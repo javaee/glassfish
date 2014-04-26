@@ -623,7 +623,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
      */
     @Override
     public <T> T getService(Class<T> contractOrImpl, Annotation... qualifiers) throws MultiException {
-        return getService((Type) contractOrImpl, qualifiers);
+        return internalGetService(contractOrImpl, null, null, qualifiers);
     }
 
     /* (non-Javadoc)
@@ -631,16 +631,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
      */
     @Override
     public <T> T getService(Type contractOrImpl, Annotation... qualifiers) throws MultiException {
-        checkState();
-
-        ActiveDescriptor<T> ad = internalGetDescriptor(null, contractOrImpl, null, null, qualifiers);
-        if (ad == null){
-            return null;
-        }
-
-        T retVal = Utilities.createService(ad, null, this, null, ReflectionHelper.getRawClass(contractOrImpl));
-
-        return retVal;
+        return internalGetService(contractOrImpl, null, null, qualifiers);
     }
 
     /* (non-Javadoc)
@@ -649,7 +640,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     @Override
     public <T> T getService(Class<T> contractOrImpl, String name, Annotation... qualifiers)
             throws MultiException {
-        return internalGetService(contractOrImpl, name, qualifiers);
+        return internalGetService(contractOrImpl, name, null, qualifiers);
     }
 
     /* (non-Javadoc)
@@ -658,13 +649,13 @@ public class ServiceLocatorImpl implements ServiceLocator {
     @Override
     public <T> T getService(Type contractOrImpl, String name, Annotation... qualifiers)
             throws MultiException {
-        return internalGetService(contractOrImpl, name, qualifiers);
+        return internalGetService(contractOrImpl, name, null, qualifiers);
     }
 
-    private <T> T internalGetService(Type contractOrImpl, String name, Annotation... qualifiers) {
+    private <T> T internalGetService(Type contractOrImpl, String name, Unqualified unqualified, Annotation... qualifiers) {
         checkState();
 
-        ActiveDescriptor<T> ad = internalGetDescriptor(null, contractOrImpl, name, null, qualifiers);
+        ActiveDescriptor<T> ad = internalGetDescriptor(null, contractOrImpl, name, unqualified, qualifiers);
         if (ad == null) return null;
 
         T retVal = Utilities.createService(ad, null, this, null, ReflectionHelper.getRawClass(contractOrImpl));
@@ -674,14 +665,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     }
 
     /* package */ <T> T getUnqualifiedService(Type contractOrImpl, Unqualified unqualified, Annotation... qualifiers) throws MultiException {
-        checkState();
-
-        ActiveDescriptor<T> ad = internalGetDescriptor(null, contractOrImpl, null, unqualified, qualifiers);
-        if (ad == null) return null;
-
-        T retVal = Utilities.createService(ad, null, this, null, ReflectionHelper.getRawClass(contractOrImpl));
-
-        return retVal;
+        return internalGetService(contractOrImpl, null, unqualified, qualifiers);
     }
 
     private <T> List<T> protectedGetAllServices(final Type contractOrImpl,
