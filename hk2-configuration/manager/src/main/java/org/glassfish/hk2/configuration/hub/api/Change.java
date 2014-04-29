@@ -40,15 +40,62 @@
 package org.glassfish.hk2.configuration.hub.api;
 
 import java.beans.PropertyChangeEvent;
+import java.util.List;
 
 /**
  * @author jwells
  *
  */
-public interface SingletonType extends Type {
-    public Object getBean();
+public interface Change {
+    /**
+     * Gets the type of the change for all change categories.  In
+     * the case of ADD_TYPE the value returned will include all
+     * instances added, but there will also be an ADD_INSTANCE
+     * change sent for each instance of this type that was added.
+     * In the case of REMOVE_TYPE the value return will include
+     * all instances still in the type at the time of removal, but
+     * there will also be a REMOVE_INSTANCE change sent for each
+     * instance that was in the type at the time of type removal 
+     * 
+     * @return The type of the change.  Will not be null
+     */
+    public Type getChangeType();
     
-    public void setBean(Object bean);
+    /**
+     * Returns the key of the instance that was removed, added or modified
+     * for the categories ADD_INSTANCE, REMOVE_INSTANCE and MODIFY_INSTANCE
+     * 
+     * @return The key of the instance that was added, removed or modified.
+     * Returns null for change category REMOVE_TYPE or ADD_TYPE
+     */
+    public Object getInstanceKey();
     
-    public void modifyBean(PropertyChangeEvent... changes);
+    /**
+     * Returns the value of the instance that was removed, added or modified
+     * for the categories ADD_INSTANCE, REMOVE_INSTANCE and MODIFY_INSTANCE
+     * 
+     * @return The value of the instance that was added, removed or modified.
+     * Returns null for change category REMOVE_TYPE or ADD_TYPE
+     */
+    public Object getInstanceValue();
+    
+    /**
+     * Returns a list of properties that were changed if the change category
+     * is MODIFY_INSTANCE.
+     * 
+     * @return A non-null and non-empty list of modified properties that were
+     * changed in the instance for change category MODIFY_INSTANCE.  Returns
+     * null for all other change categories
+     */
+    public List<PropertyChangeEvent> getModifiedProperties();
+    
+    public enum ChangeCategory {
+        REMOVE_TYPE,
+        ADD_TYPE,
+        ADD_INSTANCE,
+        REMOVE_INSTANCE,
+        MODIFY_INSTANCE
+        
+    }
+
 }

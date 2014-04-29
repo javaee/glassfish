@@ -37,58 +37,21 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.hub.internal;
-
-import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
-import org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener;
-import org.glassfish.hk2.configuration.hub.api.Hub;
-import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
-import org.jvnet.hk2.annotations.ContractsProvided;
-import org.jvnet.hk2.annotations.Service;
+package org.glassfish.hk2.configuration.hub.api;
 
 /**
  * @author jwells
  *
  */
-@Service @ContractsProvided(Hub.class)
-public class HubImpl implements Hub {
-    private BeanDatabaseImpl currentDatabase = new BeanDatabaseImpl();
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.configuration.hub.api.Hub#getCurrentDatabase()
-     */
-    @Override
-    public BeanDatabase getCurrentDatabase() {
-        return currentDatabase;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.configuration.hub.api.Hub#addListener(org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener)
-     */
-    @Override
-    public void addListener(BeanDatabaseUpdateListener listener) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.configuration.hub.api.Hub#removeListener(org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener)
-     */
-    @Override
-    public void removeListener(BeanDatabaseUpdateListener listener) {
-        // TODO Auto-generated method stub
-        
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.configuration.hub.api.Hub#getWriteableDatabaseCopy()
-     */
-    @Override
-    public WriteableBeanDatabase getWriteableDatabaseCopy() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
+public interface WriteableBeanDatabase extends BeanDatabase {
+    public WriteableType addType(String typeName);
     
+    public void removeType(String typeName);
+    
+    public WriteableType getWriteableType(String typeName);
+    
+    public WriteableType findOrAddWriteableType(String typeName);
+    
+    public void commit();
 
 }

@@ -39,7 +39,6 @@
  */
 package org.glassfish.hk2.configuration.hub.api;
 
-import java.beans.PropertyChangeEvent;
 import java.util.List;
 
 /**
@@ -49,14 +48,5 @@ import java.util.List;
 public interface BeanDatabaseUpdateListener {
     public void initialize(BeanDatabase database);
     
-    public void singletonTypeAdded(BeanDatabase proposedDatabase, SingletonType type);
-    public void singletonTypeRemoved(BeanDatabase proposedDatabase, SingletonType type);
-    public void singletonTypeChanged(BeanDatabase proposedDatabase, SingletonType typeChanged, List<PropertyChangeEvent> changes);
-    
-    public void keyedTypeAdded(BeanDatabase proposedDatabase, KeyedType type);
-    public void keyedTypeRemoved(BeanDatabase proposedDatabase, KeyedType type);
-    public void keyedTypeBeanAdded(BeanDatabase proposedDatabase, KeyedType type, String addedKey, Object addedBean);
-    public void keyedTypeBeanRemoved(BeanDatabase proposedDatabase, KeyedType type, String removedKey, Object removedBean);
-    public void keyedTypeBeanChanged(BeanDatabase proposedDatabase, KeyedType type, String removedKey, List<PropertyChangeEvent> changes);
-
+    public void databaseHasChanged(BeanDatabase newDatabase, List<Change> changes);
 }

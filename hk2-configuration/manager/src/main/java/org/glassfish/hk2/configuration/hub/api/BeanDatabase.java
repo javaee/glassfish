@@ -46,12 +46,8 @@ import java.util.Set;
  *
  */
 public interface BeanDatabase {
-    public Set<SingletonType> getAllSingetonTypes();
+    public Set<Type> getAllTypes();
     
-    public SingletonType getSingletonType(String typeName);
-    
-    public Set<KeyedType> getAllKeyedTypes();
-    
-    public KeyedType getKeyedType(String typeName);
+    public Type getType(String type);
 
 }

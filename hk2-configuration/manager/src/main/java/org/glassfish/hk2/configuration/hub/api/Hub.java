@@ -48,18 +48,16 @@ import org.jvnet.hk2.annotations.Contract;
  */
 @Contract
 public interface Hub {
+    /**
+     * Gets the current database running in the system
+     * 
+     * @return
+     */
     public BeanDatabase getCurrentDatabase();
     
-    public KeyedType createMultiValueType(String name);
+    public WriteableBeanDatabase getWriteableDatabaseCopy();
     
-    public KeyedType findOrCreateMultiValueType(String name);
+    public void addListener(BeanDatabaseUpdateListener listener);
     
-    public KeyedType removeMultiValueType(String name);
-    
-    public SingletonType createType(String name);
-    
-    public SingletonType findOrCreateType(String name);
-    
-    public SingletonType removeType(String name);
-    
+    public void removeListener(BeanDatabaseUpdateListener listener);
 }

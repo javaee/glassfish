@@ -39,18 +39,25 @@
  */
 package org.glassfish.hk2.configuration.hub.api;
 
+import java.util.Map;
+
 /**
  * @author jwells
  *
  */
 public interface Type {
+    /**
+     * A unique identifier for this type
+     * 
+     * @return A unique identifier for this type (may not return null)
+     */
+    public String getName();
     
-    public Form getForm();
-    
-    public enum Form {
-        AUTO_DETECT,
-        BEAN_LIKE_MAP,
-        JAVA_BEAN
-    }
-
+    /**
+     * Returns a read-only map of the instances that are associated with this type
+     * 
+     * @return A read-only and possibly empty map of instances associated
+     * with this type
+     */
+    public Map<Object, Object> getInstances();
 }

@@ -45,10 +45,11 @@ import java.beans.PropertyChangeEvent;
  * @author jwells
  *
  */
-public interface KeyedType extends Type {
-    public void addBean(String key, Object bean);
-    public Object removeBean(String key, Object bean);
-    public void modifyBean(String key, PropertyChangeEvent... changes);
-    public Object getBean(String key);
+public interface WriteableType extends Type {
+    public void addInstance(Object key, Object bean);
+    
+    public Object removeInstance(Object key);
+    
+    public void modifyInstance(Object key, PropertyChangeEvent... changes);
 
 }
