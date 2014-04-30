@@ -37,35 +37,39 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.hub.api;
+package org.glassfish.hk2.configuration.hub.test;
 
-import java.util.Map;
+import java.io.Serializable;
 
 /**
  * @author jwells
  *
  */
-public interface Type {
-    /**
-     * A unique identifier for this type
-     * 
-     * @return A unique identifier for this type (may not return null)
-     */
-    public String getName();
+public class GenericJavaBean implements Serializable {
+    /** For serialization */
+    private static final long serialVersionUID = -7225319624147000913L;
     
-    /**
-     * Returns a read-only map of the instances that are associated with this type
-     * 
-     * @return A read-only and possibly empty map of instances associated
-     * with this type
-     */
-    public Map<Object, Object> getInstances();
+    private String name;
+    private String other;
     
-    /**
-     * Gets the instance associated with this key, or null if there is none
-     * 
-     * @param key The non-null key for the instance
-     * @return The resulting instance or null if there is none
-     */
-    public Object getInstance(Object key);
+    public GenericJavaBean() {
+    }
+    
+    public GenericJavaBean(String name, String other) {
+        this.name = name;
+        this.other = other;
+    }
+    
+    public String getName() {
+        return name;
+    }
+    
+    public String getOther() {
+        return other;
+    }
+    
+    public void setOther(String other) {
+        this.other = other;
+    }
+
 }

@@ -84,6 +84,14 @@ public class WriteableTypeImpl implements WriteableType {
     public synchronized Map<Object, Object> getInstances() {
         return Collections.unmodifiableMap(beanMap);
     }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.configuration.hub.api.Type#getInstance(java.lang.Object)
+     */
+    @Override
+    public synchronized Object getInstance(Object key) {
+        return beanMap.get(key);
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.configuration.hub.api.WriteableType#addInstance(java.lang.Object, java.lang.Object)
@@ -136,6 +144,8 @@ public class WriteableTypeImpl implements WriteableType {
         if (oldBean == null) {
             throw new IllegalStateException("Attempting to modify bean with key " + key + " but no such bean exists");
         }
+        
+        beanMap.put(key, newBean);
 
         ArrayList<PropertyChangeEvent> propChangesList = new ArrayList<PropertyChangeEvent>(propChanges.length);
         for (PropertyChangeEvent pce : propChanges) {
@@ -148,5 +158,7 @@ public class WriteableTypeImpl implements WriteableType {
                 newBean,
                 propChangesList));
     }
+
+    
 
 }

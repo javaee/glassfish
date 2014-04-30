@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.configuration.hub.test;
 
+import java.beans.PropertyChangeEvent;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -62,9 +63,15 @@ import org.jvnet.hk2.testing.junit.HK2Runner;
 public class HubTest extends HK2Runner {
     private final static String EMPTY_TYPE = "EmptyType";
     private final static String ONE_INSTANCE_TYPE = "OneInstanceType";
+    private final static String TYPE_TWO = "TypeTwo";
+    
     private final static String NAME_PROPERTY = "Name";
+    private final static String OTHER_PROPERTY = "Other";
     
     private final static String ALICE = "Alice";
+    
+    private final static String OTHER_PROPERTY_VALUE1 = "value1";
+    private final static String OTHER_PROPERTY_VALUE2 = "value2";
     
     private Hub hub;
     private Map<String, Object> oneFieldBeanLikeMap = new HashMap<String, Object>();
@@ -219,6 +226,155 @@ public class HubTest extends HK2Runner {
             hub.removeListener(listener);
         }
         
+    }
+    
+    private void addType(String typeName) {
+        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+        
+        wbd.addType(typeName);
+        
+        wbd.commit();
+    }
+    
+    private void addTypeAndInstance(String typeName, String instanceKey, Object instanceValue) {
+        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+        
+        WriteableType wt = wbd.addType(typeName);
+        
+        wt.addInstance(instanceKey, instanceValue);
+        
+        wbd.commit();
+    }
+    
+    private void removeType(String typeName) {
+        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+        
+        wbd.removeType(typeName);
+        
+        wbd.commit();
+    }
+    
+    /**
+     * Tests adding an instance to an existing a type
+     */
+    @Test
+    public void addInstanceToExistingType() {
+        addType(ONE_INSTANCE_TYPE);
+        
+        GenericBeanDatabaseUpdateListener listener = null;
+        WriteableBeanDatabase wbd = null;
+        
+        try {
+            listener = new GenericBeanDatabaseUpdateListener();
+            hub.addListener(listener);
+        
+            wbd = hub.getWriteableDatabaseCopy();
+            WriteableType wt = wbd.getWriteableType(ONE_INSTANCE_TYPE);
+            Assert.assertNotNull(wt);
+            
+            wt.addInstance(ALICE, oneFieldBeanLikeMap);
+        
+            wbd.commit();
+        
+            Type oneInstanceType = hub.getCurrentDatabase().getType(ONE_INSTANCE_TYPE);
+            
+            List<Change> changes = listener.getLastSetOfChanges();
+            
+            Assert.assertEquals(1, changes.size());
+            
+            {
+                Change instanceChange = changes.get(0);
+            
+                Assert.assertEquals(Change.ChangeCategory.ADD_INSTANCE, instanceChange.getChangeCategory());
+                Assert.assertEquals(oneInstanceType.getName(), instanceChange.getChangeType().getName());
+                Assert.assertEquals(1, instanceChange.getChangeType().getInstances().size());
+                Assert.assertEquals(ALICE, instanceChange.getInstanceKey());
+                Assert.assertEquals(oneFieldBeanLikeMap, instanceChange.getInstanceValue());
+                Assert.assertNull(instanceChange.getModifiedProperties());
+            }
+        }
+        finally {
+            // Cleanup
+            if (listener != null) {
+                hub.removeListener(listener);
+            }
+            
+            if (wbd != null) {
+                removeType(ONE_INSTANCE_TYPE);
+            }
+            
+        }
+    }
+    
+    /**
+     * Tests adding an instance to an existing a type
+     */
+    @Test
+    public void modifyProperty() {
+        addTypeAndInstance(TYPE_TWO, ALICE, new GenericJavaBean(ALICE, OTHER_PROPERTY_VALUE1));
+        
+        GenericBeanDatabaseUpdateListener listener = null;
+        WriteableBeanDatabase wbd = null;
+        
+        try {
+            listener = new GenericBeanDatabaseUpdateListener();
+            hub.addListener(listener);
+        
+            wbd = hub.getWriteableDatabaseCopy();
+            WriteableType wt = wbd.getWriteableType(TYPE_TWO);
+            Assert.assertNotNull(wt);
+            
+            GenericJavaBean newBean = new GenericJavaBean(ALICE, OTHER_PROPERTY_VALUE2);
+            wt.modifyInstance(ALICE, newBean,
+                    new PropertyChangeEvent(newBean, OTHER_PROPERTY, OTHER_PROPERTY_VALUE1, OTHER_PROPERTY_VALUE2));
+        
+            wbd.commit();
+        
+            Type typeTwo = hub.getCurrentDatabase().getType(TYPE_TWO);
+            
+            List<Change> changes = listener.getLastSetOfChanges();
+            
+            Assert.assertEquals(1, changes.size());
+            
+            {
+                Change instanceChange = changes.get(0);
+            
+                Assert.assertEquals(Change.ChangeCategory.MODIFY_INSTANCE, instanceChange.getChangeCategory());
+                Assert.assertEquals(TYPE_TWO, instanceChange.getChangeType().getName());
+                Assert.assertEquals(1, instanceChange.getChangeType().getInstances().size());
+                Assert.assertEquals(ALICE, instanceChange.getInstanceKey());
+                Assert.assertEquals(newBean, instanceChange.getInstanceValue());
+                
+                List<PropertyChangeEvent> propertyChanges = instanceChange.getModifiedProperties();
+                Assert.assertNotNull(propertyChanges);
+                Assert.assertEquals(1, propertyChanges.size());
+                
+                PropertyChangeEvent pce = propertyChanges.get(0);
+                
+                Assert.assertEquals(OTHER_PROPERTY, pce.getPropertyName());
+                Assert.assertEquals(OTHER_PROPERTY_VALUE1, pce.getOldValue());
+                Assert.assertEquals(OTHER_PROPERTY_VALUE2, pce.getNewValue());
+                Assert.assertEquals(newBean, pce.getSource());
+            }
+            
+            typeTwo = hub.getCurrentDatabase().getType(TYPE_TWO);
+            
+            GenericJavaBean bean = (GenericJavaBean) typeTwo.getInstance(ALICE);
+            
+            Assert.assertEquals(ALICE, bean.getName());
+            Assert.assertEquals(OTHER_PROPERTY_VALUE2, bean.getOther());
+        }
+        finally {
+            // Cleanup
+            if (listener != null) {
+                hub.removeListener(listener);
+            }
+            
+            if (wbd != null) {
+                removeType(ONE_INSTANCE_TYPE);
+            }
+            
+        }
     }
 
 }

@@ -40,7 +40,6 @@
 package org.glassfish.hk2.configuration.hub.internal;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.glassfish.hk2.configuration.hub.api.Type;
@@ -72,6 +71,14 @@ public class TypeImpl implements Type {
     @Override
     public Map<Object, Object> getInstances() {
         return instances;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.configuration.hub.api.Type#getInstance(java.lang.Object)
+     */
+    @Override
+    public Object getInstance(Object key) {
+        return instances.get(key);
     }
 
 }
