@@ -39,21 +39,14 @@
  */
 package org.jvnet.hk2.testing.junit.internal;
 
-import java.util.LinkedList;
+import java.util.List;
 
-import javax.inject.Named;
-import javax.inject.Qualifier;
-import javax.inject.Scope;
-import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.utilities.DescriptorImpl;
-import org.jvnet.hk2.annotations.Contract;
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.hk2.external.org.objectweb.asm.AnnotationVisitor;
-import org.glassfish.hk2.external.org.objectweb.asm.Attribute;
 import org.glassfish.hk2.external.org.objectweb.asm.ClassVisitor;
-import org.glassfish.hk2.external.org.objectweb.asm.FieldVisitor;
-import org.glassfish.hk2.external.org.objectweb.asm.MethodVisitor;
 import org.glassfish.hk2.external.org.objectweb.asm.Opcodes;
 
 /**
@@ -62,28 +55,22 @@ import org.glassfish.hk2.external.org.objectweb.asm.Opcodes;
  */
 public class ClassVisitorImpl extends ClassVisitor {
     private final static String SERVICE_CLASS_FORM = "Lorg/jvnet/hk2/annotations/Service;";
-    private final static String NAME = "name";
-    private final static String VALUE = "value";
     
-    private final DynamicConfiguration config;
+    private final ServiceLocator locator;
     private final boolean verbose;
     
     private String implName;
-    private final LinkedList<String> iFaces = new LinkedList<String>();
-    private Class<?> scopeClass;
-    private final LinkedList<String> qualifiers = new LinkedList<String>();
     private boolean isAService = false;
-    private String name;
     
     /**
      * Creates this with the config to add to if this is a service
      * @param config
      * @param verbose true if we should print out any service we are binding
      */
-    public ClassVisitorImpl(DynamicConfiguration config, boolean verbose) {
+    public ClassVisitorImpl(ServiceLocator locator, boolean verbose) {
         super(Opcodes.ASM5);
         
-        this.config = config;
+        this.locator = locator;
         this.verbose = verbose;
     }
 
@@ -98,20 +85,6 @@ public class ClassVisitorImpl extends ClassVisitor {
             String superName,
             String[] interfaces) {
         implName = name.replace("/", ".");
-        
-        for (String i : interfaces) {
-            String iFace = i.replace("/", ".");
-            try {
-                Class<?> iClass = this.getClass().getClassLoader().loadClass(iFace);
-                if (iClass.isAnnotationPresent(Contract.class)) {
-                    iFaces.add(iClass.getName());
-                }
-            }
-            catch (Throwable th) {
-                // Ignore, simply can't be loaded
-            }
-        }
-        
     }
 
     /* (non-Javadoc)
@@ -123,51 +96,9 @@ public class ClassVisitorImpl extends ClassVisitor {
         
         if (SERVICE_CLASS_FORM.equals(desc)) {
             isAService = true;
-            
-            return new ServiceAnnotationVisitor();
-        }
-        
-        if (!desc.startsWith("L")) return null;
-            
-        String loadQualifierName = desc.substring(1, desc.length() -1).replace("/", ".");
-        Class<?> annoClass;
-        try {
-            annoClass = Class.forName(loadQualifierName);
-        }
-        catch (Throwable th) {
-            return null;
-        }
-            
-        if (annoClass.isAnnotationPresent(Scope.class)) {
-            scopeClass = annoClass;
-        }
-        else if (annoClass.isAnnotationPresent(Qualifier.class)) {
-            qualifiers.add(annoClass.getName());
-            
-            if (Named.class.equals(annoClass)) {
-                return new NamedAnnotationVisitor(getDefaultName());
-            }
         }
         
         return null;
-    }
-    
-    private String getDefaultName() {
-        if (implName == null) throw new IllegalStateException();
-        
-        int index = implName.lastIndexOf('.');
-        if (index <= 0) return implName;
-        
-        return implName.substring(index + 1);
-    }
-        
-
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.ClassVisitor#visitAttribute(org.objectweb.asm.Attribute)
-     */
-    @Override
-    public void visitAttribute(Attribute arg0) {
-        
     }
 
     /* (non-Javadoc)
@@ -177,185 +108,19 @@ public class ClassVisitorImpl extends ClassVisitor {
     public void visitEnd() {
         if (!isAService) return;
         
-        DescriptorImpl di = new DescriptorImpl();
-        di.setImplementation(implName);
-        if (scopeClass == null) {
-            // The default for classes with Service is Singelton
-            di.setScope(Singleton.class.getName());
+        Class<?> implClass = null;
+        try {
+            implClass = Class.forName(implName);
         }
-        else {
-            di.setScope(scopeClass.getName());
-        }
-        
-        di.addAdvertisedContract(implName);
-        for (String iFace : iFaces) {
-            di.addAdvertisedContract(iFace);
+        catch (Throwable th) {
+            System.out.println("HK2Runner could not classload service " + implName + ", skipping...");
+            return;
         }
         
-        for (String qualifier : qualifiers) {
-            di.addQualifier(qualifier);
-        }
+        List<ActiveDescriptor<?>> added = ServiceLocatorUtilities.addClasses(locator, implClass);
         
-        if (name != null) {
-            di.setName(name);
+        if (verbose && !added.isEmpty()) {
+            System.out.println("HK2Runner bound service " + added.get(0));
         }
-        
-        if (verbose) {
-            System.out.println("Binding service " + di);
-        }
-        config.bind(di);
     }
-
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.ClassVisitor#visitField(int, java.lang.String, java.lang.String, java.lang.String, java.lang.Object)
-     */
-    @Override
-    public FieldVisitor visitField(int arg0, String arg1, String arg2,
-            String arg3, Object arg4) {
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.ClassVisitor#visitInnerClass(java.lang.String, java.lang.String, java.lang.String, int)
-     */
-    @Override
-    public void visitInnerClass(String arg0, String arg1, String arg2, int arg3) {
-        
-    }
-
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.ClassVisitor#visitMethod(int, java.lang.String, java.lang.String, java.lang.String, java.lang.String[])
-     */
-    @Override
-    public MethodVisitor visitMethod(int arg0, String arg1, String arg2,
-            String arg3, String[] arg4) {
-        return null;
-    }
-
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.ClassVisitor#visitOuterClass(java.lang.String, java.lang.String, java.lang.String)
-     */
-    @Override
-    public void visitOuterClass(String arg0, String arg1, String arg2) {
-        
-    }
-
-    /* (non-Javadoc)
-     * @see org.objectweb.asm.ClassVisitor#visitSource(java.lang.String, java.lang.String)
-     */
-    @Override
-    public void visitSource(String arg0, String arg1) {
-        
-    }
-    
-    private class ServiceAnnotationVisitor extends AnnotationVisitor {
-        public ServiceAnnotationVisitor() {
-            super(Opcodes.ASM5);
-        }
-
-        /* (non-Javadoc)
-         * @see org.objectweb.asm.AnnotationVisitor#visit(java.lang.String, java.lang.Object)
-         */
-        @Override
-        public void visit(String annotationName, Object value) {
-            if (annotationName.equals(NAME)) {
-                name = (String) value;
-            }
-        }
-
-        /* (non-Javadoc)
-         * @see org.objectweb.asm.AnnotationVisitor#visitAnnotation(java.lang.String, java.lang.String)
-         */
-        @Override
-        public AnnotationVisitor visitAnnotation(String name, String desc) {
-            return null;
-        }
-
-        /* (non-Javadoc)
-         * @see org.objectweb.asm.AnnotationVisitor#visitArray(java.lang.String)
-         */
-        @Override
-        public AnnotationVisitor visitArray(String arg0) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        /* (non-Javadoc)
-         * @see org.objectweb.asm.AnnotationVisitor#visitEnd()
-         */
-        @Override
-        public void visitEnd() {
-            
-        }
-
-        /* (non-Javadoc)
-         * @see org.objectweb.asm.AnnotationVisitor#visitEnum(java.lang.String, java.lang.String, java.lang.String)
-         */
-        @Override
-        public void visitEnum(String arg0, String arg1, String arg2) {
-            // TODO Auto-generated method stub
-            
-        }
-        
-    }
-    
-    private class NamedAnnotationVisitor extends AnnotationVisitor {
-        private final String defaultName;
-        private boolean nameSet = false;
-        
-        public NamedAnnotationVisitor(String defaultName) {
-            super(Opcodes.ASM5);
-            
-            this.defaultName = defaultName;
-        }
-
-        /* (non-Javadoc)
-         * @see org.objectweb.asm.AnnotationVisitor#visit(java.lang.String, java.lang.Object)
-         */
-        @Override
-        public void visit(String annotationName, Object value) {
-            if (annotationName.equals(VALUE)) {
-                name = (String) value;
-                nameSet = true;
-            }
-        }
-
-        /* (non-Javadoc)
-         * @see org.objectweb.asm.AnnotationVisitor#visitAnnotation(java.lang.String, java.lang.String)
-         */
-        @Override
-        public AnnotationVisitor visitAnnotation(String name, String desc) {
-            return null;
-        }
-
-        /* (non-Javadoc)
-         * @see org.objectweb.asm.AnnotationVisitor#visitArray(java.lang.String)
-         */
-        @Override
-        public AnnotationVisitor visitArray(String arg0) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        /* (non-Javadoc)
-         * @see org.objectweb.asm.AnnotationVisitor#visitEnd()
-         */
-        @Override
-        public void visitEnd() {
-            if (nameSet) return;
-            
-            name = defaultName;
-        }
-
-        /* (non-Javadoc)
-         * @see org.objectweb.asm.AnnotationVisitor#visitEnum(java.lang.String, java.lang.String, java.lang.String)
-         */
-        @Override
-        public void visitEnum(String arg0, String arg1, String arg2) {
-            // TODO Auto-generated method stub
-            
-        }
-        
-    }
-
 }

@@ -145,4 +145,15 @@ public class RunnerTest extends HK2Runner {
     public void testTestInjection() {
         Assert.assertNotNull(injectMe);
     }
+    
+    /**
+     * Ensures that a complex test service is properly found
+     */
+    @Test
+    public void testComplexService() {
+        SimpleContract0 sc0 = testLocator.getService(SimpleContract0.class);
+        
+        Assert.assertNotNull(sc0);
+        
+    }
 }

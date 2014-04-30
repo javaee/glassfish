@@ -62,6 +62,7 @@ import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.utilities.DescriptorImpl;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Before;
 import org.jvnet.hk2.testing.junit.internal.ClassVisitorImpl;
 import org.jvnet.hk2.testing.junit.internal.ErrorServiceImpl;
@@ -136,11 +137,10 @@ public class HK2Runner {
         
         testLocator = ServiceLocatorFactory.getInstance().create(name);
         
+        ServiceLocatorUtilities.addClasses(testLocator, ErrorServiceImpl.class, JustInTimeInjectionResolverImpl.class);
+        
         DynamicConfigurationService dcs = testLocator.getService(DynamicConfigurationService.class);
         DynamicConfiguration config = dcs.createDynamicConfiguration();
-        
-        config.addActiveDescriptor(ErrorServiceImpl.class);
-        config.addActiveDescriptor(JustInTimeInjectionResolverImpl.class);
         
         addServicesFromDefault(config);
         
@@ -227,7 +227,6 @@ public class HK2Runner {
     
     private void internalAddServicesFromPackage(DynamicConfiguration config, List<String> packages) {
         if (packages.isEmpty()) {
-            System.out.println("JRW(10) HK2Runner leaving packages empty bro");
             return;
         }
         
@@ -277,7 +276,7 @@ public class HK2Runner {
                 try {
                     FileInputStream fis = new FileInputStream(candidate);
                     
-                    addClassIfService(config, fis);
+                    addClassIfService(fis);
                 }
                 catch (IOException ioe) {
                     // Just don't add it
@@ -321,7 +320,7 @@ public class HK2Runner {
                     }
                 
                     try {
-                        addClassIfService(config, jarFile.getInputStream(entry));
+                        addClassIfService(jarFile.getInputStream(entry));
                     }
                     catch (IOException ioe) {
                         // Simply don't add it if we can't read it
@@ -339,10 +338,10 @@ public class HK2Runner {
         }
     }
     
-    private void addClassIfService(DynamicConfiguration config, InputStream is) throws IOException {
+    private void addClassIfService(InputStream is) throws IOException {
         ClassReader reader = new ClassReader(is);
         
-        ClassVisitorImpl cvi = new ClassVisitorImpl(config, verbose);
+        ClassVisitorImpl cvi = new ClassVisitorImpl(testLocator, verbose);
         
         reader.accept(cvi, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
         
