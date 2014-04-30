@@ -43,8 +43,6 @@ import java.beans.PropertyChangeEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import org.glassfish.hk2.configuration.hub.api.Change;
@@ -56,16 +54,18 @@ import org.glassfish.hk2.configuration.hub.api.WriteableType;
  *
  */
 public class WriteableTypeImpl implements WriteableType {
+    private final WriteableBeanDatabaseImpl parent;
     private final String name;
     private final HashMap<Object, Object> beanMap = new HashMap<Object, Object>();
-    private final List<Change> changes = new LinkedList<Change>();
     
-    /* package */ WriteableTypeImpl(Type mother) {
+    /* package */ WriteableTypeImpl(WriteableBeanDatabaseImpl parent, Type mother) {
+        this.parent = parent;
         this.name = mother.getName();
         beanMap.putAll(mother.getInstances());
     }
     
-    /* package */ WriteableTypeImpl(String name) {
+    /* package */ WriteableTypeImpl(WriteableBeanDatabaseImpl parent, String name) {
+        this.parent = parent;
         this.name = name;
     }
 
@@ -92,7 +92,7 @@ public class WriteableTypeImpl implements WriteableType {
     public synchronized void addInstance(Object key, Object bean) {
         if (key == null || bean == null) throw new IllegalArgumentException();
         
-        changes.add(new ChangeImpl(Change.ChangeCategory.ADD_INSTANCE,
+        parent.addChange(new ChangeImpl(Change.ChangeCategory.ADD_INSTANCE,
                                    this,
                                    key,
                                    bean,
@@ -111,7 +111,7 @@ public class WriteableTypeImpl implements WriteableType {
         Object removedValue = beanMap.remove(key);
         if (removedValue == null) return null;
         
-        changes.add(new ChangeImpl(Change.ChangeCategory.REMOVE_INSTANCE,
+        parent.addChange(new ChangeImpl(Change.ChangeCategory.REMOVE_INSTANCE,
                 this,
                 key,
                 removedValue,
@@ -142,7 +142,7 @@ public class WriteableTypeImpl implements WriteableType {
             propChangesList.add(pce);
         }
         
-        changes.add(new ChangeImpl(Change.ChangeCategory.MODIFY_INSTANCE,
+        parent.addChange(new ChangeImpl(Change.ChangeCategory.MODIFY_INSTANCE,
                 this,
                 key,
                 newBean,

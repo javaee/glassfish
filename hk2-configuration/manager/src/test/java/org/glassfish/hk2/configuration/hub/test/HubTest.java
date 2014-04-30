@@ -39,6 +39,9 @@
  */
 package org.glassfish.hk2.configuration.hub.test;
 
+import java.util.List;
+
+import org.glassfish.hk2.configuration.hub.api.Change;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
@@ -79,6 +82,55 @@ public class HubTest extends HK2Runner {
             wbd = hub.getWriteableDatabaseCopy();
             wbd.removeType(EMPTY_TYPE);
             wbd.commit();
+        }
+        
+    }
+    
+    /**
+     * Tests we can add an empty type to the database with a listener
+     */
+    @Test
+    public void testAddEmptyTypeWithListener() {
+        Hub hub = testLocator.getService(Hub.class);
+        
+        Assert.assertNull(hub.getCurrentDatabase().getType(EMPTY_TYPE));
+        
+        GenericBeanDatabaseUpdateListener listener = new GenericBeanDatabaseUpdateListener();
+        hub.addListener(listener);
+        
+        WriteableBeanDatabase wbd = null;
+        
+        try {
+        
+            wbd = hub.getWriteableDatabaseCopy();
+            wbd.addType(EMPTY_TYPE);
+        
+            wbd.commit();
+        
+            Type emptyType = hub.getCurrentDatabase().getType(EMPTY_TYPE);
+            
+            List<Change> changes = listener.getLastSetOfChanges();
+            
+            Assert.assertEquals(1, changes.size());
+            
+            Change change = changes.get(0);
+            
+            Assert.assertEquals(Change.ChangeCategory.ADD_TYPE, change.getChangeCategory());
+            Assert.assertEquals(emptyType.getName(), change.getChangeType().getName());
+            Assert.assertEquals(0, change.getChangeType().getInstances().size());
+            Assert.assertNull(change.getInstanceKey());
+            Assert.assertNull(change.getInstanceValue());
+            Assert.assertNull(change.getModifiedProperties());
+        }
+        finally {
+            // Cleanup
+            if (wbd != null) {
+                wbd = hub.getWriteableDatabaseCopy();
+                wbd.removeType(EMPTY_TYPE);
+                wbd.commit();
+            }
+            
+            hub.removeListener(listener);
         }
         
     }

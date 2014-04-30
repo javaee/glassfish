@@ -67,7 +67,7 @@ public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase {
         baseRevision = currentDatabase.getRevision();
         
         for (Type type : currentDatabase.getAllTypes()) {
-            types.put(type.getName(), new WriteableTypeImpl(type));
+            types.put(type.getName(), new WriteableTypeImpl(this, type));
         }
         
     }
@@ -100,7 +100,7 @@ public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase {
         if (typeName == null) throw new IllegalArgumentException();
         checkState();
         
-        WriteableTypeImpl wti = new WriteableTypeImpl(typeName);
+        WriteableTypeImpl wti = new WriteableTypeImpl(this, typeName);
         
         changes.add(new ChangeImpl(Change.ChangeCategory.ADD_TYPE,
                                    wti,
@@ -175,11 +175,15 @@ public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase {
         }
         
         // Outside of lock
-        hub.setCurrentDatabase(this);
+        hub.setCurrentDatabase(this, changes);
     }
     
     /* package */ long getBaseRevision() {
         return baseRevision;
+    }
+    
+    /* package */ synchronized void addChange(Change change) {
+        changes.add(change);
     }
 
 }

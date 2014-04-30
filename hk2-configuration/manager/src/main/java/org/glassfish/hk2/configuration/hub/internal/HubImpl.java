@@ -39,10 +39,15 @@
  */
 package org.glassfish.hk2.configuration.hub.internal;
 
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener;
+import org.glassfish.hk2.configuration.hub.api.Change;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.jvnet.hk2.annotations.ContractsProvided;
@@ -58,6 +63,7 @@ public class HubImpl implements Hub {
     
     private final Object lock = new Object();
     private BeanDatabaseImpl currentDatabase = new BeanDatabaseImpl(revisionCounter.getAndIncrement());
+    private final HashSet<BeanDatabaseUpdateListener> listeners = new HashSet<BeanDatabaseUpdateListener>();
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.configuration.hub.api.Hub#getCurrentDatabase()
@@ -73,18 +79,26 @@ public class HubImpl implements Hub {
      * @see org.glassfish.hk2.configuration.hub.api.Hub#addListener(org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener)
      */
     @Override
-    public void addListener(BeanDatabaseUpdateListener listener) {
-        throw new AssertionError("not yet implemented");
+    public synchronized void addListener(BeanDatabaseUpdateListener listener) {
+        try {
+            listener.initialize(currentDatabase);
+        }
+        catch (RuntimeException re) {
+            throw re;
+        }
+        catch (Throwable th) {
+            throw new MultiException(th);
+        }
         
+        listeners.add(listener);
     }
     
     /* (non-Javadoc)
      * @see org.glassfish.hk2.configuration.hub.api.Hub#removeListener(org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener)
      */
     @Override
-    public void removeListener(BeanDatabaseUpdateListener listener) {
-        throw new AssertionError("not yet implemented");
-        
+    public synchronized void removeListener(BeanDatabaseUpdateListener listener) {
+        listeners.remove(listener);
     }
 
     /* (non-Javadoc)
@@ -97,7 +111,7 @@ public class HubImpl implements Hub {
         }
     }
     
-    /* package */ void setCurrentDatabase(WriteableBeanDatabaseImpl writeableDatabase) {
+    /* package */ void setCurrentDatabase(WriteableBeanDatabaseImpl writeableDatabase, List<Change> changes) {
         synchronized (lock) {
             long currentRevision = currentDatabase.getRevision();
             long writeRevision = writeableDatabase.getBaseRevision();
@@ -108,7 +122,17 @@ public class HubImpl implements Hub {
             
             currentDatabase = new BeanDatabaseImpl(revisionCounter.getAndIncrement(), writeableDatabase);
             
-            // TODO:  Send out notifications
+            for (BeanDatabaseUpdateListener listener : listeners) {
+                try {
+                    listener.databaseHasChanged(currentDatabase, changes);
+                }
+                catch (Throwable th) {
+                    // silly user code, I don't care about your troubles
+                }
+                
+            }
         }
+        
+        
     }
 }
