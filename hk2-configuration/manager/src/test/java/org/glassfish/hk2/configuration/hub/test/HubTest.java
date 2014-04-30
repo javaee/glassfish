@@ -37,19 +37,50 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.hub.api;
+package org.glassfish.hk2.configuration.hub.test;
 
-import java.beans.PropertyChangeEvent;
+import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.configuration.hub.api.Type;
+import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
+import org.glassfish.hk2.configuration.hub.api.WriteableType;
+import org.junit.Assert;
+import org.junit.Test;
+import org.jvnet.hk2.testing.junit.HK2Runner;
 
 /**
  * @author jwells
  *
  */
-public interface WriteableType extends Type {
-    public void addInstance(Object key, Object bean);
+public class HubTest extends HK2Runner {
+    private final static String EMPTY_TYPE = "EmptyType";
     
-    public Object removeInstance(Object key);
-    
-    public void modifyInstance(Object key, Object newBean, PropertyChangeEvent... changes);
+    /**
+     * Tests we can add an empty type to the database
+     */
+    @Test
+    public void testAddEmptyType() {
+        Hub hub = testLocator.getService(Hub.class);
+        
+        Assert.assertNull(hub.getCurrentDatabase().getType(EMPTY_TYPE));
+        
+        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+        wbd.addType(EMPTY_TYPE);
+        
+        wbd.commit();
+        
+        try {
+            Type emptyType = hub.getCurrentDatabase().getType(EMPTY_TYPE);
+            
+            Assert.assertNotNull(emptyType);
+            Assert.assertEquals(0, emptyType.getInstances().size());
+        }
+        finally {
+            // Cleanup
+            wbd = hub.getWriteableDatabaseCopy();
+            wbd.removeType(EMPTY_TYPE);
+            wbd.commit();
+        }
+        
+    }
 
 }

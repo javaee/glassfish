@@ -46,7 +46,7 @@ package org.glassfish.hk2.configuration.hub.api;
 public interface WriteableBeanDatabase extends BeanDatabase {
     public WriteableType addType(String typeName);
     
-    public void removeType(String typeName);
+    public Type removeType(String typeName);
     
     public WriteableType getWriteableType(String typeName);
     

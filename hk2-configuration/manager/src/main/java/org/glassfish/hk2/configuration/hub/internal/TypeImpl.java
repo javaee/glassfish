@@ -37,19 +37,41 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.hub.api;
+package org.glassfish.hk2.configuration.hub.internal;
 
-import java.beans.PropertyChangeEvent;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.glassfish.hk2.configuration.hub.api.Type;
 
 /**
  * @author jwells
  *
  */
-public interface WriteableType extends Type {
-    public void addInstance(Object key, Object bean);
+public class TypeImpl implements Type {
+    private final String name;
+    private final Map<Object, Object> instances;
     
-    public Object removeInstance(Object key);
-    
-    public void modifyInstance(Object key, Object newBean, PropertyChangeEvent... changes);
+    /* package */ TypeImpl(Type baseType) {
+        name = baseType.getName();
+        instances = Collections.unmodifiableMap(baseType.getInstances());
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.configuration.hub.api.Type#getName()
+     */
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.configuration.hub.api.Type#getInstances()
+     */
+    @Override
+    public Map<Object, Object> getInstances() {
+        return instances;
+    }
 
 }

@@ -54,6 +54,7 @@
     <name>HK2 Configuration Subsystem</name>
     
     <modules>
+        <module>manager</module>
         <module>hk2-integration</module>
     </modules>
 </project>

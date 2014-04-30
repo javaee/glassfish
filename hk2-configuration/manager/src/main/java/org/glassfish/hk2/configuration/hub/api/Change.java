@@ -48,6 +48,20 @@ import java.util.List;
  */
 public interface Change {
     /**
+     * Gets the category of change this Change object
+     * represents
+     * 
+     * @return <UL>
+     * <LI>REMOVE_TYPE</LI>
+     * <LI>ADD_TYPE</LI>
+     * <LI>ADD_INSTANCE</LI>
+     * <LI>REMOVE_INSTANCE</LI>
+     * <LI>MODIFY_INSTANCE</LI>
+     * </UL>
+     */
+    public ChangeCategory getChangeCategory();
+    
+    /**
      * Gets the type of the change for all change categories.  In
      * the case of ADD_TYPE the value returned will include all
      * instances added, but there will also be an ADD_INSTANCE

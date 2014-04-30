@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.configuration.hub.internal;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener;
 import org.glassfish.hk2.configuration.hub.api.Hub;
@@ -52,14 +54,19 @@ import org.jvnet.hk2.annotations.Service;
  */
 @Service @ContractsProvided(Hub.class)
 public class HubImpl implements Hub {
-    private BeanDatabaseImpl currentDatabase = new BeanDatabaseImpl();
+    private static final AtomicLong revisionCounter = new AtomicLong(1);
+    
+    private final Object lock = new Object();
+    private BeanDatabaseImpl currentDatabase = new BeanDatabaseImpl(revisionCounter.getAndIncrement());
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.configuration.hub.api.Hub#getCurrentDatabase()
      */
     @Override
     public BeanDatabase getCurrentDatabase() {
-        return currentDatabase;
+        synchronized (lock) {
+            return currentDatabase;
+        }
     }
 
     /* (non-Javadoc)
@@ -67,16 +74,16 @@ public class HubImpl implements Hub {
      */
     @Override
     public void addListener(BeanDatabaseUpdateListener listener) {
-        // TODO Auto-generated method stub
+        throw new AssertionError("not yet implemented");
         
     }
-
+    
     /* (non-Javadoc)
      * @see org.glassfish.hk2.configuration.hub.api.Hub#removeListener(org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener)
      */
     @Override
     public void removeListener(BeanDatabaseUpdateListener listener) {
-        // TODO Auto-generated method stub
+        throw new AssertionError("not yet implemented");
         
     }
 
@@ -85,10 +92,23 @@ public class HubImpl implements Hub {
      */
     @Override
     public WriteableBeanDatabase getWriteableDatabaseCopy() {
-        // TODO Auto-generated method stub
-        return null;
+        synchronized (lock) {
+            return new WriteableBeanDatabaseImpl(this, currentDatabase);
+        }
     }
-
     
-
+    /* package */ void setCurrentDatabase(WriteableBeanDatabaseImpl writeableDatabase) {
+        synchronized (lock) {
+            long currentRevision = currentDatabase.getRevision();
+            long writeRevision = writeableDatabase.getBaseRevision();
+            
+            if (currentRevision != writeRevision) {
+                throw new IllegalStateException("commit was called on a WriteableDatabase but the current database has changed after that copy was made");
+            }
+            
+            currentDatabase = new BeanDatabaseImpl(revisionCounter.getAndIncrement(), writeableDatabase);
+            
+            // TODO:  Send out notifications
+        }
+    }
 }

@@ -78,6 +78,9 @@
  */
 package org.glassfish.hk2.configuration.hub.internal;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
@@ -88,20 +91,22 @@ import org.glassfish.hk2.configuration.hub.api.Type;
  *
  */
 public class BeanDatabaseImpl implements BeanDatabase {
+    private final long revision;
+    private final HashMap<String, Type> types = new HashMap<String, Type>();
+    
     /**
      * Creates a new, fresh database
      */
-    public BeanDatabaseImpl() {
-        
+    /* package */ BeanDatabaseImpl(long revision) {
+        this.revision = revision;
     }
     
-    /**
-     * Does a deep copy
-     * @param copyMe
-     */
-    public BeanDatabaseImpl(BeanDatabaseImpl copyMe) {
-        throw new AssertionError("not yet implemented");
+    /* package */ BeanDatabaseImpl(long revision, BeanDatabase beanDatabase) {
+        this(revision);
         
+        for (Type type : beanDatabase.getAllTypes()) {
+            types.put(type.getName(), new TypeImpl(type));
+        }
     }
 
     /* (non-Javadoc)
@@ -109,8 +114,7 @@ public class BeanDatabaseImpl implements BeanDatabase {
      */
     @Override
     public Set<Type> getAllTypes() {
-        // TODO Auto-generated method stub
-        return null;
+        return Collections.unmodifiableSet(new HashSet<Type>(types.values()));
     }
 
     /* (non-Javadoc)
@@ -118,8 +122,11 @@ public class BeanDatabaseImpl implements BeanDatabase {
      */
     @Override
     public Type getType(String type) {
-        // TODO Auto-generated method stub
-        return null;
+        return types.get(type);
+    }
+    
+    /* package */ long getRevision() {
+        return revision;
     }
 
     
