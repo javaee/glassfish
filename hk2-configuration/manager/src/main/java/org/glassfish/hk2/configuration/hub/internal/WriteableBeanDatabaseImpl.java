@@ -43,6 +43,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 
 import org.glassfish.hk2.configuration.hub.api.Change;
@@ -124,9 +125,9 @@ public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase {
         WriteableType retVal = types.remove(typeName);
         if (retVal == null) return null;
         
-        if (!retVal.getInstances().isEmpty()) {
-            throw new IllegalStateException("A type must have zero instances before it can be removed.  Type " + typeName +
-                    " has " + retVal.getInstances().size() + " instances");
+        Map<Object, Object> instances = retVal.getInstances();
+        for (Object key : instances.keySet()) {
+            retVal.removeInstance(key);
         }
         
         changes.add(new ChangeImpl(Change.ChangeCategory.REMOVE_TYPE,

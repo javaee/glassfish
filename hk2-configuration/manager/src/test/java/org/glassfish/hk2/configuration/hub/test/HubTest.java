@@ -39,14 +39,19 @@
  */
 package org.glassfish.hk2.configuration.hub.test;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.glassfish.hk2.configuration.hub.api.Change;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
+import org.glassfish.hk2.configuration.hub.internal.HubImpl;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.jvnet.hk2.testing.junit.HK2Runner;
 
@@ -56,14 +61,34 @@ import org.jvnet.hk2.testing.junit.HK2Runner;
  */
 public class HubTest extends HK2Runner {
     private final static String EMPTY_TYPE = "EmptyType";
+    private final static String ONE_INSTANCE_TYPE = "OneInstanceType";
+    private final static String NAME_PROPERTY = "Name";
+    
+    private final static String ALICE = "Alice";
+    
+    private Hub hub;
+    private Map<String, Object> oneFieldBeanLikeMap = new HashMap<String, Object>();
+    
+    @Before
+    public void before() {
+        super.before();
+        
+        // This is necessary to make running in an IDE easier
+        Hub hub = testLocator.getService(Hub.class);
+        if (hub == null) {
+            ServiceLocatorUtilities.addClasses(testLocator, HubImpl.class);
+        }
+        
+        this.hub = testLocator.getService(Hub.class);
+        
+        oneFieldBeanLikeMap.put(NAME_PROPERTY, ALICE);
+    }
     
     /**
      * Tests we can add an empty type to the database
      */
     @Test
     public void testAddEmptyType() {
-        Hub hub = testLocator.getService(Hub.class);
-        
         Assert.assertNull(hub.getCurrentDatabase().getType(EMPTY_TYPE));
         
         WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
@@ -91,8 +116,6 @@ public class HubTest extends HK2Runner {
      */
     @Test
     public void testAddEmptyTypeWithListener() {
-        Hub hub = testLocator.getService(Hub.class);
-        
         Assert.assertNull(hub.getCurrentDatabase().getType(EMPTY_TYPE));
         
         GenericBeanDatabaseUpdateListener listener = new GenericBeanDatabaseUpdateListener();
@@ -101,7 +124,8 @@ public class HubTest extends HK2Runner {
         WriteableBeanDatabase wbd = null;
         
         try {
-        
+            Hub hub = testLocator.getService(Hub.class);
+            
             wbd = hub.getWriteableDatabaseCopy();
             wbd.addType(EMPTY_TYPE);
         
@@ -127,6 +151,68 @@ public class HubTest extends HK2Runner {
             if (wbd != null) {
                 wbd = hub.getWriteableDatabaseCopy();
                 wbd.removeType(EMPTY_TYPE);
+                wbd.commit();
+            }
+            
+            hub.removeListener(listener);
+        }
+        
+    }
+    
+    /**
+     * Tests adding a type with one instance
+     */
+    @Test
+    public void addNewTypeWithOneInstance() {
+        Assert.assertNull(hub.getCurrentDatabase().getType(ONE_INSTANCE_TYPE));
+        
+        GenericBeanDatabaseUpdateListener listener = new GenericBeanDatabaseUpdateListener();
+        hub.addListener(listener);
+        
+        WriteableBeanDatabase wbd = null;
+        
+        try {
+        
+            wbd = hub.getWriteableDatabaseCopy();
+            WriteableType wt = wbd.addType(ONE_INSTANCE_TYPE);
+            
+            wt.addInstance(ALICE, oneFieldBeanLikeMap);
+        
+            wbd.commit();
+        
+            Type oneInstanceType = hub.getCurrentDatabase().getType(ONE_INSTANCE_TYPE);
+            
+            List<Change> changes = listener.getLastSetOfChanges();
+            
+            Assert.assertEquals(2, changes.size());
+            
+            {
+                Change typeChange = changes.get(0);
+            
+                Assert.assertEquals(Change.ChangeCategory.ADD_TYPE, typeChange.getChangeCategory());
+                Assert.assertEquals(oneInstanceType.getName(), typeChange.getChangeType().getName());
+                Assert.assertEquals(1, typeChange.getChangeType().getInstances().size());
+                Assert.assertNull(typeChange.getInstanceKey());
+                Assert.assertNull(typeChange.getInstanceValue());
+                Assert.assertNull(typeChange.getModifiedProperties());
+            }
+            
+            {
+                Change instanceChange = changes.get(1);
+            
+                Assert.assertEquals(Change.ChangeCategory.ADD_INSTANCE, instanceChange.getChangeCategory());
+                Assert.assertEquals(oneInstanceType.getName(), instanceChange.getChangeType().getName());
+                Assert.assertEquals(1, instanceChange.getChangeType().getInstances().size());
+                Assert.assertEquals(ALICE, instanceChange.getInstanceKey());
+                Assert.assertEquals(oneFieldBeanLikeMap, instanceChange.getInstanceValue());
+                Assert.assertNull(instanceChange.getModifiedProperties());
+            }
+        }
+        finally {
+            // Cleanup
+            if (wbd != null) {
+                wbd = hub.getWriteableDatabaseCopy();
+                wbd.removeType(ONE_INSTANCE_TYPE);
                 wbd.commit();
             }
             
