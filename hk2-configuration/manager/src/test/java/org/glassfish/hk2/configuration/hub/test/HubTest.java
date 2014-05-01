@@ -64,6 +64,7 @@ public class HubTest extends HK2Runner {
     private final static String EMPTY_TYPE = "EmptyType";
     private final static String ONE_INSTANCE_TYPE = "OneInstanceType";
     private final static String TYPE_TWO = "TypeTwo";
+    private final static String TYPE_THREE = "TypeThree";
     
     private final static String NAME_PROPERTY = "Name";
     private final static String OTHER_PROPERTY = "Other";
@@ -369,6 +370,46 @@ public class HubTest extends HK2Runner {
             if (listener != null) {
                 hub.removeListener(listener);
             }
+            
+            if (wbd != null) {
+                removeType(ONE_INSTANCE_TYPE);
+            }
+            
+        }
+    }
+    
+    /**
+     * Tests findOrAddWriteableType and other accessors
+     */
+    @Test
+    public void testFindOrAdd() {
+        GenericJavaBean addedBean = new GenericJavaBean(ALICE, OTHER_PROPERTY_VALUE1);
+        addTypeAndInstance(TYPE_TWO, ALICE, addedBean);
+        
+        WriteableBeanDatabase wbd = null;
+        
+        try {
+            wbd = hub.getWriteableDatabaseCopy();
+            
+            GenericJavaBean gjb = (GenericJavaBean) wbd.getInstance(TYPE_TWO, ALICE);
+            Assert.assertNotNull(gjb);
+            Assert.assertEquals(addedBean, gjb);
+        
+            WriteableType wt = wbd.findOrAddWriteableType(TYPE_TWO);
+            Assert.assertNotNull(wt);
+            
+            gjb = (GenericJavaBean) wt.getInstance(ALICE);
+            Assert.assertNotNull(gjb);
+            Assert.assertEquals(addedBean, gjb);
+            
+            WriteableType wt3 = wbd.findOrAddWriteableType(TYPE_THREE);
+            Assert.assertNotNull(wt3);
+            
+            gjb = (GenericJavaBean) wt3.getInstance(ALICE);
+            Assert.assertNull(gjb);
+        }
+        finally {
+            // Cleanup
             
             if (wbd != null) {
                 removeType(ONE_INSTANCE_TYPE);

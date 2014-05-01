@@ -46,8 +46,31 @@ import java.util.Set;
  *
  */
 public interface BeanDatabase {
+    /**
+     * Gets an unmodifiable set of all the types in the bean database
+     * 
+     * @return A non-null unmodifiable and possibly empty set of
+     * all the types in the database
+     */
     public Set<Type> getAllTypes();
     
+    /**
+     * Gets the type with the given name
+     * 
+     * @param type The non-null name
+     * @return The type corresponding to the given name.  May return null
+     */
     public Type getType(String type);
+    
+    /**
+     * Returns the instance with the given instanceKey from the
+     * type with the given name
+     * 
+     * @param type The non-null name of the type to get the instance from
+     * @param instanceKey The non-null key of the instance
+     * @return The bean from the given type with the given name.  Will return
+     * null if the type does not exist or an instance with that key does not exist
+     */
+    public Object getInstance(String type, Object instanceKey);
 
 }

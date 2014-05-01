@@ -113,21 +113,34 @@ public class BeanDatabaseImpl implements BeanDatabase {
      * @see org.glassfish.hk2.configuration.hub.api.BeanDatabase#getAllTypes()
      */
     @Override
-    public Set<Type> getAllTypes() {
+    public synchronized Set<Type> getAllTypes() {
         return Collections.unmodifiableSet(new HashSet<Type>(types.values()));
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.configuration.hub.api.BeanDatabase#getInstance(java.lang.String, java.lang.Object)
+     */
+    @Override
+    public synchronized Object getInstance(String type, Object instanceKey) {
+        Type t = getType(type);
+        if (t == null) return null;
+        
+        return t.getInstance(instanceKey);
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.configuration.hub.api.BeanDatabase#getType(java.lang.String)
      */
     @Override
-    public Type getType(String type) {
+    public synchronized Type getType(String type) {
         return types.get(type);
     }
     
     /* package */ long getRevision() {
         return revision;
     }
+
+    
 
     
 }

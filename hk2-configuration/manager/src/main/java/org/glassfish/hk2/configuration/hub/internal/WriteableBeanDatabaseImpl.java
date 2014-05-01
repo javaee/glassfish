@@ -89,6 +89,17 @@ public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase {
         return types.get(type);
     }
     
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.configuration.hub.api.BeanDatabase#getInstance(java.lang.String, java.lang.Object)
+     */
+    @Override
+    public synchronized Object getInstance(String type, Object instanceKey) {
+        Type t = getType(type);
+        if (t == null) return null;
+        
+        return t.getInstance(instanceKey);
+    }
+    
     private void checkState() {
         if (committed) throw new IllegalStateException("This database has already been committed");
     }
