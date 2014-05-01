@@ -70,6 +70,7 @@ public class HubTest extends HK2Runner {
     private final static String OTHER_PROPERTY = "Other";
     
     private final static String ALICE = "Alice";
+    private final static String BOB = "Bob";
     
     private final static String OTHER_PROPERTY_VALUE1 = "value1";
     private final static String OTHER_PROPERTY_VALUE2 = "value2";
@@ -240,7 +241,7 @@ public class HubTest extends HK2Runner {
     private void addTypeAndInstance(String typeName, String instanceKey, Object instanceValue) {
         WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
         
-        WriteableType wt = wbd.addType(typeName);
+        WriteableType wt = wbd.findOrAddWriteableType(typeName);
         
         wt.addInstance(instanceKey, instanceValue);
         
@@ -311,7 +312,7 @@ public class HubTest extends HK2Runner {
      * Tests adding an instance to an existing a type
      */
     @Test
-    public void modifyProperty() {
+    public void testModifyProperty() {
         addTypeAndInstance(TYPE_TWO, ALICE, new GenericJavaBean(ALICE, OTHER_PROPERTY_VALUE1));
         
         GenericBeanDatabaseUpdateListener listener = null;
@@ -372,7 +373,7 @@ public class HubTest extends HK2Runner {
             }
             
             if (wbd != null) {
-                removeType(ONE_INSTANCE_TYPE);
+                removeType(TYPE_TWO);
             }
             
         }
@@ -412,7 +413,72 @@ public class HubTest extends HK2Runner {
             // Cleanup
             
             if (wbd != null) {
-                removeType(ONE_INSTANCE_TYPE);
+                removeType(TYPE_TWO);
+            }
+            
+        }
+    }
+    
+    /**
+     * Tests removing an instance
+     */
+    @Test
+    public void testRemoveInstance() {
+        addTypeAndInstance(TYPE_TWO, ALICE, new GenericJavaBean(ALICE, OTHER_PROPERTY_VALUE1));
+        addTypeAndInstance(TYPE_TWO, BOB, new GenericJavaBean(BOB, OTHER_PROPERTY_VALUE1));
+        
+        GenericBeanDatabaseUpdateListener listener = null;
+        WriteableBeanDatabase wbd = null;
+        
+        try {
+            listener = new GenericBeanDatabaseUpdateListener();
+            hub.addListener(listener);
+        
+            wbd = hub.getWriteableDatabaseCopy();
+            WriteableType wt = wbd.getWriteableType(TYPE_TWO);
+            Assert.assertNotNull(wt);
+            
+            GenericJavaBean removed = (GenericJavaBean) wt.removeInstance(ALICE);
+            Assert.assertNotNull(removed);
+            Assert.assertEquals(ALICE, removed.getName());
+        
+            wbd.commit();
+        
+            Type typeTwo = hub.getCurrentDatabase().getType(TYPE_TWO);
+            
+            List<Change> changes = listener.getLastSetOfChanges();
+            
+            Assert.assertEquals(1, changes.size());
+            
+            {
+                Change instanceChange = changes.get(0);
+            
+                Assert.assertEquals(Change.ChangeCategory.REMOVE_INSTANCE, instanceChange.getChangeCategory());
+                Assert.assertEquals(TYPE_TWO, instanceChange.getChangeType().getName());
+                Assert.assertEquals(1, instanceChange.getChangeType().getInstances().size());
+                Assert.assertEquals(ALICE, instanceChange.getInstanceKey());
+                Assert.assertEquals(removed, instanceChange.getInstanceValue());
+                Assert.assertNull(instanceChange.getModifiedProperties());
+            }
+            
+            typeTwo = hub.getCurrentDatabase().getType(TYPE_TWO);
+            
+            GenericJavaBean bean = (GenericJavaBean) typeTwo.getInstance(ALICE);
+            Assert.assertNull(bean);
+            
+            // Make sure Bob is still there though!
+            bean = (GenericJavaBean) typeTwo.getInstance(BOB);
+            Assert.assertNotNull(bean);
+            Assert.assertEquals(BOB, bean.getName());
+        }
+        finally {
+            // Cleanup
+            if (listener != null) {
+                hub.removeListener(listener);
+            }
+            
+            if (wbd != null) {
+                removeType(TYPE_TWO);
             }
             
         }
