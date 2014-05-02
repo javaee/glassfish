@@ -48,6 +48,7 @@ import org.glassfish.hk2.api.ErrorInformation;
 import org.glassfish.hk2.api.ErrorType;
 import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
@@ -261,6 +262,37 @@ public class ErrorService1Test {
         ErrorInformation ei = errors.get(0);
         
         Assert.assertEquals(ErrorType.SERVICE_CREATION_FAILURE, ei.getErrorType());
+        Assert.assertEquals(serviceDescriptor, ei.getDescriptor());
+        Assert.assertNull(ei.getInjectee());
+        
+        Throwable associatedException = ei.getAssociatedException();
+        Assert.assertTrue(associatedException.getMessage().contains(ERROR_STRING));
+    }
+    
+    /**
+     * Tests that a service that fails during destruction is reported to the error service
+     */
+    @Test @Ignore
+    public void testFailsInDestroy() {
+        ServiceLocator locator = LocatorHelper.getServiceLocator(RecordingErrorService.class,
+                ServiceFailsInDestructor.class);
+        
+        ActiveDescriptor<?> serviceDescriptor = locator.getBestDescriptor(BuilderHelper.createContractFilter(
+                ServiceFailsInDestructor.class.getName()));
+        Assert.assertNotNull(serviceDescriptor);
+        
+        ServiceHandle<ServiceFailsInDestructor> handle = locator.getServiceHandle(ServiceFailsInDestructor.class);
+        Assert.assertNotNull(handle.getService());
+        
+        handle.destroy();
+        
+        List<ErrorInformation> errors = locator.getService(RecordingErrorService.class).getAndClearErrors();
+        
+        Assert.assertEquals(1, errors.size());
+        
+        ErrorInformation ei = errors.get(0);
+        
+        Assert.assertEquals(ErrorType.SERVICE_DESTRUCTION_FAILURE, ei.getErrorType());
         Assert.assertEquals(serviceDescriptor, ei.getDescriptor());
         Assert.assertNull(ei.getInjectee());
         
