@@ -54,6 +54,8 @@ public interface ErrorInformation {
      * @return <UL>
      * <LI>{@link ErrorType#FAILURE_TO_REIFY}</LI>
      * <LI>{@link ErrorType#DYNAMIC_CONFIGURATION_FAILURE}</LI>
+     * <LI>{@link ErrorType#SERVICE_CREATION_FAILURE}</LI>
+     * <LI>{@link ErrorType#SERVICE_DESTRUCTION_FAILURE}</LI>
      * </UL>
      */
     public ErrorType getErrorType();
@@ -62,7 +64,10 @@ public interface ErrorInformation {
      * This will contain the active descriptor that is associated
      * with this failure.  In the case of FAILURE_TO_REIFY it will
      * contain the descriptor that failed to reify.  In the
-     * DYNAMIC_CONFIGURATION_FAILURE case this will return null
+     * DYNAMIC_CONFIGURATION_FAILURE case this will return null.
+     * In SERVICE_CREATION_FAILURE and SERVICE_DESTRUCTION_FAILURE
+     * it will contain the descriptor whose create or destroy methods
+     * failed
      * 
      * @return The descriptor associated with this failure
      */
@@ -76,7 +81,8 @@ public interface ErrorInformation {
      * being looked up to satisfy the injection point, or null if this lookup
      * was due to an API call.
      * <p>
-     * In the case of DYNAMIC_CONFIGURATION_FAILURE this will return null.
+     * In the cases of DYNAMIC_CONFIGURATION_FAILURE, SERVICE_CREATION_FAILURE and
+     * SERVICE_DESTRUCTION_FAILURE this will return null.
      * 
      * @return The injectee associated with this failure
      */
@@ -91,6 +97,12 @@ public interface ErrorInformation {
      * <p>
      * In the case of DYNAMIC_CONFIGURATION_FAILURE this will contain the exception
      * that cause the configuration operation to fail
+     * <p>
+     * In the case of SERVICE_CREATION_FAILURE this will contain the exception
+     * that was thrown during service creation
+     * <p>
+     * In the case of SERVICE_DESTRUCTION_FAILURE this will contain the exception
+     * that was thrown during service destruction
      * 
      * @return The exception associated with this failure
      */

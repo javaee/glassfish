@@ -55,6 +55,16 @@ public enum ErrorType {
     /**
      * This type is set if a dynamic configuration operation fails
      */
-    DYNAMIC_CONFIGURATION_FAILURE
+    DYNAMIC_CONFIGURATION_FAILURE,
+    
+    /**
+     * A service threw an error upon creation
+     */
+    SERVICE_CREATION_FAILURE,
+    
+    /**
+     * A service threw an error upon destruction
+     */
+    SERVICE_DESTRUCTION_FAILURE
 
 }
