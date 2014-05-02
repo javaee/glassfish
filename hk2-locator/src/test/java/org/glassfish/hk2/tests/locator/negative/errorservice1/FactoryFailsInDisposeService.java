@@ -41,36 +41,31 @@ package org.glassfish.hk2.tests.locator.negative.errorservice1;
 
 import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.ServiceHandle;
-import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
+import org.glassfish.hk2.api.Factory;
 
 /**
+ * Factory fails in the dispose method
+ * 
  * @author jwells
  *
  */
-public class AlwaysFailActiveDescriptor extends
-        AbstractActiveDescriptor<SimpleService> {
-    public AlwaysFailActiveDescriptor() {
-        super();
-        
-        super.addContractType(SimpleService.class);
-        super.setScopeAnnotation(Singleton.class);
-        super.setImplementation(SimpleService.class.getName());
+@Singleton
+public class FactoryFailsInDisposeService implements Factory<SimpleService> {
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Factory#provide()
+     */
+    @Override @Singleton
+    public SimpleService provide() {
+        return new SimpleService();
     }
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.ActiveDescriptor#getImplementationClass()
+     * @see org.glassfish.hk2.api.Factory#dispose(java.lang.Object)
      */
     @Override
-    public Class<?> getImplementationClass() {
-        return SimpleService.class;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.ActiveDescriptor#create(org.glassfish.hk2.api.ServiceHandle)
-     */
-    @Override
-    public SimpleService create(ServiceHandle<?> root) {
+    public void dispose(SimpleService instance) {
         throw new RuntimeException(ErrorService1Test.ERROR_STRING);
     }
+
 }

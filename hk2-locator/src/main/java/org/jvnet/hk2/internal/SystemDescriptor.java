@@ -506,12 +506,42 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
         // invoke listeners BEFORE destroying the instance
         invokeInstanceListeners(event);
 
-        if (activeDescriptor != null) {
-            activeDescriptor.dispose(instance);
-            return;
-        }
+        try {
+            if (activeDescriptor != null) {
+                activeDescriptor.dispose(instance);
+                return;
+            }
 
-        creator.dispose(instance);
+            creator.dispose(instance);
+        }
+        catch (Throwable re) {
+            if (!(re instanceof MultiException)) {
+                re = new MultiException(re);
+            }
+            MultiException reported = (MultiException) re;
+            
+            if (!reported.getReportToErrorService()) {
+                // Specifically told to NOT report this error to error handlers
+                throw (RuntimeException) re;
+            }
+            
+            LinkedList<ErrorService> errorHandlers = sdLocator.getErrorHandlers();
+            for (ErrorService es : errorHandlers) {
+                ErrorInformation ei = new ErrorInformationImpl(ErrorType.SERVICE_DESTRUCTION_FAILURE,
+                        this,
+                        null,
+                        reported);
+                
+                try {
+                    es.onFailure(ei);
+                }
+                catch (Throwable th) {
+                    // ignored
+                }
+            }
+            
+            throw (RuntimeException) re;
+        }
     }
 
     private void checkState() {

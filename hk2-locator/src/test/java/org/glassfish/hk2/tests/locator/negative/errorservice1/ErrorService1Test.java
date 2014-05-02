@@ -134,7 +134,7 @@ public class ErrorService1Test {
     }
     
     /**
-     * Tests that a service that fails in an initializer method has the error passed to the error service
+     * Tests that a service that fails in an postConstruct method has the error passed to the error service
      */
     @Test
     public void testServiceFailsInPostConstruct() {
@@ -168,7 +168,7 @@ public class ErrorService1Test {
     }
     
     /**
-     * Tests that a service that fails in an initializer method has the error passed to the error service
+     * Tests that a service that comes from a factory that fails in provide
      */
     @Test
     public void testFactorServiceFailsInProvide() {
@@ -208,7 +208,7 @@ public class ErrorService1Test {
     }
     
     /**
-     * Tests that a service that fails in an initializer method has the error passed to the error service
+     * Tests that a service that fails but tells HK2 to NOT report the failure to the error handler service
      */
     @Test
     public void testSilentFailureInPostConstruct() {
@@ -272,7 +272,7 @@ public class ErrorService1Test {
     /**
      * Tests that a service that fails during destruction is reported to the error service
      */
-    @Test @Ignore
+    @Test
     public void testFailsInDestroy() {
         ServiceLocator locator = LocatorHelper.getServiceLocator(RecordingErrorService.class,
                 ServiceFailsInDestructor.class);
@@ -282,6 +282,79 @@ public class ErrorService1Test {
         Assert.assertNotNull(serviceDescriptor);
         
         ServiceHandle<ServiceFailsInDestructor> handle = locator.getServiceHandle(ServiceFailsInDestructor.class);
+        Assert.assertNotNull(handle.getService());
+        
+        handle.destroy();
+        
+        List<ErrorInformation> errors = locator.getService(RecordingErrorService.class).getAndClearErrors();
+        
+        Assert.assertEquals(1, errors.size());
+        
+        ErrorInformation ei = errors.get(0);
+        
+        Assert.assertEquals(ErrorType.SERVICE_DESTRUCTION_FAILURE, ei.getErrorType());
+        Assert.assertEquals(serviceDescriptor, ei.getDescriptor());
+        Assert.assertNull(ei.getInjectee());
+        
+        Throwable associatedException = ei.getAssociatedException();
+        Assert.assertTrue(associatedException.getMessage().contains(ERROR_STRING));
+    }
+    
+    /**
+     * Tests that a service that is created by a factory where the factory dispose method fails
+     */
+    @Test
+    public void testFactorServiceFailsInDispose() {
+        ServiceLocator locator = LocatorHelper.getServiceLocator(RecordingErrorService.class);
+        
+        FactoryDescriptors fds = BuilderHelper.link(FactoryFailsInDisposeService.class)
+                     .to(SimpleService.class.getName())
+                     .in(Singleton.class.getName())
+                     .buildFactory(Singleton.class.getName());
+        
+        ServiceLocatorUtilities.addFactoryDescriptors(locator, fds);
+        
+        ActiveDescriptor<?> serviceDescriptor = locator.getBestDescriptor(BuilderHelper.createContractFilter(
+                SimpleService.class.getName()));
+        Assert.assertNotNull(serviceDescriptor);
+        
+        ServiceHandle<SimpleService> handle = locator.getServiceHandle(SimpleService.class);
+        Assert.assertNotNull(handle);
+        Assert.assertNotNull(handle.getService());
+        
+        handle.destroy();
+        
+        List<ErrorInformation> errors = locator.getService(RecordingErrorService.class).getAndClearErrors();
+        
+        Assert.assertEquals(1, errors.size());
+        
+        ErrorInformation ei = errors.get(0);
+        
+        Assert.assertEquals(ErrorType.SERVICE_DESTRUCTION_FAILURE, ei.getErrorType());
+        Assert.assertEquals(serviceDescriptor, ei.getDescriptor());
+        Assert.assertNull(ei.getInjectee());
+        
+        Throwable associatedException = ei.getAssociatedException();
+        Assert.assertTrue(associatedException.getMessage().contains(ERROR_STRING));
+    }
+    
+    /**
+     * Tests that a third-party service that fails in dispose
+     */
+    @Test
+    public void testFailingInDisposeThirdPartyService() {
+        ServiceLocator locator = LocatorHelper.getServiceLocator(RecordingErrorService.class);
+        
+        AlwaysFailInDisposeActiveDescriptor thirdPartyDescriptor = new AlwaysFailInDisposeActiveDescriptor();
+        
+        ServiceLocatorUtilities.addOneDescriptor(locator, thirdPartyDescriptor);
+        
+        ActiveDescriptor<?> serviceDescriptor = locator.getBestDescriptor(BuilderHelper.createContractFilter(
+                SimpleService.class.getName()));
+        Assert.assertNotNull(serviceDescriptor);
+        
+        ServiceHandle<SimpleService> handle = locator.getServiceHandle(SimpleService.class);
+        Assert.assertNotNull(handle);
         Assert.assertNotNull(handle.getService());
         
         handle.destroy();

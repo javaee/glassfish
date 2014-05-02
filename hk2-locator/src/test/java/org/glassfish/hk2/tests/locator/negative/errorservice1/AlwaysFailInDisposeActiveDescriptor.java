@@ -48,11 +48,11 @@ import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
  * @author jwells
  *
  */
-public class AlwaysFailActiveDescriptor extends
-        AbstractActiveDescriptor<SimpleService> {
-    public AlwaysFailActiveDescriptor() {
+public class AlwaysFailInDisposeActiveDescriptor extends
+    AbstractActiveDescriptor<SimpleService> {
+    public AlwaysFailInDisposeActiveDescriptor() {
         super();
-        
+
         super.addContractType(SimpleService.class);
         super.setScopeAnnotation(Singleton.class);
         super.setImplementation(SimpleService.class.getName());
@@ -71,6 +71,17 @@ public class AlwaysFailActiveDescriptor extends
      */
     @Override
     public SimpleService create(ServiceHandle<?> root) {
-        throw new RuntimeException(ErrorService1Test.ERROR_STRING);
+        return new SimpleService();
     }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#dispose(java.lang.Object, org.glassfish.hk2.api.ServiceHandle)
+     */
+    @Override
+    public void dispose(SimpleService instance) {
+        throw new IllegalStateException(ErrorService1Test.ERROR_STRING);
+    }
+    
+    
 }
+
