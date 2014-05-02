@@ -167,7 +167,7 @@ public class AsyncRunLevelContext {
             }
             
             if (hardCancelledDescriptors.contains(activeDescriptor)) {
-                throw new MultiException(new WasCancelledException(activeDescriptor));
+                throw new MultiException(new WasCancelledException(activeDescriptor), false);
             }
             
             while (creatingDescriptors.containsKey(activeDescriptor)) {
@@ -179,7 +179,7 @@ public class AsyncRunLevelContext {
                 }
                 
                 if (throwWouldBlock) {
-                    throw new MultiException(new WouldBlockException(activeDescriptor));
+                    throw new MultiException(new WouldBlockException(activeDescriptor), false);
                 }
                 
                 try {
@@ -199,7 +199,7 @@ public class AsyncRunLevelContext {
             }
             
             if (hardCancelledDescriptors.contains(activeDescriptor)) {
-                throw new MultiException(new WasCancelledException(activeDescriptor));
+                throw new MultiException(new WasCancelledException(activeDescriptor), false);
             }
             
             creatingDescriptors.put(activeDescriptor, Thread.currentThread().getId());
@@ -255,7 +255,7 @@ public class AsyncRunLevelContext {
                         // are going to pretend it failed.  Putting it in the lists
                         // above will ensure it gets properly shutdown
                         
-                        MultiException cancelledException = new MultiException(new WasCancelledException(activeDescriptor));
+                        MultiException cancelledException = new MultiException(new WasCancelledException(activeDescriptor), false);
                         
                         if (!hardCancelled) {
                             levelErrorMap.put(activeDescriptor, cancelledException);

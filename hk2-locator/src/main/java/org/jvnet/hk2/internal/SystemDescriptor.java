@@ -468,6 +468,11 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
             }
             MultiException reported = (MultiException) re;
             
+            if (!reported.getReportToErrorService()) {
+                // Specifically told to NOT report this error to error handlers
+                throw (RuntimeException) re;
+            }
+            
             LinkedList<ErrorService> errorHandlers = sdLocator.getErrorHandlers();
             for (ErrorService es : errorHandlers) {
                 ErrorInformation ei = new ErrorInformationImpl(ErrorType.SERVICE_CREATION_FAILURE,

@@ -60,6 +60,7 @@ public class MultiException extends HK2RuntimeException {
     private static final long serialVersionUID = 2112432697858621044L;
     private final Object lock = new Object();
     private final List<Throwable> throwables = new LinkedList<Throwable>();
+    private boolean reportToErrorService = true;
 
     /**
      * Creates an empty MultiException
@@ -97,7 +98,7 @@ public class MultiException extends HK2RuntimeException {
      *
      * @param th May not be null
      */
-    public MultiException(Throwable th) {
+    public MultiException(Throwable th, boolean reportToErrorService) {
         super(th.getMessage(), th);
 
         if (th instanceof MultiException) {
@@ -108,6 +109,18 @@ public class MultiException extends HK2RuntimeException {
         else {
             throwables.add(th);
         }
+        
+        this.reportToErrorService = reportToErrorService;
+    }
+    
+    /**
+     * This allows for construction of a MultiException
+     * with one element in its list
+     *
+     * @param th May not be null
+     */
+    public MultiException(Throwable th) {
+        this(th, true);
     }
 
     /**
@@ -133,6 +146,9 @@ public class MultiException extends HK2RuntimeException {
         }
     }
     
+    /**
+     * Gets the message associated with this exception
+     */
     public String getMessage() {
         List<Throwable> listCopy = getErrors();
         StringBuffer sb = new StringBuffer("A MultiException has " + listCopy.size() + " exceptions.  They are:\n");
@@ -145,6 +161,9 @@ public class MultiException extends HK2RuntimeException {
         return sb.toString();
     }
     
+    /**
+     * Prints the stack trace of this exception to the given PrintStream
+     */
     public void printStackTrace(PrintStream s) {
         List<Throwable> listCopy = getErrors();
         
@@ -160,6 +179,9 @@ public class MultiException extends HK2RuntimeException {
         }
     }
     
+    /**
+     * Prints the stack trace of this exception to the given PrintWriter
+     */
     public void printStackTrace(PrintWriter s) {
         List<Throwable> listCopy = getErrors();
         
@@ -174,7 +196,32 @@ public class MultiException extends HK2RuntimeException {
             th.printStackTrace(s);
         }
     }
+    
+    /**
+     * Returns true if this exception should be reported
+     * to the error service when thrown during a creation
+     * or deletion of a service
+     * 
+     * @return true if this exception should be reported to
+     * the error service when creating or deleting a service
+     */
+    public boolean getReportToErrorService() {
+        return reportToErrorService;
+    }
+    
+    /**
+     * Sets if this exception should be reported
+     * to the error service when thrown during a creation
+     * or deletion of a service
+     * 
+     * @param report true if this exception should be reported to
+     * the error service when creating or deleting a service
+     */
+    public void setReportToErrorService(boolean report) {
+        reportToErrorService = report;
+    }
 
+    @Override
     public String toString() {
         return getMessage();
     }

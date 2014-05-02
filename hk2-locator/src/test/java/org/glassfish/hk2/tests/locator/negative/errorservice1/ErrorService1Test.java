@@ -205,5 +205,30 @@ public class ErrorService1Test {
         Throwable associatedException = ei.getAssociatedException();
         Assert.assertTrue(associatedException.getMessage().contains(ERROR_STRING));
     }
+    
+    /**
+     * Tests that a service that fails in an initializer method has the error passed to the error service
+     */
+    @Test
+    public void testSilentFailureInPostConstruct() {
+        ServiceLocator locator = LocatorHelper.getServiceLocator(RecordingErrorService.class,
+                ServiceDirectsNoErrorService.class);
+        
+        ActiveDescriptor<?> serviceDescriptor = locator.getBestDescriptor(BuilderHelper.createContractFilter(
+                ServiceDirectsNoErrorService.class.getName()));
+        Assert.assertNotNull(serviceDescriptor);
+        
+        try {
+            locator.getService(ServiceDirectsNoErrorService.class);
+            Assert.fail("Should have failed");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage().contains(ERROR_STRING));
+        }
+        
+        List<ErrorInformation> errors = locator.getService(RecordingErrorService.class).getAndClearErrors();
+        
+        Assert.assertEquals(0, errors.size());
+    }
 
 }
