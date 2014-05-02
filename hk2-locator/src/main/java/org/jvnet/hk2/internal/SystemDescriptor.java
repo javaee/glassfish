@@ -736,7 +736,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
         int locatorLow32 = (int) sdLocator.getLocatorId();
         int locatorHigh32 = (int) (sdLocator.getLocatorId() >> 32);
 
-        return baseDescriptor.hashCode() ^ low32 ^ high32 ^ locatorLow32 ^ locatorHigh32;
+        return low32 ^ high32 ^ locatorLow32 ^ locatorHigh32;
     }
 
     @SuppressWarnings({ "rawtypes" })
@@ -749,9 +749,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
 
         if (!sd.getServiceId().equals(id)) return false;
 
-        if (!sd.getLocatorId().equals(sdLocator.getLocatorId())) return false;
-
-        return sd.baseDescriptor.equals(baseDescriptor);
+        return sd.getLocatorId().equals(sdLocator.getLocatorId());
     }
 
     /* (non-Javadoc)

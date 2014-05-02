@@ -44,13 +44,14 @@ import javax.inject.Inject;
 
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.configuration.api.Configured;
+import org.glassfish.hk2.configuration.api.ConfiguredBy;
 import org.junit.Assert;
 import org.jvnet.hk2.annotations.Service;
 
 /**
  * @author jwells
  */
-@Service @PerLookup
+@Service @ConfiguredBy(type="TestConfigurationType1")
 public class ConfiguredService {
     @Configured
     private String fieldOutput1;
@@ -69,12 +70,12 @@ public class ConfiguredService {
         this.constructorOutput = constructorOutput;
     }
     
-    @Inject @Configured
-    private void setMethodOutput1(String methodOutput1) {
+    private void setMethodOutput1(@Configured(key="methodOutput1") String methodOutput1) {
         this.methodOutput1 = methodOutput1;
         
     }
     
+    @Inject
     @SuppressWarnings("unused")
     private void anotherMethodInitializer(@Configured(key="methodOutput2") String methodOutput2,
             SimpleService simpleService) {
