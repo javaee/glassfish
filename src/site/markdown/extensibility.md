@@ -26,6 +26,7 @@ users can customize thier HK2 environment.  Among the set of things which can be
 + [Class Analysis](extensibility.html#Class_Analysis)
 + [Run Level Services](extensibility.html#Run_Level_Services)
 + [Self Descriptor Injection](extensibility.html#Self_Descriptor_Injection)
++ [Error Handling](extensibility.html#Error_Handling)
 
 ### Events
 
@@ -297,6 +298,19 @@ public abstract class GenericService {
 }
 ```java
 
+### Error Handling
+
+Errors can pop up in various phases of the HK2 service lifecycle.  Users can register implementations of the
+[ErrorService][errorservice] in order to be notified when errors occur.  There are currently four types of
+errors that the system sends to the [ErrorService][errorservice]:
+
++ FAILURE_TO_REIFY:  When there has been a problem classloading a service
++ DYNAMIC_CONFIGURATION_FALURE: When a dynamic update to the set of services fails
++ SERVICE_CREATION_FALURE: When a service fails during creation
++ SERVICE_DESTRUCTION_FAILURE: When a service fails during destruction
+
+Using the ErrorService can be a convenient place to standardize on logging of service failures.
+
 [apioverview]: api-overview.html
 [servicelocator]: apidocs/org/glassfish/hk2/api/ServiceLocator.html
 [context]: apidocs/org/glassfish/hk2/api/Context.html
@@ -336,3 +350,4 @@ public abstract class GenericService {
 [aopexample]: aop-example.html
 [events]: events.html
 [threaded-events-example]: threaded-events-example.html
+[errorservice]: apidocs/org/glassfish/hk2/api/ErrorService.html
