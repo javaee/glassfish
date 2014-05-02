@@ -76,7 +76,7 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
     private final static Set<Annotation> EMPTY_QUALIFIER_SET = Collections.emptySet();
 
     private Set<Type> advertisedContracts = new LinkedHashSet<Type>();
-    private final Class<? extends Annotation> scope;
+    private Class<? extends Annotation> scope;
     private Set<Annotation> qualifiers;
     private Long factoryServiceId;
     private Long factoryLocatorId;
@@ -364,6 +364,16 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
     @Override
     public Class<? extends Annotation> getScopeAnnotation() {
         return scope;
+    }
+    
+    /**
+     * Sets the scope annotation for this descriptor
+     * 
+     * @param scopeAnnotation The non-null scope annotation for this service
+     */
+    public void setScopeAnnotation(Class<? extends Annotation> scopeAnnotation) {
+        this.scope = scopeAnnotation;
+        setScope(this.scope.getName());
     }
 
     /* (non-Javadoc)

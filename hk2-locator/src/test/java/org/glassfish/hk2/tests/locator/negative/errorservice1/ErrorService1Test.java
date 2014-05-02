@@ -230,5 +230,42 @@ public class ErrorService1Test {
         
         Assert.assertEquals(0, errors.size());
     }
+    
+    /**
+     * Tests that a third-party service that fails in create
+     */
+    @Test
+    public void testFailingThirdPartyService() {
+        ServiceLocator locator = LocatorHelper.getServiceLocator(RecordingErrorService.class);
+        
+        AlwaysFailActiveDescriptor thirdPartyDescriptor = new AlwaysFailActiveDescriptor();
+        
+        ServiceLocatorUtilities.addOneDescriptor(locator, thirdPartyDescriptor);
+        
+        ActiveDescriptor<?> serviceDescriptor = locator.getBestDescriptor(BuilderHelper.createContractFilter(
+                SimpleService.class.getName()));
+        Assert.assertNotNull(serviceDescriptor);
+        
+        try {
+            locator.getService(SimpleService.class);
+            Assert.fail("Should have failed");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage().contains(ERROR_STRING));
+        }
+        
+        List<ErrorInformation> errors = locator.getService(RecordingErrorService.class).getAndClearErrors();
+        
+        Assert.assertEquals(1, errors.size());
+        
+        ErrorInformation ei = errors.get(0);
+        
+        Assert.assertEquals(ErrorType.SERVICE_CREATION_FAILURE, ei.getErrorType());
+        Assert.assertEquals(serviceDescriptor, ei.getDescriptor());
+        Assert.assertNull(ei.getInjectee());
+        
+        Throwable associatedException = ei.getAssociatedException();
+        Assert.assertTrue(associatedException.getMessage().contains(ERROR_STRING));
+    }
 
 }
