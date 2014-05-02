@@ -55,6 +55,9 @@ import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.DescriptorVisibility;
+import org.glassfish.hk2.api.ErrorInformation;
+import org.glassfish.hk2.api.ErrorService;
+import org.glassfish.hk2.api.ErrorType;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.HK2Loader;
@@ -437,26 +440,51 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     public T create(ServiceHandle<?> root) {
         checkState();
 
-        T retVal;
-        if (activeDescriptor != null) {
-            if (!(activeDescriptor instanceof AutoActiveDescriptor)) {
-                // An auto-active descriptor will do the even in its create method
-                invokeInstanceListeners(new InstanceLifecycleEventImpl(InstanceLifecycleEventType.PRE_PRODUCTION, null, this));
+        try {
+            T retVal;
+            if (activeDescriptor != null) {
+                if (!(activeDescriptor instanceof AutoActiveDescriptor)) {
+                    // An auto-active descriptor will do the even in its create method
+                    invokeInstanceListeners(new InstanceLifecycleEventImpl(InstanceLifecycleEventType.PRE_PRODUCTION, null, this));
+                }
+
+
+                retVal = activeDescriptor.create(root);
+
+                if (!(activeDescriptor instanceof AutoActiveDescriptor)) {
+                    // An auto-active descriptor will do the even in its create method
+                    invokeInstanceListeners(new InstanceLifecycleEventImpl(InstanceLifecycleEventType.POST_PRODUCTION, retVal, this));
+                }
+            }
+            else {
+                retVal = creator.create(root, this);
             }
 
-
-            retVal = activeDescriptor.create(root);
-
-            if (!(activeDescriptor instanceof AutoActiveDescriptor)) {
-                // An auto-active descriptor will do the even in its create method
-                invokeInstanceListeners(new InstanceLifecycleEventImpl(InstanceLifecycleEventType.POST_PRODUCTION, retVal, this));
+            return retVal;
+        }
+        catch (Throwable re) {
+            if (!(re instanceof MultiException)) {
+                re = new MultiException(re);
             }
+            MultiException reported = (MultiException) re;
+            
+            LinkedList<ErrorService> errorHandlers = sdLocator.getErrorHandlers();
+            for (ErrorService es : errorHandlers) {
+                ErrorInformation ei = new ErrorInformationImpl(ErrorType.SERVICE_CREATION_FAILURE,
+                        this,
+                        null,
+                        reported);
+                
+                try {
+                    es.onFailure(ei);
+                }
+                catch (Throwable th) {
+                    // ignored
+                }
+            }
+            
+            throw (RuntimeException) re;
         }
-        else {
-            retVal = creator.create(root, this);
-        }
-
-        return retVal;
     }
 
     /* (non-Javadoc)

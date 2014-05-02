@@ -295,7 +295,7 @@ public abstract class ServiceLocatorUtilities {
      * @return a list of the FactoryDescriptor descriptors that were added to the service locator
      * @throws MultiException On a commit failure
      */
-    public List<FactoryDescriptors> addFactoryDescriptors(ServiceLocator locator, FactoryDescriptors...factories) {
+    public static List<FactoryDescriptors> addFactoryDescriptors(ServiceLocator locator, FactoryDescriptors...factories) {
         return addFactoryDescriptors(locator, true, factories);
     }
     
@@ -328,9 +328,9 @@ public abstract class ServiceLocatorUtilities {
     }
     
     /**
-     * It is very often the case that one wishes to add a single class that hk2
+     * It is very often the case that one wishes to add classes that hk2
      * will automatically analyze for contracts and qualifiers to
-     * a service locator.  This method adds that one class
+     * a service locator.  This method adds those classes
      *
      * @param locator The non-null locator to add this descriptor to
      * @param toAdd The classes to add to the locator

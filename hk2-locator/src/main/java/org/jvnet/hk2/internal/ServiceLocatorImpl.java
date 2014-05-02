@@ -2360,6 +2360,16 @@ public class ServiceLocatorImpl implements ServiceLocator {
     /* package */ ClassReflectionHelper getClassReflectionHelper() {
         return classReflectionHelper;
     }
+    
+    /* package */ LinkedList<ErrorService> getErrorHandlers() {
+        rLock.lock();
+        try {
+            return new LinkedList<ErrorService>(errorHandlers);
+        }
+        finally {
+            rLock.unlock();
+        }
+    }
 
     public String toString() {
         return "ServiceLocatorImpl(" + locatorName + "," + id + "," + System.identityHashCode(this) + ")";

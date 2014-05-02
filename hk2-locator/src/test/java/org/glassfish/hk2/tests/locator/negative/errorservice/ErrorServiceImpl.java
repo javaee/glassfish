@@ -44,6 +44,7 @@ import javax.inject.Singleton;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.ErrorInformation;
 import org.glassfish.hk2.api.ErrorService;
+import org.glassfish.hk2.api.ErrorType;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.MultiException;
 
@@ -65,6 +66,9 @@ public class ErrorServiceImpl implements ErrorService {
      */
     @Override
     public void onFailure(ErrorInformation ei) {
+        if (ei.getErrorType().equals(ErrorType.SERVICE_CREATION_FAILURE)) return;
+        if (ei.getErrorType().equals(ErrorType.SERVICE_DESTRUCTION_FAILURE)) return;
+        
         this.descriptor = (ActiveDescriptor<?>) ei.getDescriptor();
         this.injectee = ei.getInjectee();
         this.me = ei.getAssociatedException();
