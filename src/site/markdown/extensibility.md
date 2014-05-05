@@ -3,15 +3,14 @@
 
 ### Compatibility
 
-This page describes extensibility with the HK2 2.0 API, which is based on the
-JSR-330 standard annotations.  Also, Habitat has been replaced with a new
-interface called [ServiceLocator][servicelocator].
-More information can be found [here][apioverview].
+This page describes the features of the HK2 2.0 API.  The Habitat API
+from version 1.x of HK2 has been replaced with a new interface called
+[ServiceLocator][servicelocator]. More information can be found [here][apioverview].
     
-###Extensibility of HK2
+### Features of HK2
 
-HK2 is extensible along many dimensions.  This page is intended to give an overview and example of each dimension along which
-users can customize thier HK2 environment.  Among the set of things which can be extended are these:
+HK2 has many features for customizing the system.  This page is intended to give an
+overview of each feature.  Among the set of HK2 features are:
 
 + [Events](extensibility.html#Events)
 + [Adding a Scope and Context to the system](extensibility.html#Adding_a_Scope_and_Context_to_the_system)
@@ -309,7 +308,7 @@ errors that the system sends to the [ErrorService][errorservice]:
 + SERVICE_CREATION_FALURE: When a service fails during creation
 + SERVICE_DESTRUCTION_FAILURE: When a service fails during destruction
 
-Using the ErrorService can be a convenient place to standardize on logging of service failures.
+Using the [ErrorService][errorservice] can be a convenient place to standardize on logging of service failures.
 
 [apioverview]: api-overview.html
 [servicelocator]: apidocs/org/glassfish/hk2/api/ServiceLocator.html

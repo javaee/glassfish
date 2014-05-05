@@ -280,6 +280,20 @@ public abstract class AbstractBinder implements Binder, DynamicConfiguration {
     public <T> ActiveDescriptor<T> addActiveDescriptor(Class<T> rawClass) throws MultiException, IllegalArgumentException {
         return configuration().addActiveDescriptor(rawClass);
     }
+    
+    /**
+     * {@inheritDoc}
+     * <p>
+     * This method can be called only in the execution context of the {@link #configure()}
+     * method.
+     * </p>
+     */
+    @Override
+    public <T> FactoryDescriptors addActiveFactoryDescriptor(Class<? extends Factory<T>> rawFactoryClass) throws MultiException, IllegalArgumentException {
+        return configuration().addActiveFactoryDescriptor(rawFactoryClass);
+    }
+    
+    
 
     /**
      * {@inheritDoc}

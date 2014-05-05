@@ -56,10 +56,11 @@ While the three services in your [ServiceLocator][servicelocator] are nice, they
 a useful system.  What is needed is all of your services, in order to make it useful.  Also please note that this section assumes that
 you are not using the upper level system that automatically reads in the descriptions of your services and populate
 [ServiceLocators][servicelocator] for you.  For information on how that system works see
-TBD.
+[here][gettingstarted].
 
-You add your own service by getting the [DynamicConfigurationService][dynamicconfigurationservice].
-Since that is one of the original three services added to the service locator, you can get that service by simply looking
+You add your own service by using the [DynamicConfigurationService][dynamicconfigurationservice].
+[DynamicConfigurationService][dynamicconfigurationservice] is one of the set of services automatically
+added to every [ServiceLocator][servicelocator].  You can get that service by simply looking
 it up:
  
 ``` java
@@ -103,7 +104,7 @@ that contains all of that information can be built up using our EDSL:
     }
 ``` java
 
-The [BuildHelper][buildhelper] link method creates a [DescriptorBuilder][descriptorbuilder].
+The [BuilderHelper][builderhelper] link method creates a [DescriptorBuilder][descriptorbuilder].
 The [DescriptorBuilder][descriptorbuilder] then creates more and more specific versions of itself
 as you fill in the data with calls to "to" or "in" or "qualifiedBy".
 
@@ -142,7 +143,7 @@ in the previous section but uses the [DescriptorImpl][descriptorimpl] to do it:
 ``` java
 
 One interesting thing to notice in the above code is that we added the implementation class as an advertisedContract.
-This was done automatically for us in the [BuilderHelper][buildhelper] case, but needed to be explicitly done in this case.
+This was done automatically for us in the [BuilderHelper][builderhelper] case, but needed to be explicitly done in this case.
  
 ### Binding a Descriptor into a ServiceLocator
 
@@ -274,8 +275,8 @@ and getBestDescriptor methods will never cause classloading to occur, so it is s
 classloading can be an issue.
  
 The getDescriptor methods on [ServiceLocator][servicelocator] use a [Fitler][filter] to determine which [Descriptors][descriptor] to return.
-You can implement your own [Filter][filter] or you can use one of the [Filter][filter] implementations provided by [BuilderHelper][buildhelper].
-The most common case is to use an [IndexedFilter][indexedfilter] provided by [BuildHelper][buildhelper], like this:
+You can implement your own [Filter][filter] or you can use one of the [Filter][filter] implementations provided by [BuilderHelper][builderhelper].
+The most common case is to use an [IndexedFilter][indexedfilter] provided by [BuildHelper][builderhelper], like this:
  
 ```java
   IndexedFilter widgetFilter = BuilderHelper.createContractFilter(Widget.class.getName());
@@ -327,7 +328,7 @@ the preDestroy to be called on it by using the preDestroy method:
 This sequence can be very useful when there is some special processing that needs to happen and the user does not want to have HK2 manage
 the objects themselves.
  
-[buildhelper]: apidocs/org/glassfish/hk2/utilities/BuilderHelper.html
+[builderhelper]: apidocs/org/glassfish/hk2/utilities/BuilderHelper.html
 [servicelocator]: apidocs/org/glassfish/hk2/api/ServiceLocator.html
 [filter]: apidocs/org/glassfish/hk2/api/Filter.html
 [descriptor]: apidocs/org/glassfish/hk2/api/Descriptor.html
@@ -347,3 +348,4 @@ the objects themselves.
 [sluaddclasses]: apidocs/org/glassfish/hk2/utilities/ServiceLocatorUtilities.html#addClasses(org.glassfish.hk2.api.ServiceLocator, java.lang.Class...)
 [sluaddoneconstant]: apidocs/org/glassfish/hk2/utilities/ServiceLocatorUtilities.html#addOneConstant(org.glassfish.hk2.api.ServiceLocator, java.lang.Object)
 [sluaddonedescriptor]: apidocs/org/glassfish/hk2/utilities/ServiceLocatorUtilities.html#addOneDescriptor(org.glassfish.hk2.api.ServiceLocator, org.glassfish.hk2.api.Descriptor)
+[gettingstarted]: getting-started.html#Automatic_Service_Population

@@ -178,6 +178,23 @@ public interface DynamicConfiguration {
             throws MultiException, IllegalArgumentException;
     
     /**
+     * This adds two active descriptor to the system based completely on the analysis
+     * of the given {@link Factory} class.  The {@link Factory} class itself and all
+     * interfaces marked contract will be in the list of advertised services.  The scope
+     * and qualifiers will be taken from the annotations on the class.  The annotations
+     * on the {@link Factory#provide} method will provide the scope and qualifiers of the
+     * service produced by the {@link Factory}
+     * 
+     * @param rawFactoryClass The class to analyze, must not be null 
+     * @return The factory descriptors that have been added to the system, with
+     * all fields filled in based on the rawFactoryClass
+     * @throws MultiException If this class cannot be a service
+     * @throws IllegalArgumentException if rawClass is null
+     */
+    public <T> FactoryDescriptors addActiveFactoryDescriptor(Class<? extends Factory<T>> rawFactoryClass)
+            throws MultiException, IllegalArgumentException;
+    
+    /**
      * This filter will added to the list of filters in this Configuration that will
      * determine which Descriptors will be removed from the system.  Only services directly
      * from this Configuration objects' associated ServiceLocator will be given to this Filter

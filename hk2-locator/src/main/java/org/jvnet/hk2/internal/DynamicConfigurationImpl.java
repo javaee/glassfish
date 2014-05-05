@@ -45,6 +45,7 @@ import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.MultiException;
@@ -212,6 +213,16 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
     }
     
     /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.DynamicConfiguration#addActiveFactoryDescriptor(java.lang.Class)
+     */
+    @Override
+    public <T> FactoryDescriptors addActiveFactoryDescriptor(
+            Class<? extends Factory<T>> rawFactoryClass) throws MultiException,
+            IllegalArgumentException {
+        throw new AssertionError("not implemented");
+    }
+    
+    /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Configuration#addUnbindFilter(org.glassfish.hk2.api.Filter)
      */
     @Override
@@ -277,4 +288,6 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
             Pretty.collection(allUnbindFilters) + "," +
             System.identityHashCode(this) + ")";
     }
+
+    
 }

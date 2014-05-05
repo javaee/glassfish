@@ -61,6 +61,7 @@ import org.glassfish.hk2.api.ValidationService;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -638,6 +639,27 @@ public class DynamicConfigTest {
         Assert.assertNull(locator.getService(ContractsProvidedService2.class));
         Assert.assertNotNull(locator.getService(IsNotAContract.class));
         Assert.assertNull(locator.getService(IsAContract.class));
+        
+    }
+    
+    /**
+     * Tests that class analysis honors ContractsProvided, even if ContractsProvided does
+     * not include the class itself
+     */
+    @Test @Ignore
+    public void testAddActiveFactory() {
+        ServiceLocator locator = LocatorHelper.create();
+        
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        FactoryDescriptors fds = config.addActiveFactoryDescriptor(ComplexFactory.class);
+        
+        Assert.assertNotNull(fds);
+        
+        config.commit();
+        
+        Assert.assertNotNull(locator.getService(ComplexObject.class));
         
     }
 }
