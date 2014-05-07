@@ -57,6 +57,7 @@ import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.HK2Loader;
@@ -330,22 +331,37 @@ public abstract class ServiceLocatorUtilities {
     /**
      * It is very often the case that one wishes to add classes that hk2
      * will automatically analyze for contracts and qualifiers to
-     * a service locator.  This method adds those classes
+     * a service locator.  This method adds those classes.
+     * <p>
+     * If the class to add implements {@link Factory} then two descriptors
+     * will be added, one for the {@link Factory} class itself, and one for
+     * the {@link Factory#provide()} method of the factory.  In the output
+     * list the descriptor for the {@link Factory} will be added first, followed
+     * by the descriptor for the {@link Factory#provide()} method
      *
      * @param locator The non-null locator to add this descriptor to
-     * @param toAdd The classes to add to the locator
+     * @param toAdd The classes to add to the locator.  If a class in this list implements
+     * {@link Factory} then two descriptors will be added for that class
      * @return The list of descriptors added to the system.  Will not return null but
      * may return an empty list
      * @throws MultiException On a commit failure
      */
+    @SuppressWarnings("unchecked")
     public static List<ActiveDescriptor<?>> addClasses(ServiceLocator locator, Class<?>... toAdd) {
         DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
         DynamicConfiguration config = dcs.createDynamicConfiguration();
         
         LinkedList<ActiveDescriptor<?>> retVal = new LinkedList<ActiveDescriptor<?>>();
         for (Class<?> addMe : toAdd) {
-            ActiveDescriptor<?> ad = config.addActiveDescriptor(addMe);
-            retVal.add(ad);
+            if (Factory.class.isAssignableFrom(addMe)) {
+                FactoryDescriptors fds = config.addActiveFactoryDescriptor((Class<Factory<Object>>) addMe);
+                retVal.add((ActiveDescriptor<?>) fds.getFactoryAsAService());
+                retVal.add((ActiveDescriptor<?>) fds.getFactoryAsAFactory());
+            }
+            else {
+                ActiveDescriptor<?> ad = config.addActiveDescriptor(addMe);
+                retVal.add(ad);
+            }
         }
 
         config.commit();

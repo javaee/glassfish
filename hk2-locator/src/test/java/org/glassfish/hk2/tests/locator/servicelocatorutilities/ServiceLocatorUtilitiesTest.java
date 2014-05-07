@@ -39,9 +39,13 @@
  */
 package org.glassfish.hk2.tests.locator.servicelocatorutilities;
 
+import java.lang.annotation.Annotation;
+import java.util.List;
+
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.AnnotationLiteral;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
@@ -69,6 +73,8 @@ public class ServiceLocatorUtilitiesTest {
     private final static String TEST_NAME = "ServiceLocatorUtilitiesTest";
     /* package */ final static String ALICE_NAME = "Alice";
     /* package */ final static String MALLORY_NAME = "Mallory";
+    /* package */ final static String BLUE = "blue";
+    /* package */ final static String RED = "red";
 
     private SimpleService addSimpleService(ServiceLocator locator) {
         SimpleService ss1 = locator.getService(SimpleService.class);
@@ -701,4 +707,46 @@ public class ServiceLocatorUtilitiesTest {
         ServiceLocatorUtilities.dumpAllDescriptors(locator);
         ServiceLocatorUtilities.dumpAllDescriptors(locator, System.out);
     }
+    
+    /**
+     * Uses addClasses with factories
+     */
+    @Test
+    public void testAddClassesWithFactories() {
+        ServiceLocator locator = uniqueCreate();
+        
+        List<ActiveDescriptor<?>> added = ServiceLocatorUtilities.addClasses(locator, RedFactory.class, BlueFactory.class);
+        Assert.assertEquals(4, added.size());
+        
+        String blue = locator.getService(String.class, new BlueImpl());
+        Assert.assertEquals(BLUE, blue);
+        
+        String red = locator.getService(String.class, new RedImpl());
+        Assert.assertEquals(RED, red);
+    }
+    
+    private static class BlueImpl extends AnnotationLiteral<Blue> implements Blue {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = -7725354246185428959L;
+
+        
+    }
+    
+    private static class RedImpl extends AnnotationLiteral<Red> implements Red {
+
+        /**
+         * 
+         */
+        private static final long serialVersionUID = 3107298539617537764L;
+
+
+        
+    }
 }
+
+
+
+
