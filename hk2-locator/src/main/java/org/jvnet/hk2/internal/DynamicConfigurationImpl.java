@@ -52,8 +52,9 @@ import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.utilities.reflection.Pretty;
 
 /**
+ * The system implementation of the DynamicConfiguration service
+ * 
  * @author jwells
- *
  */
 public class DynamicConfigurationImpl implements DynamicConfiguration {
     private final ServiceLocatorImpl locator;
@@ -219,7 +220,27 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
     public <T> FactoryDescriptors addActiveFactoryDescriptor(
             Class<? extends Factory<T>> rawFactoryClass) throws MultiException,
             IllegalArgumentException {
-        throw new AssertionError("not implemented");
+        Collector collector = new Collector();
+        Utilities.checkFactoryType(rawFactoryClass, collector);
+        collector.throwIfErrors();
+        
+        final ActiveDescriptor<?> factoryDescriptor = addActiveDescriptor(rawFactoryClass);
+        ActiveDescriptor<?> userMethodDescriptor = Utilities.createAutoFactoryDescriptor(rawFactoryClass, factoryDescriptor, locator);
+        final ActiveDescriptor<?> methodDescriptor = addActiveDescriptor(userMethodDescriptor);
+        
+        return new FactoryDescriptors() {
+
+            @Override
+            public Descriptor getFactoryAsAService() {
+                return factoryDescriptor;
+            }
+
+            @Override
+            public Descriptor getFactoryAsAFactory() {
+                return methodDescriptor;
+            }
+            
+        };
     }
     
     /* (non-Javadoc)

@@ -51,9 +51,11 @@ import junit.framework.Assert;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.ServiceLocator;
@@ -61,7 +63,6 @@ import org.glassfish.hk2.api.ValidationService;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -646,7 +647,7 @@ public class DynamicConfigTest {
      * Tests that class analysis honors ContractsProvided, even if ContractsProvided does
      * not include the class itself
      */
-    @Test @Ignore
+    @Test
     public void testAddActiveFactory() {
         ServiceLocator locator = LocatorHelper.create();
         
@@ -657,9 +658,83 @@ public class DynamicConfigTest {
         
         Assert.assertNotNull(fds);
         
+        {
+            Descriptor factoryDescriptor = fds.getFactoryAsAService();
+            Assert.assertNotNull(factoryDescriptor);
+            Assert.assertEquals(ComplexFactory.class.getName(), factoryDescriptor.getImplementation());
+            Assert.assertEquals(DescriptorType.CLASS, factoryDescriptor.getDescriptorType());
+            Assert.assertTrue(factoryDescriptor.getAdvertisedContracts().contains(Factory.class.getName()));
+        }
+        
+        Type lookupType = null;
+        {
+            Descriptor methodDescriptor = fds.getFactoryAsAFactory();
+            Assert.assertNotNull(methodDescriptor);
+            Assert.assertEquals(ComplexFactory.class.getName(), methodDescriptor.getImplementation());
+            Assert.assertEquals(DescriptorType.PROVIDE_METHOD, methodDescriptor.getDescriptorType());
+            Assert.assertTrue(methodDescriptor.getAdvertisedContracts().contains(ComplexObject.class.getName()));
+            Assert.assertTrue(methodDescriptor.getAdvertisedContracts().contains(IsAClassContract.class.getName()));
+            Assert.assertTrue(methodDescriptor.getAdvertisedContracts().contains(ParameterizedObject.class.getName()));
+            Assert.assertTrue(methodDescriptor.getAdvertisedContracts().contains(IsAContract.class.getName()));
+            Assert.assertTrue(methodDescriptor.getAdvertisedContracts().contains(ParameterizedInterface.class.getName()));
+            
+            ActiveDescriptor<?> ad = (ActiveDescriptor<?>) methodDescriptor;
+            Assert.assertEquals(ComplexFactory.class, ad.getImplementationClass());
+            
+            boolean foundComplexObject = false;
+            boolean foundIsAClassContract = false;
+            boolean foundParameterizedObject = false;
+            boolean foundIsAContract = false;
+            boolean foundParameterizedInterface = false;
+            
+            for (Type cType : ad.getContractTypes()) {
+                if (cType instanceof Class) {
+                    if (ComplexObject.class.equals(cType)) {
+                        foundComplexObject = true;
+                    }
+                    else if (IsAClassContract.class.equals(cType)) {
+                        foundIsAClassContract = true;
+                    }
+                    else if (IsAContract.class.equals(cType)) {
+                        foundIsAContract = true;
+                    }
+                    else if (ParameterizedObject.class.equals(cType)) {
+                        foundParameterizedObject = true;
+                    }
+                    else {
+                        Assert.fail("Found unknown class contract: " + cType);
+                    }
+                }
+                else if (cType instanceof ParameterizedType) {
+                    ParameterizedType pt = (ParameterizedType) cType;
+                    
+                    Class<?> baseClass = (Class<?>) pt.getRawType();
+                    
+                    if (ParameterizedInterface.class.equals(baseClass)) {
+                        lookupType = cType;
+                        foundParameterizedInterface = true;
+                    }
+                    else {
+                        Assert.fail("Found unknown parameterized type: " + cType);
+                    }
+                    
+                    Type actual0 = pt.getActualTypeArguments()[0];
+                    Assert.assertEquals(String.class, actual0);
+                }
+            }
+            
+            Assert.assertTrue(foundComplexObject);
+            Assert.assertTrue(foundIsAClassContract);
+            Assert.assertTrue(foundParameterizedObject);
+            Assert.assertTrue(foundIsAContract);
+            Assert.assertTrue(foundParameterizedInterface);
+        }
+        
+        
         config.commit();
         
         Assert.assertNotNull(locator.getService(ComplexObject.class));
+        Assert.assertNotNull(locator.getService(lookupType));
         
     }
 }

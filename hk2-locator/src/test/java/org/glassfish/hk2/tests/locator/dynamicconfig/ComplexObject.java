@@ -46,7 +46,7 @@ package org.glassfish.hk2.tests.locator.dynamicconfig;
  * <LI>ComplexObject</LI>
  * <LI>IsAClassContract</LI>
  * <LI>IsAContract</LI>
- * <LI>ParameterizedObject (as a ParameterizedType)</LI>
+ * <LI>ParameterizedObject</LI>
  * <LI>ParameterizedInterface (as a ParameterizedType)</LI>
  * </OL>
  * 

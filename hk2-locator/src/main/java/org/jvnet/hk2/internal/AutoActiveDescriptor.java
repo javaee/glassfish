@@ -88,6 +88,7 @@ public class AutoActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
      * @param proxyForSameScope Whether or not to proxy within the same scope (null for default)
      * @param classAnalysisName The name of the class analyzer (null for default)
      * @param metadata The set of metadata associated with this descriptor
+     * @param descriptorType The type of the descriptor
      */
     public AutoActiveDescriptor(
             Class<?> clazz,
@@ -100,7 +101,8 @@ public class AutoActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
             Boolean proxy,
             Boolean proxyForSameScope,
             String classAnalysisName,
-            Map<String, List<String>> metadata) {
+            Map<String, List<String>> metadata,
+            DescriptorType descriptorType) {
         super(advertisedContracts,
                 scope,
                 name,
@@ -117,6 +119,7 @@ public class AutoActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
         this.creator = creator;
         
         setImplementation(implClass.getName());
+        setDescriptorType(descriptorType);
     }
     
     /* package */ void resetSelfDescriptor(ActiveDescriptor<?> toMe) {

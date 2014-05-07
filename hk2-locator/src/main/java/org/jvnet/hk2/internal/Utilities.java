@@ -733,9 +733,107 @@ public class Utilities {
                 proxy,
                 proxyForSameScope,
                 analyzerName,
-                metadata);
+                metadata,
+                DescriptorType.CLASS);
 
         creator.initialize(retVal, analyzerName, collector);
+
+        collector.throwIfErrors();
+
+        return retVal;
+    }
+    
+    /**
+     * Creates a reified automatically generated descriptor
+     *
+     * @param clazz The class to create the desciptor for
+     * @param locator The service locator for whom we are creating this
+     * @return A reified active descriptor
+     *
+     * @throws MultiException if there was an error in the class
+     * @throws IllegalArgumentException If the class is null
+     * @throws IllegalStateException If the name could not be determined from the Named annotation
+     */
+    public static <T> AutoActiveDescriptor<T> createAutoFactoryDescriptor(Class<T> parentClazz, ActiveDescriptor<?> factoryDescriptor, ServiceLocatorImpl locator)
+            throws MultiException, IllegalArgumentException, IllegalStateException {
+        if (parentClazz == null) throw new IllegalArgumentException();
+        
+        Collector collector = new Collector();
+        
+        Type factoryProductionType = Utilities.getFactoryProductionType(parentClazz);
+        
+        Method provideMethod = Utilities.getFactoryProvideMethod(parentClazz);
+        if (provideMethod == null) {
+            collector.addThrowable(new IllegalArgumentException("Could not find the provide method on the class " + parentClazz.getName()));
+            
+            // Guaranteed to throw
+            collector.throwIfErrors();
+        }
+
+        FactoryCreator<T> creator;
+        Set<Annotation> qualifiers;
+        Set<Type> contracts;
+        Class<? extends Annotation> scope;
+        String name;
+        Boolean proxy = null;
+        Boolean proxyForSameScope = null;
+        
+        qualifiers = ReflectionHelper.getQualifierAnnotations(provideMethod);
+        name = ReflectionHelper.getNameFromAllQualifiers(qualifiers, provideMethod);
+
+        contracts = getAutoAdvertisedTypes(factoryProductionType);
+        ScopeInfo scopeInfo = getScopeInfo(provideMethod, null, collector);
+        scope = scopeInfo.getAnnoType();
+
+        creator = new FactoryCreator<T>(locator, factoryDescriptor);
+
+        collector.throwIfErrors();
+
+        Map<String, List<String>> metadata = new HashMap<String, List<String>>();
+        if (scopeInfo.getScope() != null) {
+            BuilderHelper.getMetadataValues(scopeInfo.getScope(), metadata);
+        }
+
+        for (Annotation qualifier : qualifiers) {
+            BuilderHelper.getMetadataValues(qualifier, metadata);
+        }
+
+        UseProxy useProxy = provideMethod.getAnnotation(UseProxy.class);
+        if (useProxy != null) {
+            proxy = useProxy.value();
+        }
+
+        ProxyForSameScope pfss = provideMethod.getAnnotation(ProxyForSameScope.class);
+        if (pfss != null) {
+            proxyForSameScope = pfss.value();
+        }
+
+        DescriptorVisibility visibility = DescriptorVisibility.NORMAL;
+        Visibility vi = provideMethod.getAnnotation(Visibility.class);
+        if (vi != null) {
+            visibility = vi.value();
+        }
+        
+        int rank = 0;
+        Rank ranking = provideMethod.getAnnotation(Rank.class);
+        if (ranking != null) {
+            rank = ranking.value();
+        }
+
+        AutoActiveDescriptor<T> retVal = new AutoActiveDescriptor<T>(
+                factoryDescriptor.getImplementationClass(),
+                creator,
+                contracts,
+                scope,
+                name,
+                qualifiers,
+                visibility,
+                rank,
+                proxy,
+                proxyForSameScope,
+                null,  // provide methods do not have analyzers
+                metadata,
+                DescriptorType.PROVIDE_METHOD);
 
         collector.throwIfErrors();
 

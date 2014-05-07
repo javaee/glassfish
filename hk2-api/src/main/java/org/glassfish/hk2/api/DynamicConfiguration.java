@@ -178,7 +178,7 @@ public interface DynamicConfiguration {
             throws MultiException, IllegalArgumentException;
     
     /**
-     * This adds two active descriptor to the system based completely on the analysis
+     * This adds two active descriptors to the system based completely on the analysis
      * of the given {@link Factory} class.  The {@link Factory} class itself and all
      * interfaces marked contract will be in the list of advertised services.  The scope
      * and qualifiers will be taken from the annotations on the class.  The annotations
