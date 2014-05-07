@@ -93,7 +93,7 @@ public class GuiceScopeContext implements Context<GuiceScope> {
      */
     @Override
     public boolean supportsNullCreation() {
-        return false;
+        return true;
     }
 
     /* (non-Javadoc)
