@@ -39,76 +39,80 @@
  */
 package org.glassfish.hk2.configuration.tests.simple;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-
-import org.glassfish.hk2.api.PerLookup;
-import org.glassfish.hk2.configuration.api.Configured;
-import org.glassfish.hk2.configuration.api.ConfiguredBy;
-import org.junit.Assert;
-import org.jvnet.hk2.annotations.Service;
-
 /**
+ * JavaBean for the ConfiguredService service
+ * 
  * @author jwells
+ *
  */
-@Service @ConfiguredBy(type=BasicConfigurationTest.TEST_TYPE_ONE)
-public class ConfiguredService {
-    @Configured
+public class ConfiguredServiceBean {
     private String fieldOutput1;
-    
-    @Inject @Configured(key="fieldOutput2")
-    private String anotherField;
-    
-    private final String constructorOutput;
+    private String fieldOutput2;
+    private String constructorOutput;
     private String methodOutput1;
     private String methodOutput2;
     
-    @Inject
-    private ConfiguredService(@Configured(key="constructorOutput") String constructorOutput,
-            SimpleService simpleService) {
-        simpleService.hashCode();  //throws NPE if simpleService is null
-        this.constructorOutput = constructorOutput;
-    }
-    
-    private void setMethodOutput1(@Configured(key="methodOutput1") String methodOutput1) {
-        this.methodOutput1 = methodOutput1;
-        
-    }
-    
-    @Inject
-    private void anotherMethodInitializer(@Configured(key="methodOutput2") String methodOutput2,
-            SimpleService simpleService) {
-        simpleService.hashCode();  //throws NPE if simpleService is null
-        
-        this.methodOutput2 = methodOutput2;
-    }
-    
-    @PostConstruct
-    private void postConstruct() {
-        Assert.assertNotNull(fieldOutput1);
-        Assert.assertNotNull(anotherField);
-        Assert.assertNotNull(constructorOutput);
-        Assert.assertNotNull(methodOutput1);
-        Assert.assertNotNull(methodOutput2);
-    }
-    
+    /**
+     * @return the fieldOutput1
+     */
     public String getFieldOutput1() {
         return fieldOutput1;
     }
-    
-    public String getFieldOutput2() {
-        return anotherField;
+    /**
+     * @param fieldOutput1 the fieldOutput1 to set
+     */
+    public void setFieldOutput1(String fieldOutput1) {
+        this.fieldOutput1 = fieldOutput1;
     }
-    
+    /**
+     * @return the fieldOutput2
+     */
+    public String getFieldOutput2() {
+        return fieldOutput2;
+    }
+    /**
+     * @param fieldOutput2 the fieldOutput2 to set
+     */
+    public void setFieldOutput2(String fieldOutput2) {
+        this.fieldOutput2 = fieldOutput2;
+    }
+    /**
+     * @return the constructorOutput
+     */
     public String getConstructorOutput() {
         return constructorOutput;
     }
-    
+    /**
+     * @param constructorOutput the constructorOutput to set
+     */
+    public void setConstructorOutput(String constructorOutput) {
+        this.constructorOutput = constructorOutput;
+    }
+    /**
+     * @return the methodOutput1
+     */
     public String getMethodOutput1() {
         return methodOutput1;
     }
-
+    /**
+     * @param methodOutput1 the methodOutput1 to set
+     */
+    public void setMethodOutput1(String methodOutput1) {
+        this.methodOutput1 = methodOutput1;
+    }
+    /**
+     * @return the methodOutput2
+     */
     public String getMethodOutput2() {
         return methodOutput2;
     }
+    /**
+     * @param methodOutput2 the methodOutput2 to set
+     */
+    public void setMethodOutput2(String methodOutput2) {
+        this.methodOutput2 = methodOutput2;
+    }
+    
+    
+
 }

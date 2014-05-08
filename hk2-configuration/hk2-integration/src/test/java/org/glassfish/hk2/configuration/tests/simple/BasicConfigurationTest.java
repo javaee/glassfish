@@ -39,7 +39,12 @@
  */
 package org.glassfish.hk2.configuration.tests.simple;
 
+import javax.inject.Inject;
+
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
+import org.glassfish.hk2.configuration.hub.api.WriteableType;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -53,17 +58,56 @@ import org.jvnet.hk2.testing.junit.HK2Runner;
  *
  */
 public class BasicConfigurationTest extends HK2Runner {
+    /* package */ final static String TEST_TYPE_ONE = "TestConfigurationType1";
+    
+    private final static String FIELD1 = "field1";
+    private final static String FIELD2 = "field2";
+    private final static String CONSTRUCTOR = "constructor";
+    private final static String METHOD1 = "method1";
+    private final static String METHOD2 = "method2";
+    
+    @Inject
+    private Hub hub;
+    
+    private ConfiguredServiceBean createBean() {
+        ConfiguredServiceBean csb = new ConfiguredServiceBean();
+        
+        csb.setConstructorOutput(CONSTRUCTOR);
+        csb.setFieldOutput1(FIELD1);
+        csb.setFieldOutput2(FIELD2);
+        csb.setMethodOutput1(METHOD1);
+        csb.setMethodOutput2(METHOD2);
+        
+        return csb;
+    }
+    
+    private void addBean() {
+        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+        
+        WriteableType wt = wbd.findOrAddWriteableType(TEST_TYPE_ONE);
+        
+        wt.addInstance(CONSTRUCTOR, createBean());
+        
+        wbd.commit();
+    }
+    
     /**
      * Tests a service that has basic configuration information
      */
     @Test @Ignore
     public void testBasicConfiguration() {
-        // TODO:  how to add a configuration to the manager?
+        addBean();
         
         ActiveDescriptor<?> ad = testLocator.getBestDescriptor(BuilderHelper.createContractFilter(ConfiguredService.class.getName()));
         Assert.assertNotNull(ad);
         
         ConfiguredService cs = testLocator.getService(ConfiguredService.class);
         Assert.assertNotNull(cs);
+        
+        Assert.assertEquals(CONSTRUCTOR, cs.getConstructorOutput());
+        Assert.assertEquals(METHOD1, cs.getMethodOutput1());
+        Assert.assertEquals(METHOD2, cs.getMethodOutput2());
+        Assert.assertEquals(FIELD1, cs.getFieldOutput1());
+        Assert.assertEquals(FIELD2, cs.getFieldOutput2());
     }
 }
