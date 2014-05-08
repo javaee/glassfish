@@ -39,10 +39,11 @@
  */
 package org.glassfish.hk2.tests.locator.perthread;
 
+import java.util.HashSet;
+
 import junit.framework.Assert;
 
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.tests.locator.perlookup.PerLookupModule;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Before;
@@ -55,9 +56,12 @@ import org.junit.Test;
 public class PerThreadTest {
     private final static String TEST_NAME = "PerThradTest";
     private final static ServiceLocator locator = LocatorHelper.create(TEST_NAME, new PerThreadModule());
+    private final static int NUM_LOOKUPS = 10000;
+    private final static int NUM_SHIRT_THREADS = 10;
     
     private final Object lock = new Object();
     private int numFinished = 0;
+    private int shirtThreadsDone = 0;
     
     @Before
     public void before() {
@@ -67,6 +71,11 @@ public class PerThreadTest {
         ServiceLocatorUtilities.enablePerThreadScope(locator);
     }
     
+    /**
+     * Tests we get different values per thread
+     * 
+     * @throws InterruptedException
+     */
     @Test
     public void testPerThread() throws InterruptedException {
         StoreRunner runner1 = new StoreRunner();
@@ -100,6 +109,39 @@ public class PerThreadTest {
         Assert.assertNotSame(pants2, pants3);
     }
     
+    /**
+     * Tests we get the same value perThread on multiple lookups
+     * 
+     * @throws InterruptedException
+     */
+    @Test
+    public void testSameValuePerThread() throws InterruptedException {
+        ServiceLocator locator = LocatorHelper.create();
+        ServiceLocatorUtilities.enablePerThreadScope(locator);
+        ServiceLocatorUtilities.addClasses(locator, ShirtFactory.class);
+        
+        HashSet<Shirt> collector = new HashSet<Shirt>();
+        
+        Thread threads[] = new Thread[NUM_SHIRT_THREADS];
+        for (int lcv = 0; lcv < NUM_SHIRT_THREADS; lcv++) {
+            ShirtRunner runner = new ShirtRunner(locator, collector);
+            
+            threads[lcv] = new Thread(runner);
+        }
+        
+        for (int lcv = 0; lcv < NUM_SHIRT_THREADS; lcv++) {
+            threads[lcv].start();
+        }
+        
+        synchronized (lock) {
+            while (shirtThreadsDone < NUM_SHIRT_THREADS) {
+                lock.wait();
+            }
+        }
+        
+        Assert.assertEquals(NUM_SHIRT_THREADS, collector.size());
+    }
+    
     
     public class StoreRunner implements Runnable {
         private ClothingStore store;
@@ -113,6 +155,35 @@ public class PerThreadTest {
             
             synchronized (lock) {
                 numFinished++;
+                lock.notify();
+            }
+        }
+        
+    }
+    
+    public class ShirtRunner implements Runnable {
+        private final ServiceLocator locator;
+        private final HashSet<Shirt> collector;
+        
+        private ShirtRunner(ServiceLocator locator, HashSet<Shirt> collector) {
+            this.locator = locator;
+            this.collector = collector;
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Runnable#run()
+         */
+        @Override
+        public void run() {
+            for (int lcv = 0; lcv < NUM_LOOKUPS; lcv++) {
+                Shirt shirt = locator.getService(Shirt.class);
+                synchronized (collector) {
+                    collector.add(shirt);
+                }
+            }
+            
+            synchronized (lock) {
+                shirtThreadsDone++;
                 lock.notify();
             }
         }
