@@ -40,42 +40,39 @@
 package org.glassfish.hk2.configuration.tests.simple;
 
 import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 
-import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.configuration.api.Configured;
 import org.glassfish.hk2.configuration.api.ConfiguredBy;
 import org.junit.Assert;
-import org.jvnet.hk2.annotations.Service;
 
 /**
  * @author jwells
  */
-@Service @ConfiguredBy(type=BasicConfigurationTest.TEST_TYPE_ONE)
+@ConfiguredBy(type=BasicConfigurationTest.TEST_TYPE_ONE)
 public class ConfiguredService {
     @Configured
     private String fieldOutput1;
     
-    @Inject @Configured(key="fieldOutput2")
+    @Configured(key="fieldOutput2")
     private String anotherField;
     
     private final String constructorOutput;
     private String methodOutput1;
     private String methodOutput2;
     
-    @Inject
     private ConfiguredService(@Configured(key="constructorOutput") String constructorOutput,
             SimpleService simpleService) {
         simpleService.hashCode();  //throws NPE if simpleService is null
         this.constructorOutput = constructorOutput;
     }
     
+    @SuppressWarnings("unused")
     private void setMethodOutput1(@Configured(key="methodOutput1") String methodOutput1) {
         this.methodOutput1 = methodOutput1;
         
     }
     
-    @Inject
+    @SuppressWarnings("unused")
     private void anotherMethodInitializer(@Configured(key="methodOutput2") String methodOutput2,
             SimpleService simpleService) {
         simpleService.hashCode();  //throws NPE if simpleService is null

@@ -37,38 +37,47 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.hub.api;
+package org.glassfish.hk2.configuration.internal;
 
-import java.beans.PropertyChangeEvent;
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.api.Operation;
+import org.glassfish.hk2.api.ValidationInformation;
+import org.glassfish.hk2.api.Validator;
+import org.jvnet.hk2.annotations.ContractsProvided;
 
 /**
  * @author jwells
  *
  */
-public interface WriteableType extends Type {
-    /**
-     * Adds the instance with the given key to the type
-     * 
-     * @param key A non-null name for this bean
-     * @param bean The non-null bean to add
+@Singleton @ContractsProvided({ConfiguredValidator.class, Validator.class})
+public class ConfiguredValidator implements Validator {
+    private boolean validateLookup(ValidationInformation info) {
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Validator#validate(org.glassfish.hk2.api.ValidationInformation)
      */
-    public void addInstance(String key, Object bean);
-    
-    /**
-     * Removes the instance with the given key from the type
-     * @param key A non-null name for this bean
-     * @return The possibly null bean that was removed.  If null
-     * then no bean was found with the given name
-     */
-    public Object removeInstance(String key);
-    
-    /**
-     * Modifies the instance with the given key
-     * 
-     * @param key A non-null name or key for the bean to modify
-     * @param newBean The new bean to use with this key
-     * @param changes The full set of changes from the previous version
-     */
-    public void modifyInstance(String key, Object newBean, PropertyChangeEvent... changes);
+    @Override
+    public boolean validate(ValidationInformation info) {
+        if (Operation.LOOKUP.equals(info.getOperation())) {
+            return validateLookup(info);
+        }
+        
+        if (Operation.BIND.equals(info.getOperation())) {
+            return true;
+            
+        }
+        
+        if (Operation.UNBIND.equals(info.getOperation())) {
+            return true;
+        }
+        
+        
+        
+        // Unknown operation, I guess it is ok
+        return true;
+    }
 
 }

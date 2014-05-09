@@ -56,7 +56,7 @@ import org.glassfish.hk2.configuration.hub.api.WriteableType;
 public class WriteableTypeImpl implements WriteableType {
     private final WriteableBeanDatabaseImpl parent;
     private final String name;
-    private final HashMap<Object, Object> beanMap = new HashMap<Object, Object>();
+    private final HashMap<String, Object> beanMap = new HashMap<String, Object>();
     
     /* package */ WriteableTypeImpl(WriteableBeanDatabaseImpl parent, Type mother) {
         this.parent = parent;
@@ -81,7 +81,7 @@ public class WriteableTypeImpl implements WriteableType {
      * @see org.glassfish.hk2.configuration.hub.api.Type#getInstances()
      */
     @Override
-    public synchronized Map<Object, Object> getInstances() {
+    public synchronized Map<String, Object> getInstances() {
         return Collections.unmodifiableMap(beanMap);
     }
     
@@ -89,7 +89,7 @@ public class WriteableTypeImpl implements WriteableType {
      * @see org.glassfish.hk2.configuration.hub.api.Type#getInstance(java.lang.Object)
      */
     @Override
-    public synchronized Object getInstance(Object key) {
+    public synchronized Object getInstance(String key) {
         return beanMap.get(key);
     }
 
@@ -97,7 +97,7 @@ public class WriteableTypeImpl implements WriteableType {
      * @see org.glassfish.hk2.configuration.hub.api.WriteableType#addInstance(java.lang.Object, java.lang.Object)
      */
     @Override
-    public synchronized void addInstance(Object key, Object bean) {
+    public synchronized void addInstance(String key, Object bean) {
         if (key == null || bean == null) throw new IllegalArgumentException();
         
         parent.addChange(new ChangeImpl(Change.ChangeCategory.ADD_INSTANCE,
@@ -113,7 +113,7 @@ public class WriteableTypeImpl implements WriteableType {
      * @see org.glassfish.hk2.configuration.hub.api.WriteableType#removeInstance(java.lang.Object)
      */
     @Override
-    public synchronized Object removeInstance(Object key) {
+    public synchronized Object removeInstance(String key) {
         if (key == null) throw new IllegalArgumentException();
         
         Object removedValue = beanMap.remove(key);
@@ -132,7 +132,7 @@ public class WriteableTypeImpl implements WriteableType {
      * @see org.glassfish.hk2.configuration.hub.api.WriteableType#modifyInstance(java.lang.Object, java.lang.Object, java.beans.PropertyChangeEvent[])
      */
     @Override
-    public synchronized void modifyInstance(Object key, Object newBean,
+    public synchronized void modifyInstance(String key, Object newBean,
             PropertyChangeEvent... propChanges) {
         if (key == null || newBean == null) throw new IllegalArgumentException();
         

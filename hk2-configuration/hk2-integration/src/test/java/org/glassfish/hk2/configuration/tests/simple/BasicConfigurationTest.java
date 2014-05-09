@@ -42,11 +42,14 @@ package org.glassfish.hk2.configuration.tests.simple;
 import javax.inject.Inject;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.configuration.api.ConfigurationUtilities;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.jvnet.hk2.testing.junit.HK2Runner;
@@ -60,6 +63,7 @@ import org.jvnet.hk2.testing.junit.HK2Runner;
 public class BasicConfigurationTest extends HK2Runner {
     /* package */ final static String TEST_TYPE_ONE = "TestConfigurationType1";
     
+    private final static String DEFAULT = "default";
     private final static String FIELD1 = "field1";
     private final static String FIELD2 = "field2";
     private final static String CONSTRUCTOR = "constructor";
@@ -68,6 +72,13 @@ public class BasicConfigurationTest extends HK2Runner {
     
     @Inject
     private Hub hub;
+    
+    @Before
+    public void before() {
+        super.before();
+        
+        ConfigurationUtilities.enableConfigurationSystem(testLocator);
+    }
     
     private ConfiguredServiceBean createBean() {
         ConfiguredServiceBean csb = new ConfiguredServiceBean();
@@ -82,11 +93,13 @@ public class BasicConfigurationTest extends HK2Runner {
     }
     
     private void addBean() {
+        ServiceLocatorUtilities.addClasses(testLocator, ConfiguredService.class);
+        
         WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
         
         WriteableType wt = wbd.findOrAddWriteableType(TEST_TYPE_ONE);
         
-        wt.addInstance(CONSTRUCTOR, createBean());
+        wt.addInstance(DEFAULT, createBean());
         
         wbd.commit();
     }

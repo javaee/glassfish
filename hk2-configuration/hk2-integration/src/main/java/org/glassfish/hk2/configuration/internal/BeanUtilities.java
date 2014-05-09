@@ -37,35 +37,77 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.hub.api;
+package org.glassfish.hk2.configuration.internal;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Map;
 
 /**
+ * For JavaBean or Bean-Like-Map utilities
+ * 
  * @author jwells
  *
  */
-public interface Type {
-    /**
-     * A unique identifier for this type
-     * 
-     * @return A unique identifier for this type (may not return null)
-     */
-    public String getName();
+public class BeanUtilities {
+    private final static String GET = "get";
+    private final static String IS = "is";
     
-    /**
-     * Returns a read-only map of the instances that are associated with this type
-     * 
-     * @return A read-only and possibly empty map of instances associated
-     * with this type
-     */
-    public Map<String, Object> getInstances();
+    private static String firstUpper(String s) {
+        if (s == null || s.length() <= 0) {
+            return s;
+        }
+        
+        char firstChar = Character.toUpperCase(s.charAt(0));
+        
+        return firstChar + s.substring(1);
+    }
     
-    /**
-     * Gets the instance associated with this key, or null if there is none
-     * 
-     * @param key The non-null key for the instance
-     * @return The resulting instance or null if there is none
-     */
-    public Object getInstance(String key);
+    @SuppressWarnings("unchecked")
+    public static Object getBeanPropertyValue(String attribute, Object bean) {
+        if (bean instanceof Map) {
+            
+            Map<String, Object> beanLikeMap = (Map<String, Object>) bean;
+            return beanLikeMap.get(attribute);
+        }
+        
+        attribute = firstUpper(attribute);
+        
+        String methodName = GET + attribute;
+        
+        Class<?> beanClass = bean.getClass();
+        
+        Method m = null;
+        try {
+            m = beanClass.getMethod(methodName, new Class[0]);
+        }
+        catch (NoSuchMethodException me) {
+            methodName = IS + attribute;
+            
+            try {
+                m = beanClass.getMethod(methodName, new Class[0]);
+            }
+            catch (NoSuchMethodException me2) {
+                throw new IllegalArgumentException("The bean " + bean + " has no getter for attribute " + attribute);
+            }
+        }
+        
+        m.setAccessible(true);
+        
+        try {
+            return m.invoke(bean, new Object[0]);
+        }
+        catch (InvocationTargetException e) {
+            Throwable th = e.getTargetException();
+            throw new IllegalStateException(th);
+        }
+        catch (IllegalAccessException e) {
+            throw new IllegalStateException(e);
+        }
+        catch (IllegalArgumentException e) {
+            throw new IllegalStateException(e);
+        }
+        
+    }
+
 }

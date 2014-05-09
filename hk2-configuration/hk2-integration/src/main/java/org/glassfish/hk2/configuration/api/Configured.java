@@ -57,8 +57,6 @@ import javax.inject.Qualifier;
 @Retention(RUNTIME)
 @Target( { TYPE, METHOD, FIELD, PARAMETER })
 public @interface Configured {
-    public String type() default "";
-    
     public String key() default "";
 
 }

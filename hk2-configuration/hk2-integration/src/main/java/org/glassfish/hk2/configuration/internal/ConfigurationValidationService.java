@@ -37,38 +37,48 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.hub.api;
+package org.glassfish.hk2.configuration.internal;
 
-import java.beans.PropertyChangeEvent;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.ValidationService;
+import org.glassfish.hk2.api.Validator;
+import org.glassfish.hk2.configuration.api.ConfiguredBy;
 
 /**
  * @author jwells
  *
  */
-public interface WriteableType extends Type {
-    /**
-     * Adds the instance with the given key to the type
-     * 
-     * @param key A non-null name for this bean
-     * @param bean The non-null bean to add
-     */
-    public void addInstance(String key, Object bean);
+@Singleton
+public class ConfigurationValidationService implements ValidationService {
+    private final static Filter LOOKUP_FILTER = new Filter() {
+
+        @Override
+        public boolean matches(Descriptor d) {
+            return ConfiguredBy.class.getName().equals(d.getScope());
+        }
+    };
     
-    /**
-     * Removes the instance with the given key from the type
-     * @param key A non-null name for this bean
-     * @return The possibly null bean that was removed.  If null
-     * then no bean was found with the given name
+    @Inject
+    private ConfiguredValidator validator;
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ValidationService#getLookupFilter()
      */
-    public Object removeInstance(String key);
-    
-    /**
-     * Modifies the instance with the given key
-     * 
-     * @param key A non-null name or key for the bean to modify
-     * @param newBean The new bean to use with this key
-     * @param changes The full set of changes from the previous version
+    @Override
+    public Filter getLookupFilter() {
+        return LOOKUP_FILTER;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ValidationService#getValidator()
      */
-    public void modifyInstance(String key, Object newBean, PropertyChangeEvent... changes);
+    @Override
+    public Validator getValidator() {
+        return validator;
+    }
 
 }

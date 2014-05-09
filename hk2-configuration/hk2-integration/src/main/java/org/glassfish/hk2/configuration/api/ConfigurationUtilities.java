@@ -37,38 +37,46 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.hub.api;
+package org.glassfish.hk2.configuration.api;
 
-import java.beans.PropertyChangeEvent;
+import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.configuration.internal.ConfigurationListener;
+import org.glassfish.hk2.configuration.internal.ConfigurationValidationService;
+import org.glassfish.hk2.configuration.internal.ConfiguredByContext;
+import org.glassfish.hk2.configuration.internal.ConfiguredByInjectionResolver;
+import org.glassfish.hk2.configuration.internal.ConfiguredValidator;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 
 /**
+ * Useful utilities for using the hk2 configuration system
  * @author jwells
  *
  */
-public interface WriteableType extends Type {
+public class ConfigurationUtilities {
     /**
-     * Adds the instance with the given key to the type
+     * Enables the Configuration subsystem of HK2. This call is idempotent
      * 
-     * @param key A non-null name for this bean
-     * @param bean The non-null bean to add
+     * @param locator The non-null service locator in which to enable the
+     * configuration subsystem
      */
-    public void addInstance(String key, Object bean);
-    
-    /**
-     * Removes the instance with the given key from the type
-     * @param key A non-null name for this bean
-     * @return The possibly null bean that was removed.  If null
-     * then no bean was found with the given name
-     */
-    public Object removeInstance(String key);
-    
-    /**
-     * Modifies the instance with the given key
-     * 
-     * @param key A non-null name or key for the bean to modify
-     * @param newBean The new bean to use with this key
-     * @param changes The full set of changes from the previous version
-     */
-    public void modifyInstance(String key, Object newBean, PropertyChangeEvent... changes);
+    public static void enableConfigurationSystem(ServiceLocator locator) {
+        ServiceHandle<ConfiguredByContext> alreadyThere = locator.getServiceHandle(ConfiguredByContext.class);
+        if (alreadyThere != null) {
+            // The assumption is that if this service is there then this is already on, don't do it again
+            return;
+        }
+        
+        ServiceLocatorUtilities.addClasses(locator, ConfiguredValidator.class);
+        
+        ServiceLocatorUtilities.addClasses(locator,
+                ConfiguredByContext.class,
+                ConfigurationValidationService.class,
+                ConfiguredByInjectionResolver.class,
+                ConfigurationListener.class);
+        
+        // Creates demand, starts the thing off
+        locator.getService(ConfigurationListener.class);
+    }
 
 }

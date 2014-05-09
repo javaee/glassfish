@@ -53,13 +53,13 @@ import org.glassfish.hk2.configuration.hub.api.Type;
 public class ChangeImpl implements Change {
     private final ChangeCategory changeCategory;
     private final Type changeType;
-    private final Object instanceKey;
+    private final String instanceKey;
     private final Object instanceValue;
     private final List<PropertyChangeEvent> propertyChanges;
     
     /* package */ ChangeImpl(ChangeCategory changeCategory,
                              Type changeType,
-                             Object instanceKey,
+                             String instanceKey,
                              Object instanceValue,
                              List<PropertyChangeEvent> propertyChanges) {
         this.changeCategory = changeCategory;
@@ -89,7 +89,7 @@ public class ChangeImpl implements Change {
      * @see org.glassfish.hk2.configuration.hub.api.Change#getInstanceKey()
      */
     @Override
-    public Object getInstanceKey() {
+    public String getInstanceKey() {
         return instanceKey;
     }
 

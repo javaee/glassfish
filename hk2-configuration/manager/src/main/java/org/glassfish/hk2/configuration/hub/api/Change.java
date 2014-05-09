@@ -82,7 +82,7 @@ public interface Change {
      * @return The key of the instance that was added, removed or modified.
      * Returns null for change category REMOVE_TYPE or ADD_TYPE
      */
-    public Object getInstanceKey();
+    public String getInstanceKey();
     
     /**
      * Returns the value of the instance that was removed, added or modified

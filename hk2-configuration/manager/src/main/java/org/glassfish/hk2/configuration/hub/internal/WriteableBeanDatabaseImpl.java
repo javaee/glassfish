@@ -93,7 +93,7 @@ public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase {
      * @see org.glassfish.hk2.configuration.hub.api.BeanDatabase#getInstance(java.lang.String, java.lang.Object)
      */
     @Override
-    public synchronized Object getInstance(String type, Object instanceKey) {
+    public synchronized Object getInstance(String type, String instanceKey) {
         Type t = getType(type);
         if (t == null) return null;
         
@@ -136,8 +136,8 @@ public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase {
         WriteableType retVal = types.remove(typeName);
         if (retVal == null) return null;
         
-        Map<Object, Object> instances = retVal.getInstances();
-        for (Object key : instances.keySet()) {
+        Map<String, Object> instances = retVal.getInstances();
+        for (String key : instances.keySet()) {
             retVal.removeInstance(key);
         }
         

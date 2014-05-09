@@ -121,7 +121,7 @@ public class BeanDatabaseImpl implements BeanDatabase {
      * @see org.glassfish.hk2.configuration.hub.api.BeanDatabase#getInstance(java.lang.String, java.lang.Object)
      */
     @Override
-    public synchronized Object getInstance(String type, Object instanceKey) {
+    public synchronized Object getInstance(String type, String instanceKey) {
         Type t = getType(type);
         if (t == null) return null;
         

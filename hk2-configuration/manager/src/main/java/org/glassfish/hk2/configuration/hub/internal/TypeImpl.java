@@ -50,7 +50,7 @@ import org.glassfish.hk2.configuration.hub.api.Type;
  */
 public class TypeImpl implements Type {
     private final String name;
-    private final Map<Object, Object> instances;
+    private final Map<String, Object> instances;
     
     /* package */ TypeImpl(Type baseType) {
         name = baseType.getName();
@@ -69,7 +69,7 @@ public class TypeImpl implements Type {
      * @see org.glassfish.hk2.configuration.hub.api.Type#getInstances()
      */
     @Override
-    public Map<Object, Object> getInstances() {
+    public Map<String, Object> getInstances() {
         return instances;
     }
 
@@ -77,7 +77,7 @@ public class TypeImpl implements Type {
      * @see org.glassfish.hk2.configuration.hub.api.Type#getInstance(java.lang.Object)
      */
     @Override
-    public Object getInstance(Object key) {
+    public Object getInstance(String key) {
         return instances.get(key);
     }
 

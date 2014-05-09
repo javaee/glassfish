@@ -152,10 +152,10 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
             // that should win.  Hence we can often pre-populate the cache here
             if ((isPostConstruct(method) || isPreDestroy(method)) && (method.getParameterTypes().length == 0)) {
                 if (isPostConstruct(method) && !postConstructCache.containsKey(clazz)) {
-                    postConstructCache.putIfAbsent(clazz, new MethodPresentValue(method));
+                    postConstructCache.put(clazz, new MethodPresentValue(method));
                 }
                 if (isPreDestroy(method) && !preDestroyCache.containsKey(clazz)) {
-                    preDestroyCache.putIfAbsent(clazz, new MethodPresentValue(method));
+                    preDestroyCache.put(clazz, new MethodPresentValue(method));
                 }
             }
         }
@@ -195,7 +195,7 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
         retVal.addAll(getDeclaredFieldWrappers(clazz));
         retVal.addAll(getAllFieldWrappers(clazz.getSuperclass()));
         
-        fieldCache.putIfAbsent(clazz, retVal);
+        fieldCache.put(clazz, retVal);
         
         return retVal;
     }
@@ -214,7 +214,7 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
         retVal.addAll(getDeclaredMethodWrappers(clazz));
         retVal.addAll(getAllMethodWrappers(clazz.getSuperclass()));
         
-        methodCache.putIfAbsent(clazz, retVal);
+        methodCache.put(clazz, retVal);
         
         return retVal;
     }
@@ -279,7 +279,7 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
                     " annotated with @PostConstruct must not have any arguments");
         }
         
-        postConstructCache.putIfAbsent(clazz, new MethodPresentValue(retVal));
+        postConstructCache.put(clazz, new MethodPresentValue(retVal));
         
         return retVal;
     }
