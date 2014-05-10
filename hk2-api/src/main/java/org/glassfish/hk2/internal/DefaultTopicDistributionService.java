@@ -43,6 +43,7 @@ import java.lang.annotation.Annotation;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -160,6 +161,7 @@ public class DefaultTopicDistributionService implements
         LinkedList<FireResults> retVal = new LinkedList<FireResults>();
         
         List<SubscriberInfo> subscribers = class2Subscribers.get(new ActivatorClassKey(descriptor, clazz));
+        if (subscribers == null) subscribers = Collections.emptyList();
         
         for (SubscriberInfo subscriberInfo : subscribers) {    
             Type subscriptionType = subscriberInfo.eventType;
