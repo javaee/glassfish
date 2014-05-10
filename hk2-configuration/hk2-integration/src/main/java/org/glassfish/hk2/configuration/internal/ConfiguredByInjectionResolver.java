@@ -68,6 +68,9 @@ public class ConfiguredByInjectionResolver implements
     @Inject @Named(InjectionResolver.SYSTEM_RESOLVER_NAME)
     private InjectionResolver<Inject> systemResolver;
     
+    @Inject
+    private ConfiguredByContext context;
+    
     private final HashMap<ActiveDescriptor<?>, Object> beanMap = new HashMap<ActiveDescriptor<?>, Object>();
     
     private static boolean isEmpty(String s) {
@@ -154,9 +157,12 @@ public class ConfiguredByInjectionResolver implements
         
         if (parameterName == null) return systemResolver.resolve(injectee, root);
         
-        Object bean = beanMap.get(injecteeParent);
+        ActiveDescriptor<?> workingOn = context.getWorkingOn();
+        if (workingOn == null) return systemResolver.resolve(injectee, root);
+        
+        Object bean = beanMap.get(workingOn);
         if (bean == null) {
-            throw new IllegalStateException("Could not find a configuration bean for " + injectee);
+            throw new IllegalStateException("Could not find a configuration bean for " + injectee + " with descriptor " + workingOn);
         }
         
         return BeanUtilities.getBeanPropertyValue(parameterName, bean);

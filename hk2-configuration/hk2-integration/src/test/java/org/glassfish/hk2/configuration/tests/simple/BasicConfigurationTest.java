@@ -107,7 +107,7 @@ public class BasicConfigurationTest extends HK2Runner {
     /**
      * Tests a service that has basic configuration information
      */
-    @Test @Ignore
+    @Test
     public void testBasicConfiguration() {
         addBean();
         

@@ -41,16 +41,14 @@ package org.glassfish.hk2.configuration.internal;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.configuration.api.ConfiguredBy;
-import org.glassfish.hk2.configuration.hub.api.Hub;
 
 /**
  * @author jwells
@@ -58,11 +56,15 @@ import org.glassfish.hk2.configuration.hub.api.Hub;
  */
 @Singleton
 public class ConfiguredByContext implements Context<ConfiguredBy> {
+    private final static ThreadLocal<ActiveDescriptor<?>> workingOn = new ThreadLocal<ActiveDescriptor<?>>() {
+        public ActiveDescriptor<?> initialValue() {
+            return null;
+        }
+        
+    };
+    
     private final Object lock = new Object();
     private final HashMap<ActiveDescriptor<?>, Object> db = new HashMap<ActiveDescriptor<?>, Object>();
-    
-    @Inject
-    private Hub hub;
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Context#getScope()
@@ -79,9 +81,29 @@ public class ConfiguredByContext implements Context<ConfiguredBy> {
     @Override
     public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor,
             ServiceHandle<?> root) {
+        ActiveDescriptor<U> previousValue = (ActiveDescriptor<U>) workingOn.get();
+        workingOn.set(activeDescriptor);
+        try {
+            return internalFindOrCreate(activeDescriptor, root);
+        }
+        finally {
+            workingOn.set(previousValue);
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#findOrCreate(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.ServiceHandle)
+     */
+    @SuppressWarnings("unchecked")
+    private <U> U internalFindOrCreate(ActiveDescriptor<U> activeDescriptor,
+            ServiceHandle<?> root) {
         synchronized (lock) {
             U retVal = (U) db.get(activeDescriptor);
             if (retVal != null) return retVal;
+            
+            if (activeDescriptor.getName() == null) {
+                throw new MultiException(new IllegalStateException("ConfiguredBy services without names are templates and cannot be created directly"));
+            }
             
             retVal = activeDescriptor.create(root);
             db.put(activeDescriptor, retVal);
@@ -142,6 +164,10 @@ public class ConfiguredByContext implements Context<ConfiguredBy> {
             }
         }
         
+    }
+    
+    /* package */ ActiveDescriptor<?> getWorkingOn() {
+        return workingOn.get();
     }
 
 }

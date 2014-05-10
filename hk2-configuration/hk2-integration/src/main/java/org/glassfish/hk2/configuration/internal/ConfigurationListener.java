@@ -49,14 +49,10 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
-import org.glassfish.hk2.api.IndexedFilter;
-import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.configuration.api.ConfiguredBy;
 import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener;
 import org.glassfish.hk2.configuration.hub.api.Change;
@@ -176,62 +172,6 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
         @Override
         public void run() {
             hub.addListener(ConfigurationListener.this);
-        }
-        
-    }
-    
-    /**
-     * Matches only things with scope ConfiguredBy and which have no name
-     * 
-     * @author jwells
-     *
-     */
-    private static class NoNameTypeFilter implements IndexedFilter {
-        private final ServiceLocator locator;
-        private final String typeName;
-        
-        private NoNameTypeFilter(ServiceLocator locator, String typeName) {
-            this.locator = locator;
-            this.typeName = typeName;
-        }
-
-        /* (non-Javadoc)
-         * @see org.glassfish.hk2.api.Filter#matches(org.glassfish.hk2.api.Descriptor)
-         */
-        @Override
-        public boolean matches(Descriptor d) {
-            if (d.getName() != null) return false;
-            
-            
-            ActiveDescriptor<?> reified;
-            try {
-                reified = locator.reifyDescriptor(d);
-            }
-            catch (MultiException me) {
-                return false;
-            }
-            
-            Class<?> implClass = reified.getImplementationClass();
-            ConfiguredBy configuredBy = implClass.getAnnotation(ConfiguredBy.class);
-            if (configuredBy == null) return false;
-            
-            return configuredBy.type().equals(typeName);
-        }
-
-        /* (non-Javadoc)
-         * @see org.glassfish.hk2.api.IndexedFilter#getAdvertisedContract()
-         */
-        @Override
-        public String getAdvertisedContract() {
-            return ConfiguredBy.class.getName();
-        }
-
-        /* (non-Javadoc)
-         * @see org.glassfish.hk2.api.IndexedFilter#getName()
-         */
-        @Override
-        public String getName() {
-            return null;
         }
         
     }

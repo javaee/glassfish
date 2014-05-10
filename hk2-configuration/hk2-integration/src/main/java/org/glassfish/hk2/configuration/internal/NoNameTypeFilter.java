@@ -39,63 +39,64 @@
  */
 package org.glassfish.hk2.configuration.internal;
 
-import javax.inject.Singleton;
-
 import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Filter;
-import org.glassfish.hk2.api.Operation;
-import org.glassfish.hk2.api.ValidationInformation;
-import org.glassfish.hk2.api.Validator;
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.IndexedFilter;
+import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.configuration.api.ConfiguredBy;
 
 /**
+ * Matches only things with scope ConfiguredBy and which have no name
+ * 
  * @author jwells
  *
  */
-@Singleton
-public class ConfiguredValidator implements Validator {
-    private boolean validateLookup(ValidationInformation info) {
-        ActiveDescriptor<?> candidate = info.getCandidate();
-        if (candidate.getName() != null) {
-            // Any named 
-            return true;
-        }
-        
-        if (info.getInjectee() != null) {
-            // May not be injected anywhere
-            return false;
-        }
-        
-        Filter f = info.getFilter();
-        if ((f != null) && (f instanceof NoNameTypeFilter)) {
-            // OK, we are getting this internally
-            return true;
-        }
-        
-        return false;
+class NoNameTypeFilter implements IndexedFilter {
+    private final ServiceLocator locator;
+    private final String typeName;
+    
+    NoNameTypeFilter(ServiceLocator locator, String typeName) {
+        this.locator = locator;
+        this.typeName = typeName;
     }
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Validator#validate(org.glassfish.hk2.api.ValidationInformation)
+     * @see org.glassfish.hk2.api.Filter#matches(org.glassfish.hk2.api.Descriptor)
      */
     @Override
-    public boolean validate(ValidationInformation info) {
-        if (Operation.LOOKUP.equals(info.getOperation())) {
-            return validateLookup(info);
+    public boolean matches(Descriptor d) {
+        if (d.getName() != null) return false;
+        
+        ActiveDescriptor<?> reified;
+        try {
+            reified = locator.reifyDescriptor(d);
+        }
+        catch (MultiException me) {
+            return false;
         }
         
-        if (Operation.BIND.equals(info.getOperation())) {
-            return true;
-            
-        }
+        Class<?> implClass = reified.getImplementationClass();
+        ConfiguredBy configuredBy = implClass.getAnnotation(ConfiguredBy.class);
+        if (configuredBy == null) return false;
         
-        if (Operation.UNBIND.equals(info.getOperation())) {
-            return true;
-        }
-        
-        
-        
-        // Unknown operation, I guess it is ok
-        return true;
+        return configuredBy.type().equals(typeName);
     }
 
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.IndexedFilter#getAdvertisedContract()
+     */
+    @Override
+    public String getAdvertisedContract() {
+        return ConfiguredBy.class.getName();
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.IndexedFilter#getName()
+     */
+    @Override
+    public String getName() {
+        return null;
+    }
+    
 }
