@@ -791,29 +791,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
 
     }
 
-    @Override
-    public int hashCode() {
-        int low32 = id.intValue();
-        int high32 = (int) (id.longValue() >> 32);
-
-        int locatorLow32 = (int) sdLocator.getLocatorId();
-        int locatorHigh32 = (int) (sdLocator.getLocatorId() >> 32);
-
-        return low32 ^ high32 ^ locatorLow32 ^ locatorHigh32;
-    }
-
-    @SuppressWarnings({ "rawtypes" })
-    @Override
-    public boolean equals(Object o) {
-        if (o == null) return false;
-        if (!(o instanceof SystemDescriptor)) return false;
-
-        SystemDescriptor sd = (SystemDescriptor) o;
-
-        if (!sd.getServiceId().equals(id)) return false;
-
-        return sd.getLocatorId().equals(sdLocator.getLocatorId());
-    }
+    
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Descriptor#getLocatorId()
@@ -904,7 +882,32 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     /* package */ void setSingletonGeneration(int gen) {
         singletonGeneration = gen;
     }
+    
+    @Override
+    public int hashCode() {
+        int low32 = id.intValue();
+        int high32 = (int) (id.longValue() >> 32);
 
+        int locatorLow32 = (int) sdLocator.getLocatorId();
+        int locatorHigh32 = (int) (sdLocator.getLocatorId() >> 32);
+
+        return low32 ^ high32 ^ locatorLow32 ^ locatorHigh32;
+    }
+
+    @SuppressWarnings({ "rawtypes" })
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        if (!(o instanceof SystemDescriptor)) return false;
+
+        SystemDescriptor sd = (SystemDescriptor) o;
+
+        if (!sd.getServiceId().equals(id)) return false;
+
+        return sd.getLocatorId().equals(sdLocator.getLocatorId());
+    }
+
+    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer("SystemDescriptor(");
 

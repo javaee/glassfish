@@ -162,7 +162,7 @@ public class BasicTopicTest {
     }
     
     /**
-     * Tests a single subscriber subscribing to different Types
+     * Tests a single subscriber subscribing to different Types by qualifier
      */
     @Test
     public void testEventDistributionByQualifier() {
@@ -340,6 +340,23 @@ public class BasicTopicTest {
         publisher.publishBar(10);
         
         Assert.assertTrue(subscriber.isSubscriptionServiceDead());
+    }
+    
+    /**
+     * Tests that a publisher that never had any subscribers is a-ok
+     */
+    @Test
+    public void testNeverAnySubscibers() {
+        ServiceLocator locator = LocatorHelper.getServiceLocator();
+        
+        ServiceLocatorUtilities.enableTopicDistribution(locator);
+        
+        ServiceLocatorUtilities.addClasses(locator, ZeroPublisher.class);
+        
+        ZeroPublisher publisher = locator.getService(ZeroPublisher.class);
+        
+        publisher.publish();
+        
     }
 
 }

@@ -103,7 +103,7 @@ public class DefaultTopicDistributionService implements
     
     private final ClassReflectionHelper reflectionHelper = new ClassReflectionHelperImpl();
     private final HashMap<ActiveDescriptor<?>, Set<Class<?>>> descriptor2Classes = new HashMap<ActiveDescriptor<?>, Set<Class<?>>>();
-    private final HashMap<ActivatorClassKey, List<SubscriberInfo>> class2Methods = new HashMap<ActivatorClassKey, List<SubscriberInfo>>();
+    private final HashMap<ActivatorClassKey, List<SubscriberInfo>> class2Subscribers = new HashMap<ActivatorClassKey, List<SubscriberInfo>>();
     
     private final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     private final WriteLock wLock = readWriteLock.writeLock();
@@ -159,7 +159,7 @@ public class DefaultTopicDistributionService implements
     private List<FireResults> handleDescriptorToClass(ActiveDescriptor<?> descriptor, Class<?> clazz, Type eventType, Topic<?> topic) {
         LinkedList<FireResults> retVal = new LinkedList<FireResults>();
         
-        List<SubscriberInfo> subscribers = class2Methods.get(new ActivatorClassKey(descriptor, clazz));
+        List<SubscriberInfo> subscribers = class2Subscribers.get(new ActivatorClassKey(descriptor, clazz));
         
         for (SubscriberInfo subscriberInfo : subscribers) {    
             Type subscriptionType = subscriberInfo.eventType;
@@ -313,7 +313,7 @@ public class DefaultTopicDistributionService implements
         
         if (descriptorClazzes != null) {
             if (descriptorClazzes.contains(targetClass)) {
-                existingMethods = class2Methods.get(new ActivatorClassKey(descriptor, targetClass));
+                existingMethods = class2Subscribers.get(new ActivatorClassKey(descriptor, targetClass));
             
                 if (existingMethods != null) {
                     for (SubscriberInfo info : existingMethods) {
@@ -335,7 +335,7 @@ public class DefaultTopicDistributionService implements
         }
         
         existingMethods = new LinkedList<SubscriberInfo>();    
-        class2Methods.put(new ActivatorClassKey(descriptor, targetClass), existingMethods);
+        class2Subscribers.put(new ActivatorClassKey(descriptor, targetClass), existingMethods);
         
         // Have not yet seen this descriptor, must now get the information on it
         Set<MethodWrapper> allMethods = reflectionHelper.getAllMethods(targetClass);
@@ -449,7 +449,7 @@ public class DefaultTopicDistributionService implements
         Set<Class<?>> classes = descriptor2Classes.get(descriptor);
         
         for (Class<?> clazz : classes) {
-            List<SubscriberInfo> subscribers = class2Methods.get(new ActivatorClassKey(descriptor, clazz));
+            List<SubscriberInfo> subscribers = class2Subscribers.get(new ActivatorClassKey(descriptor, clazz));
             
             for (SubscriberInfo subscriberInfo : subscribers) {
                 Iterator<WeakReference<Object>> targetIterator = subscriberInfo.targets.iterator();
@@ -510,7 +510,7 @@ public class DefaultTopicDistributionService implements
                 if (clazzes == null) continue;
                 
                 for (Class<?> clazz : clazzes) {
-                    class2Methods.remove(new ActivatorClassKey(parent, clazz));
+                    class2Subscribers.remove(new ActivatorClassKey(parent, clazz));
                 }
             }
         }
@@ -555,6 +555,14 @@ public class DefaultTopicDistributionService implements
         
     }
     
+    /**
+     * This is here to handle the case where a PerLookup Factory (or the like)
+     * could possibly return different classes every time it is looked up.  For
+     * each one we need to keep the set of subscribers
+     * 
+     * @author jwells
+     *
+     */
     private static class ActivatorClassKey {
         private final ActiveDescriptor<?> descriptor;
         private final Class<?> clazz;
