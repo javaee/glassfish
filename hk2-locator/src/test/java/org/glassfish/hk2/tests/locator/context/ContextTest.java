@@ -39,15 +39,21 @@
  */
 package org.glassfish.hk2.tests.locator.context;
 
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.List;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -250,5 +256,52 @@ public class ContextTest {
         Assert.assertNotSame(rootHandle0, handle);
         
         Assert.assertEquals(rootHandle0, rootHandle1);
+    }
+    
+    /**
+     * Ensures that a service that uses custom annotation for injection
+     * point can be added via automatic class analysis even if the
+     * context for it is not available.  (This tests the InjectionPointIndicator
+     * annotation is working properly)
+     */
+    @Test @Ignore
+    public void testInjectionPointWithoutContext() {
+        ServiceLocator locator = LocatorHelper.create();
+        
+        List<ActiveDescriptor<?>> added = ServiceLocatorUtilities.addClasses(locator, AnyplaceService.class);
+        Assert.assertEquals(1, added.size());
+        
+        ActiveDescriptor<?> ad = added.get(0);
+        
+        List<Injectee> injectees = ad.getInjectees();
+        
+        boolean gotField = false;
+        boolean gotConstructor = false;
+        boolean gotMethod = false;
+        
+        for (Injectee injectee: injectees) {
+            AnnotatedElement ae = injectee.getParent();
+            Assert.assertNotNull(ae);
+            
+            if (ae instanceof Field) {
+                Assert.assertFalse(gotField);
+                gotField = true;
+            }
+            else if (ae instanceof Constructor) {
+                Assert.assertFalse(gotConstructor);
+                gotConstructor = true;
+            }
+            else if (ae instanceof Method) {
+                Assert.assertFalse(gotMethod);
+                gotMethod = true;
+            }
+            else {
+                Assert.fail("Unknown type " + ae);
+            }
+        }
+        
+        Assert.assertTrue(gotField);
+        Assert.assertTrue(gotConstructor);
+        Assert.assertTrue(gotMethod);
     }
 }
