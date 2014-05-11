@@ -115,6 +115,10 @@ public class HK2TestListenerAdapter implements IExecutionListener, IHookable, IC
         ServiceLocatorUtilities.enableLookupExceptions(locator);
       }
       
+      if (hk2.enableEvents()) {
+          ServiceLocatorUtilities.enableTopicDistribution(locator);
+        }
+      
     }
 
     private void injectTestInstance(ITestResult testResult) throws InstantiationException, IllegalAccessException {

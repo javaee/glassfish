@@ -104,5 +104,12 @@ public @interface HK2 {
      * back to the caller
      */
     boolean enableLookupExceptions() default true;
+    
+    /**
+     * If true then events will be enabled
+     * 
+     * @return true if events should be enabled
+     */
+    boolean enableEvents() default true;
 
 }
