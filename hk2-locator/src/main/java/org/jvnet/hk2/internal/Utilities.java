@@ -89,6 +89,7 @@ import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.InjectionPointIndicator;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.InstanceLifecycleListener;
 import org.glassfish.hk2.api.InterceptionService;
@@ -1451,6 +1452,10 @@ public class Utilities {
      */
     private static boolean hasInjectAnnotation(ServiceLocatorImpl locator, AnnotatedElement annotated, boolean checkParams) {
         for (Annotation anno : annotated.getAnnotations()) {
+            if (anno.annotationType().getAnnotation(InjectionPointIndicator.class) != null) {
+                return true;
+            }
+            
             if (locator.isInjectAnnotation(anno)) {
                 return true;
             }
@@ -1476,6 +1481,10 @@ public class Utilities {
 
         for (Annotation allParamAnnotations[] : allAnnotations) {
             for (Annotation paramAnno : allParamAnnotations) {
+                if (paramAnno.annotationType().getAnnotation(InjectionPointIndicator.class) != null) {
+                    return true;
+                }
+                
                 if (locator.isInjectAnnotation(paramAnno, isConstructor)) {
                     return true;
                 }

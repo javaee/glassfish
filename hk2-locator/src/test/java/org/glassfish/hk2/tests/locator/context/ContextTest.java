@@ -53,7 +53,6 @@ import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -264,11 +263,13 @@ public class ContextTest {
      * context for it is not available.  (This tests the InjectionPointIndicator
      * annotation is working properly)
      */
-    @Test @Ignore
+    @Test
     public void testInjectionPointWithoutContext() {
         ServiceLocator locator = LocatorHelper.create();
         
-        List<ActiveDescriptor<?>> added = ServiceLocatorUtilities.addClasses(locator, AnyplaceService.class);
+        List<ActiveDescriptor<?>> added = ServiceLocatorUtilities.addClasses(locator,
+                AnyplaceService.class);
+        
         Assert.assertEquals(1, added.size());
         
         ActiveDescriptor<?> ad = added.get(0);
@@ -303,5 +304,59 @@ public class ContextTest {
         Assert.assertTrue(gotField);
         Assert.assertTrue(gotConstructor);
         Assert.assertTrue(gotMethod);
+    }
+    
+    /**
+     * Ensures that a service that uses custom annotation for injection
+     * point in a constructor parameter can be added via automatic class
+     * analysis even if the context for it is not available.  (This tests
+     * the InjectionPointIndicator Paraannotation is working properly)
+     */
+    @Test
+    public void testConstructorParameterInjectionPointWithoutContext() {
+        ServiceLocator locator = LocatorHelper.create();
+        
+        List<ActiveDescriptor<?>> added = ServiceLocatorUtilities.addClasses(locator,
+                ConstructorParameterInjectionIndicatorService.class);
+        
+        Assert.assertEquals(1, added.size());
+        
+        ActiveDescriptor<?> ad = added.get(0);
+        
+        List<Injectee> injectees = ad.getInjectees();
+        
+        Assert.assertEquals(1, injectees.size());
+        
+        AnnotatedElement ae = injectees.get(0).getParent();
+        Assert.assertNotNull(ae);
+        
+        Assert.assertTrue(ae instanceof Constructor);
+    }
+    
+    /**
+     * Ensures that a service that uses custom annotation for injection
+     * point in a method parameter can be added via automatic class
+     * analysis even if the context for it is not available.  (This tests
+     * the InjectionPointIndicator Paraannotation is working properly)
+     */
+    @Test
+    public void testMethodParameterInjectionPointWithoutContext() {
+        ServiceLocator locator = LocatorHelper.create();
+        
+        List<ActiveDescriptor<?>> added = ServiceLocatorUtilities.addClasses(locator,
+                MethodParameterInjectionIndicatorService.class);
+        
+        Assert.assertEquals(1, added.size());
+        
+        ActiveDescriptor<?> ad = added.get(0);
+        
+        List<Injectee> injectees = ad.getInjectees();
+        
+        Assert.assertEquals(1, injectees.size());
+        
+        AnnotatedElement ae = injectees.get(0).getParent();
+        Assert.assertNotNull(ae);
+        
+        Assert.assertTrue(ae instanceof Method);
     }
 }
