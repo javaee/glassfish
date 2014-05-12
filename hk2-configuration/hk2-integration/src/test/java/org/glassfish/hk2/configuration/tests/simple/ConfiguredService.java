@@ -44,11 +44,12 @@ import javax.annotation.PostConstruct;
 import org.glassfish.hk2.configuration.api.Configured;
 import org.glassfish.hk2.configuration.api.ConfiguredBy;
 import org.junit.Assert;
+import org.jvnet.hk2.annotations.Service;
 
 /**
  * @author jwells
  */
-@ConfiguredBy(type=BasicConfigurationTest.TEST_TYPE_ONE)
+@Service @ConfiguredBy(type=BasicConfigurationTest.TEST_TYPE_ONE)
 public class ConfiguredService {
     @Configured
     private String fieldOutput1;

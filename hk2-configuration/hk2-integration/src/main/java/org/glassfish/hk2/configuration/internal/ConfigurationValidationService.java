@@ -44,7 +44,6 @@ import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.Filter;
-import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.ValidationService;
 import org.glassfish.hk2.api.Validator;
 import org.glassfish.hk2.configuration.api.ConfiguredBy;

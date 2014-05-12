@@ -48,6 +48,11 @@ import java.lang.annotation.Target;
 import javax.inject.Scope;
 
 /**
+ * This annotation is put onto classes to indicate that
+ * they should be created based on the availability of
+ * instances of a specify type of configuration in the 
+ * {@link org.glassfish.hk2.configuration.hub.api.Hub}
+ * 
  * @author jwells
  *
  */
@@ -55,6 +60,13 @@ import javax.inject.Scope;
 @Retention(RUNTIME)
 @Target(TYPE)
 public @interface ConfiguredBy {
+    /**
+     * A service is created for each instance of this type,
+     * with a name taken from the key of the instance
+     * 
+     * @return the name of the type to base instances
+     * of this service on
+     */
     public String type();
 
 }

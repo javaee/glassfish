@@ -47,10 +47,8 @@ import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
 import org.glassfish.hk2.utilities.BuilderHelper;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.jvnet.hk2.testing.junit.HK2Runner;
 
@@ -93,8 +91,6 @@ public class BasicConfigurationTest extends HK2Runner {
     }
     
     private void addBean() {
-        ServiceLocatorUtilities.addClasses(testLocator, ConfiguredService.class);
-        
         WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
         
         WriteableType wt = wbd.findOrAddWriteableType(TEST_TYPE_ONE);
@@ -106,6 +102,7 @@ public class BasicConfigurationTest extends HK2Runner {
     
     /**
      * Tests a service that has basic configuration information
+     * @throws InterruptedException 
      */
     @Test
     public void testBasicConfiguration() {
