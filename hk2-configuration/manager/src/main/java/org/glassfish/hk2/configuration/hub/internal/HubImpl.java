@@ -40,7 +40,6 @@
 package org.glassfish.hk2.configuration.hub.internal;
 
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 

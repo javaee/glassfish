@@ -46,8 +46,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.glassfish.hk2.configuration.hub.api.Change;
-import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
+import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
+import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
 
 /**
  * @author jwells
@@ -57,16 +58,19 @@ public class WriteableTypeImpl implements WriteableType {
     private final WriteableBeanDatabaseImpl parent;
     private final String name;
     private final HashMap<String, Object> beanMap = new HashMap<String, Object>();
+    private final ClassReflectionHelper helper;
     
-    /* package */ WriteableTypeImpl(WriteableBeanDatabaseImpl parent, Type mother) {
+    /* package */ WriteableTypeImpl(WriteableBeanDatabaseImpl parent, TypeImpl mother) {
         this.parent = parent;
         this.name = mother.getName();
         beanMap.putAll(mother.getInstances());
+        helper = mother.getHelper();
     }
     
     /* package */ WriteableTypeImpl(WriteableBeanDatabaseImpl parent, String name) {
         this.parent = parent;
         this.name = name;
+        helper = new ClassReflectionHelperImpl();
     }
 
     /* (non-Javadoc)
@@ -136,13 +140,13 @@ public class WriteableTypeImpl implements WriteableType {
             PropertyChangeEvent... propChanges) {
         if (key == null || newBean == null) throw new IllegalArgumentException();
         
-        if (propChanges.length == 0) {
-            throw new AssertionError("Automatic discovery of bean modification NOT yet supported");
-        }
-        
         Object oldBean = beanMap.get(key);
         if (oldBean == null) {
             throw new IllegalStateException("Attempting to modify bean with key " + key + " but no such bean exists");
+        }
+        
+        if (propChanges.length == 0) {
+            propChanges = BeanReflectionHelper.getChangeEvents(helper, oldBean, newBean);
         }
         
         beanMap.put(key, newBean);
@@ -161,6 +165,8 @@ public class WriteableTypeImpl implements WriteableType {
         return propChanges;
     }
 
-    
+    ClassReflectionHelper getHelper() {
+        return helper;
+    }
 
 }

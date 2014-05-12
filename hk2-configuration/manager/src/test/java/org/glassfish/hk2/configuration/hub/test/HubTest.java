@@ -67,8 +67,8 @@ public class HubTest extends HK2Runner {
     private final static String TYPE_TWO = "TypeTwo";
     private final static String TYPE_THREE = "TypeThree";
     
-    private final static String NAME_PROPERTY = "Name";
-    private final static String OTHER_PROPERTY = "Other";
+    private final static String NAME_PROPERTY = "name";
+    private final static String OTHER_PROPERTY = "other";
     
     private final static String ALICE = "Alice";
     private final static String BOB = "Bob";
@@ -389,7 +389,7 @@ public class HubTest extends HK2Runner {
     /**
      * Tests modifying a property with automatically generated change events
      */
-    @Test @Ignore
+    @Test
     public void testModifyPropertyWithAutomaticPropertyChangeEvent() {
         addTypeAndInstance(TYPE_TWO, ALICE, new GenericJavaBean(ALICE, OTHER_PROPERTY_VALUE1));
         

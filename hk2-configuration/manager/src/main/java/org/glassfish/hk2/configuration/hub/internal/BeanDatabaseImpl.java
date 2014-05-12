@@ -92,7 +92,7 @@ import org.glassfish.hk2.configuration.hub.api.Type;
  */
 public class BeanDatabaseImpl implements BeanDatabase {
     private final long revision;
-    private final HashMap<String, Type> types = new HashMap<String, Type>();
+    private final HashMap<String, TypeImpl> types = new HashMap<String, TypeImpl>();
     
     /**
      * Creates a new, fresh database
@@ -105,7 +105,7 @@ public class BeanDatabaseImpl implements BeanDatabase {
         this(revision);
         
         for (Type type : beanDatabase.getAllTypes()) {
-            types.put(type.getName(), new TypeImpl(type));
+            types.put(type.getName(), new TypeImpl(type, ((WriteableTypeImpl) type).getHelper()));
         }
     }
 

@@ -43,6 +43,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.glassfish.hk2.configuration.hub.api.Type;
+import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 
 /**
  * @author jwells
@@ -51,10 +52,12 @@ import org.glassfish.hk2.configuration.hub.api.Type;
 public class TypeImpl implements Type {
     private final String name;
     private final Map<String, Object> instances;
+    private final ClassReflectionHelper helper;
     
-    /* package */ TypeImpl(Type baseType) {
+    /* package */ TypeImpl(Type baseType, ClassReflectionHelper helper) {
         name = baseType.getName();
         instances = Collections.unmodifiableMap(baseType.getInstances());
+        this.helper = helper;
     }
 
     /* (non-Javadoc)
@@ -80,5 +83,8 @@ public class TypeImpl implements Type {
     public Object getInstance(String key) {
         return instances.get(key);
     }
-
+    
+    /* package */ ClassReflectionHelper getHelper() {
+        return helper;
+    }
 }

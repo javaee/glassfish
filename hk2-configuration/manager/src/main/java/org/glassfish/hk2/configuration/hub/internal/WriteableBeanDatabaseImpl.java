@@ -68,7 +68,7 @@ public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase {
         baseRevision = currentDatabase.getRevision();
         
         for (Type type : currentDatabase.getAllTypes()) {
-            types.put(type.getName(), new WriteableTypeImpl(this, type));
+            types.put(type.getName(), new WriteableTypeImpl(this, (TypeImpl) type));
         }
         
     }
