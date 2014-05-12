@@ -132,7 +132,7 @@ public class WriteableTypeImpl implements WriteableType {
      * @see org.glassfish.hk2.configuration.hub.api.WriteableType#modifyInstance(java.lang.Object, java.lang.Object, java.beans.PropertyChangeEvent[])
      */
     @Override
-    public synchronized void modifyInstance(String key, Object newBean,
+    public synchronized PropertyChangeEvent[] modifyInstance(String key, Object newBean,
             PropertyChangeEvent... propChanges) {
         if (key == null || newBean == null) throw new IllegalArgumentException();
         
@@ -157,6 +157,8 @@ public class WriteableTypeImpl implements WriteableType {
                 key,
                 newBean,
                 propChangesList));
+        
+        return propChanges;
     }
 
     

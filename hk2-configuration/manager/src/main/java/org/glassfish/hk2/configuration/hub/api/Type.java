@@ -42,6 +42,9 @@ package org.glassfish.hk2.configuration.hub.api;
 import java.util.Map;
 
 /**
+ * A type contains (possibly) multiple instances of
+ * a configuration bean
+ * 
  * @author jwells
  *
  */

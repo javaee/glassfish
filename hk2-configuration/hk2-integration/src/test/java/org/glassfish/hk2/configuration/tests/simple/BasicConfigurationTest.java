@@ -49,6 +49,7 @@ import org.glassfish.hk2.configuration.hub.api.WriteableType;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.jvnet.hk2.testing.junit.HK2Runner;
 
@@ -60,12 +61,15 @@ import org.jvnet.hk2.testing.junit.HK2Runner;
  */
 public class BasicConfigurationTest extends HK2Runner {
     /* package */ final static String TEST_TYPE_ONE = "TestConfigurationType1";
+    /* package */ final static String TEST_TYPE_TWO = "TestConfigurationType2";
     
     private final static String DEFAULT = "default";
     private final static String FIELD1 = "field1";
+    private final static String FIELD1_1 = "feild1_1";
     private final static String FIELD2 = "field2";
     private final static String CONSTRUCTOR = "constructor";
     private final static String METHOD1 = "method1";
+    private final static String METHOD1_1 = "method1_1";
     private final static String METHOD2 = "method2";
     
     @Inject
@@ -79,23 +83,57 @@ public class BasicConfigurationTest extends HK2Runner {
     }
     
     private ConfiguredServiceBean createBean() {
+        return createBean(CONSTRUCTOR,
+                FIELD1,
+                FIELD2,
+                METHOD1,
+                METHOD2);
+    }
+    
+    private ConfiguredServiceBean createBean(String constructorValue,
+            String field1,
+            String field2,
+            String method1,
+            String method2) {
         ConfiguredServiceBean csb = new ConfiguredServiceBean();
         
-        csb.setConstructorOutput(CONSTRUCTOR);
-        csb.setFieldOutput1(FIELD1);
-        csb.setFieldOutput2(FIELD2);
-        csb.setMethodOutput1(METHOD1);
-        csb.setMethodOutput2(METHOD2);
+        csb.setConstructorOutput(constructorValue);
+        csb.setFieldOutput1(field1);
+        csb.setFieldOutput2(field2);
+        csb.setMethodOutput1(method1);
+        csb.setMethodOutput2(method2);
         
         return csb;
     }
     
-    private void addBean() {
+    private void addBean(String typeName) {
         WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
         
-        WriteableType wt = wbd.findOrAddWriteableType(TEST_TYPE_ONE);
+        WriteableType wt = wbd.findOrAddWriteableType(typeName);
         
         wt.addInstance(DEFAULT, createBean());
+        
+        wbd.commit();
+    }
+    
+    private void updateBean(String typeName, ConfiguredServiceBean newBean) {
+        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+        
+        WriteableType wt = wbd.getWriteableType(typeName);
+        Assert.assertNotNull(wt);
+        
+        wt.modifyInstance(DEFAULT, newBean);
+        
+        wbd.commit();
+    }
+    
+    private void removeBean(String typeName) {
+        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+        
+        WriteableType wt = wbd.getWriteableType(typeName);
+        if (wt == null) return;
+        
+        wt.removeInstance(DEFAULT);
         
         wbd.commit();
     }
@@ -106,18 +144,57 @@ public class BasicConfigurationTest extends HK2Runner {
      */
     @Test
     public void testBasicConfiguration() {
-        addBean();
+        addBean(TEST_TYPE_ONE);
         
-        ActiveDescriptor<?> ad = testLocator.getBestDescriptor(BuilderHelper.createContractFilter(ConfiguredService.class.getName()));
-        Assert.assertNotNull(ad);
+        try {
+            ActiveDescriptor<?> ad = testLocator.getBestDescriptor(BuilderHelper.createContractFilter(ConfiguredService.class.getName()));
+            Assert.assertNotNull(ad);
         
-        ConfiguredService cs = testLocator.getService(ConfiguredService.class);
-        Assert.assertNotNull(cs);
+            ConfiguredService cs = testLocator.getService(ConfiguredService.class);
+            Assert.assertNotNull(cs);
         
-        Assert.assertEquals(CONSTRUCTOR, cs.getConstructorOutput());
-        Assert.assertEquals(METHOD1, cs.getMethodOutput1());
-        Assert.assertEquals(METHOD2, cs.getMethodOutput2());
-        Assert.assertEquals(FIELD1, cs.getFieldOutput1());
-        Assert.assertEquals(FIELD2, cs.getFieldOutput2());
+            Assert.assertEquals(CONSTRUCTOR, cs.getConstructorOutput());
+            Assert.assertEquals(METHOD1, cs.getMethodOutput1());
+            Assert.assertEquals(METHOD2, cs.getMethodOutput2());
+            Assert.assertEquals(FIELD1, cs.getFieldOutput1());
+            Assert.assertEquals(FIELD2, cs.getFieldOutput2());
+        }
+        finally {
+            removeBean(TEST_TYPE_ONE);
+        }
+    }
+    
+    /**
+     * Tests a service that dynamically updates a couple fields
+     * @throws InterruptedException 
+     */
+    @Test @Ignore
+    public void testBasicDynamicConfiguration() {
+        addBean(TEST_TYPE_TWO);
+        
+        try {
+            ActiveDescriptor<?> ad = testLocator.getBestDescriptor(BuilderHelper.createContractFilter(DynamicConfiguredService.class.getName()));
+            Assert.assertNotNull(ad);
+        
+            DynamicConfiguredService cs = testLocator.getService(DynamicConfiguredService.class);
+            Assert.assertNotNull(cs);
+        
+            Assert.assertEquals(METHOD1, cs.getMethodOutput1());
+            Assert.assertEquals(FIELD1, cs.getFieldOutput1());
+            
+            ConfiguredServiceBean newBean = createBean(CONSTRUCTOR,
+                FIELD1_1,
+                FIELD2,
+                METHOD1_1,
+                METHOD2);
+            
+            updateBean(TEST_TYPE_TWO, newBean);
+            
+            Assert.assertEquals(METHOD1_1, cs.getMethodOutput1());
+            Assert.assertEquals(FIELD1_1, cs.getFieldOutput1());
+        }
+        finally {
+            removeBean(TEST_TYPE_TWO);
+        }
     }
 }

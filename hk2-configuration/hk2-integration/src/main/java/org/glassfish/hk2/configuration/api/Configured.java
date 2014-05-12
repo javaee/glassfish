@@ -86,5 +86,27 @@ public @interface Configured {
      * injecting into this field or parameter
      */
     public String key() default "";
+    
+    /**
+     * Describes how dynamic a configured field or parameter must be.
+     * All parameters of a constructor must be STATIC.
+     * All parameters of a method must have the same dynamicity value
+     * 
+     * @return The dynamicicty of this field or parameter
+     */
+    public Dynamicity dynamicity() default Dynamicity.STATIC;
+    
+    /**
+     * Describes how dynamic a configured field or parameter should be
+     * 
+     * @author jwells
+     *
+     */
+    public enum Dynamicity {
+        /** This value should not automatically change over the life of the service instance */
+        STATIC,
+        /** This value can change at any time during the life of the service instance */
+        FULLY_DYNAMIC
+    }
 
 }

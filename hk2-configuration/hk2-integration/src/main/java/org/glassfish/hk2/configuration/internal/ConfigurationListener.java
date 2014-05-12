@@ -79,8 +79,7 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
     
     @PostConstruct
     private void postConstruct() {
-        Thread t = new Thread(new Initializer());
-        t.start();
+        hub.addListener(this);
     }
     
     private ActiveDescriptor<?> addInstanceDescriptor(DynamicConfiguration config, ActiveDescriptor<?> parent, String name, Object bean) {
@@ -163,17 +162,4 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
         }
             
     }
-    
-    private class Initializer implements Runnable {
-
-        /* (non-Javadoc)
-         * @see java.lang.Runnable#run()
-         */
-        @Override
-        public void run() {
-            hub.addListener(ConfigurationListener.this);
-        }
-        
-    }
-
 }

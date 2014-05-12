@@ -67,8 +67,14 @@ public interface WriteableType extends Type {
      * 
      * @param key A non-null name or key for the bean to modify
      * @param newBean The new bean to use with this key
-     * @param changes The full set of changes from the previous version
+     * @param changes The full set of changes from the previous version.  If this
+     * is a zero-length array then the system will attempt to automatically determine
+     * the changes made to this type and will generate the list of PropertyChangeEvent
+     * to be associated with this modification
+     * @return If changes has length greater than zero then this simply returns changes.
+     * If changes is zero length then this will return the set of changes automatically
+     * determined by the system
      */
-    public void modifyInstance(String key, Object newBean, PropertyChangeEvent... changes);
+    public PropertyChangeEvent[] modifyInstance(String key, Object newBean, PropertyChangeEvent... changes);
 
 }

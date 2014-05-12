@@ -42,6 +42,15 @@ package org.glassfish.hk2.configuration.hub.api;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
+ * The central repository of configuration objects in the system.
+ * Configuration objects are organized by type, and within
+ * that type keyed instances of the configuration object.
+ * <p>
+ * A configuration object can be a java bean following
+ * the java bean standard.  A configuration object
+ * can also be a bean-like Map, which is a Map&lt;String,Object&gt;
+ * that has as keys the names of the properties and as
+ * values value that property should take
  * 
  * @author jwells
  *
@@ -51,13 +60,36 @@ public interface Hub {
     /**
      * Gets the current database running in the system
      * 
-     * @return
+     * @return The current database known to the Hub
      */
     public BeanDatabase getCurrentDatabase();
     
+    /**
+     * Creates a writeable copy of the currently running
+     * database.  If the {@link WriteableBeanDatabase#commit()}
+     * method is called (and no other {@link WriteableBeanDatabase#commit()}
+     * method has been called) then a read-only copye of the
+     * {@link WriteableBeanDatabase} will become the current database.
+     * There is no requirement to eventually call the
+     * {@link WriteableBeanDatabase#commit()} method
+     * 
+     * @return A writeable copy of the current database
+     */
     public WriteableBeanDatabase getWriteableDatabaseCopy();
     
+    /**
+     * Adds a listener for updates to the database.  The listener
+     * must be suitable for HashSet inclusion
+     * 
+     * @param listener A non-null listener for changes to the database
+     */
     public void addListener(BeanDatabaseUpdateListener listener);
     
+    
+    /**
+     * Removes a listener for updates to the database
+     * 
+     * @param listener A non-null listener to be removed
+     */
     public void removeListener(BeanDatabaseUpdateListener listener);
 }

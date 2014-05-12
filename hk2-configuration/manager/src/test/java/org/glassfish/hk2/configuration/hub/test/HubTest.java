@@ -327,8 +327,14 @@ public class HubTest extends HK2Runner {
             Assert.assertNotNull(wt);
             
             GenericJavaBean newBean = new GenericJavaBean(ALICE, OTHER_PROPERTY_VALUE2);
-            wt.modifyInstance(ALICE, newBean,
+            PropertyChangeEvent[] result = wt.modifyInstance(ALICE, newBean,
                     new PropertyChangeEvent(newBean, OTHER_PROPERTY, OTHER_PROPERTY_VALUE1, OTHER_PROPERTY_VALUE2));
+            
+            Assert.assertEquals(1, result.length);
+            Assert.assertEquals(result[0].getNewValue(), OTHER_PROPERTY_VALUE2);
+            Assert.assertEquals(result[0].getOldValue(), OTHER_PROPERTY_VALUE1);
+            Assert.assertEquals(result[0].getPropertyName(), OTHER_PROPERTY);
+            Assert.assertEquals(result[0].getSource(), newBean);
         
             wbd.commit();
         

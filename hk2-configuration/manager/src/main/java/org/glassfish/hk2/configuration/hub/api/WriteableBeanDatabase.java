@@ -40,10 +40,19 @@
 package org.glassfish.hk2.configuration.hub.api;
 
 /**
+ * A writeable version of a {@link BeanDatabase}.  Types
+ * and instances can be added to this in-memory database
+ * 
  * @author jwells
  *
  */
 public interface WriteableBeanDatabase extends BeanDatabase {
+    /**
+     * Adds a type of the given name
+     * 
+     * @param typeName The name of the type to add
+     * @return The non-null type that has been added to the database
+     */
     public WriteableType addType(String typeName);
     
     public Type removeType(String typeName);
