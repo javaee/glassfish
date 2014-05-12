@@ -39,9 +39,6 @@
  */
 package org.jvnet.testing.hk2testng;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import javax.inject.Inject;
 
 import org.glassfish.hk2.api.Descriptor;

@@ -39,12 +39,9 @@
  */
 package org.jvnet.testing.hk2testng;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import javax.inject.Inject;
 
 import org.jvnet.testing.hk2testng.service.Event;
-import org.jvnet.testing.hk2testng.service.EventReceiverService;
 import org.jvnet.testing.hk2testng.service.EventSenderService;
 import org.testng.annotations.Test;
 
