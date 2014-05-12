@@ -53,6 +53,7 @@ import org.glassfish.hk2.configuration.hub.internal.HubImpl;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.jvnet.hk2.testing.junit.HK2Runner;
 
@@ -329,6 +330,82 @@ public class HubTest extends HK2Runner {
             GenericJavaBean newBean = new GenericJavaBean(ALICE, OTHER_PROPERTY_VALUE2);
             PropertyChangeEvent[] result = wt.modifyInstance(ALICE, newBean,
                     new PropertyChangeEvent(newBean, OTHER_PROPERTY, OTHER_PROPERTY_VALUE1, OTHER_PROPERTY_VALUE2));
+            
+            Assert.assertEquals(1, result.length);
+            Assert.assertEquals(result[0].getNewValue(), OTHER_PROPERTY_VALUE2);
+            Assert.assertEquals(result[0].getOldValue(), OTHER_PROPERTY_VALUE1);
+            Assert.assertEquals(result[0].getPropertyName(), OTHER_PROPERTY);
+            Assert.assertEquals(result[0].getSource(), newBean);
+        
+            wbd.commit();
+        
+            Type typeTwo = hub.getCurrentDatabase().getType(TYPE_TWO);
+            
+            List<Change> changes = listener.getLastSetOfChanges();
+            
+            Assert.assertEquals(1, changes.size());
+            
+            {
+                Change instanceChange = changes.get(0);
+            
+                Assert.assertEquals(Change.ChangeCategory.MODIFY_INSTANCE, instanceChange.getChangeCategory());
+                Assert.assertEquals(TYPE_TWO, instanceChange.getChangeType().getName());
+                Assert.assertEquals(1, instanceChange.getChangeType().getInstances().size());
+                Assert.assertEquals(ALICE, instanceChange.getInstanceKey());
+                Assert.assertEquals(newBean, instanceChange.getInstanceValue());
+                
+                List<PropertyChangeEvent> propertyChanges = instanceChange.getModifiedProperties();
+                Assert.assertNotNull(propertyChanges);
+                Assert.assertEquals(1, propertyChanges.size());
+                
+                PropertyChangeEvent pce = propertyChanges.get(0);
+                
+                Assert.assertEquals(OTHER_PROPERTY, pce.getPropertyName());
+                Assert.assertEquals(OTHER_PROPERTY_VALUE1, pce.getOldValue());
+                Assert.assertEquals(OTHER_PROPERTY_VALUE2, pce.getNewValue());
+                Assert.assertEquals(newBean, pce.getSource());
+            }
+            
+            typeTwo = hub.getCurrentDatabase().getType(TYPE_TWO);
+            
+            GenericJavaBean bean = (GenericJavaBean) typeTwo.getInstance(ALICE);
+            
+            Assert.assertEquals(ALICE, bean.getName());
+            Assert.assertEquals(OTHER_PROPERTY_VALUE2, bean.getOther());
+        }
+        finally {
+            // Cleanup
+            if (listener != null) {
+                hub.removeListener(listener);
+            }
+            
+            if (wbd != null) {
+                removeType(TYPE_TWO);
+            }
+            
+        }
+    }
+    
+    /**
+     * Tests modifying a property with automatically generated change events
+     */
+    @Test @Ignore
+    public void testModifyPropertyWithAutomaticPropertyChangeEvent() {
+        addTypeAndInstance(TYPE_TWO, ALICE, new GenericJavaBean(ALICE, OTHER_PROPERTY_VALUE1));
+        
+        GenericBeanDatabaseUpdateListener listener = null;
+        WriteableBeanDatabase wbd = null;
+        
+        try {
+            listener = new GenericBeanDatabaseUpdateListener();
+            hub.addListener(listener);
+        
+            wbd = hub.getWriteableDatabaseCopy();
+            WriteableType wt = wbd.getWriteableType(TYPE_TWO);
+            Assert.assertNotNull(wt);
+            
+            GenericJavaBean newBean = new GenericJavaBean(ALICE, OTHER_PROPERTY_VALUE2);
+            PropertyChangeEvent[] result = wt.modifyInstance(ALICE, newBean);
             
             Assert.assertEquals(1, result.length);
             Assert.assertEquals(result[0].getNewValue(), OTHER_PROPERTY_VALUE2);
