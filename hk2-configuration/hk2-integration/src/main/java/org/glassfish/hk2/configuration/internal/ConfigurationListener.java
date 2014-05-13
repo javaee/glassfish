@@ -39,6 +39,12 @@
  */
 package org.glassfish.hk2.configuration.internal;
 
+import java.beans.PropertyChangeEvent;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +57,7 @@ import javax.inject.Singleton;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
@@ -58,6 +65,7 @@ import org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener;
 import org.glassfish.hk2.configuration.hub.api.Change;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Type;
+import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
 /**
  * @author jwells
@@ -77,6 +85,9 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
     @Inject
     private ConfiguredByInjectionResolver injectionResolver;
     
+    @Inject
+    private ConfiguredByContext context;
+    
     @PostConstruct
     private void postConstruct() {
         hub.addListener(this);
@@ -90,6 +101,103 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
         injectionResolver.addBean(systemDescriptor, bean);
         
         return systemDescriptor;
+    }
+    
+    private void modifyInstanceDescriptor(ActiveDescriptor<?> parent,
+            String name,
+            Object bean,
+            List<PropertyChangeEvent> changes
+            ) {
+        injectionResolver.addBean(parent, bean);
+        
+        Object target = context.findOnly(parent);
+        if (target == null) {
+            // race lost
+            return;
+        }
+        
+        HashMap<String, PropertyChangeEvent> changedProperties = new HashMap<String, PropertyChangeEvent>();
+        for (PropertyChangeEvent pce : changes) {
+            changedProperties.put(pce.getPropertyName(), pce);
+        }
+        
+        HashMap<Method, Object[]> dynamicMethods = new HashMap<Method, Object[]>();
+        HashSet<Method> notDynamicMethods = new HashSet<Method>();
+        
+        for (Injectee injectee : parent.getInjectees()) {
+            AnnotatedElement ae = injectee.getParent();
+            if (ae == null) continue;
+            
+            if (ae instanceof Field) {
+                String propName = BeanUtilities.getParameterNameFromField((Field) ae, true);
+                if (propName == null) continue;
+                
+                PropertyChangeEvent pce = changedProperties.get(propName);
+                if (pce != null) {
+                    try {
+                        ReflectionHelper.setField((Field) ae, target, pce.getNewValue());
+                    }
+                    catch (Throwable th) {
+                        // TODO:  How to handle exceptions
+                    }
+                }
+                
+                continue;
+            }
+            
+            if (ae instanceof Method) {
+                Method method = (Method) ae;
+                
+                if (notDynamicMethods.contains(method)) continue;
+                
+                if (!BeanUtilities.hasDynamicParameter(method)) {
+                    notDynamicMethods.add(method);
+                    continue;
+                }
+                
+                Object params[] = dynamicMethods.get(method);
+                if (params == null) {
+                    params = new Object[method.getParameterTypes().length];
+                    dynamicMethods.put(method, params);
+                }
+                
+                String propName = BeanUtilities.getParameterNameFromMethod(method, injectee.getPosition());
+                if (propName == null) {
+                    ActiveDescriptor<?> paramDescriptor = locator.getInjecteeDescriptor(injectee);
+                    if (paramDescriptor == null) {
+                        params[injectee.getPosition()] = null;
+                    }
+                    else {
+                        params[injectee.getPosition()] = locator.getServiceHandle(paramDescriptor).getService();
+                    }
+                }
+                else {
+                    PropertyChangeEvent pce = changedProperties.get(propName);
+                    if (pce != null) {
+                        params[injectee.getPosition()] = pce.getNewValue();
+                    }
+                    else {
+                        params[injectee.getPosition()] = BeanUtilities.getBeanPropertyValue(propName, bean);
+                    }
+                }
+                
+            }
+            
+        }
+        
+        for(Map.Entry<Method, Object[]> entries : dynamicMethods.entrySet()) {
+            try {
+                ReflectionHelper.invoke(target, entries.getKey(), entries.getValue(), true);
+            }
+            catch (Throwable e) {
+                // How to handle errors?
+            }
+            
+        }
+        
+        
+        
+        return;
     }
 
     /* (non-Javadoc)
@@ -105,7 +213,7 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
         for (Type type : allTypes) {
             String typeName = type.getName();
             
-            List<ActiveDescriptor<?>> typeDescriptors = locator.getDescriptors(new NoNameTypeFilter(locator, typeName));
+            List<ActiveDescriptor<?>> typeDescriptors = locator.getDescriptors(new NoNameTypeFilter(locator, typeName, null));
             
             for (ActiveDescriptor<?> typeDescriptor : typeDescriptors) {
                 // These match the type, so now we have to add one per instance
@@ -142,23 +250,37 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
                 String addedInstanceKey = change.getInstanceKey();
                 Object addedInstanceBean = change.getInstanceValue();
                 
-                List<ActiveDescriptor<?>> typeDescriptors = locator.getDescriptors(new NoNameTypeFilter(locator, change.getChangeType().getName()));
+                List<ActiveDescriptor<?>> typeDescriptors = locator.getDescriptors(new NoNameTypeFilter(locator, change.getChangeType().getName(), null));
                 
                 for (ActiveDescriptor<?> typeDescriptor : typeDescriptors) {
                     // These match the type, so now we have to add one per instance
-                    
-                        added.add(addInstanceDescriptor(config, typeDescriptor, addedInstanceKey, addedInstanceBean));
+                    added.add(addInstanceDescriptor(config, typeDescriptor, addedInstanceKey, addedInstanceBean));
                 }
-            }   
+            }
+            else if (Change.ChangeCategory.MODIFY_INSTANCE.equals(change.getChangeCategory())) {
+                String addedInstanceKey = change.getInstanceKey();
+                Object addedInstanceBean = change.getInstanceValue();
+                
+                List<ActiveDescriptor<?>> typeDescriptors = locator.getDescriptors(
+                        new NoNameTypeFilter(locator, change.getChangeType().getName(), addedInstanceKey));
+                
+                for (ActiveDescriptor<?> typeDescriptor : typeDescriptors) {
+                    // There should only be one, but the list is safer
+                    modifyInstanceDescriptor(typeDescriptor, addedInstanceKey, addedInstanceBean, change.getModifiedProperties());
+                }
+                
+            }
         }
         
         // Add all instances
-        config.commit();
+        if (!added.isEmpty()) {
+            config.commit();
         
-        // Create demand for all the ones we just added
-        for (ActiveDescriptor<?> descriptor : added) {
-            ServiceHandle<?> handle = locator.getServiceHandle(descriptor);
-            handle.getService();  // TODO: how to handle errors?
+            // Create demand for all the ones we just added
+            for (ActiveDescriptor<?> descriptor : added) {
+                ServiceHandle<?> handle = locator.getServiceHandle(descriptor);
+                handle.getService();  // TODO: how to handle errors?
+            }
         }
             
     }

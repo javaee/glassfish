@@ -39,9 +39,13 @@
  */
 package org.glassfish.hk2.configuration.internal;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
+
+import org.glassfish.hk2.configuration.api.Configured;
 
 /**
  * For JavaBean or Bean-Like-Map utilities
@@ -63,6 +67,14 @@ public class BeanUtilities {
         return firstChar + s.substring(1);
     }
     
+    /**
+     * Gets the value from the given attribute from the given bean
+     * Safe to give both a bean-like map and a java bean
+     * 
+     * @param attribute
+     * @param bean
+     * @return
+     */
     @SuppressWarnings("unchecked")
     public static Object getBeanPropertyValue(String attribute, Object bean) {
         if (bean instanceof Map) {
@@ -108,6 +120,66 @@ public class BeanUtilities {
             throw new IllegalStateException(e);
         }
         
+    }
+    
+    private final static String EMPTY = "";
+    
+    public static boolean isEmpty(String s) {
+        if (s == null) return true;
+        return EMPTY.equals(s);
+    }
+    
+    /**
+     * Gets the parameter name from a field
+     * 
+     * @param f
+     * @return
+     */
+    public static String getParameterNameFromField(Field f, boolean onlyDynamic) {
+        Configured c = f.getAnnotation(Configured.class);
+        if (c == null) return null;
+        
+        if (onlyDynamic && !Configured.Dynamicity.FULLY_DYNAMIC.equals(c.dynamicity())) {
+            return null;
+        }
+        
+        String key = c.key();
+        if (isEmpty(key)) {
+            key = f.getName();
+        }
+        
+        return key;
+    }
+    
+    public static String getParameterNameFromMethod(Method m, int paramIndex) {
+        Annotation annotations[] = m.getParameterAnnotations()[paramIndex];
+        
+        for (Annotation annotation : annotations) {
+            if (Configured.class.equals(annotation.annotationType())) {
+                Configured configured = (Configured) annotation;
+                if (!Configured.Dynamicity.FULLY_DYNAMIC.equals(configured.dynamicity())) return null;
+                
+                String retVal = ((Configured) annotation).key();
+                if (isEmpty(retVal)) return null;
+                return retVal;
+            }
+        }
+        
+        return null;
+    }
+    
+    public static boolean hasDynamicParameter(Method m) {
+        for (Annotation annotations[] : m.getParameterAnnotations()) {
+            for (Annotation annotation : annotations) {
+                if (Configured.class.equals(annotation.annotationType())) {
+                    Configured configured = (Configured) annotation;
+                    
+                    if (Configured.Dynamicity.FULLY_DYNAMIC.equals(configured.dynamicity())) return true;
+                }
+            }
+        }
+        
+        return false;
     }
 
 }

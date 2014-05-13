@@ -169,5 +169,11 @@ public class ConfiguredByContext implements Context<ConfiguredBy> {
     /* package */ ActiveDescriptor<?> getWorkingOn() {
         return workingOn.get();
     }
+    
+    /* package */ Object findOnly(ActiveDescriptor<?> descriptor) {
+        synchronized (lock) {
+            return db.get(descriptor);
+        }
+    }
 
 }

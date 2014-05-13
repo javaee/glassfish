@@ -55,10 +55,12 @@ import org.glassfish.hk2.configuration.api.ConfiguredBy;
 class NoNameTypeFilter implements IndexedFilter {
     private final ServiceLocator locator;
     private final String typeName;
+    private final String instanceName;
     
-    NoNameTypeFilter(ServiceLocator locator, String typeName) {
+    NoNameTypeFilter(ServiceLocator locator, String typeName, String instanceName) {
         this.locator = locator;
         this.typeName = typeName;
+        this.instanceName = instanceName;
     }
 
     /* (non-Javadoc)
@@ -66,7 +68,13 @@ class NoNameTypeFilter implements IndexedFilter {
      */
     @Override
     public boolean matches(Descriptor d) {
-        if (d.getName() != null) return false;
+        if (instanceName == null) {
+            if (d.getName() != null) return false;
+        }
+        else {
+            if (d.getName() == null) return false;
+            if (!instanceName.equals(d.getName())) return false;
+        }
         
         ActiveDescriptor<?> reified;
         try {

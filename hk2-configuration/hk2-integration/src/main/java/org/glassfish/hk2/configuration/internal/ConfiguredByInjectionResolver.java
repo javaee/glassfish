@@ -63,32 +63,13 @@ import org.glassfish.hk2.configuration.api.Configured;
 @Singleton
 public class ConfiguredByInjectionResolver implements
         InjectionResolver<Configured> {
-    private final static String EMPTY = "";
-    
     @Inject @Named(InjectionResolver.SYSTEM_RESOLVER_NAME)
     private InjectionResolver<Inject> systemResolver;
     
     @Inject
     private ConfiguredByContext context;
     
-    private final HashMap<ActiveDescriptor<?>, Object> beanMap = new HashMap<ActiveDescriptor<?>, Object>();
-    
-    private static boolean isEmpty(String s) {
-        if (s == null) return true;
-        return EMPTY.equals(s);
-    }
-    
-    private static String getParameterNameFromField(Field f) {
-        Configured c = f.getAnnotation(Configured.class);
-        if (c == null) return null;
-        
-        String key = c.key();
-        if (isEmpty(key)) {
-            key = f.getName();
-        }
-        
-        return key;
-    }
+    private final HashMap<ActiveDescriptor<?>, Object> beanMap = new HashMap<ActiveDescriptor<?>, Object>(); 
     
     private static String getParameterNameFromConstructor(Constructor<?> cnst, int position) {
         Annotation paramAnnotations[] = cnst.getParameterAnnotations()[position];
@@ -103,7 +84,7 @@ public class ConfiguredByInjectionResolver implements
         if (c == null) return null;
         
         String key = c.key();
-        if (isEmpty(key)) {
+        if (BeanUtilities.isEmpty(key)) {
             throw new AssertionError("Not enough in @Configured annotation in constructor " + cnst + " at parameter index " + position);
         }
         
@@ -123,7 +104,7 @@ public class ConfiguredByInjectionResolver implements
         if (c == null) return null;
         
         String key = c.key();
-        if (isEmpty(key)) {
+        if (BeanUtilities.isEmpty(key)) {
             throw new AssertionError("Not enough in @Configured annotation in method " + method + " at parameter index " + position);
         }
         
@@ -143,7 +124,7 @@ public class ConfiguredByInjectionResolver implements
         
         String parameterName = null;
         if (ae instanceof Field) {
-            parameterName = getParameterNameFromField((Field) ae);
+            parameterName = BeanUtilities.getParameterNameFromField((Field) ae, false);
         }
         else if (ae instanceof Constructor) {
             parameterName = getParameterNameFromConstructor((Constructor<?>) ae, injectee.getPosition());

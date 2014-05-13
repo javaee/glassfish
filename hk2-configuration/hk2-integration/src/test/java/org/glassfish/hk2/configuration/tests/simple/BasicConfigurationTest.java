@@ -168,7 +168,7 @@ public class BasicConfigurationTest extends HK2Runner {
      * Tests a service that dynamically updates a couple fields
      * @throws InterruptedException 
      */
-    @Test @Ignore
+    @Test
     public void testBasicDynamicConfiguration() {
         addBean(TEST_TYPE_TWO);
         
