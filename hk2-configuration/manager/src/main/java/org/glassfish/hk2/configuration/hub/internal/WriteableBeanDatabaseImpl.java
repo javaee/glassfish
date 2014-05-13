@@ -61,6 +61,7 @@ public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase {
     private final HubImpl hub;
     
     private final LinkedList<Change> changes = new LinkedList<Change>();
+    private final LinkedList<WriteableTypeImpl> removedTypes = new LinkedList<WriteableTypeImpl>();
     private boolean committed = false;
     
     /* package */ WriteableBeanDatabaseImpl(HubImpl hub, BeanDatabaseImpl currentDatabase) {
@@ -133,7 +134,7 @@ public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase {
         if (typeName == null) throw new IllegalArgumentException();
         checkState();
         
-        WriteableType retVal = types.remove(typeName);
+        WriteableTypeImpl retVal = types.remove(typeName);
         if (retVal == null) return null;
         
         Map<String, Object> instances = retVal.getInstances();
@@ -146,6 +147,8 @@ public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase {
                 null,
                 null,
                 null));
+        
+        removedTypes.add(retVal);
         
         return retVal;
     }
@@ -188,6 +191,12 @@ public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase {
         
         // Outside of lock
         hub.setCurrentDatabase(this, changes);
+        
+        for (WriteableTypeImpl removedType : removedTypes) {
+            removedType.getHelper().dispose();
+        }
+        
+        removedTypes.clear();
     }
     
     /* package */ long getBaseRevision() {
