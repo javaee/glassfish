@@ -37,38 +37,62 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.api;
+package org.glassfish.hk2.configuration.tests.simple;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.beans.PropertyChangeEvent;
+import java.util.List;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import javax.inject.Scope;
+import org.glassfish.hk2.configuration.api.Configured;
+import org.glassfish.hk2.configuration.api.ConfiguredBy;
+import org.glassfish.hk2.configuration.api.PostDynamicChange;
+import org.glassfish.hk2.configuration.api.PreDynamicChange;
+import org.jvnet.hk2.annotations.Service;
 
 /**
- * This annotation is put onto classes to indicate that
- * they should be created based on the availability of
- * instances of a specify type of configuration in the 
- * {@link org.glassfish.hk2.configuration.hub.api.Hub}
- * 
  * @author jwells
  *
  */
-@Documented
-@Scope
-@Retention(RUNTIME)
-@Target(TYPE)
-public @interface ConfiguredBy {
-    /**
-     * A service is created for each instance of this type,
-     * with a name taken from the key of the instance
-     * 
-     * @return the name of the type to base instances
-     * of this service on
-     */
-    public String type();
+@Service @ConfiguredBy(type=BasicConfigurationTest.TEST_TYPE_THREE)
+public class DynConPrePostWListService {
+    @Configured(dynamicity=Configured.Dynamicity.FULLY_DYNAMIC)
+    private String fieldOutput1;
+    
+    private String preChangeCalled = null;
+    private String postChangeCalled = null;
+    
+    private List<PropertyChangeEvent> preChangeList = null;
+    private List<PropertyChangeEvent> postChangeList = null;
+    
+    @PreDynamicChange
+    private void preChange(List<PropertyChangeEvent> changes) {
+        preChangeCalled = fieldOutput1;
+        preChangeList = changes;
+    }
+    
+    @PostDynamicChange
+    private void postChange(List<PropertyChangeEvent> changes) {
+        postChangeCalled = fieldOutput1;
+        postChangeList = changes;
+    }
+
+    public String isPostChangeCalled() {
+        return postChangeCalled;
+    }
+    
+    public String isPreChangeCalled() {
+        return preChangeCalled;
+    }
+    
+    public List<PropertyChangeEvent> getPostChangeList() {
+        return postChangeList;
+    }
+    
+    public List<PropertyChangeEvent> getPreChangeList() {
+        return preChangeList;
+    }
+    
+    public String getFieldOutput1() {
+        return fieldOutput1;
+    }
 
 }

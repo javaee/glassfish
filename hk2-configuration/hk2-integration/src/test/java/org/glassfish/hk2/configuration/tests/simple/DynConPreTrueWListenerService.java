@@ -37,38 +37,71 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.api;
+package org.glassfish.hk2.configuration.tests.simple;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.List;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import javax.inject.Scope;
+import org.glassfish.hk2.configuration.api.Configured;
+import org.glassfish.hk2.configuration.api.ConfiguredBy;
+import org.glassfish.hk2.configuration.api.PostDynamicChange;
+import org.glassfish.hk2.configuration.api.PreDynamicChange;
+import org.jvnet.hk2.annotations.Service;
 
 /**
- * This annotation is put onto classes to indicate that
- * they should be created based on the availability of
- * instances of a specify type of configuration in the 
- * {@link org.glassfish.hk2.configuration.hub.api.Hub}
- * 
  * @author jwells
  *
  */
-@Documented
-@Scope
-@Retention(RUNTIME)
-@Target(TYPE)
-public @interface ConfiguredBy {
-    /**
-     * A service is created for each instance of this type,
-     * with a name taken from the key of the instance
-     * 
-     * @return the name of the type to base instances
-     * of this service on
+@Service @ConfiguredBy(type=BasicConfigurationTest.TEST_TYPE_THREE)
+public class DynConPreTrueWListenerService implements PropertyChangeListener {
+    @Configured(dynamicity=Configured.Dynamicity.FULLY_DYNAMIC)
+    private String fieldOutput1;
+    
+    private String preChangeCalled = null;
+    private String postChangeCalled = null;
+    
+    private PropertyChangeEvent lastPropertyChange = null;
+    private int numPropChanges = 0;
+    
+    @PreDynamicChange
+    private boolean preChange(List<PropertyChangeEvent> changes) {
+        preChangeCalled = fieldOutput1;
+        return true;
+    }
+    
+    @PostDynamicChange
+    private void postChange(List<PropertyChangeEvent> changes) {
+        postChangeCalled = fieldOutput1;
+    }
+
+    public String isPostChangeCalled() {
+        return postChangeCalled;
+    }
+    
+    public String isPreChangeCalled() {
+        return preChangeCalled;
+    }
+    
+    public String getFieldOutput1() {
+        return fieldOutput1;
+    }
+
+    /* (non-Javadoc)
+     * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
      */
-    public String type();
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        numPropChanges++;
+        lastPropertyChange = evt;
+    }
+    
+    public int getNumPropertyChanges() {
+        return numPropChanges;
+    }
+    
+    public PropertyChangeEvent getLastPropChangeEvent() {
+        return lastPropertyChange;
+    }
 
 }

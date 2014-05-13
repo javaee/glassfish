@@ -37,38 +37,36 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.api;
+package org.glassfish.hk2.configuration.tests.simple;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import javax.inject.Scope;
+import org.glassfish.hk2.configuration.api.Configured;
+import org.glassfish.hk2.configuration.api.ConfiguredBy;
+import org.glassfish.hk2.configuration.api.PreDynamicChange;
+import org.jvnet.hk2.annotations.Service;
 
 /**
- * This annotation is put onto classes to indicate that
- * they should be created based on the availability of
- * instances of a specify type of configuration in the 
- * {@link org.glassfish.hk2.configuration.hub.api.Hub}
- * 
  * @author jwells
  *
  */
-@Documented
-@Scope
-@Retention(RUNTIME)
-@Target(TYPE)
-public @interface ConfiguredBy {
-    /**
-     * A service is created for each instance of this type,
-     * with a name taken from the key of the instance
-     * 
-     * @return the name of the type to base instances
-     * of this service on
-     */
-    public String type();
+@Service @ConfiguredBy(type=BasicConfigurationTest.TEST_TYPE_THREE)
+public class DynConPreFalseService {
+    @Configured(dynamicity=Configured.Dynamicity.FULLY_DYNAMIC)
+    private String fieldOutput1;
+    
+    private String preChangeCalled = null;
+    
+    @PreDynamicChange
+    private boolean preChange() {
+        preChangeCalled = fieldOutput1;
+        return false;
+    }
+
+    public String isPreChangeCalled() {
+        return preChangeCalled;
+    }
+    
+    public String getFieldOutput1() {
+        return fieldOutput1;
+    }
 
 }

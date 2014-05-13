@@ -39,6 +39,9 @@
  */
 package org.glassfish.hk2.configuration.tests.simple;
 
+import java.beans.PropertyChangeEvent;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
@@ -62,6 +65,7 @@ import org.jvnet.hk2.testing.junit.HK2Runner;
 public class BasicConfigurationTest extends HK2Runner {
     /* package */ final static String TEST_TYPE_ONE = "TestConfigurationType1";
     /* package */ final static String TEST_TYPE_TWO = "TestConfigurationType2";
+    /* package */ final static String TEST_TYPE_THREE = "TestConfigurationType3";
     
     private final static String DEFAULT = "default";
     private final static String FIELD1 = "field1";
@@ -69,7 +73,7 @@ public class BasicConfigurationTest extends HK2Runner {
     private final static String FIELD2 = "field2";
     private final static String CONSTRUCTOR = "constructor";
     private final static String METHOD1 = "method1";
-    private final static String METHOD1_1 = "method1_1";
+    // private final static String METHOD1_1 = "method1_1";
     private final static String METHOD2 = "method2";
     
     @Inject
@@ -165,36 +169,210 @@ public class BasicConfigurationTest extends HK2Runner {
     }
     
     /**
-     * Tests a service that dynamically updates a couple fields
+     * Tests a service that dynamically updates with a method
+     * marked with {@link PreDynamicChange}
      * @throws InterruptedException 
      */
-    @Test
-    public void testBasicDynamicConfiguration() {
-        addBean(TEST_TYPE_TWO);
+    @Test @Ignore
+    public void testDynamicConfigurationWithJustPreMethod() {
+        addBean(TEST_TYPE_THREE);
         
         try {
-            ActiveDescriptor<?> ad = testLocator.getBestDescriptor(BuilderHelper.createContractFilter(DynamicConfiguredService.class.getName()));
-            Assert.assertNotNull(ad);
+            DynConJustPreMethodService service = testLocator.getService(DynConJustPreMethodService.class);
+            Assert.assertNotNull(service);
         
-            DynamicConfiguredService cs = testLocator.getService(DynamicConfiguredService.class);
-            Assert.assertNotNull(cs);
-        
-            Assert.assertEquals(METHOD1, cs.getMethodOutput1());
-            Assert.assertEquals(FIELD1, cs.getFieldOutput1());
+            Assert.assertEquals(FIELD1, service.getFieldOutput1());
+            Assert.assertNull(service.isPreChangeCalled());
             
             ConfiguredServiceBean newBean = createBean(CONSTRUCTOR,
                 FIELD1_1,
                 FIELD2,
-                METHOD1_1,
+                METHOD1,
                 METHOD2);
             
-            updateBean(TEST_TYPE_TWO, newBean);
+            updateBean(TEST_TYPE_THREE, newBean);
             
-            Assert.assertEquals(METHOD1_1, cs.getMethodOutput1());
-            Assert.assertEquals(FIELD1_1, cs.getFieldOutput1());
+            Assert.assertEquals(FIELD1_1, service.getFieldOutput1());
+            Assert.assertEquals(FIELD1, service.isPreChangeCalled());
         }
         finally {
-            removeBean(TEST_TYPE_TWO);
+            removeBean(TEST_TYPE_THREE);
+        }
+    }
+    
+    /**
+     * Tests a service that dynamically updates with a method
+     * marked with {@link PostDynamicChange}
+     * @throws InterruptedException 
+     */
+    @Test @Ignore
+    public void testDynamicConfigurationWithJustPostMethod() {
+        addBean(TEST_TYPE_THREE);
+        
+        try {
+            DynConJustPostMethodService service = testLocator.getService(DynConJustPostMethodService.class);
+            Assert.assertNotNull(service);
+        
+            Assert.assertEquals(FIELD1, service.getFieldOutput1());
+            Assert.assertNull(service.isPostChangeCalled());
+            
+            ConfiguredServiceBean newBean = createBean(CONSTRUCTOR,
+                FIELD1_1,
+                FIELD2,
+                METHOD1,
+                METHOD2);
+            
+            updateBean(TEST_TYPE_THREE, newBean);
+            
+            Assert.assertEquals(FIELD1_1, service.getFieldOutput1());
+            Assert.assertEquals(FIELD1_1, service.isPostChangeCalled());
+        }
+        finally {
+            removeBean(TEST_TYPE_THREE);
+        }
+    }
+    
+    /**
+     * Tests a service that dynamically updates with a method
+     * marked with {@link PostDynamicChange} and {@link PreDynamicChange}
+     * which takes a list
+     * @throws InterruptedException 
+     */
+    @Test @Ignore
+    public void testDynamicConfigurationWithPostAndPreMethods() {
+        addBean(TEST_TYPE_THREE);
+        
+        try {
+            DynConPrePostWListService service = testLocator.getService(DynConPrePostWListService.class);
+            Assert.assertNotNull(service);
+        
+            Assert.assertEquals(FIELD1, service.getFieldOutput1());
+            Assert.assertNull(service.isPostChangeCalled());
+            Assert.assertNull(service.isPreChangeCalled());
+            Assert.assertNull(service.getPostChangeList());
+            Assert.assertNull(service.getPreChangeList());
+            
+            ConfiguredServiceBean newBean = createBean(CONSTRUCTOR,
+                FIELD1_1,
+                FIELD2,
+                METHOD1,
+                METHOD2);
+            
+            updateBean(TEST_TYPE_THREE, newBean);
+            
+            Assert.assertEquals(FIELD1_1, service.getFieldOutput1());
+            Assert.assertEquals(FIELD1_1, service.isPostChangeCalled());
+            Assert.assertEquals(FIELD1, service.isPreChangeCalled());
+            
+            {
+                List<PropertyChangeEvent> preList = service.getPreChangeList();
+                Assert.assertNotNull(preList);
+                Assert.assertEquals(1, preList.size());
+                
+                PropertyChangeEvent pce = preList.get(0);
+                Assert.assertNotNull(pce);
+                
+                Assert.assertEquals("fieldOutput1", pce.getPropertyName());
+                Assert.assertEquals(FIELD1, pce.getOldValue());
+                Assert.assertEquals(FIELD1_1, pce.getOldValue());
+            }
+            
+            {
+                List<PropertyChangeEvent> postList = service.getPostChangeList();
+                Assert.assertNotNull(postList);
+                Assert.assertEquals(1, postList.size());
+                
+                PropertyChangeEvent pce = postList.get(0);
+                Assert.assertNotNull(pce);
+                
+                Assert.assertEquals("fieldOutput1", pce.getPropertyName());
+                Assert.assertEquals(FIELD1, pce.getOldValue());
+                Assert.assertEquals(FIELD1_1, pce.getOldValue());
+            }
+        }
+        finally {
+            removeBean(TEST_TYPE_THREE);
+        }
+    }
+    
+    /**
+     * Tests a service that dynamically updates with a method
+     * marked with {@link PreDynamicChange} that returns false
+     * and so the fields should NOT get updated
+     * 
+     * @throws InterruptedException 
+     */
+    @Test @Ignore
+    public void testDynamicConfigurationPreMethodReturnsFalse() {
+        addBean(TEST_TYPE_THREE);
+        
+        try {
+            DynConPreFalseService service = testLocator.getService(DynConPreFalseService.class);
+            Assert.assertNotNull(service);
+        
+            Assert.assertEquals(FIELD1, service.getFieldOutput1());
+            Assert.assertNull(service.isPreChangeCalled());
+            
+            ConfiguredServiceBean newBean = createBean(CONSTRUCTOR,
+                FIELD1_1,
+                FIELD2,
+                METHOD1,
+                METHOD2);
+            
+            updateBean(TEST_TYPE_THREE, newBean);
+            
+            Assert.assertEquals(FIELD1, service.getFieldOutput1());  // Because the preMethod returns false
+            Assert.assertEquals(FIELD1, service.isPreChangeCalled());
+        }
+        finally {
+            removeBean(TEST_TYPE_THREE);
+        }
+    }
+    
+    /**
+     * Tests a service that dynamically updates with a method
+     * marked with {@link PostDynamicChange} and {@link PreDynamicChange}
+     * and that is also a {@link PropertyChangeListener}
+     * @throws InterruptedException 
+     */
+    @Test @Ignore
+    public void testDynamicConfigurationWithPostPreAndListener() {
+        addBean(TEST_TYPE_THREE);
+        
+        try {
+            DynConPreTrueWListenerService service = testLocator.getService(DynConPreTrueWListenerService.class);
+            Assert.assertNotNull(service);
+        
+            Assert.assertEquals(FIELD1, service.getFieldOutput1());
+            Assert.assertNull(service.isPostChangeCalled());
+            Assert.assertNull(service.isPreChangeCalled());
+            Assert.assertNull(service.getLastPropChangeEvent());
+            Assert.assertEquals(0, service.getNumPropertyChanges());
+            
+            ConfiguredServiceBean newBean = createBean(CONSTRUCTOR,
+                FIELD1_1,
+                FIELD2,
+                METHOD1,
+                METHOD2);
+            
+            updateBean(TEST_TYPE_THREE, newBean);
+            
+            Assert.assertEquals(FIELD1_1, service.getFieldOutput1());
+            Assert.assertEquals(FIELD1_1, service.isPostChangeCalled());
+            Assert.assertEquals(FIELD1, service.isPreChangeCalled());
+            Assert.assertEquals(1, service.getNumPropertyChanges());
+            
+            {
+                PropertyChangeEvent pce = service.getLastPropChangeEvent();
+                Assert.assertNotNull(pce);
+                
+                Assert.assertEquals("fieldOutput1", pce.getPropertyName());
+                Assert.assertEquals(FIELD1, pce.getOldValue());
+                Assert.assertEquals(FIELD1_1, pce.getOldValue());
+            }
+        }
+        finally {
+            removeBean(TEST_TYPE_THREE);
         }
     }
 }

@@ -39,41 +39,31 @@
  */
 package org.glassfish.hk2.configuration.api;
 
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
 /**
- * Tells a back-end service that the changes to a bean are starting, and whether or
- * not those changes have been accepted or rejected.
- * <p>
- * A bean can contain many values.  More than one of those values could be changing
- * at the same time.  However {@link java.beans.PropertyChangeListener} or
- * {@link java.beans.VetoablePropertyChangeListener} only take one property change
- * at a time.  This makes it difficult or impossible to solve the max/min problem,
- * where both the max and the min are changing at the same time and the code would like
- * to validate that the system is always in a consistent state
- * 
- * TODO:  It is possible this can be moved up into the hk2-integration module
+ * A method marked with this annotation will be invoked prior
+ * to dynamic changes being applied to a service.  The method
+ * must either take no arguments or single argument that is
+ * a {@link java.util.List} (of type {@link java.beans.PropertyChangeEvent}).
+ * The {@link java.util.List} parameter will be filled in with the
+ * set of dynamic changes being done to this service.  If the method
+ * returns a boolean, and that boolean is false then the set of changes
+ * will NOT be given to the fields and methods with dynamic properties.
+ * Any exception thrown by this method will be ignored.  The method
+ * may have any visibility, including private, package and protected.
  * 
  * @author jwells
  *
  */
-public interface PropertyChangeListenerLifecycle {
-    /**
-     * The bean with the given type and the given key is getting changed
-     * 
-     * @param beanType The non-null type of the bean getting changed
-     * @param beanKey The possibly null key of the bean getting changed.  Will
-     * be null if this is a Singleton type and therefor has no other key
-     */
-    public void propertyChangesStarted(String beanType, String beanKey);
-    
-    /**
-     * Will be called after all back-end services have accepted the change
-     * and agreed to allow it
-     */
-    public void changeAccepted();
-    
-    /**
-     * Will be called after all back-end services have been called and at
-     * least one of them has rejected it
-     */
-    public void changeRejected();
+@Documented
+@Retention(RUNTIME)
+@Target(METHOD)
+public @interface PreDynamicChange {
+
 }

@@ -39,36 +39,30 @@
  */
 package org.glassfish.hk2.configuration.api;
 
-import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import javax.inject.Scope;
-
 /**
- * This annotation is put onto classes to indicate that
- * they should be created based on the availability of
- * instances of a specify type of configuration in the 
- * {@link org.glassfish.hk2.configuration.hub.api.Hub}
+ * A method marked with this annotation will be invoked after
+ * to dynamic change have been applied to a service.  It is also called
+ * after the {@link java.beans.PropertyChangeListener} callback has been invoked.
+ * The method must either take no arguments or single argument that is
+ * a {@link java.util.List} (of type {@link java.beans.PropertyChangeEvent}).
+ * The {@link java.util.List} parameter will be filled in with the
+ * set of dynamic changes that have been done to this service.
+ * Any exception thrown by this method will be ignored.  The method
+ * may have any visibility, including private, package and protected.
  * 
  * @author jwells
  *
  */
 @Documented
-@Scope
 @Retention(RUNTIME)
-@Target(TYPE)
-public @interface ConfiguredBy {
-    /**
-     * A service is created for each instance of this type,
-     * with a name taken from the key of the instance
-     * 
-     * @return the name of the type to base instances
-     * of this service on
-     */
-    public String type();
+@Target(METHOD)
+public @interface PostDynamicChange {
 
 }
