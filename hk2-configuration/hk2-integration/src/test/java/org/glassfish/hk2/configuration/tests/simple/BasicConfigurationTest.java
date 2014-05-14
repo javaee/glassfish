@@ -52,7 +52,6 @@ import org.glassfish.hk2.configuration.hub.api.WriteableType;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.jvnet.hk2.testing.junit.HK2Runner;
 
@@ -66,6 +65,7 @@ public class BasicConfigurationTest extends HK2Runner {
     /* package */ final static String TEST_TYPE_ONE = "TestConfigurationType1";
     /* package */ final static String TEST_TYPE_TWO = "TestConfigurationType2";
     /* package */ final static String TEST_TYPE_THREE = "TestConfigurationType3";
+    /* package */ final static String TEST_TYPE_FOUR = "TestConfigurationType4";
     
     private final static String DEFAULT = "default";
     private final static String FIELD1 = "field1";
@@ -75,6 +75,10 @@ public class BasicConfigurationTest extends HK2Runner {
     private final static String METHOD1 = "method1";
     private final static String METHOD1_1 = "method1_1";
     private final static String METHOD2 = "method2";
+    
+    private final static String ALICE = "Alice";
+    private final static String BOB = "Bob";
+    private final static String CAROL = "Carol";
     
     @Inject
     private Hub hub;
@@ -138,6 +142,34 @@ public class BasicConfigurationTest extends HK2Runner {
         if (wt == null) return;
         
         wt.removeInstance(DEFAULT);
+        
+        wbd.commit();
+    }
+    
+    private void addNamedBean(String typeName, String name) {
+        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+        
+        WriteableType wt = wbd.findOrAddWriteableType(typeName);
+        
+        wt.addInstance(name, new NamedBean(name));
+        
+        wbd.commit();
+    }
+    
+    private void removeNamedBean(String typeName, String name) {
+        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+        
+        WriteableType wt = wbd.findOrAddWriteableType(typeName);
+        
+        wt.removeInstance(name);
+        
+        wbd.commit();
+    }
+    
+    private void removeType(String typeName) {
+        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+        
+        wbd.removeType(typeName);
         
         wbd.commit();
     }
@@ -408,5 +440,59 @@ public class BasicConfigurationTest extends HK2Runner {
         finally {
             removeBean(TEST_TYPE_THREE);
         }
+    }
+    
+    /**
+     * Tests that we can remove instances of services but the other
+     * services are still there
+     */
+    public void testRemovalOfInstances() {
+        addNamedBean(TEST_TYPE_FOUR, ALICE);
+        addNamedBean(TEST_TYPE_FOUR, BOB);
+        addNamedBean(TEST_TYPE_FOUR, CAROL);
+        
+        MultiService alice = null;
+        MultiService carol = null;
+        try {
+            alice = testLocator.getService(MultiService.class, ALICE);
+            MultiService bob = testLocator.getService(MultiService.class, BOB);
+            carol = testLocator.getService(MultiService.class, CAROL);
+            
+            Assert.assertNotNull(alice);
+            Assert.assertNotNull(bob);
+            Assert.assertNotNull(carol);
+            
+            Assert.assertEquals(ALICE, alice.getName());
+            Assert.assertEquals(BOB, bob.getName());
+            Assert.assertEquals(CAROL, carol.getName());
+            
+            Assert.assertFalse(alice.isDestroyed());
+            Assert.assertFalse(bob.isDestroyed());
+            Assert.assertFalse(carol.isDestroyed());
+            
+            removeNamedBean(TEST_TYPE_FOUR, BOB);
+            
+            alice = testLocator.getService(MultiService.class, ALICE);
+            MultiService noBob = testLocator.getService(MultiService.class, BOB);
+            carol = testLocator.getService(MultiService.class, CAROL);
+            
+            Assert.assertNotNull(alice);
+            Assert.assertNull(noBob);
+            Assert.assertNotNull(carol);
+            
+            Assert.assertEquals(ALICE, alice.getName());
+            Assert.assertEquals(CAROL, carol.getName());
+            
+            Assert.assertFalse(alice.isDestroyed());
+            Assert.assertTrue(bob.isDestroyed());
+            Assert.assertFalse(carol.isDestroyed());
+        }
+        finally {
+            removeType(TEST_TYPE_FOUR);
+        }
+        
+        Assert.assertTrue(alice.isDestroyed());
+        Assert.assertTrue(carol.isDestroyed());
+        
     }
 }
