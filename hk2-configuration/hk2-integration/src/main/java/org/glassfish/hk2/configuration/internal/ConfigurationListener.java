@@ -40,9 +40,12 @@
 package org.glassfish.hk2.configuration.internal;
 
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -60,12 +63,18 @@ import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.configuration.api.PostDynamicChange;
+import org.glassfish.hk2.configuration.api.PreDynamicChange;
 import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener;
 import org.glassfish.hk2.configuration.hub.api.Change;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Type;
+import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
+import org.glassfish.hk2.utilities.reflection.MethodWrapper;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
+import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
 
 /**
  * @author jwells
@@ -88,6 +97,9 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
     @Inject
     private ConfiguredByContext context;
     
+    private final Map<String, ModificationInformation> typeInformation = 
+            new HashMap<String, ModificationInformation>();
+    
     @PostConstruct
     private void postConstruct() {
         hub.addListener(this);
@@ -103,9 +115,94 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
         return systemDescriptor;
     }
     
+    private boolean invokePreMethod(Object target,
+            List<PropertyChangeEvent> changes,
+            String typeName) {
+        ModificationInformation modInfo = typeInformation.get(typeName);
+        if (modInfo == null) {
+            return true;
+        }
+        
+        Method preMethod = modInfo.getPreDynamicChangeMethod(target.getClass());
+        if (preMethod == null) {
+            return true;
+        }
+        
+        Class<?> params[] = preMethod.getParameterTypes();
+        
+        Object result = null;
+        if (params.length <= 0) {
+            try {
+                result = ReflectionHelper.invoke(target, preMethod, new Object[0], true);
+            }
+            catch (Throwable th) {
+                return true;
+            }
+        }
+        else if (params.length == 1) {
+            if (!List.class.isAssignableFrom(params[0])) return true;
+            
+            Object pValues[] = new Object[1];
+            pValues[0] = Collections.unmodifiableList(changes);
+            
+            try {
+                result = ReflectionHelper.invoke(target, preMethod, pValues, true);
+            }
+            catch (Throwable th) {
+                return true;
+            }
+        }
+        else {
+            return true;
+        }
+        
+        if (result == null || !(result instanceof Boolean)) {
+            return true;
+        }
+        Boolean b = (Boolean) result;
+        
+        return b;
+        
+    }
+    
+    private void invokePostMethod(Object target,
+            List<PropertyChangeEvent> changes,
+            String typeName) {
+        ModificationInformation modInfo = typeInformation.get(typeName);
+        if (modInfo == null) return;
+        
+        Method postMethod = modInfo.getPostDynamicChangeMethod(target.getClass());
+        if (postMethod == null) return;
+        
+        Class<?> params[] = postMethod.getParameterTypes();
+        
+        if (params.length <= 0) {
+            try {
+                ReflectionHelper.invoke(target, postMethod, new Object[0], true);
+            }
+            catch (Throwable th) {
+                return;
+            }
+        }
+        else if (params.length == 1) {
+            if (!List.class.isAssignableFrom(params[0])) return;
+            
+            Object pValues[] = new Object[1];
+            pValues[0] = Collections.unmodifiableList(changes);
+            
+            try {
+                ReflectionHelper.invoke(target, postMethod, pValues, true);
+            }
+            catch (Throwable th) {
+                return;
+            }
+        }
+    }
+    
     private void modifyInstanceDescriptor(ActiveDescriptor<?> parent,
             String name,
             Object bean,
+            String typeName,
             List<PropertyChangeEvent> changes
             ) {
         injectionResolver.addBean(parent, bean);
@@ -116,9 +213,26 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
             return;
         }
         
+        boolean moveForward = invokePreMethod(target, changes, typeName);
+        if (!moveForward) {
+            // User told us to NOT move forward
+            return;
+        }
+        
         HashMap<String, PropertyChangeEvent> changedProperties = new HashMap<String, PropertyChangeEvent>();
         for (PropertyChangeEvent pce : changes) {
             changedProperties.put(pce.getPropertyName(), pce);
+            
+            if (target instanceof PropertyChangeListener) {
+                PropertyChangeListener listener = (PropertyChangeListener) target;
+                
+                try {
+                    listener.propertyChange(pce);
+                }
+                catch (Throwable th) {
+                    // TODO:  What to do about errors?
+                }
+            }
         }
         
         HashMap<Method, Object[]> dynamicMethods = new HashMap<Method, Object[]>();
@@ -195,7 +309,7 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
             
         }
         
-        
+        invokePostMethod(target, changes, typeName);
         
         return;
     }
@@ -212,6 +326,8 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
         
         for (Type type : allTypes) {
             String typeName = type.getName();
+            
+            typeInformation.put(typeName, new ModificationInformation());
             
             List<ActiveDescriptor<?>> typeDescriptors = locator.getDescriptors(new NoNameTypeFilter(locator, typeName, null));
             
@@ -243,10 +359,16 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
     public void databaseHasChanged(BeanDatabase newDatabase,
             List<Change> changes) {
         LinkedList<ActiveDescriptor<?>> added = new LinkedList<ActiveDescriptor<?>>();
+        LinkedList<ActiveDescriptor<?>> removed = new LinkedList<ActiveDescriptor<?>>();
         DynamicConfiguration config = configurationService.createDynamicConfiguration();
         
         for (Change change : changes) {
             if (Change.ChangeCategory.ADD_INSTANCE.equals(change.getChangeCategory())) {
+                String typeName = change.getChangeType().getName();
+                if (!typeInformation.containsKey(typeName)) {
+                    typeInformation.put(typeName, new ModificationInformation());
+                }
+                
                 String addedInstanceKey = change.getInstanceKey();
                 Object addedInstanceBean = change.getInstanceValue();
                 
@@ -265,15 +387,39 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
                         new NoNameTypeFilter(locator, change.getChangeType().getName(), addedInstanceKey));
                 
                 for (ActiveDescriptor<?> typeDescriptor : typeDescriptors) {
-                    // There should only be one, but the list is safer
-                    modifyInstanceDescriptor(typeDescriptor, addedInstanceKey, addedInstanceBean, change.getModifiedProperties());
+                    modifyInstanceDescriptor(typeDescriptor,
+                            addedInstanceKey,
+                            addedInstanceBean,
+                            change.getChangeType().getName(),
+                            change.getModifiedProperties());
+                }
+                
+            }
+            else if (Change.ChangeCategory.REMOVE_TYPE.equals(change.getChangeCategory())) {
+                String typeName = change.getChangeType().getName();
+                ModificationInformation cache = typeInformation.remove(typeName);
+                if (cache != null) {
+                    cache.dispose();
+                }
+            }
+            else if (Change.ChangeCategory.REMOVE_INSTANCE.equals(change.getChangeCategory())) {
+                String addedInstanceKey = change.getInstanceKey();
+                
+                List<ActiveDescriptor<?>> removeDescriptors = locator.getDescriptors(new NoNameTypeFilter(locator, change.getChangeType().getName(), addedInstanceKey));
+                
+                for (ActiveDescriptor<?> removeDescriptor : removeDescriptors) {
+                    config.addUnbindFilter(BuilderHelper.createSpecificDescriptorFilter(removeDescriptor));
+                    
+                    injectionResolver.removeBean(removeDescriptor);
+                    
+                    removed.add(removeDescriptor);
                 }
                 
             }
         }
         
         // Add all instances
-        if (!added.isEmpty()) {
+        if (!added.isEmpty() || !removed.isEmpty()) {
             config.commit();
         
             // Create demand for all the ones we just added
@@ -281,7 +427,64 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
                 ServiceHandle<?> handle = locator.getServiceHandle(descriptor);
                 handle.getService();  // TODO: how to handle errors?
             }
+            
+            // Destroy the ones we just removed
+            for (ActiveDescriptor<?> descriptor : removed) {
+                ServiceHandle<?> handle = locator.getServiceHandle(descriptor);
+                handle.destroy();
+            }
         }
             
+    }
+    
+    private static class ModificationInformation {
+        private final ClassReflectionHelper helper = new ClassReflectionHelperImpl();
+        private final HashMap<Class<?>, Method> preMethods =
+                new HashMap<Class<?>, Method>();
+        private final HashMap<Class<?>, Method> postMethods =
+                new HashMap<Class<?>, Method>();
+        
+        private Method getPreDynamicChangeMethod(Class<?> rawClass) {
+            if (preMethods.containsKey(rawClass)) {
+                return preMethods.get(rawClass);
+            }
+            
+            Method preModificationMethod = getSpecialMethod(rawClass, PreDynamicChange.class);
+            preMethods.put(rawClass, preModificationMethod);
+            
+            return preModificationMethod;
+        }
+        
+        private Method getPostDynamicChangeMethod(Class<?> rawClass) {
+            if (postMethods.containsKey(rawClass)) {
+                return postMethods.get(rawClass);
+            }
+            
+            Method postModificationMethod = getSpecialMethod(rawClass, PostDynamicChange.class);
+            postMethods.put(rawClass, postModificationMethod);
+            
+            return postModificationMethod;
+        }
+        
+        private Method getSpecialMethod(Class<?> rawClass, Class<? extends Annotation> anno) {
+            Set<MethodWrapper> wrappers = helper.getAllMethods(rawClass);
+            for (MethodWrapper wrapper : wrappers) {
+                Method candidate = wrapper.getMethod();
+                
+                if (candidate.getAnnotation(anno) != null) {
+                    return candidate;
+                }
+            }
+            
+            return null;
+        }
+        
+        private void dispose() {
+            helper.dispose();
+            
+            preMethods.clear();
+            postMethods.clear();
+        }
+        
     }
 }

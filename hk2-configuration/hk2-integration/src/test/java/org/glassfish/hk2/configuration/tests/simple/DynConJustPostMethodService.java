@@ -67,5 +67,4 @@ public class DynConJustPostMethodService {
     public String getFieldOutput1() {
         return fieldOutput1;
     }
-
 }

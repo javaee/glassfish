@@ -168,4 +168,8 @@ public class ConfiguredByInjectionResolver implements
     /* package */ synchronized void addBean(ActiveDescriptor<?> descriptor, Object bean) {
         beanMap.put(descriptor, bean);
     }
+    
+    /* package */ synchronized void removeBean(ActiveDescriptor<?> descriptor) {
+        beanMap.remove(descriptor);
+    }
 }

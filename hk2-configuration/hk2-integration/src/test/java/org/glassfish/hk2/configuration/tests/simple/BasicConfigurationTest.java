@@ -73,7 +73,7 @@ public class BasicConfigurationTest extends HK2Runner {
     private final static String FIELD2 = "field2";
     private final static String CONSTRUCTOR = "constructor";
     private final static String METHOD1 = "method1";
-    // private final static String METHOD1_1 = "method1_1";
+    private final static String METHOD1_1 = "method1_1";
     private final static String METHOD2 = "method2";
     
     @Inject
@@ -169,11 +169,45 @@ public class BasicConfigurationTest extends HK2Runner {
     }
     
     /**
+     * Tests a service that dynamically updates a couple fields
+     * @throws InterruptedException 
+     */
+    @Test
+    public void testBasicDynamicConfiguration() {
+        addBean(TEST_TYPE_TWO);
+        
+        try {
+            ActiveDescriptor<?> ad = testLocator.getBestDescriptor(BuilderHelper.createContractFilter(DynamicConfiguredService.class.getName()));
+            Assert.assertNotNull(ad);
+        
+            DynamicConfiguredService cs = testLocator.getService(DynamicConfiguredService.class);
+            Assert.assertNotNull(cs);
+        
+            Assert.assertEquals(METHOD1, cs.getMethodOutput1());
+            Assert.assertEquals(FIELD1, cs.getFieldOutput1());
+            
+            ConfiguredServiceBean newBean = createBean(CONSTRUCTOR,
+                FIELD1_1,
+                FIELD2,
+                METHOD1_1,
+                METHOD2);
+            
+            updateBean(TEST_TYPE_TWO, newBean);
+            
+            Assert.assertEquals(METHOD1_1, cs.getMethodOutput1());
+            Assert.assertEquals(FIELD1_1, cs.getFieldOutput1());
+        }
+        finally {
+            removeBean(TEST_TYPE_TWO);
+        }
+    }
+    
+    /**
      * Tests a service that dynamically updates with a method
      * marked with {@link PreDynamicChange}
      * @throws InterruptedException 
      */
-    @Test @Ignore
+    @Test
     public void testDynamicConfigurationWithJustPreMethod() {
         addBean(TEST_TYPE_THREE);
         
@@ -205,7 +239,7 @@ public class BasicConfigurationTest extends HK2Runner {
      * marked with {@link PostDynamicChange}
      * @throws InterruptedException 
      */
-    @Test @Ignore
+    @Test
     public void testDynamicConfigurationWithJustPostMethod() {
         addBean(TEST_TYPE_THREE);
         
@@ -238,7 +272,7 @@ public class BasicConfigurationTest extends HK2Runner {
      * which takes a list
      * @throws InterruptedException 
      */
-    @Test @Ignore
+    @Test
     public void testDynamicConfigurationWithPostAndPreMethods() {
         addBean(TEST_TYPE_THREE);
         
@@ -274,7 +308,7 @@ public class BasicConfigurationTest extends HK2Runner {
                 
                 Assert.assertEquals("fieldOutput1", pce.getPropertyName());
                 Assert.assertEquals(FIELD1, pce.getOldValue());
-                Assert.assertEquals(FIELD1_1, pce.getOldValue());
+                Assert.assertEquals(FIELD1_1, pce.getNewValue());
             }
             
             {
@@ -287,7 +321,7 @@ public class BasicConfigurationTest extends HK2Runner {
                 
                 Assert.assertEquals("fieldOutput1", pce.getPropertyName());
                 Assert.assertEquals(FIELD1, pce.getOldValue());
-                Assert.assertEquals(FIELD1_1, pce.getOldValue());
+                Assert.assertEquals(FIELD1_1, pce.getNewValue());
             }
         }
         finally {
@@ -302,7 +336,7 @@ public class BasicConfigurationTest extends HK2Runner {
      * 
      * @throws InterruptedException 
      */
-    @Test @Ignore
+    @Test
     public void testDynamicConfigurationPreMethodReturnsFalse() {
         addBean(TEST_TYPE_THREE);
         
@@ -335,7 +369,7 @@ public class BasicConfigurationTest extends HK2Runner {
      * and that is also a {@link PropertyChangeListener}
      * @throws InterruptedException 
      */
-    @Test @Ignore
+    @Test
     public void testDynamicConfigurationWithPostPreAndListener() {
         addBean(TEST_TYPE_THREE);
         
@@ -368,7 +402,7 @@ public class BasicConfigurationTest extends HK2Runner {
                 
                 Assert.assertEquals("fieldOutput1", pce.getPropertyName());
                 Assert.assertEquals(FIELD1, pce.getOldValue());
-                Assert.assertEquals(FIELD1_1, pce.getOldValue());
+                Assert.assertEquals(FIELD1_1, pce.getNewValue());
             }
         }
         finally {
