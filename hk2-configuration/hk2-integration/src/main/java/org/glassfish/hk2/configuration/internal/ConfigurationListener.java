@@ -63,6 +63,7 @@ import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.configuration.api.ConfiguredBy;
 import org.glassfish.hk2.configuration.api.PostDynamicChange;
 import org.glassfish.hk2.configuration.api.PreDynamicChange;
 import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
@@ -346,10 +347,22 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
         
         // Create demand for all the ones we just added
         for (ActiveDescriptor<?> descriptor : added) {
+            if (!isEager(descriptor)) continue;
+            
             ServiceHandle<?> handle = locator.getServiceHandle(descriptor);
             handle.getService();  // TODO: how to handle errors?
         }
         
+    }
+    
+    private static boolean isEager(ActiveDescriptor<?> descriptor) {
+        Class<?> implClass = descriptor.getImplementationClass();
+        if (implClass == null) return false;
+        
+        ConfiguredBy configuredBy = implClass.getAnnotation(ConfiguredBy.class);
+        if (configuredBy == null) return false;
+        
+        return ConfiguredBy.CreationPolicy.EAGER.equals(configuredBy.creationPolicy());
     }
 
     /* (non-Javadoc)
@@ -424,6 +437,8 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
         
             // Create demand for all the ones we just added
             for (ActiveDescriptor<?> descriptor : added) {
+                if (!isEager(descriptor)) continue;
+                
                 ServiceHandle<?> handle = locator.getServiceHandle(descriptor);
                 handle.getService();  // TODO: how to handle errors?
             }

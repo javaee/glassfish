@@ -47,7 +47,6 @@ import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.jvnet.hk2.testing.junit.HK2Runner;
 
@@ -57,8 +56,10 @@ import org.jvnet.hk2.testing.junit.HK2Runner;
  */
 public class CreationPolicyTest extends HK2Runner {
     /* package */ static final String ON_DEMAND_TEST = "OnDemandType";
+    /* package */ static final String EAGER_TEST = "EagerType";
     
     /* package */ static final String ONE = "One";
+    /* package */ static final String TWO = "Two";
     
     @Inject
     private Hub hub;
@@ -99,7 +100,7 @@ public class CreationPolicyTest extends HK2Runner {
     /**
      * Tests that an on_demand service is not created until someone... uh... demands it!
      */
-    @Test @Ignore
+    @Test
     public void testOnDemandCreation() {
         try {
             Assert.assertNull(OnDemandConfiguredService.getInstance());
@@ -119,6 +120,40 @@ public class CreationPolicyTest extends HK2Runner {
             Assert.assertEquals(1, service.getCreationNumber());
             
             Assert.assertEquals(service, OnDemandConfiguredService.getInstance());
+        }
+        finally {
+            removeType(ON_DEMAND_TEST);
+        }
+        
+        
+    }
+    
+    /**
+     * Tests that an eager service is created eagerly
+     */
+    @Test
+    public void testEagerCreation() {
+        try {
+            Assert.assertNull(EagerConfiguredService.getInstance());
+            
+            createType(EAGER_TEST);
+            
+            // No instances yet, there cannot be a service yet
+            Assert.assertNull(EagerConfiguredService.getInstance());
+            
+            addInstance(EAGER_TEST, TWO, new CreationBean(2));
+            
+            // Still null because this is on-demand, and no demand has yet been made
+            Assert.assertNotNull(EagerConfiguredService.getInstance());
+            
+            Assert.assertEquals(2, EagerConfiguredService.getInstance().getCreationNumber());
+            
+            EagerConfiguredService service = testLocator.getService(EagerConfiguredService.class);
+            Assert.assertNotNull(service);
+            
+            Assert.assertEquals(2, service.getCreationNumber());
+            
+            Assert.assertEquals(service, EagerConfiguredService.getInstance());
         }
         finally {
             removeType(ON_DEMAND_TEST);
