@@ -77,6 +77,8 @@ public class BeanUtilities {
      */
     @SuppressWarnings("unchecked")
     public static Object getBeanPropertyValue(String attribute, Object bean) {
+        if (Configured.BEAN_KEY.equals(attribute)) return bean;
+        
         if (bean instanceof Map) {
             
             Map<String, Object> beanLikeMap = (Map<String, Object>) bean;

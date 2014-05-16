@@ -41,12 +41,13 @@ package org.glassfish.hk2.configuration.tests.simple;
 
 import org.glassfish.hk2.configuration.api.Configured;
 import org.glassfish.hk2.configuration.api.ConfiguredBy;
+import org.jvnet.hk2.annotations.Service;
 
 /**
  * @author jwells
  *
  */
-@ConfiguredBy(BasicConfigurationTest.TEST_TYPE_FIVE)
+@Service @ConfiguredBy(BasicConfigurationTest.TEST_TYPE_FIVE)
 public class BeanInjectedIntoConstructorService {
     private final ConfiguredServiceBean myBean;
     

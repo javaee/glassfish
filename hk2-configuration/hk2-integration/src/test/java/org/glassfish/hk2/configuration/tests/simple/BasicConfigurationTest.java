@@ -503,7 +503,7 @@ public class BasicConfigurationTest extends HK2Runner {
      * Tests that we can remove instances of services but the other
      * services are still there
      */
-    @Test @Ignore
+    @Test
     public void testInjecteWholeBeanIntoConstructor() {
         addBean(TEST_TYPE_FIVE);
         
