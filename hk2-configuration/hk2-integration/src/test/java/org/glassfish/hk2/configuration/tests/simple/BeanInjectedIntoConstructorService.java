@@ -41,30 +41,20 @@ package org.glassfish.hk2.configuration.tests.simple;
 
 import org.glassfish.hk2.configuration.api.Configured;
 import org.glassfish.hk2.configuration.api.ConfiguredBy;
-import org.glassfish.hk2.configuration.api.PostDynamicChange;
-import org.jvnet.hk2.annotations.Service;
 
 /**
  * @author jwells
  *
  */
-@Service @ConfiguredBy(BasicConfigurationTest.TEST_TYPE_THREE)
-public class DynConJustPostMethodService {
-    @Configured(dynamicity=Configured.Dynamicity.FULLY_DYNAMIC)
-    private String fieldOutput1;
+@ConfiguredBy(BasicConfigurationTest.TEST_TYPE_FIVE)
+public class BeanInjectedIntoConstructorService {
+    private final ConfiguredServiceBean myBean;
     
-    private String postChangeCalled = null;
-    
-    @PostDynamicChange
-    private void postChange() {
-        postChangeCalled = fieldOutput1;
+    public BeanInjectedIntoConstructorService(@Configured(Configured.BEAN_KEY) ConfiguredServiceBean myBean) {
+        this.myBean = myBean;
     }
 
-    public String isPostChangeCalled() {
-        return postChangeCalled;
-    }
-    
-    public String getFieldOutput1() {
-        return fieldOutput1;
+    public ConfiguredServiceBean getBean() {
+        return myBean;
     }
 }

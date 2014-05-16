@@ -138,7 +138,7 @@ public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase {
         if (retVal == null) return null;
         
         Map<String, Object> instances = retVal.getInstances();
-        for (String key : instances.keySet()) {
+        for (String key : new HashSet<String>(instances.keySet())) {
             retVal.removeInstance(key);
         }
         

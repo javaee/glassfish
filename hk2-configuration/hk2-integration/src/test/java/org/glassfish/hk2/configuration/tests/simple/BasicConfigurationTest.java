@@ -52,6 +52,7 @@ import org.glassfish.hk2.configuration.hub.api.WriteableType;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.jvnet.hk2.testing.junit.HK2Runner;
 
@@ -66,6 +67,7 @@ public class BasicConfigurationTest extends HK2Runner {
     /* package */ final static String TEST_TYPE_TWO = "TestConfigurationType2";
     /* package */ final static String TEST_TYPE_THREE = "TestConfigurationType3";
     /* package */ final static String TEST_TYPE_FOUR = "TestConfigurationType4";
+    /* package */ final static String TEST_TYPE_FIVE = "TestConfigurationType5";
     
     private final static String DEFAULT = "default";
     private final static String FIELD1 = "field1";
@@ -446,6 +448,7 @@ public class BasicConfigurationTest extends HK2Runner {
      * Tests that we can remove instances of services but the other
      * services are still there
      */
+    @Test
     public void testRemovalOfInstances() {
         addNamedBean(TEST_TYPE_FOUR, ALICE);
         addNamedBean(TEST_TYPE_FOUR, BOB);
@@ -494,5 +497,31 @@ public class BasicConfigurationTest extends HK2Runner {
         Assert.assertTrue(alice.isDestroyed());
         Assert.assertTrue(carol.isDestroyed());
         
+    }
+    
+    /**
+     * Tests that we can remove instances of services but the other
+     * services are still there
+     */
+    @Test @Ignore
+    public void testInjecteWholeBeanIntoConstructor() {
+        addBean(TEST_TYPE_FIVE);
+        
+        try {
+            BeanInjectedIntoConstructorService service = testLocator.getService(BeanInjectedIntoConstructorService.class, DEFAULT);
+            Assert.assertNotNull(service);
+            
+            ConfiguredServiceBean csb = service.getBean();
+            Assert.assertNotNull(csb);
+            
+            Assert.assertEquals(CONSTRUCTOR, csb.getConstructorOutput());
+            Assert.assertEquals(FIELD1, csb.getFieldOutput1());
+            Assert.assertEquals(FIELD2, csb.getFieldOutput2());
+            Assert.assertEquals(METHOD1, csb.getMethodOutput1());
+            Assert.assertEquals(METHOD2, csb.getMethodOutput2());
+        }
+        finally {
+            removeBean(TEST_TYPE_FIVE);
+        }
     }
 }

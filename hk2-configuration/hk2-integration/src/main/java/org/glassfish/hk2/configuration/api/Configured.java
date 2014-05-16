@@ -77,15 +77,20 @@ import org.glassfish.hk2.api.InjectionPointIndicator;
 @Target( { FIELD, PARAMETER })
 @InjectionPointIndicator
 public @interface Configured {
+    public final static String BEAN_KEY = "$bean";
+    
     /**
      * The name of the field in the java bean or
      * bean-like map to use for injecting into
-     * this field or parameter
+     * this field or parameter.  If this field is
+     * set to &quot$bean&quot then the whole bean
+     * upon which this instance is based will be
+     * injected into this location
      * 
      * @return The name of the field to use for
      * injecting into this field or parameter
      */
-    public String key() default "";
+    public String value() default "";
     
     /**
      * Describes how dynamic a configured field or parameter must be.

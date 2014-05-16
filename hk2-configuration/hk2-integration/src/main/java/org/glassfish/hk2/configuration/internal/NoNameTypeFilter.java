@@ -88,7 +88,7 @@ class NoNameTypeFilter implements IndexedFilter {
         ConfiguredBy configuredBy = implClass.getAnnotation(ConfiguredBy.class);
         if (configuredBy == null) return false;
         
-        return configuredBy.type().equals(typeName);
+        return configuredBy.value().equals(typeName);
     }
 
     /* (non-Javadoc)

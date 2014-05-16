@@ -69,6 +69,6 @@ public @interface ConfiguredBy {
      * @return the name of the type to base instances
      * of this service on
      */
-    public String type();
+    public String value();
 
 }

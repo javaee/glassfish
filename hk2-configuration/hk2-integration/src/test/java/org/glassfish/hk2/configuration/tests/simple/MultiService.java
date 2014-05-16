@@ -49,7 +49,7 @@ import org.jvnet.hk2.annotations.Service;
  * @author jwells
  *
  */
-@Service @ConfiguredBy(type=BasicConfigurationTest.TEST_TYPE_FOUR)
+@Service @ConfiguredBy(BasicConfigurationTest.TEST_TYPE_FOUR)
 public class MultiService {
     @Configured
     private String name;

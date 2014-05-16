@@ -83,7 +83,7 @@ public class ConfiguredByInjectionResolver implements
         }
         if (c == null) return null;
         
-        String key = c.key();
+        String key = c.value();
         if (BeanUtilities.isEmpty(key)) {
             throw new AssertionError("Not enough in @Configured annotation in constructor " + cnst + " at parameter index " + position);
         }
@@ -103,7 +103,7 @@ public class ConfiguredByInjectionResolver implements
         }
         if (c == null) return null;
         
-        String key = c.key();
+        String key = c.value();
         if (BeanUtilities.isEmpty(key)) {
             throw new AssertionError("Not enough in @Configured annotation in method " + method + " at parameter index " + position);
         }

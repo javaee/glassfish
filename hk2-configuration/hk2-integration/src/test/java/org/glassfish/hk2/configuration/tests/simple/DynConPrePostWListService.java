@@ -52,7 +52,7 @@ import org.jvnet.hk2.annotations.Service;
  * @author jwells
  *
  */
-@Service @ConfiguredBy(type=BasicConfigurationTest.TEST_TYPE_THREE)
+@Service @ConfiguredBy(BasicConfigurationTest.TEST_TYPE_THREE)
 public class DynConPrePostWListService {
     @Configured(dynamicity=Configured.Dynamicity.FULLY_DYNAMIC)
     private String fieldOutput1;

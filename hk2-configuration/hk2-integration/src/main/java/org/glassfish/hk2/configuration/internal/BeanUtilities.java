@@ -143,7 +143,7 @@ public class BeanUtilities {
             return null;
         }
         
-        String key = c.key();
+        String key = c.value();
         if (isEmpty(key)) {
             key = f.getName();
         }
@@ -159,7 +159,7 @@ public class BeanUtilities {
                 Configured configured = (Configured) annotation;
                 if (!Configured.Dynamicity.FULLY_DYNAMIC.equals(configured.dynamicity())) return null;
                 
-                String retVal = ((Configured) annotation).key();
+                String retVal = ((Configured) annotation).value();
                 if (isEmpty(retVal)) return null;
                 return retVal;
             }

@@ -65,6 +65,7 @@ public class HubTest extends HK2Runner {
     private final static String ONE_INSTANCE_TYPE = "OneInstanceType";
     private final static String TYPE_TWO = "TypeTwo";
     private final static String TYPE_THREE = "TypeThree";
+    private final static String TYPE_FOUR = "TypeFour";
     
     private final static String NAME_PROPERTY = "name";
     private final static String OTHER_PROPERTY = "other";
@@ -563,6 +564,91 @@ public class HubTest extends HK2Runner {
                 removeType(TYPE_TWO);
             }
             
+        }
+    }
+    
+    /**
+     * Tests removing an type that has current instances
+     */
+    @Test
+    public void testRemoveTypeWithInstances() {
+        addTypeAndInstance(TYPE_FOUR, ALICE, new GenericJavaBean(ALICE, OTHER_PROPERTY_VALUE1));
+        addTypeAndInstance(TYPE_FOUR, BOB, new GenericJavaBean(BOB, OTHER_PROPERTY_VALUE1));
+        
+        GenericBeanDatabaseUpdateListener listener = null;
+        WriteableBeanDatabase wbd = null;
+        
+        try {
+            listener = new GenericBeanDatabaseUpdateListener();
+            hub.addListener(listener);
+        
+            wbd = hub.getWriteableDatabaseCopy();
+            
+            Type removed = wbd.removeType(TYPE_FOUR);
+            Assert.assertNotNull(removed);
+            Assert.assertEquals(TYPE_FOUR, removed.getName());
+        
+            wbd.commit();
+        
+            Type typeFour = hub.getCurrentDatabase().getType(TYPE_FOUR);
+            Assert.assertNull(typeFour);
+            
+            List<Change> changes = listener.getLastSetOfChanges();
+            
+            Assert.assertEquals(3, changes.size());
+            
+            boolean firstChangeWasAlice = false;
+            {
+                Change instanceChange = changes.get(0);
+            
+                Assert.assertEquals(Change.ChangeCategory.REMOVE_INSTANCE, instanceChange.getChangeCategory());
+                Assert.assertEquals(TYPE_FOUR, instanceChange.getChangeType().getName());
+                Assert.assertEquals(0, instanceChange.getChangeType().getInstances().size());
+                if (instanceChange.getInstanceKey().equals(ALICE)) {
+                    firstChangeWasAlice = true;
+                }
+                else if (instanceChange.getInstanceKey().equals(BOB)) {
+                    firstChangeWasAlice = false;
+                }
+                else {
+                    Assert.fail("Unknown instance name " + instanceChange.getInstanceKey());
+                }
+                
+                Assert.assertNull(instanceChange.getModifiedProperties());
+            }
+            
+            {
+                Change instanceChange = changes.get(1);
+            
+                Assert.assertEquals(Change.ChangeCategory.REMOVE_INSTANCE, instanceChange.getChangeCategory());
+                Assert.assertEquals(TYPE_FOUR, instanceChange.getChangeType().getName());
+                Assert.assertEquals(0, instanceChange.getChangeType().getInstances().size());
+                if (firstChangeWasAlice) {
+                    Assert.assertEquals(BOB, instanceChange.getInstanceKey());
+                }
+                else {
+                    Assert.assertEquals(ALICE, instanceChange.getInstanceKey());
+                }
+                
+                Assert.assertNull(instanceChange.getModifiedProperties());
+            }
+            
+            {
+                Change instanceChange = changes.get(2);
+            
+                Assert.assertEquals(Change.ChangeCategory.REMOVE_TYPE, instanceChange.getChangeCategory());
+                Assert.assertEquals(TYPE_FOUR, instanceChange.getChangeType().getName());
+                Assert.assertEquals(0, instanceChange.getChangeType().getInstances().size());
+                Assert.assertNull(instanceChange.getModifiedProperties());
+            }
+            
+            
+        }
+        finally {
+            // Cleanup
+            if (listener != null) {
+                hub.removeListener(listener);
+            }
         }
     }
 
