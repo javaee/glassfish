@@ -54,7 +54,6 @@ import org.glassfish.hk2.configuration.hub.api.WriteableType;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.jvnet.hk2.testing.junit.HK2Runner;
 
@@ -219,7 +218,7 @@ public class MapConfigurationTest extends HK2Runner {
      * Tests a service that dynamically updates a couple fields
      * @throws InterruptedException 
      */
-    @Test @Ignore
+    @Test
     public void testBasicDynamicConfiguration() {
         addBean(TEST_TYPE_TWO);
         
@@ -254,7 +253,7 @@ public class MapConfigurationTest extends HK2Runner {
      * marked with {@link PreDynamicChange}
      * @throws InterruptedException 
      */
-    @Test @Ignore
+    @Test
     public void testDynamicConfigurationWithJustPreMethod() {
         addBean(TEST_TYPE_THREE);
         
@@ -286,7 +285,7 @@ public class MapConfigurationTest extends HK2Runner {
      * marked with {@link PostDynamicChange}
      * @throws InterruptedException 
      */
-    @Test @Ignore
+    @Test
     public void testDynamicConfigurationWithJustPostMethod() {
         addBean(TEST_TYPE_THREE);
         
@@ -319,7 +318,7 @@ public class MapConfigurationTest extends HK2Runner {
      * which takes a list
      * @throws InterruptedException 
      */
-    @Test @Ignore
+    @Test
     public void testDynamicConfigurationWithPostAndPreMethods() {
         addBean(TEST_TYPE_THREE);
         
@@ -383,7 +382,7 @@ public class MapConfigurationTest extends HK2Runner {
      * 
      * @throws InterruptedException 
      */
-    @Test @Ignore
+    @Test
     public void testDynamicConfigurationPreMethodReturnsFalse() {
         addBean(TEST_TYPE_THREE);
         
@@ -416,7 +415,7 @@ public class MapConfigurationTest extends HK2Runner {
      * and that is also a {@link PropertyChangeListener}
      * @throws InterruptedException 
      */
-    @Test @Ignore
+    @Test
     public void testDynamicConfigurationWithPostPreAndListener() {
         addBean(TEST_TYPE_THREE);
         

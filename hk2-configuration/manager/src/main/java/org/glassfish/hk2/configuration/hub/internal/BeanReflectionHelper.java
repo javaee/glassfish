@@ -44,6 +44,7 @@ import java.beans.PropertyChangeEvent;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
@@ -134,7 +135,31 @@ public class BeanReflectionHelper {
         }
     }
     
+    private static PropertyChangeEvent[] getMapChangeEvents(Map<String, Object> oldBean, Map<String, Object> newBean) {
+        LinkedList<PropertyChangeEvent> retVal = new LinkedList<PropertyChangeEvent>();
+        
+        for (Map.Entry<String, Object> entry : oldBean.entrySet()) {
+            String key = entry.getKey();
+            Object oldValue = entry.getValue();
+            Object newValue = newBean.get(key);
+            
+            if (!safeEquals(oldValue, newValue)) {
+                retVal.add(new PropertyChangeEvent(newBean,
+                    key,
+                    oldValue,
+                    newValue));
+            }
+        }
+        
+        return retVal.toArray(new PropertyChangeEvent[retVal.size()]);
+    }
+    
+    @SuppressWarnings("unchecked")
     public static PropertyChangeEvent[] getChangeEvents(ClassReflectionHelper helper, Object oldBean, Object newBean) {
+        if (oldBean instanceof Map) {
+            return getMapChangeEvents((Map<String, Object>) oldBean, (Map<String, Object>) newBean);
+        }
+        
         LinkedList<PropertyChangeEvent> retVal = new LinkedList<PropertyChangeEvent>();
         
         Set<MethodWrapper> methods = helper.getAllMethods(oldBean.getClass());
