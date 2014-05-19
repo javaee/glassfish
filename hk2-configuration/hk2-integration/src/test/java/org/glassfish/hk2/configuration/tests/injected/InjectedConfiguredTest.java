@@ -59,11 +59,14 @@ import org.jvnet.hk2.testing.junit.HK2Runner;
  */
 public class InjectedConfiguredTest extends HK2Runner {
     /* package */ static final String CTEST_ONE_TYPE = "InjectedConfiguredTestType1";
+    /* package */ static final String CTEST_TWO_TYPE = "InjectedConfiguredTestType2";
     
     /* package */ static final String ALICE = "Alice";
     /* package */ static final String BOB = "Bob";
     
     private final static String NAME_KEY = "name";
+    private final static String CONFIGURED_VALUE_KEY = "configuredValue";
+    private final static String DEFAULT_KEY = "default";
     
     @Inject
     private Hub hub;
@@ -73,6 +76,19 @@ public class InjectedConfiguredTest extends HK2Runner {
         super.before();
         
         ConfigurationUtilities.enableConfigurationSystem(testLocator);
+    }
+    
+    private void addConfiguredValueBean(String typeName, long value) {
+        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+        
+        WriteableType wt = wbd.findOrAddWriteableType(typeName);
+        
+        HashMap<String, Object> namedBean = new HashMap<String, Object>();
+        namedBean.put(CONFIGURED_VALUE_KEY, new Long(value));
+        
+        wt.addInstance(DEFAULT_KEY, namedBean);
+        
+        wbd.commit();
     }
     
     private void addNamedBean(String typeName, String name) {
@@ -202,6 +218,29 @@ public class InjectedConfiguredTest extends HK2Runner {
         }
         finally {
             removeType(CTEST_ONE_TYPE);
+        }
+        
+    }
+    
+    /**
+     * Tests that a configured service can inject another
+     * configured service
+     */
+    @Test
+    public void testStackedConfiguredService() {
+        try {
+            addNamedBean(CTEST_ONE_TYPE, BOB);
+            addConfiguredValueBean(CTEST_TWO_TYPE, 100L);
+            
+            StackedConfiguredService scs = testLocator.getService(StackedConfiguredService.class);
+            Assert.assertNotNull(scs);
+            
+            Assert.assertEquals(100L, scs.getConfiguredValue());
+            Assert.assertEquals(BOB, scs.getConfiguredContract().getName());
+        }
+        finally {
+            removeType(CTEST_ONE_TYPE);
+            removeType(CTEST_TWO_TYPE);
         }
         
     }
