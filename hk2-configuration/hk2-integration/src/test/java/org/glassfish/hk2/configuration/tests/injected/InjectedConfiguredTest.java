@@ -170,5 +170,40 @@ public class InjectedConfiguredTest extends HK2Runner {
         }
         
     }
+    
+    /**
+     * Tests that a service injected with an IterableProvider
+     * can be used to get specific instances
+     */
+    @Test
+    public void testIterableProviderOfConfiguredService() {
+        VariableInjectedService vis = testLocator.getService(VariableInjectedService.class);
+        
+        Assert.assertNull(vis.getNamedContract(ALICE));
+        Assert.assertNull(vis.getNamedContract(BOB));
+        
+        try {
+            addNamedBean(CTEST_ONE_TYPE, ALICE);
+            
+            Assert.assertEquals(ALICE, vis.getNamedContract(ALICE).getName());
+            Assert.assertNull(vis.getNamedContract(BOB));
+            
+            removeNamedBean(CTEST_ONE_TYPE, ALICE);
+            
+            Assert.assertNull(vis.getNamedContract(ALICE));
+            Assert.assertNull(vis.getNamedContract(BOB));
+            
+            addNamedBean(CTEST_ONE_TYPE, BOB);
+            addNamedBean(CTEST_ONE_TYPE, ALICE);
+            
+            Assert.assertEquals(ALICE, vis.getNamedContract(ALICE).getName());
+            Assert.assertEquals(BOB, vis.getNamedContract(BOB).getName());
+            
+        }
+        finally {
+            removeType(CTEST_ONE_TYPE);
+        }
+        
+    }
 
 }
