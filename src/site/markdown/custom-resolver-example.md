@@ -45,13 +45,15 @@ The HttpRequest object itself is in the RequestScope context, which means its va
 is currently active.  In order to do that, the RequestScope context is a Proxiable context.  We will see more about creating
 the RequestScoped context later in this document.
 
-For now, lets look at how we define the **@AlternateInject** annotation.  An injection annotation is valid on fields, methods and
-constructors.  However, in this case the **@AlternateInject** is only supported for methods, so the definition of
-**@AlternateInject** looks like this:
+For now, lets look at how we define the **@AlternateInject** annotation.  An injection annotation is valid on fields, methods,
+parameters of methods,
+constructors and parameters of constructors.  However, in this case the **@AlternateInject** is only supported for methods, so
+the definition of **@AlternateInject** looks like this:
 
 ```java
 @Retention(RUNTIME)
 @Target( { METHOD })
+@InjectionPointIndicator
 public @interface AlternateInject {
 }
 ```java
@@ -61,7 +63,14 @@ When providing a custom injection annotation, you must also provide an implement
 implementation that will be called whenever HK2 wants to inject into a constructor or field or method
 that is annotated with the custom injection annotation.  The actual type of the parameterized type of
 the [InjectionResolver][injectionresolver] implementation must be
-the custom injection annotation.  Here is how the AlternateInjectionResolver is defined:
+the custom injection annotation.
+
+The annotation [InjectionPointResolver][injectionpointresolver] can
+optionally be placed on the custom annotation.  Using this annotation
+allows the automatic analysis of a class with custom injection
+annotations prior to the registration of the associated [InjectionResolver][injectionresolver].
+
+Here is how the AlternateInjectionResolver is defined:
 
 ```java
 @Singleton
@@ -381,4 +390,5 @@ After having this utility method, the test itself is very simple, and just ensur
 
 [context]: apidocs/org/glassfish/hk2/api/Context.html
 [injectionresolver]: apidocs/org/glassfish/hk2/api/InjectionResolver.html
+[injectionpointindicator]: apidocs/org/glassfish/hk2/api/InjectionPointIndicator.html
 [injectee]: apidocs/org/glassfish/hk2/api/Injectee.html

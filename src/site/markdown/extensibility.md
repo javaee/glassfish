@@ -207,13 +207,17 @@ The mind boggles at all the ways [HK2Loader][hk2loader] can be implemented.
 ### Custom Injection Resolvers
 
 By default the system provides JSR-330 standard injection.
-That means honoring [@Inject][javaxinject] and all other parts of the JSR-330 specification. (For more information see TBD).
+That means honoring [@Inject][javaxinject] and all other parts of the JSR-330 specification.
 However, it is sometimes the case that a user would like to customize the JSR-330 resolution in some manner, 
 or provide their own injection points based on a different annotation.
 
 In order to do so, the user implements [InjectionResolver][injectionresolver].
 The parameterized type of the [InjectionResolver][injectionresolver] must be the injection annotation that they will resolve.
 The user implementation of [InjectionResolver][injectionresolver] is then bound into a [ServiceLocator][servicelocator] like any other service.
+
+Annotations to be used as injection points can optionally be annotated
+with [InjectionPointIndicator][injectionpointindicator].  This annotation
+allows automatic analysis of classes using the custom [InjectionResolver][injectionresolver].
 
 This [example][custom-resolver-example] adds a custom injection resolver that customizes the default JSR-330 injection resolver.
 
@@ -334,6 +338,7 @@ Using the [ErrorService][errorservice] can be a convenient place to standardize 
 [hk2loader]: apidocs/org/glassfish/hk2/api/HK2Loader.html
 [javaxinject]: http://docs.oracle.com/javaee/6/api/javax/inject/Inject.html
 [injectionresolver]: apidocs/org/glassfish/hk2/api/InjectionResolver.html
+[injectionpointindicator]: apidocs/org/glassfish/hk2/api/InjectionPointIndicator.html
 [validationservice]: apidocs/org/glassfish/hk2/api/ValidationService.html
 [security-lockdown-example-runner]: security-lockdown-example-runner.html
 [instancelifecyclelistener]: apidocs/org/glassfish/hk2/api/InstanceLifecycleListener.html

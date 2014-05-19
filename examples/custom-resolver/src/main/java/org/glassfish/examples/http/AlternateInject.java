@@ -45,6 +45,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import org.glassfish.hk2.api.InjectionPointIndicator;
+
 /**
  * Our custom injection annotation.  Only supported on methods.
  * 
@@ -52,5 +54,6 @@ import java.lang.annotation.Target;
  */
 @Retention(RUNTIME)
 @Target( { METHOD })
+@InjectionPointIndicator
 public @interface AlternateInject {
 }
