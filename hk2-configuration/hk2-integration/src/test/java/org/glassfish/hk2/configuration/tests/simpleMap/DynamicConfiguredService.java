@@ -58,7 +58,9 @@ public class DynamicConfiguredService {
     private String methodOutput1;
     
     @SuppressWarnings("unused")
-    private void setMethodOutput1(@Configured(value="methodOutput1", dynamicity=Configured.Dynamicity.FULLY_DYNAMIC) String methodOutput1) {
+    private void setMethodOutput1(@Configured(value="methodOutput1",
+                                              dynamicity=Configured.Dynamicity.FULLY_DYNAMIC)
+                                              String methodOutput1) {
         this.methodOutput1 = methodOutput1;
     }
     

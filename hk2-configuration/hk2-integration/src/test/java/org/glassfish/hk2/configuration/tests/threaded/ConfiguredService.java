@@ -37,68 +37,54 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.api;
+package org.glassfish.hk2.configuration.tests.threaded;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.util.List;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 
-import javax.inject.Scope;
+import org.glassfish.hk2.api.IterableProvider;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.configuration.api.Configured;
+import org.glassfish.hk2.configuration.api.ConfiguredBy;
+import org.jvnet.hk2.annotations.Service;
 
 /**
- * This annotation is put onto classes to indicate that
- * they should be created based on the availability of
- * instances of a specify type of configuration in the 
- * {@link org.glassfish.hk2.configuration.hub.api.Hub}
- * 
  * @author jwells
  *
  */
-@Documented
-@Scope
-@Retention(RUNTIME)
-@Target(TYPE)
-public @interface ConfiguredBy {
-    /**
-     * A service is created for each instance of this type,
-     * with a name taken from the key of the instance
-     * 
-     * @return the name of the type to base instances
-     * of this service on
-     */
-    public String value();
+@Service @ConfiguredBy(ConfiguredThreadedTest.THREADED_TYPE)
+public class ConfiguredService {
+    @Inject
+    private AnotherConfiguredService acs;
     
-    /**
-     * Specifies the creation policy for configured services
-     * based on type instances.  The values it can take are:
-     * <UL>
-     * <LI>ON_DEMAND - Services are created when user code creates demand (via lookup or injection)</LI>
-     * <LI>EAGER - Services are created as soon as configured instances become available</LI>
-     * </UL>
-     * The default value is ON_DEMAND
-     * 
-     * @return The creation policy for services configured by this type
-     */
-    public CreationPolicy creationPolicy() default CreationPolicy.ON_DEMAND;
+    private String name;
     
-    public enum CreationPolicy {
-        /**
-         * Instances of services with this policy will
-         * be created when some user code creates explicit
-         * demand for the service.  This is similar to most
-         * other hk2 services
-         */
-        ON_DEMAND,
+    @Inject
+    private ServiceLocator locator;
+    
+    @SuppressWarnings("unused")
+    private synchronized void setName(@Configured(ConfiguredThreadedTest.NAME_KEY) String name) {
+        this.name = name;
+    }
+    
+    public synchronized String getName() {
+        return name;
+    }
+    
+    public synchronized AnotherConfiguredService getACS() {
+        return acs;
+    }
+    
+    public int runOthersDown() {
+        int retVal = 0;
+        List<ConfiguredService> allOfMe = locator.getAllServices(ConfiguredService.class);
+        for (ConfiguredService cs : allOfMe) {
+            retVal++;
+        }
         
-        /**
-         * Instances of services with this policy will
-         * be created as soon as their backing instances
-         * become available
-         */
-        EAGER
+        return retVal;
     }
 
 }
