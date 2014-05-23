@@ -232,7 +232,7 @@
         <module>osgi</module>
         <module>dependency-verifier</module>
         <module>dependency-visualizer</module>
-        <module>hk2-config</module>
+        <module>hk2-configuration/persistence/hk2-xml-dom/hk2-config</module>
         <module>config-types</module>
         <module>examples</module>
         <module>hk2-testing</module>
@@ -683,7 +683,7 @@
                     <javadocDir>${site.outputDir}/apidocs</javadocDir>                    
                     <sourcePath>
                         ;${basedir}/hk2-api/src/main/java;
-                        ${basedir}/hk2-config/src/main/java;
+                        ${basedir}/hk2-configuration/persistence/hk2-xml-dom/hk2-config/src/main/java;
                         ${basedir}/hk2-locator/src/main/java;
                         ${basedir}/hk2-utils/src/main/java;
                         ${basedir}/hk2-runlevel/src/main/java;
