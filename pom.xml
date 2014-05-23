@@ -220,7 +220,6 @@
     
     <modules>
         <module>hk2-maven</module>
-        <module>hk2-configuration/persistence/hk2-xml-dom/config-generator</module>
         <module>osgiversion-maven-plugin</module>
         <module>hk2-inhabitant-generator</module>
         <module>consolidatedbundle-maven-plugin</module>
@@ -232,8 +231,6 @@
         <module>osgi</module>
         <module>dependency-verifier</module>
         <module>dependency-visualizer</module>
-        <module>hk2-configuration/persistence/hk2-xml-dom/hk2-config</module>
-        <module>hk2-configuration/persistence/hk2-xml-dom/config-types</module>
         <module>examples</module>
         <module>hk2-testing</module>
         <module>guice-bridge</module>

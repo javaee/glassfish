@@ -56,5 +56,6 @@
     <modules>
         <module>manager</module>
         <module>hk2-integration</module>
+        <module>persistence</module>
     </modules>
 </project>
