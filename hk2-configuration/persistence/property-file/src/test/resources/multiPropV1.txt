@@ -1,0 +1,20 @@
+#
+# comments
+#
+T1.I1.name=I1
+T1.I1.address=300 Packer Blvd
+T1.I1.city=Philadelpha
+T1.I1.state=PA
+T1.I1.zip=08008
+
+T1.I2.name=I2
+T1.I2.address=310 Packer Blvd
+T1.I2.city=Philadelpha
+T1.I2.state=PA
+T1.I2.zip=08008
+
+T2.I1.name=I1
+T2.I1.address=Taylor Avenue
+T2.I1.city=Beach Haven
+T2.I1.state=NJ
+T2.I1.zip=08007
