@@ -61,7 +61,7 @@ public class InterceptorTest {
     /**
      * Very simple intercepted service
      */
-    @Test @org.junit.Ignore
+    @Test
     public void testMostBasicInterceptor() {
         ServiceLocator locator = LocatorHelper.create(null, new InterceptorModule());
         

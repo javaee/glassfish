@@ -51,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.aopalliance.intercept.MethodInterceptor;
+import org.glassfish.hk2.api.AOPProxyCtl;
 import org.glassfish.hk2.utilities.reflection.Logger;
 
 /**
@@ -58,6 +59,7 @@ import org.glassfish.hk2.utilities.reflection.Logger;
  *
  */
 final class ConstructorActionImpl<T> implements ConstructorAction {
+    private final static Class<?> ADDED_INTERFACES[] = { AOPProxyCtl.class };
     private final static MethodFilter METHOD_FILTER = new MethodFilter() {
 
         @Override
@@ -93,11 +95,15 @@ final class ConstructorActionImpl<T> implements ConstructorAction {
     @Override
     public Object makeMe(final Constructor<?> c, final Object[] args, final boolean neutralCCL)
             throws Throwable {
-        final MethodInterceptorHandler methodInterceptor = new MethodInterceptorHandler(this.clazzCreator.locator, methodInterceptors);
+        final MethodInterceptorHandler methodInterceptor = new MethodInterceptorHandler(
+                clazzCreator.getServiceLocator(),
+                clazzCreator.getUnderlyingDescriptor(),
+                methodInterceptors);
             
         final ProxyFactory proxyFactory = new ProxyFactory();
-        proxyFactory.setSuperclass(this.clazzCreator.implClass);
+        proxyFactory.setSuperclass(clazzCreator.getImplClass());
         proxyFactory.setFilter(METHOD_FILTER);
+        proxyFactory.setInterfaces(ADDED_INTERFACES);
         
         return AccessController.doPrivileged(new PrivilegedExceptionAction<Object>() {
 

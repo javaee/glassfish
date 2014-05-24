@@ -48,6 +48,8 @@ import java.util.RandomAccess;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.glassfish.hk2.api.AOPProxyCtl;
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
 import javassist.util.proxy.MethodHandler;
@@ -61,11 +63,14 @@ import javassist.util.proxy.MethodHandler;
 public class MethodInterceptorHandler implements MethodHandler {
     private final ServiceLocatorImpl locator;
     private final Map<Method, List<MethodInterceptor>> interceptorLists;
+    private final ActiveDescriptor<?> underlyingDescriptor;
     
     /* package */ MethodInterceptorHandler(ServiceLocatorImpl locator,
+            ActiveDescriptor<?> underlyingDescriptor,
             Map<Method, List<MethodInterceptor>> interceptorLists) {
         this.locator = locator;
         this.interceptorLists = interceptorLists;
+        this.underlyingDescriptor = underlyingDescriptor;
     }
 
     /* (non-Javadoc)
@@ -74,6 +79,10 @@ public class MethodInterceptorHandler implements MethodHandler {
     @Override
     public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args)
             throws Throwable {
+        if (thisMethod.getName().equals(AOPProxyCtl.UNDERLYING_METHOD_NAME)) {
+            return underlyingDescriptor;
+        }
+        
         List<MethodInterceptor> interceptors = interceptorLists.get(thisMethod);
         if (interceptors == null || interceptors.isEmpty()) {
             return ReflectionHelper.invoke(self, proceed, args, locator.getNeutralContextClassLoader());

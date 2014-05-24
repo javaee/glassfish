@@ -72,8 +72,8 @@ import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 public class ClazzCreator<T> implements Creator<T> {
     
     
-    final ServiceLocatorImpl locator;
-    final Class<?> implClass;
+    private final ServiceLocatorImpl locator;
+    private final Class<?> implClass;
     private final Set<ResolutionInfo> myInitializers = new LinkedHashSet<ResolutionInfo>();
     private final Set<ResolutionInfo> myFields = new LinkedHashSet<ResolutionInfo>();
     private ActiveDescriptor<?> selfDescriptor;
@@ -421,6 +421,18 @@ public class ClazzCreator<T> implements Creator<T> {
     @Override
     public List<Injectee> getInjectees() {
         return allInjectees;
+    }
+    
+    /* package */ ServiceLocatorImpl getServiceLocator() {
+        return locator;
+    }
+    
+    /* package */ Class<?> getImplClass() {
+        return implClass;
+    }
+    
+    /* package */ ActiveDescriptor<?> getUnderlyingDescriptor() {
+        return selfDescriptor;
     }
 
     private static class ResolutionInfo {
