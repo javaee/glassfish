@@ -52,8 +52,7 @@ import org.jvnet.hk2.annotations.Service;
 public class EventSubscriberService {
     private Event lastEvent;
     
-    @SuppressWarnings("unused")
-    private void subscribeMe(@SubscribeTo Event event) {
+    public void subscribeMe(@SubscribeTo Event event) {
         lastEvent = event;
     }
     

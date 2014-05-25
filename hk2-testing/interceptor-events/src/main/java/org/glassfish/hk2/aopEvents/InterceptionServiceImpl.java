@@ -88,11 +88,9 @@ public class InterceptionServiceImpl implements InterceptionService {
     @Override
     public List<MethodInterceptor> getMethodInterceptors(Method method) {
         if (!method.getName().equals("subscribeMe")) {
-            System.out.println("JRW(10) ISI returning null for " + method);
             return null;
         }
         
-        System.out.println("JRW(20) ISI returning " + interceptor + " for " + method);
         return Collections.singletonList(interceptor);
     }
 

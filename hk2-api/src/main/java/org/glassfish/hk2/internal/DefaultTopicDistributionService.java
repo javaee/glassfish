@@ -59,6 +59,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.glassfish.hk2.api.AOPProxyCtl;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfigurationListener;
 import org.glassfish.hk2.api.Filter;
@@ -339,8 +340,27 @@ public class DefaultTopicDistributionService implements
         existingMethods = new LinkedList<SubscriberInfo>();    
         class2Subscribers.put(new ActivatorClassKey(descriptor, targetClass), existingMethods);
         
+        Class<?> resolvedClass;
+        if (target instanceof AOPProxyCtl) {
+            // The proxy versions of the methods do NOT have the SubscribeTo
+            // annotation pulled into its methods, and hence do NOT show up
+            // as being subscription methods.  This block of code allows
+            // us to analyze the methods on the underlying class, not
+            // the direct proxy class
+            ActiveDescriptor<?> underlyingDescriptor = ((AOPProxyCtl) target).__getUnderlyingDescriptor();
+            if (underlyingDescriptor == null) {
+                resolvedClass = targetClass;
+            }
+            else {
+                resolvedClass = underlyingDescriptor.getImplementationClass();
+            }
+        }
+        else {
+            resolvedClass = targetClass;
+        }
+        
         // Have not yet seen this descriptor, must now get the information on it
-        Set<MethodWrapper> allMethods = reflectionHelper.getAllMethods(targetClass);
+        Set<MethodWrapper> allMethods = reflectionHelper.getAllMethods(resolvedClass);
         
         for (MethodWrapper methodWrapper : allMethods) {
             Annotation paramAnnotations[][] =methodWrapper.getMethod().getParameterAnnotations();
@@ -359,14 +379,24 @@ public class DefaultTopicDistributionService implements
                     }
                 }
             }
-                
+            
             if (foundPosition == -1) {
                 // Try next method
                 continue;
             }
                 
             // Found a method with exactly one SubscribeTo annotation!
-            SubscriberInfo si = generateSubscriberInfo(descriptor, methodWrapper.getMethod(), foundPosition, paramAnnotations);
+            Method useMethod;
+            if (resolvedClass == targetClass) {
+                useMethod = methodWrapper.getMethod();
+            }
+            else {
+                // Must find the method on the real class
+                useMethod = findMethodOnDifferentClass(targetClass, methodWrapper.getMethod());
+                if (useMethod == null) continue;
+            }
+            
+            SubscriberInfo si = generateSubscriberInfo(descriptor, methodWrapper.getMethod(), useMethod, foundPosition, paramAnnotations);
             si.targets.add(new WeakReference<Object>(target));
             
             existingMethods.add(si);
@@ -374,8 +404,17 @@ public class DefaultTopicDistributionService implements
         
     }
     
+    private static Method findMethodOnDifferentClass(Class<?> findOnMe, Method method) {
+        try {
+            return findOnMe.getMethod(method.getName(), method.getParameterTypes());
+        }
+        catch (Throwable th) {
+            return null;
+        }
+    }
+    
     private static SubscriberInfo generateSubscriberInfo(ActiveDescriptor<?> injecteeDescriptor,
-            Method subscriber, int subscribeToPosition, Annotation paramAnnotations[][]) {
+            Method subscriber, Method useSubscriber, int subscribeToPosition, Annotation paramAnnotations[][]) {
         Type parameterTypes[] = subscriber.getGenericParameterTypes();
         
         // Get the event type
@@ -430,7 +469,7 @@ public class DefaultTopicDistributionService implements
                 
                 ii.setRequiredQualifiers(parameterQualifiers);
                 ii.setPosition(lcv);
-                ii.setParent(subscriber);
+                ii.setParent(useSubscriber);
                 ii.setOptional(isOptional);
                 ii.setSelf(isSelf);
                 ii.setUnqualified(unqualified);

@@ -43,8 +43,6 @@ import org.glassfish.hk2.aopEvents.Event;
 import org.glassfish.hk2.aopEvents.EventPublisher;
 import org.glassfish.hk2.aopEvents.EventSubscriberService;
 import org.glassfish.hk2.aopEvents.MethodInterceptorImpl;
-import org.glassfish.hk2.api.TypeLiteral;
-import org.glassfish.hk2.api.messaging.Topic;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Before;
@@ -65,7 +63,7 @@ public class AOPEventsTest extends HK2Runner {
         ServiceLocatorUtilities.enableTopicDistribution(testLocator);
     }
     
-    @Test @org.junit.Ignore
+    @Test
     public void testSimpleInterceptedEvent() {
         MethodInterceptorImpl mi = testLocator.getService(MethodInterceptorImpl.class);
         mi.getAndZeroCounter();
