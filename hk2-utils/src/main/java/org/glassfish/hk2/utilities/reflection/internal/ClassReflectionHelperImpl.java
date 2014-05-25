@@ -413,6 +413,14 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
             clazz = clazz.getSuperclass();
         }
     }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.utilities.reflection.ClassReflectionHelper#createMethodWrapper(java.lang.reflect.Method)
+     */
+    @Override
+    public MethodWrapper createMethodWrapper(Method m) {
+        return new MethodWrapperImpl(m);
+    }
 
     @Override
     public void dispose() {
@@ -426,6 +434,8 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
     public String toString() {
         return "ClassReflectionHelperImpl(" + System.identityHashCode(this) + ")";
     }
+
+    
 
     
 

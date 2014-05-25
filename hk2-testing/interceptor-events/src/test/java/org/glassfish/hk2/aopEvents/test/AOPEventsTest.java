@@ -39,10 +39,15 @@
  */
 package org.glassfish.hk2.aopEvents.test;
 
+import java.util.HashSet;
+
 import org.glassfish.hk2.aopEvents.Event;
 import org.glassfish.hk2.aopEvents.EventPublisher;
 import org.glassfish.hk2.aopEvents.EventSubscriberService;
 import org.glassfish.hk2.aopEvents.MethodInterceptorImpl;
+import org.glassfish.hk2.aopEvents.PackageEventSubscriberService;
+import org.glassfish.hk2.aopEvents.PrivateEventSubscriberService;
+import org.glassfish.hk2.aopEvents.ProtectedEventSubscriberService;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Before;
@@ -63,10 +68,13 @@ public class AOPEventsTest extends HK2Runner {
         ServiceLocatorUtilities.enableTopicDistribution(testLocator);
     }
     
+    /**
+     * Tests that public event methods can be intercepted
+     */
     @Test
-    public void testSimpleInterceptedEvent() {
+    public void testPublicSimpleInterceptedEvent() {
         MethodInterceptorImpl mi = testLocator.getService(MethodInterceptorImpl.class);
-        mi.getAndZeroCounter();
+        mi.clearAndGetIntercepted();
         
         EventSubscriberService subscriber = testLocator.getService(EventSubscriberService.class);
         EventPublisher publisher = testLocator.getService(EventPublisher.class);
@@ -76,6 +84,71 @@ public class AOPEventsTest extends HK2Runner {
         
         // Intercepted and invoked
         Assert.assertEquals(event, subscriber.getLastEvent());
-        Assert.assertEquals(1, mi.getAndZeroCounter());
+        
+        HashSet<String> intercepted = mi.clearAndGetIntercepted();
+        Assert.assertTrue(intercepted.contains(EventSubscriberService.class.getName()));
+    }
+    
+    /**
+     * Tests that protected event methods can be intercepted
+     */
+    @Test
+    public void testProtectedSimpleInterceptedEvent() {
+        MethodInterceptorImpl mi = testLocator.getService(MethodInterceptorImpl.class);
+        mi.clearAndGetIntercepted();
+        
+        ProtectedEventSubscriberService subscriber = testLocator.getService(ProtectedEventSubscriberService.class);
+        EventPublisher publisher = testLocator.getService(EventPublisher.class);
+        
+        Event event = new Event();
+        publisher.publish(event);
+        
+        // Intercepted and invoked
+        Assert.assertEquals(event, subscriber.getLastEvent());
+        
+        HashSet<String> intercepted = mi.clearAndGetIntercepted();
+        Assert.assertTrue(intercepted.contains(ProtectedEventSubscriberService.class.getName()));
+    }
+    
+    /**
+     * Tests that package event methods can be intercepted
+     */
+    @Test
+    public void testPackageSimpleInterceptedEvent() {
+        MethodInterceptorImpl mi = testLocator.getService(MethodInterceptorImpl.class);
+        mi.clearAndGetIntercepted();
+        
+        PackageEventSubscriberService subscriber = testLocator.getService(PackageEventSubscriberService.class);
+        EventPublisher publisher = testLocator.getService(EventPublisher.class);
+        
+        Event event = new Event();
+        publisher.publish(event);
+        
+        // Intercepted and invoked
+        Assert.assertEquals(event, subscriber.getLastEvent());
+        
+        HashSet<String> intercepted = mi.clearAndGetIntercepted();
+        Assert.assertTrue(intercepted.contains(PackageEventSubscriberService.class.getName()));
+    }
+    
+    /**
+     * Tests that private event methods can be NOT intercepted but are invoked anyway
+     */
+    @Test
+    public void testPrivateSimpleInterceptedEvent() {
+        MethodInterceptorImpl mi = testLocator.getService(MethodInterceptorImpl.class);
+        mi.clearAndGetIntercepted();
+        
+        PrivateEventSubscriberService subscriber = testLocator.getService(PrivateEventSubscriberService.class);
+        EventPublisher publisher = testLocator.getService(EventPublisher.class);
+        
+        Event event = new Event();
+        publisher.publish(event);
+        
+        // Intercepted and invoked
+        Assert.assertEquals(event, subscriber.getLastEvent());
+        
+        HashSet<String> intercepted = mi.clearAndGetIntercepted();
+        Assert.assertFalse(intercepted.contains(PrivateEventSubscriberService.class.getName()));
     }
 }

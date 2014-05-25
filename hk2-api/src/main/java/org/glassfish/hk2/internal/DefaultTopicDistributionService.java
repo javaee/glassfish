@@ -42,6 +42,7 @@ package org.glassfish.hk2.internal;
 import java.lang.annotation.Annotation;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
 import java.util.Collections;
 import java.util.HashMap;
@@ -404,13 +405,31 @@ public class DefaultTopicDistributionService implements
         
     }
     
-    private static Method findMethodOnDifferentClass(Class<?> findOnMe, Method method) {
-        try {
-            return findOnMe.getMethod(method.getName(), method.getParameterTypes());
+    private Method findMethodOnDifferentClass(Class<?> findOnMe, Method method) {
+        if ((method.getModifiers() & Modifier.PRIVATE) != 0) {
+            return method;
         }
-        catch (Throwable th) {
-            return null;
+        
+        if ((method.getModifiers() & Modifier.PUBLIC) != 0) {
+            try {
+                return findOnMe.getMethod(method.getName(), method.getParameterTypes());
+            }
+            catch (Throwable th) {
+                return null;
+            }
         }
+        
+        
+        Set<MethodWrapper> allMethods = reflectionHelper.getAllMethods(findOnMe);
+        MethodWrapper findMe = reflectionHelper.createMethodWrapper(method);
+        
+        for (MethodWrapper allMethod : allMethods) {
+            if (allMethod.equals(findMe)) {
+                return allMethod.getMethod();
+            }
+        }
+        
+        return null;
     }
     
     private static SubscriberInfo generateSubscriberInfo(ActiveDescriptor<?> injecteeDescriptor,

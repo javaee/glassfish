@@ -59,6 +59,14 @@ public interface ClassReflectionHelper {
     public Set<MethodWrapper> getAllMethods(Class<?> clazz);
     
     /**
+     * Creates a method wrapper from the given method
+     * 
+     * @param m A non-null method to create a wrapper from
+     * @return A method wrapper
+     */
+    public MethodWrapper createMethodWrapper(Method m);
+    
+    /**
      * Gets all fields for a class (taking class heirarchy into account)
      * 
      * @param clazz The class to analyze for all fields

@@ -76,6 +76,18 @@ public class InterceptionServiceImpl implements InterceptionService {
                     return true;
                 }
                 
+                if (ProtectedEventSubscriberService.class.getName().equals(d.getImplementation())) {
+                    return true;
+                }
+                
+                if (PackageEventSubscriberService.class.getName().equals(d.getImplementation())) {
+                    return true;
+                }
+                
+                if (PrivateEventSubscriberService.class.getName().equals(d.getImplementation())) {
+                    return true;
+                }
+                
                 return false;
             }
             
