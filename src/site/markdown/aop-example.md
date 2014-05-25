@@ -378,10 +378,15 @@ the service is in the PerLookup scope.
 ### AOP Requirements
 
 In order to use method interceptors proxies are used.  Therefore services that use method interceptors
-must not be final nor have any final methods or fields.  Proxies must be supported on the platform on which
+must not be final nor have any final methods.  Proxies must be supported on the platform on which
 hk2 is running.  Constructor interception does NOT use proxies so these limitations do not extend to
-constructor injection.  The proxies created for method interception (as opposed to those created for
-proxiable scopes) do not implement the [ProxyCtl][proxyctl] interface.
+constructor injection.  Any method to be intercepted must be public, protected or package visibility.
+Private methods will not be intercepted.  Constructors to be intercepted can have any visibility.
+
+The proxies created for method interception (as opposed to those created for
+proxiable scopes) do not implement the [ProxyCtl][proxyctl] interface.  Instead they implement the
+[AOPProxyCtl][aopproxyctl] interface, which allows access to the underlying descriptor for the service
+whose instance was proxied.
 
 Interception in general is only supported when HK2 is constructing the services itself.  In particular
 services created via a [Factory][factory] can not use AOP nor can services that come from third-parties.
@@ -400,3 +405,4 @@ the interceptors developed for other systems may be appropriate in HK2 as well.
 [activedescriptor]: apidocs/org/glassfish/hk2/api/ActiveDescriptor.html
 [builderhelper]: apidocs/org/glassfish/hk2/utilities/BuilderHelper.html
 [proxyctl]: apidocs/org/glassfish/hk2/api/ProxyCtl.html
+[aopproxyctl]: apidocs/org/glassfish/hk2/api/AOPProxyCtl.html
