@@ -43,10 +43,8 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Member;
 import java.lang.reflect.Type;
 import javax.inject.Inject;
-import javax.inject.Named;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
-import static org.glassfish.hk2.api.InjectionResolver.SYSTEM_RESOLVER_NAME;
 import org.glassfish.hk2.api.Rank;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.jvnet.hk2.annotations.Service;
@@ -65,15 +63,12 @@ public class HK2MockitoSpyInjectionResolver implements InjectionResolver<Inject>
 
     private final SpyService spyService;
     private final ParentCache parentCache;
-    private final InjectionResolver<Inject> systemResolver;
 
     @Inject
     HK2MockitoSpyInjectionResolver(SpyService spyService,
-            ParentCache parentCache,
-            @Named(SYSTEM_RESOLVER_NAME) InjectionResolver systemResolver) {
+            ParentCache parentCache) {
         this.spyService = spyService;
         this.parentCache = parentCache;
-        this.systemResolver = systemResolver;
     }
 
     @Override

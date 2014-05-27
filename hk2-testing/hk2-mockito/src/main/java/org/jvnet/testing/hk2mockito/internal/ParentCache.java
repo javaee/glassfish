@@ -50,7 +50,6 @@ import org.jvnet.hk2.annotations.Service;
  *
  * @author Sharmarke Aden
  */
-@HK2Mockito
 @Service
 public class ParentCache {
 

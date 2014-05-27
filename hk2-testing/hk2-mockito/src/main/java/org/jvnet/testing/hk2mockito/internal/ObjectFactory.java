@@ -48,7 +48,6 @@ import static org.mockito.Mockito.spy;
  *
  * @author Sharmarke Aden
  */
-@HK2Mockito
 @Service
 public class ObjectFactory {
 

@@ -50,7 +50,6 @@ import org.jvnet.hk2.annotations.Service;
  *
  * @author Sharmarke Aden
  */
-@HK2Mockito
 @Service
 public class MemberCache {
 
@@ -58,8 +57,7 @@ public class MemberCache {
     private final Provider<Map> cacheProvider;
 
     @Inject
-    MemberCache(@HK2Mockito Map cache,
-            @HK2Mockito Provider<Map> cacheProvider) {
+    MemberCache(@HK2Mockito Map cache, @HK2Mockito Provider<Map> cacheProvider) {
         this.cache = cache;
         this.cacheProvider = cacheProvider;
     }

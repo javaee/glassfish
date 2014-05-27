@@ -39,13 +39,12 @@
  */
 package org.jvnet.testing.hk2mockito.internal;
 
-import java.lang.reflect.Executable;
+import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Type;
 import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.inject.Provider;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
 import static org.glassfish.hk2.api.InjectionResolver.SYSTEM_RESOLVER_NAME;
@@ -69,10 +68,9 @@ public class SpyService {
     private final InjectionResolver<Inject> systemResolver;
 
     @Inject
-    SpyService(@HK2Mockito MemberCache memberCache,
-            @HK2Mockito ParentCache parentCache,
-            @HK2Mockito Provider<Map> cacheProvider,
-            @HK2Mockito ObjectFactory objectFactory,
+    SpyService(MemberCache memberCache,
+            ParentCache parentCache,
+            ObjectFactory objectFactory,
             @Named(SYSTEM_RESOLVER_NAME) InjectionResolver systemResolver) {
         this.memberCache = memberCache;
         this.parentCache = parentCache;
@@ -143,10 +141,10 @@ public class SpyService {
 
         SpyCacheKey key;
 
-        if (member instanceof Executable) {
-            key = objectFactory.newKey(requiredType, injectee.getPosition());
-        } else {
+        if (member instanceof Field) {
             key = objectFactory.newKey(requiredType, member.getName());
+        } else {
+            key = objectFactory.newKey(requiredType, injectee.getPosition());
         }
 
         Object cachedService = cache.get(key);
