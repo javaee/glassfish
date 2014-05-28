@@ -279,18 +279,35 @@ public class HK2Main extends Main implements
     }
 
     private class NonHK2ServiceFilter implements Filter {
-        public boolean match(ServiceReference serviceReference) {
-            return (!ctx.getBundle().equals(serviceReference.getBundle()));
+        /* (non-Javadoc)
+         * @see org.osgi.framework.Filter#match(org.osgi.framework.ServiceReference)
+         */
+        @Override
+        public boolean match(ServiceReference reference) {
+            return (!ctx.getBundle().equals(reference.getBundle()));
         }
 
+        /* (non-Javadoc)
+         * @see org.osgi.framework.Filter#match(java.util.Dictionary)
+         */
         public boolean match(Dictionary dictionary) {
             throw new RuntimeException("Unexpected method called");
         }
 
+        /* (non-Javadoc)
+         * @see org.osgi.framework.Filter#matches(java.util.Map)
+         */
+        public boolean matches(Map<String, ?> map) {
+            throw new RuntimeException("Unexpected method called");
+        }
+        
+        /* (non-Javadoc)
+         * @see org.osgi.framework.Filter#matchCase(java.util.Dictionary)
+         */
         public boolean matchCase(Dictionary dictionary) {
             throw new RuntimeException("Unexpected method called");
         }
-
+        
         public String toString() {
             return "(objectClass=*)";
         }
