@@ -185,6 +185,7 @@
     <properties>
         <java.net.username>${user.name}</java.net.username>
         
+        <junit.version>4.11</junit.version>
         <asm.version>5.0.3</asm.version>
         <tiger-types.version>1.4</tiger-types.version>
         <woodstox.version>3.2.3</woodstox.version>
@@ -914,7 +915,7 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.3.1</version>                
+                <version>${junit.version}</version>                
             </dependency>
             <dependency>
                 <groupId>org.easymock</groupId>
