@@ -39,22 +39,58 @@
  */
 package org.glassfish.hk2.configuration.persistence.properties.internal;
 
+import java.util.HashMap;
 import java.util.Properties;
 
 import org.glassfish.hk2.configuration.persistence.properties.PropertyFileHandle;
+import org.jvnet.hk2.annotations.Service;
 
 /**
  * @author jwells
  *
  */
+@Service
 public class PropertyFileHandleImpl implements PropertyFileHandle {
+    private final static String SEPARATOR = ".";
+    
+    private HashMap<String, String> lastRead = new HashMap<String, String>();
+    
+    private final String specificType;
+    private final String defaultType;
+    private final String defaultInstanceName;
+    
+    private static String emptyNull(String input) {
+        if (input == null) return null;
+        input = input.trim();
+        if (input.length() <= 0) return null;
+        return input;
+    }
+    
+    /* package */ PropertyFileHandleImpl(String specificType, String defaultType, String defaultInstanceName) {
+        this.specificType = emptyNull(specificType);
+        this.defaultType = emptyNull(defaultType);
+        this.defaultInstanceName = emptyNull(defaultInstanceName);
+    }
+    
+    private TypeData extractData(String rawString) {
+        return null;
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.configuration.persistence.properties.PropertyFileHandle#readProperties(java.util.Properties)
      */
     @Override
     public void readProperties(Properties properties) {
-        // TODO Auto-generated method stub
+        if (properties == null) throw new IllegalArgumentException();
+        
+        for (Object fullKey : properties.keySet()) {
+            if (!(fullKey instanceof String)) continue;
+            
+            String sFullKey = (String) fullKey;
+            
+            int firstDotIndex = sFullKey.indexOf(SEPARATOR);
+            
+        }
 
     }
 
@@ -63,8 +99,7 @@ public class PropertyFileHandleImpl implements PropertyFileHandle {
      */
     @Override
     public String getSpecificType() {
-        // TODO Auto-generated method stub
-        return null;
+        return specificType;
     }
 
     /* (non-Javadoc)
@@ -72,8 +107,7 @@ public class PropertyFileHandleImpl implements PropertyFileHandle {
      */
     @Override
     public String getDefaultType() {
-        // TODO Auto-generated method stub
-        return null;
+        return defaultType;
     }
 
     /* (non-Javadoc)
@@ -81,8 +115,7 @@ public class PropertyFileHandleImpl implements PropertyFileHandle {
      */
     @Override
     public String getDefaultInstanceName() {
-        // TODO Auto-generated method stub
-        return null;
+        return defaultInstanceName;
     }
 
     /* (non-Javadoc)
@@ -92,6 +125,48 @@ public class PropertyFileHandleImpl implements PropertyFileHandle {
     public void dispose() {
         // TODO Auto-generated method stub
 
+    }
+    
+    private static class TypeData {
+        private final String typeName;
+        private final String instanceName;
+        private final String paramName;
+        private final int hashCode;
+        private String value;
+        
+        private TypeData(String typeName,
+                String instanceName,
+                String paramName,
+                String value) {
+            this.typeName = typeName;
+            this.instanceName = instanceName;
+            this.paramName = paramName;
+            this.value = value;
+            
+            hashCode = typeName.hashCode() ^ instanceName.hashCode() ^ paramName.hashCode();
+        }
+        
+        public int hashCode() {
+            return hashCode;
+        }
+        
+        private void setValue(String value) {
+            this.value = value;
+        }
+        
+        private String getValue() {
+            return value;
+        }
+        
+        public boolean equals(Object o) {
+            if (o == null) return false;
+            if (!(o instanceof TypeData)) return false;
+            TypeData other = (TypeData) o;
+            
+            return (typeName.equals(other.typeName) &&
+                    instanceName.equals(other.instanceName) &&
+                    paramName.equals(other.paramName));
+        }
     }
 
 }
