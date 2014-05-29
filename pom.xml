@@ -215,7 +215,7 @@
         <fontawesome.version>3.2.1</fontawesome.version>
         <highlightjs.version>7.5</highlightjs.version>
         <jquery.version>1.9.1</jquery.version>
-        <jdk.version>1.8.0-20</jdk.version>
+        <jdk.version>1.8.0</jdk.version>
         <mvn.version>3.0.3</mvn.version>
     </properties>
     

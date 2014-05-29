@@ -63,5 +63,6 @@
         <module>hk2-locator-no-proxies</module>
         <module>hk2-locator-no-proxies2</module>
         <module>interceptor-events</module>
+        <module>hk2-mockito</module>
     </modules>
 </project>
