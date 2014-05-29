@@ -1,6 +1,7 @@
 package org.jvnet.hk2.osgiadapter;
 
 import static org.ops4j.pax.exam.CoreOptions.cleanCaches;
+import static org.ops4j.pax.exam.CoreOptions.frameworkProperty;
 import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
@@ -62,7 +63,8 @@ public class ServiceLocatorHk2MainTest {
 	public Option[] configuration() {
 		String projectVersion = System.getProperty("project.version");
 		return options(
-		        systemProperty("java.io.tmpdir").value(System.getProperty("basedir")),
+		        systemProperty("java.io.tmpdir").value(System.getProperty("basedir") + "/target"),
+		        frameworkProperty("org.osgi.framework.storage").value(System.getProperty("basedir") + "/target/felix"),
 				systemPackage("sun.misc"),
 				systemPackage("javax.net.ssl"),
 				systemPackage("javax.xml.bind"),
