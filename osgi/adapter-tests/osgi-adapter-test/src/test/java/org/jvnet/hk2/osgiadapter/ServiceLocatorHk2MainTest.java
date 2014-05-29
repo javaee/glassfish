@@ -6,6 +6,7 @@ import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.provision;
 import static org.ops4j.pax.exam.CoreOptions.systemPackage;
+import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 import java.io.File;
 import java.util.List;
@@ -61,6 +62,7 @@ public class ServiceLocatorHk2MainTest {
 	public Option[] configuration() {
 		String projectVersion = System.getProperty("project.version");
 		return options(
+		        systemProperty("java.io.tmpdir").value(System.getProperty("basedir")),
 				systemPackage("sun.misc"),
 				systemPackage("javax.net.ssl"),
 				systemPackage("javax.xml.bind"),

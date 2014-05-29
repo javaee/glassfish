@@ -45,6 +45,7 @@ import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.provision;
 import static org.ops4j.pax.exam.CoreOptions.systemPackage;
+import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 
 import java.util.List;
 
@@ -64,6 +65,7 @@ import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.options.SystemPropertyOption;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.osgi.framework.BundleContext;
@@ -91,6 +93,7 @@ public class OSGiTest {
     public Option[] configuration() {
         String projectVersion = System.getProperty("project.version");
         return options(
+                systemProperty("java.io.tmpdir").value(System.getProperty("basedir")),
                 systemPackage("sun.misc"),
                 systemPackage("javax.net.ssl"),
                 systemPackage("javax.xml.bind"),
