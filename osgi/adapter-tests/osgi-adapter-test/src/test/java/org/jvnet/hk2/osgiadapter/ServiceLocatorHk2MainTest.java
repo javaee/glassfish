@@ -8,6 +8,7 @@ import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.provision;
 import static org.ops4j.pax.exam.CoreOptions.systemPackage;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+import static org.ops4j.pax.exam.CoreOptions.workingDirectory;
 
 import java.io.File;
 import java.util.List;
@@ -63,6 +64,7 @@ public class ServiceLocatorHk2MainTest {
 	public Option[] configuration() {
 		String projectVersion = System.getProperty("project.version");
 		return options(
+		        workingDirectory(System.getProperty("basedir") + "/target/wd"),
 		        systemProperty("java.io.tmpdir").value(System.getProperty("basedir") + "/target"),
 		        frameworkProperty("org.osgi.framework.storage").value(System.getProperty("basedir") + "/target/felix"),
 				systemPackage("sun.misc"),
