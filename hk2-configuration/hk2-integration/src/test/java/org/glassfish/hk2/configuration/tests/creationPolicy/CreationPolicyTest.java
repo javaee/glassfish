@@ -39,8 +39,6 @@
  */
 package org.glassfish.hk2.configuration.tests.creationPolicy;
 
-import javax.inject.Inject;
-
 import org.glassfish.hk2.configuration.api.ConfigurationUtilities;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
@@ -61,7 +59,6 @@ public class CreationPolicyTest extends HK2Runner {
     /* package */ static final String ONE = "One";
     /* package */ static final String TWO = "Two";
     
-    @Inject
     private Hub hub;
     
     @Before
@@ -69,6 +66,8 @@ public class CreationPolicyTest extends HK2Runner {
         super.before();
         
         ConfigurationUtilities.enableConfigurationSystem(testLocator);
+        
+        hub = testLocator.getService(Hub.class);
     }
     
     private void createType(String typeName) {

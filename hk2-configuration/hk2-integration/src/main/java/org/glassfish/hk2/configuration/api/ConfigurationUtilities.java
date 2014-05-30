@@ -41,6 +41,7 @@ package org.glassfish.hk2.configuration.api;
 
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.configuration.hub.api.ManagerUtilities;
 import org.glassfish.hk2.configuration.internal.ConfigurationListener;
 import org.glassfish.hk2.configuration.internal.ConfigurationValidationService;
 import org.glassfish.hk2.configuration.internal.ConfiguredByContext;
@@ -66,6 +67,8 @@ public class ConfigurationUtilities {
             // The assumption is that if this service is there then this is already on, don't do it again
             return;
         }
+        
+        ManagerUtilities.enableConfigurationHub(locator);
         
         ServiceLocatorUtilities.addClasses(locator, ConfiguredValidator.class);
         

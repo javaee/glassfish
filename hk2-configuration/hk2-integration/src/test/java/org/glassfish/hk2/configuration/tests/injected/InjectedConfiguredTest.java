@@ -41,8 +41,6 @@ package org.glassfish.hk2.configuration.tests.injected;
 
 import java.util.HashMap;
 
-import javax.inject.Inject;
-
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.configuration.api.ConfigurationUtilities;
 import org.glassfish.hk2.configuration.hub.api.Hub;
@@ -68,7 +66,6 @@ public class InjectedConfiguredTest extends HK2Runner {
     private final static String CONFIGURED_VALUE_KEY = "configuredValue";
     private final static String DEFAULT_KEY = "default";
     
-    @Inject
     private Hub hub;
     
     @Before
@@ -76,6 +73,8 @@ public class InjectedConfiguredTest extends HK2Runner {
         super.before();
         
         ConfigurationUtilities.enableConfigurationSystem(testLocator);
+        
+        hub = testLocator.getService(Hub.class);
     }
     
     private void addConfiguredValueBean(String typeName, long value) {

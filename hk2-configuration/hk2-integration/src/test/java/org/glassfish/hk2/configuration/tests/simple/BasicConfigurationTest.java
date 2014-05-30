@@ -42,8 +42,6 @@ package org.glassfish.hk2.configuration.tests.simple;
 import java.beans.PropertyChangeEvent;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.configuration.api.ConfigurationUtilities;
 import org.glassfish.hk2.configuration.hub.api.Hub;
@@ -81,7 +79,6 @@ public class BasicConfigurationTest extends HK2Runner {
     private final static String BOB = "Bob";
     private final static String CAROL = "Carol";
     
-    @Inject
     private Hub hub;
     
     @Before
@@ -89,6 +86,8 @@ public class BasicConfigurationTest extends HK2Runner {
         super.before();
         
         ConfigurationUtilities.enableConfigurationSystem(testLocator);
+        
+        hub = testLocator.getService(Hub.class);
     }
     
     private ConfiguredServiceBean createBean() {
