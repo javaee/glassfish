@@ -81,7 +81,7 @@ public class PropertiesTest extends HK2Runner {
         return url.openStream();
     }
     
-    @Test @org.junit.Ignore
+    @Test //@org.junit.Ignore
     public void testBasicPropertyFile() throws IOException {
         removeType(TYPE1);
         removeType(TYPE2);
@@ -101,6 +101,7 @@ public class PropertiesTest extends HK2Runner {
         }
         finally {
             is.close();
+            pfh.dispose();
         }
         
         

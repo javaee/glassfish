@@ -39,14 +39,21 @@
  */
 package org.glassfish.hk2.configuration.persistence.properties.internal;
 
+import javax.inject.Inject;
+
+import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.persistence.properties.PropertyFileHandle;
 import org.glassfish.hk2.configuration.persistence.properties.PropertyFileService;
+import org.jvnet.hk2.annotations.Service;
 
 /**
  * @author jwells
  *
  */
+@Service
 public class PropertyFileServiceImpl implements PropertyFileService {
+    @Inject
+    private Hub hub;
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.configuration.persistence.properties.PropertyFileService#createPropertyHandleOfSpecificType(java.lang.String, java.lang.String)
@@ -54,8 +61,7 @@ public class PropertyFileServiceImpl implements PropertyFileService {
     @Override
     public PropertyFileHandle createPropertyHandleOfSpecificType(
             String specificTypeName, String defaultInstanceName) {
-        // TODO Auto-generated method stub
-        return null;
+        return new PropertyFileHandleImpl(specificTypeName, null, defaultInstanceName, hub);
     }
 
     /* (non-Javadoc)
@@ -64,8 +70,7 @@ public class PropertyFileServiceImpl implements PropertyFileService {
     @Override
     public PropertyFileHandle createPropertyHandleOfSpecificType(
             String specificTypeName) {
-        // TODO Auto-generated method stub
-        return null;
+        return new PropertyFileHandleImpl(specificTypeName, null, null, hub);
     }
 
     /* (non-Javadoc)
@@ -74,8 +79,7 @@ public class PropertyFileServiceImpl implements PropertyFileService {
     @Override
     public PropertyFileHandle createPropertyHandleOfAnyType(
             String defaultTypeName, String defaultInstanceName) {
-        // TODO Auto-generated method stub
-        return null;
+        return new PropertyFileHandleImpl(null, defaultTypeName, defaultInstanceName, hub);
     }
 
     /* (non-Javadoc)
@@ -83,8 +87,7 @@ public class PropertyFileServiceImpl implements PropertyFileService {
      */
     @Override
     public PropertyFileHandle createPropertyHandleOfAnyType() {
-        // TODO Auto-generated method stub
-        return null;
+        return new PropertyFileHandleImpl(null, null, null, hub);
     }
 
 }
