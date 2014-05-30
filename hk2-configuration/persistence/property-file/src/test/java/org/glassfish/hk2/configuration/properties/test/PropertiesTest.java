@@ -47,9 +47,11 @@ import java.util.Properties;
 import javax.inject.Inject;
 
 import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.configuration.hub.api.ManagerUtilities;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.persistence.properties.PropertyFileHandle;
 import org.glassfish.hk2.configuration.persistence.properties.PropertyFileService;
+import org.glassfish.hk2.configuration.persistence.properties.PropertyFileUtilities;
 import org.junit.Before;
 import org.junit.Test;
 import org.jvnet.hk2.testing.junit.HK2Runner;
@@ -64,8 +66,16 @@ public class PropertiesTest extends HK2Runner {
     private final static String INSTANCE1 = "I1";
     private final static String INSTANCE2 = "I2";
     
-    @Inject
     private Hub hub;
+    
+    @Before
+    public void before() {
+        super.before();
+        
+        PropertyFileUtilities.enablePropertyFileService(testLocator);
+        
+        hub = testLocator.getService(Hub.class);
+    }
     
     private void removeType(String typeName) {
         WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
@@ -81,7 +91,7 @@ public class PropertiesTest extends HK2Runner {
         return url.openStream();
     }
     
-    @Test //@org.junit.Ignore
+    @Test
     public void testBasicPropertyFile() throws IOException {
         removeType(TYPE1);
         removeType(TYPE2);
