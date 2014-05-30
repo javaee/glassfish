@@ -44,6 +44,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.configuration.hub.api.ManagerUtilities;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
 import org.glassfish.hk2.configuration.hub.internal.HubImpl;
@@ -67,10 +68,7 @@ public class NegativeHubTest extends HK2Runner {
         super.before();
         
         // This is necessary to make running in an IDE easier
-        Hub hub = testLocator.getService(Hub.class);
-        if (hub == null) {
-            ServiceLocatorUtilities.addClasses(testLocator, HubImpl.class);
-        }
+        ManagerUtilities.enableConfigurationHub(testLocator);
         
         this.hub = testLocator.getService(Hub.class);
     }
