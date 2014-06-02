@@ -71,7 +71,7 @@ public class TestServlet extends HttpServlet {
 
     /* Normal injection of Beans */
     @Inject 
-    private transient org.slf4j.Logger log;
+    private transient org.jboss.logging.Logger log;
     @Inject BeanManager bm_at_inj;
 
     /*Injection of Java EE resources*/
