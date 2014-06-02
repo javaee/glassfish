@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010-2014 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,9 +45,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.jboss.logging.Logger;
+//import org.slf4j.LoggerFactory;
 
 @WebServlet(name="mytest",
         urlPatterns={"/myurl"},
@@ -76,7 +75,7 @@ public class TestServlet extends HttpServlet {
         System.out.println("BeanManager is " + bm);
         System.out.println("BeanManager via lookup is " + bm1);
         
-        Logger l = LoggerFactory.getLogger(getClass());
+        Logger l = Logger.getLogger(getClass());
         String s = "[ Hello World is logged by an instance of " + l.getClass() + ", which is loaded by " + l.getClass().getClassLoader() + "]";
         msg += s;
         l.info(s);

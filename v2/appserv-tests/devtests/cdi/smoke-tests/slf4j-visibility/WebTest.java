@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2010 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010-2014 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -118,7 +118,7 @@ public class WebTest {
             if (isExpectedResponse(line)) {
                 stat.addStatus(TEST_NAME, stat.PASS);
             } else {
-                System.out.println("Wrong response. Expected: org.slf4j.impl.SimpleLogger and WebappClassLoader in output" + 
+                System.out.println("Wrong response. Expected: org.jboss.logging.JDKLogger and org.jboss.logging.jboss-logging in output" + 
                           ", received: " + line);
                 stat.addStatus(TEST_NAME, stat.FAIL);
             }
@@ -126,6 +126,6 @@ public class WebTest {
     }
 
     private boolean isExpectedResponse(String line) {
-        return line.contains("org.slf4j.impl.SimpleLogger") && line.contains("WebappClassLoader");
+        return line.contains("org.jboss.logging.JDKLogger") && line.contains("org.jboss.logging.jboss-logging");
     }
 }
