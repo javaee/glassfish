@@ -39,17 +39,16 @@
  */
 package org.glassfish.hk2.configuration.properties.test;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.inject.Inject;
-
 import org.glassfish.hk2.configuration.hub.api.Hub;
-import org.glassfish.hk2.configuration.hub.api.ManagerUtilities;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
+import org.glassfish.hk2.configuration.hub.api.WriteableType;
 import org.glassfish.hk2.configuration.persistence.properties.PropertyFileBean;
 import org.glassfish.hk2.configuration.persistence.properties.PropertyFileHandle;
 import org.glassfish.hk2.configuration.persistence.properties.PropertyFileService;
@@ -67,6 +66,7 @@ public class PropertiesTest extends HK2Runner {
     private final static String TYPE1 = "T1";
     private final static String TYPE2 = "T2";
     private final static String TYPE3 = "T3";
+    private final static String TYPE4 = "T4";
     
     private final static String INSTANCE1 = "I1";
     private final static String INSTANCE2 = "I2";
@@ -74,10 +74,14 @@ public class PropertiesTest extends HK2Runner {
     private final static String DEFAULT_INSTANCE_NAME = "DEFAULT_INSTANCE_NAME";
     
     private final static String NAME = "name";
+    private final static String OTHER = "other";
     
     private final static String ALICE = "alice";
     private final static String BOB = "bob";
     private final static String CAROL = "carol";
+    
+    private final static String OTHER_VALUE1 = "V1";
+    private final static String OTHER_VALUE2 = "V2";
     
     private Hub hub;
     
@@ -94,6 +98,16 @@ public class PropertiesTest extends HK2Runner {
         WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
         
         wbd.removeType(typeName);
+        
+        wbd.commit();
+    }
+    
+    private void removeInstance(String typeName, String instanceName) {
+        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+        
+        WriteableType wt = wbd.getWriteableType(typeName);
+        
+        wt.removeInstance(instanceName);
         
         wbd.commit();
     }
@@ -191,6 +205,7 @@ public class PropertiesTest extends HK2Runner {
             p.put("fooChar", "e");
             p.put("fooString", "Eagles");
             p.put("fooByte", "18");
+            p.put("fooFile", ".");
             
             pfh.readProperties(p);
             
@@ -209,6 +224,7 @@ public class PropertiesTest extends HK2Runner {
             Assert.assertEquals('e', fooBean.getFooChar());
             Assert.assertEquals("Eagles", fooBean.getFooString());
             Assert.assertEquals((byte) 18, fooBean.getFooByte());
+            Assert.assertEquals(new File("."), fooBean.getFooFile());
         }
         finally {
             pfs.removePropertyFileBean();
@@ -231,7 +247,7 @@ public class PropertiesTest extends HK2Runner {
     }
     
     /**
-     * Tests reading a property file
+     * Tests removing instances
      * 
      * @throws IOException
      */
@@ -284,6 +300,126 @@ public class PropertiesTest extends HK2Runner {
             pfh.dispose();
             
             removeType(TYPE3);
+        }
+    }
+    
+    /**
+     * Tests modifying an instance
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void testInstanceModification() throws IOException {
+        removeType(TYPE4);
+        
+        PropertyFileService pfs = testLocator.getService(PropertyFileService.class);
+        PropertyFileHandle pfh = pfs.createPropertyHandleOfAnyType(TYPE4, CAROL);
+        
+        try {
+            Properties p = new Properties();
+            
+            p.put(instanceAndParamKey(ALICE, NAME), ALICE);
+            p.put(instanceAndParamKey(ALICE, OTHER), OTHER_VALUE1);
+            
+            pfh.readProperties(p);
+            
+            Assert.assertEquals(ALICE, getHubValue(TYPE4, ALICE, NAME));
+            Assert.assertEquals(OTHER_VALUE1, getHubValue(TYPE4, ALICE, OTHER));
+            
+            p.put(instanceAndParamKey(ALICE, OTHER), OTHER_VALUE2);
+            
+            pfh.readProperties(p);
+            
+            Assert.assertEquals(ALICE, getHubValue(TYPE4, ALICE, NAME));
+            Assert.assertEquals(OTHER_VALUE2, getHubValue(TYPE4, ALICE, OTHER));
+        }
+        finally {
+            pfh.dispose();
+            
+            removeType(TYPE4);
+        }
+    }
+    
+    /**
+     * Tests modifying and instance that was deleted outside the control of the
+     * PropertyFileHandle (should act like an add)
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void testModifyDeletedInstance() throws IOException {
+        removeType(TYPE4);
+        
+        PropertyFileService pfs = testLocator.getService(PropertyFileService.class);
+        PropertyFileHandle pfh = pfs.createPropertyHandleOfAnyType(TYPE4, CAROL);
+        
+        try {
+            Properties p = new Properties();
+            
+            p.put(instanceAndParamKey(ALICE, NAME), ALICE);
+            p.put(instanceAndParamKey(ALICE, OTHER), OTHER_VALUE1);
+            
+            pfh.readProperties(p);
+            
+            Assert.assertEquals(ALICE, getHubValue(TYPE4, ALICE, NAME));
+            Assert.assertEquals(OTHER_VALUE1, getHubValue(TYPE4, ALICE, OTHER));
+            
+            removeInstance(TYPE4, ALICE);
+            
+            Assert.assertNull(getHubValue(TYPE4, ALICE, NAME));
+            Assert.assertNull(getHubValue(TYPE4, ALICE, OTHER));
+            
+            p.put(instanceAndParamKey(ALICE, OTHER), OTHER_VALUE2);
+            
+            pfh.readProperties(p);
+            
+            Assert.assertEquals(ALICE, getHubValue(TYPE4, ALICE, NAME));
+            Assert.assertEquals(OTHER_VALUE2, getHubValue(TYPE4, ALICE, OTHER));
+        }
+        finally {
+            pfh.dispose();
+            
+            removeType(TYPE4);
+        }
+    }
+    
+    /**
+     * Tests adding and instance that was previously already added.
+     * Should act like a modify
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void testAddAlreadyExistingInstance() throws IOException {
+        removeType(TYPE4);
+        
+        PropertyFileService pfs = testLocator.getService(PropertyFileService.class);
+        PropertyFileHandle pfh1 = pfs.createPropertyHandleOfAnyType(TYPE4, CAROL);
+        PropertyFileHandle pfh2 = pfs.createPropertyHandleOfAnyType(TYPE4, CAROL);
+        
+        try {
+            Properties p = new Properties();
+            
+            p.put(instanceAndParamKey(ALICE, NAME), ALICE);
+            p.put(instanceAndParamKey(ALICE, OTHER), OTHER_VALUE1);
+            
+            pfh1.readProperties(p);
+            
+            Assert.assertEquals(ALICE, getHubValue(TYPE4, ALICE, NAME));
+            Assert.assertEquals(OTHER_VALUE1, getHubValue(TYPE4, ALICE, OTHER));
+            
+            p.put(instanceAndParamKey(ALICE, OTHER), OTHER_VALUE2);
+            
+            pfh2.readProperties(p);
+            
+            Assert.assertEquals(ALICE, getHubValue(TYPE4, ALICE, NAME));
+            Assert.assertEquals(OTHER_VALUE2, getHubValue(TYPE4, ALICE, OTHER));
+        }
+        finally {
+            pfh1.dispose();
+            pfh2.dispose();
+            
+            removeType(TYPE4);
         }
     }
 

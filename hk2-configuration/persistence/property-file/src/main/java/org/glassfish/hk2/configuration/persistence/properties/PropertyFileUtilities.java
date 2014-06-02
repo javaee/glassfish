@@ -45,6 +45,9 @@ import org.glassfish.hk2.configuration.persistence.properties.internal.PropertyF
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 
 /**
+ * This utility should be used when initializing hk2 in order to properly
+ * add the PropertyFileService to a specific registry
+ * 
  * @author jwells
  *
  */

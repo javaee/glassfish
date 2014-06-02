@@ -281,6 +281,7 @@ public class PropertyFileHandleImpl implements PropertyFileHandle {
             return Double.parseDouble(value);
         }
         if (char.class.equals(intoMe) || Character.class.equals(intoMe)) {
+            if (value.length() < 0) return ((char) 0);
             return value.charAt(0);
         }
         

@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.configuration.properties.test;
 
+import java.io.File;
+
 /**
  * A bean with a lot of useless stuff in it
  * 
@@ -58,6 +60,7 @@ public class FooBean {
     private char fooChar;
     private String fooString;
     private byte fooByte;
+    private File fooFile;
     
     /**
      * @return the fooBool
@@ -166,6 +169,18 @@ public class FooBean {
      */
     public void setFooByte(byte fooByte) {
         this.fooByte = fooByte;
+    }
+    /**
+     * @return the fooFile
+     */
+    public File getFooFile() {
+        return fooFile;
+    }
+    /**
+     * @param fooFile the fooFile to set
+     */
+    public void setFooFile(File fooFile) {
+        this.fooFile = fooFile;
     }
     
     
