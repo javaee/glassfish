@@ -56,7 +56,7 @@ public class TestServlet extends HttpServlet {
     BeanManager bm1;
     
     @Inject 
-    private transient org.slf4j.Logger log;
+    private transient org.jboss.logging.Logger log;
 
     public void service(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {

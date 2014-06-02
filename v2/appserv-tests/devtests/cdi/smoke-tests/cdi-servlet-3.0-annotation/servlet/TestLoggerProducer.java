@@ -1,10 +1,11 @@
 import javax.enterprise.inject.Produces;
+import org.jboss.logging.Logger;
 
 
 public class TestLoggerProducer {
     @Produces
-    public org.slf4j.Logger getLogger(){
-        org.slf4j.Logger l = org.slf4j.LoggerFactory.getLogger(TestLoggerProducer.class);
+    public org.jboss.logging.Logger getLogger(){
+        Logger l = Logger.getLogger(TestLoggerProducer.class);
         System.out.println("getLogger:: " + l);
         return l;
     }
