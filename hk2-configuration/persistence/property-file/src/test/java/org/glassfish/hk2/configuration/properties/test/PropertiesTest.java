@@ -42,6 +42,7 @@ package org.glassfish.hk2.configuration.properties.test;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.inject.Inject;
@@ -100,6 +101,7 @@ public class PropertiesTest extends HK2Runner {
      * 
      * @throws IOException
      */
+    @SuppressWarnings("unchecked")
     @Test
     public void testBasicPropertyFile() throws IOException {
         removeType(TYPE1);
@@ -116,7 +118,32 @@ public class PropertiesTest extends HK2Runner {
             
             pfh.readProperties(p);
             
-            hub.getCurrentDatabase().getInstance(TYPE1, INSTANCE1);
+            {
+                Map<String, Object> instance1 = (Map<String, Object>) hub.getCurrentDatabase().getInstance(TYPE1, INSTANCE1);
+                Assert.assertEquals("I1", instance1.get("name"));
+                Assert.assertEquals("300 Packer Blvd", instance1.get("address"));
+                Assert.assertEquals("Philadelphia", instance1.get("city"));
+                Assert.assertEquals("PA", instance1.get("state"));
+                Assert.assertEquals("07936", instance1.get("zip"));
+            }
+            
+            {
+                Map<String, Object> instance2 = (Map<String, Object>) hub.getCurrentDatabase().getInstance(TYPE1, INSTANCE2);
+                Assert.assertEquals("I2", instance2.get("name"));
+                Assert.assertEquals("310 Packer Blvd", instance2.get("address"));
+                Assert.assertEquals("Philadelphia", instance2.get("city"));
+                Assert.assertEquals("PA", instance2.get("state"));
+                Assert.assertEquals("08008", instance2.get("zip"));
+            }
+            
+            {
+                Map<String, Object> instance1 = (Map<String, Object>) hub.getCurrentDatabase().getInstance(TYPE2, INSTANCE1);
+                Assert.assertEquals("I1", instance1.get("name"));
+                Assert.assertEquals("Taylor Avenue", instance1.get("address"));
+                Assert.assertEquals("Beach Haven", instance1.get("city"));
+                Assert.assertEquals("NJ", instance1.get("state"));
+                Assert.assertEquals("08007", instance1.get("zip"));
+            }
         }
         finally {
             is.close();
