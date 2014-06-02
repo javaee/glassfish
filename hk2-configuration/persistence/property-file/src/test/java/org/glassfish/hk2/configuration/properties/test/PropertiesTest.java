@@ -130,7 +130,7 @@ public class PropertiesTest extends HK2Runner {
     /**
      * Tests adding a bean via properties that is backed by a java bean rather than a map
      */
-    @Test @org.junit.Ignore
+    @Test
     public void addJavaBeanBackedPropertyMap() {
         removeType(FooBean.TYPE_NAME);
         
@@ -155,6 +155,7 @@ public class PropertiesTest extends HK2Runner {
             p.put("fooDouble", "17.00");
             p.put("fooChar", "e");
             p.put("fooString", "Eagles");
+            p.put("fooByte", "18");
             
             pfh.readProperties(p);
             
@@ -168,10 +169,11 @@ public class PropertiesTest extends HK2Runner {
             Assert.assertEquals(13, fooBean.getFooShort());
             Assert.assertEquals(14, fooBean.getFooInt());
             Assert.assertEquals(-15L, fooBean.getFooLong());
-            Assert.assertEquals((float) 16.00, fooBean.getFooFloat());
-            Assert.assertEquals((double) 17.00, fooBean.getFooDouble());
+            Assert.assertEquals((float) 16.00, fooBean.getFooFloat(), 1);
+            Assert.assertEquals((double) 17.00, fooBean.getFooDouble(), 1);
             Assert.assertEquals('e', fooBean.getFooChar());
             Assert.assertEquals("Eagles", fooBean.getFooString());
+            Assert.assertEquals((byte) 18, fooBean.getFooByte());
         }
         finally {
             pfs.removePropertyFileBean();

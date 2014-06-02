@@ -39,16 +39,27 @@
  */
 package org.glassfish.hk2.configuration.persistence.properties.internal;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
+import org.glassfish.hk2.configuration.persistence.properties.PropertyFileBean;
 import org.glassfish.hk2.configuration.persistence.properties.PropertyFileHandle;
 import org.glassfish.hk2.configuration.persistence.properties.PropertyFileService;
+import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
+import org.glassfish.hk2.utilities.reflection.MethodWrapper;
+import org.glassfish.hk2.utilities.reflection.Pretty;
+import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
 import org.jvnet.hk2.annotations.Service;
 
 /**
@@ -68,6 +79,7 @@ public class PropertyFileHandleImpl implements PropertyFileHandle {
     private final String defaultType;
     private final String defaultInstanceName;
     private final Hub hub;
+    private final ClassReflectionHelper reflectionHelper = new ClassReflectionHelperImpl();
     
     /* package */ PropertyFileHandleImpl(String specificType, String defaultType, String defaultInstanceName, Hub hub) {
         this.specificType = emptyNull(specificType);
@@ -191,6 +203,154 @@ public class PropertyFileHandleImpl implements PropertyFileHandle {
         }
     }
     
+    private static String SET = "set";
+    
+    private static Set<String> getPossibleSetterNames(String key) {
+        LinkedHashSet<String> retVal = new LinkedHashSet<String>(2);
+        
+        char c = key.charAt(0);
+        retVal.add(SET + Character.toUpperCase(c) + key.substring(1));
+        
+        StringBuffer sb = new StringBuffer(SET);
+        sb.append(Character.toUpperCase(c));
+        
+        boolean foundFirstUpper = false;
+        for (int lcv = 1; lcv < key.length(); lcv++) {
+            c = key.charAt(lcv);
+            boolean isUpper = Character.isUpperCase(c);
+            
+            if (isUpper || foundFirstUpper) {
+                foundFirstUpper = true;
+                sb.append(c);
+            }
+            else {
+                sb.append(Character.toUpperCase(c));
+            }
+        }
+        
+        retVal.add(sb.toString());
+        
+        return retVal;
+    }
+    
+    private Method findMethod(Class<?> clazz, Set<String> possibleSetterNames) {
+        Set<MethodWrapper> wrappers = reflectionHelper.getAllMethods(clazz);
+        
+        for (MethodWrapper wrapper : wrappers) {
+            Method method = wrapper.getMethod();
+            
+            if ((method.getModifiers() & Modifier.PUBLIC) == 0) continue;
+            
+            Class<?> parameters[] = method.getParameterTypes();
+            if (parameters.length != 1) continue;
+            
+            String methodName = method.getName();
+            for (String searchName : possibleSetterNames) {
+                if (methodName.equals(searchName)) {
+                    return method;
+                }
+            }
+        }
+        
+        return null;
+    }
+    
+    private Object convertValue(String value, Class<?> intoMe) {
+        if (value == null) return value;
+        
+        if (String.class.equals(intoMe)) return value;
+        if (boolean.class.equals(intoMe) || Boolean.class.equals(intoMe)) {
+            return Boolean.parseBoolean(value);
+        }
+        if (short.class.equals(intoMe) || Short.class.equals(intoMe)) {
+            return Short.parseShort(value);
+        }
+        if (int.class.equals(intoMe) || Integer.class.equals(intoMe)) {
+            return Integer.parseInt(value);
+        }
+        if (long.class.equals(intoMe) || Long.class.equals(intoMe)) {
+            return Long.parseLong(value);
+        }
+        if (float.class.equals(intoMe) || Float.class.equals(intoMe)) {
+            return Float.parseFloat(value);
+        }
+        if (byte.class.equals(intoMe) || Byte.class.equals(intoMe)) {
+            return Byte.parseByte(value);
+        }
+        if (double.class.equals(intoMe) || Double.class.equals(intoMe)) {
+            return Double.parseDouble(value);
+        }
+        if (char.class.equals(intoMe) || Character.class.equals(intoMe)) {
+            return value.charAt(0);
+        }
+        
+        // OK, none of the normal ones, lets see if it has a public constructor
+        // that takes a String
+        Constructor<?> constructor;
+        try {
+            constructor = intoMe.getConstructor(String.class);
+        }
+        catch (NoSuchMethodException e) {
+            throw new IllegalArgumentException("Could not convert value " + value + " into class " + intoMe.getName());
+        }
+        
+        try {
+            return constructor.newInstance(value);
+        }
+        catch (InstantiationException ie) {
+            throw new IllegalArgumentException("Could not create value " + value + " from class " + intoMe.getName(), ie);
+        }
+        catch (IllegalAccessException e) {
+            throw new IllegalArgumentException("Could not create value " + value + " from class " + intoMe.getName(), e);
+        }
+        catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Could not create value " + value + " from class " + intoMe.getName(), e);
+        }
+        catch (InvocationTargetException e) {
+            throw new IllegalArgumentException("Could not create value " + value + " from class " + intoMe.getName(), e.getTargetException());
+        }
+    }
+    
+    private Object convertBean(String typeName, Map<String, String> rawBean) {
+        PropertyFileBean propertyFileBean = (PropertyFileBean) hub.getCurrentDatabase().getInstance(
+                PropertyFileBean.TYPE_NAME,
+                PropertyFileBean.INSTANCE_NAME);
+        if (propertyFileBean == null) return rawBean;
+        
+        Class<?> beanClass = propertyFileBean.getTypeMapping(typeName);
+        if (beanClass == null) return rawBean;
+        
+        // OK, at this point we need to convert the map to a real bean
+        try {
+            Object target = beanClass.newInstance();
+            
+            for (Map.Entry<String, String> entry : rawBean.entrySet()) {
+                String key = entry.getKey();
+                
+                // Could be two of them
+                Set<String> possibleSetterNames = getPossibleSetterNames(key);
+                Method method = findMethod(beanClass, possibleSetterNames);
+                if (method == null) {
+                    throw new IllegalArgumentException("Could not find a setter for property names " + Pretty.collection(possibleSetterNames));
+                }
+                
+                Class<?> methodParamType = method.getParameterTypes()[0];
+                
+                Object params[] = new Object[1];
+                params[0] = convertValue(entry.getValue(), methodParamType);
+                
+                method.invoke(target, params);
+            }
+            
+            return target;
+        }
+        catch (Throwable th) {
+            throw new IllegalArgumentException("Error converting to bean type " + beanClass.getName(), th);
+        }
+        
+        
+    }
+    
     private void modifyValues(WriteableBeanDatabase wbd, HashMap<TypeData, Map<String, String>> allBeans) {
         for (Map.Entry<TypeData, Map<String, String>> entry : lastRead.entrySet()) {
             TypeData oldKey = entry.getKey();
@@ -201,12 +361,14 @@ public class PropertyFileHandleImpl implements PropertyFileHandle {
             String type = oldKey.typeName;
             String instance = oldKey.instanceName;
             
+            Object convertedNewBean = convertBean(type, newBean);
+            
             WriteableType wt = wbd.findOrAddWriteableType(type);
             if (wt.getInstance(instance) == null) {
-                wt.addInstance(instance, newBean);
+                wt.addInstance(instance, convertedNewBean);
             }
             else {
-                wt.modifyInstance(instance, newBean);
+                wt.modifyInstance(instance, convertedNewBean);
             }
         }
     }
@@ -222,12 +384,14 @@ public class PropertyFileHandleImpl implements PropertyFileHandle {
             String typeName = newKey.typeName;
             String instanceName = newKey.instanceName;
             
+            Object convertedNewBean = convertBean(typeName, entry.getValue());
+            
             WriteableType wt = wbd.findOrAddWriteableType(typeName);
             if (wt.getInstance(instanceName) != null) {
-                wt.modifyInstance(instanceName, entry.getValue());
+                wt.modifyInstance(instanceName, convertedNewBean);
             }
             else {
-                wt.addInstance(instanceName, entry.getValue());
+                wt.addInstance(instanceName, convertedNewBean);
             }
         }
     }
@@ -335,6 +499,8 @@ public class PropertyFileHandleImpl implements PropertyFileHandle {
         synchronized (lock) {
             if (!open) return;
             open = false;
+            
+            reflectionHelper.dispose();
             
             HashMap<TypeData, Map<String, String>> allBeans = new HashMap<TypeData, Map<String, String>>();
             

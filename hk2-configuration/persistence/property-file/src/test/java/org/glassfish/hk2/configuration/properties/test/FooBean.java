@@ -57,6 +57,7 @@ public class FooBean {
     private double fooDouble;
     private char fooChar;
     private String fooString;
+    private byte fooByte;
     
     /**
      * @return the fooBool
@@ -153,6 +154,18 @@ public class FooBean {
      */
     public void setFooString(String fooString) {
         this.fooString = fooString;
+    }
+    /**
+     * @return the fooByte
+     */
+    public byte getFooByte() {
+        return fooByte;
+    }
+    /**
+     * @param fooByte the fooByte to set
+     */
+    public void setFooByte(byte fooByte) {
+        this.fooByte = fooByte;
     }
     
     
