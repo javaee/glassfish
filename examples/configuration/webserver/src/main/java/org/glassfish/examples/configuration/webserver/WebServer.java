@@ -39,6 +39,9 @@
  */
 package org.glassfish.examples.configuration.webserver;
 
+import java.io.File;
+import java.util.List;
+
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.annotations.Service;
 
@@ -55,14 +58,70 @@ import org.jvnet.hk2.annotations.Service;
  */
 @Contract 
 public interface WebServer {
-    
+    /**
+     * Gets the name of this web server
+     * 
+     * @return The name of this web server
+     */
     public String getName();
     
-    public void openAdminPort();
+    /**
+     * Opens the admin port, and returns the number
+     * of the port open
+     * 
+     * @return The admin port opened
+     */
+    public int openAdminPort();
     
-    public void openClientPorts();
+    /**
+     * Opens the SSL port, and returns the number
+     * of the port open
+     * 
+     * @return The SSL port open
+     */
+    public int openSSLPort();
     
-    public void closeClientPorts();
+    /**
+     * Opens the non-SSL port, and returns the number
+     * of the port open
+     * 
+     * @return The non-SSL port open
+     */
+    public int openPort();
     
-    public void closeAdminPort();
+    /**
+     * Gets the current admin port, or -1
+     * if the port is not open
+     * 
+     * @return The current admin port, or -1
+     */
+    public int getAdminPort();
+    
+    /**
+     * Gets the current SSL port, or -1
+     * if the port is not open
+     * 
+     * @return The current SSL port, or -1
+     */
+    public int getSSLPort();
+    
+    /**
+     * Gets the current HTTP port, or -1
+     * if the port is not open
+     * 
+     * @return The current HTTP port, or -1
+     */
+    public int getPort();
+    
+    /**
+     * Gets the list of certificates that are
+     * used by this web server
+     * 
+     * @return A non-null but possibly empty set
+     * of Files pointing to the public certificates
+     * of the web server
+     */
+    public List<File> getCertificates();
+    
+    
 }

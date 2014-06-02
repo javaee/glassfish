@@ -39,6 +39,12 @@
  */
 package org.glassfish.examples.configuration.webserver.internal;
 
+import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
 import org.glassfish.examples.configuration.webserver.WebServer;
@@ -58,12 +64,17 @@ public class WebServerImpl implements WebServer {
     
     @Configured
     private int adminPort;
+    private int openAdminPort = -1;
     
     @Configured(dynamicity=Configured.Dynamicity.FULLY_DYNAMIC)
     private String address;
     
     private int sslPort;
+    private int openSSLPort = -1;
     private int port;
+    private int openPort = -1;
+    
+    private boolean opened = false;
     
     /**
      * These are configured services that can be used to get other
@@ -91,6 +102,23 @@ public class WebServerImpl implements WebServer {
             @Configured(dynamicity=Configured.Dynamicity.FULLY_DYNAMIC) int port) {
         this.sslPort = sslPort;
         this.port = port;
+        
+        if (opened) {
+            openSSLPort = sslPort;
+            openPort = port;
+        }
+    }
+    
+    @PostConstruct
+    private void postConstruct() {
+        opened = true;
+    }
+    
+    @PreDestroy
+    private void preDestroy() {
+        openPort = -1;
+        openSSLPort = -1;
+        openAdminPort = -1;
     }
     
     
@@ -102,44 +130,74 @@ public class WebServerImpl implements WebServer {
         return name;
     }
 
+
     /* (non-Javadoc)
      * @see org.glassfish.examples.configuration.webserver.WebServer#openAdminPort()
      */
     @Override
-    public void openAdminPort() {
-        // TODO Auto-generated method stub
-        
+    public int openAdminPort() {
+        openAdminPort = adminPort;
+        return adminPort;
+    }
+
+
+    /* (non-Javadoc)
+     * @see org.glassfish.examples.configuration.webserver.WebServer#openSSLPort()
+     */
+    @Override
+    public int openSSLPort() {
+        openSSLPort = sslPort;
+        return sslPort;
+    }
+
+
+    /* (non-Javadoc)
+     * @see org.glassfish.examples.configuration.webserver.WebServer#openPort()
+     */
+    @Override
+    public int openPort() {
+        openPort = port;
+        return port;
+    }
+
+
+    /* (non-Javadoc)
+     * @see org.glassfish.examples.configuration.webserver.WebServer#getAdminPort()
+     */
+    @Override
+    public int getAdminPort() {
+        return openAdminPort;
+    }
+
+
+    /* (non-Javadoc)
+     * @see org.glassfish.examples.configuration.webserver.WebServer#getSSLPort()
+     */
+    @Override
+    public int getSSLPort() {
+        return openSSLPort;
+    }
+
+
+    /* (non-Javadoc)
+     * @see org.glassfish.examples.configuration.webserver.WebServer#getPort()
+     */
+    @Override
+    public int getPort() {
+        return openPort;
     }
 
     /* (non-Javadoc)
-     * @see org.glassfish.examples.configuration.webserver.WebServer#openClientPorts()
+     * @see org.glassfish.examples.configuration.webserver.WebServer#getCertificates()
      */
     @Override
-    public void openClientPorts() {
-        // TODO Auto-generated method stub
+    public List<File> getCertificates() {
+        LinkedList<File> retVal = new LinkedList<File>();
         
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.examples.configuration.webserver.WebServer#closeClientPorts()
-     */
-    @Override
-    public void closeClientPorts() {
-        // TODO Auto-generated method stub
+        for (SSLCertificateService certService : certificates) {
+            retVal.add(certService.getCertificate());
+        }
         
+        return retVal;
     }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.examples.configuration.webserver.WebServer#closeAdminPort()
-     */
-    @Override
-    public void closeAdminPort() {
-        // TODO Auto-generated method stub
-        
-    }
-
-    
-
-    
-
 }

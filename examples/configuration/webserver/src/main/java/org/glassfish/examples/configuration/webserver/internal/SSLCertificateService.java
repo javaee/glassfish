@@ -39,6 +39,8 @@
  */
 package org.glassfish.examples.configuration.webserver.internal;
 
+import java.io.File;
+
 import org.glassfish.examples.configuration.webserver.SSLCertificateBean;
 import org.glassfish.hk2.configuration.api.Configured;
 import org.glassfish.hk2.configuration.api.ConfiguredBy;
@@ -59,5 +61,14 @@ import org.jvnet.hk2.annotations.Service;
 public class SSLCertificateService {
     @Configured("$bean")
     private SSLCertificateBean certificateBean;
+    
+    /**
+     * Returns the location of the public certificate
+     * 
+     * @return The public certificate for this SSL service
+     */
+    public File getCertificate() {
+        return certificateBean.getCertificateLocation();
+    }
 
 }

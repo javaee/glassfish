@@ -42,11 +42,38 @@ package org.glassfish.examples.configuration.webserver;
 import java.io.File;
 
 /**
+ * This java bean contains information about the public
+ * and private SSL keys
+ * 
  * @author jwells
  *
  */
 public class SSLCertificateBean {
     private File certificateLocation;
     private File secretKeyLocation;
+    /**
+     * @return the certificateLocation
+     */
+    public File getCertificateLocation() {
+        return certificateLocation;
+    }
+    /**
+     * @param certificateLocation the certificateLocation to set
+     */
+    public void setCertificateLocation(File certificateLocation) {
+        this.certificateLocation = certificateLocation;
+    }
+    /**
+     * @return the secretKeyLocation
+     */
+    public File getSecretKeyLocation() {
+        return secretKeyLocation;
+    }
+    /**
+     * @param secretKeyLocation the secretKeyLocation to set
+     */
+    public void setSecretKeyLocation(File secretKeyLocation) {
+        this.secretKeyLocation = secretKeyLocation;
+    }
 
 }

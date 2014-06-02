@@ -39,11 +39,18 @@
  */
 package org.glassfish.examples.configuration.webserver.tests;
 
+import java.util.HashMap;
+
+import org.glassfish.examples.configuration.webserver.SSLCertificateBean;
+import org.glassfish.examples.configuration.webserver.WebServer;
+import org.glassfish.examples.configuration.webserver.WebServerBean;
 import org.glassfish.examples.configuration.webserver.internal.SSLCertificateService;
 import org.glassfish.examples.configuration.webserver.internal.WebServerImpl;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.configuration.api.ConfigurationUtilities;
+import org.glassfish.hk2.configuration.persistence.properties.PropertyFileBean;
+import org.glassfish.hk2.configuration.persistence.properties.PropertyFileService;
 import org.glassfish.hk2.configuration.persistence.properties.PropertyFileUtilities;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Before;
@@ -69,12 +76,24 @@ public class WebServerTest {
         // Enable Properties service, to get service properties from a Properties object
         PropertyFileUtilities.enablePropertyFileService(serviceLocator);
         
-        // Finally, add the test services themselves
+        // The propertyFileBean contains the mapping from type names to Java Beans
+        PropertyFileBean propertyFileBean = new PropertyFileBean();
+        propertyFileBean.addTypeMapping("WebServerBean", WebServerBean.class);
+        propertyFileBean.addTypeMapping("SSLCertificateBean", SSLCertificateBean.class);
+        
+        // Add in the mapping from type name to bean classes
+        PropertyFileService propertyFileService = serviceLocator.getService(PropertyFileService.class);
+        propertyFileService.addPropertyFileBean(propertyFileBean);
+        
+        // Add the test services themselves
         ServiceLocatorUtilities.addClasses(serviceLocator,
                 SSLCertificateService.class,
                 WebServerImpl.class);
     }
     
+    /**
+     * 
+     */
     @Test
     public void testAddWebServerAndCertificates() {
         
