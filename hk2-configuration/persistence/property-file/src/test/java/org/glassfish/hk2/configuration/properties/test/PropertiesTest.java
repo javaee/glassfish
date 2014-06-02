@@ -66,10 +66,18 @@ import org.jvnet.hk2.testing.junit.HK2Runner;
 public class PropertiesTest extends HK2Runner {
     private final static String TYPE1 = "T1";
     private final static String TYPE2 = "T2";
+    private final static String TYPE3 = "T3";
+    
     private final static String INSTANCE1 = "I1";
     private final static String INSTANCE2 = "I2";
     
     private final static String DEFAULT_INSTANCE_NAME = "DEFAULT_INSTANCE_NAME";
+    
+    private final static String NAME = "name";
+    
+    private final static String ALICE = "alice";
+    private final static String BOB = "bob";
+    private final static String CAROL = "carol";
     
     private Hub hub;
     
@@ -102,7 +110,7 @@ public class PropertiesTest extends HK2Runner {
      * @throws IOException
      */
     @SuppressWarnings("unchecked")
-    @Test
+    @Test // @org.junit.Ignore
     public void testBasicPropertyFile() throws IOException {
         removeType(TYPE1);
         removeType(TYPE2);
@@ -157,7 +165,7 @@ public class PropertiesTest extends HK2Runner {
     /**
      * Tests adding a bean via properties that is backed by a java bean rather than a map
      */
-    @Test
+    @Test // @org.junit.Ignore
     public void addJavaBeanBackedPropertyMap() {
         removeType(FooBean.TYPE_NAME);
         
@@ -208,6 +216,75 @@ public class PropertiesTest extends HK2Runner {
             removeType(FooBean.TYPE_NAME);
         }
         
+    }
+    
+    private static String instanceAndParamKey(String instance, String param) {
+        return instance + "." + param;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private String getHubValue(String type, String instance, String param) {
+        Map<String, Object> blm = (Map<String, Object>) hub.getCurrentDatabase().getInstance(type, instance);
+        if (blm == null) return null;
+        
+        return (String) blm.get(param);
+    }
+    
+    /**
+     * Tests reading a property file
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void testInstanceRemoval() throws IOException {
+        removeType(TYPE3);
+        
+        PropertyFileService pfs = testLocator.getService(PropertyFileService.class);
+        PropertyFileHandle pfh = pfs.createPropertyHandleOfSpecificType(TYPE3);
+        
+        try {
+            Properties p = new Properties();
+            
+            p.put(instanceAndParamKey(ALICE, NAME), ALICE);
+            p.put(instanceAndParamKey(BOB, NAME), BOB);
+            p.put(instanceAndParamKey(CAROL, NAME), CAROL);
+            
+            pfh.readProperties(p);
+            
+            Assert.assertEquals(ALICE, getHubValue(TYPE3, ALICE, NAME));
+            Assert.assertEquals(BOB, getHubValue(TYPE3, BOB, NAME));
+            Assert.assertEquals(CAROL, getHubValue(TYPE3, CAROL, NAME));
+            
+            p.remove(instanceAndParamKey(BOB,NAME));
+            
+            pfh.readProperties(p);
+            
+            Assert.assertEquals(ALICE, getHubValue(TYPE3, ALICE, NAME));
+            Assert.assertNull(getHubValue(TYPE3, BOB, NAME));
+            Assert.assertEquals(CAROL, getHubValue(TYPE3, CAROL, NAME));
+            
+            p.remove(instanceAndParamKey(ALICE,NAME));
+            
+            pfh.readProperties(p);
+            
+            Assert.assertNull(getHubValue(TYPE3, ALICE, NAME));
+            Assert.assertNull(getHubValue(TYPE3, BOB, NAME));
+            Assert.assertEquals(CAROL, getHubValue(TYPE3, CAROL, NAME));
+            
+            p.remove(instanceAndParamKey(CAROL, NAME));
+            
+            pfh.readProperties(p);
+            
+            Assert.assertNull(getHubValue(TYPE3, ALICE, NAME));
+            Assert.assertNull(getHubValue(TYPE3, BOB, NAME));
+            Assert.assertNull(getHubValue(TYPE3, CAROL, NAME));
+            
+        }
+        finally {
+            pfh.dispose();
+            
+            removeType(TYPE3);
+        }
     }
 
 }
