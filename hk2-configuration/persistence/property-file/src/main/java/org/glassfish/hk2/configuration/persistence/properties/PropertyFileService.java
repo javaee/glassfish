@@ -137,4 +137,20 @@ public interface PropertyFileService {
      * property file
      */
     public PropertyFileHandle createPropertyHandleOfAnyType();
+    
+    /**
+     * This is a utility method that will add the given {@link PropertyFileBean}
+     * to the Hub for use in configuring this service
+     * 
+     * @param propertyFileBean The non-null property file bean that should
+     * either be added to the Hub or be used to modify the existing
+     * bean in the hub
+     */
+    public void addPropertyFileBean(PropertyFileBean propertyFileBean);
+    
+    /**
+     * This is a utility method that will remove the {@link PropertyFileBean}
+     * from the Hub if it is present
+     */
+    public void removePropertyFileBean();
 }

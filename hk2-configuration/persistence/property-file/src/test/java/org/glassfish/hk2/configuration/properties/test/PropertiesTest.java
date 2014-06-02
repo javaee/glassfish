@@ -49,9 +49,11 @@ import javax.inject.Inject;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.ManagerUtilities;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
+import org.glassfish.hk2.configuration.persistence.properties.PropertyFileBean;
 import org.glassfish.hk2.configuration.persistence.properties.PropertyFileHandle;
 import org.glassfish.hk2.configuration.persistence.properties.PropertyFileService;
 import org.glassfish.hk2.configuration.persistence.properties.PropertyFileUtilities;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.jvnet.hk2.testing.junit.HK2Runner;
@@ -65,6 +67,8 @@ public class PropertiesTest extends HK2Runner {
     private final static String TYPE2 = "T2";
     private final static String INSTANCE1 = "I1";
     private final static String INSTANCE2 = "I2";
+    
+    private final static String DEFAULT_INSTANCE_NAME = "DEFAULT_INSTANCE_NAME";
     
     private Hub hub;
     
@@ -91,6 +95,11 @@ public class PropertiesTest extends HK2Runner {
         return url.openStream();
     }
     
+    /**
+     * Tests reading a property file
+     * 
+     * @throws IOException
+     */
     @Test
     public void testBasicPropertyFile() throws IOException {
         removeType(TYPE1);
@@ -112,9 +121,63 @@ public class PropertiesTest extends HK2Runner {
         finally {
             is.close();
             pfh.dispose();
+            
+            removeType(TYPE1);
+            removeType(TYPE2);
         }
+    }
+    
+    /**
+     * Tests adding a bean via properties that is backed by a java bean rather than a map
+     */
+    @Test @org.junit.Ignore
+    public void addJavaBeanBackedPropertyMap() {
+        removeType(FooBean.TYPE_NAME);
         
+        PropertyFileBean propertyFileBean = new PropertyFileBean();
+        propertyFileBean.addTypeMapping(FooBean.TYPE_NAME, FooBean.class);
         
+        PropertyFileService pfs = testLocator.getService(PropertyFileService.class);
+        pfs.addPropertyFileBean(propertyFileBean);
+        
+        pfs.addPropertyFileBean(propertyFileBean);
+        PropertyFileHandle pfh = pfs.createPropertyHandleOfSpecificType(FooBean.TYPE_NAME,
+                DEFAULT_INSTANCE_NAME);
+        
+        try {
+            Properties p = new Properties();
+            
+            p.put("fooBool", "true");
+            p.put("fooShort", "13");
+            p.put("fooInt", "14");
+            p.put("fooLong", "-15");
+            p.put("fooFloat", "16.0");
+            p.put("fooDouble", "17.00");
+            p.put("fooChar", "e");
+            p.put("fooString", "Eagles");
+            
+            pfh.readProperties(p);
+            
+            Object o = hub.getCurrentDatabase().getInstance(FooBean.TYPE_NAME, DEFAULT_INSTANCE_NAME);
+            Assert.assertNotNull(o);
+            Assert.assertTrue(o instanceof FooBean);
+            
+            FooBean fooBean = (FooBean) o;
+            
+            Assert.assertEquals(true, fooBean.isFooBool());
+            Assert.assertEquals(13, fooBean.getFooShort());
+            Assert.assertEquals(14, fooBean.getFooInt());
+            Assert.assertEquals(-15L, fooBean.getFooLong());
+            Assert.assertEquals((float) 16.00, fooBean.getFooFloat());
+            Assert.assertEquals((double) 17.00, fooBean.getFooDouble());
+            Assert.assertEquals('e', fooBean.getFooChar());
+            Assert.assertEquals("Eagles", fooBean.getFooString());
+        }
+        finally {
+            pfs.removePropertyFileBean();
+            
+            removeType(FooBean.TYPE_NAME);
+        }
         
     }
 

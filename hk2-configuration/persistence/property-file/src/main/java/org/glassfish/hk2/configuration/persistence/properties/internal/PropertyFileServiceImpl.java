@@ -39,9 +39,14 @@
  */
 package org.glassfish.hk2.configuration.persistence.properties.internal;
 
+import java.beans.PropertyChangeEvent;
+
 import javax.inject.Inject;
 
 import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
+import org.glassfish.hk2.configuration.hub.api.WriteableType;
+import org.glassfish.hk2.configuration.persistence.properties.PropertyFileBean;
 import org.glassfish.hk2.configuration.persistence.properties.PropertyFileHandle;
 import org.glassfish.hk2.configuration.persistence.properties.PropertyFileService;
 import org.jvnet.hk2.annotations.Service;
@@ -52,6 +57,8 @@ import org.jvnet.hk2.annotations.Service;
  */
 @Service
 public class PropertyFileServiceImpl implements PropertyFileService {
+    private final static int MAX_TRIES = 10000;
+    
     @Inject
     private Hub hub;
 
@@ -88,6 +95,67 @@ public class PropertyFileServiceImpl implements PropertyFileService {
     @Override
     public PropertyFileHandle createPropertyHandleOfAnyType() {
         return new PropertyFileHandleImpl(null, null, null, hub);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.configuration.persistence.properties.PropertyFileService#addPropertyFileBean(org.glassfish.hk2.configuration.persistence.properties.PropertyFileBean)
+     */
+    @Override
+    public void addPropertyFileBean(PropertyFileBean propertyFileBean) {
+        boolean success = false;
+        for (int lcv = 0; lcv < MAX_TRIES; lcv++) {
+            WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+            
+            WriteableType wt = wbd.findOrAddWriteableType(PropertyFileBean.TYPE_NAME);
+            
+            PropertyFileBean oldBean = (PropertyFileBean) wt.getInstance(PropertyFileBean.INSTANCE_NAME);
+            if (oldBean != null) {
+                wt.modifyInstance(PropertyFileBean.INSTANCE_NAME, propertyFileBean,
+                        new PropertyChangeEvent(propertyFileBean,
+                                "typeMapping",
+                                oldBean.getTypeMapping(),
+                                propertyFileBean.getTypeMapping()));
+            }
+            else {
+                wt.addInstance(PropertyFileBean.INSTANCE_NAME, propertyFileBean);
+            }
+            
+            try {
+                wbd.commit();
+                success = true;
+                break;
+            }
+            catch (IllegalStateException ise) {
+                // try again
+            }
+        }
+        
+        if (!success) {
+            throw new IllegalStateException("Could not update hub with propertyFileBean " + propertyFileBean);
+        }
+    }
+    
+    @Override
+    public void removePropertyFileBean() {
+        boolean success = false;
+        for (int lcv = 0; lcv < MAX_TRIES; lcv++) {
+            WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+            
+            wbd.removeType(PropertyFileBean.TYPE_NAME);
+            
+            try {
+                wbd.commit();
+                success = true;
+                break;
+            }
+            catch (IllegalStateException ise) {
+                // try again
+            }
+        }
+        
+        if (!success) {
+            throw new IllegalStateException("Could not update hub to remove the propertyFileBean");
+        }
     }
 
 }
