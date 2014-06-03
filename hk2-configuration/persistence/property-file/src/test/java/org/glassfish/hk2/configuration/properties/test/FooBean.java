@@ -62,6 +62,9 @@ public class FooBean {
     private byte fooByte;
     private File fooFile;
     
+    // The getter/setter will use SNMP
+    private String snmpValue;
+    
     /**
      * @return the fooBool
      */
@@ -181,6 +184,18 @@ public class FooBean {
      */
     public void setFooFile(File fooFile) {
         this.fooFile = fooFile;
+    }
+    /**
+     * @return the snmpValue
+     */
+    public String getSNMPValue() {
+        return snmpValue;
+    }
+    /**
+     * @param snmpValue the snmpValue to set
+     */
+    public void setSNMPValue(String snmpValue) {
+        this.snmpValue = snmpValue;
     }
     
     

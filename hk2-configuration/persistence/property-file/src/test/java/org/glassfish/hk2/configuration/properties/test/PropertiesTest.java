@@ -206,6 +206,7 @@ public class PropertiesTest extends HK2Runner {
             p.put("fooString", "Eagles");
             p.put("fooByte", "18");
             p.put("fooFile", ".");
+            p.put("snmpValue", "19");
             
             pfh.readProperties(p);
             
@@ -225,6 +226,7 @@ public class PropertiesTest extends HK2Runner {
             Assert.assertEquals("Eagles", fooBean.getFooString());
             Assert.assertEquals((byte) 18, fooBean.getFooByte());
             Assert.assertEquals(new File("."), fooBean.getFooFile());
+            Assert.assertEquals("19", fooBean.getSNMPValue());
         }
         finally {
             pfs.removePropertyFileBean();

@@ -103,7 +103,7 @@ public class WebServerTest {
      * This test demonstrates adding and the modifying the http and
      * ssl ports of the web server
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testDemonstrateWebServerConfiguration() throws IOException {
         // Before we add a configuration there is no web server
         WebServer webServer = locator.getService(WebServer.class);
@@ -140,9 +140,9 @@ public class WebServerTest {
         // adminPort = 7070
         // sslPort = 81
         // port = 80
-        Assert.assertEquals(7070, webServer.openAdminPort());
-        Assert.assertEquals(81, webServer.openSSLPort());
-        Assert.assertEquals(80, webServer.openPort());
+        Assert.assertEquals((int) 7070, webServer.openAdminPort());
+        Assert.assertEquals((int) 81, webServer.openSSLPort());
+        Assert.assertEquals((int) 80, webServer.openPort());
         
         // Now lets check that we have two SSL certificates
         List<File> certs = webServer.getCertificates();
@@ -160,7 +160,7 @@ public class WebServerTest {
         
         // OK, we have verified that all of the parameters of the
         // webserver are as expected.  We are now going to dynamically
-        // change all the ports.  In the actual webserver however only
+        // change all the ports.  In the webserver however only
         // the ssl and http ports are dynamic, so after the change
         // only the ssl and http ports should have their new values,
         // while the admin port should remain with the old value

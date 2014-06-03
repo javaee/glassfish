@@ -98,7 +98,7 @@ public class WebServerImpl implements WebServer {
      */
     @SuppressWarnings("unused")
     private void setUserPorts(
-            @Configured(value="sslPort", dynamicity=Configured.Dynamicity.FULLY_DYNAMIC) int sslPort,
+            @Configured(value="SSLPort", dynamicity=Configured.Dynamicity.FULLY_DYNAMIC) int sslPort,
             @Configured(value="port", dynamicity=Configured.Dynamicity.FULLY_DYNAMIC) int port) {
         this.sslPort = sslPort;
         this.port = port;
