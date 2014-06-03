@@ -39,10 +39,7 @@ package test.ejb.nointerfacebeanview;
 import javax.enterprise.inject.Alternative;
 
  
-//marked as Alternative, otherwise there would
-//an ambiguous definition for TestLocalInterface between this
-//super class and the TestLocalEJB
-public @Alternative class TestSuperClass implements TestInterface{
+public class TestSuperClass implements TestInterface{
 
     @Override
     public boolean m1DefinedInInterface() {

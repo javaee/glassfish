@@ -40,7 +40,16 @@ import javax.ejb.Stateless;
 
 
 @Stateless
-public class TestNoInterfaceEJB extends TestSuperClass {
+public class TestNoInterfaceEJB  {
+  public boolean m1DefinedInInterface() {
+    System.out.println("no interface bean: m1");
+    return true;
+  }
+
+  public boolean m2DefinedInSuperClass(){
+    System.out.println("no interface bean: m2");
+    return true;
+  }
     public boolean m3DefinedInEJB() {
         System.out.println("no interface ejb: m3");
         return true;

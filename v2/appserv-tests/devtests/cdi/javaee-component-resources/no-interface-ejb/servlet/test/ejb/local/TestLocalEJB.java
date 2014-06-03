@@ -41,7 +41,7 @@ import javax.ejb.Stateless;
 
 @Stateless
 @Local(TestInterface.class)
-public class TestLocalEJB extends TestSuperClass{
+public class TestLocalEJB extends TestSuperClass implements TestInterface {
     public boolean m3DefinedInEJB(){
         System.out.println("local ejb: m3");
         return true;
