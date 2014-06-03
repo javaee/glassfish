@@ -1,0 +1,26 @@
+#
+# Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+#
+
+#
+# This represents the configuration of a web-server.  The format of the
+# keys is
+# <type-name>.<instance-name>.<parameter>
+#
+# The type for the webserver is "WebServerBean".  The type for the SSL
+# certificates is "SSLCertificateBean".  This property file
+# has the configuration for one web server named "Acme" and two SSL
+# certificates, one named "Corporate" and one named "HR"
+
+WebServerBean.Acme.name=Acme
+WebServerBean.Acme.address=localhost
+WebServerBean.Acme.adminPort=7070
+WebServerBean.Acme.sslPort=81
+WebServerBean.Acme.port=80
+
+SSLCertificateBean.Corporate.certificateLocation=Corporatex509.cert
+SSLCertificateBean.Corporate.secretKeyLocation=Corporate.pem
+
+SSLCertificateBean.HR.certificateLocation=HRx509.cert
+SSLCertificateBean.HR.secretKeyLocation=HR.pem
+
