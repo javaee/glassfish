@@ -43,6 +43,8 @@ import java.beans.PropertyChangeEvent;
 import java.util.List;
 
 /**
+ * This represents a single change made to a {@link BeanDatabase}
+ * 
  * @author jwells
  *
  */
@@ -104,10 +106,19 @@ public interface Change {
     public List<PropertyChangeEvent> getModifiedProperties();
     
     public enum ChangeCategory {
+        /** A type was removed */
         REMOVE_TYPE,
+        
+        /** A type was added */
         ADD_TYPE,
+        
+        /** An instance of a type was added */
         ADD_INSTANCE,
+        
+        /** An instance of a type was removed */
         REMOVE_INSTANCE,
+        
+        /** An instance of a type was modified */
         MODIFY_INSTANCE
         
     }

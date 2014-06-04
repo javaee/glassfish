@@ -42,11 +42,32 @@ package org.glassfish.hk2.configuration.hub.api;
 import java.util.List;
 
 /**
+ * This is a listener that is notified when changes are made to
+ * the current {@link BeanDatabase}.  This listener is guaranteed
+ * to be accurate, meaning that no updates will be lost after
+ * the call to initialize.  The implementation of the
+ * BeanDatabaseUpdateListener must be suitable for storing as
+ * a key in a HashSet.
+ * 
  * @author jwells
  *
  */
 public interface BeanDatabaseUpdateListener {
+    /**
+     * The current bean database at the time this listener is
+     * registered
+     * 
+     * @param database The bean database at the time this
+     * listener has been registered
+     */
     public void initialize(BeanDatabase database);
     
+    /**
+     * This method is called whenever the BeanDatabase has
+     * been modified
+     * 
+     * @param newDatabase The bean database that is currently in effect
+     * @param changes The changes that were made to the previous database
+     */
     public void databaseHasChanged(BeanDatabase newDatabase, List<Change> changes);
 }
