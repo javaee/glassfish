@@ -43,7 +43,6 @@ import java.io.File;
 import java.util.List;
 
 import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.annotations.Service;
 
 /**
  * This is a fake WebServer that is designed to show the features of
