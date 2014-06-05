@@ -128,7 +128,7 @@ public class LRUHybridCache<K,V> implements Computable<K, HybridCacheEntry<V>> {
             return future.hashCode();
         }
 
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
         public boolean equals(Object obj) {
             if (obj == null) {
@@ -137,7 +137,7 @@ public class LRUHybridCache<K,V> implements Computable<K, HybridCacheEntry<V>> {
             if (getClass() != obj.getClass()) {
                 return false;
             }
-            final LRUHybridCache<K,V>.OriginThreadAwareFuture other = (LRUHybridCache<K,V>.OriginThreadAwareFuture) obj;
+            final LRUHybridCache<K,V>.OriginThreadAwareFuture other = (LRUHybridCache.OriginThreadAwareFuture) obj;
             if (this.future != other.future && (this.future == null || !this.future.equals(other.future))) {
                 return false;
             }
