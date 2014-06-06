@@ -490,9 +490,12 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>2.9.1</version>
+<!--
+  Enable for jdk 1.8.0
                     <configuration>
                       <additionalparam>-Xdoclint:none</additionalparam>
                     </configuration>
+  -->
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -647,7 +650,10 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.8</version>
                 <configuration>
+<!--
+  Enable for jdk 1.8.0
                     <additionalparam>-Xdoclint:none</additionalparam>
+  -->
                     <sourcepath>
                         ${basedir}/hk2-api/src/main/java;
                         ${basedir}/hk2-utils/src/main/java;

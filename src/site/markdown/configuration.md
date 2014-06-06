@@ -171,6 +171,18 @@ method of the [ConfigurationUtilities][configurationutilities] class.
 
 ### Configuration Persistence
 
+The persistence layer isn't a layer so much as a set of plugins that take configuration data from some form (usually
+persistent) and tranlate it into JavaBeans or bean-like maps.  Those JavaBeans or bean-like maps are then
+placed into the [Hub][hub].  There can be multiple providers providing the input, or some providers can be used
+in some scenarios while others are used in other scenarios.  For example, a central server could read the configuration
+from an XML file while remote clients could have a network plugin that receive the configuration from the central
+server.
+
+At the time of writing HK2 provides a provider that reads property files.  There may be other providers that
+are added as well (i.e., one that reads XML data).
+
+### The HK2 Properties Configuration provider
+
 This space is under construction
 
 [hub]: apidocs/org/glassfish/hk2/configuration/hub/api/Hub.html
