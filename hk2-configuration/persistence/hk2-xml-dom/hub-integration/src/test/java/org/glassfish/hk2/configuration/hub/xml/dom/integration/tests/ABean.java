@@ -53,8 +53,8 @@ public interface ABean extends ConfigBeanProxy {
     public String getStringParameter();
     
     @Attribute (defaultValue="0")
-    public String getIntParameter();
+    public int getIntParameter();
     
     @Attribute (defaultValue="-1")
-    public String getLongParameter();
+    public long getLongParameter();
 }

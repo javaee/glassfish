@@ -47,6 +47,7 @@ import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.jvnet.hk2.config.ConfigParser;
 import org.jvnet.hk2.testing.junit.HK2Runner;
@@ -56,31 +57,46 @@ import org.jvnet.hk2.testing.junit.HK2Runner;
  *
  */
 public class HubIntegrationTest extends HK2Runner {
+    private final static String ABEAN_TAG = "a-bean";
+    private final static String HELLO = "hello";
+    
     @Inject
     private Hub hub;
+    
+    @Before
+    public void before() {
+        super.initialize("HubIntegrationTest", null, null);
+    }
     
     /**
      * Tests just adding one bean, and the removing it
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testAddAndRemoveOneBean() {
         ConfigParser parser = new ConfigParser(testLocator);
         URL url = getClass().getClassLoader().getResource("simple.xml");
         Assert.assertNotNull(url);
         
-        ServiceLocatorUtilities.dumpAllDescriptors(testLocator);
-        
         parser.parse(url);
+        
+        ServiceLocatorUtilities.dumpAllDescriptors(testLocator);
         
         ABean abean = testLocator.getService(ABean.class);
         Assert.assertNotNull(abean);
         
+        Assert.assertEquals(HELLO, abean.getStringParameter());
+        Assert.assertEquals(10, abean.getIntParameter());
+        Assert.assertEquals(100L, abean.getLongParameter());
+        
         BeanDatabase beanDatabase = hub.getCurrentDatabase();
-        Object instance = beanDatabase.getInstance(ABean.class.getName(), "HK2_CONFIG_DEFAULT");
+        Object instance = beanDatabase.getInstance(ABEAN_TAG, "HK2_CONFIG_DEFAULT");
         Assert.assertNotNull(instance);
         
         Assert.assertTrue(instance instanceof ABean);
-        Assert.assertEquals(abean, instance);
+        ABean abeanInstance = (ABean) instance;
+        Assert.assertEquals(HELLO, abeanInstance.getStringParameter());
+        Assert.assertEquals(10, abeanInstance.getIntParameter());
+        Assert.assertEquals(100L, abeanInstance.getLongParameter());
     }
 
 }

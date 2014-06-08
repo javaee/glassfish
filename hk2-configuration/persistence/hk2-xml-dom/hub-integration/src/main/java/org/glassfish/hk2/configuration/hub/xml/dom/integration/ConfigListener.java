@@ -39,11 +39,151 @@
  */
 package org.glassfish.hk2.configuration.hub.xml.dom.integration;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.DynamicConfigurationListener;
+import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.IndexedFilter;
+import org.glassfish.hk2.api.InstanceLifecycleEvent;
+import org.glassfish.hk2.api.InstanceLifecycleEventType;
+import org.glassfish.hk2.api.InstanceLifecycleListener;
+import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
+import org.glassfish.hk2.configuration.hub.api.WriteableType;
+import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.reflection.Pretty;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.config.ConfigBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ConfigInjector;
+import org.jvnet.hk2.config.ConfigModel;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.ConfigView;
+import org.jvnet.hk2.config.Dom;
+
 /**
  * Implementation of the listener needed to add/remove instances of
  * the hk2-config configuration beans into the hub
  * 
  * @author jwells
  */
-public class ConfigListener {
+@Service
+public class ConfigListener implements DynamicConfigurationListener {
+    private final static int MAX_TRIES = 10000;
+    private final static IndexedFilter CONFIG_FILTER = BuilderHelper.createContractFilter(ConfigBean.class.getName());
+    
+    @Inject
+    private ServiceLocator locator;
+    
+    @Inject
+    private Hub hub;
+    
+    private final HashMap<ActiveDescriptor<?>, HubKey> descriptors = new HashMap<ActiveDescriptor<?>, HubKey>();
+    
+    private HubKey getHubKey(ActiveDescriptor<?> descriptor) {
+        ServiceHandle<?> handle = locator.getServiceHandle(descriptor);
+        ConfigBeanProxy configBeanProxy = (ConfigBeanProxy) handle.getService();
+        
+        String instance = "HK2_CONFIG_DEFAULT";
+        Dom dom = Dom.unwrap(configBeanProxy);
+        ConfigModel childModel = dom.model;
+        if (childModel.key != null) {
+            instance = childModel.key;
+        }
+        
+        boolean firstTime = true;
+        StringBuffer typeBuffer = new StringBuffer();
+        
+        while (dom != null) {
+            if (firstTime) {
+                firstTime = false;
+            }
+            else {
+                typeBuffer.append(".");
+            }
+            
+            ConfigModel model = dom.model;
+            if (model.getTagName() != null) {
+                typeBuffer.append(model.getTagName());
+            }
+            
+            dom = dom.parent();
+        }
+        
+        return new HubKey(handle, typeBuffer.toString(), instance);
+        
+    }
+    
+    private void addInstance(ActiveDescriptor<?> descriptor) {
+        HubKey hubKey = getHubKey(descriptor);
+        Object target = hubKey.handle.getService();
+        
+        for (int lcv = 0; lcv < MAX_TRIES; lcv++) {
+            WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+            
+            WriteableType wt = wbd.findOrAddWriteableType(hubKey.type);
+            
+            wt.addInstance(hubKey.instance, target);
+            
+            try {
+                wbd.commit();
+                break;
+            }
+            catch (IllegalStateException ise) {
+                // try again
+            }
+        }
+        
+        descriptors.put(descriptor, hubKey);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.DynamicConfigurationListener#configurationChanged()
+     */
+    @Override
+    @PostConstruct
+    public void configurationChanged() {
+        
+        
+        List<ActiveDescriptor<?>> currentDescriptors = locator.getDescriptors(CONFIG_FILTER);
+        
+        synchronized (descriptors) {
+            HashSet<ActiveDescriptor<?>> descriptorsCopy = new HashSet<ActiveDescriptor<?>>(descriptors.keySet());
+            descriptorsCopy.removeAll(currentDescriptors);
+            
+            // Everything left over needs to be removed
+            for (ActiveDescriptor<?> removeMe : descriptorsCopy) {
+                HubKey hubKey = descriptors.remove(removeMe);
+                if (hubKey == null) continue;
+                
+                // TODO:  How to get instance name
+            }
+        
+            for (ActiveDescriptor<?> descriptor : currentDescriptors) {
+                if (descriptors.containsKey(descriptor)) continue;
+                addInstance(descriptor);
+            }
+        }
+    }
+    
+    private static class HubKey {
+        private final ServiceHandle<?> handle;
+        private final String type;
+        private final String instance;
+        
+        private HubKey(ServiceHandle<?> handle, String type, String instance) {
+            this.handle = handle;
+            this.type = type;
+            this.instance = instance;
+        }
+    }
 }
