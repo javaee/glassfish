@@ -37,7 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.hub.xml.dom.integration;
+package org.glassfish.hk2.configuration.hub.xml.dom.integration.internal;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -59,6 +59,7 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
+import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationUtilities;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.reflection.Pretty;
 import org.jvnet.hk2.annotations.Service;
@@ -93,7 +94,7 @@ public class ConfigListener implements DynamicConfigurationListener {
         ServiceHandle<?> handle = locator.getServiceHandle(descriptor);
         ConfigBeanProxy configBeanProxy = (ConfigBeanProxy) handle.getService();
         
-        String instance = "HK2_CONFIG_DEFAULT";
+        String instance = XmlDomIntegrationUtilities.DEFAULT_INSTANCE_NAME;
         Dom dom = Dom.unwrap(configBeanProxy);
         ConfigModel childModel = dom.model;
         if (childModel.key != null) {

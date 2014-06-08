@@ -45,6 +45,7 @@ import javax.inject.Inject;
 
 import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationUtilities;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Before;
@@ -89,7 +90,7 @@ public class HubIntegrationTest extends HK2Runner {
         Assert.assertEquals(100L, abean.getLongParameter());
         
         BeanDatabase beanDatabase = hub.getCurrentDatabase();
-        Object instance = beanDatabase.getInstance(ABEAN_TAG, "HK2_CONFIG_DEFAULT");
+        Object instance = beanDatabase.getInstance(ABEAN_TAG, XmlDomIntegrationUtilities.DEFAULT_INSTANCE_NAME);
         Assert.assertNotNull(instance);
         
         Assert.assertTrue(instance instanceof ABean);
