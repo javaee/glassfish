@@ -42,18 +42,13 @@ package org.glassfish.hk2.configuration.hub.xml.dom.integration.internal;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfigurationListener;
-import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.IndexedFilter;
-import org.glassfish.hk2.api.InstanceLifecycleEvent;
-import org.glassfish.hk2.api.InstanceLifecycleEventType;
-import org.glassfish.hk2.api.InstanceLifecycleListener;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Hub;
@@ -61,14 +56,10 @@ import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationUtilities;
 import org.glassfish.hk2.utilities.BuilderHelper;
-import org.glassfish.hk2.utilities.reflection.Pretty;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.ConfigInjector;
 import org.jvnet.hk2.config.ConfigModel;
-import org.jvnet.hk2.config.ConfigSupport;
-import org.jvnet.hk2.config.ConfigView;
 import org.jvnet.hk2.config.Dom;
 
 /**
@@ -146,6 +137,24 @@ public class ConfigListener implements DynamicConfigurationListener {
         
         descriptors.put(descriptor, hubKey);
     }
+    
+    private void removeInstance(HubKey key) {
+        for (int lcv = 0; lcv < MAX_TRIES; lcv++) {
+            WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+            
+            WriteableType wt = wbd.findOrAddWriteableType(key.type);
+            
+            wt.removeInstance(key.instance);
+            
+            try {
+                wbd.commit();
+                break;
+            }
+            catch (IllegalStateException ise) {
+                // try again
+            }
+        }
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.DynamicConfigurationListener#configurationChanged()
@@ -153,8 +162,6 @@ public class ConfigListener implements DynamicConfigurationListener {
     @Override
     @PostConstruct
     public void configurationChanged() {
-        
-        
         List<ActiveDescriptor<?>> currentDescriptors = locator.getDescriptors(CONFIG_FILTER);
         
         synchronized (descriptors) {
@@ -166,7 +173,7 @@ public class ConfigListener implements DynamicConfigurationListener {
                 HubKey hubKey = descriptors.remove(removeMe);
                 if (hubKey == null) continue;
                 
-                // TODO:  How to get instance name
+                removeInstance(hubKey);
             }
         
             for (ActiveDescriptor<?> descriptor : currentDescriptors) {

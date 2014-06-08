@@ -37,15 +37,12 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.hub.xml.dom.integration.tests;
+package org.glassfish.hk2.configuration.hub.xml.dom.integration.e2etests;
 
 import java.net.URL;
 
-import javax.inject.Inject;
-
-import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
-import org.glassfish.hk2.configuration.hub.api.Hub;
-import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationUtilities;
+import org.glassfish.hk2.configuration.api.ConfigurationUtilities;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,20 +53,20 @@ import org.jvnet.hk2.testing.junit.HK2Runner;
  * @author jwells
  *
  */
-public class HubIntegrationTest extends HK2Runner {
-    private final static String ABEAN_TAG = "a-bean";
+public class E2ETest extends HK2Runner {
+    /* package */ final static String ABEAN_TAG = "a-bean";
     private final static String HELLO = "hello";
-    
-    @Inject
-    private Hub hub;
     
     @Before
     public void before() {
-        super.initialize("HubIntegrationTest", null, null);
+        super.initialize("E2ETest", null, null);
+        
+        ConfigurationUtilities.enableConfigurationSystem(testLocator);
     }
     
     /**
-     * Tests just adding one bean
+     * Tests just adding one bean then checking the
+     * cooresponding service is available
      */
     @Test // @org.junit.Ignore
     public void testAddOneBean() {
@@ -79,22 +76,14 @@ public class HubIntegrationTest extends HK2Runner {
         
         parser.parse(url);
         
-        ABean abean = testLocator.getService(ABean.class);
-        Assert.assertNotNull(abean);
+        ServiceLocatorUtilities.dumpAllDescriptors(testLocator);
         
-        Assert.assertEquals(HELLO, abean.getStringParameter());
-        Assert.assertEquals(10, abean.getIntParameter());
-        Assert.assertEquals(100L, abean.getLongParameter());
+        AService aService = testLocator.getService(AService.class);
+        Assert.assertNotNull(aService);
         
-        BeanDatabase beanDatabase = hub.getCurrentDatabase();
-        Object instance = beanDatabase.getInstance(ABEAN_TAG, XmlDomIntegrationUtilities.DEFAULT_INSTANCE_NAME);
-        Assert.assertNotNull(instance);
-        
-        Assert.assertTrue(instance instanceof ABean);
-        ABean abeanInstance = (ABean) instance;
-        Assert.assertEquals(HELLO, abeanInstance.getStringParameter());
-        Assert.assertEquals(10, abeanInstance.getIntParameter());
-        Assert.assertEquals(100L, abeanInstance.getLongParameter());
+        Assert.assertEquals(HELLO, aService.getStringParameter());
+        Assert.assertEquals(10, aService.getIntParameter());
+        Assert.assertEquals(100, aService.getLongParameter());
     }
 
 }
