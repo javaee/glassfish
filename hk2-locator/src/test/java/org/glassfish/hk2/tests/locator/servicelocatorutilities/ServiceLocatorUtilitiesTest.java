@@ -39,7 +39,6 @@
  */
 package org.glassfish.hk2.tests.locator.servicelocatorutilities;
 
-import java.lang.annotation.Annotation;
 import java.util.List;
 
 import javax.inject.Singleton;
@@ -723,6 +722,18 @@ public class ServiceLocatorUtilitiesTest {
         
         String red = locator.getService(String.class, new RedImpl());
         Assert.assertEquals(RED, red);
+    }
+    
+    @Test @org.junit.Ignore
+    public void addClassWithMetadata() {
+        ServiceLocator locator = uniqueCreate();
+        
+        List<ActiveDescriptor<?>> added = ServiceLocatorUtilities.addClasses(locator, ServiceWithMetadata.class);
+        Assert.assertEquals(1, added.size());
+        
+        ActiveDescriptor<?> descriptor = added.get(0);
+        
+        Assert.assertEquals("value", ServiceLocatorUtilities.getOneMetadataField(descriptor, "key"));
     }
     
     private static class BlueImpl extends AnnotationLiteral<Blue> implements Blue {
