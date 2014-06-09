@@ -41,6 +41,7 @@ package org.glassfish.hk2.configuration.hub.xml.dom.integration.internal;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -88,37 +89,36 @@ public class ConfigListener implements DynamicConfigurationListener {
         
         String instance = XmlDomIntegrationUtilities.DEFAULT_INSTANCE_NAME;
         Dom dom = Dom.unwrap(configBeanProxy);
-        ConfigModel childModel = dom.model;
-        if (childModel.key != null) {
-            instance = childModel.key;
+        ConfigModel configModel = dom.model;
+        if (configModel.key != null) {
+            instance = dom.getKey();
         }
         
-        boolean firstTime = true;
-        StringBuffer typeBuffer = new StringBuffer();
-        
+        LinkedList<String> xpathTags = new LinkedList<String>();
         while (dom != null) {
-            if (firstTime) {
-                firstTime = false;
-            }
-            else {
-                typeBuffer.append(TYPE_CONNECTOR);
-            }
-            
             ConfigModel model = dom.model;
             if (model.getTagName() != null) {
-                typeBuffer.append(model.getTagName());
+                xpathTags.addFirst(model.getTagName());
             }
             
             dom = dom.parent();
         }
         
-        return new HubKey(handle, typeBuffer.toString(), instance);
+        StringBuffer typeBuffer = new StringBuffer();
+        for (String tag : xpathTags) {
+            typeBuffer.append(TYPE_CONNECTOR + tag);
+        }
         
+        return new HubKey(handle, typeBuffer.toString(), instance);
     }
     
     private void addInstance(ActiveDescriptor<?> descriptor) {
         HubKey hubKey = getHubKey(descriptor);
         Object target = hubKey.handle.getService();
+        
+        // Must add this in prior to telling the database about
+        // it to stop infinite recursions
+        descriptors.put(descriptor, hubKey);
         
         for (int lcv = 0; lcv < MAX_TRIES; lcv++) {
             WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
@@ -135,8 +135,6 @@ public class ConfigListener implements DynamicConfigurationListener {
                 // try again
             }
         }
-        
-        descriptors.put(descriptor, hubKey);
     }
     
     private void removeInstance(HubKey key) {
@@ -193,6 +191,11 @@ public class ConfigListener implements DynamicConfigurationListener {
             this.handle = handle;
             this.type = type;
             this.instance = instance;
+        }
+        
+        @Override
+        public String toString() {
+            return "HubKey(" + type + "," + instance + "," + System.identityHashCode(this) + ")";
         }
     }
 }

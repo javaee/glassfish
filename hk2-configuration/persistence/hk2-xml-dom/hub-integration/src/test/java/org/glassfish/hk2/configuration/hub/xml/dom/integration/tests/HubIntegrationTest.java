@@ -59,9 +59,9 @@ import org.jvnet.hk2.testing.junit.HK2Runner;
  *
  */
 public class HubIntegrationTest extends HK2Runner {
-    private final static String ABEAN_TAG = "a-bean";
-    private final static String BBEAN_TAG = "b-bean";
-    private final static String CBEAN_TAG = "b-bean/c-bean";
+    private final static String ABEAN_TAG = "/a-bean";
+    private final static String BBEAN_TAG = "/b-bean";
+    private final static String CBEAN_TAG = "/b-bean/c-bean";
     
     private final static String ALICE = "alice";
     private final static String BOB = "bob";
@@ -108,7 +108,7 @@ public class HubIntegrationTest extends HK2Runner {
     /**
      * Tests an outer bean that has a sub-keyed bean
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testComplexKeyedBean() {
         ConfigParser parser = new ConfigParser(testLocator);
         URL url = getClass().getClassLoader().getResource("complex1.xml");
@@ -144,8 +144,6 @@ public class HubIntegrationTest extends HK2Runner {
         
         Object aliceInstance = beanDatabase.getInstance(CBEAN_TAG, ALICE);
         Object bobInstance = beanDatabase.getInstance(CBEAN_TAG, BOB);
-        
-        ServiceLocatorUtilities.dumpAllDescriptors(testLocator, System.out);
         
         Assert.assertNotNull(aliceInstance);
         Assert.assertNotNull(bobInstance);

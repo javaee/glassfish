@@ -42,7 +42,6 @@ package org.glassfish.hk2.configuration.hub.xml.dom.integration.e2etests;
 import java.net.URL;
 
 import org.glassfish.hk2.configuration.api.ConfigurationUtilities;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,7 +53,7 @@ import org.jvnet.hk2.testing.junit.HK2Runner;
  *
  */
 public class E2ETest extends HK2Runner {
-    /* package */ final static String ABEAN_TAG = "a-bean";
+    /* package */ final static String ABEAN_TAG = "/a-bean";
     private final static String HELLO = "hello";
     
     @Before
