@@ -87,7 +87,7 @@ public @interface Service {
 
     /**
      * Additional metadata that goes into the inhabitants file.
-     * The value is "key=value,key=value,..." format.
+     * The value is "key={value},key={value1,value2,...},..." format.
      *
      * This information is accessible from {@link org.glassfish.hk2.api.Descriptor#getMetadata()}.
      *

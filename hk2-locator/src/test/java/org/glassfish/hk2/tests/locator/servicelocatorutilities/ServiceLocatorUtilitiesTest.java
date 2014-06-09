@@ -724,7 +724,7 @@ public class ServiceLocatorUtilitiesTest {
         Assert.assertEquals(RED, red);
     }
     
-    @Test @org.junit.Ignore
+    @Test
     public void addClassWithMetadata() {
         ServiceLocator locator = uniqueCreate();
         
@@ -734,6 +734,12 @@ public class ServiceLocatorUtilitiesTest {
         ActiveDescriptor<?> descriptor = added.get(0);
         
         Assert.assertEquals("value", ServiceLocatorUtilities.getOneMetadataField(descriptor, "key"));
+        
+        List<String> multiValues = descriptor.getMetadata().get("multiKey");
+        Assert.assertEquals(2, multiValues.size());
+        
+        Assert.assertEquals("value1", multiValues.get(0));
+        Assert.assertEquals("value2", multiValues.get(1));
     }
     
     private static class BlueImpl extends AnnotationLiteral<Blue> implements Blue {

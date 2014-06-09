@@ -45,7 +45,7 @@ import org.jvnet.hk2.annotations.Service;
  * @author jwells
  *
  */
-@Service(metadata="key=value")
+@Service(metadata="key={value},multiKey={value1,value2}")
 public class ServiceWithMetadata {
 
 }

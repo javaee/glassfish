@@ -42,6 +42,7 @@ package org.jvnet.hk2.internal;
 import org.aopalliance.intercept.ConstructorInterceptor;
 import org.aopalliance.intercept.MethodInterceptor;
 
+import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Inherited;
 import java.lang.ref.SoftReference;
@@ -672,12 +673,18 @@ public class Utilities {
         Boolean proxy = null;
         Boolean proxyForSameScope = null;
         String analyzerName;
+        String serviceMetadata = null;
         
         // Qualifiers naming dance
         String serviceName = null;
         Service serviceAnno = clazz.getAnnotation(Service.class);
-        if (serviceAnno != null && !"".equals(serviceAnno.name())) {
-            serviceName = serviceAnno.name();
+        if (serviceAnno != null) {
+            if(!"".equals(serviceAnno.name())) {
+              serviceName = serviceAnno.name();
+            }
+            if (!"".equals(serviceAnno.metadata())) {
+                serviceMetadata = serviceAnno.metadata();
+            }
         }
         
         qualifiers = ReflectionHelper.getQualifierAnnotations(clazz);
@@ -703,9 +710,18 @@ public class Utilities {
 
         creator = new ClazzCreator<T>(locator, clazz);
 
-        collector.throwIfErrors();
-
         Map<String, List<String>> metadata = new HashMap<String, List<String>>();
+        if (serviceMetadata != null) {
+            try {
+                ReflectionHelper.readMetadataMap(serviceMetadata, metadata);
+            }
+            catch (IOException ioe) {
+                collector.addThrowable(ioe);
+            }
+        }
+        
+        collector.throwIfErrors();
+        
         if (scopeInfo.getScope() != null) {
             BuilderHelper.getMetadataValues(scopeInfo.getScope(), metadata);
         }
