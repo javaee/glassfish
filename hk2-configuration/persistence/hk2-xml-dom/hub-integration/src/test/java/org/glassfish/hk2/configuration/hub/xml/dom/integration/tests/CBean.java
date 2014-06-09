@@ -37,51 +37,18 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.hub.xml.dom.integration.e2etests;
+package org.glassfish.hk2.configuration.hub.xml.dom.integration.tests;
 
-import java.net.URL;
-
-import org.glassfish.hk2.configuration.api.ConfigurationUtilities;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.jvnet.hk2.config.ConfigParser;
-import org.jvnet.hk2.testing.junit.HK2Runner;
+import org.jvnet.hk2.config.Attribute;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.Configured;
 
 /**
  * @author jwells
  *
  */
-public class E2ETest extends HK2Runner {
-    /* package */ final static String ABEAN_TAG = "a-bean";
-    private final static String HELLO = "hello";
-    
-    @Before
-    public void before() {
-        super.initialize("E2ETest", null, null);
-        
-        ConfigurationUtilities.enableConfigurationSystem(testLocator);
-    }
-    
-    /**
-     * Tests just adding one bean then checking the
-     * cooresponding service is available
-     */
-    @Test // @org.junit.Ignore
-    public void testAddOneBean() {
-        ConfigParser parser = new ConfigParser(testLocator);
-        URL url = getClass().getClassLoader().getResource("simple.xml");
-        Assert.assertNotNull(url);
-        
-        parser.parse(url);
-        
-        AService aService = testLocator.getService(AService.class);
-        Assert.assertNotNull(aService);
-        
-        Assert.assertEquals(HELLO, aService.getStringParameter());
-        Assert.assertEquals(10, aService.getIntParameter());
-        Assert.assertEquals(100, aService.getLongParameter());
-    }
-
+@Configured
+public interface CBean extends ConfigBeanProxy {
+    @Attribute(required=true, key=true)
+    public String getName();
 }

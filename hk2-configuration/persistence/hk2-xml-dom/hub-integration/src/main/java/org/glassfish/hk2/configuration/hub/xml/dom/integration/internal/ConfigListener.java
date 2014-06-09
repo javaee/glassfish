@@ -72,6 +72,7 @@ import org.jvnet.hk2.config.Dom;
 public class ConfigListener implements DynamicConfigurationListener {
     private final static int MAX_TRIES = 10000;
     private final static IndexedFilter CONFIG_FILTER = BuilderHelper.createContractFilter(ConfigBean.class.getName());
+    private final static String TYPE_CONNECTOR = "/";
     
     @Inject
     private ServiceLocator locator;
@@ -100,7 +101,7 @@ public class ConfigListener implements DynamicConfigurationListener {
                 firstTime = false;
             }
             else {
-                typeBuffer.append(".");
+                typeBuffer.append(TYPE_CONNECTOR);
             }
             
             ConfigModel model = dom.model;

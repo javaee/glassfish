@@ -40,12 +40,14 @@
 package org.glassfish.hk2.configuration.hub.xml.dom.integration.tests;
 
 import java.net.URL;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationUtilities;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -58,6 +60,12 @@ import org.jvnet.hk2.testing.junit.HK2Runner;
  */
 public class HubIntegrationTest extends HK2Runner {
     private final static String ABEAN_TAG = "a-bean";
+    private final static String BBEAN_TAG = "b-bean";
+    private final static String CBEAN_TAG = "b-bean/c-bean";
+    
+    private final static String ALICE = "alice";
+    private final static String BOB = "bob";
+    
     private final static String HELLO = "hello";
     
     @Inject
@@ -95,6 +103,52 @@ public class HubIntegrationTest extends HK2Runner {
         Assert.assertEquals(HELLO, abeanInstance.getStringParameter());
         Assert.assertEquals(10, abeanInstance.getIntParameter());
         Assert.assertEquals(100L, abeanInstance.getLongParameter());
+    }
+    
+    /**
+     * Tests an outer bean that has a sub-keyed bean
+     */
+    @Test @org.junit.Ignore
+    public void testComplexKeyedBean() {
+        ConfigParser parser = new ConfigParser(testLocator);
+        URL url = getClass().getClassLoader().getResource("complex1.xml");
+        Assert.assertNotNull(url);
+        
+        parser.parse(url);
+        
+        BBean bbean = testLocator.getService(BBean.class);
+        Assert.assertNotNull(bbean);
+        
+        Assert.assertEquals(HELLO, bbean.getParameter());
+        List<CBean> cbeans = bbean.getCBeans();
+        
+        Assert.assertEquals(2, cbeans.size());
+        
+        boolean foundAlice = false;
+        boolean foundBob = false;
+        for (CBean cbean : cbeans) {
+            if (ALICE.equals(cbean.getName())) {
+                foundAlice = true;
+            }
+            else if (BOB.equals(cbean.getName())) {
+                foundBob = true;
+            }
+        }
+        
+        Assert.assertTrue(foundAlice);
+        Assert.assertTrue(foundBob);
+        
+        BeanDatabase beanDatabase = hub.getCurrentDatabase();
+        Object bInstance = beanDatabase.getInstance(BBEAN_TAG, XmlDomIntegrationUtilities.DEFAULT_INSTANCE_NAME);
+        Assert.assertNotNull(bInstance);
+        
+        Object aliceInstance = beanDatabase.getInstance(CBEAN_TAG, ALICE);
+        Object bobInstance = beanDatabase.getInstance(CBEAN_TAG, BOB);
+        
+        ServiceLocatorUtilities.dumpAllDescriptors(testLocator, System.out);
+        
+        Assert.assertNotNull(aliceInstance);
+        Assert.assertNotNull(bobInstance);
     }
 
 }

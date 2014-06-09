@@ -1,0 +1,4 @@
+<b-bean parameter="hello">
+  <c-bean name="alice" />
+  <c-bean name="bob" />
+</b-bean>
