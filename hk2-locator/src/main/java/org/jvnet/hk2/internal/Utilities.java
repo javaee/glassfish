@@ -77,6 +77,7 @@ import javax.inject.Singleton;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.ClassAnalyzer;
 import org.glassfish.hk2.api.Context;
+import org.glassfish.hk2.api.ContractIndicator;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.DescriptorVisibility;
@@ -576,12 +577,25 @@ public class Utilities {
 
     }
     
+    private static boolean hasContract(Class<?> clazz) {
+        // We give this one for free, to speed up performance
+        if (clazz.isAnnotationPresent(Contract.class)) return true;
+        
+        for (Annotation clazzAnnotation : clazz.getAnnotations()) {
+            if (clazzAnnotation.annotationType().isAnnotationPresent(ContractIndicator.class)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
     private static void addAllInterfaceContracts(Type interfaceType, LinkedHashSet<Type> addToMe) {
         Class<?> interfaceClass = ReflectionHelper.getRawClass(interfaceType);
         if (interfaceClass == null) return;
         if (addToMe.contains(interfaceType)) return;
         
-        if (interfaceClass.isAnnotationPresent(Contract.class)) {
+        if (hasContract(interfaceClass)) {
             addToMe.add(interfaceType);
         }
         
@@ -615,7 +629,7 @@ public class Utilities {
             Class<?> rawSuperclass = ReflectionHelper.getRawClass(genericSuperclass);
             if (rawSuperclass == null) break;
 
-            if (rawSuperclass.isAnnotationPresent(Contract.class)) {
+            if (hasContract(rawSuperclass)) {
                 retVal.add(genericSuperclass);
             }
 

@@ -742,7 +742,7 @@ public class DynamicConfigTest {
      * Tests that we can use an alternate contract by specifying the
      * ContractIndicator on the contract
      */
-    @Test @org.junit.Ignore
+    @Test
     public void testAlternateContract() {
         ServiceLocator locator = LocatorHelper.create();
         
