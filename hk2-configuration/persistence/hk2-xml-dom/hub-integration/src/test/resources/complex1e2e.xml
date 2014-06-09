@@ -1,0 +1,4 @@
+<b-end-to-end-bean parameter="hello">
+  <c-end-to-end-bean name="alice" />
+  <c-end-to-end-bean name="bob" />
+</b-end-to-end-bean>

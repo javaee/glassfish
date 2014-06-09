@@ -39,22 +39,21 @@
  */
 package org.glassfish.hk2.configuration.hub.xml.dom.integration.e2etests;
 
-import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.Configured;
+import org.glassfish.hk2.configuration.api.Configured;
+import org.glassfish.hk2.configuration.api.ConfiguredBy;
+import org.jvnet.hk2.annotations.Service;
 
 /**
  * @author jwells
  *
  */
-@Configured
-public interface ABean {
-    @Attribute
-    public String getStringParameter();
+@Service @ConfiguredBy(E2ETest.BBEAN_TAG)
+public class BService {
+    @Configured
+    private String parameter;
     
-    @Attribute (defaultValue="0")
-    public int getIntParameter();
-    
-    @Attribute (defaultValue="-1")
-    public long getLongParameter();
+    public String getParameter() {
+        return parameter;
+    }
 
 }

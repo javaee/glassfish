@@ -116,6 +116,8 @@ public class ConfigListener implements DynamicConfigurationListener {
         HubKey hubKey = getHubKey(descriptor);
         Object target = hubKey.handle.getService();
         
+        System.out.println("JRW(10) recursive check " + hubKey);
+        
         // Must add this in prior to telling the database about
         // it to stop infinite recursions
         descriptors.put(descriptor, hubKey);

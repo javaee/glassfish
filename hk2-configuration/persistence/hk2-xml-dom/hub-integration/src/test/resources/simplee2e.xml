@@ -1,0 +1,5 @@
+<a-end-to-end-bean
+  string-parameter="hello"
+  int-parameter="10"
+  long-parameter="100"
+ />

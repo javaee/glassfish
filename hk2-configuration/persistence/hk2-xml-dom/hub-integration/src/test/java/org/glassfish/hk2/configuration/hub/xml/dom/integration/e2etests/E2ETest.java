@@ -53,7 +53,13 @@ import org.jvnet.hk2.testing.junit.HK2Runner;
  *
  */
 public class E2ETest extends HK2Runner {
-    /* package */ final static String ABEAN_TAG = "/a-bean";
+    /* package */ final static String ABEAN_TAG = "/a-end-to-end-bean";
+    /* package */ final static String BBEAN_TAG = "/b-end-to-end-bean";
+    /* package */ final static String CBEAN_TAG = "/b-end-to-end-bean/c-end-to-end-bean";
+    
+    private final static String ALICE = "alice";
+    private final static String BOB = "bob";
+    
     private final static String HELLO = "hello";
     
     @Before
@@ -70,7 +76,7 @@ public class E2ETest extends HK2Runner {
     @Test // @org.junit.Ignore
     public void testAddOneBean() {
         ConfigParser parser = new ConfigParser(testLocator);
-        URL url = getClass().getClassLoader().getResource("simple.xml");
+        URL url = getClass().getClassLoader().getResource("simplee2e.xml");
         Assert.assertNotNull(url);
         
         parser.parse(url);
@@ -81,6 +87,32 @@ public class E2ETest extends HK2Runner {
         Assert.assertEquals(HELLO, aService.getStringParameter());
         Assert.assertEquals(10, aService.getIntParameter());
         Assert.assertEquals(100, aService.getLongParameter());
+    }
+    
+    /**
+     * Tests just adding one bean then checking the
+     * cooresponding service is available
+     */
+    @Test // @org.junit.Ignore
+    public void testComplexKeyedBean() {
+        ConfigParser parser = new ConfigParser(testLocator);
+        URL url = getClass().getClassLoader().getResource("complex1e2e.xml");
+        Assert.assertNotNull(url);
+        
+        parser.parse(url);
+        
+        BService bService = testLocator.getService(BService.class);
+        Assert.assertNotNull(bService);
+        
+        Assert.assertEquals(HELLO, bService.getParameter());
+        
+        CService alice = testLocator.getService(CService.class, ALICE);
+        Assert.assertNotNull(alice);
+        Assert.assertEquals(ALICE, alice.getName());
+        
+        CService bob = testLocator.getService(CService.class, BOB);
+        Assert.assertNotNull(bob);
+        Assert.assertEquals(BOB, bob.getName());
     }
 
 }
