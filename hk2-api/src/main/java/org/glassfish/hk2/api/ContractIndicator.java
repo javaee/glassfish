@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,32 +37,27 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.annotations;
+package org.glassfish.hk2.api;
 
-import static java.lang.annotation.ElementType.TYPE;
-
-import java.lang.annotation.Retention;
-
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import java.lang.annotation.Target;
 import java.lang.annotation.Documented;
-
-import org.glassfish.hk2.api.ContractIndicator;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
- * This annotation is used by HK2 during automatic
- * class analysis to indicate that a class or
- * interface should be included in the list of
- * contracts for a service
+ * This annotation is put on annotations that are used
+ * to mark things as hk2 contracts.  For example
+ * the annotation {@link org.jvnet.hk2.annotations.Contract} is
+ * used to denote hk2 contracts
+ * 
+ * @author jwells
  *
- * @author Jerome Dochez
- * @see ContractsProvided
  */
 @Documented
 @Retention(RUNTIME)
-@Target({TYPE})
-@ContractIndicator
-public @interface Contract {
-    
+@Target( ANNOTATION_TYPE )
+public @interface ContractIndicator {
+
 }

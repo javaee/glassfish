@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,32 +37,25 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.annotations;
+package org.glassfish.hk2.tests.locator.dynamicconfig;
 
 import static java.lang.annotation.ElementType.TYPE;
-
-import java.lang.annotation.Retention;
-
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
-import java.lang.annotation.Documented;
 
 import org.glassfish.hk2.api.ContractIndicator;
 
 /**
- * This annotation is used by HK2 during automatic
- * class analysis to indicate that a class or
- * interface should be included in the list of
- * contracts for a service
+ * This is an alternate contract indicator
+ * 
+ * @author jwells
  *
- * @author Jerome Dochez
- * @see ContractsProvided
  */
-@Documented
 @Retention(RUNTIME)
 @Target({TYPE})
 @ContractIndicator
-public @interface Contract {
-    
+public @interface AlternateContract {
+
 }

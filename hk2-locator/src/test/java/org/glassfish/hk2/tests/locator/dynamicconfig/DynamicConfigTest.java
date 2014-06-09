@@ -737,4 +737,22 @@ public class DynamicConfigTest {
         Assert.assertNotNull(locator.getService(lookupType));
         
     }
+    
+    /**
+     * Tests that we can use an alternate contract by specifying the
+     * ContractIndicator on the contract
+     */
+    @Test @org.junit.Ignore
+    public void testAlternateContract() {
+        ServiceLocator locator = LocatorHelper.create();
+        
+        List<ActiveDescriptor<?>> added = ServiceLocatorUtilities.addClasses(locator, AlternateServiceImpl.class);
+        Assert.assertEquals(1, added.size());
+        
+        ActiveDescriptor<?> descriptor = added.get(0);
+        
+        Assert.assertTrue(descriptor.getAdvertisedContracts().contains(AlternateService.class.getName()));
+        Assert.assertTrue(descriptor.getContractTypes().contains(AlternateService.class));
+        
+    }
 }
