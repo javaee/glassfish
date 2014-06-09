@@ -69,7 +69,8 @@ public interface ServiceLocator {
      * Gets the best service from this locator that implements
      * this contract or has this implementation
      * <p>
-     * Use this method only if destroying the service is not important
+     * Use this method only if destroying the service is not important,
+     * otherwise use {@link ServiceLocator#getServiceHandle(Class, Annotation...)}
      * 
      * @param contractOrImpl May not be null, and is the contract
      * or concrete implementation to get the best instance of
@@ -86,7 +87,8 @@ public interface ServiceLocator {
      * Gets the best service from this locator that implements
      * this contract or has this implementation
      * <p>
-     * Use this method only if destroying the service is not important
+     * Use this method only if destroying the service is not important,
+     * otherwise use {@link ServiceLocator#getServiceHandle(Type, Annotation...)}
      * 
      * @param contractOrImpl May not be null, and is the contract
      * or concrete implementation to get the best instance of
@@ -104,7 +106,8 @@ public interface ServiceLocator {
      * this contract or has this implementation and has the given
      * name
      * <p>
-     * Use this method only if destroying the service is not important
+     * Use this method only if destroying the service is not important,
+     * otherwise use {@link ServiceLocator#getServiceHandle(Class, String, Annotation...)}
      * 
      * @param contractOrImpl May not be null, and is the contract
      * or concrete implementation to get the best instance of
@@ -124,7 +127,8 @@ public interface ServiceLocator {
      * this contract or has this implementation and has the given
      * name
      * <p>
-     * Use this method only if destroying the service is not important
+     * Use this method only if destroying the service is not important,
+     * otherwise use {@link ServiceLocator#getServiceHandle(Type, String, Annotation...)}
      * 
      * @param contractOrImpl May not be null, and is the contract
      * or concrete implementation to get the best instance of
@@ -143,7 +147,8 @@ public interface ServiceLocator {
      * Gets the all the services from this locator that implements
      * this contract or has this implementation
      * <p>
-     * Use this method only if destroying the service is not important
+     * Use this method only if destroying the service is not important,
+     * otherwise use {@link ServiceLocator#getAllServiceHandles(Class, Annotation...)}
      * 
      * @param contractOrImpl May not be null, and is the contract
      * or concrete implementation to get the best instance of
@@ -161,7 +166,8 @@ public interface ServiceLocator {
      * Gets the all the services from this locator that implements
      * this contract or has this implementation
      * <p>
-     * Use this method only if destroying the service is not important
+     * Use this method only if destroying the service is not important,
+     * otherwise use {@link ServiceLocator#getAllServiceHandles(Type, Annotation...)}
      * 
      * @param contractOrImpl May not be null, and is the contract
      * or concrete implementation to get the best instance of
@@ -179,7 +185,8 @@ public interface ServiceLocator {
      * Gets the all the services from this locator that has the given
      * qualifier or qualifiers
      * <p>
-     * Use this method only if destroying the services is not important
+     * Use this method only if destroying the services is not important,
+     * otherwise use {@link ServiceLocator#getAllServiceHandles(Annotation, Annotation...)}
      * 
      * @param qualifier May not be null, and is a qualifier that must
      * match the service definition
@@ -197,7 +204,8 @@ public interface ServiceLocator {
      * Gets the all the services from this locator that matches the
      * {@link Filter}
      * <p>
-     * Use this method only if destroying the service is not important
+     * Use this method only if destroying the service is not important,
+     * otherwise use {@link ServiceLocator#getAllServiceHandles(Filter)}
      * <p>
      * This method should also be used with care to avoid classloading
      * a large number of services
