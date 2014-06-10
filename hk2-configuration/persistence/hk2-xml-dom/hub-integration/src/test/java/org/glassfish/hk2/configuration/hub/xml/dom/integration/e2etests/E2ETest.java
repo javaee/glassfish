@@ -59,6 +59,8 @@ public class E2ETest extends HK2Runner {
     
     private final static String ALICE = "alice";
     private final static String BOB = "bob";
+    private final static String ALICE_INSTANCE_NAME = "b-end-to-end-bean.alice";
+    private final static String BOB_INSTANCE_NAME = "b-end-to-end-bean.bob";
     
     private final static String HELLO = "hello";
     
@@ -106,11 +108,11 @@ public class E2ETest extends HK2Runner {
         
         Assert.assertEquals(HELLO, bService.getParameter());
         
-        CService alice = testLocator.getService(CService.class, ALICE);
+        CService alice = testLocator.getService(CService.class, ALICE_INSTANCE_NAME);
         Assert.assertNotNull(alice);
         Assert.assertEquals(ALICE, alice.getName());
         
-        CService bob = testLocator.getService(CService.class, BOB);
+        CService bob = testLocator.getService(CService.class, BOB_INSTANCE_NAME);
         Assert.assertNotNull(bob);
         Assert.assertEquals(BOB, bob.getName());
     }

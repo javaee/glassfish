@@ -1,0 +1,29 @@
+<d-bean name="alice">
+  <e-bean>
+    <f-bean name="carol">]
+      <g-bean name="dave">
+        <g-bean name="englebert"/>
+      </g-bean>
+    </f-bean>
+    <f-bean name="fred">
+      <g-bean name="gary"/>
+    </f-bean>
+  </e-bean>
+</d-bean>
+
+<!--
+  This second d-bean has the same e-bean from above, but the names would
+  be different because of the naming conventions
+  -->
+<d-bean name="bob">
+  <e-bean>
+    <f-bean name="carol">]
+      <g-bean name="dave">
+        <g-bean name="englebert"/>
+      </g-bean>
+    </f-bean>
+    <f-bean name="fred">
+      <g-bean name="gary"/>
+    </f-bean>
+  </e-bean>
+</d-bean>

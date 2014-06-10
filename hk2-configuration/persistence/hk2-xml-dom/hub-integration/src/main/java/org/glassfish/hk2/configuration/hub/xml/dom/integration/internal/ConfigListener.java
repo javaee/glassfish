@@ -74,6 +74,7 @@ public class ConfigListener implements DynamicConfigurationListener {
     private final static int MAX_TRIES = 10000;
     private final static IndexedFilter CONFIG_FILTER = BuilderHelper.createContractFilter(ConfigBean.class.getName());
     private final static String TYPE_CONNECTOR = "/";
+    private final static String INSTANCE_CONNECTOR = ".";
     
     @Inject
     private ServiceLocator locator;
@@ -87,18 +88,27 @@ public class ConfigListener implements DynamicConfigurationListener {
         ServiceHandle<?> handle = locator.getServiceHandle(descriptor);
         ConfigBeanProxy configBeanProxy = (ConfigBeanProxy) handle.getService();
         
-        String instance = XmlDomIntegrationUtilities.DEFAULT_INSTANCE_NAME;
         Dom dom = Dom.unwrap(configBeanProxy);
-        ConfigModel configModel = dom.model;
-        if (configModel.key != null) {
-            instance = dom.getKey();
-        }
+        
         
         LinkedList<String> xpathTags = new LinkedList<String>();
+        LinkedList<String> nameTags = new LinkedList<String>();
         while (dom != null) {
             ConfigModel model = dom.model;
-            if (model.getTagName() != null) {
-                xpathTags.addFirst(model.getTagName());
+            
+            String tagName = model.getTagName();
+            if (tagName != null) {
+                xpathTags.addFirst(tagName);
+            }
+            
+            if (model.key != null) {
+                nameTags.addFirst(dom.getKey());
+            }
+            else if (tagName != null) {
+                nameTags.addFirst(tagName);
+            }
+            else {
+                nameTags.addFirst(XmlDomIntegrationUtilities.DEFAULT_INSTANCE_NAME);
             }
             
             dom = dom.parent();
@@ -109,14 +119,24 @@ public class ConfigListener implements DynamicConfigurationListener {
             typeBuffer.append(TYPE_CONNECTOR + tag);
         }
         
-        return new HubKey(handle, typeBuffer.toString(), instance);
+        boolean firstTime = true;
+        StringBuffer instanceBuffer = new StringBuffer();
+        for (String name : nameTags) {
+            if (firstTime) {
+                firstTime = false;
+                instanceBuffer.append(name);
+            }
+            else {
+                instanceBuffer.append(INSTANCE_CONNECTOR + name);
+            }
+        }
+        
+        return new HubKey(handle, typeBuffer.toString(), instanceBuffer.toString());
     }
     
     private void addInstance(ActiveDescriptor<?> descriptor) {
         HubKey hubKey = getHubKey(descriptor);
         Object target = hubKey.handle.getService();
-        
-        System.out.println("JRW(10) recursive check " + hubKey);
         
         // Must add this in prior to telling the database about
         // it to stop infinite recursions
