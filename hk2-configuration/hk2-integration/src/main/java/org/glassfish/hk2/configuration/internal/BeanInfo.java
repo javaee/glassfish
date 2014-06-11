@@ -37,39 +37,43 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.tests.simple;
-
-import org.glassfish.hk2.configuration.api.Configured;
-import org.glassfish.hk2.configuration.api.ConfiguredBy;
-import org.jvnet.hk2.annotations.Service;
+package org.glassfish.hk2.configuration.internal;
 
 /**
  * @author jwells
  *
  */
-@Service @ConfiguredBy(BasicConfigurationTest.TEST_TYPE_FIVE)
-public class BeanInjectedIntoConstructorService {
-    private final ConfiguredServiceBean myBean;
-    private final String myInstance;
-    private final String myType;
+public class BeanInfo {
+    private final String typeName;
+    private final String instanceName;
+    private final Object bean;
     
-    public BeanInjectedIntoConstructorService(@Configured(Configured.BEAN_KEY) ConfiguredServiceBean myBean,
-            @Configured(Configured.INSTANCE) String instance,
-            @Configured(Configured.TYPE) String type) {
-        this.myBean = myBean;
-        myInstance = instance;
-        myType = type;
+    /* package */ BeanInfo(String typeName, String instanceName, Object bean) {
+        this.typeName = typeName;
+        this.instanceName = instanceName;
+        this.bean = bean;
     }
 
-    public ConfiguredServiceBean getBean() {
-        return myBean;
+    /**
+     * @return the typeName
+     */
+    public String getTypeName() {
+        return typeName;
+    }
+
+    /**
+     * @return the instanceName
+     */
+    public String getInstanceName() {
+        return instanceName;
+    }
+
+    /**
+     * @return the bean
+     */
+    public Object getBean() {
+        return bean;
     }
     
-    public String getInstance() {
-        return myInstance;
-    }
-    
-    public String getType() {
-        return myType;
-    }
+
 }

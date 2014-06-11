@@ -69,7 +69,7 @@ public class ConfiguredByInjectionResolver implements
     @Inject
     private ConfiguredByContext context;
     
-    private final HashMap<ActiveDescriptor<?>, Object> beanMap = new HashMap<ActiveDescriptor<?>, Object>(); 
+    private final HashMap<ActiveDescriptor<?>, BeanInfo> beanMap = new HashMap<ActiveDescriptor<?>, BeanInfo>(); 
     
     private static String getParameterNameFromConstructor(Constructor<?> cnst, int position) {
         Annotation paramAnnotations[] = cnst.getParameterAnnotations()[position];
@@ -141,12 +141,12 @@ public class ConfiguredByInjectionResolver implements
         ActiveDescriptor<?> workingOn = context.getWorkingOn();
         if (workingOn == null) return systemResolver.resolve(injectee, root);
         
-        Object bean = beanMap.get(workingOn);
-        if (bean == null) {
+        BeanInfo beanInfo = beanMap.get(workingOn);
+        if (beanInfo == null) {
             throw new IllegalStateException("Could not find a configuration bean for " + injectee + " with descriptor " + workingOn);
         }
         
-        return BeanUtilities.getBeanPropertyValue(parameterName, bean);
+        return BeanUtilities.getBeanPropertyValue(parameterName, beanInfo);
     }
 
     /* (non-Javadoc)
@@ -165,8 +165,10 @@ public class ConfiguredByInjectionResolver implements
         return true;
     }
     
-    /* package */ synchronized void addBean(ActiveDescriptor<?> descriptor, Object bean) {
-        beanMap.put(descriptor, bean);
+    /* package */ synchronized BeanInfo addBean(ActiveDescriptor<?> descriptor, Object bean, String type) {
+        BeanInfo retVal = new BeanInfo(type, descriptor.getName(), bean);
+        beanMap.put(descriptor, retVal);
+        return retVal;
     }
     
     /* package */ synchronized void removeBean(ActiveDescriptor<?> descriptor) {

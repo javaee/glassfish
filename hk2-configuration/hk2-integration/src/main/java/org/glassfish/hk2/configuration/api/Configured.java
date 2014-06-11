@@ -79,7 +79,20 @@ import org.glassfish.hk2.api.InjectionPointIndicator;
 @Target( { FIELD, PARAMETER })
 @InjectionPointIndicator
 public @interface Configured {
+    /** This value can be used to indicate that the injection point should be the whole bean */
     public final static String BEAN_KEY = "$bean";
+    
+    /**
+     * This value can be used to indicate that the injection point should be given the instance name.
+     * The injection point must be of type String
+     */
+    public final static String INSTANCE = "$instance";
+    
+    /**
+     * This value can be used to indicate that the injection point should be given the type name.
+     * The injection point must be of type String
+     */
+    public final static String TYPE = "$type";
     
     /**
      * The name of the field in the java bean or

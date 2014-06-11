@@ -517,6 +517,9 @@ public class BasicConfigurationTest extends HK2Runner {
             Assert.assertEquals(FIELD2, csb.getFieldOutput2());
             Assert.assertEquals(METHOD1, csb.getMethodOutput1());
             Assert.assertEquals(METHOD2, csb.getMethodOutput2());
+            
+            Assert.assertEquals(TEST_TYPE_FIVE, service.getType());
+            Assert.assertEquals(DEFAULT, service.getInstance());
         }
         finally {
             removeBean(TEST_TYPE_FIVE);
