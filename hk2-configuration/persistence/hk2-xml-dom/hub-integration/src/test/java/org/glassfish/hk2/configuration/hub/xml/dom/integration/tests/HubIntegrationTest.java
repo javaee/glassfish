@@ -41,11 +41,13 @@ package org.glassfish.hk2.configuration.hub.xml.dom.integration.tests;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.configuration.hub.api.Type;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -62,6 +64,9 @@ public class HubIntegrationTest extends HK2Runner {
     private final static String BBEAN_TAG = "/b-bean";
     private final static String BBEAN_INSTANCE_NAME = "b-bean";
     private final static String CBEAN_TAG = "/b-bean/c-bean";
+    private final static String DBEAN_TAG = "/h-bean/d-bean";
+    private final static String DBEAN_ALICE_INSTANCE_NAME = "h-bean.alice";
+    private final static String DBEAN_BOB_INSTANCE_NAME = "h-bean.bob";
     
     private final static String ALICE = "alice";
     private final static String BOB = "bob";
@@ -152,6 +157,51 @@ public class HubIntegrationTest extends HK2Runner {
         
         Assert.assertEquals(ALICE, ((CBean) aliceInstance).getName());
         Assert.assertEquals(BOB, ((CBean) bobInstance).getName());
+    }
+    
+    /**
+     * Both cbeans have the same structure internally
+     * 
+     * @param cbean
+     */
+    private void checkDBean(DBean dbean) {
+        
+    }
+    
+    /**
+     * Tests an outer bean with an inner bean that is
+     * singleton but which itself has keyed beans, one of
+     * which recurses on itself (fun!)
+     */
+    @Test // @org.junit.Ignore
+    public void testUberComplexKeyedBean() {
+        ConfigParser parser = new ConfigParser(testLocator);
+        URL url = getClass().getClassLoader().getResource("complex2.xml");
+        Assert.assertNotNull(url);
+        
+        parser.parse(url);
+        
+        BeanDatabase beanDatabase = hub.getCurrentDatabase();
+        
+        {
+            DBean alice = testLocator.getService(DBean.class, ALICE);
+            Assert.assertNotNull(alice);
+        
+            Object aliceInstance = beanDatabase.getInstance(DBEAN_TAG, DBEAN_ALICE_INSTANCE_NAME);
+            Assert.assertNotNull(aliceInstance);
+            
+            Assert.assertEquals(ALICE, ((DBean) aliceInstance).getName());
+        }
+        
+        {
+            DBean bob = testLocator.getService(DBean.class, BOB);
+            Assert.assertNotNull(bob);
+        
+            Object bobInstance = beanDatabase.getInstance(DBEAN_TAG, DBEAN_BOB_INSTANCE_NAME);
+            Assert.assertNotNull(bobInstance);
+            
+            Assert.assertEquals(BOB, ((DBean) bobInstance).getName());
+        }
     }
 
 }

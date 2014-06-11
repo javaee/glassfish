@@ -78,9 +78,11 @@
  */
 package org.glassfish.hk2.configuration.hub.internal;
 
+import java.io.PrintStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
@@ -140,7 +142,19 @@ public class BeanDatabaseImpl implements BeanDatabase {
         return revision;
     }
 
-    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.configuration.hub.api.BeanDatabase#dumpDatabase()
+     */
+    @Override
+    public void dumpDatabase() {
+        dumpDatabase(System.err);
+    }
 
-    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.configuration.hub.api.BeanDatabase#dumpDatabase(java.io.PrintStream)
+     */
+    @Override
+    public void dumpDatabase(PrintStream output) {
+        BeanReflectionHelper.dumpDatabase(this, output);
+    }
 }

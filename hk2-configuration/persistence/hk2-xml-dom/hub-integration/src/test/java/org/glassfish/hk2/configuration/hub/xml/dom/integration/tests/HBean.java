@@ -37,55 +37,21 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.hub.api;
+package org.glassfish.hk2.configuration.hub.xml.dom.integration.tests;
 
-import java.io.PrintStream;
-import java.util.Set;
+import java.util.List;
+
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.Element;
 
 /**
- * A database of beans organized as types, where a type
- * can have multiple instances of a configuration bean
- * 
  * @author jwells
  *
  */
-public interface BeanDatabase {
-    /**
-     * Gets an unmodifiable set of all the types in the bean database
-     * 
-     * @return A non-null unmodifiable and possibly empty set of
-     * all the types in the database
-     */
-    public Set<Type> getAllTypes();
-    
-    /**
-     * Gets the type with the given name
-     * 
-     * @param type The non-null name
-     * @return The type corresponding to the given name.  May return null
-     */
-    public Type getType(String type);
-    
-    /**
-     * Returns the instance with the given instanceKey from the
-     * type with the given name
-     * 
-     * @param type The non-null name of the type to get the instance from
-     * @param instanceKey The non-null key of the instance
-     * @return The bean from the given type with the given name.  Will return
-     * null if the type does not exist or an instance with that key does not exist
-     */
-    public Object getInstance(String type, String instanceKey);
-    
-    /**
-     * Dumps the type and instance names to stderr
-     */
-    public void dumpDatabase();
-    
-    /**
-     * Dumps the type and instance names to the given stream
-     * @param output - The non-null outut stream to write the database to
-     */
-    public void dumpDatabase(PrintStream output);
+@Configured
+public interface HBean extends ConfigBeanProxy {
+    @Element("*")
+    public List<DBean> getDBeans();
 
 }

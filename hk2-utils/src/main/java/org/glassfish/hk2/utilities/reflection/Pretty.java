@@ -193,7 +193,7 @@ public class Pretty {
             }
         }
         
-        sb.append("})");
+        sb.append("}");
         
         return sb.toString();
     }
