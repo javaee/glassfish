@@ -41,13 +41,11 @@ package org.glassfish.hk2.configuration.hub.xml.dom.integration.tests;
 
 import java.net.URL;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 
 import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.Hub;
-import org.glassfish.hk2.configuration.hub.api.Type;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,16 +58,26 @@ import org.jvnet.hk2.testing.junit.HK2Runner;
  */
 public class HubIntegrationTest extends HK2Runner {
     private final static String ABEAN_TAG = "/a-bean";
-    private final static String ABEAN_INSTANCE_NAME = "a-bean";
     private final static String BBEAN_TAG = "/b-bean";
-    private final static String BBEAN_INSTANCE_NAME = "b-bean";
     private final static String CBEAN_TAG = "/b-bean/c-bean";
     private final static String DBEAN_TAG = "/h-bean/d-bean";
+    private final static String EBEAN_TAG = "/h-bean/d-bean/e-bean";
+    private final static String FBEAN_TAG = "/h-bean/d-bean/e-bean/f-bean";
+    private final static String G0BEAN_TAG = "/h-bean/d-bean/e-bean/f-bean/g-bean";
+    private final static String G1BEAN_TAG = "/h-bean/d-bean/e-bean/f-bean/g-bean/g-bean";
+    
+    private final static String ABEAN_INSTANCE_NAME = "a-bean";
+    private final static String BBEAN_INSTANCE_NAME = "b-bean";
     private final static String DBEAN_ALICE_INSTANCE_NAME = "h-bean.alice";
     private final static String DBEAN_BOB_INSTANCE_NAME = "h-bean.bob";
     
     private final static String ALICE = "alice";
     private final static String BOB = "bob";
+    private final static String CAROL = "carol";
+    private final static String DAVE = "dave";
+    private final static String ENGLEBERT = "englebert";
+    private final static String FRED = "fred";
+    private final static String GARY = "gary";
     private final static String ALICE_INSTANCE_NAME = "b-bean.alice";
     private final static String BOB_INSTANCE_NAME = "b-bean.bob";
     
@@ -165,6 +173,68 @@ public class HubIntegrationTest extends HK2Runner {
      * @param cbean
      */
     private void checkDBean(DBean dbean) {
+        String dbeanName = dbean.getName();
+        
+        EBean ebean = dbean.getEBean();
+        Assert.assertNotNull(ebean);
+        
+        String eBeanInstanceName = "h-bean." + dbeanName + ".e-bean";
+        
+        Object ebeanInstance = hub.getCurrentDatabase().getInstance(EBEAN_TAG, eBeanInstanceName);
+        Assert.assertNotNull(ebeanInstance);
+        
+        List<FBean> fbeans = ((EBean) ebeanInstance).getFBeans();
+        Assert.assertNotNull(fbeans);
+        Assert.assertEquals(2, fbeans.size());
+        
+        for (FBean fbean : fbeans) {
+            String fbeanName = fbean.getName();
+            
+            String fbeanInstanceName = eBeanInstanceName + "." + fbeanName;
+            Object fbeanInstance = hub.getCurrentDatabase().getInstance(FBEAN_TAG, fbeanInstanceName);
+            Assert.assertNotNull(fbeanInstance);
+            
+            if (CAROL.equals(fbeanName)) {
+                GBean daveGBean = ((FBean) fbeanInstance).getGBeans().get(0);
+                Assert.assertNotNull(daveGBean);
+                
+                Assert.assertEquals(DAVE, daveGBean.getName());
+                
+                String daveGBeanInstanceName = fbeanInstanceName + "." + DAVE;
+                
+                Object daveGBeanInstance = hub.getCurrentDatabase().getInstance(G0BEAN_TAG, daveGBeanInstanceName);
+                Assert.assertNotNull(daveGBeanInstance);
+                Assert.assertEquals(DAVE, ((GBean) daveGBeanInstance).getName());
+                
+                GBean englebertGBean = daveGBean.getExtensions().get(0);
+                Assert.assertNotNull(englebertGBean);
+                
+                Assert.assertEquals(ENGLEBERT, englebertGBean.getName());
+                
+                String englebertGBeanInstanceName = daveGBeanInstanceName + "." + ENGLEBERT;
+                
+                Object englebertGBeanInstance = hub.getCurrentDatabase().getInstance(G1BEAN_TAG, englebertGBeanInstanceName);
+                Assert.assertNotNull(englebertGBeanInstance);
+                Assert.assertEquals(ENGLEBERT, ((GBean) englebertGBeanInstance).getName());
+            }
+            else if (FRED.equals(fbeanName)) {
+                GBean garyGBean = ((FBean) fbeanInstance).getGBeans().get(0);
+                Assert.assertNotNull(garyGBean);
+                
+                Assert.assertEquals(GARY, garyGBean.getName());
+                
+                String garyGBeanInstanceName = fbeanInstanceName + "." + GARY;
+                
+                Object garyGBeanInstance = hub.getCurrentDatabase().getInstance(G0BEAN_TAG, garyGBeanInstanceName);
+                Assert.assertNotNull(garyGBeanInstance);
+                Assert.assertEquals(GARY, ((GBean) garyGBeanInstance).getName());
+            }
+            else {
+                Assert.fail("Unkown fbean with name " + fbean.getName());
+            }
+            
+        }
+        
         
     }
     
@@ -191,6 +261,8 @@ public class HubIntegrationTest extends HK2Runner {
             Assert.assertNotNull(aliceInstance);
             
             Assert.assertEquals(ALICE, ((DBean) aliceInstance).getName());
+            
+            checkDBean((DBean) aliceInstance);
         }
         
         {
@@ -201,6 +273,8 @@ public class HubIntegrationTest extends HK2Runner {
             Assert.assertNotNull(bobInstance);
             
             Assert.assertEquals(BOB, ((DBean) bobInstance).getName());
+            
+            checkDBean((DBean) bobInstance);
         }
     }
 
