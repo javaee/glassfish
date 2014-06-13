@@ -234,7 +234,13 @@ public class ConfigListener implements DynamicConfigurationListener {
                 
                 wt.modifyInstance(instance, handle.getService(), events);
                 
-                wbd.commit();
+                try {
+                  wbd.commit();
+                  break;
+                }
+                catch (IllegalStateException ise) {
+                    // keep going
+                }
             }
             
             return null;
