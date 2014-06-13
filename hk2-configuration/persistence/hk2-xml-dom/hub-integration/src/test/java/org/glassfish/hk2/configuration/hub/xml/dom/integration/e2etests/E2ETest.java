@@ -157,6 +157,7 @@ public class E2ETest extends HK2Runner {
         }, iBean);
         
         Assert.assertEquals(SECOND_BOURBON, iService.getBourbon());
+        Assert.assertEquals(1, iService.getNumTimesSet());
     }
 
 }

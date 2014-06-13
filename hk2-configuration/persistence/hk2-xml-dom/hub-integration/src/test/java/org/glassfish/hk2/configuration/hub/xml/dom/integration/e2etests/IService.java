@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.configuration.hub.xml.dom.integration.e2etests;
 
+import javax.annotation.PostConstruct;
+
 import org.glassfish.hk2.configuration.api.Configured;
 import org.glassfish.hk2.configuration.api.ConfiguredBy;
 import org.jvnet.hk2.annotations.Service;
@@ -49,11 +51,26 @@ import org.jvnet.hk2.annotations.Service;
  */
 @Service @ConfiguredBy("/i-bean")
 public class IService {
-    @Configured(dynamicity=Configured.Dynamicity.FULLY_DYNAMIC)
     private String bourbon;
+    private int numTimesSet = 0;
+    
+    @SuppressWarnings("unused")
+    private void setBourbon(@Configured(value="bourbon", dynamicity=Configured.Dynamicity.FULLY_DYNAMIC) String bourbon) {
+        this.bourbon = bourbon;
+        numTimesSet++;
+    }
+    
+    @PostConstruct
+    private void postConstruct() {
+        numTimesSet = 0;
+    }
     
     public String getBourbon() {
         return bourbon;
+    }
+    
+    public int getNumTimesSet() {
+        return numTimesSet;
     }
 
 }
