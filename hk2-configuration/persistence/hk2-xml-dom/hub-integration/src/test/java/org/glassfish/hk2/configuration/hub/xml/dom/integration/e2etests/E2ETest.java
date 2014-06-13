@@ -39,13 +39,18 @@
  */
 package org.glassfish.hk2.configuration.hub.xml.dom.integration.e2etests;
 
+import java.beans.PropertyVetoException;
 import java.net.URL;
+
 
 import org.glassfish.hk2.configuration.api.ConfigurationUtilities;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.jvnet.hk2.config.ConfigParser;
+import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
 import org.jvnet.hk2.testing.junit.HK2Runner;
 
 /**
@@ -63,6 +68,9 @@ public class E2ETest extends HK2Runner {
     private final static String BOB_INSTANCE_NAME = "b-end-to-end-bean.bob";
     
     private final static String HELLO = "hello";
+    
+    private final static String FIRST_BOURBON = "Jack Daniels";
+    private final static String SECOND_BOURBON = "Rebel Yell";
     
     @Before
     public void before() {
@@ -115,6 +123,40 @@ public class E2ETest extends HK2Runner {
         CService bob = testLocator.getService(CService.class, BOB_INSTANCE_NAME);
         Assert.assertNotNull(bob);
         Assert.assertEquals(BOB, bob.getName());
+    }
+    
+    /**
+     * Tests that a dynamic change to a bean is reflected in the backing service
+     * @throws TransactionFailure 
+     */
+    @Test @org.junit.Ignore
+    public void testDynamicChange() throws TransactionFailure {
+        ConfigParser parser = new ConfigParser(testLocator);
+        URL url = getClass().getClassLoader().getResource("simple2.xml");
+        Assert.assertNotNull(url);
+        
+        parser.parse(url);
+        
+        IService iService = testLocator.getService(IService.class);
+        Assert.assertNotNull(iService);
+        
+        Assert.assertEquals(FIRST_BOURBON, iService.getBourbon());
+        
+        IBean iBean = testLocator.getService(IBean.class);
+        Assert.assertNotNull(iBean);
+        
+        ConfigSupport.apply(new SingleConfigCode<IBean>() {
+
+            @Override
+            public Object run(IBean param) throws PropertyVetoException,
+                    TransactionFailure {
+                param.setBourbon(SECOND_BOURBON);
+                return null;
+            }
+            
+        }, iBean);
+        
+        Assert.assertEquals(SECOND_BOURBON, iService.getBourbon());
     }
 
 }
