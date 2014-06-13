@@ -206,7 +206,11 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
         
         Set<Type> ctrs = new HashSet<Type>();
         ctrs.add(myselfReified.getImplementationClass());
-        ctrs.add(ConfigBean.class);
+        
+        if (ConfigBean.class.isAssignableFrom(this.getClass())) {
+            ctrs.add(ConfigBean.class);
+        }
+        
         DomDescriptor<Dom> domDesc = new DomDescriptor<Dom>(this, ctrs, Singleton.class,
                 getImplementation(), new HashSet<Annotation>());
         domDesc.setLoader(loader);
