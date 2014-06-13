@@ -51,7 +51,7 @@ import java.util.Map;
  */
 public interface InstanceLifecycleEvent {
     /**
-     * Gets the type of even this describes.  The values may be:<UL>
+     * Gets the type of event this describes.  The values may be:<UL>
      * <LI>PRE_PRODUCTION</LI>
      * <LI>POST_PRODUCTION</LI>
      * <LI>PRE_DESTRUCTION</LI>
