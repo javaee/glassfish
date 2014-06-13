@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.configuration.hub.xml.dom.integration.internal;
 
+import java.beans.PropertyChangeEvent;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -62,6 +63,7 @@ import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigModel;
 import org.jvnet.hk2.config.Dom;
+import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
 /**
  * Implementation of the listener needed to add/remove instances of
@@ -89,7 +91,7 @@ public class ConfigListener implements DynamicConfigurationListener {
         ConfigBeanProxy configBeanProxy = (ConfigBeanProxy) handle.getService();
         
         Dom dom = Dom.unwrap(configBeanProxy);
-        
+        Dom topDom = dom;
         
         LinkedList<String> xpathTags = new LinkedList<String>();
         LinkedList<String> nameTags = new LinkedList<String>();
@@ -131,7 +133,9 @@ public class ConfigListener implements DynamicConfigurationListener {
             }
         }
         
-        return new HubKey(handle, typeBuffer.toString(), instanceBuffer.toString());
+        HubKey retVal = new HubKey(handle, typeBuffer.toString(), instanceBuffer.toString());
+        topDom.addListener(retVal);
+        return retVal;
     }
     
     private void addInstance(ActiveDescriptor<?> descriptor) {
@@ -204,7 +208,7 @@ public class ConfigListener implements DynamicConfigurationListener {
         }
     }
     
-    private static class HubKey {
+    private class HubKey implements org.jvnet.hk2.config.ConfigListener {
         private final ServiceHandle<?> handle;
         private final String type;
         private final String instance;
@@ -215,9 +219,30 @@ public class ConfigListener implements DynamicConfigurationListener {
             this.instance = instance;
         }
         
+        
+
+        /* (non-Javadoc)
+         * @see org.jvnet.hk2.config.ConfigListener#changed(java.beans.PropertyChangeEvent[])
+         */
+        @Override
+        public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
+            for (int lcv = 0; lcv < MAX_TRIES; lcv++) {
+                WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+                
+                WriteableType wt = wbd.getWriteableType(type);
+                if (wt == null) return null;
+                
+                wt.modifyInstance(instance, handle.getService(), events);
+                
+                wbd.commit();
+            }
+            
+            return null;
+        }
+          
         @Override
         public String toString() {
             return "HubKey(" + type + "," + instance + "," + System.identityHashCode(this) + ")";
-        }
+        }   
     }
 }

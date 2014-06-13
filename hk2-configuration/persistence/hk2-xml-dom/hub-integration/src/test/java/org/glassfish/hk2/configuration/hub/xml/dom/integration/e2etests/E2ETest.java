@@ -129,7 +129,7 @@ public class E2ETest extends HK2Runner {
      * Tests that a dynamic change to a bean is reflected in the backing service
      * @throws TransactionFailure 
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testDynamicChange() throws TransactionFailure {
         ConfigParser parser = new ConfigParser(testLocator);
         URL url = getClass().getClassLoader().getResource("simple2.xml");
