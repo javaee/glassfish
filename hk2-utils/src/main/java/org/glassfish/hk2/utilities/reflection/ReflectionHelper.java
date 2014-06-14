@@ -53,8 +53,10 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -1270,5 +1272,121 @@ public final class ReflectionHelper {
         int modifiers = member.getModifiers();
 
         return ((modifiers & Modifier.PRIVATE) != 0);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static Set<Type> getAllTypes(Type t) {
+        LinkedHashSet<Type> retVal = new LinkedHashSet<Type>();
+        retVal.add(t);
+
+        Class<?> rawClass = ReflectionHelper.getRawClass(t);
+        if (rawClass == null) return retVal;
+
+        Type genericSuperclass = rawClass.getGenericSuperclass();
+        while (genericSuperclass != null) {
+            Class<?> rawSuperclass = ReflectionHelper.getRawClass(genericSuperclass);
+            if (rawSuperclass == null) break;
+
+            retVal.add(genericSuperclass);
+
+            genericSuperclass = rawSuperclass.getGenericSuperclass();
+        }
+
+        while (rawClass != null) {
+            for (Type iface : rawClass.getGenericInterfaces()) {
+                addAllInterfaceContracts(iface, retVal);
+            }
+
+            rawClass = rawClass.getSuperclass();
+        }
+        
+        LinkedHashSet<Type> altRetVal = new LinkedHashSet<Type>();
+        HashMap<Class<?>, ParameterizedType> class2TypeMap = new HashMap<Class<?>, ParameterizedType>();
+        
+        for (Type foundType : retVal) {
+            if (!(foundType instanceof ParameterizedType)) {
+                altRetVal.add(foundType);
+                continue;
+            }
+            
+            ParameterizedType originalPt = (ParameterizedType) foundType;
+            Class<?> rawType = getRawClass(foundType);
+            
+            class2TypeMap.put(rawType, originalPt);
+            
+            if (isFilledIn(originalPt)) {
+                altRetVal.add(foundType);
+                continue;
+            }
+            
+            // At this point, this guy may need to get filled in
+            Type newActualArguments[] = new Type[originalPt.getActualTypeArguments().length];
+            for (int outerIndex = 0 ; outerIndex < newActualArguments.length; outerIndex++) {
+                Type fillMeIn = originalPt.getActualTypeArguments()[outerIndex];
+                
+                // All else failing ensure it is filled in with the original value
+                newActualArguments[outerIndex] = fillMeIn;
+                
+                if (!(fillMeIn instanceof TypeVariable)) {
+                    continue;
+                }
+                
+                TypeVariable<Class<?>> tv = (TypeVariable<Class<?>>) fillMeIn;
+                Class<?> genericDeclaration = tv.getGenericDeclaration();
+                
+                boolean found = false;
+                int count = -1;
+                for (Type parentVariable : genericDeclaration.getTypeParameters()) {
+                    count++;
+                    if (parentVariable.equals(tv)) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found == false) continue;
+                
+                ParameterizedType parentPType = class2TypeMap.get(genericDeclaration);
+                if (parentPType == null) continue;
+                
+                newActualArguments[outerIndex] = parentPType.getActualTypeArguments()[count];
+            }
+            
+            ParameterizedTypeImpl pti = new ParameterizedTypeImpl(rawType, newActualArguments);
+            altRetVal.add(pti);
+            class2TypeMap.put(rawType, pti);
+        }
+
+        return altRetVal;
+    }
+    
+    private static boolean isFilledIn(ParameterizedType pt, HashSet<ParameterizedType> recursionKiller) {
+        if (recursionKiller.contains(pt)) return false;
+        recursionKiller.add(pt);
+        
+        for (Type t : pt.getActualTypeArguments()) {
+            if (t instanceof TypeVariable) return false;
+            if (t instanceof WildcardType) return false;
+            if (t instanceof ParameterizedType) {
+                return (isFilledIn((ParameterizedType) t, recursionKiller));
+            }
+        }
+        
+        return true;
+    }
+    
+    private static boolean isFilledIn(ParameterizedType pt) {
+        return isFilledIn(pt, new HashSet<ParameterizedType>());
+    }
+    
+    private static void addAllInterfaceContracts(Type interfaceType, LinkedHashSet<Type> addToMe) {
+        Class<?> interfaceClass = ReflectionHelper.getRawClass(interfaceType);
+        if (interfaceClass == null) return;
+        if (addToMe.contains(interfaceType)) return;
+        
+        addToMe.add(interfaceType);
+        
+        for (Type extendedInterfaces : interfaceClass.getGenericInterfaces()) {
+            addAllInterfaceContracts(extendedInterfaces, addToMe);
+        }
     }
 }

@@ -39,11 +39,21 @@
  */
 package org.glassfish.hk2.utilities.reflection;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import junit.framework.Assert;
 
+import org.glassfish.hk2.utilities.reflection.types.AbstractServiceOne;
+import org.glassfish.hk2.utilities.reflection.types.AbstractServiceTwo;
+import org.glassfish.hk2.utilities.reflection.types.ConcreteServiceOne;
+import org.glassfish.hk2.utilities.reflection.types.InterfaceFour;
+import org.glassfish.hk2.utilities.reflection.types.InterfaceOne;
+import org.glassfish.hk2.utilities.reflection.types.InterfaceThree;
+import org.glassfish.hk2.utilities.reflection.types.InterfaceTwo;
 import org.junit.Test;
 
 /**
@@ -69,6 +79,9 @@ public class ReflectionHelperTest {
     private final static String BADLY_FORMED_METADATA = KEY1 + "=" + VALUE1 + "," +
             KEY2 + "=\"No trailing quote";
     
+    /**
+     * Tests the most basic of metadata
+     */
     @Test
     public void testBasicServiceMetadata() {
         HashMap<String, List<String>> metadata = new HashMap<String, List<String>>();
@@ -83,6 +96,9 @@ public class ReflectionHelperTest {
         Assert.assertEquals(metadata.get(MULTI_KEY).get(0), NAKED_MULTI_VALUE);   
     }
     
+    /**
+     * Tests another metadata scenario
+     */
     @Test
     public void testBasic2ServiceMetadata() {
         HashMap<String, List<String>> metadata = new HashMap<String, List<String>>();
@@ -93,6 +109,9 @@ public class ReflectionHelperTest {
         Assert.assertEquals(metadata.get("key2").get(0), "value2");
     }
     
+    /**
+     * Tests some metadata with an empty string
+     */
     @Test
     public void testEmptyStringMetadata() {
         HashMap<String, List<String>> metadata = new HashMap<String, List<String>>();
@@ -102,6 +121,9 @@ public class ReflectionHelperTest {
         Assert.assertTrue(metadata.isEmpty());
     }
     
+    /**
+     * Negative test for some bad metadata
+     */
     @Test
     public void testBadlyFormedMetadata() {
         HashMap<String, List<String>> metadata = new HashMap<String, List<String>>();
@@ -113,6 +135,115 @@ public class ReflectionHelperTest {
         catch (IllegalStateException ise) {
             Assert.assertTrue(ise.getMessage().contains("Badly formed metadata"));
         }
+    }
+    
+    /**
+     * Tests a complex type, makes sure we get everything properly filled in
+     */
+    @Test
+    public void testComplexType() {
+        Set<Type> allTypes = ReflectionHelper.getAllTypes(ConcreteServiceOne.class);
+        Assert.assertEquals(8, allTypes.size());
+        
+        int lcv = 0;
+        for (Type type : allTypes) {
+            switch(lcv) {
+            case 0:  // top class ConcreteServiceOne
+            {
+                Assert.assertEquals(ConcreteServiceOne.class, type);
+                break;
+            }
+            case 1:  // AbstractServiceTwo
+            {
+                Assert.assertTrue(type instanceof ParameterizedType);
+                ParameterizedType pt = (ParameterizedType) type;
+                
+                Assert.assertEquals(AbstractServiceTwo.class, pt.getRawType());
+                
+                Assert.assertEquals(5, pt.getActualTypeArguments().length);
+                Assert.assertEquals(Integer.class, pt.getActualTypeArguments()[0]);
+                Assert.assertEquals(Long.class, pt.getActualTypeArguments()[1]);
+                Assert.assertEquals(Float.class, pt.getActualTypeArguments()[2]);
+                Assert.assertEquals(Double.class, pt.getActualTypeArguments()[3]);
+                Assert.assertEquals(Character.class, pt.getActualTypeArguments()[4]);
+                break;
+            }
+            case 2:  // AbstractServiceOne
+            {
+                Assert.assertTrue(type instanceof ParameterizedType);
+                ParameterizedType pt = (ParameterizedType) type;
+                
+                Assert.assertEquals(AbstractServiceOne.class, pt.getRawType());
+                
+                Assert.assertEquals(4, pt.getActualTypeArguments().length);
+                Assert.assertEquals(Float.class, pt.getActualTypeArguments()[0]);
+                Assert.assertEquals(String.class, pt.getActualTypeArguments()[1]);
+                Assert.assertEquals(Integer.class, pt.getActualTypeArguments()[2]);
+                Assert.assertEquals(Character.class, pt.getActualTypeArguments()[3]);
+                break;
+            }
+            case 3:  // Object
+            {
+                Assert.assertEquals(Object.class, type);
+                break;
+            }
+            case 4:  // InterfaceFour
+            {
+                Assert.assertTrue(type instanceof ParameterizedType);
+                ParameterizedType pt = (ParameterizedType) type;
+                
+                Assert.assertEquals(InterfaceFour.class, pt.getRawType());
+                
+                Assert.assertEquals(2, pt.getActualTypeArguments().length);
+                Assert.assertEquals(Double.class, pt.getActualTypeArguments()[0]);
+                Assert.assertEquals(Long.class, pt.getActualTypeArguments()[1]);
+                break;
+            }
+            case 5:  // InterfaceThree
+            {
+                Assert.assertTrue(type instanceof ParameterizedType);
+                ParameterizedType pt = (ParameterizedType) type;
+                
+                Assert.assertEquals(InterfaceThree.class, pt.getRawType());
+                
+                Assert.assertEquals(1, pt.getActualTypeArguments().length);
+                Assert.assertEquals(Double.class, pt.getActualTypeArguments()[0]);
+                break;
+            }
+            case 6:  // InterfaceOne
+            {
+                Assert.assertTrue(type instanceof ParameterizedType);
+                ParameterizedType pt = (ParameterizedType) type;
+                
+                Assert.assertEquals(InterfaceOne.class, pt.getRawType());
+                
+                Assert.assertEquals(2, pt.getActualTypeArguments().length);
+                Assert.assertEquals(Float.class, pt.getActualTypeArguments()[0]);
+                Assert.assertEquals(Integer.class, pt.getActualTypeArguments()[1]);
+                break;
+            }
+            case 7:  // InterfaceTwo
+            {
+                Assert.assertTrue(type instanceof ParameterizedType);
+                ParameterizedType pt = (ParameterizedType) type;
+                
+                Assert.assertEquals(InterfaceTwo.class, pt.getRawType());
+                
+                Assert.assertEquals(2, pt.getActualTypeArguments().length);
+                Assert.assertEquals(String.class, pt.getActualTypeArguments()[0]);
+                Assert.assertEquals(String.class, pt.getActualTypeArguments()[1]);
+                break;
+            }
+            default:
+                Assert.fail("Should never get here");
+            }
+            
+            lcv++;
+            
+        }
+        
+        
+        
     }
 
 }
