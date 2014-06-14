@@ -39,10 +39,6 @@
  */
 package org.glassfish.hk2.tests.locator.types;
 
-import java.lang.reflect.Type;
-import java.util.List;
-
-import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
@@ -59,7 +55,7 @@ public class TypesTest {
      * fully qualified version of that interface (String, String).
      * Hence, it should be injectable into InjectedService
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testAbstractSuperclass() {
         ServiceLocator locator = LocatorHelper.create();
         

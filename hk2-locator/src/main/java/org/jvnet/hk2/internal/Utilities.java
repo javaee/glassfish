@@ -579,6 +579,8 @@ public class Utilities {
     }
     
     private static boolean hasContract(Class<?> clazz) {
+        if (clazz == null) return false;
+        
         // We give this one for free, to speed up performance
         if (clazz.isAnnotationPresent(Contract.class)) return true;
         
@@ -589,20 +591,6 @@ public class Utilities {
         }
         
         return false;
-    }
-    
-    private static void addAllInterfaceContracts(Type interfaceType, LinkedHashSet<Type> addToMe) {
-        Class<?> interfaceClass = ReflectionHelper.getRawClass(interfaceType);
-        if (interfaceClass == null) return;
-        if (addToMe.contains(interfaceType)) return;
-        
-        if (hasContract(interfaceClass)) {
-            addToMe.add(interfaceType);
-        }
-        
-        for (Type extendedInterfaces : interfaceClass.getGenericInterfaces()) {
-            addAllInterfaceContracts(extendedInterfaces, addToMe);
-        }
     }
 
     private static Set<Type> getAutoAdvertisedTypes(Type t) {
@@ -624,26 +612,16 @@ public class Utilities {
             
             return retVal;
         }
-
-        Type genericSuperclass = rawClass.getGenericSuperclass();
-        while (genericSuperclass != null) {
-            Class<?> rawSuperclass = ReflectionHelper.getRawClass(genericSuperclass);
-            if (rawSuperclass == null) break;
-
-            if (hasContract(rawSuperclass)) {
-                retVal.add(genericSuperclass);
+        
+        Set<Type> allTypes = ReflectionHelper.getAllTypes(t);
+        for (Type candidate : allTypes) {
+            if (hasContract(ReflectionHelper.getRawClass(candidate))) {
+                retVal.add(candidate);
+                
             }
-
-            genericSuperclass = rawSuperclass.getGenericSuperclass();
         }
 
-        while (rawClass != null) {
-            for (Type iface : rawClass.getGenericInterfaces()) {
-                addAllInterfaceContracts(iface, retVal);
-            }
-
-            rawClass = rawClass.getSuperclass();
-        }
+        
 
         return retVal;
     }
