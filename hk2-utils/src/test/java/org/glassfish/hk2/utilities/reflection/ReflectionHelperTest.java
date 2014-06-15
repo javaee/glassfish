@@ -143,7 +143,7 @@ public class ReflectionHelperTest {
     /**
      * Tests a complex type, makes sure we get everything properly filled in
      */
-    @Test
+    @Test // @org.junit.Ignore
     public void testComplexType() {
         Set<Type> allTypes = ReflectionHelper.getAllTypes(ConcreteServiceOne.class);
         Assert.assertEquals(8, allTypes.size());
@@ -249,7 +249,7 @@ public class ReflectionHelperTest {
     /**
      * Tests a complex parameterized type, makes sure we get everything properly filled in
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testComplexParameterizedType() {
         Set<Type> allTypes = ReflectionHelper.getAllTypes(ConcreteServiceTwo.class);
         Assert.assertEquals(4, allTypes.size());

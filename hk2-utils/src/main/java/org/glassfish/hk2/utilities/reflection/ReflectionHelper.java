@@ -1274,7 +1274,6 @@ public final class ReflectionHelper {
         return ((modifiers & Modifier.PRIVATE) != 0);
     }
     
-    @SuppressWarnings("unchecked")
     public static Set<Type> getAllTypes(Type t) {
         LinkedHashSet<Type> retVal = new LinkedHashSet<Type>();
         retVal.add(t);
@@ -1319,44 +1318,58 @@ public final class ReflectionHelper {
                 continue;
             }
             
-            // At this point, this guy may need to get filled in
-            Type newActualArguments[] = new Type[originalPt.getActualTypeArguments().length];
-            for (int outerIndex = 0 ; outerIndex < newActualArguments.length; outerIndex++) {
-                Type fillMeIn = originalPt.getActualTypeArguments()[outerIndex];
-                
-                // All else failing ensure it is filled in with the original value
-                newActualArguments[outerIndex] = fillMeIn;
-                
-                if (!(fillMeIn instanceof TypeVariable)) {
-                    continue;
-                }
-                
-                TypeVariable<Class<?>> tv = (TypeVariable<Class<?>>) fillMeIn;
-                Class<?> genericDeclaration = tv.getGenericDeclaration();
-                
-                boolean found = false;
-                int count = -1;
-                for (Type parentVariable : genericDeclaration.getTypeParameters()) {
-                    count++;
-                    if (parentVariable.equals(tv)) {
-                        found = true;
-                        break;
-                    }
-                }
-                if (found == false) continue;
-                
-                ParameterizedType parentPType = class2TypeMap.get(genericDeclaration);
-                if (parentPType == null) continue;
-                
-                newActualArguments[outerIndex] = parentPType.getActualTypeArguments()[count];
-            }
-            
-            ParameterizedTypeImpl pti = new ParameterizedTypeImpl(rawType, newActualArguments);
+            ParameterizedType pti = fillInPT(originalPt, class2TypeMap);
             altRetVal.add(pti);
             class2TypeMap.put(rawType, pti);
         }
 
         return altRetVal;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static ParameterizedType fillInPT(ParameterizedType pt,
+            HashMap<Class<?>, ParameterizedType> class2TypeMap) {
+        if (isFilledIn(pt)) return pt;
+        
+        // At this point, this guy may need to get filled in
+        Type newActualArguments[] = new Type[pt.getActualTypeArguments().length];
+        for (int outerIndex = 0 ; outerIndex < newActualArguments.length; outerIndex++) {
+            Type fillMeIn = pt.getActualTypeArguments()[outerIndex];
+            
+            // All else failing ensure it is filled in with the original value
+            newActualArguments[outerIndex] = fillMeIn;
+            
+            if (fillMeIn instanceof ParameterizedType) {
+                newActualArguments[outerIndex] = fillInPT((ParameterizedType) fillMeIn, class2TypeMap);
+                continue;
+            }
+            
+            if (!(fillMeIn instanceof TypeVariable)) {
+                continue;
+            }
+            
+            TypeVariable<Class<?>> tv = (TypeVariable<Class<?>>) fillMeIn;
+            Class<?> genericDeclaration = tv.getGenericDeclaration();
+            
+            boolean found = false;
+            int count = -1;
+            for (Type parentVariable : genericDeclaration.getTypeParameters()) {
+                count++;
+                if (parentVariable.equals(tv)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (found == false) continue;
+            
+            ParameterizedType parentPType = class2TypeMap.get(genericDeclaration);
+            if (parentPType == null) continue;
+            
+            newActualArguments[outerIndex] = parentPType.getActualTypeArguments()[count];
+        }
+        
+        ParameterizedTypeImpl pti = new ParameterizedTypeImpl(getRawClass(pt), newActualArguments);
+        return pti;
     }
     
     private static boolean isFilledIn(ParameterizedType pt, HashSet<ParameterizedType> recursionKiller) {
