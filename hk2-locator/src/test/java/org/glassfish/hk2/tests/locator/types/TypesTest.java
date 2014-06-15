@@ -39,8 +39,13 @@
  */
 package org.glassfish.hk2.tests.locator.types;
 
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Test;
@@ -61,6 +66,31 @@ public class TypesTest {
         
         ServiceLocatorUtilities.addClasses(locator,
                 FullService.class, InjectedService.class);
+        
+        InjectedService is = locator.getService(InjectedService.class);
+        Assert.assertNotNull(is);
+        Assert.assertNotNull(is.getInjectedService());
+    }
+    
+    /**
+     * FullService extends a typed abstract class, but is itself a
+     * fully qualified version of that interface (String, String).
+     * Hence, it should be injectable into InjectedService
+     */
+    @Test // @org.junit.Ignore
+    public void testAbstractSuperclassFromBasicDescriptor() {
+        ServiceLocator locator = LocatorHelper.create();
+        
+        ServiceLocatorUtilities.addClasses(locator,
+                InjectedService.class);
+        
+        Descriptor addMe = BuilderHelper.link(FullService.class.getName())
+            .to(ServiceInterface.class.getName())
+            .in(Singleton.class.getName()).build();
+        
+        ActiveDescriptor<?> added = ServiceLocatorUtilities.addOneDescriptor(locator, addMe);
+        
+        added = locator.reifyDescriptor(added);
         
         InjectedService is = locator.getService(InjectedService.class);
         Assert.assertNotNull(is);
