@@ -50,10 +50,13 @@ import junit.framework.Assert;
 import org.glassfish.hk2.utilities.reflection.types.AbstractServiceOne;
 import org.glassfish.hk2.utilities.reflection.types.AbstractServiceTwo;
 import org.glassfish.hk2.utilities.reflection.types.ConcreteServiceOne;
+import org.glassfish.hk2.utilities.reflection.types.ConcreteServiceTwo;
+import org.glassfish.hk2.utilities.reflection.types.InterfaceFive;
 import org.glassfish.hk2.utilities.reflection.types.InterfaceFour;
 import org.glassfish.hk2.utilities.reflection.types.InterfaceOne;
 import org.glassfish.hk2.utilities.reflection.types.InterfaceThree;
 import org.glassfish.hk2.utilities.reflection.types.InterfaceTwo;
+import org.glassfish.hk2.utilities.reflection.types.ParameterizedClassOne;
 import org.junit.Test;
 
 /**
@@ -241,8 +244,64 @@ public class ReflectionHelperTest {
             lcv++;
             
         }
+    }
+    
+    /**
+     * Tests a complex parameterized type, makes sure we get everything properly filled in
+     */
+    @Test @org.junit.Ignore
+    public void testComplexParameterizedType() {
+        Set<Type> allTypes = ReflectionHelper.getAllTypes(ConcreteServiceTwo.class);
+        Assert.assertEquals(4, allTypes.size());
         
-        
+        int lcv = 0;
+        for (Type type : allTypes) {
+            switch(lcv) {
+            case 0:  // top class ConcreteServiceOne
+            {
+                Assert.assertEquals(ConcreteServiceTwo.class, type);
+                break;
+            }
+            case 1:  // AbstractServiceTwo
+            {
+                Assert.assertTrue(type instanceof ParameterizedType);
+                ParameterizedType pt = (ParameterizedType) type;
+                
+                Assert.assertEquals(ParameterizedClassOne.class, pt.getRawType());
+                
+                Assert.assertEquals(1, pt.getActualTypeArguments().length);
+                Assert.assertEquals(String.class, pt.getActualTypeArguments()[0]);
+                break;
+            }
+            case 2:  // Object
+            {
+                Assert.assertEquals(Object.class, type);
+                break;
+            }
+            case 3:  // InterfaceFour
+            {
+                Assert.assertTrue(type instanceof ParameterizedType);
+                ParameterizedType pt = (ParameterizedType) type;
+                
+                Assert.assertEquals(InterfaceFive.class, pt.getRawType());
+                
+                Assert.assertEquals(1, pt.getActualTypeArguments().length);
+                Type iFaceTypePT = pt.getActualTypeArguments()[0];
+                Assert.assertTrue(iFaceTypePT instanceof ParameterizedType);
+                
+                ParameterizedType iFacePT = (ParameterizedType) iFaceTypePT;
+                Assert.assertEquals(List.class, iFacePT.getRawType());
+                
+                Assert.assertEquals(1, iFacePT.getActualTypeArguments().length);
+                Assert.assertEquals(String.class, iFacePT.getActualTypeArguments()[0]);
+                break;
+            }
+            default:
+                Assert.fail("Should never get here");
+            }
+            
+            lcv++;
+        }
         
     }
 
