@@ -61,7 +61,7 @@ import javassist.util.proxy.ProxyObject;
 public class ProxyUtilities {
     private final static Object proxyCreationLock = new Object();
     
-    public static <T> T secureCreate(final Class<?> superclass,
+    private static <T> T secureCreate(final Class<?> superclass,
             final Class<?>[] interfaces,
             final MethodHandler callback,
             boolean useJDKProxy) {
@@ -166,7 +166,7 @@ public class ProxyUtilities {
 
         T proxy;
         try {
-            proxy = (T) ProxyUtilities.secureCreate(proxyClass,
+            proxy = (T) secureCreate(proxyClass,
                 iFaces,
                 new MethodInterceptorImpl(locator, root, handle),
                 isInterface);
