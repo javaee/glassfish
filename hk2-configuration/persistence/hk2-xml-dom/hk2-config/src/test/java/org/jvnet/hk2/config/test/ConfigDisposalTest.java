@@ -25,11 +25,15 @@ import org.jvnet.hk2.config.TransactionFailure;
 
 public class ConfigDisposalTest {
     private final static String TEST_NAME = "ConfigDisposal";
+    private final static Random RANDOM = new Random();
+    
     private ServiceLocator habitat;
 
     @Before
     public void before() {
-        habitat = ServiceLocatorFactory.getInstance().create(TEST_NAME + new Random().nextInt());
+        String testName = TEST_NAME + RANDOM.nextInt();
+        
+        habitat = ServiceLocatorFactory.getInstance().create(testName);
         DynamicConfigurationService dcs = habitat.getService(DynamicConfigurationService.class);
         DynamicConfiguration config = dcs.createDynamicConfiguration();
         new ConfigModule(habitat).configure(config);
@@ -40,7 +44,8 @@ public class ConfigDisposalTest {
 
     @After
     public void after() {
-        habitat.shutdown();
+        ServiceLocatorFactory.getInstance().destroy(habitat);
+        habitat = null;
     }
 
     public void parseDomainXml() {
