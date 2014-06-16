@@ -694,7 +694,9 @@ public class Utilities {
                 ReflectionHelper.readMetadataMap(serviceMetadata, metadata);
             }
             catch (IOException ioe) {
-                collector.addThrowable(ioe);
+                // If we can not read it, someone else may have
+                // a different metadata parser
+                metadata.clear();
             }
         }
         

@@ -49,6 +49,8 @@ import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.jvnet.hk2.config.ConfigBean;
@@ -137,14 +139,6 @@ public class ConfigTest {
                 new InjectionTargetFilter(EjbContainerAvailability.class.getName()));
         assert(desc != null
                 && desc.getImplementation().equals(EjbContainerAvailabilityInjector.class.getName()));
-    }
-
-    // @Test
-    public void getDomainXmlURL() {
-        URL url = this.getClass().getResource("/domain.xml");
-        System.out.println("URL : " + url);
-
-        assert(url != null);
     }
     
     // @Test
@@ -405,7 +399,6 @@ public class ConfigTest {
         lookupInjectorByName();
         testLookupOfInjectorAndCheckIfActive();
         lookupInjectorByFilter();
-        getDomainXmlURL();
         parseDomainXml();
         lookupConnectorServiceAndEnsureNotActive();
         getConnectorServiceAndCheckIfActive();
@@ -422,6 +415,21 @@ public class ConfigTest {
         testIntDataType();
         testConfigurationPopulator();
         testSingletonProxy();
+        
+    }
+    
+    /**
+     * Ensures that even the non-standard format of metadata from the hk2-config subsystem can
+     * be not-read from the service in addClasses
+     */
+    @Test
+    public void testAddClassOfInjector() {
+        ServiceLocator locator = ServiceLocatorFactory.getInstance().create(null);
+        
+        List<ActiveDescriptor<?>> added = ServiceLocatorUtilities.addClasses(locator, EjbContainerAvailabilityInjector.class);
+        ActiveDescriptor<?> descriptor = added.get(0);
+        
+        Assert.assertNull(ServiceLocatorUtilities.getOneMetadataField(descriptor, "target"));
         
     }
 
