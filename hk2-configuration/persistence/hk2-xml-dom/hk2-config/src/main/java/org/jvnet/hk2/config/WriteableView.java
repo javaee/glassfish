@@ -65,14 +65,53 @@ import org.jvnet.hk2.config.ConfigModel.Property;
  * @author Jerome Dochez
  */
 public class WriteableView implements InvocationHandler, Transactor, ConfigView {
+    private static final TraversableResolver TRAVERSABLE_RESOLVER = new TraversableResolver() {
+        public boolean isReachable(Object traversableObject,
+                Path.Node traversableProperty, Class<?> rootBeanType,
+                Path pathToTraversableObject, ElementType elementType) {
+                    return true;
+        }
 
+        public boolean isCascadable(Object traversableObject,
+                Path.Node traversableProperty, Class<?> rootBeanType,
+                Path pathToTraversableObject, ElementType elementType) {
+                    return true;
+        }
+        
+    };
+    
+    private final static Validator beanValidator;
+    
+    static {
+        ClassLoader cl = System.getSecurityManager()==null?Thread.currentThread().getContextClassLoader():
+            AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+               @Override
+               public ClassLoader run() {
+                   return Thread.currentThread().getContextClassLoader();
+               }
+            });
+   
+       try {      
+           Thread.currentThread().setContextClassLoader(ValidatorFactory.class.getClassLoader());
+       
+           ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+           ValidatorContext validatorContext = validatorFactory.usingContext();
+           validatorContext.messageInterpolator(new MessageInterpolatorImpl());                
+           beanValidator = validatorContext.traversableResolver(
+                       TRAVERSABLE_RESOLVER).getValidator();
+       } finally {
+           Thread.currentThread().setContextClassLoader(cl);
+       }
+    }
+    
+    // private final Validator beanValidator;
     private final ConfigBean bean;
     private final ConfigBeanProxy defaultView;
     private final Map<String, PropertyChangeEvent> changedAttributes;
     private final Map<String, ProtectedList> changedCollections;
     Transaction currentTx;
     private boolean isDeleted;
-    private static Validator beanValidator=null;
+    
 
     private final static ResourceBundle i18n = ResourceBundle.getBundle("org.jvnet.hk2.config.LocalStrings");
     
@@ -83,40 +122,6 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
         this.defaultView = bean.createProxy();
         changedAttributes = new HashMap<String, PropertyChangeEvent>();
         changedCollections = new HashMap<String, ProtectedList>();
-        if (beanValidator == null) {
-            ClassLoader cl = System.getSecurityManager()==null?Thread.currentThread().getContextClassLoader():
-                    AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
-                        @Override
-                        public ClassLoader run() {
-                            return Thread.currentThread().getContextClassLoader();
-                        }
-                    });
-            try {      
-                Thread.currentThread().setContextClassLoader(ValidatorFactory.class.getClassLoader());
-                TraversableResolver traversableResolver =
-                    new TraversableResolver() {
-                        public boolean isReachable(Object traversableObject,
-                            Path.Node traversableProperty, Class<?> rootBeanType,
-                            Path pathToTraversableObject, ElementType elementType) {
-                                return true;
-                        }
-
-                        public boolean isCascadable(Object traversableObject,
-                            Path.Node traversableProperty, Class<?> rootBeanType,
-                            Path pathToTraversableObject, ElementType elementType) {
-                                return true;
-                        }
-                    };
-                
-                ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
-                ValidatorContext validatorContext = validatorFactory.usingContext();
-                validatorContext.messageInterpolator(new MessageInterpolatorImpl());                
-                    beanValidator = validatorContext.traversableResolver(
-                            traversableResolver).getValidator();
-            } finally {
-                Thread.currentThread().setContextClassLoader(cl);
-            }
-        }
     }
 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
