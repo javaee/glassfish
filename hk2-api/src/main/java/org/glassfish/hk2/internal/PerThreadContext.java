@@ -40,6 +40,8 @@
 package org.glassfish.hk2.internal;
 
 import java.lang.annotation.Annotation;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.HashMap;
 
 import javax.inject.Singleton;
@@ -48,16 +50,26 @@ import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.PerThread;
 import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.utilities.reflection.Logger;
 
 /**
  * @author jwells
  */
 @Singleton
 public class PerThreadContext implements Context<PerThread> {
-    private ThreadLocal<HashMap<ActiveDescriptor<?>, Object>> threadMap =
-            new ThreadLocal<HashMap<ActiveDescriptor<?>, Object>>() {
-        public HashMap<ActiveDescriptor<?>, Object> initialValue() {
-            return new HashMap<ActiveDescriptor<?>, Object>();
+    private final static boolean LOG_THREAD_DESTRUCTION = AccessController.<Boolean>doPrivileged(new PrivilegedAction<Boolean>() {
+
+        @Override
+        public Boolean run() {
+            return Boolean.parseBoolean(System.getProperty("org.hk2.debug.perthreadcontext.log", "false"));
+        }
+        
+    });
+    
+    private ThreadLocal<PerContextThreadWrapper> threadMap =
+            new ThreadLocal<PerContextThreadWrapper>() {
+        public PerContextThreadWrapper initialValue() {
+            return new PerContextThreadWrapper();
         }
     };
 
@@ -76,12 +88,10 @@ public class PerThreadContext implements Context<PerThread> {
     @Override
     public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor,
             ServiceHandle<?> root) {
-        HashMap<ActiveDescriptor<?>, Object> database = threadMap.get();
-        
-        U retVal = (U) database.get(activeDescriptor);
+        U retVal = (U) threadMap.get().get(activeDescriptor);
         if (retVal == null) {
             retVal = activeDescriptor.create(root);
-            database.put(activeDescriptor, retVal);
+            threadMap.get().put(activeDescriptor, retVal);
         }
         
         return retVal;
@@ -92,8 +102,7 @@ public class PerThreadContext implements Context<PerThread> {
      */
     @Override
     public boolean containsKey(ActiveDescriptor<?> descriptor) {
-        HashMap<ActiveDescriptor<?>, Object> database = threadMap.get();
-        return database.containsKey(descriptor);
+        return threadMap.get().has(descriptor);
     }
 
     /* (non-Javadoc)
@@ -124,6 +133,34 @@ public class PerThreadContext implements Context<PerThread> {
     public void destroyOne(ActiveDescriptor<?> descriptor) {
         // per-thread instances live for the life of the thread,
         // so we will ignore any request to destroy a descriptor
+        
+    }
+    
+    private static class PerContextThreadWrapper {
+        private final HashMap<ActiveDescriptor<?>, Object> instances =
+                new HashMap<ActiveDescriptor<?>, Object>();
+        private final long id = Thread.currentThread().getId();
+        
+        public boolean has(ActiveDescriptor<?> d) {
+            return instances.containsKey(d);
+        }
+        
+        public Object get(ActiveDescriptor<?> d) {
+            return instances.get(d);
+        }
+        
+        public void put(ActiveDescriptor<?> d, Object v) {
+            instances.put(d, v);
+        }
+        
+        @Override
+        public void finalize() throws Throwable {
+            instances.clear();
+            
+            if (LOG_THREAD_DESTRUCTION) {
+                Logger.getLogger().debug("Removing PerThreadContext data for thread " + id);
+            }
+        }
         
     }
 }

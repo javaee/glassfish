@@ -50,19 +50,14 @@ import java.security.PrivilegedAction;
 public class Logger {
     private static final Logger INSTANCE = new Logger();
     private static final String HK2_LOGGER_NAME = "org.jvnet.hk2.logger";
-    private static final boolean STDOUT_DEBUG;
-    
-    static {
-        STDOUT_DEBUG = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
-
-            @Override
-            public Boolean run() {
-                return Boolean.parseBoolean(
-            System.getProperty("org.jvnet.hk2.logger.debugToStdout", "false"));
-            }
+    private static final boolean STDOUT_DEBUG = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+        @Override
+        public Boolean run() {
+            return Boolean.parseBoolean(
+                System.getProperty("org.jvnet.hk2.logger.debugToStdout", "false"));
+        }
             
-        });
-    }
+    });
     
     private final java.util.logging.Logger jdkLogger;
     

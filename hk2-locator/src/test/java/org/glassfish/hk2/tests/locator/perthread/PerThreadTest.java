@@ -76,7 +76,7 @@ public class PerThreadTest {
      * 
      * @throws InterruptedException
      */
-    @Test
+    @Test // @org.junit.Ignore
     public void testPerThread() throws InterruptedException {
         StoreRunner runner1 = new StoreRunner();
         StoreRunner runner2 = new StoreRunner();
@@ -114,7 +114,7 @@ public class PerThreadTest {
      * 
      * @throws InterruptedException
      */
-    @Test
+    @Test // @org.junit.Ignore
     public void testSameValuePerThread() throws InterruptedException {
         ServiceLocator locator = LocatorHelper.create();
         ServiceLocatorUtilities.enablePerThreadScope(locator);
@@ -142,6 +142,49 @@ public class PerThreadTest {
         Assert.assertEquals(NUM_SHIRT_THREADS, collector.size());
     }
     
+    private final static int NUM_MANY_THREADS = 100;
+    
+    @Test // @org.junit.Ignore
+    public void testManyThreads() throws InterruptedException {
+        final ServiceLocator locator = LocatorHelper.create();
+        ServiceLocatorUtilities.enablePerThreadScope(locator);
+        ServiceLocatorUtilities.addClasses(locator, Pants.class);
+        
+        synchronized (lock) {
+            numFinished = 0;
+        }
+        
+        for (int lcv =  0; lcv < NUM_MANY_THREADS; lcv++) {
+            Thread thread = new Thread(new Runnable() {
+
+                @Override
+                public void run() {
+                    locator.getService(Pants.class);
+                    synchronized (lock) {
+                        numFinished++;
+                        if (numFinished >= NUM_MANY_THREADS) {
+                            lock.notify();
+                        }
+                    }
+                }
+            });
+            
+            thread.start();
+        }
+        
+        synchronized (lock) {
+            long totalWait = 20 * 1000;
+            
+            while (numFinished < NUM_MANY_THREADS && totalWait > 0) {
+                long elapsedTime = System.currentTimeMillis();
+                lock.wait();
+                elapsedTime = System.currentTimeMillis() - elapsedTime;
+                totalWait -= elapsedTime;
+            }
+            
+            Assert.assertTrue(numFinished >= NUM_MANY_THREADS);
+        }
+    }
     
     public class StoreRunner implements Runnable {
         private ClothingStore store;
