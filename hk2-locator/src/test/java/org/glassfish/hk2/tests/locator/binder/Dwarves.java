@@ -39,10 +39,36 @@
  */
 package org.glassfish.hk2.tests.locator.binder;
 
+import java.lang.annotation.Annotation;
+
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Self;
+
 /**
  * @author jwells
  *
  */
 public class Dwarves {
+    @Inject @Self
+    private ActiveDescriptor<?> me;
+    
+    public String getName() {
+        return me.getName();
+    }
+    
+    public String getNameViaQualifiers() {
+        for (Annotation qualifier : me.getQualifierAnnotations()) {
+            if (Named.class.equals(qualifier.annotationType())) {
+                Named n = (Named) qualifier;
+                return n.value();
+            }
+            
+        }
+        
+        return null;
+    }
 
 }
