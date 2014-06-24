@@ -45,6 +45,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Named;
+
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.Factory;
@@ -167,6 +169,9 @@ abstract class AbstractBindingBuilder<T> implements
 
     @Override
     public AbstractBindingBuilder<T> qualifiedBy(Annotation annotation) {
+        if (Named.class.equals(annotation.annotationType())) {
+            this.name = ((Named) annotation).value();
+        }
         this.qualifiers.add(annotation);
         return this;
     }

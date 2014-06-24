@@ -192,6 +192,10 @@ public class DescriptorBuilderImpl implements DescriptorBuilder {
     public DescriptorBuilder qualifiedBy(Annotation annotation)
             throws IllegalArgumentException {
         if (annotation == null) throw new IllegalArgumentException();
+        
+        if (Named.class.equals(annotation.annotationType())) {
+            this.name = ((Named) annotation).value();
+        }
 
         return qualifiedBy(annotation.annotationType().getName());
     }

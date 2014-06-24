@@ -48,6 +48,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Named;
+
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.HK2Loader;
@@ -120,7 +122,12 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
     @Override
     public ActiveDescriptorBuilder qualifiedBy(Annotation annotation)
             throws IllegalArgumentException {
-        if (annotation != null) qualifiers.add(annotation);
+        if (annotation != null) {
+            if (Named.class.equals(annotation.annotationType())) {
+                name = ((Named) annotation).value();
+            }
+            qualifiers.add(annotation);
+        }
         
         return this;
     }

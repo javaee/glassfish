@@ -44,6 +44,7 @@ import java.lang.reflect.Type;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.Factory;
@@ -184,16 +185,16 @@ public class BinderTest {
     /**
      * Tests that you can use a direct annotation for a name
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testUseDirectNamedQualifierAsName() {
         ServiceLocator locator = ServiceLocatorFactory.getInstance().create(null);
         
         ServiceLocatorUtilities.bind(locator, new AbstractBinder() {
             @Override
             protected void configure() {
-                bind(Dwarves.class).qualifiedBy(new NamedImpl(BIFUR));
-                bind(Dwarves.class).qualifiedBy(new NamedImpl(BOFUR));
-                bind(Dwarves.class).qualifiedBy(new NamedImpl(BOMBUR));
+                bind(Dwarves.class).to(Dwarves.class).qualifiedBy(new NamedImpl(BIFUR));
+                bind(Dwarves.class).to(Dwarves.class).qualifiedBy(new NamedImpl(BOFUR));
+                bind(Dwarves.class).to(Dwarves.class).qualifiedBy(new NamedImpl(BOMBUR));
             }
             
         });
@@ -218,7 +219,7 @@ public class BinderTest {
     /**
      * Tests that you can use a direct annotation for a name
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testUseDirectNamedQualifierAsNameWithBuilderHelper() {
         Descriptor bifur = BuilderHelper.link(Dwarves.class.getName()).qualifiedBy(new NamedImpl(BIFUR)).build();
         Descriptor bofur = BuilderHelper.link(Dwarves.class.getName()).qualifiedBy(new NamedImpl(BOFUR)).build();
@@ -236,16 +237,38 @@ public class BinderTest {
     /**
      * Tests that you can use a direct annotation for a name
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
+    public void testUseDirectNamedQualifierAsNameWithBuilderHelperActive() {
+        ActiveDescriptor<?> bifur = BuilderHelper.activeLink(Dwarves.class).qualifiedBy(new NamedImpl(BIFUR)).build();
+        ActiveDescriptor<?> bofur = BuilderHelper.activeLink(Dwarves.class).qualifiedBy(new NamedImpl(BOFUR)).build();
+        ActiveDescriptor<?> bombur = BuilderHelper.activeLink(Dwarves.class).qualifiedBy(new NamedImpl(BOMBUR)).build();
+        
+        Assert.assertEquals(BIFUR, bifur.getName());
+        Assert.assertEquals(BOFUR, bofur.getName());
+        Assert.assertEquals(BOMBUR, bombur.getName());
+        
+        Assert.assertTrue(bifur.getQualifiers().contains(Named.class.getName()));
+        Assert.assertTrue(bofur.getQualifiers().contains(Named.class.getName()));
+        Assert.assertTrue(bombur.getQualifiers().contains(Named.class.getName()));
+        
+        Assert.assertTrue(bifur.getQualifierAnnotations().contains(new NamedImpl(BIFUR)));
+        Assert.assertTrue(bofur.getQualifierAnnotations().contains(new NamedImpl(BOFUR)));
+        Assert.assertTrue(bombur.getQualifierAnnotations().contains(new NamedImpl(BOMBUR)));
+    }
+    
+    /**
+     * Tests that you can use a direct annotation for a name
+     */
+    @Test // @org.junit.Ignore
     public void testUseNameAsName() {
         ServiceLocator locator = ServiceLocatorFactory.getInstance().create(null);
         
         ServiceLocatorUtilities.bind(locator, new AbstractBinder() {
             @Override
             protected void configure() {
-                bind(Dwarves.class).named(BIFUR);
-                bind(Dwarves.class).named(BOFUR);
-                bind(Dwarves.class).named(BOMBUR);
+                bind(Dwarves.class).to(Dwarves.class).named(BIFUR);
+                bind(Dwarves.class).to(Dwarves.class).named(BOFUR);
+                bind(Dwarves.class).to(Dwarves.class).named(BOMBUR);
             }
             
         });
