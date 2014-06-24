@@ -56,5 +56,6 @@
     <modules>
         <module>hk2-xml-dom</module>
         <module>property-file</module>
+        <module>hk2-xml</module>
     </modules>
 </project>
