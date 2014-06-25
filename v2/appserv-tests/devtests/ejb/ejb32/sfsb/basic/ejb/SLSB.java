@@ -12,6 +12,12 @@ public class SLSB implements Hello2 {
         System.out.println("In SLSB::testRemove()");
 	bean.test("XYZ", 0);
         bean.testRemove();
+        try {
+        	bean.foo();
+        	throw new RuntimeException("Removed bean got invoked!");
+        } catch(NoSuchEJBException nse) {
+        	System.out.println("SFSB has been removed, subsequent invocation got exception");
+        }
     }
 
 }

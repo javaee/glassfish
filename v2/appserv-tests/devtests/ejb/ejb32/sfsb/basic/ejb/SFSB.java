@@ -10,7 +10,7 @@ import javax.management.j2ee.ManagementHome;
 
 @Stateful
 @LocalBean
-public class SFSB implements Hello {
+public class SFSB extends SuperSFSB implements Hello {
 
     @PersistenceContext
     private EntityManager em;
