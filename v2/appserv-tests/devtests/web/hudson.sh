@@ -123,15 +123,21 @@ cd $APS_HOME
 echo "AS_ADMIN_PASSWORD=" > temppwd
 $S1AS_HOME/bin/asadmin --user admin --passwordfile $APS_HOME/config/adminpassword.txt create-domain --adminport ${WEBTIER_ADMIN_PORT} --domainproperties jms.port=${WEBTIER_JMS_PORT}:domain.jmxPort=${WEBTIER_JMX_PORT}:orb.listener.port=${WEBTIER_ORB_PORT}:http.ssl.port=${WEBTIER_SSL_PORT}:orb.ssl.port=${WEBTIER_ORB_SSL_PORT}:orb.mutualauth.port=${WEBTIER_ORB_SSL_MUTUALAUTH_PORT} --instanceport ${WEBTIER_PORT} domain1
 
+if [ `uname`="Linux" ]; then
+    HOST="localhost.localdomain"
+else
+    HOST="localhost"
+fi
+
 #Create 
 echo "admin.domain=domain1
 admin.domain.dir=\${env.S1AS_HOME}/domains
 admin.port=${WEBTIER_ADMIN_PORT}
 admin.user=admin
-admin.host=localhost
+admin.host=$HOST
 http.port=${WEBTIER_PORT}
 https.port=${WEBTIER_SSL_PORT}
-http.host=localhost
+http.host=$HOST
 http.address=127.0.0.1
 http.alternate.port=${WEBTIER_ALTERNATE_PORT}
 orb.port=${WEBTIER_ORB_PORT}
@@ -142,7 +148,7 @@ admin.password.file=\${env.APS_HOME}/config/adminpassword.txt
 appserver.instance.name=server
 config.dottedname.prefix=server
 resources.dottedname.prefix=domain.resources
-results.mailhost=localhost
+results.mailhost=$HOST
 results.mailer=QLTestsForPEInstallOrDASInEEInstall@sun.com
 results.mailee=yourname@sun.com
 autodeploy.dir=\${env.S1AS_HOME}/domains/\${admin.domain}/autodeploy
