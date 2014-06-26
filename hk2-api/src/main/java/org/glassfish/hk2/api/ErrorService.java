@@ -47,7 +47,13 @@ import org.jvnet.hk2.annotations.Contract;
  * errors are those that might happen during normal processing of
  * HK2 requests
  * <p>
- * An implementation of ErrorService must be in the Singleton scope
+ * An implementation of ErrorService must be in the Singleton scope.
+ * Implementations of ErrorService will be instantiated as soon as
+ * they are added to HK2 in order to avoid deadlocks and circular references.
+ * Therefore it is recommended that implementations of ErrorService
+ * make liberal use of {@link javax.inject.Provider} or {@link IterableProvider}
+ * when injecting dependent services so that these services are not instantiated
+ * when the ErrorService is created
  * 
  * @author jwells
  *

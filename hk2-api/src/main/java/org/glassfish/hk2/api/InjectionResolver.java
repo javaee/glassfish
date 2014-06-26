@@ -48,7 +48,13 @@ import org.jvnet.hk2.annotations.Contract;
  * the system provided resolver for &#64;Inject.  Otherwise, this
  * resolver can be used to provide injection points for any annotation.
  * <p>
- * An implementation of Context must be in the Singleton scope
+ * An implementation of InjectionResolver must be in the Singleton scope.
+ * Implementations of InjectionResolver will be instantiated as soon as
+ * they are added to HK2 in order to avoid deadlocks and circular references.
+ * Therefore it is recommended that implementations of InjectionResolver
+ * make liberal use of {@link javax.inject.Provider} or {@link IterableProvider}
+ * when injecting dependent services so that these services are not instantiated
+ * when the InjectionResolver is created
  * 
  * @author jwells
  * @param <T> This must be the class of the injection annotation that this resolver

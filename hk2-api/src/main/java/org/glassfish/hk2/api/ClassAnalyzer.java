@@ -61,6 +61,13 @@ import org.jvnet.hk2.annotations.Contract;
  * The method {@link ServiceLocator#setDefaultClassAnalyzerName(String)} can be used
  * to set the global ClassAnalyzer name that will be the name of the ClassAnalyzer used
  * when the method {@link Descriptor#getClassAnalysisName()} returns null
+ * <p>
+ * Implementations of ClassAnalyzer will be instantiated as soon as
+ * they are added to HK2 in order to avoid deadlocks and circular references.
+ * Therefore it is recommended that implementations of ClassAnalyzer
+ * make liberal use of {@link javax.inject.Provider} or {@link IterableProvider}
+ * when injecting dependent services so that these services are not instantiated
+ * when the ClassAnalyzer is created
  * 
  * @author jwells
  *
