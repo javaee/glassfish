@@ -39,8 +39,9 @@
 # holder.
 #
 
-# 
-# Usage: appserv-tests/devtests/web/hudson.sh [<url for download glassfish> <job name for skip file>]
+#u
+# Usage: appserv-tests/devtests/web/hudson.sh [-d <url for download glassfish>]
+#     [-d <directory for storing glassfish.zip>] [ -s <job name for skip file>]
 #
 # Hudson setup:
 #
@@ -61,8 +62,8 @@
 #   WEBTIER_JMS_PORT
 #   WEBTIER_JMX_PORT 
 #   WEBTIER_ORB_PORT
-#   WEBTIER_SSL_PORT
-#   WEBTIER_PORT
+#   WEBTIER_HTTPS_PORT
+#   WEBTIER_HTTP_PORT
 #   WEBTIER_ALTERNATE_PORT
 #   WEBTIER_ORB_SSL_PORT
 #   WEBTIER_ORB_SSL_MUTUALAUTH_PORT
@@ -70,6 +71,9 @@
 #   WEBTIER_INSTANCE_PORT_2
 #   WEBTIER_INSTANCE_PORT_3
 #   WEBTIER_INSTANCE_HTTPS_PORT
+#
+# If the script is used locally, WORKSPACE need to be defined as the parent of appserv-tests.
+# And GlassFish will be installed in $WORKSPACE.
 #
 # Record finderprints of files to track usage: glassfish-v3-image/glassfish.zip
 #     Fingerprint all archived artifacts
@@ -91,25 +95,50 @@ kill_processes() {
     esac
 
     (ps -aef | grep java | grep ASMain | grep -v grep | awk '{print $2}' | xargs $KILL > /dev/null 2>&1) || true
+    (jps | grep Main | grep -v grep | awk '{print $1}' | xargs $KILL > /dev/null 2>&1) || true
+    (ps -aef | grep derby | grep -v grep | awk '{print $2}' | xargs $KILL > /dev/null 2>&1) || true
 }
 
-GLASSFISH_DOWNLOAD_URL=${1:-"http://gf-hudson.us.oracle.com/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip"}
-SKIP_NAME=$2
+download=
+GLASSFISH_DOWNLOAD_URL="http://gf-hudson.us.oracle.com/hudson/job/gf-trunk-build-dev/lastSuccessfulBuild/artifact/bundles/glassfish.zip"
+SKIP_NAME=
+DOWNLOAD_DIR=$WORKSPACE/bundles
+
+while getopts u:s:i: flag; do
+    case $flag in
+        u)
+            download=1;
+            if [ "x$OPTARG" != "x" ]; then
+                GLASSFISH_DOWNLOAD_URL=$OPTARG;
+            fi
+            ;;
+        s)
+            SKIP_NAME=$OPTARG;
+            ;;
+        d) 
+            DOWNLOAD_DIR=$OPTARG
+            ;;
+        \?)
+            echo "Illegal options"
+            exit
+            ;;
+    esac
+done
+shift $(( OPTIND - 1 ));
 
 java -version
+ant -version
 
-rm -rf glassfish-v3-image
-mkdir glassfish-v3-image
-pushd glassfish-v3-image
+rm -rf $WORKSPACE/glassfish4
 
-# download the latest GF 
-wget -O glassfish.zip $GLASSFISH_DOWNLOAD_URL
+if [ "x$download" = "x1" ]; then
+    cd $DOWNLOAD_DIR
+    curl -O glassfish.zip $GLASSFISH_DOWNLOAD_URL
+fi
+unzip -q $DOWNLOAD_DIR/glassfish.zip
 
-unzip -q glassfish.zip
-
-export S1AS_HOME=$PWD/glassfish4/glassfish
-popd
-export APS_HOME=$PWD/appserv-tests
+export S1AS_HOME=$WORKSPACE/glassfish4/glassfish
+export APS_HOME=$WORKSPACE/appserv-tests
 export AS_LOGFILE=$S1AS_HOME/cli.log 
 #export AS_DEBUG=true 
 
@@ -121,7 +150,7 @@ rm -rf $S1AS_HOME/domains/domain1
 cd $APS_HOME
 
 echo "AS_ADMIN_PASSWORD=" > temppwd
-$S1AS_HOME/bin/asadmin --user admin --passwordfile $APS_HOME/config/adminpassword.txt create-domain --adminport ${WEBTIER_ADMIN_PORT} --domainproperties jms.port=${WEBTIER_JMS_PORT}:domain.jmxPort=${WEBTIER_JMX_PORT}:orb.listener.port=${WEBTIER_ORB_PORT}:http.ssl.port=${WEBTIER_SSL_PORT}:orb.ssl.port=${WEBTIER_ORB_SSL_PORT}:orb.mutualauth.port=${WEBTIER_ORB_SSL_MUTUALAUTH_PORT} --instanceport ${WEBTIER_PORT} domain1
+$S1AS_HOME/bin/asadmin --user admin --passwordfile $APS_HOME/config/adminpassword.txt create-domain --adminport ${WEBTIER_ADMIN_PORT} --domainproperties jms.port=${WEBTIER_JMS_PORT}:domain.jmxPort=${WEBTIER_JMX_PORT}:orb.listener.port=${WEBTIER_ORB_PORT}:http.ssl.port=${WEBTIER_HTTPS_PORT}:orb.ssl.port=${WEBTIER_ORB_SSL_PORT}:orb.mutualauth.port=${WEBTIER_ORB_SSL_MUTUALAUTH_PORT} --instanceport ${WEBTIER_HTTP_PORT} domain1
 
 if [ `uname`="Linux" ]; then
     HOST="localhost.localdomain"
@@ -135,8 +164,8 @@ admin.domain.dir=\${env.S1AS_HOME}/domains
 admin.port=${WEBTIER_ADMIN_PORT}
 admin.user=admin
 admin.host=$HOST
-http.port=${WEBTIER_PORT}
-https.port=${WEBTIER_SSL_PORT}
+http.port=${WEBTIER_HTTP_PORT}
+https.port=${WEBTIER_HTTPS_PORT}
 http.host=$HOST
 http.address=127.0.0.1
 http.alternate.port=${WEBTIER_ALTERNATE_PORT}
@@ -169,7 +198,7 @@ nodeagent.name=localhost-domain1
 
 kill_processes
 
-pushd $APS_HOME/devtests/web
+cd $APS_HOME/devtests/web
 ./exclude-jobs.sh $SKIP_NAME
 
 ant all
@@ -179,7 +208,3 @@ rm $APS_HOME/devtests/web/build.xml
 
 kill_processes
 (cat web.output | grep FAIL | grep -v "Total FAIL") || true
-#popd
-#cd $S1AS_HOME/bin/
-#./asadmin stop-domain
-#kill_processes
