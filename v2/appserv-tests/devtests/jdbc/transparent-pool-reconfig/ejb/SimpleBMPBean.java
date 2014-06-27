@@ -9,6 +9,8 @@ import org.glassfish.api.ActionReport;
 import org.glassfish.api.admin.*;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.hk2.api.ServiceLocator;
+import javax.security.auth.Subject;
+import com.sun.enterprise.deployment.ResourcePrincipal;
 
 
 public class SimpleBMPBean implements EntityBean {
@@ -122,10 +124,14 @@ public class SimpleBMPBean implements EntityBean {
     }
 
     private static ActionReport runCommand(String commandName, ParameterMap parameters) {
+        Subject subject = new Subject();
+        ResourcePrincipal rp =  new ResourcePrincipal("asadmin", "");
+        subject.getPrincipals().add(rp);
+
         ServiceLocator serviceLocator = Globals.getDefaultHabitat();
         CommandRunner cr = serviceLocator.getService(CommandRunner.class);
         ActionReport ar = serviceLocator.getService(ActionReport.class);
-        cr.getCommandInvocation(commandName, ar, null).parameters(parameters).execute();
+        cr.getCommandInvocation(commandName, ar, subject).parameters(parameters).execute();
         return ar;
     }
 }
