@@ -104,7 +104,7 @@ GLASSFISH_DOWNLOAD_URL="http://gf-hudson.us.oracle.com/hudson/job/gf-trunk-build
 SKIP_NAME=
 DOWNLOAD_DIR=$WORKSPACE/bundles
 
-while getopts u:s:i: flag; do
+while getopts u:s:d: flag; do
     case $flag in
         u)
             download=1;
@@ -135,6 +135,7 @@ if [ "x$download" = "x1" ]; then
     cd $DOWNLOAD_DIR
     curl -O glassfish.zip $GLASSFISH_DOWNLOAD_URL
 fi
+cd $WORKSPACE
 unzip -q $DOWNLOAD_DIR/glassfish.zip
 
 export S1AS_HOME=$WORKSPACE/glassfish4/glassfish
