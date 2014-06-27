@@ -62,8 +62,8 @@
 #   WEBTIER_JMS_PORT
 #   WEBTIER_JMX_PORT 
 #   WEBTIER_ORB_PORT
-#   WEBTIER_HTTPS_PORT
 #   WEBTIER_HTTP_PORT
+#   WEBTIER_HTTPS_PORT
 #   WEBTIER_ALTERNATE_PORT
 #   WEBTIER_ORB_SSL_PORT
 #   WEBTIER_ORB_SSL_MUTUALAUTH_PORT
@@ -199,12 +199,13 @@ nodeagent.name=localhost-domain1
 kill_processes
 
 cd $APS_HOME/devtests/web
+cp build.xml build.xml.orig
 ./exclude-jobs.sh $SKIP_NAME
 
 ant all
 
-#check out fresh build.xml 
-rm $APS_HOME/devtests/web/build.xml
+#restore original build.xml 
+mv build.xml.orig build.xml
 
 kill_processes
 (cat web.output | grep FAIL | grep -v "Total FAIL") || true
