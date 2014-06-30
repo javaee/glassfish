@@ -159,6 +159,8 @@ public class LocatorTest {
         Assert.assertEquals(FrenchService.class, ad.getImplementationClass());
         
         Assert.assertTrue(ad.getContractTypes().contains(FrenchService.class));
+        Assert.assertNull(ad.getServiceId());
+        Assert.assertEquals(locator.getLocatorId(), ad.getLocatorId().longValue());
     }
     
     /**
@@ -185,6 +187,8 @@ public class LocatorTest {
         Assert.assertEquals(GermanService.class, ad.getImplementationClass());
         
         Assert.assertTrue(ad.getContractTypes().contains(GermanService.class));
+        Assert.assertNull(ad.getServiceId());
+        Assert.assertEquals(locator.getLocatorId(), ad.getLocatorId().longValue());
     }
     
     /**
