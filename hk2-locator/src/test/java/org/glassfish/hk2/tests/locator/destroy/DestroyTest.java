@@ -43,11 +43,12 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.hk2.utilities.reflection.Pretty;
 
 /**
@@ -151,7 +152,7 @@ public class DestroyTest {
         Assert.assertNotSame(sprocketFactory1, widget2.getSprocketFactory());
     }
     
-    @Test @Ignore
+    @Test @org.junit.Ignore
     public void testNotOriginalServiceHandleDestruction() {
         SingletonWithPerLookupInjection swpli = locator.getService(SingletonWithPerLookupInjection.class);
         Assert.assertFalse(swpli.isDestroyed());
@@ -168,6 +169,25 @@ public class DestroyTest {
         Assert.assertFalse(swpli.wasPerLookupDestroyed());
         
         Assert.assertTrue(plwd.isDestroyed());
+    }
+    
+    /**
+     * Tests that a descriptor that has been unbound
+     * cannot be used after it has been removed
+     */
+    @Test(expected=IllegalStateException.class) @org.junit.Ignore
+    public void testDisposedDescriptorCannotBeUsedToCreateAService() {
+        ServiceLocator locator = LocatorHelper.create();
+        ActiveDescriptor<?> desc = ServiceLocatorUtilities.addClasses(locator, SimpleService.class).get(0);
+        
+        ServiceHandle<?> handle = locator.getServiceHandle(desc);
+        Assert.assertNotNull(handle.getService());
+        
+        // Remove it
+        ServiceLocatorUtilities.removeOneDescriptor(locator, desc);
+        
+        // Should error out, descriptor has been removed
+        handle.getService();
     }
 
 }
