@@ -82,7 +82,7 @@ import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
  * @author jwells
  * @param <T> The type from the cache
  */
-public class SystemDescriptor<T> implements ActiveDescriptor<T> {
+public class SystemDescriptor<T> implements ActiveDescriptor<T>, Closeable {
     private final Descriptor baseDescriptor;
     private final Long id;
     private final ActiveDescriptor<T> activeDescriptor;
@@ -91,6 +91,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     private volatile boolean reified;
     private boolean reifying = false;  // Am I currently reifying
     private boolean preAnalyzed = false;
+    private volatile boolean closed = false;
 
     private final Object cacheLock = new Object();
     private boolean cacheSet = false;
@@ -800,6 +801,35 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
     public Long getLocatorId() {
         return sdLocator.getLocatorId();
     }
+    
+    /* (non-Javadoc)
+     * @see org.jvnet.hk2.internal.Closeable#close()
+     */
+    @Override
+    public boolean close() {
+        if (closed) return true;
+        
+        synchronized (this) {
+            if (closed) return true;
+            
+            closed = true;
+            return false;
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.jvnet.hk2.internal.Closeable#isClosed()
+     */
+    @Override
+    public boolean isClosed() {
+        // This is safe because once a descriptor is
+        // closed it is never opened
+        if (closed) return true;
+
+        synchronized (this) {
+            return closed;
+        }
+    }
 
     /**
      * Gets the decision of the filter from this service.  May use
@@ -919,4 +949,5 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T> {
 
         return sb.toString();
     }
+
 }

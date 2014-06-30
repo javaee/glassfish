@@ -88,6 +88,13 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
     }
     
     /* package */ T getService(ServiceHandle<T> handle) {
+        if (root instanceof Closeable) {
+            Closeable closeable = (Closeable) root;
+            if (closeable.isClosed()) {
+                throw new IllegalStateException("This service has been unbound: " + root);
+            }
+        }
+        
         synchronized (lock) {
             if (serviceDestroyed) throw new IllegalStateException("Service has been disposed");
             

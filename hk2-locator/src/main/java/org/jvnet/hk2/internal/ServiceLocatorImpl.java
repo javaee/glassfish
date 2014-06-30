@@ -1673,6 +1673,13 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 classReflectionHelper.clean(unbind.getImplementationClass());
             }
         }
+        
+        for (SystemDescriptor<?> unbind : unbinds) {
+            // Do this after all the other work has been done
+            // to ensure we can possibly still use things such
+            // as the validation service while we are unbinding
+            unbind.close();
+        }
     }
 
     private static boolean doTrace(ActiveDescriptor<?> desc) {

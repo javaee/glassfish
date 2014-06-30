@@ -175,7 +175,7 @@ public class DestroyTest {
      * Tests that a descriptor that has been unbound
      * cannot be used after it has been removed
      */
-    @Test(expected=IllegalStateException.class) @org.junit.Ignore
+    @Test(expected=IllegalStateException.class) // @org.junit.Ignore
     public void testDisposedDescriptorCannotBeUsedToCreateAService() {
         ServiceLocator locator = LocatorHelper.create();
         ActiveDescriptor<?> desc = ServiceLocatorUtilities.addClasses(locator, SimpleService.class).get(0);
