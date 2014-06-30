@@ -552,6 +552,30 @@ public class ServiceLocatorImpl implements ServiceLocator {
     public <T> ServiceHandle<T> getServiceHandle(
             ActiveDescriptor<T> activeDescriptor,
             Injectee injectee) throws MultiException {
+        if (activeDescriptor != null) {
+            if (!(activeDescriptor instanceof SystemDescriptor)) {
+                throw new IllegalArgumentException("The descriptor passed to getServiceHandle must have been bound into a ServiceLocator.  " +
+                    "The descriptor is of type " + activeDescriptor.getClass().getName());
+            }
+            
+            SystemDescriptor<T> sd = (SystemDescriptor<T>) activeDescriptor;
+            Long sdLocator = sd.getLocatorId();
+            if (sdLocator == null) {
+                throw new IllegalArgumentException("The descriptor passed to getServiceHandle is not associated with any ServiceLocator");
+            }
+            
+            if (sdLocator.longValue() != id) {
+                throw new IllegalArgumentException("The descriptor passed to getServiceHandle is not associated with this ServiceLocator (id=" +
+                    id + ").  It is associated ServiceLocator id=" + sdLocator);
+            }
+            
+           Long sdSID = sd.getServiceId();
+           if (sdSID == null) {
+               throw new IllegalArgumentException("The descriptor passed to getServiceHandle was never added to this ServiceLocator (id=" +
+                   id + ")");
+           }
+        }
+        
         return getServiceHandleImpl(activeDescriptor, injectee);
     }
 
@@ -570,7 +594,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     @Override
     public <T> ServiceHandle<T> getServiceHandle(
             ActiveDescriptor<T> activeDescriptor) throws MultiException {
-        return internalGetServiceHandle(activeDescriptor, null);
+        return getServiceHandle(activeDescriptor, null);
     }
 
     private <T> ServiceHandleImpl<T> internalGetServiceHandle(

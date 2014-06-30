@@ -56,7 +56,10 @@ import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Test;
 
 /**
@@ -561,5 +564,38 @@ public class NegativeApiTest {
               Assert.assertTrue(iae.getMessage(), iae.getMessage().contains(
                       " must be a scope or annotation"));
           }
+    }
+    
+    /**
+     * Trying to create a handle with non-associated descriptor
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testHandleFromNonAssocaitedDescriptor() {
+        ActiveDescriptor<?> desc = new ForeignDescriptor();
+        locator.getServiceHandle(desc);
+    }
+    
+    /**
+     * Trying to create a handle generated with this locator, but never bound
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testHandleNeverBound() {
+        AbstractActiveDescriptor<?> desc = new ForeignDescriptor();
+        desc.setReified(false);
+        
+        ActiveDescriptor<?> reified = locator.reifyDescriptor(desc);
+        
+        locator.getServiceHandle(reified);
+    }
+    
+    /**
+     * Trying to create a handle generated with a different locator
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testHandleBoundToDifferentLocator() {
+        ServiceLocator otherLocator = LocatorHelper.create();
+        ActiveDescriptor<?> desc = ServiceLocatorUtilities.addClasses(otherLocator, ForeignService.class).get(0);
+        
+        locator.getServiceHandle(desc);
     }
 }
