@@ -148,7 +148,7 @@ public class SecurityLockdownTest extends HK2Runner {
             Assert.fail("Mallory should not be able to inject a service it has no rights to");
         }
         catch (MultiException multi) {
-            Assert.assertTrue(multi.getMessage().contains("There was no object available for injection at Injectee"));
+            Assert.assertTrue(multi.getMessage().contains("There was no object available for injection at SystemInjecteeImpl"));
         }
     }
 }

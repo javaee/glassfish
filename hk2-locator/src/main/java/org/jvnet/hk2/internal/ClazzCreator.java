@@ -79,7 +79,7 @@ public class ClazzCreator<T> implements Creator<T> {
     private ActiveDescriptor<?> selfDescriptor;
 
     private ResolutionInfo myConstructor;
-    private List<Injectee> allInjectees;
+    private List<SystemInjecteeImpl> allInjectees;
 
     private Method postConstructMethod;
     private Method preDestroyMethod;
@@ -121,10 +121,10 @@ public class ClazzCreator<T> implements Creator<T> {
             return;
         }
 
-        List<Injectee> baseAllInjectees = new LinkedList<Injectee>();
+        List<SystemInjecteeImpl> baseAllInjectees = new LinkedList<SystemInjecteeImpl>();
 
         AnnotatedElement element;
-        List<Injectee> injectees;
+        List<SystemInjecteeImpl> injectees;
 
         element = Utilities.getConstructor(implClass, analyzer, collector);
         if (element == null) {
@@ -193,15 +193,15 @@ public class ClazzCreator<T> implements Creator<T> {
         this.selfDescriptor = selfDescriptor;
 
         for (Injectee injectee : allInjectees) {
-            if (!(injectee instanceof InjecteeImpl)) continue;
+            if (!(injectee instanceof SystemInjecteeImpl)) continue;
 
-            ((InjecteeImpl) injectee).resetInjecteeDescriptor(selfDescriptor);
+            ((SystemInjecteeImpl) injectee).resetInjecteeDescriptor(selfDescriptor);
         }
     }
 
-    private void resolve(Map<Injectee, Object> addToMe,
+    private void resolve(Map<SystemInjecteeImpl, Object> addToMe,
                          InjectionResolver<?> resolver,
-                         Injectee injectee,
+                         SystemInjecteeImpl injectee,
                          ServiceHandle<?> root,
                          Collector errorCollection) {
         if (injectee.isSelf()) {
@@ -221,25 +221,25 @@ public class ClazzCreator<T> implements Creator<T> {
         }
     }
 
-    private Map<Injectee, Object> resolveAllDependencies(final ServiceHandle<?> root) throws MultiException, IllegalStateException {
+    private Map<SystemInjecteeImpl, Object> resolveAllDependencies(final ServiceHandle<?> root) throws MultiException, IllegalStateException {
         Collector errorCollector = new Collector();
 
-        final Map<Injectee, Object> retVal = new LinkedHashMap<Injectee, Object>();
+        final Map<SystemInjecteeImpl, Object> retVal = new LinkedHashMap<SystemInjecteeImpl, Object>();
 
-        for (Injectee injectee : myConstructor.injectees) {
+        for (SystemInjecteeImpl injectee : myConstructor.injectees) {
             InjectionResolver<?> resolver = locator.getInjectionResolverForInjectee(injectee);
             resolve(retVal, resolver, injectee, root, errorCollector);
         }
 
         for (ResolutionInfo fieldRI : myFields) {
-            for (Injectee injectee : fieldRI.injectees) {
+            for (SystemInjecteeImpl injectee : fieldRI.injectees) {
                 InjectionResolver<?> resolver = locator.getInjectionResolverForInjectee(injectee);
                 resolve(retVal, resolver, injectee, root, errorCollector);
             }
         }
 
         for (ResolutionInfo methodRI : myInitializers) {
-            for (Injectee injectee : methodRI.injectees) {
+            for (SystemInjecteeImpl injectee : methodRI.injectees) {
                 InjectionResolver<?> resolver = locator.getInjectionResolverForInjectee(injectee);
                 resolve(retVal, resolver, injectee, root, errorCollector);
             }
@@ -255,9 +255,9 @@ public class ClazzCreator<T> implements Creator<T> {
         return retVal;
     }
 
-    private Object createMe(Map<Injectee, Object> resolved) throws Throwable {
+    private Object createMe(Map<SystemInjecteeImpl, Object> resolved) throws Throwable {
         final Constructor<?> c = (Constructor<?>) myConstructor.baseElement;
-        List<Injectee> injectees = myConstructor.injectees;
+        List<SystemInjecteeImpl> injectees = myConstructor.injectees;
 
         final Object args[] = new Object[injectees.size()];
         for (Injectee injectee : injectees) {
@@ -292,10 +292,10 @@ public class ClazzCreator<T> implements Creator<T> {
                 new ConstructorActionImpl<T>(this, methodInterceptors));
     }
 
-    private void fieldMe(Map<Injectee, Object> resolved, T t) throws Throwable {
+    private void fieldMe(Map<SystemInjecteeImpl, Object> resolved, T t) throws Throwable {
         for (ResolutionInfo ri : myFields) {
             Field field = (Field) ri.baseElement;
-            List<Injectee> injectees = ri.injectees;  // Should be only one injectee, itself!
+            List<SystemInjecteeImpl> injectees = ri.injectees;  // Should be only one injectee, itself!
 
             Injectee fieldInjectee = null;
             for (Injectee candidate : injectees) {
@@ -308,10 +308,10 @@ public class ClazzCreator<T> implements Creator<T> {
         }
     }
 
-    private void methodMe(Map<Injectee, Object> resolved, T t) throws Throwable {
+    private void methodMe(Map<SystemInjecteeImpl, Object> resolved, T t) throws Throwable {
         for (ResolutionInfo ri : myInitializers) {
             Method m = (Method) ri.baseElement;
-            List<Injectee> injectees = ri.injectees;
+            List<SystemInjecteeImpl> injectees = ri.injectees;
 
             Object args[] = new Object[injectees.size()];
             for (Injectee injectee : injectees) {
@@ -357,11 +357,11 @@ public class ClazzCreator<T> implements Creator<T> {
         String failureLocation = "resolve";
         try {
 
-            final Map<Injectee, Object> allResolved = resolveAllDependencies(root);
+            final Map<SystemInjecteeImpl, Object> allResolved = resolveAllDependencies(root);
 
             if (eventThrower != null) {
                 eventThrower.invokeInstanceListeners(new InstanceLifecycleEventImpl(InstanceLifecycleEventType.PRE_PRODUCTION,
-                    null, allResolved, eventThrower));
+                    null, Utilities.<Map<Injectee,Object>>cast(allResolved), eventThrower));
             }
 
             failureLocation = "create";
@@ -378,7 +378,7 @@ public class ClazzCreator<T> implements Creator<T> {
 
             if (eventThrower != null) {
                 eventThrower.invokeInstanceListeners(new InstanceLifecycleEventImpl(InstanceLifecycleEventType.POST_PRODUCTION,
-                    retVal, allResolved, eventThrower));
+                    retVal, Utilities.<Map<Injectee, Object>>cast(allResolved), eventThrower));
             }
 
             return retVal;
@@ -420,7 +420,7 @@ public class ClazzCreator<T> implements Creator<T> {
      */
     @Override
     public List<Injectee> getInjectees() {
-        return allInjectees;
+        return Utilities.cast(allInjectees);
     }
     
     /* package */ ServiceLocatorImpl getServiceLocator() {
@@ -437,9 +437,9 @@ public class ClazzCreator<T> implements Creator<T> {
 
     private static class ResolutionInfo {
         private final AnnotatedElement baseElement;
-        private final List<Injectee> injectees = new LinkedList<Injectee>();
+        private final List<SystemInjecteeImpl> injectees = new LinkedList<SystemInjecteeImpl>();
 
-        private ResolutionInfo(AnnotatedElement baseElement, List<Injectee> injectees) {
+        private ResolutionInfo(AnnotatedElement baseElement, List<SystemInjecteeImpl> injectees) {
             this.baseElement = baseElement;
             this.injectees.addAll(injectees);
         }

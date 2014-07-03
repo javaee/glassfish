@@ -198,10 +198,11 @@ public class ServiceLocatorImpl implements ServiceLocator {
 
     private ConcurrentHashMap<Class<? extends Annotation>, InjectionResolver<?>> allResolvers =
             new ConcurrentHashMap<Class<? extends Annotation>, InjectionResolver<?>>();
-    private final Cache<Injectee, InjectionResolver<?>> injecteeToResolverCache = new Cache<Injectee, InjectionResolver<?>>(new Computable<Injectee, InjectionResolver<?>>() {
+    private final Cache<SystemInjecteeImpl, InjectionResolver<?>> injecteeToResolverCache = 
+            new Cache<SystemInjecteeImpl, InjectionResolver<?>>(new Computable<SystemInjecteeImpl, InjectionResolver<?>>() {
 
         @Override
-        public InjectionResolver<?> compute(Injectee key) {
+        public InjectionResolver<?> compute(SystemInjecteeImpl key) {
             return Utilities.getInjectionResolver(getMe(), key);
         }
         
@@ -1667,7 +1668,9 @@ public class ServiceLocatorImpl implements ServiceLocator {
             
             if (unbind.isReified()) {
                 for (Injectee injectee : unbind.getInjectees()) {
-                    injecteeToResolverCache.remove(injectee);
+                    if (injectee instanceof SystemInjecteeImpl) {
+                        injecteeToResolverCache.remove((SystemInjecteeImpl) injectee);
+                    }
                 }
                 
                 classReflectionHelper.clean(unbind.getImplementationClass());
@@ -2383,7 +2386,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         return this;
     }
     
-    /* package */ InjectionResolver<?> getInjectionResolverForInjectee(Injectee injectee) {
+    /* package */ InjectionResolver<?> getInjectionResolverForInjectee(SystemInjecteeImpl injectee) {
         return injecteeToResolverCache.compute(injectee);  
     }
     

@@ -937,7 +937,7 @@ public class Utilities {
         for (Field field : fields) {
             InjectionResolver<?> resolver = getInjectionResolver(locator, field);
 
-            List<Injectee> injecteeFields = Utilities.getFieldInjectees(field, null);
+            List<SystemInjecteeImpl> injecteeFields = Utilities.getFieldInjectees(field, null);
 
             validateSelfInjectees(null, injecteeFields, collector);
             collector.throwIfErrors();
@@ -955,14 +955,14 @@ public class Utilities {
         }
 
         for (Method method : methods) {
-            List<Injectee> injectees = Utilities.getMethodInjectees(method, null);
+            List<SystemInjecteeImpl> injectees = Utilities.getMethodInjectees(method, null);
 
             validateSelfInjectees(null, injectees, collector);
             collector.throwIfErrors();
 
             Object args[] = new Object[injectees.size()];
 
-            for (Injectee injectee : injectees) {
+            for (SystemInjecteeImpl injectee : injectees) {
                 InjectionResolver<?> resolver = getInjectionResolver(locator, injectee);
                 args[injectee.getPosition()] = resolver.resolve(injectee, null);
             }
@@ -995,14 +995,14 @@ public class Utilities {
 
         collector.throwIfErrors();
 
-        List<Injectee> injectees = getConstructorInjectees(c, null);
+        List<SystemInjecteeImpl> injectees = getConstructorInjectees(c, null);
 
         validateSelfInjectees(null, injectees, collector);
         collector.throwIfErrors();
 
         Object args[] = new Object[injectees.size()];
 
-        for (Injectee injectee : injectees) {
+        for (SystemInjecteeImpl injectee : injectees) {
             InjectionResolver<?> resolver = getInjectionResolver(locator, injectee);
             args[injectee.getPosition()] = resolver.resolve(injectee, null);
         }
@@ -1843,7 +1843,7 @@ public class Utilities {
      * @throws IllegalStateException If we could not find a valid resolver
      */
     public static InjectionResolver<?> getInjectionResolver(
-            ServiceLocatorImpl locator, Injectee injectee) throws IllegalStateException {
+            ServiceLocatorImpl locator, SystemInjecteeImpl injectee) throws IllegalStateException {
         return getInjectionResolver(locator, injectee.getParent(), injectee.getPosition());
 
     }
@@ -2021,16 +2021,16 @@ public class Utilities {
      * @param injecteeDescriptor The descriptor of the injectee
      * @return the list (in order) of parameters to the constructor
      */
-    public static List<Injectee> getConstructorInjectees(Constructor<?> c, ActiveDescriptor<?> injecteeDescriptor) {
+    public static List<SystemInjecteeImpl> getConstructorInjectees(Constructor<?> c, ActiveDescriptor<?> injecteeDescriptor) {
         Type genericTypeParams[] = c.getGenericParameterTypes();
         Annotation paramAnnotations[][] = c.getParameterAnnotations();
 
-        List<Injectee> retVal = new LinkedList<Injectee>();
+        List<SystemInjecteeImpl> retVal = new LinkedList<SystemInjecteeImpl>();
 
         for (int lcv = 0; lcv < genericTypeParams.length; lcv++) {
             AnnotationInformation ai = getParamInformation(paramAnnotations[lcv]);
             
-            retVal.add(new InjecteeImpl(genericTypeParams[lcv],
+            retVal.add(new SystemInjecteeImpl(genericTypeParams[lcv],
                     ai.qualifiers,
                     lcv,
                     c,
@@ -2049,16 +2049,16 @@ public class Utilities {
      * @param injecteeDescriptor The descriptor of the injectee
      * @return the list (in order) of parameters to the constructor
      */
-    public static List<Injectee> getMethodInjectees(Method c, ActiveDescriptor<?> injecteeDescriptor) {
+    public static List<SystemInjecteeImpl> getMethodInjectees(Method c, ActiveDescriptor<?> injecteeDescriptor) {
         Type genericTypeParams[] = c.getGenericParameterTypes();
         Annotation paramAnnotations[][] = c.getParameterAnnotations();
 
-        List<Injectee> retVal = new LinkedList<Injectee>();
+        List<SystemInjecteeImpl> retVal = new LinkedList<SystemInjecteeImpl>();
 
         for (int lcv = 0; lcv < genericTypeParams.length; lcv++) {
             AnnotationInformation ai = getParamInformation(paramAnnotations[lcv]);
             
-            retVal.add(new InjecteeImpl(genericTypeParams[lcv],
+            retVal.add(new SystemInjecteeImpl(genericTypeParams[lcv],
                     ai.qualifiers,
                     lcv,
                     c,
@@ -2093,11 +2093,11 @@ public class Utilities {
      * @param injecteeDescriptor The descriptor of the injectee
      * @return the list (in order) of parameters to the constructor
      */
-    public static List<Injectee> getFieldInjectees(Field f, ActiveDescriptor<?> injecteeDescriptor) {
-        List<Injectee> retVal = new LinkedList<Injectee>();
+    public static List<SystemInjecteeImpl> getFieldInjectees(Field f, ActiveDescriptor<?> injecteeDescriptor) {
+        List<SystemInjecteeImpl> retVal = new LinkedList<SystemInjecteeImpl>();
         AnnotationInformation ai = getParamInformation(f.getAnnotations());
 
-        retVal.add(new InjecteeImpl(f.getGenericType(),
+        retVal.add(new SystemInjecteeImpl(f.getGenericType(),
                 getFieldAdjustedQualifierAnnotations(f),
                 -1,
                 f,
@@ -2119,7 +2119,7 @@ public class Utilities {
      * @param collector The collector to add any errors to
      */
     public static void validateSelfInjectees(ActiveDescriptor<?> givenDescriptor,
-                                             List<Injectee> injectees,
+                                             List<SystemInjecteeImpl> injectees,
                                              Collector collector) {
 
         for (Injectee injectee : injectees) {

@@ -59,7 +59,7 @@ import org.glassfish.hk2.utilities.reflection.Pretty;
  * @author jwells
  *
  */
-public class InjecteeImpl implements Injectee {
+public class SystemInjecteeImpl implements Injectee {
     private final Type requiredType;
     private final Set<Annotation> qualifiers;
     private final int position;
@@ -70,7 +70,7 @@ public class InjecteeImpl implements Injectee {
     private final Unqualified unqualified;
     private ActiveDescriptor<?> injecteeDescriptor;
     
-    /* package */ InjecteeImpl(
+    /* package */ SystemInjecteeImpl(
             Type requiredType,
             Set<Annotation> qualifiers,
             int position,
@@ -170,7 +170,7 @@ public class InjecteeImpl implements Injectee {
     }
     
     public String toString() {
-        return "Injectee(requiredType=" + Pretty.type(requiredType) +
+        return "SystemInjecteeImpl(requiredType=" + Pretty.type(requiredType) +
                 ",parent=" + Pretty.clazz(pClass) +
                 ",qualifiers=" + Pretty.collection(qualifiers) +
                 ",position=" + position +
