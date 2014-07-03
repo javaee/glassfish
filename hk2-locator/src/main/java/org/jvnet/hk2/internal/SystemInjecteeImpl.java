@@ -52,6 +52,7 @@ import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.Unqualified;
 import org.glassfish.hk2.utilities.reflection.Pretty;
+import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
 /**
  * This is an implementation of Injectee that is used by the system.
@@ -69,6 +70,8 @@ public class SystemInjecteeImpl implements Injectee {
     private final boolean isSelf;
     private final Unqualified unqualified;
     private ActiveDescriptor<?> injecteeDescriptor;
+    
+    private final Object parentIdentifier;
     
     /* package */ SystemInjecteeImpl(
             Type requiredType,
@@ -90,12 +93,15 @@ public class SystemInjecteeImpl implements Injectee {
         
         if (parent instanceof Field) {
             pClass = ((Field) parent).getDeclaringClass();
+            parentIdentifier = ((Field) parent).getName();
         }
         else if (parent instanceof Constructor) {
             pClass = ((Constructor<?>) parent).getDeclaringClass();
+            parentIdentifier = pClass;
         }
         else {
             pClass = ((Method) parent).getDeclaringClass();
+            parentIdentifier = ReflectionHelper.createMethodWrapper((Method) parent);
         }
     }
 
@@ -169,6 +175,25 @@ public class SystemInjecteeImpl implements Injectee {
         this.injecteeDescriptor = injecteeDescriptor;
     }
     
+    @Override
+    public int hashCode() {
+        return position ^ parentIdentifier.hashCode() ^ pClass.hashCode() ;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        if (!(o instanceof SystemInjecteeImpl)) return false;
+        
+        SystemInjecteeImpl other = (SystemInjecteeImpl) o;
+        
+        if (position != other.getPosition()) return false;
+        if (!pClass.equals(other.getInjecteeClass())) return false;
+        
+        return parentIdentifier.equals(other.parentIdentifier);
+    }
+    
+    @Override
     public String toString() {
         return "SystemInjecteeImpl(requiredType=" + Pretty.type(requiredType) +
                 ",parent=" + Pretty.clazz(pClass) +

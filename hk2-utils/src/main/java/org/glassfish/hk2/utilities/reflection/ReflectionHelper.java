@@ -56,7 +56,6 @@ import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -71,6 +70,8 @@ import java.util.Set;
 import javax.inject.Named;
 import javax.inject.Qualifier;
 import javax.inject.Scope;
+
+import org.glassfish.hk2.utilities.reflection.internal.MethodWrapperImpl;
 
 /**
  * @author jwells
@@ -1401,5 +1402,15 @@ public final class ReflectionHelper {
         for (Type extendedInterfaces : interfaceClass.getGenericInterfaces()) {
             addAllInterfaceContracts(extendedInterfaces, addToMe);
         }
+    }
+    
+    /**
+     * Creates a method wrapper for the given method
+     * 
+     * @param wrapMe The non-null method to wrap
+     * @return A method wrapper that has a proper equals/hashCode
+     */
+    public static MethodWrapper createMethodWrapper(Method wrapMe) {
+        return new MethodWrapperImpl(wrapMe);
     }
 }

@@ -39,8 +39,6 @@
  */
 package org.glassfish.hk2.tests.locator.memory;
 
-import java.util.List;
-
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
@@ -63,13 +61,15 @@ import org.junit.Test;
  */
 public class MemoryTest {
     /**
-     * This test causes the injecteeToResolverCache in ServiceLocator
-     * impl to grow, as every time reifyDescriptor is called
-     * a new SystemDescriptor is created which has new Injectee instances.
+     * This test causes the injecteeToResolverCache in ServiceLocatorImpl
+     * to grow, as every time reifyDescriptor is called a new SystemDescriptor
+     * is created which has new Injectee instances.
      * Since the cache was based on the identity of the object, this
-     * caused the cache to continually grow
+     * caused the cache to continually grow.  This leak has been fixed
+     * by having SystemInjecteeImpl have a good hashCode/equals implementation,
+     * so the keys are the same even if the objects are different
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testDirectlyCallingCreate() {
         ServiceLocator locator = LocatorHelper.create();
         
