@@ -45,6 +45,7 @@ import junit.framework.Assert;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.glassfish.hk2.utilities.PerThreadScopeModule;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Before;
 import org.junit.Test;
@@ -78,9 +79,13 @@ public class PerThreadTest {
      */
     @Test // @org.junit.Ignore
     public void testPerThread() throws InterruptedException {
-        StoreRunner runner1 = new StoreRunner();
-        StoreRunner runner2 = new StoreRunner();
-        StoreRunner runner3 = new StoreRunner();
+        synchronized (lock) {
+            numFinished = 0;
+        }
+        
+        StoreRunner runner1 = new StoreRunner(locator);
+        StoreRunner runner2 = new StoreRunner(locator);
+        StoreRunner runner3 = new StoreRunner(locator);
         
         Thread thread1 = new Thread(runner1);
         Thread thread2 = new Thread(runner2);
@@ -142,6 +147,51 @@ public class PerThreadTest {
         Assert.assertEquals(NUM_SHIRT_THREADS, collector.size());
     }
     
+    /**
+     * Tests we get different values per thread
+     * 
+     * @throws InterruptedException
+     */
+    @Test // @org.junit.Ignore
+    public void testPerThreadWithModule() throws InterruptedException {
+        synchronized (lock) {
+            numFinished = 0;
+        }
+        
+        ServiceLocator locator = ServiceLocatorUtilities.bind(new PerThreadScopeModule());
+        ServiceLocatorUtilities.addClasses(locator, ClothingStore.class, Pants.class);
+        
+        StoreRunner runner1 = new StoreRunner(locator);
+        StoreRunner runner2 = new StoreRunner(locator);
+        StoreRunner runner3 = new StoreRunner(locator);
+        
+        Thread thread1 = new Thread(runner1);
+        Thread thread2 = new Thread(runner2);
+        Thread thread3 = new Thread(runner3);
+        
+        thread1.start();
+        thread2.start();
+        thread3.start();
+        
+        synchronized (lock) {
+            while (numFinished < 3) {
+                lock.wait();
+            }
+        }
+        
+        ClothingStore store1 = runner1.store;
+        ClothingStore store2 = runner2.store;
+        ClothingStore store3 = runner3.store;
+        
+        Pants pants1 = store1.check();
+        Pants pants2 = store2.check();
+        Pants pants3 = store3.check();
+        
+        Assert.assertNotSame(pants1, pants2);
+        Assert.assertNotSame(pants1, pants3);
+        Assert.assertNotSame(pants2, pants3);
+    }
+    
     private final static int NUM_MANY_THREADS = 100;
     
     @Test // @org.junit.Ignore
@@ -187,7 +237,12 @@ public class PerThreadTest {
     }
     
     public class StoreRunner implements Runnable {
+        private final ServiceLocator locator;
         private ClothingStore store;
+        
+        private StoreRunner(ServiceLocator locator) {
+            this.locator = locator;
+        }
 
         /* (non-Javadoc)
          * @see java.lang.Runnable#run()
