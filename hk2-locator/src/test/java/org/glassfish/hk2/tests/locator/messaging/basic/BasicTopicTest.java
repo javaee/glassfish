@@ -50,7 +50,9 @@ import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.ImmediateScopeModule;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.glassfish.hk2.utilities.TopicDistributionModule;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -68,6 +70,45 @@ public class BasicTopicTest {
         
         ServiceLocatorUtilities.enableTopicDistribution(locator);
         ServiceLocatorUtilities.enableImmediateScope(locator);
+        
+        ServiceLocatorUtilities.addClasses(locator, FooPublisher.class,
+                ImmediateSubscriber.class,
+                PerLookupSubscriber.class,
+                SingletonSubscriber.class);
+        
+        FooPublisher publisher = locator.getService(FooPublisher.class);
+        SingletonSubscriber singletonSubscriber = locator.getService(SingletonSubscriber.class);
+        ImmediateSubscriber immediateSubscriber = locator.getService(ImmediateSubscriber.class);
+        
+        publisher.publishFoo(12);
+        
+        Foo singletonFoo = singletonSubscriber.getAndClearLastEvent();
+        Assert.assertNotNull(singletonFoo);
+        Assert.assertEquals(12, singletonFoo.getFooValue());
+        
+        Foo perLookupFoo1 = singletonSubscriber.getAndClearDependentLastEvent();
+        Assert.assertNotNull(perLookupFoo1);
+        Assert.assertEquals(12, perLookupFoo1.getFooValue());
+        
+        Foo immediateFoo = immediateSubscriber.getAndClearLastEvent();
+        Assert.assertNotNull(immediateFoo);
+        Assert.assertEquals(12, immediateFoo.getFooValue());
+        
+        Foo perLookupFoo2 = immediateSubscriber.getAndClearDependentLastEvent();
+        Assert.assertNotNull(perLookupFoo2);
+        Assert.assertEquals(12, perLookupFoo2.getFooValue());
+    }
+    
+    /**
+     * Tests the most basic form of topic/subscriber via module
+     * initialization
+     */
+    @Test
+    public void testEventDistributedToAllSubscribersViaModules() {
+        ServiceLocator locator = LocatorHelper.getServiceLocator();
+        
+        ServiceLocatorUtilities.bind(locator, new TopicDistributionModule(),
+                new ImmediateScopeModule());
         
         ServiceLocatorUtilities.addClasses(locator, FooPublisher.class,
                 ImmediateSubscriber.class,
