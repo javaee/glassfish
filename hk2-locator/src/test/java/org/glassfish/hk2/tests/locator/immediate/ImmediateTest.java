@@ -51,6 +51,7 @@ import org.glassfish.hk2.api.Immediate;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.ImmediateScopeModule;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Test;
@@ -299,6 +300,32 @@ public class ImmediateTest {
         Assert.assertTrue(agds.isDestroyed());
         Assert.assertTrue(gds.isDestroyed());
         Assert.assertTrue(gdpls.isDestroyed());
+    }
+    
+    /**
+     * Tests that an immediate service is started and stopped when
+     * added and removed using the ImmediateScopeModule to enable
+     * the feature
+     * 
+     * @throws InterruptedException 
+     */
+    @Test
+    public void testBasicImmediateBinder() throws InterruptedException {
+        WaitableImmediateService.clear();
+        
+        ServiceLocator locator = ServiceLocatorUtilities.bind(new ImmediateScopeModule());
+        
+        List<ActiveDescriptor<?>> ims = ServiceLocatorUtilities.addClasses(locator, WaitableImmediateService.class);
+        
+        int numCreations = WaitableImmediateService.waitForCreationsGreaterThanZero(5 * 1000);
+        Assert.assertEquals(1, numCreations);
+        Assert.assertEquals(0, WaitableImmediateService.getNumDeletions());
+        
+        ServiceLocatorUtilities.removeOneDescriptor(locator, ims.get(0));
+        
+        int numDeletions = WaitableImmediateService.waitForDeletionsGreaterThanZero(5 * 1000);
+        Assert.assertEquals(1, numDeletions);
+        Assert.assertEquals(1, WaitableImmediateService.getNumCreations());
     }
     
     private final static Object sLock = new Object();
