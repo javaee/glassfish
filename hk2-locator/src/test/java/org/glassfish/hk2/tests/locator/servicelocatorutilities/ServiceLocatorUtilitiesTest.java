@@ -57,6 +57,7 @@ import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorImpl;
+import org.glassfish.hk2.utilities.EnableLookupExceptionsModule;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Test;
@@ -602,6 +603,36 @@ public class ServiceLocatorUtilitiesTest {
         try {
             locator.getService(FailService.class);
             Assert.fail("Should have rethrown reification failure (2)");
+        }
+        catch (MultiException me) {
+            // expected
+        }
+
+    }
+    
+    /**
+     * Tests enableLookupExceptions
+     */
+    @Test
+    public void testErrorRethrowerViaModule() {
+        ServiceLocator locator = uniqueCreate();
+
+        DescriptorImpl di = BuilderHelper.link(FailService.class.getName()).andLoadWith(new HK2LoaderFail()).build();
+
+        ServiceLocatorUtilities.addOneDescriptor(locator, di);
+
+        // The lookup prior to enabling the rethrow should return null
+        Assert.assertNull(locator.getService(FailService.class));
+
+        Assert.assertEquals(0, locator.getAllServices(ErrorService.class).size());
+
+        ServiceLocatorUtilities.bind(locator, new EnableLookupExceptionsModule());
+
+        Assert.assertEquals(1, locator.getAllServices(ErrorService.class).size());
+
+        try {
+            locator.getService(FailService.class);
+            Assert.fail("Should have rethrown reification failure");
         }
         catch (MultiException me) {
             // expected
