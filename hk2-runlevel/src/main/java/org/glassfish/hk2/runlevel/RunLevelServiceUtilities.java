@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,67 +37,40 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.runlevel.tests.utilities;
+package org.glassfish.hk2.runlevel;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.glassfish.hk2.runlevel.RunLevelContext;
-import org.glassfish.hk2.runlevel.RunLevelServiceModule;
-import org.glassfish.hk2.runlevel.RunLevelServiceUtilities;
 import org.glassfish.hk2.runlevel.internal.AsyncRunLevelContext;
 import org.glassfish.hk2.runlevel.internal.RunLevelControllerImpl;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 
 /**
+ * Utilities for using the RunLevelService
+ * 
  * @author jwells
  *
  */
-public class Utilities {
-    public enum InitType {
-        DYNAMIC,
-        UTILITIES,
-        MODULE
-    }
-    
+public class RunLevelServiceUtilities {
     /**
-     * Creates a ServiceLocator equipped with a RunLevelService and the set of classes given
+     * Enables the RunLevelService in the given {@link ServiceLocator}.
+     * If the {@link RunLevelContext} is already registered then
+     * this method does nothing.
+     * <p>
+     * All services needed by the
+     * RunLevelService feature are marked with {@link Service} and
+     * hence would be automatically picked up in environments that
+     * use automatic service discovery
      * 
-     * @param classes The set of classes to also add to the descriptor (should probably contain some run level services, right?)
-     * @return The ServiceLocator to use
+     * @param locator the non-null service locator to add
+     * the run-level service to
      */
-    public static ServiceLocator getServiceLocator(InitType initType, Class<?>... classes) {
-        ServiceLocator locator = ServiceLocatorFactory.getInstance().create(null);
+    public static void enableRunLevelService(ServiceLocator locator) {
+        if (locator.getService(RunLevelContext.class) != null) return;
         
-        if (InitType.DYNAMIC.equals(initType)) {
-            DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
-            DynamicConfiguration config = dcs.createDynamicConfiguration();
-        
-            config.addActiveDescriptor(RunLevelControllerImpl.class);
-            config.addActiveDescriptor(AsyncRunLevelContext.class);
-            config.addActiveDescriptor(RunLevelContext.class);
-            
-            config.commit();
-        }
-        else if (InitType.UTILITIES.equals(initType)) {
-            RunLevelServiceUtilities.enableRunLevelService(locator);
-            
-            // Twice to test idempotentness.  Is that a word?
-            RunLevelServiceUtilities.enableRunLevelService(locator);
-        }
-        else if (InitType.MODULE.equals(initType)) {
-            ServiceLocatorUtilities.bind(locator, new RunLevelServiceModule());
-        }
-        
-        ServiceLocatorUtilities.addClasses(locator, classes);
-        
-        return locator;
-    }
-    
-    public static ServiceLocator getServiceLocator(Class<?>... classes) {
-        return getServiceLocator(InitType.MODULE, classes);
-        
+        ServiceLocatorUtilities.addClasses(locator,
+                RunLevelContext.class,
+                AsyncRunLevelContext.class,
+                RunLevelControllerImpl.class);
     }
 
 }

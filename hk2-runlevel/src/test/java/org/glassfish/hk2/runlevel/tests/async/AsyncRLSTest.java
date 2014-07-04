@@ -96,6 +96,7 @@ public class AsyncRLSTest {
     public void testUpToTwentyAndDownToZero() throws
         ExecutionException, InterruptedException, TimeoutException {
         ServiceLocator basicLocator = Utilities.getServiceLocator(
+                Utilities.InitType.DYNAMIC,
                 UpRecorder.class,
                 DownRecorder.class,
                 LevelFiveService_1.class,
@@ -189,6 +190,7 @@ public class AsyncRLSTest {
     public void testYoYo() throws
         ExecutionException, InterruptedException, TimeoutException {
         ServiceLocator basicLocator = Utilities.getServiceLocator(
+                Utilities.InitType.MODULE,
                 UpRecorder.class,
                 DownRecorder.class,
                 LevelFiveService_1.class,
@@ -293,6 +295,7 @@ public class AsyncRLSTest {
     public void testUpToTwentyAndDownToZeroWithListeners() throws
         ExecutionException, InterruptedException, TimeoutException {
         ServiceLocator basicLocator = Utilities.getServiceLocator(
+                Utilities.InitType.UTILITIES,
                 UpRecorder.class,
                 DownRecorder.class,
                 LevelFiveService_1.class,
@@ -359,6 +362,7 @@ public class AsyncRLSTest {
     public void testUpAndDownWithAsyncServices() throws
         ExecutionException, InterruptedException, TimeoutException {
         ServiceLocator basicLocator = Utilities.getServiceLocator(
+                Utilities.InitType.MODULE,
                 UpRecorder.class,
                 DownRecorder.class,
                 AsyncService1_1.class,
@@ -411,6 +415,7 @@ public class AsyncRLSTest {
     public void testUpAndDownWithAsyncDependentServices() throws
         ExecutionException, InterruptedException, TimeoutException {
         ServiceLocator basicLocator = Utilities.getServiceLocator(
+                Utilities.InitType.UTILITIES,
                 UpRecorder.class,
                 DownRecorder.class,
                 DependsOnServiceA.class,
