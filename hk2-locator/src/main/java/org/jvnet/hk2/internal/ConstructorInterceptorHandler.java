@@ -42,11 +42,13 @@ package org.jvnet.hk2.internal;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.RandomAccess;
 
 import org.aopalliance.intercept.ConstructorInterceptor;
 import org.aopalliance.intercept.ConstructorInvocation;
+import org.glassfish.hk2.api.HK2Invocation;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
 /**
@@ -90,7 +92,8 @@ public class ConstructorInterceptorHandler {
                 neutralCCL,
                 action,
                 0,
-                interceptors));
+                interceptors,
+                null));
         
         if (retVal == null) {
             throw new AssertionError("ConstructorInterceptor construct method returned null for " + c);
@@ -113,7 +116,7 @@ public class ConstructorInterceptorHandler {
         return construct(c, args, neutralCCL, interceptors, DEFAULT_ACTION);
     }
     
-    private static class ConstructorInvocationImpl implements ConstructorInvocation {
+    private static class ConstructorInvocationImpl implements ConstructorInvocation, HK2Invocation {
         private final Constructor<?> c;
         private final Object[] args;
         private final boolean neutralCCL;
@@ -121,19 +124,22 @@ public class ConstructorInterceptorHandler {
         private final int index;
         private final ConstructorAction finalAction;
         private final List<ConstructorInterceptor> interceptors;
+        private HashMap<String, Object> userData;
         
         private ConstructorInvocationImpl(Constructor<?> c,
                 Object args[],
                 boolean neutralCCL,
                 ConstructorAction finalAction,
                 int index,
-                List<ConstructorInterceptor> interceptors) {
+                List<ConstructorInterceptor> interceptors,
+                HashMap<String, Object> userData) {
             this.c = c;
             this.args = args;
             this.neutralCCL = neutralCCL;
             this.finalAction = finalAction;
             this.index = index;
             this.interceptors = interceptors;
+            this.userData = userData;
         }
         
 
@@ -164,7 +170,7 @@ public class ConstructorInterceptorHandler {
             ConstructorInterceptor nextInterceptor = interceptors.get(newIndex);
             
             myThis = nextInterceptor.construct(new ConstructorInvocationImpl(c, args, neutralCCL,
-                    finalAction, newIndex, interceptors));
+                    finalAction, newIndex, interceptors, userData));
             return myThis;
         }
 
@@ -172,6 +178,37 @@ public class ConstructorInterceptorHandler {
         @Override
         public Constructor getConstructor() {
             return c;
+        }
+
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.api.HK2Invocation#setUserData(java.lang.String, java.lang.Object)
+         */
+        @Override
+        public void setUserData(String key, Object data) {
+            if (key == null) throw new IllegalArgumentException();
+            
+            if (userData == null) userData = new HashMap<String, Object>();
+            
+            if (data == null) {
+                userData.remove(key);
+            }
+            else {
+                userData.put(key, data);
+            }
+            
+        }
+
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.api.HK2Invocation#getUserData(java.lang.String)
+         */
+        @Override
+        public Object getUserData(String key) {
+            if (key == null) throw new IllegalArgumentException();
+            
+            if (userData == null) return null;
+            return userData.get(key);
         }
         
     }

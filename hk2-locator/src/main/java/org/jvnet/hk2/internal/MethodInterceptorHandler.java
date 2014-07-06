@@ -42,6 +42,7 @@ package org.jvnet.hk2.internal;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.RandomAccess;
@@ -50,6 +51,7 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.glassfish.hk2.api.AOPProxyCtl;
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.HK2Invocation;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
 import javassist.util.proxy.MethodHandler;
@@ -96,29 +98,32 @@ public class MethodInterceptorHandler implements MethodHandler {
         MethodInterceptor nextInterceptor = interceptors.get(0);
         
         return nextInterceptor.invoke(new MethodInvocationImpl(args,
-                thisMethod, self, interceptors, 0, proceed));
+                thisMethod, self, interceptors, 0, proceed, null));
     }
     
-    private class MethodInvocationImpl implements MethodInvocation {
+    private class MethodInvocationImpl implements MethodInvocation, HK2Invocation {
         private final Object[] arguments;  // Live!
         private final Method method;
         private final Object myself;
         private final List<MethodInterceptor> interceptors;
         private final int index;
         private final Method proceed;
+        private HashMap<String, Object> userData;
         
         private MethodInvocationImpl(Object[] arguments,
                 Method method,
                 Object myself,
                 List<MethodInterceptor> interceptors,
                 int index,
-                Method proceed) {
+                Method proceed,
+                HashMap<String, Object> userData) {
             this.arguments = arguments;
             this.method = method;
             this.myself = myself;
             this.interceptors = interceptors;
             this.index = index;
             this.proceed = proceed;
+            this.userData = userData;
         }
 
         @Override
@@ -153,7 +158,35 @@ public class MethodInterceptorHandler implements MethodHandler {
             MethodInterceptor nextInterceptor = interceptors.get(newIndex);
             
             return nextInterceptor.invoke(new MethodInvocationImpl(arguments,
-                    method, myself, interceptors, newIndex, proceed));
+                    method, myself, interceptors, newIndex, proceed, userData));
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.api.HK2Invocation#setUserData(java.lang.String, java.lang.Object)
+         */
+        @Override
+        public void setUserData(String key, Object data) {
+            if (key == null) throw new IllegalArgumentException();
+            
+            if (userData == null) userData = new HashMap<String, Object>();
+            
+            if (data == null) {
+                userData.remove(key);
+            }
+            else {
+                userData.put(key, data);
+            }
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.api.HK2Invocation#getUserData(java.lang.String)
+         */
+        @Override
+        public Object getUserData(String key) {
+            if (key == null) throw new IllegalArgumentException();
+            
+            if (userData == null) return null;
+            return userData.get(key);
         }
         
     }

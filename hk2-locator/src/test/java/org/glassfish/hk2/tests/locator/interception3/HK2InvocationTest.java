@@ -62,7 +62,7 @@ public class HK2InvocationTest {
     /**
      * Tests the HK2Invocation on methods and constructors
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testHK2Invocation() {
         ServiceLocator locator = LocatorHelper.create();
         
