@@ -105,6 +105,11 @@ public class GeneratorRunner {
         this.outputDirectory = outputDirectory;
         utilities = new Utilities(verbose, searchPath);
         this.includeDate = includeDate;
+        
+        if (verbose) {
+            System.out.println("HabitatGenerator: inputFile=" + fileOrDirectory + " outjarName=" + outjarName +
+                    " locatorName=" + locatorName + " noSwap=" + noSwap + " outputDirectory=" + outputDirectory);
+        }
     }
     
     /**

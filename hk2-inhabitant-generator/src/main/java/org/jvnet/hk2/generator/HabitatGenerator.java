@@ -119,6 +119,9 @@ public class HabitatGenerator {
         
         try {
             runner.go();
+            if (verbose) {
+                System.out.println("HabitatGenerator completed successfully");
+            }
         }
         catch (AssertionError ae) {
             if (verbose) {
