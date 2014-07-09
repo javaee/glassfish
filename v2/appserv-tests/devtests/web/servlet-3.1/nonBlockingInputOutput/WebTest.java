@@ -50,7 +50,7 @@ import com.sun.ejte.ccl.reporter.*;
 public class WebTest {
 
     private static String TEST_NAME = "non-blocking-Input-Output";
-    private static String EXPECTED_RESPONSE = "HelloWorldComplete";
+    private static String EXPECTED_RESPONSE = "HelloWorld";
 
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");

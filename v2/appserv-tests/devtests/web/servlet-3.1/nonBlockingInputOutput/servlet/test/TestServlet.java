@@ -70,7 +70,6 @@ public class TestServlet extends HttpServlet {
         ac.addListener(new AsyncListener() {
             public void onComplete(AsyncEvent event) throws IOException {
                 System.out.println("my asyncListener.onComplete");
-                event.getSuppliedResponse().getOutputStream().print("Complete");
             }
             public void onError(AsyncEvent event) {
                 System.out.println("my asyncListener.onError: " + event.getThrowable());
