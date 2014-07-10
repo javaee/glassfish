@@ -41,7 +41,7 @@ package org.glassfish.hk2.tests.locator.customresolver;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
-
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Test;
 
 import junit.framework.Assert;
@@ -112,6 +112,21 @@ public class CustomResolverTest {
         Assert.assertEquals("Parameter A", service.getParameterA());
         Assert.assertEquals("Parameter B", service.getParameterB());
         Assert.assertEquals("Parameter A", service.getAnotherParameterA());
+    }
+    
+    /**
+     * Tests custom resolution
+     */
+    @Test @org.junit.Ignore
+    public void testCustomInjectResolverInChild() {
+        ServiceLocator child = LocatorHelper.create(locator);
+        
+        ServiceLocatorUtilities.addClasses(child, ServiceWithCustomInjections2.class);
+        
+        ServiceWithCustomInjections2 cwci = child.getService(ServiceWithCustomInjections2.class);
+        Assert.assertNotNull(cwci);
+
+        Assert.assertTrue(cwci.isValid());
     }
 
 }
