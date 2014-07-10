@@ -127,6 +127,13 @@ public class CustomResolverTest {
         Assert.assertNotNull(cwci);
 
         Assert.assertTrue(cwci.isValid());
+        
+        child.shutdown();
+        
+        ServiceWithCustomInjections cwci1 = locator.getService(ServiceWithCustomInjections.class);
+        Assert.assertNotNull(cwci1);
+
+        Assert.assertTrue(cwci1.isValid());
     }
 
 }
