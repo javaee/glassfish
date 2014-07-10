@@ -117,7 +117,7 @@ public class CustomResolverTest {
     /**
      * Tests custom resolution
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testCustomInjectResolverInChild() {
         ServiceLocator child = LocatorHelper.create(locator);
         

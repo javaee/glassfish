@@ -566,6 +566,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
             }
             
             if (sdLocator.longValue() != id) {
+                if (parent != null) {
+                    return parent.getServiceHandle(activeDescriptor, injectee);
+                }
+                
                 throw new IllegalArgumentException("The descriptor passed to getServiceHandle is not associated with this ServiceLocator (id=" +
                     id + ").  It is associated ServiceLocator id=" + sdLocator);
             }
