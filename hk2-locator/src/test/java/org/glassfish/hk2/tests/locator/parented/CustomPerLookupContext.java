@@ -45,6 +45,7 @@ import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceHandle;
 
 /**
@@ -53,6 +54,7 @@ import org.glassfish.hk2.api.ServiceHandle;
  */
 @Singleton
 public class CustomPerLookupContext implements Context<CustomPerLookup> {
+    private boolean shutdown = false;
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Context#getScope()
@@ -68,6 +70,10 @@ public class CustomPerLookupContext implements Context<CustomPerLookup> {
     @Override
     public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor,
             ServiceHandle<?> root) {
+        if (shutdown) {
+            throw new MultiException(new IllegalStateException("CustomPerLookupContext has been shutdown"));
+        }
+        
         return activeDescriptor.create(root);
     }
 
@@ -109,7 +115,7 @@ public class CustomPerLookupContext implements Context<CustomPerLookup> {
      */
     @Override
     public void shutdown() {
-        // Do nothing
+        shutdown = true;
 
     }
 
