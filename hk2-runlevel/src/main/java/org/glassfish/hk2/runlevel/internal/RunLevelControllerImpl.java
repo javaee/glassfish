@@ -44,7 +44,9 @@ import java.util.concurrent.Executor;
 
 import javax.inject.Inject;
 
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.runlevel.CurrentlyRunningException;
 import org.glassfish.hk2.runlevel.RunLevelController;
 import org.glassfish.hk2.runlevel.RunLevelFuture;
@@ -56,7 +58,9 @@ import org.jvnet.hk2.annotations.Service;
  * 
  * @author jwells
  */
-@Service @ContractsProvided(RunLevelController.class)
+@Service
+@ContractsProvided(RunLevelController.class)
+@Visibility(DescriptorVisibility.LOCAL)
 public class RunLevelControllerImpl implements RunLevelController {
     @Inject
     private AsyncRunLevelContext context;

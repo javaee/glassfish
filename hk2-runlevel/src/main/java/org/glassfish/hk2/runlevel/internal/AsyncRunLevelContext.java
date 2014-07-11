@@ -57,9 +57,11 @@ import javax.inject.Inject;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.runlevel.CurrentlyRunningException;
 import org.glassfish.hk2.runlevel.RunLevel;
 import org.glassfish.hk2.runlevel.RunLevelController;
@@ -71,7 +73,7 @@ import org.jvnet.hk2.annotations.Service;
  * @author jwells
  *
  */
-@Service
+@Service @Visibility(DescriptorVisibility.LOCAL)
 public class AsyncRunLevelContext {
     private static final Logger logger = Logger.getLogger(AsyncRunLevelContext.class.getName());
     
