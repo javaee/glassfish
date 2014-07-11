@@ -218,6 +218,8 @@ public class PerThreadTest {
         try {
             for (int lcv = 0; lcv < NUM_MANY_THREADS; lcv++) {
                 ServiceLocator child = LocatorHelper.create(locator);
+                
+                ServiceLocatorUtilities.enablePerThreadScope(child);
             
                 ServiceLocatorUtilities.addClasses(child, Pants.class);
             

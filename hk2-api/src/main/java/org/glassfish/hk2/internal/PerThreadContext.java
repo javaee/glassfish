@@ -48,14 +48,16 @@ import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.PerThread;
 import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.utilities.reflection.Logger;
 
 /**
  * @author jwells
  */
-@Singleton
+@Singleton @Visibility(DescriptorVisibility.LOCAL)
 public class PerThreadContext implements Context<PerThread> {
     private final static boolean LOG_THREAD_DESTRUCTION = AccessController.<Boolean>doPrivileged(new PrivilegedAction<Boolean>() {
 

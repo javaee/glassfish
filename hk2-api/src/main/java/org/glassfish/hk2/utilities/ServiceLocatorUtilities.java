@@ -55,6 +55,7 @@ import javax.inject.Singleton;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.Factory;
@@ -100,6 +101,7 @@ public abstract class ServiceLocatorUtilities {
         final DescriptorImpl descriptor = BuilderHelper.link(PerThreadContext.class).
                 to(Context.class).
                 in(Singleton.class.getName()).
+                visibility(DescriptorVisibility.LOCAL).
                 build();
 
         ClassLoader loader = ServiceLocatorUtilities.class.getClassLoader();

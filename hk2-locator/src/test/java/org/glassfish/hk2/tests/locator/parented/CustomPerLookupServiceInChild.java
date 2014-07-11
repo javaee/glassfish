@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,68 +37,15 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.utilities;
+package org.glassfish.hk2.tests.locator.parented;
 
-import java.lang.annotation.Annotation;
-
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Context;
-import org.glassfish.hk2.api.DescriptorVisibility;
-import org.glassfish.hk2.api.Immediate;
-import org.glassfish.hk2.api.ServiceHandle;
-import org.glassfish.hk2.api.Visibility;
-import org.glassfish.hk2.internal.ImmediateHelper;
+import org.jvnet.hk2.annotations.Service;
 
 /**
- * This is the {@link Context} implementation for the {@link Immediate}
- * scope
- * 
  * @author jwells
  *
  */
-@Singleton @Visibility(DescriptorVisibility.LOCAL)
-public class ImmediateContext implements Context<Immediate>{
-    @Inject
-    private ImmediateHelper delegate;
-    
-    @Override
-    public Class<? extends Annotation> getScope() {
-        return Immediate.class;
-    }
-
-    @Override
-    public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor,
-            ServiceHandle<?> root) {
-        return delegate.findOrCreate(activeDescriptor, root);
-    }
-
-    @Override
-    public boolean containsKey(ActiveDescriptor<?> descriptor) {
-        return delegate.containsKey(descriptor);
-    }
-
-    @Override
-    public void destroyOne(ActiveDescriptor<?> descriptor) {
-        delegate.destroyOne(descriptor, null);
-    }
-
-    @Override
-    public boolean supportsNullCreation() {
-        return false;
-    }
-
-    @Override
-    public boolean isActive() {
-        return true;
-    }
-
-    @Override
-    public void shutdown() {
-        delegate.shutdown();
-        
-    }
+@Service @CustomPerLookup
+public class CustomPerLookupServiceInChild {
 
 }

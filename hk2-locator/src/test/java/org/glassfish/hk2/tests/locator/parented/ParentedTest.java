@@ -286,19 +286,19 @@ public class ParentedTest {
         ServiceLocator parent = factory.create(PARENT8);
         ServiceLocator child = factory.create(CHILD8, parent);
         
-        ServiceLocatorUtilities.enablePerThreadScope(parent);
+        ServiceLocatorUtilities.addClasses(parent, CustomPerLookupContext.class);
         
-        ServiceLocatorUtilities.addClasses(parent, PerThreadServiceInParent.class);
-        ServiceLocatorUtilities.addClasses(child, PerThreadServiceInChild.class);
+        ServiceLocatorUtilities.addClasses(parent, CustomPerLookupServiceInParent.class);
+        ServiceLocatorUtilities.addClasses(child, CustomPerLookupServiceInChild.class);
         
-        PerThreadServiceInChild ptsic = child.getService(PerThreadServiceInChild.class);
+        CustomPerLookupServiceInChild ptsic = child.getService(CustomPerLookupServiceInChild.class);
         
         Assert.assertNotNull(ptsic);
         
         factory.destroy(child);
         
         // Make sure we can still use the PerThread context after the child was destroyed!
-        PerThreadServiceInParent ptsip = parent.getService(PerThreadServiceInParent.class);
+        CustomPerLookupServiceInParent ptsip = parent.getService(CustomPerLookupServiceInParent.class);
         
         Assert.assertNotNull(ptsip);
     }

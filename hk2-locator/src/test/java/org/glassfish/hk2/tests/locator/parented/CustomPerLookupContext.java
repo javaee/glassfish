@@ -39,14 +39,78 @@
  */
 package org.glassfish.hk2.tests.locator.parented;
 
-import org.glassfish.hk2.api.PerThread;
-import org.jvnet.hk2.annotations.Service;
+import java.lang.annotation.Annotation;
+
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Context;
+import org.glassfish.hk2.api.ServiceHandle;
 
 /**
  * @author jwells
  *
  */
-@Service @PerThread
-public class PerThreadServiceInParent {
+@Singleton
+public class CustomPerLookupContext implements Context<CustomPerLookup> {
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#getScope()
+     */
+    @Override
+    public Class<? extends Annotation> getScope() {
+        return CustomPerLookup.class;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#findOrCreate(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.ServiceHandle)
+     */
+    @Override
+    public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor,
+            ServiceHandle<?> root) {
+        return activeDescriptor.create(root);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#containsKey(org.glassfish.hk2.api.ActiveDescriptor)
+     */
+    @Override
+    public boolean containsKey(ActiveDescriptor<?> descriptor) {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#destroyOne(org.glassfish.hk2.api.ActiveDescriptor)
+     */
+    @Override
+    public void destroyOne(ActiveDescriptor<?> descriptor) {
+        // Does nothing
+
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#supportsNullCreation()
+     */
+    @Override
+    public boolean supportsNullCreation() {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#isActive()
+     */
+    @Override
+    public boolean isActive() {
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#shutdown()
+     */
+    @Override
+    public void shutdown() {
+        // Do nothing
+
+    }
 
 }

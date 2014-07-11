@@ -39,14 +39,21 @@
  */
 package org.glassfish.hk2.tests.locator.parented;
 
-import org.glassfish.hk2.api.PerThread;
-import org.jvnet.hk2.annotations.Service;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import javax.inject.Scope;
 
 /**
  * @author jwells
  *
  */
-@Service @PerThread
-public class PerThreadServiceInChild {
+@Scope
+@Retention(RUNTIME)
+@Target( { TYPE })
+public @interface CustomPerLookup {
 
 }
