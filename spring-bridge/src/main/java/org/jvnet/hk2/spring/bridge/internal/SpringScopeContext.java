@@ -43,7 +43,9 @@ import java.lang.annotation.Annotation;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.api.Visibility;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.spring.bridge.api.SpringScope;
 
@@ -52,6 +54,7 @@ import org.jvnet.hk2.spring.bridge.api.SpringScope;
  *
  */
 @Service
+@Visibility(DescriptorVisibility.LOCAL)
 public class SpringScopeContext implements Context<SpringScope> {
 
     @Override

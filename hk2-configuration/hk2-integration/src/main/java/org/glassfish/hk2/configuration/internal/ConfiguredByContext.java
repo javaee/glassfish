@@ -46,8 +46,10 @@ import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.configuration.api.ConfiguredBy;
 
 /**
@@ -55,6 +57,7 @@ import org.glassfish.hk2.configuration.api.ConfiguredBy;
  *
  */
 @Singleton
+@Visibility(DescriptorVisibility.LOCAL)
 public class ConfiguredByContext implements Context<ConfiguredBy> {
     private final static ThreadLocal<ActiveDescriptor<?>> workingOn = new ThreadLocal<ActiveDescriptor<?>>() {
         public ActiveDescriptor<?> initialValue() {

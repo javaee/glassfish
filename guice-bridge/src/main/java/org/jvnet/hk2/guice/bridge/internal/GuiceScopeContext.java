@@ -43,7 +43,9 @@ import java.lang.annotation.Annotation;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.api.Visibility;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.guice.bridge.api.GuiceScope;
 
@@ -52,6 +54,7 @@ import org.jvnet.hk2.guice.bridge.api.GuiceScope;
  *
  */
 @Service
+@Visibility(DescriptorVisibility.LOCAL)
 public class GuiceScopeContext implements Context<GuiceScope> {
 
     /* (non-Javadoc)
