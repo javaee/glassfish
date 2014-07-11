@@ -194,6 +194,47 @@ public class PerThreadTest {
     
     private final static int NUM_MANY_THREADS = 100;
     
+    /**
+     * Tests a single extra thread but with a large number of children
+     * service locators.  This test exhibits a memory leak in the
+     * PerThreadContext since the children descriptors never leave
+     * the map of the PerThreadContext
+     * 
+     * @throws InterruptedException
+     */
+    @Test // @org.junit.Ignore
+    public void testManyChildLocatorsOneThread() throws InterruptedException {
+        synchronized (lock) {
+            numFinished = 0;
+        }
+        
+        ServiceLocator locator = LocatorHelper.create();
+        ServiceLocatorUtilities.bind(locator, new PerThreadScopeModule());
+        
+        Worker worker = new Worker();
+        Thread t = new Thread(worker);
+        t.start();
+        
+        try {
+            for (int lcv = 0; lcv < NUM_MANY_THREADS; lcv++) {
+                ServiceLocator child = LocatorHelper.create(locator);
+            
+                ServiceLocatorUtilities.addClasses(child, Pants.class);
+            
+                worker.doJob(child);
+            }
+        }
+        finally {
+            worker.shutdown();
+        }
+        
+    }
+    
+    /**
+     * Tests a large number of threads
+     * 
+     * @throws InterruptedException
+     */
     @Test // @org.junit.Ignore
     public void testManyThreads() throws InterruptedException {
         final ServiceLocator locator = LocatorHelper.create();
@@ -284,6 +325,73 @@ public class PerThreadTest {
                 shirtThreadsDone++;
                 lock.notify();
             }
+        }
+        
+    }
+    
+    public static class Worker implements Runnable {
+        private ServiceLocator nextJob;
+        private boolean daylightCome = false;  // I want to go home
+        private final Object lock = new Object();
+        
+        private void doJob(ServiceLocator job) {
+            synchronized (lock) {
+                while (nextJob != null) {
+                    try {
+                        lock.wait();
+                    }
+                    catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                
+                nextJob = job;
+                lock.notifyAll();
+            }
+        }
+        
+        private void shutdown() {
+            synchronized (lock) {
+                daylightCome = true;
+                lock.notifyAll();
+            }
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Runnable#run()
+         */
+        @Override
+        public void run() {
+            for (;;) {
+                ServiceLocator currentJob = null;
+                synchronized (lock) {
+                    while (nextJob == null && !daylightCome) {
+                        try {
+                            lock.wait();
+                        }
+                        catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    
+                    if (daylightCome) return;
+                    
+                    if (nextJob == null) continue;
+                    
+                    currentJob = nextJob;
+                }
+                
+                // Now do the job
+                Pants currentResult = currentJob.getService(Pants.class);
+                Assert.assertNotNull(currentResult);
+                
+                synchronized (lock) {
+                    nextJob = null;
+                    lock.notifyAll();
+                }
+                
+            }
+            
         }
         
     }
