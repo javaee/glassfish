@@ -51,6 +51,7 @@ import org.glassfish.examples.configuration.webserver.WebServer;
 import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.configuration.api.Configured;
 import org.glassfish.hk2.configuration.api.ConfiguredBy;
+import org.glassfish.hk2.configuration.api.Dynamicity;
 import org.jvnet.hk2.annotations.Service;
 
 /**
@@ -66,7 +67,7 @@ public class WebServerImpl implements WebServer {
     private int adminPort;
     private int openAdminPort = -1;
     
-    @Configured(dynamicity=Configured.Dynamicity.FULLY_DYNAMIC)
+    @Configured(dynamicity=Dynamicity.FULLY_DYNAMIC)
     private String address;
     
     private int sslPort;
@@ -98,8 +99,8 @@ public class WebServerImpl implements WebServer {
      */
     @SuppressWarnings("unused")
     private void setUserPorts(
-            @Configured(value="SSLPort", dynamicity=Configured.Dynamicity.FULLY_DYNAMIC) int sslPort,
-            @Configured(value="port", dynamicity=Configured.Dynamicity.FULLY_DYNAMIC) int port) {
+            @Configured(value="SSLPort", dynamicity=Dynamicity.FULLY_DYNAMIC) int sslPort,
+            @Configured(value="port", dynamicity=Dynamicity.FULLY_DYNAMIC) int port) {
         this.sslPort = sslPort;
         this.port = port;
         

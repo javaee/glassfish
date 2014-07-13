@@ -43,6 +43,7 @@ import javax.annotation.PostConstruct;
 
 import org.glassfish.hk2.configuration.api.Configured;
 import org.glassfish.hk2.configuration.api.ConfiguredBy;
+import org.glassfish.hk2.configuration.api.Dynamicity;
 import org.jvnet.hk2.annotations.Service;
 
 /**
@@ -55,7 +56,7 @@ public class IService {
     private int numTimesSet = 0;
     
     @SuppressWarnings("unused")
-    private void setBourbon(@Configured(value="bourbon", dynamicity=Configured.Dynamicity.FULLY_DYNAMIC) String bourbon) {
+    private void setBourbon(@Configured(value="bourbon", dynamicity=Dynamicity.FULLY_DYNAMIC) String bourbon) {
         this.bourbon = bourbon;
         numTimesSet++;
     }

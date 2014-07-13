@@ -37,72 +37,42 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.tests.simpleMap;
+package org.glassfish.hk2.configuration.internal;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.List;
-
-import org.glassfish.hk2.configuration.api.Configured;
-import org.glassfish.hk2.configuration.api.ConfiguredBy;
-import org.glassfish.hk2.configuration.api.Dynamicity;
-import org.glassfish.hk2.configuration.api.PostDynamicChange;
-import org.glassfish.hk2.configuration.api.PreDynamicChange;
-import org.jvnet.hk2.annotations.Service;
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.InjectionResolver;
+import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.configuration.api.ChildInject;
 
 /**
  * @author jwells
  *
  */
-@Service @ConfiguredBy(MapConfigurationTest.TEST_TYPE_THREE)
-public class DynConPreTrueWListenerService implements PropertyChangeListener {
-    @Configured(dynamicity=Dynamicity.FULLY_DYNAMIC)
-    private String fieldOutput1;
-    
-    private String preChangeCalled = null;
-    private String postChangeCalled = null;
-    
-    private PropertyChangeEvent lastPropertyChange = null;
-    private int numPropChanges = 0;
-    
-    @PreDynamicChange
-    private boolean preChange(List<PropertyChangeEvent> changes) {
-        preChangeCalled = fieldOutput1;
-        return true;
-    }
-    
-    @PostDynamicChange
-    private void postChange(List<PropertyChangeEvent> changes) {
-        postChangeCalled = fieldOutput1;
-    }
+public class ChildInjectResolverImpl implements InjectionResolver<ChildInject> {
 
-    public String isPostChangeCalled() {
-        return postChangeCalled;
-    }
-    
-    public String isPreChangeCalled() {
-        return preChangeCalled;
-    }
-    
-    public String getFieldOutput1() {
-        return fieldOutput1;
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.InjectionResolver#resolve(org.glassfish.hk2.api.Injectee, org.glassfish.hk2.api.ServiceHandle)
+     */
+    @Override
+    public Object resolve(Injectee injectee, ServiceHandle<?> root) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     /* (non-Javadoc)
-     * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
+     * @see org.glassfish.hk2.api.InjectionResolver#isConstructorParameterIndicator()
      */
     @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        numPropChanges++;
-        lastPropertyChange = evt;
+    public boolean isConstructorParameterIndicator() {
+        return true;
     }
-    
-    public int getNumPropertyChanges() {
-        return numPropChanges;
-    }
-    
-    public PropertyChangeEvent getLastPropChangeEvent() {
-        return lastPropertyChange;
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.InjectionResolver#isMethodParameterIndicator()
+     */
+    @Override
+    public boolean isMethodParameterIndicator() {
+        return true;
     }
 
 }

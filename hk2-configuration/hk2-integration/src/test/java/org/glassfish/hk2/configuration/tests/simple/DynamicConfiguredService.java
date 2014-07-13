@@ -41,6 +41,7 @@ package org.glassfish.hk2.configuration.tests.simple;
 
 import org.glassfish.hk2.configuration.api.Configured;
 import org.glassfish.hk2.configuration.api.ConfiguredBy;
+import org.glassfish.hk2.configuration.api.Dynamicity;
 import org.jvnet.hk2.annotations.Service;
 
 /**
@@ -52,13 +53,13 @@ import org.jvnet.hk2.annotations.Service;
  */
 @Service @ConfiguredBy(BasicConfigurationTest.TEST_TYPE_TWO)
 public class DynamicConfiguredService {
-    @Configured(dynamicity=Configured.Dynamicity.FULLY_DYNAMIC)
+    @Configured(dynamicity=Dynamicity.FULLY_DYNAMIC)
     private String fieldOutput1;
     
     private String methodOutput1;
     
     @SuppressWarnings("unused")
-    private void setMethodOutput1(@Configured(value="methodOutput1", dynamicity=Configured.Dynamicity.FULLY_DYNAMIC) String methodOutput1) {
+    private void setMethodOutput1(@Configured(value="methodOutput1", dynamicity=Dynamicity.FULLY_DYNAMIC) String methodOutput1) {
         this.methodOutput1 = methodOutput1;
     }
     

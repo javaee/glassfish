@@ -46,6 +46,7 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 import org.glassfish.hk2.configuration.api.Configured;
+import org.glassfish.hk2.configuration.api.Dynamicity;
 
 /**
  * For JavaBean or Bean-Like-Map utilities
@@ -144,7 +145,7 @@ public class BeanUtilities {
         Configured c = f.getAnnotation(Configured.class);
         if (c == null) return null;
         
-        if (onlyDynamic && !Configured.Dynamicity.FULLY_DYNAMIC.equals(c.dynamicity())) {
+        if (onlyDynamic && !Dynamicity.FULLY_DYNAMIC.equals(c.dynamicity())) {
             return null;
         }
         
@@ -162,7 +163,7 @@ public class BeanUtilities {
         for (Annotation annotation : annotations) {
             if (Configured.class.equals(annotation.annotationType())) {
                 Configured configured = (Configured) annotation;
-                if (!Configured.Dynamicity.FULLY_DYNAMIC.equals(configured.dynamicity())) return null;
+                if (!Dynamicity.FULLY_DYNAMIC.equals(configured.dynamicity())) return null;
                 
                 String retVal = ((Configured) annotation).value();
                 if (isEmpty(retVal)) return null;
@@ -179,7 +180,7 @@ public class BeanUtilities {
                 if (Configured.class.equals(annotation.annotationType())) {
                     Configured configured = (Configured) annotation;
                     
-                    if (Configured.Dynamicity.FULLY_DYNAMIC.equals(configured.dynamicity())) return true;
+                    if (Dynamicity.FULLY_DYNAMIC.equals(configured.dynamicity())) return true;
                 }
             }
         }

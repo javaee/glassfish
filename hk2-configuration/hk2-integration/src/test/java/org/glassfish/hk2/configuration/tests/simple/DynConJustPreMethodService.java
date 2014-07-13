@@ -41,6 +41,7 @@ package org.glassfish.hk2.configuration.tests.simple;
 
 import org.glassfish.hk2.configuration.api.Configured;
 import org.glassfish.hk2.configuration.api.ConfiguredBy;
+import org.glassfish.hk2.configuration.api.Dynamicity;
 import org.glassfish.hk2.configuration.api.PreDynamicChange;
 import org.jvnet.hk2.annotations.Service;
 
@@ -50,7 +51,7 @@ import org.jvnet.hk2.annotations.Service;
  */
 @Service @ConfiguredBy(BasicConfigurationTest.TEST_TYPE_THREE)
 public class DynConJustPreMethodService {
-    @Configured(dynamicity=Configured.Dynamicity.FULLY_DYNAMIC)
+    @Configured(dynamicity=Dynamicity.FULLY_DYNAMIC)
     private String fieldOutput1;
     
     private String preChangeCalled = null;

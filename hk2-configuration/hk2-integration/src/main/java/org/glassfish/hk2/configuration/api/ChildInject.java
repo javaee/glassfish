@@ -43,67 +43,47 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 import org.glassfish.hk2.api.InjectionPointIndicator;
 
 /**
- * This annotation is placed on fields or on parameters
- * of methods or constructors to indicate that these
- * fields or parameters should come from the configuration
- * instance of the type defined by the {@link ConfiguredBy}
- * annotation on the class.
+ * This Injection point indicator can be used for
+ * services that have a hierarchical names.  The name space
+ * of the name fields of the ActiveDescriptors must form
+ * a directed acyclical graph.  For example, this is useful if
+ * using a naming scheme based on an XML hierarchy.
  * <p>
- * The key field gives the name of the parameter to get from
- * the java bean instance upon which the instance of this service
- * is based.  If the configuration bean is a java bean then
- * a method name starting with &quot;get&quot; and having the
- * key name (with the first letter capitalized) will be invoked
- * to get the value.  if the configuration bean is a map then
- * the value of the key is the value of the key in the map from
- * which to get the value
+ * If the injection point of this annotation is of type
+ * {@link java.util.List} then the generic type of the
+ * {@link java.util.List} must contain the Type
+ * of the underlying service, and the {@link java.util.List}
+ * will contain all of the children services whose
+ * name starts with the name of the parent ActiveDescriptor
+ * appended with the value field of this annotation.
  * <p>
- * In the case of a field the key field can come from the name
- * of the field (or can be explicitly set, which will override the name
- * of the field).  In the case of a parameter the key field must
- * be filled in with the name of the field on the java bean to
- * use to inject into this parameter
+ * If the injection point is NOT a list then the type is
+ * as per a normal injection point, but the chosen instance
+ * of that type will have a name that starts with the name
+ * of the parent ActiveDescriptor appended with the value
+ * field of this annotation
  * 
  * @author jwells
  *
  */
-@Documented
 @Retention(RUNTIME)
 @Target( { FIELD, PARAMETER })
 @InjectionPointIndicator
-public @interface Configured {
-    /** This value can be used to indicate that the injection point should be the whole bean */
-    public final static String BEAN_KEY = "$bean";
-    
+public @interface ChildInject {
     /**
-     * This value can be used to indicate that the injection point should be given the instance name.
-     * The injection point must be of type String
-     */
-    public final static String INSTANCE = "$instance";
-    
-    /**
-     * This value can be used to indicate that the injection point should be given the type name.
-     * The injection point must be of type String
-     */
-    public final static String TYPE = "$type";
-    
-    /**
-     * The name of the field in the java bean or
-     * bean-like map to use for injecting into
-     * this field or parameter.  If this field is
-     * set to &quot$bean&quot then the whole bean
-     * upon which this instance is based will be
-     * injected into this location
+     * The string that will be appended to the
+     * name field of the ActiveDescriptor of
+     * the parent of this injection point
      * 
-     * @return The name of the field to use for
-     * injecting into this field or parameter
+     * @return The value to append to the name
+     * field of the ActiveDescriptor of the parent
+     * of this injection point
      */
     public String value() default "";
     
@@ -115,5 +95,4 @@ public @interface Configured {
      * @return The dynamicicty of this field or parameter
      */
     public Dynamicity dynamicity() default Dynamicity.STATIC;
-
 }
