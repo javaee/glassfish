@@ -114,6 +114,11 @@ class ReadListenerImpl implements ReadListener {
     @Override
     public void onAllDataRead() throws IOException {
         System.out.println("--> onAllDataRead");
+        try {
+            wc.close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Override
@@ -123,7 +128,8 @@ class ReadListenerImpl implements ReadListener {
         
         try {
             wc.close();
-        } catch (Exception e) {
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 

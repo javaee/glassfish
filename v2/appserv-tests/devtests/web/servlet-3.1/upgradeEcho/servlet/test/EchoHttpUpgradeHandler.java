@@ -114,18 +114,25 @@ public class EchoHttpUpgradeHandler implements HttpUpgradeHandler {
             }
             output.print(delimiter + sb.toString());
             output.flush();
-
-            // Server side connection close 
-            //wc.close();
         }
 
         public void onAllDataRead() throws IOException {
             System.out.println("--> onAllDataRead");
+            try {
+                wc.close();
+            } catch(Exception ex) {
+                ex.printStackTrace();
+            }
         }
 
         public void onError(final Throwable t) {
             System.out.println("--> onError");
-            //t.printStackTrace();
+            t.printStackTrace();
+            try {
+                wc.close();
+            } catch(Exception ex) {
+                ex.printStackTrace();
+            }
         }
     }
 }
