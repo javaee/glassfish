@@ -44,6 +44,7 @@ import java.util.List;
 
 import junit.framework.Assert;
 
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.configuration.api.ConfigurationUtilities;
@@ -96,7 +97,7 @@ public class HierarchicalTest {
      *     </b-bean>
      *   </b-beans>
      */
-    @Test // @org.junit.Ignore
+    @Test @org.junit.Ignore
     public void testBasicHierarchy() {
         BBeans bbeans = new BBeans();
         
@@ -189,6 +190,27 @@ public class HierarchicalTest {
             }
             
             Assert.assertNotNull(aliceService.getDave());
+            
+            List<ServiceHandle<DService>> aliceDServicesAsHandle = aliceService.getDServicesAsHandles();
+            
+            {
+                Assert.assertEquals(3, aliceDServicesAsHandle.size());
+                
+                HashSet<String> handleNames = new HashSet<String>();
+                HashSet<String> aliceDServicesNames = new HashSet<String>();
+                for (ServiceHandle<DService> dservice : aliceDServicesAsHandle) {
+                    aliceDServicesNames.add(dservice.getService().getName());
+                    handleNames.add(dservice.getActiveDescriptor().getName());
+                }
+        
+                Assert.assertTrue(aliceDServicesNames.contains(DAVE));
+                Assert.assertTrue(aliceDServicesNames.contains(ED));
+                Assert.assertTrue(aliceDServicesNames.contains(FRANK));
+                
+                Assert.assertTrue(handleNames.contains(DAVE));
+                Assert.assertTrue(handleNames.contains(ED));
+                Assert.assertTrue(handleNames.contains(FRANK));
+            }
         }
         
         {
@@ -223,6 +245,25 @@ public class HierarchicalTest {
             }
             
             Assert.assertNotNull(giannaService.getDave());
+            
+            List<ServiceHandle<DService>> giannaDServicesAsHandle = giannaService.getDServicesAsHandles();
+            
+            {
+                Assert.assertEquals(2, giannaDServicesAsHandle.size());
+                
+                HashSet<String> handleNames = new HashSet<String>();
+                HashSet<String> giannaDServicesNames = new HashSet<String>();
+                for (ServiceHandle<DService> dservice : giannaDServicesAsHandle) {
+                    giannaDServicesNames.add(dservice.getService().getName());
+                    handleNames.add(dservice.getActiveDescriptor().getName());
+                }
+        
+                Assert.assertTrue(giannaDServicesNames.contains(DAVE));
+                Assert.assertTrue(giannaDServicesNames.contains(FRANK));
+                
+                Assert.assertTrue(handleNames.contains(DAVE));
+                Assert.assertTrue(handleNames.contains(FRANK));
+            }
         }
     }
     

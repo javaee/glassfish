@@ -41,6 +41,7 @@ package org.glassfish.hk2.configuration.tests.hierarchical;
 
 import java.util.List;
 
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.configuration.api.ChildInject;
 import org.glassfish.hk2.configuration.api.ConfiguredBy;
 
@@ -56,6 +57,9 @@ public class BService extends NamedService {
     @ChildInject
     private List<DService> dServices;
     
+    @ChildInject
+    private List<ServiceHandle<DService>> dServicesAsHandles;
+    
     @ChildInject(".dave")
     private DService dave;
     
@@ -65,6 +69,10 @@ public class BService extends NamedService {
     
     public List<DService> getDServices() {
         return dServices;
+    }
+    
+    public List<ServiceHandle<DService>> getDServicesAsHandles() {
+        return dServicesAsHandles;
     }
     
     public DService getDave() {
