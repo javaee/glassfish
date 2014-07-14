@@ -87,6 +87,8 @@ public class ChildInjectResolverImpl implements InjectionResolver<ChildInject> {
             // We give up, ask the normal resolver
             return systemResolver.resolve(injectee, root);
         }
+        
+        // Need to get the real descriptor, not the seed
         parentDescriptor = configuredByContext.getWorkingOn();
         if (parentDescriptor == null) {
             // We give up, ask the normal resolver
@@ -106,11 +108,36 @@ public class ChildInjectResolverImpl implements InjectionResolver<ChildInject> {
         prefixName = prefixName + childInject.value();
         
         boolean isList = false;
+        boolean isHandle = false;
         if (List.class.equals(requiredClass) && (requiredType instanceof ParameterizedType)) {
             isList = true;
             ParameterizedType pt = (ParameterizedType) requiredType;
             
             // Replace the required type
+            requiredType = pt.getActualTypeArguments()[0];
+            requiredClass = ReflectionHelper.getRawClass(requiredType);
+            if (requiredClass == null) {
+                return systemResolver.resolve(injectee, root);
+            }
+            
+            if (ServiceHandle.class.equals(requiredClass) && (requiredType instanceof ParameterizedType)) {
+                isHandle = true;
+                pt = (ParameterizedType) requiredType;
+                
+                // Replace the required type... again
+                requiredType = pt.getActualTypeArguments()[0];
+                requiredClass = ReflectionHelper.getRawClass(requiredType);
+                if (requiredClass == null) {
+                    return systemResolver.resolve(injectee, root);
+                }
+            }
+            
+        }
+        else if (ServiceHandle.class.equals(requiredClass) && (requiredType instanceof ParameterizedType)) {
+            isHandle = true;
+            ParameterizedType pt = (ParameterizedType) requiredType;
+            
+            // Replace the required type... again, again
             requiredType = pt.getActualTypeArguments()[0];
             requiredClass = ReflectionHelper.getRawClass(requiredType);
             if (requiredClass == null) {
@@ -124,7 +151,12 @@ public class ChildInjectResolverImpl implements InjectionResolver<ChildInject> {
             ArrayList<Object> retVal = new ArrayList<Object>(matches.size());
             
             for (ActiveDescriptor<?> match : matches) {
-                retVal.add(locator.getServiceHandle(match).getService());
+                if (isHandle) {
+                    retVal.add(locator.getServiceHandle(match));
+                }
+                else {
+                    retVal.add(locator.getServiceHandle(match).getService());
+                }
             }
             
             return retVal;
@@ -132,6 +164,12 @@ public class ChildInjectResolverImpl implements InjectionResolver<ChildInject> {
         
         if (matches.isEmpty()) {
             throw new IllegalStateException("Could not find a child injection point for " + injectee);
+        }
+        
+        
+        
+        if (isHandle) {
+            return locator.getServiceHandle(matches.get(0));
         }
         
         return locator.getServiceHandle(matches.get(0)).getService();

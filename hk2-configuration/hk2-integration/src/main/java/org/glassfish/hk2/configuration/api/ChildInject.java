@@ -73,7 +73,10 @@ import org.glassfish.hk2.api.InjectionPointIndicator;
  * as per a normal injection point, but the chosen instance
  * of that type will have a name that starts with the name
  * of the parent ActiveDescriptor appended with the value
- * field of this annotation
+ * field of this annotation.  If the injection point is a
+ * {@link ServiceHandle} then the generic type of the
+ * {@link ServiceHandle} will be used and the ServiceHandle
+ * will be injected into the service
  * 
  * @author jwells
  *

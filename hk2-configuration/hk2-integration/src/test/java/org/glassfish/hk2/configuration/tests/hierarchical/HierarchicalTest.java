@@ -97,7 +97,7 @@ public class HierarchicalTest {
      *     </b-bean>
      *   </b-beans>
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testBasicHierarchy() {
         BBeans bbeans = new BBeans();
         
@@ -207,10 +207,13 @@ public class HierarchicalTest {
                 Assert.assertTrue(aliceDServicesNames.contains(ED));
                 Assert.assertTrue(aliceDServicesNames.contains(FRANK));
                 
-                Assert.assertTrue(handleNames.contains(DAVE));
-                Assert.assertTrue(handleNames.contains(ED));
-                Assert.assertTrue(handleNames.contains(FRANK));
+                Assert.assertTrue(handleNames.contains(getDName(alice, DAVE)));
+                Assert.assertTrue(handleNames.contains(getDName(alice, ED)));
+                Assert.assertTrue(handleNames.contains(getDName(alice, FRANK)));
             }
+            
+            Assert.assertNotNull(aliceService.getDaveHandle());
+            Assert.assertNotNull(aliceService.getDaveHandle().getService());
         }
         
         {
@@ -261,9 +264,12 @@ public class HierarchicalTest {
                 Assert.assertTrue(giannaDServicesNames.contains(DAVE));
                 Assert.assertTrue(giannaDServicesNames.contains(FRANK));
                 
-                Assert.assertTrue(handleNames.contains(DAVE));
-                Assert.assertTrue(handleNames.contains(FRANK));
+                Assert.assertTrue(handleNames.contains(getDName(gianna, DAVE)));
+                Assert.assertTrue(handleNames.contains(getDName(gianna, FRANK)));
             }
+            
+            Assert.assertNotNull(giannaService.getDaveHandle());
+            Assert.assertNotNull(giannaService.getDaveHandle().getService());
         }
     }
     

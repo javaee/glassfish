@@ -63,6 +63,9 @@ public class BService extends NamedService {
     @ChildInject(".dave")
     private DService dave;
     
+    @ChildInject(".dave")
+    private ServiceHandle<DService> daveHandle;
+    
     public List<CService> getCServices() {
         return cServices;
     }
@@ -77,5 +80,9 @@ public class BService extends NamedService {
     
     public DService getDave() {
         return dave;
+    }
+    
+    public ServiceHandle<DService> getDaveHandle() {
+        return daveHandle;
     }
 }
