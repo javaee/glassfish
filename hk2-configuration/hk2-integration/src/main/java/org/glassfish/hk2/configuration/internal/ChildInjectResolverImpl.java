@@ -39,24 +39,117 @@
  */
 package org.glassfish.hk2.configuration.internal;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.api.ChildInject;
+import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
 /**
  * @author jwells
  *
  */
 public class ChildInjectResolverImpl implements InjectionResolver<ChildInject> {
+    @Inject
+    private ServiceLocator locator;
+    
+    @Inject
+    private InjectionResolver<Inject> systemResolver;
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.InjectionResolver#resolve(org.glassfish.hk2.api.Injectee, org.glassfish.hk2.api.ServiceHandle)
      */
     @Override
     public Object resolve(Injectee injectee, ServiceHandle<?> root) {
-        // TODO Auto-generated method stub
-        return null;
+        ActiveDescriptor<?> parentDescriptor = injectee.getInjecteeDescriptor();
+        if (parentDescriptor == null) {
+            // We give up, ask the normal resolver
+            return systemResolver.resolve(injectee, root);
+        }
+        
+        Type requiredType = injectee.getRequiredType();
+        Class<?> requiredClass = ReflectionHelper.getRawClass(requiredType);
+        if (requiredClass == null) {
+            return systemResolver.resolve(injectee, root);
+        }
+        
+        ChildInject childInject = getInjectionAnnotation(injectee.getParent(), injectee.getPosition());
+        String prefixName = parentDescriptor.getName();
+        if (prefixName == null) prefixName = "";
+        
+        prefixName = prefixName + childInject.value();
+        
+        boolean isList = false;
+        if (List.class.equals(requiredClass) && (requiredType instanceof ParameterizedType)) {
+            isList = true;
+            ParameterizedType pt = (ParameterizedType) requiredType;
+            
+            // Replace the required type
+            requiredType = pt.getActualTypeArguments()[0];
+            requiredClass = ReflectionHelper.getRawClass(requiredType);
+            if (requiredClass == null) {
+                return systemResolver.resolve(injectee, root);
+            }
+        }
+        
+        List<ActiveDescriptor<?>> matches = locator.getDescriptors(new ChildFilter(requiredType, prefixName));
+        
+        
+        if (isList) {
+            
+        }
+        
+        if (matches.isEmpty()) {
+            throw new IllegalStateException("Could not find a child injection point for " + injectee);
+        }
+        
+        return locator.getServiceHandle(matches.get(0)).getService();
+    }
+    
+    private static ChildInject getInjectionAnnotation(AnnotatedElement element, int position) {
+        if (element instanceof Field) {
+            Field field = (Field) element;
+            
+            return field.getAnnotation(ChildInject.class);
+        }
+        
+        Annotation annotations[];
+        if (element instanceof Constructor) {
+            Constructor<?> constructor = (Constructor<?>) element;
+            
+            annotations = constructor.getParameterAnnotations()[position];
+        }
+        else if (element instanceof Method) {
+            Method method = (Method) element;
+            
+            annotations = method.getParameterAnnotations()[position];
+        }
+        else {
+            throw new IllegalArgumentException();
+        }
+        
+        for (Annotation annotation : annotations) {
+            if (annotation.annotationType().equals(ChildInject.class)) {
+                return (ChildInject) annotation;
+            }
+        }
+        
+        throw new IllegalArgumentException();
     }
 
     /* (non-Javadoc)
@@ -73,6 +166,45 @@ public class ChildInjectResolverImpl implements InjectionResolver<ChildInject> {
     @Override
     public boolean isMethodParameterIndicator() {
         return true;
+    }
+    
+    private static class ChildFilter implements IndexedFilter {
+        private final String requiredType;
+        private final String requiredPrefix;
+        
+        private ChildFilter(Type type, String prefix) {
+            Class<?> requiredTypeClass = ReflectionHelper.getRawClass(type);
+            
+            requiredType = requiredTypeClass.getName();
+            requiredPrefix = prefix;
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.api.Filter#matches(org.glassfish.hk2.api.Descriptor)
+         */
+        @Override
+        public boolean matches(Descriptor d) {
+            if (d.getName() == null) return false;
+            
+            return (d.getName().startsWith(requiredPrefix));
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.api.IndexedFilter#getAdvertisedContract()
+         */
+        @Override
+        public String getAdvertisedContract() {
+            return requiredType;
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.api.IndexedFilter#getName()
+         */
+        @Override
+        public String getName() {
+            return null;
+        }
+        
     }
 
 }

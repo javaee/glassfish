@@ -42,28 +42,42 @@
 -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.glassfish.hk2</groupId>
-        <artifactId>hk2-parent</artifactId>
+        <artifactId>hk2-testing</artifactId>
         <version>2.3.0-b10-SNAPSHOT</version>
     </parent>
 
-    <modelVersion>4.0.0</modelVersion>
-    
-    <artifactId>hk2-testing</artifactId>
-    <packaging>pom</packaging>
-    <name>Utilities for testing with HK2</name>
-    
-    <modules>
-        <module>hk2-junitrunner</module>
-        <module>ant</module>
-        <module>hk2-locator-extras</module>
-        <module>hk2-testng</module>
-        <module>hk2-runlevel-extras</module>
-        <module>hk2-locator-no-proxies</module>
-        <module>hk2-locator-no-proxies2</module>
-        <module>interceptor-events</module>
-        <module>hk2-mockito</module>
-        <module>collections</module>
-    </modules>
+    <artifactId>hk2-collections-test</artifactId>
+    <name>Collections Tests</name>
+    <description>Generic tests for common Collection implementations</description>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.glassfish.hk2</groupId>
+                <artifactId>osgiversion-maven-plugin</artifactId>
+            </plugin>            
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>bundle-manifest</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>manifest</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+    </dependencies>
 </project>
