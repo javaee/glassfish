@@ -54,17 +54,25 @@ public class BService extends NamedService {
     @ChildInject(".c-beans.")
     private List<CService> cServices;
     
-    @ChildInject
-    private List<DService> dServices;
+    private final List<DService> dServices;
     
-    @ChildInject
+    private BService(@ChildInject List<DService> dServices) {
+        this.dServices = dServices;
+    }
+    
+    // Set by method
     private List<ServiceHandle<DService>> dServicesAsHandles;
-    
-    @ChildInject(".dave")
     private DService dave;
     
     @ChildInject(".dave")
     private ServiceHandle<DService> daveHandle;
+    
+    @SuppressWarnings("unused")
+    private void myInitializer(@ChildInject List<ServiceHandle<DService>> dServicesAsHandles,
+                               @ChildInject DService dave) {
+        this.dServicesAsHandles = dServicesAsHandles;
+        this.dave = dave;
+    }
     
     public List<CService> getCServices() {
         return cServices;

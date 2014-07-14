@@ -166,8 +166,6 @@ public class ChildInjectResolverImpl implements InjectionResolver<ChildInject> {
             throw new IllegalStateException("Could not find a child injection point for " + injectee);
         }
         
-        
-        
         if (isHandle) {
             return locator.getServiceHandle(matches.get(0));
         }
