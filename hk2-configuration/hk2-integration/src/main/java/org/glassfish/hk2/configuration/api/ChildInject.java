@@ -62,6 +62,12 @@ import org.glassfish.hk2.api.InjectionPointIndicator;
  * will contain all of the children services whose
  * name starts with the name of the parent ActiveDescriptor
  * appended with the value field of this annotation.
+ * If the generic type of the {@link java.util.List}
+ * is of type {@link ServiceHandle} then the list
+ * injected will contain ServiceHandles of the generic
+ * type of the {@link ServiceHandle}, which in effect
+ * makes the {@link java.util.List} be lazy about
+ * instantiating the underlying services.
  * <p>
  * If the injection point is NOT a list then the type is
  * as per a normal injection point, but the chosen instance

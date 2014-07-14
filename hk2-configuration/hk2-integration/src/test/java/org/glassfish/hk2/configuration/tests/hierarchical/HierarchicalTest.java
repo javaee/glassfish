@@ -96,7 +96,7 @@ public class HierarchicalTest {
      *     </b-bean>
      *   </b-beans>
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testBasicHierarchy() {
         BBeans bbeans = new BBeans();
         

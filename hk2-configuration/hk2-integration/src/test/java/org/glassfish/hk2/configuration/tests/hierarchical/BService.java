@@ -56,7 +56,7 @@ public class BService extends NamedService {
     @ChildInject
     private List<DService> dServices;
     
-    @ChildInject(".Dave")
+    @ChildInject(".dave")
     private DService dave;
     
     public List<CService> getCServices() {

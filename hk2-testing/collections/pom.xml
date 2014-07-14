@@ -49,7 +49,7 @@
         <version>2.3.0-b10-SNAPSHOT</version>
     </parent>
 
-    <artifactId>hk2-collections-test</artifactId>
+    <artifactId>hk2-collections-tests</artifactId>
     <name>Collections Tests</name>
     <description>Generic tests for common Collection implementations</description>
 

@@ -46,9 +46,11 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
@@ -64,12 +66,16 @@ import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
  * @author jwells
  *
  */
+@Singleton
 public class ChildInjectResolverImpl implements InjectionResolver<ChildInject> {
     @Inject
     private ServiceLocator locator;
     
     @Inject
     private InjectionResolver<Inject> systemResolver;
+    
+    @Inject
+    private ConfiguredByContext configuredByContext;
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.InjectionResolver#resolve(org.glassfish.hk2.api.Injectee, org.glassfish.hk2.api.ServiceHandle)
@@ -77,6 +83,11 @@ public class ChildInjectResolverImpl implements InjectionResolver<ChildInject> {
     @Override
     public Object resolve(Injectee injectee, ServiceHandle<?> root) {
         ActiveDescriptor<?> parentDescriptor = injectee.getInjecteeDescriptor();
+        if (parentDescriptor == null) {
+            // We give up, ask the normal resolver
+            return systemResolver.resolve(injectee, root);
+        }
+        parentDescriptor = configuredByContext.getWorkingOn();
         if (parentDescriptor == null) {
             // We give up, ask the normal resolver
             return systemResolver.resolve(injectee, root);
@@ -109,9 +120,14 @@ public class ChildInjectResolverImpl implements InjectionResolver<ChildInject> {
         
         List<ActiveDescriptor<?>> matches = locator.getDescriptors(new ChildFilter(requiredType, prefixName));
         
-        
         if (isList) {
+            ArrayList<Object> retVal = new ArrayList<Object>(matches.size());
             
+            for (ActiveDescriptor<?> match : matches) {
+                retVal.add(locator.getServiceHandle(match).getService());
+            }
+            
+            return retVal;
         }
         
         if (matches.isEmpty()) {

@@ -42,6 +42,7 @@ package org.glassfish.hk2.configuration.api;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.ManagerUtilities;
+import org.glassfish.hk2.configuration.internal.ChildInjectResolverImpl;
 import org.glassfish.hk2.configuration.internal.ConfigurationListener;
 import org.glassfish.hk2.configuration.internal.ConfigurationValidationService;
 import org.glassfish.hk2.configuration.internal.ConfiguredByContext;
@@ -76,7 +77,8 @@ public class ConfigurationUtilities {
                 ConfiguredByContext.class,
                 ConfigurationValidationService.class,
                 ConfiguredByInjectionResolver.class,
-                ConfigurationListener.class);
+                ConfigurationListener.class,
+                ChildInjectResolverImpl.class);
         
         // Creates demand, starts the thing off
         locator.getService(ConfigurationListener.class);
