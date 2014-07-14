@@ -107,7 +107,7 @@ DOWNLOAD_DIR=$WORKSPACE/bundles
 # but can be any of : all, jsp, taglib, el, servlet, web-container, security, http-connector, comet, misc, weblogicDD, clustering, ha, embedded-all
 TARGET=all
 
-while getopts u:s:d: flag; do
+while getopts u:s:d:t: flag; do
     case $flag in
         u)
             download=1;
