@@ -41,7 +41,8 @@ package org.glassfish.hk2.configuration.hub.xml.dom.integration.e2etests;
 
 import java.beans.PropertyVetoException;
 import java.net.URL;
-
+import java.util.HashSet;
+import java.util.List;
 
 import org.glassfish.hk2.configuration.api.ConfigurationUtilities;
 import org.junit.Assert;
@@ -123,6 +124,17 @@ public class E2ETest extends HK2Runner {
         CService bob = testLocator.getService(CService.class, BOB_INSTANCE_NAME);
         Assert.assertNotNull(bob);
         Assert.assertEquals(BOB, bob.getName());
+        
+        List<CService> children = bService.getChildren();
+        Assert.assertEquals(2, children.size());
+        
+        HashSet<String> names = new HashSet<String>();
+        for (CService child : children) {
+            names.add(child.getName());
+        }
+        
+        Assert.assertTrue(names.contains(ALICE));
+        Assert.assertTrue(names.contains(ALICE));
     }
     
     /**

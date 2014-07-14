@@ -39,6 +39,9 @@
  */
 package org.glassfish.hk2.configuration.hub.xml.dom.integration.e2etests;
 
+import java.util.List;
+
+import org.glassfish.hk2.configuration.api.ChildInject;
 import org.glassfish.hk2.configuration.api.Configured;
 import org.glassfish.hk2.configuration.api.ConfiguredBy;
 import org.jvnet.hk2.annotations.Service;
@@ -52,8 +55,15 @@ public class BService {
     @Configured
     private String parameter;
     
+    @ChildInject
+    private List<CService> children;
+    
     public String getParameter() {
         return parameter;
+    }
+    
+    public List<CService> getChildren() {
+        return children;
     }
 
 }
