@@ -48,8 +48,10 @@ import javax.inject.Named;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
 import static org.glassfish.hk2.api.InjectionResolver.SYSTEM_RESOLVER_NAME;
+import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.testing.hk2mockito.HK2MockitoSpyInjectionResolver;
 import org.jvnet.testing.hk2mockito.SC;
 
 /**
@@ -65,17 +67,40 @@ public class SpyService {
     private final MemberCache memberCache;
     private final ParentCache parentCache;
     private final ObjectFactory objectFactory;
+    private final IterableProvider<InjectionResolver> resolvers;
     private final InjectionResolver<Inject> systemResolver;
 
     @Inject
     SpyService(MemberCache memberCache,
             ParentCache parentCache,
             ObjectFactory objectFactory,
+            IterableProvider<InjectionResolver> resolvers,
             @Named(SYSTEM_RESOLVER_NAME) InjectionResolver systemResolver) {
         this.memberCache = memberCache;
         this.parentCache = parentCache;
         this.objectFactory = objectFactory;
+        this.resolvers = resolvers;
         this.systemResolver = systemResolver;
+
+    }
+
+    public Object resolve(Injectee injectee, ServiceHandle<?> root) {
+        Object result = null;
+
+        for (InjectionResolver resolver : resolvers) {
+
+            if (resolver.getClass().isAssignableFrom(HK2MockitoSpyInjectionResolver.class)) {
+                continue;
+            }
+
+            result = resolver.resolve(injectee, root);
+
+            if (result != null) {
+                break;
+            }
+        }
+
+        return result;
     }
 
     public Object findOrCreateSUT(Injectee injectee, ServiceHandle<?> root) {
@@ -87,7 +112,7 @@ public class SpyService {
             memberCache.add(parentType);
         }
 
-        return objectFactory.newSpy(systemResolver.resolve(injectee, root));
+        return objectFactory.newSpy(resolve(injectee, root));
     }
 
     public Object findOrCreateSC(SC sc, Injectee injectee, ServiceHandle<?> root) {
@@ -113,7 +138,7 @@ public class SpyService {
         }
 
         if (service == null) {
-            service = objectFactory.newSpy(systemResolver.resolve(injectee, root));
+            service = objectFactory.newSpy(resolve(injectee, root));
             cache.put(executableKey, service);
             cache.put(fieldKey, service);
         }
@@ -123,10 +148,16 @@ public class SpyService {
 
     public Object createOrFindService(Injectee injectee, ServiceHandle<?> root) {
         Member member = (Member) injectee.getParent();
-        Type parentType = member.getDeclaringClass();
+        Class<?> parentType = member.getDeclaringClass();
         Type requiredType = injectee.getRequiredType();
+        Object service;
 
-        Object service = systemResolver.resolve(injectee, root);
+        if (InjectionResolver.class.isAssignableFrom(parentType)) {
+            service = systemResolver.resolve(injectee, root);
+        } else {
+            service = resolve(injectee, root);
+        }
+
         Type serviceParent = parentCache.get(parentType);
 
         if (serviceParent == null) {
