@@ -123,6 +123,7 @@ while getopts u:s:d: flag; do
             ;;
         t)
             TARGET=$OPTARG
+            ;;
         \?)
             echo "Illegal options"
             exit
