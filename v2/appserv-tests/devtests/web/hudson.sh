@@ -159,7 +159,7 @@ cd $APS_HOME
 echo "AS_ADMIN_PASSWORD=" > temppwd
 $S1AS_HOME/bin/asadmin --user admin --passwordfile $APS_HOME/config/adminpassword.txt create-domain --adminport ${WEBTIER_ADMIN_PORT} --domainproperties jms.port=${WEBTIER_JMS_PORT}:domain.jmxPort=${WEBTIER_JMX_PORT}:orb.listener.port=${WEBTIER_ORB_PORT}:http.ssl.port=${WEBTIER_HTTPS_PORT}:orb.ssl.port=${WEBTIER_ORB_SSL_PORT}:orb.mutualauth.port=${WEBTIER_ORB_SSL_MUTUALAUTH_PORT} --instanceport ${WEBTIER_HTTP_PORT} domain1
 
-if [ `uname`="Linux" ]; then
+ if [ `uname | grep -n  'Linux' | wc -l` -eq 1 ] ; then
     HOST="localhost.localdomain"
 else
     HOST="localhost"
