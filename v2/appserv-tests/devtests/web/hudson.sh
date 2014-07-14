@@ -103,6 +103,9 @@ download=
 GLASSFISH_DOWNLOAD_URL="http://gf-hudson.us.oracle.com/hudson/job/gf-trunk-build-dev/lastSuccessfulBuild/artifact/bundles/glassfish.zip"
 SKIP_NAME=
 DOWNLOAD_DIR=$WORKSPACE/bundles
+# default target is all 
+# but can be any of : all, jsp, taglib, el, servlet, web-container, security, http-connector, comet, misc, weblogicDD, clustering, ha, embedded-all
+TARGET=all
 
 while getopts u:s:d: flag; do
     case $flag in
@@ -118,6 +121,8 @@ while getopts u:s:d: flag; do
         d) 
             DOWNLOAD_DIR=$OPTARG
             ;;
+        t)
+            TARGET=$OPTARG
         \?)
             echo "Illegal options"
             exit
@@ -203,7 +208,7 @@ cd $APS_HOME/devtests/web
 cp build.xml build.xml.orig
 ./exclude-jobs.sh $SKIP_NAME
 
-ant all
+ant $TARGET
 
 #restore original build.xml 
 mv build.xml.orig build.xml
