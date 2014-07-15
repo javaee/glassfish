@@ -37,71 +37,16 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.testing.hk2mockito;
-
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Member;
-import java.lang.reflect.Type;
-import javax.inject.Inject;
-import org.glassfish.hk2.api.Injectee;
-import org.glassfish.hk2.api.InjectionResolver;
-import org.glassfish.hk2.api.Rank;
-import org.glassfish.hk2.api.ServiceHandle;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.testing.hk2mockito.internal.ParentCache;
-import org.jvnet.testing.hk2mockito.internal.SpyService;
+package org.jvnet.testing.hk2mockito.fixture.assisted;
 
 /**
- * This class is a custom resolver that creates or finds services and wraps in a spy.
  *
- * @author Sharmarke Aden
+ * @author F
  */
-@Rank(Integer.MAX_VALUE)
-@Service
-public class HK2MockitoSpyInjectionResolver implements InjectionResolver<Inject> {
+public class CustomService {
 
-    private final SpyService spyService;
-    private final ParentCache parentCache;
-
-    @Inject
-    HK2MockitoSpyInjectionResolver(SpyService spyService,
-            ParentCache parentCache) {
-        this.spyService = spyService;
-        this.parentCache = parentCache;
-    }
-
-    @Override
-    public Object resolve(Injectee injectee, ServiceHandle<?> root) {
-        AnnotatedElement parent = injectee.getParent();
-        Member member = (Member) parent;
-        Type requiredType = injectee.getRequiredType();
-        Type parentType = member.getDeclaringClass();
-
-        SUT sut = parent.getAnnotation(SUT.class);
-        SC sc = parent.getAnnotation(SC.class);
-        Object service;
-
-        parentCache.put(requiredType, parentType);
-
-        if (sut != null) {
-            service = spyService.findOrCreateSUT(injectee, root);
-        } else if (sc != null) {
-            service = spyService.findOrCreateSC(sc, injectee, root);
-        } else {
-            service = spyService.createOrFindService(injectee, root);
-        }
-
-        return service;
-    }
-
-    @Override
-    public boolean isConstructorParameterIndicator() {
-        return false;
-    }
-
-    @Override
-    public boolean isMethodParameterIndicator() {
-        return false;
+    public String greet() {
+        return "Hello!";
     }
 
 }
