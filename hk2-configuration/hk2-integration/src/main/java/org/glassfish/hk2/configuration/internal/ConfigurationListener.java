@@ -393,16 +393,16 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
                 }
             }
             else if (Change.ChangeCategory.MODIFY_INSTANCE.equals(change.getChangeCategory())) {
-                String addedInstanceKey = change.getInstanceKey();
-                Object addedInstanceBean = change.getInstanceValue();
+                String modifiedInstanceKey = change.getInstanceKey();
+                Object modifiedInstanceBean = change.getInstanceValue();
                 
                 List<ActiveDescriptor<?>> typeDescriptors = locator.getDescriptors(
-                        new NoNameTypeFilter(locator, change.getChangeType().getName(), addedInstanceKey));
+                        new NoNameTypeFilter(locator, change.getChangeType().getName(), modifiedInstanceKey));
                 
                 for (ActiveDescriptor<?> typeDescriptor : typeDescriptors) {
                     modifyInstanceDescriptor(typeDescriptor,
-                            addedInstanceKey,
-                            addedInstanceBean,
+                            modifiedInstanceKey,
+                            modifiedInstanceBean,
                             change.getChangeType().getName(),
                             change.getModifiedProperties());
                 }
@@ -416,9 +416,9 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
                 }
             }
             else if (Change.ChangeCategory.REMOVE_INSTANCE.equals(change.getChangeCategory())) {
-                String addedInstanceKey = change.getInstanceKey();
+                String removedInstanceKey = change.getInstanceKey();
                 
-                List<ActiveDescriptor<?>> removeDescriptors = locator.getDescriptors(new NoNameTypeFilter(locator, change.getChangeType().getName(), addedInstanceKey));
+                List<ActiveDescriptor<?>> removeDescriptors = locator.getDescriptors(new NoNameTypeFilter(locator, change.getChangeType().getName(), removedInstanceKey));
                 
                 for (ActiveDescriptor<?> removeDescriptor : removeDescriptors) {
                     config.addUnbindFilter(BuilderHelper.createSpecificDescriptorFilter(removeDescriptor));
