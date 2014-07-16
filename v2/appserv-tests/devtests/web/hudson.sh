@@ -99,12 +99,30 @@ kill_processes() {
     (ps -aef | grep derby | grep -v grep | awk '{print $2}' | xargs $KILL > /dev/null 2>&1) || true
 }
 
+is_target(){
+    case "$1" in
+        "jsp" | \
+        "taglib" | \
+        "el" | \
+        "servlet" | \
+        "web-container" | \
+        "http-connector" | \
+        "comet" | \
+        "misc" | \
+        "weblogicDD" | \
+        "clustering" | \
+        "ha" | \
+        "embedded-all" | \
+        "all") echo 1;;
+        *) echo 0;;
+    esac
+}
+
 download=
 GLASSFISH_DOWNLOAD_URL="http://gf-hudson.us.oracle.com/hudson/job/gf-trunk-build-dev/lastSuccessfulBuild/artifact/bundles/glassfish.zip"
 SKIP_NAME=
 DOWNLOAD_DIR=$WORKSPACE/bundles
 # default target is all 
-# but can be any of : all, jsp, taglib, el, servlet, web-container, security, http-connector, comet, misc, weblogicDD, clustering, ha, embedded-all
 TARGET=all
 
 while getopts u:s:d:t: flag; do
@@ -123,6 +141,12 @@ while getopts u:s:d:t: flag; do
             ;;
         t)
             TARGET=$OPTARG
+            if [ `is_target $TARGET` -eq 0 ] ;  then
+               echo "Unknown target" 
+               exit
+            elif [ "$TARGET" != "all" ] ; then
+                TARGET="$TARGET finish-report"
+            fi
             ;;
         \?)
             echo "Illegal options"
@@ -159,7 +183,7 @@ cd $APS_HOME
 echo "AS_ADMIN_PASSWORD=" > temppwd
 $S1AS_HOME/bin/asadmin --user admin --passwordfile $APS_HOME/config/adminpassword.txt create-domain --adminport ${WEBTIER_ADMIN_PORT} --domainproperties jms.port=${WEBTIER_JMS_PORT}:domain.jmxPort=${WEBTIER_JMX_PORT}:orb.listener.port=${WEBTIER_ORB_PORT}:http.ssl.port=${WEBTIER_HTTPS_PORT}:orb.ssl.port=${WEBTIER_ORB_SSL_PORT}:orb.mutualauth.port=${WEBTIER_ORB_SSL_MUTUALAUTH_PORT} --instanceport ${WEBTIER_HTTP_PORT} domain1
 
- if [ `uname | grep -n  'Linux' | wc -l` -eq 1 ] ; then
+if [ `uname | grep -n  'Linux' | wc -l` -eq 1 ] ; then
     HOST="localhost.localdomain"
 else
     HOST="localhost"
