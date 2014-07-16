@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -81,41 +81,48 @@ public class WebTest {
     }
 
     private void invoke() throws Exception {
+        // just consume the first result
+        String lastLine = lastLine("/myurl");
+
+        lastLine = lastLine("/myurl?result=1");
+        if (EXPECTED_RESPONSE.equals(lastLine)) {
+            stat.addStatus(TEST_NAME, stat.PASS);
+        } else {
+            System.out.println("Wrong response. Expected: " + 
+                    EXPECTED_RESPONSE + ", received: " + lastLine);
+            stat.addStatus(TEST_NAME, stat.FAIL);
+        }
+    }
+
+    private String lastLine(String path) throws IOException {
         Socket sock = null;
         OutputStream os = null;
         InputStream is = null;
+        String lastLine = null;
         BufferedReader br = null;
-        String cookie = null;
 
         try {
             sock = new Socket(host, new Integer(port).intValue());
             os = sock.getOutputStream();
-            String get = "GET " + contextRoot + "/myurl HTTP/1.0\n";
+            String get = "GET " + contextRoot + path + " HTTP/1.0\n";
             System.out.print(get);
             os.write(get.getBytes());
             os.write("\r\n".getBytes());
-        
+
             is = sock.getInputStream();
             br = new BufferedReader(new InputStreamReader(is));
-
             String line = null;
-            String lastLine = null;
             while ((line = br.readLine()) != null) {
                 System.out.println(line);
                 lastLine = line;
             }
-            if (EXPECTED_RESPONSE.equals(lastLine)) {
-                stat.addStatus(TEST_NAME, stat.PASS);
-            } else {
-                System.out.println("Wrong response. Expected: " + 
-                        EXPECTED_RESPONSE + ", received: " + lastLine);
-                stat.addStatus(TEST_NAME, stat.FAIL);
-            }
         } finally {
-            close(sock);
             close(os);
             close(is);
             close(br);
+            close(sock);
+
+            return lastLine;
         }
     }
 

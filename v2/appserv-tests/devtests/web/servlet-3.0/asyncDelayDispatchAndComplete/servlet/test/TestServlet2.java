@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,13 +47,13 @@ import javax.servlet.http.*;
 
 @WebServlet(urlPatterns={"/test2"}, asyncSupported=true)
 public class TestServlet2 extends HttpServlet implements AsyncListener {
-    private static final String NAME = "text";
+    private static StringBuffer sb = new StringBuffer();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
-        addInfo(req, "S2i");
+        addInfo("S2i");
         final AsyncContext asyncContext = req.startAsync();
         asyncContext.addListener(this);
 
@@ -69,13 +69,11 @@ public class TestServlet2 extends HttpServlet implements AsyncListener {
         } catch (InterruptedException e) {
             //
         }
-        addInfo(req, "S2o");
+        addInfo("S2o");
     }
 
     public void onComplete(AsyncEvent event) throws IOException {
-        AsyncContext asyncContext = event.getAsyncContext();
-        String text = (String)asyncContext.getRequest().getAttribute(NAME);
-        asyncContext.getResponse().getWriter().println(text + "AC");
+        addInfo("AC");
     }
 
     public void onTimeout(AsyncEvent event) throws IOException {
@@ -90,12 +88,15 @@ public class TestServlet2 extends HttpServlet implements AsyncListener {
         // do nothing
     }
 
-    static void addInfo(ServletRequest req, String text) {
-        String attr = (String)req.getAttribute(NAME);
-        if (attr == null) {
-            attr = "";
-        }
-        System.out.println("--> " + attr + text);
-        req.setAttribute(NAME, attr + text);
+    static void addInfo(String text) {
+        sb.append(text);
+    }
+
+    static void clearInfo() {
+        sb.delete(0, sb.length());
+    }
+
+    static String getInfo() {
+        return sb.toString();
     }
 }

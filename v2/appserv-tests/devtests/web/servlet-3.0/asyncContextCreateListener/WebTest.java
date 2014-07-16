@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -82,22 +82,15 @@ public class WebTest {
 
     public void doTest() throws Exception {
 
+        HttpURLConnection conn = null;
         InputStream is = null;
         BufferedReader input = null;
 
         try {
-            URL url = new URL("http://" + host  + ":" + port +
-                contextRoot + "/TestServlet");
-            System.out.println("Connecting to: " + url.toString());
+            conn = getHttpURLConnection("/TestServlet");
+            conn.disconnect();
 
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.connect();
-
-            int responseCode = conn.getResponseCode();
-            if (responseCode != 200) {
-                throw new Exception("Unexpected return code: " + responseCode);
-            }
-
+            conn = getHttpURLConnection("/TestServlet?result=1");
             is = conn.getInputStream();
             input = new BufferedReader(new InputStreamReader(is));
             String response = input.readLine();
@@ -112,6 +105,25 @@ public class WebTest {
             try {
                 if (input != null) input.close();
             } catch (IOException ex) {}
+            if (conn != null) {
+                conn.disconnect();
+            }
         }
+    }
+
+    private HttpURLConnection getHttpURLConnection(String path) throws Exception {
+        URL url = new URL("http://" + host  + ":" + port +
+                contextRoot + path);
+        System.out.println("Connecting to: " + url.toString());
+
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.connect();
+
+        int responseCode = conn.getResponseCode();
+        if (responseCode != 200) {
+            throw new Exception("Unexpected return code: " + responseCode);
+        }
+
+        return conn;
     }
 }

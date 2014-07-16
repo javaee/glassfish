@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,12 +45,21 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 public class TestServlet extends HttpServlet {
+    // for testing
+    static StringBuffer sb = new StringBuffer();
 
     public void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
         if (!req.isAsyncSupported()) {
             throw new ServletException("Async not supported when it should");
+        }
+
+        if ("1".equals(req.getParameter("result"))) {
+            String result = sb.toString();
+            sb.delete(0, sb.length());
+            res.getWriter().println(result);
+            return;
         }
 
         AsyncContext ac = req.startAsync(req, res);

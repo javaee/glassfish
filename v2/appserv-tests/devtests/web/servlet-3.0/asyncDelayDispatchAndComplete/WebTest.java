@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -81,19 +81,10 @@ public class WebTest {
     }
 
     public void doTest() throws Exception {
-     
-        URL url = new URL("http://" + host  + ":" + port
-                          + contextRoot + "/test");
-        System.out.println("Connecting to: " + url.toString());
+        HttpURLConnection conn = getHttpURLConnection("/test");
+        conn.disconnect();
 
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setReadTimeout(10000);
-        conn.connect();
-        if (conn.getResponseCode() != 200) {
-            throw new Exception("Unexpected return code: " +
-                                conn.getResponseCode());
-        }
-
+        conn = getHttpURLConnection("/test?result=1");
         InputStream is = null;
         BufferedReader input = null;
         String line = null;
@@ -121,11 +112,34 @@ public class WebTest {
             } catch(IOException ioe) {
                 // ignore
             }
+            try {
+                if (conn != null) {
+                    conn.disconnect();
+                }
+            } catch(Exception ex) {
+                // ignore
+            }
         }
 
         if (line == null) {
             throw new Exception("Missing or unexpected response body, " +
                                 "expected: " + EXPECTED_RESPONSE);
         }
+    }
+
+    private HttpURLConnection getHttpURLConnection(String path) throws Exception {
+        URL url = new URL("http://" + host  + ":" + port
+                          + contextRoot + path);
+        System.out.println("Connecting to: " + url.toString());
+
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setReadTimeout(10000);
+        conn.connect();
+        if (conn.getResponseCode() != 200) {
+            throw new Exception("Unexpected return code: " +
+                                conn.getResponseCode());
+        }
+
+        return conn;
     }
 }

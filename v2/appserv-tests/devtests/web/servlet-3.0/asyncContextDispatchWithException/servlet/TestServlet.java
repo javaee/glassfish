@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -51,8 +51,16 @@ import javax.servlet.http.HttpServletResponse;
 
 @WebServlet(urlPatterns={"/myurl"}, asyncSupported=true)
 public class TestServlet extends HttpServlet implements AsyncListener {
+    static StringBuffer sb = new StringBuffer();
+
     public void service(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
+
+        if ("1".equals(req.getParameter("result"))) {
+            res.getWriter().println(sb.toString());
+            sb.delete(0, sb.length());
+            return;
+        }
 
         AsyncContext ac = req.startAsync();
         ac.addListener(this);
@@ -60,7 +68,7 @@ public class TestServlet extends HttpServlet implements AsyncListener {
     }
 
     public void onComplete(AsyncEvent event) throws IOException {
-        event.getAsyncContext().getResponse().getWriter().println(", onComplete");
+        sb.append(", onComplete");
     }
 
     public void onTimeout(AsyncEvent event) throws IOException {

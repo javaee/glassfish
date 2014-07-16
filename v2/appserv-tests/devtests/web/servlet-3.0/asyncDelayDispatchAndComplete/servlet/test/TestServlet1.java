@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -53,7 +53,14 @@ public class TestServlet1 extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
-        TestServlet2.addInfo(req, "S1i");
+        if ("1".equals(req.getParameter("result"))) {
+            String info = TestServlet2.getInfo();
+            TestServlet2.clearInfo();
+            System.out.println(info);
+            res.getWriter().println(info);
+            return;
+        }
+        TestServlet2.addInfo("S1i");
         final AsyncContext asyncContext = req.startAsync();
         asyncContext.dispatch("/test2");
 
@@ -62,6 +69,6 @@ public class TestServlet1 extends HttpServlet {
         } catch (InterruptedException e) {
             //
         }
-        TestServlet2.addInfo(req, "S1o");
+        TestServlet2.addInfo("S1o");
     }
 }

@@ -48,6 +48,6 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/errorpage")
 public class ErrorPageServlet extends HttpServlet {
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
-        res.getWriter().write("Error");
+        TestServlet.sb.append("Error");
     }
 }

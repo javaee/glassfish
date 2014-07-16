@@ -46,9 +46,16 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 public class TestServlet extends HttpServlet implements AsyncListener {
+    private static StringBuffer sb = new StringBuffer();
 
     public void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
+
+        if ("1".equals(req.getParameter("result"))) {
+            res.getWriter().println(sb.toString());
+            sb.delete(0, sb.length());
+            return;
+        }
 
         if (!req.isAsyncSupported()) {
             throw new ServletException("Async not supported when it should");
@@ -81,8 +88,7 @@ public class TestServlet extends HttpServlet implements AsyncListener {
     }
 
     public void onComplete(AsyncEvent event) throws IOException {
-        event.getAsyncContext().getResponse().getWriter().println(
-            "onComplete");
+        sb.append("onComplete");
     }
 
     public void onTimeout(AsyncEvent event) throws IOException {
@@ -94,8 +100,7 @@ public class TestServlet extends HttpServlet implements AsyncListener {
     }
 
     public void onStartAsync(AsyncEvent event) throws IOException {
-        event.getAsyncContext().getResponse().getWriter().print(
-            "onStartAsync,");
+        sb.append("onStartAsync,");
         /*
          * ServletRequest#startAsync clears the list of AsyncListener
          * instances registered with the AsyncContext - after calling
