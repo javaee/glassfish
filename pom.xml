@@ -661,6 +661,7 @@
                         ${basedir}/guice-bridge/src/main/java;
                         ${basedir}/spring-bridge/src/main/java;
                         ${basedir}/hk2-testing/hk2-junitrunner/src/main/java;
+                        ${basedir}/hk2-testing/collections/src/main/java;
                         ${basedir}/hk2-inhabitant-generator/src/main/java;
                         ${basedir}/hk2-configuration/manager/src/main/java;
                         ${basedir}/hk2-configuration/hk2-integration/src/main/java;
