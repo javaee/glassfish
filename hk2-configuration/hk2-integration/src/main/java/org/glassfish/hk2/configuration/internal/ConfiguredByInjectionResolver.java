@@ -45,6 +45,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -69,7 +70,7 @@ public class ConfiguredByInjectionResolver implements
     @Inject
     private ConfiguredByContext context;
     
-    private final HashMap<ActiveDescriptor<?>, BeanInfo> beanMap = new HashMap<ActiveDescriptor<?>, BeanInfo>(); 
+    private final ConcurrentHashMap<ActiveDescriptor<?>, BeanInfo> beanMap = new ConcurrentHashMap<ActiveDescriptor<?>, BeanInfo>(); 
     
     private static String getParameterNameFromConstructor(Constructor<?> cnst, int position) {
         Annotation paramAnnotations[] = cnst.getParameterAnnotations()[position];
