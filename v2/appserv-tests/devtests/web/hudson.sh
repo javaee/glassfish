@@ -106,6 +106,7 @@ is_target(){
         "el" | \
         "servlet" | \
         "web-container" | \
+        "security" | \
         "http-connector" | \
         "comet" | \
         "misc" | \
