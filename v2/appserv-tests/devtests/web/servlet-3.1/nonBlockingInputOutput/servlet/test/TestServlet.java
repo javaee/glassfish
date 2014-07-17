@@ -63,7 +63,8 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet(urlPatterns="/test", asyncSupported=true)
 public class TestServlet extends HttpServlet {
 
-    public void service(HttpServletRequest req, HttpServletResponse res)
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
         AsyncContext ac = req.startAsync();

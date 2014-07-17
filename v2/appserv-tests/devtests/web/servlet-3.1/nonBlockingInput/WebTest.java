@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -64,6 +64,7 @@ public class WebTest {
         try {
             URL url = new URL("http://" + host + ":" + port + "/" + contextRoot + "/test?testname=abc&data=1");
             HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+            conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-type", "text/plain; charset=utf-8");
             conn.setChunkedStreamingMode(5);
             conn.setDoOutput(true);
