@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -72,31 +72,46 @@ public class WebTest {
             try {
                 s = new Socket(host, port);
                 output = s.getOutputStream();
-                try {
-                    String reqStr = "POST " + contextRoot + "/test HTTP/1.1" + CRLF;
-                    reqStr += "User-Agent: Java/1.6.0_33" + CRLF;
-                    reqStr += "Host: " + host + ":" + port + CRLF;
-                    reqStr += "Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2" + CRLF;
-                    reqStr += "Upgrade: echo" + CRLF;
-                    reqStr += "Connection: Upgrade" + CRLF;
-                    reqStr += "Content-type: application/x-www-form-urlencoded" + CRLF;
-                    reqStr += CRLF;
-                    output.write(reqStr.getBytes());
 
-                    writeChunk(output, "Hello");
-                    int sleepInSeconds = 1;
-                    System.out.format("Sleeping %d sec\n", sleepInSeconds);
-                    Thread.sleep(sleepInSeconds * 1000);
-                    writeChunk(output, "World");
-                } catch(Exception ex) {
-                    ex.printStackTrace();
-                }
+                String reqStr = "POST " + contextRoot + "/test HTTP/1.1" + CRLF;
+                reqStr += "User-Agent: Java/1.6.0_33" + CRLF;
+                reqStr += "Host: " + host + ":" + port + CRLF;
+                reqStr += "Accept: text/html, image/gif, image/jpeg, *; q=.2, */*; q=.2" + CRLF;
+                reqStr += "Upgrade: echo" + CRLF;
+                reqStr += "Connection: Upgrade" + CRLF;
+                reqStr += "Content-type: application/x-www-form-urlencoded" + CRLF;
+                reqStr += CRLF;
+                output.write(reqStr.getBytes());
+
                 input = s.getInputStream();
-                // read data without using readLine
                 int len = -1;
                 byte b[] = new byte[1024];
-                long startTime = System.currentTimeMillis();
                 StringBuilder sb = new StringBuilder();
+                //consume headers
+                System.out.println("Consuming headers");
+                boolean containsUpgrade = false;
+                while ((len = input.read(b)) != -1) {
+                    String line = new String(b, 0, len);
+                    System.out.println(line);
+                    sb.append(line);
+                    String temp = sb.toString();
+                    if (!containsUpgrade &&  temp.toLowerCase().contains("upgrade")) {
+                        containsUpgrade = true;
+                    }
+                    if (temp.contains("\r\n\r\n") || temp.contains("\n\n")) {
+                        break;
+                    }
+                }
+
+                writeChunk(output, "Hello");
+                int sleepInSeconds = 1;
+                System.out.format("Sleeping %d sec\n", sleepInSeconds);
+                Thread.sleep(sleepInSeconds * 1000);
+                writeChunk(output, "World");
+                
+                // read data without using readLine
+                long startTime = System.currentTimeMillis();
+                System.out.println("Consuming results");
                 while ((len = input.read(b)) != -1) {
                     String line = new String(b, 0, len);
                     sb.append(line);
@@ -114,7 +129,7 @@ public class WebTest {
                     line = tokens.nextToken();
                 }
 
-                expected = line.contains("/")
+                expected = containsUpgrade && line.contains("/")
                         && (line.indexOf("/") < line.indexOf("d"))
                         && line.replace("/", "").equals(EXPECTED_RESPONSE);
             } finally {
