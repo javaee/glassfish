@@ -40,12 +40,10 @@
 package org.glassfish.hk2.configuration.hub.test;
 
 import java.util.List;
-import java.util.Set;
 
 import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener;
 import org.glassfish.hk2.configuration.hub.api.Change;
-import org.glassfish.hk2.configuration.hub.api.Type;
 
 /**
  * @author jwells
@@ -56,6 +54,7 @@ public class GenericBeanDatabaseUpdateListener implements
     private BeanDatabase originalDatabase;
     private BeanDatabase lastNewDatabase;
     private List<Change> lastSetOfChanges;
+    private Object lastCommitMessage;
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener#initialize(org.glassfish.hk2.configuration.hub.api.BeanDatabase)
@@ -71,9 +70,11 @@ public class GenericBeanDatabaseUpdateListener implements
      */
     @Override
     public void databaseHasChanged(BeanDatabase newDatabase,
+            Object commitMessage,
             List<Change> changes) {
         lastNewDatabase = newDatabase;
         lastSetOfChanges = changes;
+        lastCommitMessage = commitMessage;
     }
     
     public BeanDatabase getOriginalDatabase() {
@@ -86,6 +87,10 @@ public class GenericBeanDatabaseUpdateListener implements
     
     public List<Change> getLastSetOfChanges() {
         return lastSetOfChanges;
+    }
+    
+    public Object getLastCommitMessage() {
+        return lastCommitMessage;
     }
     
     public void clear() {

@@ -82,7 +82,6 @@ import java.io.PrintStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.glassfish.hk2.configuration.hub.api.BeanDatabase;

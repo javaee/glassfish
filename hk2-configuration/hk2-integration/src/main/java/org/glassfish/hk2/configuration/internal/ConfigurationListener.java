@@ -370,6 +370,7 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
      */
     @Override
     public void databaseHasChanged(BeanDatabase newDatabase,
+            Object commitMessage,
             List<Change> changes) {
         LinkedList<ActiveDescriptor<?>> added = new LinkedList<ActiveDescriptor<?>>();
         LinkedList<ActiveDescriptor<?>> removed = new LinkedList<ActiveDescriptor<?>>();

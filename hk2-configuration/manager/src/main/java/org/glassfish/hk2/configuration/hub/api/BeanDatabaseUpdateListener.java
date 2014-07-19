@@ -67,7 +67,8 @@ public interface BeanDatabaseUpdateListener {
      * been modified
      * 
      * @param newDatabase The bean database that is currently in effect
+     * @param commitMessage An object passed to the commit method in a dynamic change
      * @param changes The changes that were made to the previous database
      */
-    public void databaseHasChanged(BeanDatabase newDatabase, List<Change> changes);
+    public void databaseHasChanged(BeanDatabase newDatabase, Object commitMessage, List<Change> changes);
 }

@@ -41,14 +41,11 @@ package org.glassfish.hk2.configuration.hub.test;
 
 import java.beans.PropertyChangeEvent;
 import java.util.HashMap;
-import java.util.Map;
 
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.ManagerUtilities;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
-import org.glassfish.hk2.configuration.hub.internal.HubImpl;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Before;
 import org.junit.Test;
 import org.jvnet.hk2.testing.junit.HK2Runner;

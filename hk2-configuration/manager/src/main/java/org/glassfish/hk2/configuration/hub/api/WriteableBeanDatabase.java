@@ -94,5 +94,17 @@ public interface WriteableBeanDatabase extends BeanDatabase {
      * since this writeable database copy was created
      */
     public void commit() throws IllegalStateException;
+    
+    /**
+     * This method should be called when the writeable database should become
+     * the current database. All changes will be communicated to the listeners.
+     * If the current database has been modified since this writeable database
+     * was created then this method will throw an IllegalStateException
+     * @param commitMessage An object to pass to any {@link BeanDatabaseUpdateListener}
+     * that is registered
+     * @throws IllegalStateException if the current database has been modified
+     * since this writeable database copy was created
+     */
+    public void commit(Object commitMessage) throws IllegalStateException;
 
 }

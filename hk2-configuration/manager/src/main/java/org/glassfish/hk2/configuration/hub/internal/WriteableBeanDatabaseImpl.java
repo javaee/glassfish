@@ -178,12 +178,20 @@ public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase {
         
         return wti;
     }
-
+    
     /* (non-Javadoc)
      * @see org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase#commit()
      */
     @Override
     public void commit() {
+        commit(null);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase#commit()
+     */
+    @Override
+    public void commit(Object commitMessage) {
         synchronized (this) {
             checkState();
         
@@ -191,7 +199,7 @@ public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase {
         }
         
         // Outside of lock
-        hub.setCurrentDatabase(this, changes);
+        hub.setCurrentDatabase(this, commitMessage, changes);
         
         for (WriteableTypeImpl removedType : removedTypes) {
             removedType.getHelper().dispose();

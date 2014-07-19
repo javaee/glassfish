@@ -50,8 +50,6 @@ import org.glassfish.hk2.configuration.hub.api.ManagerUtilities;
 import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
-import org.glassfish.hk2.configuration.hub.internal.HubImpl;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -141,6 +139,7 @@ public class HubTest extends HK2Runner {
         
             Type emptyType = hub.getCurrentDatabase().getType(EMPTY_TYPE);
             
+            Assert.assertNull(listener.getLastCommitMessage());
             List<Change> changes = listener.getLastSetOfChanges();
             
             Assert.assertEquals(1, changes.size());
@@ -186,10 +185,12 @@ public class HubTest extends HK2Runner {
             
             wt.addInstance(ALICE, oneFieldBeanLikeMap);
         
-            wbd.commit();
+            Object commitMessage = new Object();
+            wbd.commit(commitMessage);
         
             Type oneInstanceType = hub.getCurrentDatabase().getType(ONE_INSTANCE_TYPE);
             
+            Assert.assertEquals(commitMessage, listener.getLastCommitMessage());
             List<Change> changes = listener.getLastSetOfChanges();
             
             Assert.assertEquals(2, changes.size());

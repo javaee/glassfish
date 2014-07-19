@@ -110,7 +110,7 @@ public class HubImpl implements Hub {
         }
     }
     
-    /* package */ void setCurrentDatabase(WriteableBeanDatabaseImpl writeableDatabase, List<Change> changes) {
+    /* package */ void setCurrentDatabase(WriteableBeanDatabaseImpl writeableDatabase, Object commitMessage, List<Change> changes) {
         synchronized (lock) {
             long currentRevision = currentDatabase.getRevision();
             long writeRevision = writeableDatabase.getBaseRevision();
@@ -123,7 +123,7 @@ public class HubImpl implements Hub {
             
             for (BeanDatabaseUpdateListener listener : listeners) {
                 try {
-                    listener.databaseHasChanged(currentDatabase, changes);
+                    listener.databaseHasChanged(currentDatabase, commitMessage, changes);
                 }
                 catch (Throwable th) {
                     // silly user code, I don't care about your troubles
