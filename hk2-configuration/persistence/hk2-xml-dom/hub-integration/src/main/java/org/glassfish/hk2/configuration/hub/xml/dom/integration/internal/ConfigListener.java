@@ -56,6 +56,7 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
+import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationCommitMessage;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationUtilities;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.annotations.Service;
@@ -154,7 +155,7 @@ public class ConfigListener implements DynamicConfigurationListener {
             wt.addInstance(hubKey.instance, target);
             
             try {
-                wbd.commit();
+                wbd.commit(new XmlDomIntegrationCommitMessage() {});
                 break;
             }
             catch (IllegalStateException ise) {
@@ -172,7 +173,7 @@ public class ConfigListener implements DynamicConfigurationListener {
             wt.removeInstance(key.instance);
             
             try {
-                wbd.commit();
+                wbd.commit(new XmlDomIntegrationCommitMessage() {});
                 break;
             }
             catch (IllegalStateException ise) {
@@ -235,7 +236,7 @@ public class ConfigListener implements DynamicConfigurationListener {
                 wt.modifyInstance(instance, handle.getService(), events);
                 
                 try {
-                  wbd.commit();
+                  wbd.commit(new XmlDomIntegrationCommitMessage() {});
                   break;
                 }
                 catch (IllegalStateException ise) {
