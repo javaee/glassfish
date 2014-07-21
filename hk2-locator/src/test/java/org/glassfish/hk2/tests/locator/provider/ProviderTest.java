@@ -39,10 +39,17 @@
  */
 package org.glassfish.hk2.tests.locator.provider;
 
+import javax.inject.Provider;
+
 import junit.framework.Assert;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.glassfish.hk2.utilities.BuilderHelper;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -141,5 +148,31 @@ public class ProviderTest {
         
         zoo.validateAllCharacters();
         
+    }
+    
+    /**
+     * Tests that the descriptor returned from the injectee
+     * of something that injects Provider can be used
+     * in a getService call later
+     */
+    @SuppressWarnings("unchecked")
+    @Test @Ignore
+    public void testInjecteeOfAProvider() {
+        ActiveDescriptor<?> parentDescriptor = locator.getBestDescriptor(BuilderHelper.createContractFilter(ProviderInjectedPerLookup.class.getName()));
+        Assert.assertNotNull(parentDescriptor);
+        
+        Injectee injectee = parentDescriptor.getInjectees().get(0);
+        Assert.assertNotNull(injectee);
+        
+        ActiveDescriptor<?> childDescriptor = locator.getInjecteeDescriptor(injectee);
+        Assert.assertNotNull(childDescriptor);
+        
+        ServiceHandle<?> handle = locator.getServiceHandle(childDescriptor, injectee);
+        
+        
+        Provider<PerLookupService> provider = (Provider<PerLookupService>) locator.getService(childDescriptor, null);
+        Assert.assertNotNull(provider);
+        
+        Assert.assertNotNull(provider.get());
     }
 }

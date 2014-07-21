@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,53 +39,14 @@
  */
 package org.glassfish.hk2.tests.locator.provider;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.api.PerLookup;
+import org.jvnet.hk2.annotations.Service;
 
 /**
  * @author jwells
+ *
  */
-public class ProviderModule implements TestModule {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
-     */
-    @Override
-    public void configure(DynamicConfiguration configurator) {
-        configurator.bind(BuilderHelper.link(InstantiationChecker.class).build());
-        configurator.bind(BuilderHelper.link(ProviderInjected.class).build());
-        
-        // These are for the iterable provider tests
-        configurator.bind(BuilderHelper.link(EliManning.class).
-                to(Character.class).
-                to(FootballCharacter.class).
-                named(ProviderTest.ELI).
-                qualifiedBy(Giants.class.getName()).build());
-        
-        configurator.bind(BuilderHelper.link(ShadyMcCoy.class).
-                to(Character.class).
-                to(FootballCharacter.class).
-                named(ProviderTest.SHADY).
-                qualifiedBy(Eagles.class.getName()).build());
-        
-        configurator.bind(BuilderHelper.link(Ishmael.class).
-                to(Character.class).
-                to(BookCharacter.class).
-                named(ProviderTest.ISHMAEL).
-                build());
-        
-        configurator.bind(BuilderHelper.link(QueeQueg.class).
-                to(Character.class).
-                to(BookCharacter.class).
-                named(ProviderTest.QUEEQUEG).
-                build());
-        
-        configurator.bind(BuilderHelper.link(Menagerie.class).build());
-        
-        configurator.addActiveDescriptor(PerLookupService.class);
-        configurator.addActiveDescriptor(ProviderInjectedPerLookup.class);
-        
-    }
+@Service @PerLookup
+public class PerLookupService {
 
 }
