@@ -49,7 +49,6 @@ import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -156,7 +155,7 @@ public class ProviderTest {
      * in a getService call later
      */
     @SuppressWarnings("unchecked")
-    @Test @Ignore
+    @Test
     public void testInjecteeOfAProvider() {
         ActiveDescriptor<?> parentDescriptor = locator.getBestDescriptor(BuilderHelper.createContractFilter(ProviderInjectedPerLookup.class.getName()));
         Assert.assertNotNull(parentDescriptor);
@@ -168,9 +167,15 @@ public class ProviderTest {
         Assert.assertNotNull(childDescriptor);
         
         ServiceHandle<?> handle = locator.getServiceHandle(childDescriptor, injectee);
+        Assert.assertNotNull(handle);
         
+        Object result = handle.getService();
+        Assert.assertTrue(result instanceof Provider);
         
-        Provider<PerLookupService> provider = (Provider<PerLookupService>) locator.getService(childDescriptor, null);
+        Provider<PerLookupService> provider0 = (Provider<PerLookupService>) result;
+        Assert.assertNotNull(provider0.get());
+        
+        Provider<PerLookupService> provider = (Provider<PerLookupService>) locator.getService(childDescriptor, null, injectee);
         Assert.assertNotNull(provider);
         
         Assert.assertNotNull(provider.get());
