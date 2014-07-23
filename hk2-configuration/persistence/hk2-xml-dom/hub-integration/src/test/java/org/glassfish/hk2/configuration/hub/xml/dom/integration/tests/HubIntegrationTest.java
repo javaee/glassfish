@@ -47,6 +47,7 @@ import javax.inject.Inject;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Before;
@@ -60,8 +61,10 @@ import org.jvnet.hk2.testing.junit.HK2Runner;
  */
 public class HubIntegrationTest extends HK2Runner {
     private final static String ABEAN_TAG = "/a-bean";
-    private final static String BBEAN_TAG = "/b-bean";
-    private final static String CBEAN_TAG = "/b-bean/c-bean";
+    public final static String BBEAN_TAG = "/b-bean";
+    public final static String BBEAN_TAG_TRANSLATED = "b-bean-translated";
+    public final static String CBEAN_TAG = "/b-bean/c-bean";
+    public final static String CBEAN_TAG_TRANSLATED = "c-bean-translated";
     private final static String DBEAN_TAG = "/h-bean/d-bean";
     private final static String EBEAN_TAG = "/h-bean/d-bean/e-bean";
     private final static String FBEAN_TAG = "/h-bean/d-bean/e-bean/f-bean";
@@ -74,8 +77,8 @@ public class HubIntegrationTest extends HK2Runner {
     private final static String DBEAN_BOB_INSTANCE_NAME = "h-bean.bob";
     private final static String DBEAN_HOLYOKE_INSTANCE_NAME = "h-bean.holyoke";
     
-    private final static String ALICE = "alice";
-    private final static String BOB = "bob";
+    public final static String ALICE = "alice";
+    public final static String BOB = "bob";
     private final static String CAROL = "carol";
     private final static String DAVE = "dave";
     private final static String ENGLEBERT = "englebert";
@@ -311,8 +314,6 @@ public class HubIntegrationTest extends HK2Runner {
         
         beanDatabase = hub.getCurrentDatabase();
         
-        // beanDatabase.dumpDatabase();
-        
         holyoke = (DBean) beanDatabase.getInstance(DBEAN_TAG, DBEAN_HOLYOKE_INSTANCE_NAME);
         Assert.assertNotNull(holyoke);
         Assert.assertEquals(HOLYOKE, holyoke.getName());
@@ -349,9 +350,43 @@ public class HubIntegrationTest extends HK2Runner {
         
         beanDatabase = hub.getCurrentDatabase();
         
-        // beanDatabase.dumpDatabase();
-        
         bob = (DBean) beanDatabase.getInstance(DBEAN_TAG, DBEAN_BOB_INSTANCE_NAME);
+        Assert.assertNull(bob);
+    }
+    
+    /**
+     * Tests that translating type and instance name work (one translator)
+     */
+    @Test @org.junit.Ignore
+    public void testTranslateNameAndInstanceName() {
+        ServiceLocator testLocator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
+        ServiceLocatorUtilities.addClasses(testLocator, BBeanTranslator.class);
+        
+        ConfigParser parser = new ConfigParser(testLocator);
+        URL url = getClass().getClassLoader().getResource("complex1.xml");
+        Assert.assertNotNull(url);
+        
+        parser.parse(url);
+        
+        Hub hub = testLocator.getService(Hub.class);
+        BeanDatabase beanDatabase = hub.getCurrentDatabase();
+        
+        Type bType = beanDatabase.getType(BBEAN_TAG);
+        Assert.assertNull(bType);
+        
+        bType = beanDatabase.getType(BBEAN_TAG_TRANSLATED);
+        Assert.assertNotNull(bType);
+        
+        CBean alice = (CBean) beanDatabase.getInstance(CBEAN_TAG_TRANSLATED, ALICE);
+        Assert.assertNotNull(alice);
+        
+        alice = (CBean) beanDatabase.getInstance(CBEAN_TAG, ALICE_INSTANCE_NAME);
+        Assert.assertNull(alice);
+        
+        CBean bob = (CBean) beanDatabase.getInstance(CBEAN_TAG_TRANSLATED, BOB);
+        Assert.assertNotNull(bob);
+        
+        bob = (CBean) beanDatabase.getInstance(CBEAN_TAG, BOB_INSTANCE_NAME);
         Assert.assertNull(bob);
     }
 
