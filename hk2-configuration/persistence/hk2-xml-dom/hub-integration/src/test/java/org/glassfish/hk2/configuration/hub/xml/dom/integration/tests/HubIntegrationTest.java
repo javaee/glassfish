@@ -283,11 +283,10 @@ public class HubIntegrationTest extends HK2Runner {
     }
     
     /**
-     * Tests that adding a bean in fact adds an entry in the hub, and that
-     * removing a bean in fact removes a bean from the hub
+     * Tests that adding a bean in fact adds an entry in the hub
      */
-    @Test @org.junit.Ignore
-    public void testAddAndRemoveDBeanToHBean() {
+    @Test // @org.junit.Ignore
+    public void testAddDBeanToHBean() {
         ServiceLocator testLocator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
         
         ConfigParser parser = new ConfigParser(testLocator);
@@ -317,6 +316,43 @@ public class HubIntegrationTest extends HK2Runner {
         holyoke = (DBean) beanDatabase.getInstance(DBEAN_TAG, DBEAN_HOLYOKE_INSTANCE_NAME);
         Assert.assertNotNull(holyoke);
         Assert.assertEquals(HOLYOKE, holyoke.getName());
+    }
+    
+    /**
+     * Tests that adding a bean in fact adds an entry in the hub
+     */
+    @Test // @org.junit.Ignore
+    public void testRemoveDBeanFromHBean() {
+        ServiceLocator testLocator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
+        
+        ConfigParser parser = new ConfigParser(testLocator);
+        URL url = getClass().getClassLoader().getResource("complex2.xml");
+        Assert.assertNotNull(url);
+        
+        parser.parse(url);
+        
+        Hub hub = testLocator.getService(Hub.class);
+        BeanDatabase beanDatabase = hub.getCurrentDatabase();
+        
+        DBean bob = (DBean) beanDatabase.getInstance(DBEAN_TAG, DBEAN_BOB_INSTANCE_NAME);
+        Assert.assertNotNull(bob);
+        
+        DBean bobService = testLocator.getService(DBean.class, BOB);
+        Assert.assertNotNull(bobService);
+        
+        HBean hbean = testLocator.getService(HBean.class);
+        Assert.assertNotNull(hbean);
+        
+        hbean.deleteDBean(bobService);
+        
+        Assert.assertNull(testLocator.getService(DBean.class, BOB));
+        
+        beanDatabase = hub.getCurrentDatabase();
+        
+        // beanDatabase.dumpDatabase();
+        
+        bob = (DBean) beanDatabase.getInstance(DBEAN_TAG, DBEAN_BOB_INSTANCE_NAME);
+        Assert.assertNull(bob);
     }
 
 }

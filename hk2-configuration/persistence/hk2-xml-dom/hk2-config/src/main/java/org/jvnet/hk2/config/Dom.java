@@ -534,10 +534,16 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
         return t(rawLeafElement(name));
     }
     
-    private static ActiveDescriptor<Dom> addWithAlias(ServiceLocator locator, ActiveDescriptor<?> descriptor, Class<?> contract, String name) {
+    private ActiveDescriptor<Dom> addWithAlias(ServiceLocator locator, AbstractActiveDescriptor<?> descriptor, Class<?> contract, String name) {
         ActiveDescriptor<Dom> added = ServiceLocatorUtilities.findOneDescriptor(locator, descriptor);
         
         if (added == null) {
+            if (ConfigBean.class.isAssignableFrom(this.getClass())) {
+                if (!descriptor.getAdvertisedContracts().contains(ConfigBean.class.getName())) {
+                    descriptor.addContractType(ConfigBean.class);
+                }
+            }
+            
             added = ServiceLocatorUtilities.addOneDescriptor(locator, descriptor);
         }
         
