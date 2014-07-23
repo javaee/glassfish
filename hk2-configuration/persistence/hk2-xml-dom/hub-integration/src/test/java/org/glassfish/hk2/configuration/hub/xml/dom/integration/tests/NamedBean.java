@@ -49,5 +49,6 @@ import org.jvnet.hk2.config.ConfigBeanProxy;
 public interface NamedBean extends ConfigBeanProxy {
     @Attribute(required = true, key = true)
     public String getName();
+    public void setName(String name);
 
 }

@@ -44,8 +44,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,6 +72,7 @@ public class HubIntegrationTest extends HK2Runner {
     private final static String BBEAN_INSTANCE_NAME = "b-bean";
     private final static String DBEAN_ALICE_INSTANCE_NAME = "h-bean.alice";
     private final static String DBEAN_BOB_INSTANCE_NAME = "h-bean.bob";
+    private final static String DBEAN_HOLYOKE_INSTANCE_NAME = "h-bean.holyoke";
     
     private final static String ALICE = "alice";
     private final static String BOB = "bob";
@@ -78,6 +81,7 @@ public class HubIntegrationTest extends HK2Runner {
     private final static String ENGLEBERT = "englebert";
     private final static String FRED = "fred";
     private final static String GARY = "gary";
+    private final static String HOLYOKE = "holyoke";
     private final static String ALICE_INSTANCE_NAME = "b-bean.alice";
     private final static String BOB_INSTANCE_NAME = "b-bean.bob";
     
@@ -276,6 +280,43 @@ public class HubIntegrationTest extends HK2Runner {
             
             checkDBean((DBean) bobInstance);
         }
+    }
+    
+    /**
+     * Tests that adding a bean in fact adds an entry in the hub, and that
+     * removing a bean in fact removes a bean from the hub
+     */
+    @Test @org.junit.Ignore
+    public void testAddAndRemoveDBeanToHBean() {
+        ServiceLocator testLocator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
+        
+        ConfigParser parser = new ConfigParser(testLocator);
+        URL url = getClass().getClassLoader().getResource("complex2.xml");
+        Assert.assertNotNull(url);
+        
+        parser.parse(url);
+        
+        Hub hub = testLocator.getService(Hub.class);
+        BeanDatabase beanDatabase = hub.getCurrentDatabase();
+        
+        DBean holyoke = (DBean) beanDatabase.getInstance(DBEAN_TAG, DBEAN_HOLYOKE_INSTANCE_NAME);
+        Assert.assertNull(holyoke);
+        Assert.assertNull(testLocator.getService(DBean.class, HOLYOKE));
+        
+        HBean hbean = testLocator.getService(HBean.class);
+        Assert.assertNotNull(hbean);
+        
+        hbean.createDBean(HOLYOKE);
+        
+        Assert.assertNotNull(testLocator.getService(DBean.class, HOLYOKE));
+        
+        beanDatabase = hub.getCurrentDatabase();
+        
+        // beanDatabase.dumpDatabase();
+        
+        holyoke = (DBean) beanDatabase.getInstance(DBEAN_TAG, DBEAN_HOLYOKE_INSTANCE_NAME);
+        Assert.assertNotNull(holyoke);
+        Assert.assertEquals(HOLYOKE, holyoke.getName());
     }
 
 }

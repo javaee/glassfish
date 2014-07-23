@@ -39,11 +39,16 @@
  */
 package org.glassfish.hk2.configuration.hub.xml.dom.integration.tests;
 
+import java.beans.PropertyVetoException;
 import java.util.List;
 
 import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.DuckTyped;
 import org.jvnet.hk2.config.Element;
+import org.jvnet.hk2.config.SingleConfigCode;
+import org.jvnet.hk2.config.TransactionFailure;
 
 /**
  * @author jwells
@@ -53,5 +58,63 @@ import org.jvnet.hk2.config.Element;
 public interface HBean extends ConfigBeanProxy {
     @Element("*")
     public List<DBean> getDBeans();
+    
+    @DuckTyped
+    public <T extends DBean> T createDBean(String name);
+    
+    @DuckTyped
+    public <T extends DBean> T getDBeanByName(String name);
+    
+    @DuckTyped
+    public <T extends DBean> T deleteDBean(T removeMe);
+    
+    class Duck {
+        public static <T extends DBean> T createDBean(final HBean hbean, final String name) throws TransactionFailure {
+            ConfigSupport.apply(new SingleConfigCode<HBean>() {
+
+                @Override
+                public Object run(HBean writeableHBean) throws PropertyVetoException,
+                        TransactionFailure {
+                    DBean dbean = writeableHBean.createChild(DBean.class);
+                    dbean.setName(name);
+                    
+                    writeableHBean.getDBeans().add(dbean);
+                    
+                    return dbean;
+                }}, hbean);
+            
+            return hbean.getDBeanByName(name);
+        }
+        
+        @SuppressWarnings("unchecked")
+        public static <T extends DBean> T deleteDBean(final HBean hbean, final T removeMe) throws TransactionFailure {
+            return (T) ConfigSupport.apply(new SingleConfigCode<HBean>() {
+
+                @Override
+                public Object run(HBean writeableHBean)
+                        throws TransactionFailure {
+                    writeableHBean.getDBeans().remove(removeMe);
+                    return removeMe;
+                }
+
+            }, hbean);
+            
+        }
+        
+        @SuppressWarnings("unchecked")
+        public static <T extends DBean> T getDBeanByName(final HBean hbean, String name) throws TransactionFailure {
+            if (name == null) return null;
+            if (hbean.getDBeans() == null) return null;
+            
+            for (DBean dbean : hbean.getDBeans()) {
+                if (dbean.getName().equals(name)) return (T) dbean;
+            }
+            
+            return null;
+            
+            
+        }
+        
+    }
 
 }

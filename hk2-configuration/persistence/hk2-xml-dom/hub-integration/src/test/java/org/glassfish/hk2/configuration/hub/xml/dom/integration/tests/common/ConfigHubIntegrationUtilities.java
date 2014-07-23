@@ -37,36 +37,24 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.hub.xml.dom.integration;
+package org.glassfish.hk2.configuration.hub.xml.dom.integration.tests.common;
 
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.configuration.hub.api.ManagerUtilities;
-import org.glassfish.hk2.configuration.hub.xml.dom.integration.internal.ConfigListener;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
 
 /**
  * @author jwells
  *
  */
-public class XmlDomIntegrationUtilities {
-    /**
-     * If there is no key associated with a configured bean then the
-     * instance name of that bean will be this string
-     */
-    public final static String DEFAULT_INSTANCE_NAME = "HK2_CONFIG_DEFAULT";
+public class ConfigHubIntegrationUtilities {
+    private final static ServiceLocatorFactory factory = ServiceLocatorFactory.getInstance();
     
     /**
-     * This enables the XmlDomIntegration layer of the system.
-     * It is idempotent
-     * 
-     * @param locator The non-null locator to add hk2-config integration to
+     * Creates an unnamed, untracked service locator
+     * @return An unnamed, untracked service locator
      */
-    public final static void enableHk2ConfigDomIntegration(ServiceLocator locator) {
-        ManagerUtilities.enableConfigurationHub(locator);
-        
-        if (locator.getService(ConfigListener.class) != null) return;
-        
-        ServiceLocatorUtilities.addClasses(locator, ConfigListener.class);
+    public static ServiceLocator create() {
+        return factory.create(null);
     }
 
 }
