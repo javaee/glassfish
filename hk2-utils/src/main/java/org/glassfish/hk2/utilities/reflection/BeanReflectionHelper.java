@@ -43,6 +43,7 @@ import java.beans.Introspector;
 import java.beans.PropertyChangeEvent;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -145,6 +146,15 @@ public class BeanReflectionHelper {
         return retVal.toArray(new PropertyChangeEvent[retVal.size()]);
     }
     
+    /**
+     * Gets the set of change events by comparing two different beans.  If the beans implement Map
+     * then they are considered to be bean-like maps
+     * 
+     * @param helper A ClassReflectionHelper to use for analyzing classes
+     * @param oldBean a non-null current bean
+     * @param newBean a non-null new bean
+     * @return a possibly zero length but never null list of the change events between the two beans
+     */
     @SuppressWarnings("unchecked")
     public static PropertyChangeEvent[] getChangeEvents(ClassReflectionHelper helper, Object oldBean, Object newBean) {
         if (oldBean instanceof Map) {
@@ -177,5 +187,33 @@ public class BeanReflectionHelper {
         }
         
         return retVal.toArray(new PropertyChangeEvent[retVal.size()]);
+    }
+    
+    /**
+     * Converts a Java bean to a bean-like Map
+     * 
+     * @param helper A ClassReflectionHelper to use for analyzing classes
+     * @param bean a non-null bean to convert
+     * @return a possibly zero length but never null bean-like map.  All properties of the bean are filled
+     * in, even if the value of the property is null
+     */
+    public static Map<String, Object> convertJavaBeanToBeanLikeMap(ClassReflectionHelper helper, Object bean) {
+        HashMap<String, Object> retVal = new HashMap<String, Object>();
+        
+        Set<MethodWrapper> methods = helper.getAllMethods(bean.getClass());
+        
+        for (MethodWrapper wrapper : methods) {
+            String propName = isAGetter(wrapper);
+            if (propName == null) continue;
+            if ("class".equals(propName)) continue;
+            
+            Method method = wrapper.getMethod();
+            
+            Object value = getValue(bean, method);
+            
+            retVal.put(propName, value);
+        }
+        
+        return retVal;
     }
 }
