@@ -54,13 +54,35 @@ import org.glassfish.hk2.utilities.ImmediateScopeModule;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.hk2.utilities.TopicDistributionModule;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 
 /**
  * @author jwells
  *
  */
 public class BasicTopicTest {
+    @Rule
+    public TestWatcher watchmap = new TestWatcher() {
+        @Override
+        public void starting(Description d) {
+            System.out.println("BasicTopicTest " + d.getMethodName() + " is starting");
+        }
+        
+        @Override
+        public void succeeded(Description d) {
+            System.out.println("BasicTopicTest " + d.getMethodName() + " has succeeded");
+        }
+        
+        @Override
+        public void failed(Throwable th, Description d) {
+            System.out.println("BasicTopicTest " + d.getMethodName() + " has failed");
+        }
+        
+    };
+    
     /**
      * Tests the most basic form of topic/subscriber
      */
