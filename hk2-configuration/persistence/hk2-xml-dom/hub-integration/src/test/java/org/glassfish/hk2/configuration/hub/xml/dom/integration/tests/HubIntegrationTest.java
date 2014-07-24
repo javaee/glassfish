@@ -357,7 +357,7 @@ public class HubIntegrationTest extends HK2Runner {
     /**
      * Tests that translating type and instance name work (one translator)
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testTranslateNameAndInstanceName() {
         ServiceLocator testLocator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
         ServiceLocatorUtilities.addClasses(testLocator, BBeanTranslator.class);

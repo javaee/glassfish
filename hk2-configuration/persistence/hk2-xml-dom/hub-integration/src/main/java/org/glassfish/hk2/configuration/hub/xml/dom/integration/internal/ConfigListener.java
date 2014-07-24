@@ -56,10 +56,11 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
+import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomHubData;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationCommitMessage;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationUtilities;
+import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomTranslationService;
 import org.glassfish.hk2.utilities.BuilderHelper;
-import org.glassfish.hk2.utilities.reflection.Pretty;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigBeanProxy;
@@ -135,14 +136,17 @@ public class ConfigListener implements DynamicConfigurationListener {
             }
         }
         
-        HubKey retVal = new HubKey(handle, typeBuffer.toString(), instanceBuffer.toString());
+        HubKey retVal = new HubKey(handle,
+                typeBuffer.toString(),
+                instanceBuffer.toString(),
+                locator.getAllServices(XmlDomTranslationService.class));
         topDom.addListener(retVal);
         return retVal;
     }
     
     private void addInstance(ActiveDescriptor<?> descriptor) {
         HubKey hubKey = getHubKey(descriptor);
-        Object target = hubKey.handle.getService();
+        Object target = hubKey.getTranslatedService();
         
         // Must add this in prior to telling the database about
         // it to stop infinite recursions
@@ -151,9 +155,9 @@ public class ConfigListener implements DynamicConfigurationListener {
         for (int lcv = 0; lcv < MAX_TRIES; lcv++) {
             WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
             
-            WriteableType wt = wbd.findOrAddWriteableType(hubKey.type);
+            WriteableType wt = wbd.findOrAddWriteableType(hubKey.getTranslatedType());
             
-            wt.addInstance(hubKey.instance, target);
+            wt.addInstance(hubKey.getTranslatedInstance(), target);
             
             try {
                 wbd.commit(new XmlDomIntegrationCommitMessage() {});
@@ -169,9 +173,9 @@ public class ConfigListener implements DynamicConfigurationListener {
         for (int lcv = 0; lcv < MAX_TRIES; lcv++) {
             WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
             
-            WriteableType wt = wbd.findOrAddWriteableType(key.type);
+            WriteableType wt = wbd.findOrAddWriteableType(key.getTranslatedType());
             
-            wt.removeInstance(key.instance);
+            wt.removeInstance(key.getTranslatedInstance());
             
             try {
                 wbd.commit(new XmlDomIntegrationCommitMessage() {});
@@ -211,30 +215,96 @@ public class ConfigListener implements DynamicConfigurationListener {
     }
     
     private class HubKey implements org.jvnet.hk2.config.ConfigListener {
-        private final ServiceHandle<?> handle;
-        private final String type;
-        private final String instance;
+        private final ServiceHandle<?> iHandle;
+        private final String iType;
+        private final String iInstance;
+        private final List<XmlDomTranslationService> translators;
         
-        private HubKey(ServiceHandle<?> handle, String type, String instance) {
-            this.handle = handle;
-            this.type = type;
-            this.instance = instance;
+        private String translatedType;
+        private String translatedInstance;
+        private Object translatedService;
+        
+        private HubKey(ServiceHandle<?> handle, String type, String instance, List<XmlDomTranslationService> translators) {
+            this.iHandle = handle;
+            this.iType = type;
+            this.iInstance = instance;
+            this.translators = translators;
         }
         
+        private void translate() {
+            if (translators.isEmpty()) {
+                translatedType = iType;
+                translatedInstance = iInstance;
+                translatedService = iHandle.getService();
+                return;
+            }
+            
+            XmlDomHubData original = new XmlDomHubData(iType, iInstance, iHandle.getService());
+            XmlDomHubData userData = original;
+            
+            for (XmlDomTranslationService translator : translators) {
+                XmlDomHubData previousUserData = userData;
+                try {
+                    userData = translator.translate(userData);
+                }
+                catch (Throwable th) {
+                    // TODO:  We have a lot of different kind of errors to handle
+                }
+                
+                if (userData == null) userData = previousUserData;
+                
+                if (userData.getType() == null ||
+                        userData.getInstanceKey() == null ||
+                        userData.getBean() == null) {
+                    throw new IllegalArgumentException("The data returned from " + translator + " had nulls as return values");
+                }
+            }
+            
+            // OK, finished
+            translatedType = userData.getType();
+            translatedInstance = userData.getInstanceKey();
+            translatedService = userData.getBean();
+        }
         
-
+        private synchronized String getTranslatedType() {
+            if (translatedType == null) {
+                translate();
+            }
+            
+            return translatedType;
+        }
+        
+        private synchronized String getTranslatedInstance() {
+            if (translatedType == null) {
+                translate();
+            }
+            
+            return translatedInstance;
+        }
+        
+        private synchronized Object getTranslatedService() {
+            if (translatedType == null) {
+                translate();
+            }
+            
+            return translatedService;
+        }
+        
         /* (non-Javadoc)
          * @see org.jvnet.hk2.config.ConfigListener#changed(java.beans.PropertyChangeEvent[])
          */
         @Override
-        public UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
+        public synchronized UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
+            // Must force re-translation
+            translate();
+            
             for (int lcv = 0; lcv < MAX_TRIES; lcv++) {
                 WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
                 
-                WriteableType wt = wbd.getWriteableType(type);
+                WriteableType wt = wbd.getWriteableType(translatedType);
                 if (wt == null) return null;
                 
-                wt.modifyInstance(instance, handle.getService(), events);
+                wt.modifyInstance(translatedInstance, translatedService, events);
                 
                 try {
                   wbd.commit(new XmlDomIntegrationCommitMessage() {});
@@ -250,7 +320,7 @@ public class ConfigListener implements DynamicConfigurationListener {
           
         @Override
         public String toString() {
-            return "HubKey(" + type + "," + instance + "," + System.identityHashCode(this) + ")";
+            return "HubKey(" + iType + "," + iInstance + "," + System.identityHashCode(this) + ")";
         }   
     }
 }
