@@ -41,6 +41,7 @@ package org.jvnet.hk2.internal;
 
 import java.net.URL;
 
+import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.Pretty;
 
 /**
@@ -109,14 +110,6 @@ class DelegatingClassLoader<T> extends ClassLoader {
 	    return code;
 	}
 	
-	private final static boolean safeEquals(Object a, Object b) {
-	    if (a == b) return true;
-	    if (a == null) return false;
-	    if (b == null) return false;
-	    
-	    return a.equals(b);
-	}
-	
 	@Override
 	public boolean equals(Object o) {
 	    if (o == null) return false;
@@ -124,12 +117,12 @@ class DelegatingClassLoader<T> extends ClassLoader {
 	    
 	    DelegatingClassLoader<?> other = (DelegatingClassLoader<?>) o;
 	    
-	    if (!safeEquals(getParent(), other.getParent())) return false;
+	    if (!GeneralUtilities.safeEquals(getParent(), other.getParent())) return false;
 	    
 	    if (delegates.length != other.delegates.length) return false;
 	    
 	    for (int lcv = 0; lcv < delegates.length; lcv++) {
-	        if (!safeEquals(delegates[lcv], other.delegates[lcv])) return false;
+	        if (!GeneralUtilities.safeEquals(delegates[lcv], other.delegates[lcv])) return false;
 	    }
 	    
 	    return true;

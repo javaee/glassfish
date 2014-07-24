@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,12 +37,31 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.hk2.utilities.general;
 
--exportcontents: \
-               org.glassfish.hk2.utilities.cache; \
-               org.glassfish.hk2.utilities.general; \
-               org.glassfish.hk2.utilities.reflection; \
-               org.glassfish.hk2.utilities.reflection.internal; \
-               org.jvnet.hk2.component; \
-               org.jvnet.tiger_types; \
-               version=${project.osgi.version}
+/**
+ * This class contains utilities useful for any code
+ * 
+ * @author jwells
+ *
+ */
+public class GeneralUtilities {
+    /**
+     * Returns true if a is equals to b, or both
+     * and and b are null.  Is safe even if
+     * a or b is null.  If a or b is null but
+     * the other is not null, this returns false
+     * 
+     * @param a A possibly null object to compare
+     * @param b A possibly null object to compare
+     * @return true if equal, false if not
+     */
+    public static boolean safeEquals(Object a, Object b) {
+        if (a == b) return true;
+        if (a == null) return false;
+        if (b == null) return false;
+        
+        return a.equals(b);
+    }
+
+}

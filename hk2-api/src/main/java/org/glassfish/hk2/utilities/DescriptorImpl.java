@@ -56,6 +56,7 @@ import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
 /**
@@ -588,13 +589,6 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 	    return retVal;
 	}
 	
-	private static boolean safeEquals(Object a, Object b) {
-	    if (a == b) return true;
-	    if (a == null) return false;
-	    if (b == null) return false;
-	    return a.equals(b);
-	}
-	
 	private static <T> boolean equalOrderedCollection(Collection<T> a, Collection<T> b) {
 	    if (a == b) return true;
 	    if (a == null) return false;
@@ -606,7 +600,7 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 	    Object bAsArray[] = b.toArray();
 	    
 	    for (int lcv = 0; lcv < a.size(); lcv++) {
-	        if (!safeEquals(aAsArray[lcv], bAsArray[lcv])) return false;
+	        if (!GeneralUtilities.safeEquals(aAsArray[lcv], bAsArray[lcv])) return false;
 	    }
 	    
 	    return true;
@@ -637,17 +631,17 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 	    if (!(a instanceof Descriptor)) return false;
 	    Descriptor d = (Descriptor) a;
 	    
-	    if (!safeEquals(implementation, d.getImplementation())) return false;
+	    if (!GeneralUtilities.safeEquals(implementation, d.getImplementation())) return false;
 	    if (!equalOrderedCollection((contracts == null) ? EMPTY_CONTRACTS_SET : contracts, d.getAdvertisedContracts())) return false;
-	    if (!safeEquals(name, d.getName())) return false;
-	    if (!safeEquals(scope, d.getScope())) return false;
+	    if (!GeneralUtilities.safeEquals(name, d.getName())) return false;
+	    if (!GeneralUtilities.safeEquals(scope, d.getScope())) return false;
 	    if (!equalOrderedCollection((qualifiers == null) ? EMPTY_QUALIFIER_SET : qualifiers, d.getQualifiers())) return false;
-	    if (!safeEquals(descriptorType, d.getDescriptorType())) return false;
-	    if (!safeEquals(descriptorVisibility, d.getDescriptorVisibility())) return false;
+	    if (!GeneralUtilities.safeEquals(descriptorType, d.getDescriptorType())) return false;
+	    if (!GeneralUtilities.safeEquals(descriptorVisibility, d.getDescriptorVisibility())) return false;
 	    if (!equalMetadata((metadatas == null) ? EMPTY_METADATAS_MAP : metadatas, d.getMetadata())) return false;
-	    if (!safeEquals(proxiable, d.isProxiable())) return false;
-	    if (!safeEquals(proxyForSameScope, d.isProxyForSameScope())) return false;
-	    if (!safeEquals(analysisName, d.getClassAnalysisName())) return false;
+	    if (!GeneralUtilities.safeEquals(proxiable, d.isProxiable())) return false;
+	    if (!GeneralUtilities.safeEquals(proxyForSameScope, d.isProxyForSameScope())) return false;
+	    if (!GeneralUtilities.safeEquals(analysisName, d.getClassAnalysisName())) return false;
 	    
 	    return true;
 	}

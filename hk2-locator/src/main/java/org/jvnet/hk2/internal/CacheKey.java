@@ -44,6 +44,7 @@ import java.lang.reflect.Type;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
+import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.Pretty;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
@@ -107,12 +108,6 @@ public class CacheKey {
         hashCode = retVal;
     }
 
-    private static boolean safeEquals(Object a, Object b) {
-        if (a == b) return true;
-        if (a == null || b == null) return false;
-        return a.equals(b);
-    }
-
     @Override
     public int hashCode() {
         return hashCode;
@@ -126,8 +121,8 @@ public class CacheKey {
         final CacheKey other = (CacheKey) o;
 
         if (hashCode != other.hashCode) return false;
-        if (!safeEquals(lookupType, other.lookupType)) return false;
-        if (!safeEquals(name, other.name)) return false;
+        if (!GeneralUtilities.safeEquals(lookupType, other.lookupType)) return false;
+        if (!GeneralUtilities.safeEquals(name, other.name)) return false;
 
         if (qualifiers != null) {
             if (other.qualifiers == null) return false;
@@ -139,7 +134,7 @@ public class CacheKey {
                 @Override
                 public Boolean run() {
                     for (int lcv = 0; lcv < qualifiers.length; lcv++) {
-                        if (!safeEquals(qualifiers[lcv], other.qualifiers[lcv])) return false;
+                        if (!GeneralUtilities.safeEquals(qualifiers[lcv], other.qualifiers[lcv])) return false;
                     }
 
                     return true;

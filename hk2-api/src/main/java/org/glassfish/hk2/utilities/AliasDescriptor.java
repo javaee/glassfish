@@ -53,6 +53,7 @@ import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.general.GeneralUtilities;
 
 
 /**
@@ -364,13 +365,6 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
         return retVal;
     }
     
-    private static boolean safeEquals(Object a, Object b) {
-        if (a == b) return true;
-        if (a == null) return false;
-        if (b == null) return false;
-        return a.equals(b);
-    }
-    
     @Override
     public boolean equals(Object o) {
         if (o == null) return false;
@@ -379,7 +373,7 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
         AliasDescriptor<?> other = (AliasDescriptor<?>) o;
         
         if (!other.descriptor.equals(descriptor)) return false;
-        if (!safeEquals(other.getName(), getName())) return false;
-        return safeEquals(other.contract, contract);
+        if (!GeneralUtilities.safeEquals(other.getName(), getName())) return false;
+        return GeneralUtilities.safeEquals(other.contract, contract);
     }
 }

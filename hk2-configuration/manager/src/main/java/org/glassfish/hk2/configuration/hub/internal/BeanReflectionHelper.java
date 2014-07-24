@@ -50,6 +50,7 @@ import java.util.Set;
 
 import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.Type;
+import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.MethodWrapper;
 import org.glassfish.hk2.utilities.reflection.Pretty;
@@ -122,14 +123,6 @@ public class BeanReflectionHelper {
         }
     }
     
-    private static boolean safeEquals(Object a, Object b) {
-        if (a == b) return true;
-        if (a == null) return false;
-        if (b == null) return false;
-        
-        return a.equals(b);
-    }
-    
     private static Object getValue(Object bean, Method m) {
         try {
             return m.invoke(bean, new Object[0]);
@@ -147,7 +140,7 @@ public class BeanReflectionHelper {
             Object oldValue = entry.getValue();
             Object newValue = newBean.get(key);
             
-            if (!safeEquals(oldValue, newValue)) {
+            if (!GeneralUtilities.safeEquals(oldValue, newValue)) {
                 retVal.add(new PropertyChangeEvent(newBean,
                     key,
                     oldValue,
@@ -180,7 +173,7 @@ public class BeanReflectionHelper {
             Object oldValue = getValue(oldBean, method);
             Object newValue = getValue(newBean, newMethod);
             
-            if (safeEquals(oldValue, newValue)) continue;
+            if (GeneralUtilities.safeEquals(oldValue, newValue)) continue;
             
             // Has changed!
             retVal.add(new PropertyChangeEvent(newBean,
