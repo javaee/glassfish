@@ -415,9 +415,16 @@ public class BuilderHelper {
             getMetadataValues(qualifier, metadata);
         }
         
-        Set<Type> contractsAsSet = new LinkedHashSet<Type>();
-        for (Type cType : contracts) {
-            contractsAsSet.add(cType);
+        Set<Type> contractsAsSet;
+        if (contracts.length <= 0) {
+            contractsAsSet = ReflectionHelper.getAdvertisedTypesFromObject(constant, Contract.class);
+        }
+        else {
+            contractsAsSet = new LinkedHashSet<Type>();
+            
+            for (Type cType : contracts) {
+                contractsAsSet.add(cType);
+            }
         }
         
         Boolean proxy = null;

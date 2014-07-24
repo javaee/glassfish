@@ -222,7 +222,8 @@ public abstract class ServiceLocatorUtilities {
      * @param locator The non-null locator to add this descriptor to
      * @param constant The non-null constant to add to the service locator
      * @param name The name this descriptor should take (may be null)
-     * @param contracts The full set of contracts this descriptor should take
+     * @param contracts The full set of contracts this descriptor should take.  If this
+     * field is the empty set then the contracts will be automatically discovered
      * @return The descriptor that was added to the service locator
      */
     public static <T> ActiveDescriptor<T> addOneConstant(ServiceLocator locator, Object constant, String name, Type... contracts) {

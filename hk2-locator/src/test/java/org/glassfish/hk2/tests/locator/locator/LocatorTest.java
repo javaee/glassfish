@@ -435,10 +435,11 @@ public class LocatorTest {
     }
     
     /**
-     * Tests that a constant named String works
+     * Tests that using addOneConstant with a name field but no contracts picks up
+     * the contracts from the constant
      */
-    @Test @org.junit.Ignore
-    public void testConstantString() {
+    @Test // @org.junit.Ignore
+    public void testAddOneConstantWithNameButNoContractsPicksUpContractsFromConstant() {
         ServiceLocator locator = LocatorHelper.create();
         String name = "name";
         String constant = "constant";
