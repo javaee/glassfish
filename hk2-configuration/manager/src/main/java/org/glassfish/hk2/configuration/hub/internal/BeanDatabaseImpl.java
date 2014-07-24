@@ -86,6 +86,7 @@ import java.util.Set;
 
 import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.Type;
+import org.glassfish.hk2.utilities.reflection.BeanReflectionHelper;
 
 /**
  * @author jwells
@@ -154,6 +155,6 @@ public class BeanDatabaseImpl implements BeanDatabase {
      */
     @Override
     public void dumpDatabase(PrintStream output) {
-        BeanReflectionHelper.dumpDatabase(this, output);
+        Utilities.dumpDatabase(this, output);
     }
 }

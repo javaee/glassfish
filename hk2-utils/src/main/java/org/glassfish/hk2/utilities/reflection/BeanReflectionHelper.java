@@ -37,23 +37,17 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.hub.internal;
+package org.glassfish.hk2.utilities.reflection;
 
 import java.beans.Introspector;
 import java.beans.PropertyChangeEvent;
-import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
-import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
-import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
-import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
-import org.glassfish.hk2.utilities.reflection.MethodWrapper;
-import org.glassfish.hk2.utilities.reflection.Pretty;
 
 /**
  * @author jwells
@@ -184,14 +178,4 @@ public class BeanReflectionHelper {
         
         return retVal.toArray(new PropertyChangeEvent[retVal.size()]);
     }
-    
-    public static void dumpDatabase(BeanDatabase database, PrintStream stream) {
-        for (Type type : database.getAllTypes()) {
-            Set<String> instanceNames = type.getInstances().keySet();
-            
-            stream.println(type.getName() + " -> " + Pretty.collection(instanceNames));
-        }
-        
-    }
-
 }

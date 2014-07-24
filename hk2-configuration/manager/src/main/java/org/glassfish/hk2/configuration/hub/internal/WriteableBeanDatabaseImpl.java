@@ -229,7 +229,7 @@ public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase {
      */
     @Override
     public synchronized void dumpDatabase(PrintStream output) {
-        BeanReflectionHelper.dumpDatabase(this, output);        
+        Utilities.dumpDatabase(this, output);        
     }
 
 }
