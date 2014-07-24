@@ -433,4 +433,19 @@ public class LocatorTest {
         Assert.assertTrue(RecordingLoader.getInstance().wasClassLoaded(MultiContractImpl1.class.getName()));
         Assert.assertTrue(RecordingLoader.getInstance().wasClassLoaded(MultiContractImpl2.class.getName()));
     }
+    
+    /**
+     * Tests that a constant named String works
+     */
+    @Test @org.junit.Ignore
+    public void testConstantString() {
+        ServiceLocator locator = LocatorHelper.create();
+        String name = "name";
+        String constant = "constant";
+        
+        ActiveDescriptor<?> result = ServiceLocatorUtilities.addOneConstant(locator, constant, name);
+        Assert.assertTrue(result.getContractTypes().contains(String.class));
+        
+        Assert.assertNotNull(locator.getService(String.class, name));
+    }
 }
