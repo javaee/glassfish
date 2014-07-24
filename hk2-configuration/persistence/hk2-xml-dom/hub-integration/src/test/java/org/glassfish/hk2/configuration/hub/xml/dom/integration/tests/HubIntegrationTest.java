@@ -78,8 +78,6 @@ public class HubIntegrationTest extends HK2Runner {
     private final static String DBEAN_ALICE_INSTANCE_NAME = "h-bean.alice";
     private final static String DBEAN_BOB_INSTANCE_NAME = "h-bean.bob";
     private final static String DBEAN_HOLYOKE_INSTANCE_NAME = "h-bean.holyoke";
-    private final static String CBEAN_ALICE_INSTANCE_NAME = "b-bean.alice";
-    private final static String CBEAN_BOB_INSTANCE_NAME = "b-bean.bob";
     
     public final static String ALICE = "alice";
     public final static String BOB = "bob";
@@ -416,15 +414,53 @@ public class HubIntegrationTest extends HK2Runner {
         Type bType = beanDatabase.getType(BBEAN_TAG);
         Assert.assertNotNull(bType);
         
-        Map<String, Object> alice = (Map<String, Object>) beanDatabase.getInstance(CBEAN_TAG, CBEAN_ALICE_INSTANCE_NAME);
+        Map<String, Object> alice = (Map<String, Object>) beanDatabase.getInstance(CBEAN_TAG, ALICE_INSTANCE_NAME);
         Assert.assertNotNull(alice);
         Assert.assertEquals(ALICE, alice.get(NAME_MAP_KEY));
         
-        Map<String, Object> bob = (Map<String, Object>) beanDatabase.getInstance(CBEAN_TAG, CBEAN_BOB_INSTANCE_NAME);
+        Map<String, Object> bob = (Map<String, Object>) beanDatabase.getInstance(CBEAN_TAG, BOB_INSTANCE_NAME);
+        Assert.assertNotNull(bob);
+        Assert.assertEquals(BOB, bob.get(NAME_MAP_KEY));
+    }
+    
+    /**
+     * Tests that translating type and instance name work (two translators)
+     */
+    @SuppressWarnings("unchecked")
+    @Test // @org.junit.Ignore
+    public void testTranslateNameAndInstanceNameAndObject() {
+        ServiceLocator testLocator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
+        ServiceLocatorUtilities.addClasses(testLocator, BBeanTranslator.class);
+        XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
+        
+        ConfigParser parser = new ConfigParser(testLocator);
+        URL url = getClass().getClassLoader().getResource("complex1.xml");
+        Assert.assertNotNull(url);
+        
+        parser.parse(url);
+        
+        Hub hub = testLocator.getService(Hub.class);
+        BeanDatabase beanDatabase = hub.getCurrentDatabase();
+        
+        Type bType = beanDatabase.getType(BBEAN_TAG);
+        Assert.assertNull(bType);
+        
+        bType = beanDatabase.getType(BBEAN_TAG_TRANSLATED);
+        Assert.assertNotNull(bType);
+        
+        Map<String, Object> alice = (Map<String, Object>) beanDatabase.getInstance(CBEAN_TAG_TRANSLATED, ALICE);
+        Assert.assertNotNull(alice);
+        Assert.assertEquals(ALICE, alice.get(NAME_MAP_KEY));
+        
+        alice = (Map<String, Object>) beanDatabase.getInstance(CBEAN_TAG, ALICE_INSTANCE_NAME);
+        Assert.assertNull(alice);
+        
+        Map<String, Object> bob = (Map<String, Object>) beanDatabase.getInstance(CBEAN_TAG_TRANSLATED, BOB);
         Assert.assertNotNull(bob);
         Assert.assertEquals(BOB, bob.get(NAME_MAP_KEY));
         
-        
+        bob = (Map<String, Object>) beanDatabase.getInstance(CBEAN_TAG, BOB_INSTANCE_NAME);
+        Assert.assertNull(bob);
     }
 
 }
