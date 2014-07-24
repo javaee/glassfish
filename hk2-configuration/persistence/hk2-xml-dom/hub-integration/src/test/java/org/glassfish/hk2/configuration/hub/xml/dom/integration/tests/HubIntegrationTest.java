@@ -41,6 +41,7 @@ package org.glassfish.hk2.configuration.hub.xml.dom.integration.tests;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -48,6 +49,7 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Type;
+import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationUtilities;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Before;
@@ -76,6 +78,8 @@ public class HubIntegrationTest extends HK2Runner {
     private final static String DBEAN_ALICE_INSTANCE_NAME = "h-bean.alice";
     private final static String DBEAN_BOB_INSTANCE_NAME = "h-bean.bob";
     private final static String DBEAN_HOLYOKE_INSTANCE_NAME = "h-bean.holyoke";
+    private final static String CBEAN_ALICE_INSTANCE_NAME = "b-bean.alice";
+    private final static String CBEAN_BOB_INSTANCE_NAME = "b-bean.bob";
     
     public final static String ALICE = "alice";
     public final static String BOB = "bob";
@@ -89,6 +93,7 @@ public class HubIntegrationTest extends HK2Runner {
     private final static String BOB_INSTANCE_NAME = "b-bean.bob";
     
     private final static String HELLO = "hello";
+    private final static String NAME_MAP_KEY = "name";
     
     @Inject
     private Hub hub;
@@ -388,6 +393,38 @@ public class HubIntegrationTest extends HK2Runner {
         
         bob = (CBean) beanDatabase.getInstance(CBEAN_TAG, BOB_INSTANCE_NAME);
         Assert.assertNull(bob);
+    }
+    
+    /**
+     * Tests that translating to a map works (one translator)
+     */
+    @SuppressWarnings("unchecked")
+    @Test // @org.junit.Ignore
+    public void testTranslateBeanToMap() {
+        ServiceLocator testLocator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
+        XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
+        
+        ConfigParser parser = new ConfigParser(testLocator);
+        URL url = getClass().getClassLoader().getResource("complex1.xml");
+        Assert.assertNotNull(url);
+        
+        parser.parse(url);
+        
+        Hub hub = testLocator.getService(Hub.class);
+        BeanDatabase beanDatabase = hub.getCurrentDatabase();
+        
+        Type bType = beanDatabase.getType(BBEAN_TAG);
+        Assert.assertNotNull(bType);
+        
+        Map<String, Object> alice = (Map<String, Object>) beanDatabase.getInstance(CBEAN_TAG, CBEAN_ALICE_INSTANCE_NAME);
+        Assert.assertNotNull(alice);
+        Assert.assertEquals(ALICE, alice.get(NAME_MAP_KEY));
+        
+        Map<String, Object> bob = (Map<String, Object>) beanDatabase.getInstance(CBEAN_TAG, CBEAN_BOB_INSTANCE_NAME);
+        Assert.assertNotNull(bob);
+        Assert.assertEquals(BOB, bob.get(NAME_MAP_KEY));
+        
+        
     }
 
 }

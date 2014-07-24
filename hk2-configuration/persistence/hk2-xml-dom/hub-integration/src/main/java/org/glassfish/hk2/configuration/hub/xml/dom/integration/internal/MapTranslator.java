@@ -37,50 +37,39 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.hub.xml.dom.integration;
+package org.glassfish.hk2.configuration.hub.xml.dom.integration.internal;
 
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.configuration.hub.api.ManagerUtilities;
-import org.glassfish.hk2.configuration.hub.xml.dom.integration.internal.ConfigListener;
-import org.glassfish.hk2.configuration.hub.xml.dom.integration.internal.MapTranslator;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import java.util.Map;
+
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomHubData;
+import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomTranslationService;
+import org.glassfish.hk2.utilities.reflection.BeanReflectionHelper;
+import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
 
 /**
  * @author jwells
  *
  */
-public class XmlDomIntegrationUtilities {
-    /**
-     * If there is no key associated with a configured bean then the
-     * instance name of that bean will be this string
+@Singleton
+public class MapTranslator implements XmlDomTranslationService {
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomTranslationService#translate(org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomHubData)
      */
-    public final static String DEFAULT_INSTANCE_NAME = "HK2_CONFIG_DEFAULT";
-    
-    /**
-     * This enables the XmlDomIntegration layer of the system.
-     * It is idempotent
-     * 
-     * @param locator The non-null locator to add hk2-config integration to
-     */
-    public final static void enableHk2ConfigDomIntegration(ServiceLocator locator) {
-        ManagerUtilities.enableConfigurationHub(locator);
+    @Override
+    public XmlDomHubData translate(XmlDomHubData hk2ConfigBeanData) {
+        Object bean = hk2ConfigBeanData.getBean();
+        if (bean == null) return null;
+        if (bean instanceof Map) return null;
         
-        if (locator.getService(ConfigListener.class) != null) return;
+        Map<String, Object> beanLikeMap = BeanReflectionHelper.convertJavaBeanToBeanLikeMap(
+                new ClassReflectionHelperImpl(), bean);
         
-        ServiceLocatorUtilities.addClasses(locator, ConfigListener.class);
-    }
-    
-    /**
-     * This adds in an implementation of {@link XmlDomTranslationService} that
-     * converts the hk2-config bean into a bean-like map.  The type and
-     * instance names remain the same.  This method is idempotent
-     * 
-     * @param locator The locator to add the translation service to
-     */
-    public final static void enableMapTranslator(ServiceLocator locator) {
-        if (locator.getService(MapTranslator.class) != null) return;
-        
-        ServiceLocatorUtilities.addClasses(locator, MapTranslator.class);
+        return new XmlDomHubData(hk2ConfigBeanData.getType(),
+                hk2ConfigBeanData.getInstanceKey(),
+                beanLikeMap);
     }
 
 }
