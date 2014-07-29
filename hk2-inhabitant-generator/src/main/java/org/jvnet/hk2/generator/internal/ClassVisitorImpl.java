@@ -196,6 +196,10 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
             
         String loadQualifierName = desc.substring(1, desc.length() -1).replace("/", ".");
         if (utilities.isClassAScope(searchHere, loadQualifierName)) {
+            if (scopeClass != null) {
+                throw new AssertionError("A service with implementation " + implName + " has at least two scopes: " +
+                  scopeClass + " and " + loadQualifierName);
+            }
             scopeClass = loadQualifierName;
             
             return new MetadataAnnotationVisitor(loadQualifierName);

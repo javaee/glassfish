@@ -757,14 +757,12 @@ public class InhabitantsGeneratorTest {
      * @throws IOException 
      * @throws FileNotFoundException 
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testServiceWithTwoScopes() throws IOException {
         String argv[] = new String[2];
         
         argv[0] = FILE_ARGUMENT;
         argv[1] = negativeDirectory.getAbsolutePath();
-        
-        System.out.println("JRW(10) argv[1]=" + argv[1]);
         
         File defaultOutput = new File(inhabitantsDirectory, DEFAULT);
         if (defaultOutput.exists()) {
