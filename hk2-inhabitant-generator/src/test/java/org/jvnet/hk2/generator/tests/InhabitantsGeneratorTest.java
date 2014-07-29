@@ -80,6 +80,7 @@ public class InhabitantsGeneratorTest {
     private final static String NOSWAP_ARGUMENT = "--noswap";
     private final static String LOCATOR_ARGUMENT = "--locator";
     private final static String CLASS_DIRECTORY = "gendir";
+    private final static String NEGATIVE_CLASS_DIRECTORY = "negative";
     private final static String JAR_FILE = "gendir.jar";
     private final static File OUTJAR_FILE = new File("outgendir.jar");
     
@@ -561,6 +562,7 @@ public class InhabitantsGeneratorTest {
     }
     
     private File gendirDirectory;
+    private File negativeDirectory;
     private File gendirJar;
     private File inhabitantsDirectory;
     
@@ -576,10 +578,13 @@ public class InhabitantsGeneratorTest {
             
             File mavenClassesDir = new File(buildDirFile, MAVEN_CLASSES_DIR);
             gendirDirectory = new File(mavenClassesDir, CLASS_DIRECTORY);
+            negativeDirectory = new File(mavenClassesDir, NEGATIVE_CLASS_DIRECTORY);
             gendirJar = new File(mavenClassesDir, JAR_FILE);
+            
         }
         else {
             gendirDirectory = new File(CLASS_DIRECTORY);
+            negativeDirectory = new File(NEGATIVE_CLASS_DIRECTORY);
             gendirJar = new File(JAR_FILE);
         }
         
@@ -697,7 +702,7 @@ public class InhabitantsGeneratorTest {
     }
     
     /**
-     * Tests generating into a directory
+     * Tests generating into a jar file
      * @throws IOException On failure
      */
     @Test
@@ -718,6 +723,7 @@ public class InhabitantsGeneratorTest {
             Assert.assertTrue(OUTJAR_FILE.delete());
         }
         
+        JarFile jar = null;
         try {
             int result = HabitatGenerator.embeddedMain(argv);
             Assert.assertEquals("Got error code: " + result, 0, result);
@@ -725,7 +731,7 @@ public class InhabitantsGeneratorTest {
             Assert.assertTrue("did not generate JAR " + OUTJAR_FILE.getAbsolutePath(),
                     OUTJAR_FILE.exists());
             
-            JarFile jar = new JarFile(OUTJAR_FILE);
+            jar = new JarFile(OUTJAR_FILE);
             ZipEntry entry = jar.getEntry(ZIP_FILE_INHABITANT_NAME);
             Assert.assertNotNull(entry);
             
@@ -736,8 +742,46 @@ public class InhabitantsGeneratorTest {
             checkDescriptors(generatedImpls);
         }
         finally {
+            if (jar != null) {
+                jar.close();
+            }
+            
             // The test should be clean
             OUTJAR_FILE.delete();
+        }
+    }
+    
+    /**
+     * Tests that a service with two scopes will cause a failure
+     * 
+     * @throws IOException 
+     * @throws FileNotFoundException 
+     */
+    @Test @org.junit.Ignore
+    public void testServiceWithTwoScopes() throws IOException {
+        String argv[] = new String[2];
+        
+        argv[0] = FILE_ARGUMENT;
+        argv[1] = negativeDirectory.getAbsolutePath();
+        
+        System.out.println("JRW(10) argv[1]=" + argv[1]);
+        
+        File defaultOutput = new File(inhabitantsDirectory, DEFAULT);
+        if (defaultOutput.exists()) {
+            // Start with a clean plate
+            Assert.assertTrue(defaultOutput.delete());
+        }
+        
+        try {
+            int result = HabitatGenerator.embeddedMain(argv);
+            Assert.assertNotSame("Got error code: " + result, 0, result);
+            
+            Assert.assertFalse("generated output in negative case " + defaultOutput.getAbsolutePath(),
+                    defaultOutput.exists());
+        }
+        finally {
+            // The test should be clean
+            defaultOutput.delete();
         }
     }
 }
