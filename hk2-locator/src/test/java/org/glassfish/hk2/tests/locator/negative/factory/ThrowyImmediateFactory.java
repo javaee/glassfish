@@ -39,15 +39,19 @@
  */
 package org.glassfish.hk2.tests.locator.negative.factory;
 
+import javax.inject.Singleton;
+
 import org.glassfish.hk2.api.Factory;
+import org.glassfish.hk2.api.Immediate;
 
 /**
  * @author jwells
  *
  */
+@Singleton
 public class ThrowyImmediateFactory implements Factory<SimpleService5> {
 
-    @Override
+    @Override @Immediate
     public SimpleService5 provide() {
         throw new RuntimeException(NegativeFactoryTest.THROW_STRING);
     }
