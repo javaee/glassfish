@@ -234,7 +234,7 @@ cd $APS_HOME/devtests/web
 cp build.xml build.xml.orig
 ./exclude-jobs.sh $SKIP_NAME
 
-ant $TARGET
+ant $TARGET || true
 
 #restore original build.xml 
 mv build.xml.orig build.xml
