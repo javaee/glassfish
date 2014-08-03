@@ -46,13 +46,16 @@ import static java.lang.annotation.ElementType.PARAMETER;
 import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Target;
+import org.mockito.Answers;
+import org.mockito.MockSettings;
 
 /**
- * {@literal @}MC (Mock Collaborator) annotation is used on fields and
- * methods of a Test class to inject a mock of the {@literal @}SUT's
- * collaborating services.
+ * {@literal @}MC (Mock Collaborator) annotation is used on fields and methods
+ * of a Test class to inject a mock of the {@literal @}SUT's collaborating
+ * services.
  *
  * @author Sharmarke Aden
+ * @see MockSettings
  */
 @Documented
 @Retention(RUNTIME)
@@ -66,7 +69,7 @@ public @interface MC {
      * (i.e. injecting two or more services with the same type) you may want to
      * explicitly specify the index of the service.
      *
-     * @return the index of the parameter
+     * @return the index of the parameter.
      */
     int value() default 0;
 
@@ -77,7 +80,32 @@ public @interface MC {
      * instances (i.e. field injection of two or more services with the same
      * type) you may want to explicitly specify the name of the field.
      *
-     * @return the name of the field
+     * @return the name of the field.
      */
     String field() default "";
+
+    /**
+     * Specifies default answers to interactions.
+     *
+     * @return default answer to be used by mock when not stubbed.
+     */
+    Answers answer() default Answers.RETURNS_DEFAULTS;
+
+    /**
+     * Specifies mock name. Naming mocks can be helpful for debugging - the name
+     * is used in all verification errors. By default the field name will be
+     * used as mock name.
+     *
+     * @return the name of the mock.
+     */
+    String name() default "";
+
+    /**
+     * Specifies extra interfaces the mock should implement. Might be useful for
+     * legacy code or some corner cases. For background, see issue 51 <a
+     * href="http://code.google.com/p/mockito/issues/detail?id=51">here</a>
+     *
+     * @return extra interfaces that should be implemented.
+     */
+    Class<?>[] extraInterfaces() default {};
 }

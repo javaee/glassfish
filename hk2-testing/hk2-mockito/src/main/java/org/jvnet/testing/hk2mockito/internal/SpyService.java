@@ -55,6 +55,8 @@ import org.jvnet.testing.hk2mockito.HK2MockitoSpyInjectionResolver;
 import org.jvnet.testing.hk2mockito.MC;
 import org.jvnet.testing.hk2mockito.SC;
 import org.jvnet.testing.hk2mockito.SUT;
+import org.mockito.MockSettings;
+import static org.mockito.Mockito.withSettings;
 
 /**
  *
@@ -112,15 +114,15 @@ public class SpyService {
         if (cache == null) {
             memberCache.add(parentType);
         }
-        
+
         Object service;
-        
+
         if (sut.value()) {
             service = objectFactory.newSpy(resolve(injectee, root));
         } else {
             service = resolve(injectee, root);
         }
-        
+
         return service;
     }
 
@@ -223,7 +225,24 @@ public class SpyService {
         }
 
         if (service == null) {
-            service = objectFactory.newMock((Class) requiredType);
+            Class<?>[] interfaces = mc.extraInterfaces();
+            String name = mc.name();
+            
+             if ("".equals(name)) {
+                name = member.getName();
+            } 
+            
+            MockSettings settings = withSettings()
+                    .name(name)
+                    .defaultAnswer(mc.answer().get());
+
+           
+            
+            if (interfaces != null && interfaces.length > 0) {
+                settings.extraInterfaces(mc.extraInterfaces());
+            }
+
+            service = objectFactory.newMock((Class) requiredType, settings);
             cache.put(executableKey, service);
             cache.put(fieldKey, service);
         }
