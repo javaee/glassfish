@@ -37,30 +37,47 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.testing.hk2mockito.internal;
+package org.jvnet.testing.hk2mockito;
 
-import java.lang.reflect.Type;
-import org.jvnet.hk2.annotations.Service;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
+import java.lang.annotation.Documented;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import java.lang.annotation.Retention;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.lang.annotation.Target;
 
 /**
- * A factory class used to create various objects.
+ * {@literal @}MC (Mock Collaborator) annotation is used on fields and
+ * methods of a Test class to inject a mock of the {@literal @}SUT's
+ * collaborating services.
  *
  * @author Sharmarke Aden
  */
-@Service
-public class ObjectFactory {
+@Documented
+@Retention(RUNTIME)
+@Target({METHOD, FIELD, PARAMETER})
+public @interface MC {
 
-    public Object newSpy(Object instance) {
-        return spy(instance);
-    }
+    /**
+     * If the collaborator service being injected is a constructor or method
+     * parameter of the SUT, this value should indicate the index of the
+     * parameter. By default the collaborator will be detected but in instances
+     * (i.e. injecting two or more services with the same type) you may want to
+     * explicitly specify the index of the service.
+     *
+     * @return the index of the parameter
+     */
+    int value() default 0;
 
-    public Object newMock(Class<?> type) {
-        return mock(type);
-    }
-
-    public SpyCacheKey newKey(Type type, Object value) {
-        return new SpyCacheKey(type, value);
-    }
+    /**
+     * If the collaborator service being injected is a field of the SUT, this
+     * value should indicate the name of the field. By default the
+     * {@literal @}SC field name is used as the collaborator field name but in
+     * instances (i.e. field injection of two or more services with the same
+     * type) you may want to explicitly specify the name of the field.
+     *
+     * @return the name of the field
+     */
+    String field() default "";
 }

@@ -52,6 +52,7 @@ import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.testing.hk2mockito.HK2MockitoSpyInjectionResolver;
+import org.jvnet.testing.hk2mockito.MC;
 import org.jvnet.testing.hk2mockito.SC;
 
 /**
@@ -60,7 +61,6 @@ import org.jvnet.testing.hk2mockito.SC;
  *
  * @author Sharmarke Aden
  */
-@HK2Mockito
 @Service
 public class SpyService {
 
@@ -189,6 +189,37 @@ public class SpyService {
 
         return service;
 
+    }
+
+    public Object findOrCreateMC(MC mc, Injectee injectee, ServiceHandle<?> root) {
+        Member member = (Member) injectee.getParent();
+        Type parentType = member.getDeclaringClass();
+        Type requiredType = injectee.getRequiredType();
+        Map<SpyCacheKey, Object> cache = memberCache.get(parentType);
+
+        if (cache == null) {
+            cache = memberCache.add(parentType);
+        }
+
+        SpyCacheKey executableKey = objectFactory.newKey(requiredType, mc.value());
+        String field = mc.field();
+        if ("".equals(field)) {
+            field = member.getName();
+        }
+        SpyCacheKey fieldKey = objectFactory.newKey(requiredType, field);
+
+        Object service = cache.get(executableKey);
+        if (service == null) {
+            service = cache.get(fieldKey);
+        }
+
+        if (service == null) {
+            service = objectFactory.newMock((Class)requiredType);
+            cache.put(executableKey, service);
+            cache.put(fieldKey, service);
+        }
+
+        return service;
     }
 
 }

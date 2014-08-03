@@ -64,8 +64,7 @@ public class HK2MockitoSpyInjectionResolver implements InjectionResolver<Inject>
     private final ParentCache parentCache;
 
     @Inject
-    HK2MockitoSpyInjectionResolver(SpyService spyService,
-            ParentCache parentCache) {
+    HK2MockitoSpyInjectionResolver(SpyService spyService, ParentCache parentCache) {
         this.spyService = spyService;
         this.parentCache = parentCache;
     }
@@ -79,6 +78,8 @@ public class HK2MockitoSpyInjectionResolver implements InjectionResolver<Inject>
 
         SUT sut = parent.getAnnotation(SUT.class);
         SC sc = parent.getAnnotation(SC.class);
+        MC mc = parent.getAnnotation(MC.class);
+        
         Object service;
 
         parentCache.put(requiredType, parentType);
@@ -87,6 +88,8 @@ public class HK2MockitoSpyInjectionResolver implements InjectionResolver<Inject>
             service = spyService.findOrCreateSUT(injectee, root);
         } else if (sc != null) {
             service = spyService.findOrCreateSC(sc, injectee, root);
+        } else if (mc != null) {
+            service = spyService.findOrCreateMC(mc, injectee, root);
         } else {
             service = spyService.createOrFindService(injectee, root);
         }
