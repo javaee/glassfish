@@ -54,6 +54,7 @@ import org.jvnet.hk2.annotations.Service;
 import org.jvnet.testing.hk2mockito.HK2MockitoSpyInjectionResolver;
 import org.jvnet.testing.hk2mockito.MC;
 import org.jvnet.testing.hk2mockito.SC;
+import org.jvnet.testing.hk2mockito.SUT;
 
 /**
  *
@@ -103,7 +104,7 @@ public class SpyService {
         return result;
     }
 
-    public Object findOrCreateSUT(Injectee injectee, ServiceHandle<?> root) {
+    public Object findOrCreateSUT(SUT sut, Injectee injectee, ServiceHandle<?> root) {
         Member member = (Member) injectee.getParent();
         Type parentType = member.getDeclaringClass();
         Map<SpyCacheKey, Object> cache = memberCache.get(parentType);
@@ -111,8 +112,16 @@ public class SpyService {
         if (cache == null) {
             memberCache.add(parentType);
         }
-
-        return objectFactory.newSpy(resolve(injectee, root));
+        
+        Object service;
+        
+        if (sut.value()) {
+            service = objectFactory.newSpy(resolve(injectee, root));
+        } else {
+            service = resolve(injectee, root);
+        }
+        
+        return service;
     }
 
     public Object findOrCreateSC(SC sc, Injectee injectee, ServiceHandle<?> root) {
@@ -214,7 +223,7 @@ public class SpyService {
         }
 
         if (service == null) {
-            service = objectFactory.newMock((Class)requiredType);
+            service = objectFactory.newMock((Class) requiredType);
             cache.put(executableKey, service);
             cache.put(fieldKey, service);
         }

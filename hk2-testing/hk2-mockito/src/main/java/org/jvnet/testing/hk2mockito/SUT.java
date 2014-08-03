@@ -51,7 +51,8 @@ import java.lang.annotation.Target;
  * {@literal @}SUT (Service Under Test) is an annotation used on fields and
  * methods of a Test class to inject a spy of the real service. Note that
  * calling methods on the spy will call the methods of the real service unless
- * they are stubbed with when()/give().
+ * they are stubbed with when()/give(). You can disable spying by setting 
+ * {@link #value()} to false.
  * <p>
  * Example:
  * </p>
@@ -123,4 +124,13 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Target({METHOD, FIELD, PARAMETER})
 public @interface SUT {
+
+    /**
+     * Indicates whether a spy should be created. By default a spy of the 
+     * real service is created. Note that the spy calls real methods unless
+     *  they are stubbed.
+     *
+     * @return true if a spy should be created.
+     */
+    public boolean value() default true;
 }
