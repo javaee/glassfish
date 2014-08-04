@@ -79,7 +79,7 @@ public class MockInjectionGreentingServiceTest {
         reset(sut, collaborator);
     }
 
-    @Test
+    @Test(enabled=false)
     public void callToGreetShouldCallCollboratorGreet() {
         String greeting = "Hello!";
         given(collaborator.greet()).willReturn(greeting);
