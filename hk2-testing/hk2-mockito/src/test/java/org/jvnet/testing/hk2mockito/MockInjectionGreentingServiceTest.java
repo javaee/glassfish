@@ -79,6 +79,9 @@ public class MockInjectionGreentingServiceTest {
         reset(sut, collaborator);
     }
 
+    /**
+     * https://java.net/jira/browse/HK2-223
+     */
     @Test(enabled=false)
     public void callToGreetShouldCallCollboratorGreet() {
         String greeting = "Hello!";
