@@ -37,30 +37,55 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.testing.hk2mockito.fixture;
+package org.jvnet.testing.hk2mockito;
 
 import javax.inject.Inject;
-import org.jvnet.hk2.annotations.Service;
+import static org.assertj.core.api.Assertions.assertThat;
+import org.jvnet.testing.hk2mockito.fixture.BasicGreetingService;
+import org.jvnet.testing.hk2mockito.fixture.service.ConstructorInjectionGreetingService;
+import org.jvnet.testing.hk2testng.HK2;
+import static org.mockito.Mockito.mockingDetails;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 /**
  *
  * @author Sharmarke Aden
  */
-@Service
-public class IndexedInjectionGreetingService {
+@HK2
+public class DisabledSUTSpyingTest {
 
-    private final BasicGreetingService collaborator1;
-    private final BasicGreetingService collaborator2;
-
+    @SUT(false)
     @Inject
-    IndexedInjectionGreetingService(BasicGreetingService collaborator1,
-            BasicGreetingService collaborator2) {
-        this.collaborator1 = collaborator1;
-        this.collaborator2 = collaborator2;
+    ConstructorInjectionGreetingService sut;
+    @SC
+    @Inject
+    BasicGreetingService collaborator;
+
+    @BeforeClass
+    public void verifyInjection() {
+        assertThat(sut).isNotNull();
+        assertThat(collaborator).isNotNull();
+        assertThat(mockingDetails(sut).isSpy()).isFalse();
+        assertThat(mockingDetails(collaborator).isSpy()).isTrue();
     }
 
-    public String greet() {
-        return collaborator1.greet() + collaborator2.greet();
+    @BeforeMethod
+    public void init() {
+        reset(collaborator);
+    }
+
+    @Test
+    public void callToGreetShouldCallCollboratorGreet() {
+        String greeting = "Hello!";
+
+        String result = sut.greet();
+
+        assertThat(result).isEqualTo(greeting);
+        verify(collaborator).greet();
     }
 
 }

@@ -39,10 +39,16 @@
  */
 package org.jvnet.testing.hk2mockito.internal;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Type;
+import java.security.AccessController;
+import static java.security.AccessController.doPrivileged;
+import java.security.PrivilegedAction;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.glassfish.hk2.api.Injectee;
@@ -50,6 +56,11 @@ import org.glassfish.hk2.api.InjectionResolver;
 import static org.glassfish.hk2.api.InjectionResolver.SYSTEM_RESOLVER_NAME;
 import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.InjecteeImpl;
+import org.glassfish.hk2.utilities.NamedImpl;
+import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
+import static org.glassfish.hk2.utilities.reflection.ReflectionHelper.getQualifierAnnotations;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.testing.hk2mockito.HK2MockitoSpyInjectionResolver;
 import org.jvnet.testing.hk2mockito.MC;
@@ -60,7 +71,7 @@ import static org.mockito.Mockito.withSettings;
 
 /**
  *
- * A helper service for creating SUT, SC, or regular service.
+ * A helper service for creating SUT, SC, MC or regular service.
  *
  * @author Sharmarke Aden
  */
@@ -72,16 +83,19 @@ public class SpyService {
     private final ObjectFactory objectFactory;
     private final IterableProvider<InjectionResolver> resolvers;
     private final InjectionResolver<Inject> systemResolver;
+    private final ServiceLocator locator;
 
     @Inject
     SpyService(MemberCache memberCache,
             ParentCache parentCache,
             ObjectFactory objectFactory,
+            ServiceLocator locator,
             IterableProvider<InjectionResolver> resolvers,
             @Named(SYSTEM_RESOLVER_NAME) InjectionResolver systemResolver) {
         this.memberCache = memberCache;
         this.parentCache = parentCache;
         this.objectFactory = objectFactory;
+        this.locator = locator;
         this.resolvers = resolvers;
         this.systemResolver = systemResolver;
 
@@ -109,11 +123,7 @@ public class SpyService {
     public Object findOrCreateSUT(SUT sut, Injectee injectee, ServiceHandle<?> root) {
         Member member = (Member) injectee.getParent();
         Type parentType = member.getDeclaringClass();
-        Map<SpyCacheKey, Object> cache = memberCache.get(parentType);
-
-        if (cache == null) {
-            memberCache.add(parentType);
-        }
+        prime((Class) parentType);
 
         Object service;
 
@@ -121,37 +131,6 @@ public class SpyService {
             service = objectFactory.newSpy(resolve(injectee, root));
         } else {
             service = resolve(injectee, root);
-        }
-
-        return service;
-    }
-
-    public Object findOrCreateSC(SC sc, Injectee injectee, ServiceHandle<?> root) {
-        Member member = (Member) injectee.getParent();
-        Type parentType = member.getDeclaringClass();
-        Type requiredType = injectee.getRequiredType();
-        Map<SpyCacheKey, Object> cache = memberCache.get(parentType);
-
-        if (cache == null) {
-            cache = memberCache.add(parentType);
-        }
-
-        SpyCacheKey executableKey = objectFactory.newKey(requiredType, sc.value());
-        String field = sc.field();
-        if ("".equals(field)) {
-            field = member.getName();
-        }
-        SpyCacheKey fieldKey = objectFactory.newKey(requiredType, field);
-
-        Object service = cache.get(executableKey);
-        if (service == null) {
-            service = cache.get(fieldKey);
-        }
-
-        if (service == null) {
-            service = objectFactory.newSpy(resolve(injectee, root));
-            cache.put(executableKey, service);
-            cache.put(fieldKey, service);
         }
 
         return service;
@@ -189,65 +168,126 @@ public class SpyService {
             key = objectFactory.newKey(requiredType, injectee.getPosition());
         }
 
-        Object cachedService = cache.get(key);
-
-        if (cachedService == null) {
-            service = objectFactory.newSpy(service);
-            cache.put(key, service);
-        } else {
-            service = cachedService;
-        }
-
-        return service;
-
+        return cache.get(key);
     }
 
-    public Object findOrCreateMC(MC mc, Injectee injectee, ServiceHandle<?> root) {
+    public Object findOrCreateCollaborator(int position,
+            String fieldName,
+            Injectee injectee,
+            ServiceHandle<?> root) {
         Member member = (Member) injectee.getParent();
         Type parentType = member.getDeclaringClass();
         Type requiredType = injectee.getRequiredType();
+        Map<SpyCacheKey, Object> cache = prime((Class) parentType);
+
+        SpyCacheKey cacheKey;
+        if (member instanceof Field) {
+            cacheKey = objectFactory.newKey(requiredType, position);
+        } else {
+            String field = fieldName;
+            if ("".equals(field)) {
+                field = member.getName();
+            }
+            cacheKey = objectFactory.newKey(requiredType, field);
+        }
+
+        return cache.get(cacheKey);
+    }
+
+    private Map<SpyCacheKey, Object> prime(final Class parentType) {
         Map<SpyCacheKey, Object> cache = memberCache.get(parentType);
 
-        if (cache == null) {
-            cache = memberCache.add(parentType);
+        if (cache != null) {
+            return cache;
         }
 
-        SpyCacheKey executableKey = objectFactory.newKey(requiredType, mc.value());
-        String field = mc.field();
-        if ("".equals(field)) {
-            field = member.getName();
-        }
-        SpyCacheKey fieldKey = objectFactory.newKey(requiredType, field);
+        cache = memberCache.add(parentType);
 
-        Object service = cache.get(executableKey);
-        if (service == null) {
-            service = cache.get(fieldKey);
-        }
+        Field[] fields = doPrivileged(new PrivilegedAction<Field[]>() {
 
-        if (service == null) {
-            Class<?>[] interfaces = mc.extraInterfaces();
-            String name = mc.name();
-            
-             if ("".equals(name)) {
-                name = member.getName();
-            } 
-            
-            MockSettings settings = withSettings()
-                    .name(name)
-                    .defaultAnswer(mc.answer().get());
-
-           
-            
-            if (interfaces != null && interfaces.length > 0) {
-                settings.extraInterfaces(mc.extraInterfaces());
+            @Override
+            public Field[] run() {
+                return parentType.getDeclaredFields();
             }
 
-            service = objectFactory.newMock((Class) requiredType, settings);
-            cache.put(executableKey, service);
-            cache.put(fieldKey, service);
+        });
+        if (fields != null) {
+
+            for (Field field : fields) {
+                String name = field.getName();
+                Class<?> fieldType = field.getType();
+                SC sc = field.getAnnotation(SC.class);
+                MC mc = field.getAnnotation(MC.class);
+
+                if (sc != null) {
+                    Set<Annotation> qualifiers = getQualifiers(field);
+
+                    InjecteeImpl injectee = new InjecteeImpl(field.getGenericType());
+                    injectee.setPosition(sc.value());
+                    injectee.setRequiredQualifiers(qualifiers);
+                    injectee.setParent(field.getDeclaringClass());
+
+                    Object service = resolve(injectee, null);
+                    if (service != null) {
+
+                        SpyCacheKey executableKey = objectFactory.newKey(fieldType, sc.value());
+                        String fieldName = sc.field();
+                        if ("".equals(fieldName)) {
+                            fieldName = name;
+                        }
+                        SpyCacheKey fieldKey = objectFactory.newKey(fieldType, fieldName);
+
+                        Object spy = objectFactory.newSpy(service);
+                        cache.put(executableKey, spy);
+                        cache.put(fieldKey, spy);
+                    }
+
+                } else if (mc != null) {
+                    Class<?>[] interfaces = mc.extraInterfaces();
+                    String mockName = mc.name();
+
+                    if ("".equals(mockName)) {
+                        mockName = name;
+                    }
+
+                    MockSettings settings = withSettings()
+                            .name(mockName)
+                            .defaultAnswer(mc.answer().get());
+
+                    if (interfaces != null && interfaces.length > 0) {
+                        settings.extraInterfaces(mc.extraInterfaces());
+                    }
+
+                    Object service = objectFactory.newMock(fieldType, settings);
+
+                    SpyCacheKey executableKey = objectFactory.newKey(fieldType, mc.value());
+                    String fieldName = mc.field();
+                    if ("".equals(fieldName)) {
+                        fieldName = name;
+                    }
+                    SpyCacheKey fieldKey = objectFactory.newKey(fieldType, fieldName);
+
+                    cache.put(executableKey, service);
+                    cache.put(fieldKey, service);
+                }
+
+            }
+        }
+        return cache;
+    }
+
+    private Set<Annotation> getQualifiers(Field field) {
+        Named named = field.getAnnotation(Named.class);
+        Set<Annotation> qualifiers = getQualifierAnnotations(field);
+        Set<Annotation> annotations = new HashSet<Annotation>(qualifiers.size() + 1);
+
+        if (named != null) {
+            annotations.add(new NamedImpl(named.value()));
         }
 
-        return service;
+        annotations.addAll(qualifiers);
+
+        return annotations;
     }
 
 }

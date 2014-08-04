@@ -37,31 +37,24 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.testing.hk2mockito.internal;
+package org.jvnet.testing.hk2mockito.fixture;
 
-import java.lang.reflect.Type;
+import javax.inject.Named;
 import org.jvnet.hk2.annotations.Service;
-import org.mockito.MockSettings;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 
 /**
- * A factory class used to create various objects.
  *
  * @author Sharmarke Aden
  */
+@Named("test")
 @Service
-public class ObjectFactory {
+public class NamedGreetingService {
 
-    public Object newSpy(Object instance) {
-        return spy(instance);
+    public String greet() {
+        return sayHello();
     }
 
-    public Object newMock(Class<?> type, MockSettings settings) {
-        return mock(type, settings);
-    }
-
-    public SpyCacheKey newKey(Type type, Object value) {
-        return new SpyCacheKey(type, value);
+    public String sayHello() {
+        return "Hello!";
     }
 }

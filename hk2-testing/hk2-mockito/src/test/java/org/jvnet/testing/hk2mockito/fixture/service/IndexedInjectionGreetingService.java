@@ -37,64 +37,31 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.testing.hk2mockito;
+package org.jvnet.testing.hk2mockito.fixture.service;
 
 import javax.inject.Inject;
-import static org.assertj.core.api.Assertions.assertThat;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.testing.hk2mockito.fixture.BasicGreetingService;
-import org.jvnet.testing.hk2mockito.fixture.IndexedInjectionGreetingService;
-import org.jvnet.testing.hk2testng.HK2;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
-import org.mockito.internal.util.MockitoSpy;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 /**
  *
  * @author Sharmarke Aden
  */
-@HK2
-public class IndexedInjectionGreentingServiceTest {
+@Service
+public class IndexedInjectionGreetingService {
 
-    @SUT
-    @Inject
-    IndexedInjectionGreetingService sut;
-    @SC(0)
-    @Inject
-    BasicGreetingService collaborator1;
-    @SC(1)
-    @Inject
-    BasicGreetingService collaborator2;
+    private final BasicGreetingService collaborator1;
+    private final BasicGreetingService collaborator2;
 
-    @BeforeMethod
-    public void init() {
-        reset(sut);
+    @Inject
+    IndexedInjectionGreetingService(BasicGreetingService collaborator1,
+            BasicGreetingService collaborator2) {
+        this.collaborator1 = collaborator1;
+        this.collaborator2 = collaborator2;
     }
 
-    @Test
-    public void verifyInjection() {
-        assertThat(sut)
-                .isNotNull()
-                .isInstanceOf(MockitoSpy.class);
-        assertThat(collaborator1)
-                .isNotNull()
-                .isInstanceOf(MockitoSpy.class);
-        assertThat(collaborator1)
-                .isNotNull()
-                .isInstanceOf(MockitoSpy.class);
-    }
-
-    @Test
-    public void callToGreetShouldCallCollboratorGreet() {
-        String greeting = "Hello!Hello!";
-
-        String result = sut.greet();
-
-        assertThat(result).isEqualTo(greeting);
-        verify(sut).greet();
-        verify(collaborator1).greet();
-        verify(collaborator2).greet();
+    public String greet() {
+        return collaborator1.greet() + collaborator2.greet();
     }
 
 }

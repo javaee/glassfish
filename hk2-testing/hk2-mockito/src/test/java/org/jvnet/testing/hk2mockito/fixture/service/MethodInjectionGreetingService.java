@@ -37,27 +37,27 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.testing.hk2mockito.fixture;
+package org.jvnet.testing.hk2mockito.fixture.service;
 
 import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.testing.hk2mockito.fixture.BasicGreetingService;
 
 /**
  *
  * @author Sharmarke Aden
  */
 @Service
-public class ConstructorInjectionGreetingService {
+public class MethodInjectionGreetingService {
 
-    private final BasicGreetingService collaborator;
+    private BasicGreetingService collaborator;
 
     @Inject
-    ConstructorInjectionGreetingService(BasicGreetingService collaborator) {
+    public void setCollaborator(BasicGreetingService collaborator) {
         this.collaborator = collaborator;
     }
 
     public String greet() {
         return collaborator.greet();
     }
-
 }

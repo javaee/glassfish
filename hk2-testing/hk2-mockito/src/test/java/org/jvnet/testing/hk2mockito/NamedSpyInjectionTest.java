@@ -40,13 +40,15 @@
 package org.jvnet.testing.hk2mockito;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 import static org.assertj.core.api.Assertions.assertThat;
-import org.jvnet.testing.hk2mockito.fixture.BasicGreetingService;
-import org.jvnet.testing.hk2mockito.fixture.ConstructorInjectionGreetingService;
+import org.jvnet.testing.hk2mockito.fixture.NamedGreetingService;
+import org.jvnet.testing.hk2mockito.fixture.named.NamedConstructorInjectionGreetingService;
 import org.jvnet.testing.hk2testng.HK2;
+import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
-import org.mockito.internal.util.MockitoSpy;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -55,28 +57,27 @@ import org.testng.annotations.Test;
  * @author Sharmarke Aden
  */
 @HK2
-public class ConstructorInjectionGreentingServiceTest {
+public class NamedSpyInjectionTest {
 
     @SUT
     @Inject
-    ConstructorInjectionGreetingService sut;
+    NamedConstructorInjectionGreetingService sut;
     @SC
+    @Named("test")
     @Inject
-    BasicGreetingService collaborator;
+    NamedGreetingService collaborator;
 
     @BeforeMethod
     public void init() {
-        reset(sut);
+        reset(sut, collaborator);
     }
 
-    @Test
+    @BeforeClass
     public void verifyInjection() {
-        assertThat(sut)
-                .isNotNull()
-                .isInstanceOf(MockitoSpy.class);
-        assertThat(collaborator)
-                .isNotNull()
-                .isInstanceOf(MockitoSpy.class);
+        assertThat(sut).isNotNull();
+        assertThat(collaborator).isNotNull();
+        assertThat(mockingDetails(sut).isSpy()).isTrue();
+        assertThat(mockingDetails(collaborator).isSpy()).isTrue();
     }
 
     @Test
@@ -89,5 +90,4 @@ public class ConstructorInjectionGreentingServiceTest {
         verify(sut).greet();
         verify(collaborator).greet();
     }
-
 }

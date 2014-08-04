@@ -52,7 +52,8 @@ import org.jvnet.testing.hk2mockito.internal.ParentCache;
 import org.jvnet.testing.hk2mockito.internal.SpyService;
 
 /**
- * This class is a custom resolver that creates or finds services and wraps in a spy.
+ * This class is a custom resolver that creates or finds services and wraps in a
+ * spy.
  *
  * @author Sharmarke Aden
  */
@@ -64,7 +65,8 @@ public class HK2MockitoSpyInjectionResolver implements InjectionResolver<Inject>
     private final ParentCache parentCache;
 
     @Inject
-    HK2MockitoSpyInjectionResolver(SpyService spyService, ParentCache parentCache) {
+    HK2MockitoSpyInjectionResolver(SpyService spyService,
+            ParentCache parentCache) {
         this.spyService = spyService;
         this.parentCache = parentCache;
     }
@@ -79,7 +81,7 @@ public class HK2MockitoSpyInjectionResolver implements InjectionResolver<Inject>
         SUT sut = parent.getAnnotation(SUT.class);
         SC sc = parent.getAnnotation(SC.class);
         MC mc = parent.getAnnotation(MC.class);
-        
+
         Object service;
 
         parentCache.put(requiredType, parentType);
@@ -87,9 +89,9 @@ public class HK2MockitoSpyInjectionResolver implements InjectionResolver<Inject>
         if (sut != null) {
             service = spyService.findOrCreateSUT(sut, injectee, root);
         } else if (sc != null) {
-            service = spyService.findOrCreateSC(sc, injectee, root);
+            service = spyService.findOrCreateCollaborator(sc.value(), sc.field(), injectee, root);
         } else if (mc != null) {
-            service = spyService.findOrCreateMC(mc, injectee, root);
+            service = spyService.findOrCreateCollaborator(mc.value(), mc.field(), injectee, root);
         } else {
             service = spyService.createOrFindService(injectee, root);
         }
