@@ -40,13 +40,13 @@
 package org.glassfish.hk2.configuration.tests.hierarchical;
 
 import java.util.HashSet;
-import java.util.List;
 
 import junit.framework.Assert;
 
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.configuration.api.ChildIterable;
 import org.glassfish.hk2.configuration.api.ConfigurationUtilities;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
@@ -97,7 +97,7 @@ public class HierarchicalTest {
      *     </b-bean>
      *   </b-beans>
      */
-    @Test // @org.junit.Ignore
+    @Test @org.junit.Ignore
     public void testBasicHierarchy() {
         BBeans bbeans = new BBeans();
         
@@ -162,8 +162,7 @@ public class HierarchicalTest {
             BService aliceService = locator.getService(BService.class, getBName(ALICE));
             
             {
-                List<CService> aliceCServices = aliceService.getCServices();
-                Assert.assertEquals(2, aliceCServices.size());
+                ChildIterable<CService> aliceCServices = aliceService.getCServices();
         
                 HashSet<String> aliceCServicesNames = new HashSet<String>();
                 for (CService cservice : aliceCServices) {
@@ -172,13 +171,12 @@ public class HierarchicalTest {
         
                 Assert.assertTrue(aliceCServicesNames.contains(BOB));
                 Assert.assertTrue(aliceCServicesNames.contains(CAROL));
+                Assert.assertEquals(2, aliceCServicesNames);
             }
         
-            List<DService> aliceDServices = aliceService.getDServices();
+            ChildIterable<DService> aliceDServices = aliceService.getDServices();
             
             {
-                Assert.assertEquals(3, aliceDServices.size());
-                
                 HashSet<String> aliceDServicesNames = new HashSet<String>();
                 for (DService dservice : aliceDServices) {
                     aliceDServicesNames.add(dservice.getName());
@@ -187,14 +185,14 @@ public class HierarchicalTest {
                 Assert.assertTrue(aliceDServicesNames.contains(DAVE));
                 Assert.assertTrue(aliceDServicesNames.contains(ED));
                 Assert.assertTrue(aliceDServicesNames.contains(FRANK));
+                Assert.assertEquals(3, aliceDServicesNames);
             }
             
             Assert.assertNotNull(aliceService.getDave());
             
-            List<ServiceHandle<DService>> aliceDServicesAsHandle = aliceService.getDServicesAsHandles();
+            ChildIterable<ServiceHandle<DService>> aliceDServicesAsHandle = aliceService.getDServicesAsHandles();
             
             {
-                Assert.assertEquals(3, aliceDServicesAsHandle.size());
                 
                 HashSet<String> handleNames = new HashSet<String>();
                 HashSet<String> aliceDServicesNames = new HashSet<String>();
@@ -206,6 +204,7 @@ public class HierarchicalTest {
                 Assert.assertTrue(aliceDServicesNames.contains(DAVE));
                 Assert.assertTrue(aliceDServicesNames.contains(ED));
                 Assert.assertTrue(aliceDServicesNames.contains(FRANK));
+                Assert.assertEquals(3, aliceDServicesNames);
                 
                 Assert.assertTrue(handleNames.contains(getDName(alice, DAVE)));
                 Assert.assertTrue(handleNames.contains(getDName(alice, ED)));
@@ -220,8 +219,7 @@ public class HierarchicalTest {
             BService giannaService = locator.getService(BService.class, getBName(GIANNA));
             
             {
-                List<CService> giannaCServices = giannaService.getCServices();
-                Assert.assertEquals(3, giannaCServices.size());
+                ChildIterable<CService> giannaCServices = giannaService.getCServices();
         
                 HashSet<String> giannaCServicesNames = new HashSet<String>();
                 for (CService cservice : giannaCServices) {
@@ -231,13 +229,12 @@ public class HierarchicalTest {
                 Assert.assertTrue(giannaCServicesNames.contains(HELEN));
                 Assert.assertTrue(giannaCServicesNames.contains(IAN));
                 Assert.assertTrue(giannaCServicesNames.contains(FRANK));
+                Assert.assertEquals(3, giannaCServicesNames.size());
             }
         
-            List<DService> giannaDServices = giannaService.getDServices();
+            ChildIterable<DService> giannaDServices = giannaService.getDServices();
             
-            {
-                Assert.assertEquals(2, giannaDServices.size());
-                
+            {   
                 HashSet<String> giannaDServicesNames = new HashSet<String>();
                 for (DService dservice : giannaDServices) {
                     giannaDServicesNames.add(dservice.getName());
@@ -245,15 +242,14 @@ public class HierarchicalTest {
         
                 Assert.assertTrue(giannaDServicesNames.contains(DAVE));
                 Assert.assertTrue(giannaDServicesNames.contains(FRANK));
+                Assert.assertEquals(2, giannaDServicesNames.size());
             }
             
             Assert.assertNotNull(giannaService.getDave());
             
-            List<ServiceHandle<DService>> giannaDServicesAsHandle = giannaService.getDServicesAsHandles();
+            ChildIterable<ServiceHandle<DService>> giannaDServicesAsHandle = giannaService.getDServicesAsHandles();
             
             {
-                Assert.assertEquals(2, giannaDServicesAsHandle.size());
-                
                 HashSet<String> handleNames = new HashSet<String>();
                 HashSet<String> giannaDServicesNames = new HashSet<String>();
                 for (ServiceHandle<DService> dservice : giannaDServicesAsHandle) {
@@ -263,6 +259,7 @@ public class HierarchicalTest {
         
                 Assert.assertTrue(giannaDServicesNames.contains(DAVE));
                 Assert.assertTrue(giannaDServicesNames.contains(FRANK));
+                Assert.assertEquals(2, giannaDServicesNames.size());
                 
                 Assert.assertTrue(handleNames.contains(getDName(gianna, DAVE)));
                 Assert.assertTrue(handleNames.contains(getDName(gianna, FRANK)));

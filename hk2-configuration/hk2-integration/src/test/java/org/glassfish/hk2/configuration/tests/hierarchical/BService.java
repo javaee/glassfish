@@ -39,10 +39,9 @@
  */
 package org.glassfish.hk2.configuration.tests.hierarchical;
 
-import java.util.List;
-
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.configuration.api.ChildInject;
+import org.glassfish.hk2.configuration.api.ChildIterable;
 import org.glassfish.hk2.configuration.api.ConfiguredBy;
 
 /**
@@ -52,37 +51,37 @@ import org.glassfish.hk2.configuration.api.ConfiguredBy;
 @ConfiguredBy(HierarchicalTest.BBEAN_XPATH)
 public class BService extends NamedService {
     @ChildInject(".c-beans.")
-    private List<CService> cServices;
+    private ChildIterable<CService> cServices;
     
-    private final List<DService> dServices;
+    private final ChildIterable<DService> dServices;
     
-    private BService(@ChildInject List<DService> dServices) {
+    private BService(@ChildInject ChildIterable<DService> dServices) {
         this.dServices = dServices;
     }
     
     // Set by method
-    private List<ServiceHandle<DService>> dServicesAsHandles;
+    private ChildIterable<ServiceHandle<DService>> dServicesAsHandles;
     private DService dave;
     
     @ChildInject(".dave")
     private ServiceHandle<DService> daveHandle;
     
     @SuppressWarnings("unused")
-    private void myInitializer(@ChildInject List<ServiceHandle<DService>> dServicesAsHandles,
+    private void myInitializer(@ChildInject ChildIterable<ServiceHandle<DService>> dServicesAsHandles,
                                @ChildInject DService dave) {
         this.dServicesAsHandles = dServicesAsHandles;
         this.dave = dave;
     }
     
-    public List<CService> getCServices() {
+    public ChildIterable<CService> getCServices() {
         return cServices;
     }
     
-    public List<DService> getDServices() {
+    public ChildIterable<DService> getDServices() {
         return dServices;
     }
     
-    public List<ServiceHandle<DService>> getDServicesAsHandles() {
+    public ChildIterable<ServiceHandle<DService>> getDServicesAsHandles() {
         return dServicesAsHandles;
     }
     
