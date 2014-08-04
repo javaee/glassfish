@@ -302,8 +302,10 @@ public class BasicTopicTest {
     
     /**
      * Tests that unbound services no longer get notified
+     * 
+     * See https://java.net/jira/browse/HK2-222
      */
-    @Test
+    @Test @org.junit.Ignore
     public void testUnboundServiceNoLongerGetsNotified() {
         ServiceLocator locator = LocatorHelper.getServiceLocator();
         
