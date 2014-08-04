@@ -39,54 +39,21 @@
  */
 package org.glassfish.hk2.configuration.api;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import org.glassfish.hk2.api.InjectionPointIndicator;
-
 /**
- * This Injection point indicator can be used for
- * services that have a hierarchical names.  The name space
- * of the name fields of the ActiveDescriptors must form
- * a directed acyclical graph.  For example, this is useful if
- * using a naming scheme based on an XML hierarchy.
- * <p>
- * If the injection point of this annotation is of type
- * {@link ChildIterable} then the generic type of the
- * {@link ChildIterable} must contain the Type
- * of the underlying service, and the {@link ChildIterable}
- * will contain all of the children services whose
- * name starts with the name of the parent ActiveDescriptor
- * appended with the value field of this annotation.
- * <p>
- * If the injection point is NOT a list then the type is
- * as per a normal injection point, but the chosen instance
- * of that type will have a name that starts with the name
- * of the parent ActiveDescriptor appended with the value
- * field of this annotation.  If the injection point is a
- * {@link ServiceHandle} then the generic type of the
- * {@link ServiceHandle} will be used and the ServiceHandle
- * will be injected into the service
+ * This interface can be used in conjunction with the
+ * {@link ChildInject} annotation to get the current
+ * list of children for this injection point
  * 
  * @author jwells
  *
  */
-@Retention(RUNTIME)
-@Target( { FIELD, PARAMETER })
-@InjectionPointIndicator
-public @interface ChildInject {
+public interface ChildIterable<T> extends Iterable<T> {
     /**
-     * The string that will be appended to the
-     * name field of the ActiveDescriptor of
-     * the parent of this injection point
+     * Gets the child with the given key
      * 
-     * @return The value to append to the name
-     * field of the ActiveDescriptor of the parent
-     * of this injection point
+     * @param key The non-null key of the child to get
+     * @return The child who has the given key
      */
-    public String value() default "";
+    T byKey(String key);
+
 }
