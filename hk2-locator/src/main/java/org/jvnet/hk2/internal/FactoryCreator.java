@@ -41,6 +41,7 @@ package org.jvnet.hk2.internal;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.HashSet;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Factory;
@@ -49,12 +50,21 @@ import org.glassfish.hk2.api.InstanceLifecycleEventType;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.reflection.Pretty;
 
 /**
  * @author jwells
  * @param <T> The thing this factory is producing
  */
 public class FactoryCreator<T> implements Creator<T> {
+    private final static ThreadLocal<HashSet<ActiveDescriptor<?>>> recursionFinder = new ThreadLocal<HashSet<ActiveDescriptor<?>>>() {
+        @Override
+        public HashSet<ActiveDescriptor<?>> initialValue() {
+            return new HashSet<ActiveDescriptor<?>>();
+        }
+         
+    };
+    
     private final ServiceLocator locator;
     private final ActiveDescriptor<?> factoryDescriptor;
     
@@ -91,7 +101,25 @@ public class FactoryCreator<T> implements Creator<T> {
         eventThrower.invokeInstanceListeners(new InstanceLifecycleEventImpl(
                 InstanceLifecycleEventType.PRE_PRODUCTION, null, eventThrower));
         
-        Factory<T> retValFactory = handle.getService();
+        HashSet<ActiveDescriptor<?>> dups = recursionFinder.get();
+        if (dups.contains(handle.getActiveDescriptor())) {
+            HashSet<String> impls = new HashSet<String>();
+            for (ActiveDescriptor<?> impl : dups) {
+                impls.add(impl.getImplementation());
+            }
+            dups.clear();
+            
+            throw new AssertionError("A cycle was detected involving these Factory implementations: " + Pretty.collection(impls));
+        }
+        
+        dups.add(handle.getActiveDescriptor());
+        Factory<T> retValFactory;
+        try {
+            retValFactory = handle.getService();
+        }
+        finally {
+            dups.remove(handle.getActiveDescriptor());
+        }
         
         T retVal = retValFactory.provide();
         

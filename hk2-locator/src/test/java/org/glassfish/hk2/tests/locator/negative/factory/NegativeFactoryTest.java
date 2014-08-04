@@ -135,5 +135,26 @@ public class NegativeFactoryTest {
             Assert.assertTrue(me.getMessage().contains(THROW_STRING));
         }
     }
+    
+    /**
+     * Tests that a PerLookup factory depending on itself will notice
+     * the infinite problem and throw an exception
+     */
+    @Test // @org.junit.Ignore
+    public void testInfiniteLoopPerLookupFactory() {
+        ServiceLocator locator = LocatorHelper.create();
+        ServiceLocatorUtilities.addClasses(locator, InfiniteFactory.class);
+        
+        try {
+          locator.getService(SimpleService5.class);
+          Assert.fail("Should have failed due to recursion");
+        }
+        catch (MultiException me) {
+            // Success
+            Assert.assertTrue(me.getMessage().contains("A cycle was detected"));
+            Assert.assertTrue(me.getMessage().contains(InfiniteFactory.class.getName()));
+        }
+        
+    }
 
 }
