@@ -39,72 +39,56 @@
  */
 package org.jvnet.testing.hk2mockito;
 
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Member;
-import java.lang.reflect.Type;
 import javax.inject.Inject;
-import org.glassfish.hk2.api.Injectee;
-import org.glassfish.hk2.api.InjectionResolver;
-import org.glassfish.hk2.api.Rank;
-import org.glassfish.hk2.api.ServiceHandle;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.testing.hk2mockito.internal.ParentCache;
-import org.jvnet.testing.hk2mockito.internal.SpyService;
+import static org.assertj.core.api.Assertions.assertThat;
+import org.jvnet.testing.hk2mockito.fixture.BasicGreetingService;
+import org.jvnet.testing.hk2mockito.fixture.ConstructorInjectionGreetingService;
+import org.jvnet.testing.hk2testng.HK2;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mockingDetails;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 /**
- * This class is a custom resolver that creates or finds services and wraps in a spy.
  *
  * @author Sharmarke Aden
  */
-@Rank(Integer.MAX_VALUE)
-@Service
-public class HK2MockitoSpyInjectionResolver implements InjectionResolver<Inject> {
+@HK2
+public class MockInjectionGreentingServiceTest {
 
-    private final SpyService spyService;
-    private final ParentCache parentCache;
-
+    @SUT
     @Inject
-    HK2MockitoSpyInjectionResolver(SpyService spyService, ParentCache parentCache) {
-        this.spyService = spyService;
-        this.parentCache = parentCache;
+    ConstructorInjectionGreetingService sut;
+    @MC
+    @Inject
+    BasicGreetingService collaborator;
+
+    @BeforeClass
+    public void verifyInjection() {
+        assertThat(sut).isNotNull();
+        assertThat(collaborator).isNotNull();
+        assertThat(mockingDetails(sut).isSpy()).isTrue();
+        assertThat(mockingDetails(collaborator).isMock()).isTrue();
     }
 
-    @Override
-    public Object resolve(Injectee injectee, ServiceHandle<?> root) {
-        AnnotatedElement parent = injectee.getParent();
-        Member member = (Member) parent;
-        Type requiredType = injectee.getRequiredType();
-        Type parentType = member.getDeclaringClass();
-
-        SUT sut = parent.getAnnotation(SUT.class);
-        SC sc = parent.getAnnotation(SC.class);
-        MC mc = parent.getAnnotation(MC.class);
-        
-        Object service;
-
-        parentCache.put(requiredType, parentType);
-
-        if (sut != null) {
-            service = spyService.findOrCreateSUT(sut, injectee, root);
-        } else if (sc != null) {
-            service = spyService.findOrCreateSC(sc, injectee, root);
-        } else if (mc != null) {
-            service = spyService.findOrCreateMC(mc, injectee, root);
-        } else {
-            service = spyService.createOrFindService(injectee, root);
-        }
-
-        return service;
+    @BeforeMethod
+    public void init() {
+        reset(sut, collaborator);
     }
 
-    @Override
-    public boolean isConstructorParameterIndicator() {
-        return false;
-    }
+    @Test
+    public void callToGreetShouldCallCollboratorGreet() {
+        String greeting = "Hello!";
+        given(collaborator.greet()).willReturn(greeting);
 
-    @Override
-    public boolean isMethodParameterIndicator() {
-        return false;
+        String result = sut.greet();
+
+        assertThat(result).isEqualTo(greeting);
+        verify(sut).greet();
+        verify(collaborator).greet();
     }
 
 }

@@ -41,6 +41,9 @@ package org.jvnet.testing.hk2mockito.internal;
 
 import java.lang.reflect.Type;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.testing.hk2mockito.MC;
+import org.mockito.MockSettings;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 
 /**
@@ -53,6 +56,10 @@ public class ObjectFactory {
 
     public Object newSpy(Object instance) {
         return spy(instance);
+    }
+
+    public Object newMock(Class<?> type, MockSettings settings) {
+        return mock(type, settings);
     }
 
     public SpyCacheKey newKey(Type type, Object value) {
