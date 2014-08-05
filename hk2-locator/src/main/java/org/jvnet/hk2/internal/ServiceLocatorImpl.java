@@ -361,7 +361,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     public List<ActiveDescriptor<?>> getDescriptors(Filter filter) {
         checkState();
 
-        return Utilities.cast(getDescriptors(filter, null, true, true, true));
+        return ReflectionHelper.cast(getDescriptors(filter, null, true, true, true));
     }
 
     @Override
@@ -437,7 +437,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         Collector collector = new Collector();
 
         List<ServiceHandle<JustInTimeInjectionResolver>> jitResolvers =
-                Utilities.<List<ServiceHandle<JustInTimeInjectionResolver>>>cast(
+                ReflectionHelper.<List<ServiceHandle<JustInTimeInjectionResolver>>>cast(
                 getAllServiceHandles(JustInTimeInjectionResolver.class));
 
         try {
@@ -1228,7 +1228,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     public <T> List<ServiceHandle<T>> getAllServiceHandles(
             Class<T> contractOrImpl, Annotation... qualifiers)
             throws MultiException {
-        return Utilities.cast(getAllServiceHandles((Type) contractOrImpl, qualifiers));
+        return ReflectionHelper.cast(getAllServiceHandles((Type) contractOrImpl, qualifiers));
     }
 
     /* (non-Javadoc)
@@ -1408,7 +1408,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
 
         NarrowResults results;
         LinkedList<ErrorService> currentErrorHandlers = null;
-        List<SystemDescriptor<?>> candidates = Utilities.cast(getDescriptors(searchCriteria));
+        List<SystemDescriptor<?>> candidates = ReflectionHelper.cast(getDescriptors(searchCriteria));
         ImmediateResults immediate = narrow(this,
                 candidates,
                 null,
@@ -2020,7 +2020,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         Type actuals[] = new Type[1];
         actuals[0] = scope;
         ParameterizedType findContext = new ParameterizedTypeImpl(Context.class, actuals);
-        List<ServiceHandle<Context<?>>> contextHandles = Utilities.<List<ServiceHandle<Context<?>>>>cast(
+        List<ServiceHandle<Context<?>>> contextHandles = ReflectionHelper.<List<ServiceHandle<Context<?>>>>cast(
             protectedGetAllServiceHandles(findContext));
         for (ServiceHandle<Context<?>> contextHandle : contextHandles) {
             Context<?> context = contextHandle.getService();
@@ -2086,7 +2086,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         cachedResults = retVal.getTimelessResults();
 
         if (candidates != null) {
-            List<ActiveDescriptor<?>> lCandidates = Utilities.cast(candidates);
+            List<ActiveDescriptor<?>> lCandidates = ReflectionHelper.cast(candidates);
             cachedResults.setUnnarrowedResults(lCandidates);
         }
 

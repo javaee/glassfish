@@ -53,13 +53,12 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.api.ChildInject;
+import org.glassfish.hk2.configuration.api.ChildIterable;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
 /**
@@ -109,7 +108,7 @@ public class ChildInjectResolverImpl implements InjectionResolver<ChildInject> {
         
         boolean isList = false;
         boolean isHandle = false;
-        if (List.class.equals(requiredClass) && (requiredType instanceof ParameterizedType)) {
+        if (ChildIterable.class.equals(requiredClass) && (requiredType instanceof ParameterizedType)) {
             isList = true;
             ParameterizedType pt = (ParameterizedType) requiredType;
             
@@ -120,29 +119,7 @@ public class ChildInjectResolverImpl implements InjectionResolver<ChildInject> {
                 return systemResolver.resolve(injectee, root);
             }
             
-            if (ServiceHandle.class.equals(requiredClass) && (requiredType instanceof ParameterizedType)) {
-                isHandle = true;
-                pt = (ParameterizedType) requiredType;
-                
-                // Replace the required type... again
-                requiredType = pt.getActualTypeArguments()[0];
-                requiredClass = ReflectionHelper.getRawClass(requiredType);
-                if (requiredClass == null) {
-                    return systemResolver.resolve(injectee, root);
-                }
-            }
-            
-        }
-        else if (ServiceHandle.class.equals(requiredClass) && (requiredType instanceof ParameterizedType)) {
-            isHandle = true;
-            ParameterizedType pt = (ParameterizedType) requiredType;
-            
-            // Replace the required type... again, again
-            requiredType = pt.getActualTypeArguments()[0];
-            requiredClass = ReflectionHelper.getRawClass(requiredType);
-            if (requiredClass == null) {
-                return systemResolver.resolve(injectee, root);
-            }
+            return new ChildIterableImpl<Object>(locator, requiredType, prefixName);
         }
         
         List<ActiveDescriptor<?>> matches = locator.getDescriptors(new ChildFilter(requiredType, prefixName));
@@ -218,45 +195,6 @@ public class ChildInjectResolverImpl implements InjectionResolver<ChildInject> {
     @Override
     public boolean isMethodParameterIndicator() {
         return true;
-    }
-    
-    private static class ChildFilter implements IndexedFilter {
-        private final String requiredType;
-        private final String requiredPrefix;
-        
-        private ChildFilter(Type type, String prefix) {
-            Class<?> requiredTypeClass = ReflectionHelper.getRawClass(type);
-            
-            requiredType = requiredTypeClass.getName();
-            requiredPrefix = prefix;
-        }
-
-        /* (non-Javadoc)
-         * @see org.glassfish.hk2.api.Filter#matches(org.glassfish.hk2.api.Descriptor)
-         */
-        @Override
-        public boolean matches(Descriptor d) {
-            if (d.getName() == null) return false;
-            
-            return (d.getName().startsWith(requiredPrefix));
-        }
-
-        /* (non-Javadoc)
-         * @see org.glassfish.hk2.api.IndexedFilter#getAdvertisedContract()
-         */
-        @Override
-        public String getAdvertisedContract() {
-            return requiredType;
-        }
-
-        /* (non-Javadoc)
-         * @see org.glassfish.hk2.api.IndexedFilter#getName()
-         */
-        @Override
-        public String getName() {
-            return null;
-        }
-        
     }
 
 }

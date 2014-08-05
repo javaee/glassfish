@@ -97,7 +97,7 @@ public class HierarchicalTest {
      *     </b-bean>
      *   </b-beans>
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testBasicHierarchy() {
         BBeans bbeans = new BBeans();
         
@@ -171,7 +171,7 @@ public class HierarchicalTest {
         
                 Assert.assertTrue(aliceCServicesNames.contains(BOB));
                 Assert.assertTrue(aliceCServicesNames.contains(CAROL));
-                Assert.assertEquals(2, aliceCServicesNames);
+                Assert.assertEquals(2, aliceCServicesNames.size());
             }
         
             ChildIterable<DService> aliceDServices = aliceService.getDServices();
@@ -185,18 +185,19 @@ public class HierarchicalTest {
                 Assert.assertTrue(aliceDServicesNames.contains(DAVE));
                 Assert.assertTrue(aliceDServicesNames.contains(ED));
                 Assert.assertTrue(aliceDServicesNames.contains(FRANK));
-                Assert.assertEquals(3, aliceDServicesNames);
+                Assert.assertEquals(3, aliceDServicesNames.size());
             }
             
             Assert.assertNotNull(aliceService.getDave());
             
-            ChildIterable<ServiceHandle<DService>> aliceDServicesAsHandle = aliceService.getDServicesAsHandles();
+            ChildIterable<DService> aliceDServicesAsHandle = aliceService.getDServicesAsHandles();
             
             {
                 
                 HashSet<String> handleNames = new HashSet<String>();
                 HashSet<String> aliceDServicesNames = new HashSet<String>();
-                for (ServiceHandle<DService> dservice : aliceDServicesAsHandle) {
+                
+                for (ServiceHandle<DService> dservice : aliceDServicesAsHandle.handleIterator()) {
                     aliceDServicesNames.add(dservice.getService().getName());
                     handleNames.add(dservice.getActiveDescriptor().getName());
                 }
@@ -204,15 +205,12 @@ public class HierarchicalTest {
                 Assert.assertTrue(aliceDServicesNames.contains(DAVE));
                 Assert.assertTrue(aliceDServicesNames.contains(ED));
                 Assert.assertTrue(aliceDServicesNames.contains(FRANK));
-                Assert.assertEquals(3, aliceDServicesNames);
+                Assert.assertEquals(3, aliceDServicesNames.size());
                 
                 Assert.assertTrue(handleNames.contains(getDName(alice, DAVE)));
                 Assert.assertTrue(handleNames.contains(getDName(alice, ED)));
                 Assert.assertTrue(handleNames.contains(getDName(alice, FRANK)));
             }
-            
-            Assert.assertNotNull(aliceService.getDaveHandle());
-            Assert.assertNotNull(aliceService.getDaveHandle().getService());
         }
         
         {
@@ -247,12 +245,12 @@ public class HierarchicalTest {
             
             Assert.assertNotNull(giannaService.getDave());
             
-            ChildIterable<ServiceHandle<DService>> giannaDServicesAsHandle = giannaService.getDServicesAsHandles();
+            ChildIterable<DService> giannaDServicesAsHandle = giannaService.getDServicesAsHandles();
             
             {
                 HashSet<String> handleNames = new HashSet<String>();
                 HashSet<String> giannaDServicesNames = new HashSet<String>();
-                for (ServiceHandle<DService> dservice : giannaDServicesAsHandle) {
+                for (ServiceHandle<DService> dservice : giannaDServicesAsHandle.handleIterator()) {
                     giannaDServicesNames.add(dservice.getService().getName());
                     handleNames.add(dservice.getActiveDescriptor().getName());
                 }
@@ -264,9 +262,6 @@ public class HierarchicalTest {
                 Assert.assertTrue(handleNames.contains(getDName(gianna, DAVE)));
                 Assert.assertTrue(handleNames.contains(getDName(gianna, FRANK)));
             }
-            
-            Assert.assertNotNull(giannaService.getDaveHandle());
-            Assert.assertNotNull(giannaService.getDaveHandle().getService());
         }
     }
     

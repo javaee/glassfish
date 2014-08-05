@@ -56,6 +56,7 @@ import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.Unqualified;
 import org.glassfish.hk2.utilities.NamedImpl;
 import org.glassfish.hk2.utilities.reflection.Pretty;
+import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
 /**
  * @author jwells
@@ -139,11 +140,11 @@ public class IterableProviderImpl<T> implements IterableProvider<T> {
         
         List<ServiceHandle<T>> handles;
         if (unqualified == null) {
-            handles = Utilities.<List<ServiceHandle<T>>>cast(locator.getAllServiceHandles(requiredType,
+            handles = ReflectionHelper.<List<ServiceHandle<T>>>cast(locator.getAllServiceHandles(requiredType,
                 requiredQualifiers.toArray(new Annotation[requiredQualifiers.size()])));
         }
         else {
-            handles = Utilities.<List<ServiceHandle<T>>>cast(locator.getAllUnqualifiedServiceHandles(requiredType,
+            handles = ReflectionHelper.<List<ServiceHandle<T>>>cast(locator.getAllUnqualifiedServiceHandles(requiredType,
                     unqualified, requiredQualifiers.toArray(new Annotation[requiredQualifiers.size()])));
         }
         
@@ -202,7 +203,7 @@ public class IterableProviderImpl<T> implements IterableProvider<T> {
     public Iterable<ServiceHandle<T>> handleIterator() {
         justInTime();
         
-        List<ServiceHandle<T>> handles = Utilities.<List<ServiceHandle<T>>>cast(locator.getAllServiceHandles(requiredType,
+        List<ServiceHandle<T>> handles = ReflectionHelper.<List<ServiceHandle<T>>>cast(locator.getAllServiceHandles(requiredType,
                 requiredQualifiers.toArray(new Annotation[requiredQualifiers.size()])));
         
         return new HandleIterable<T>(handles);

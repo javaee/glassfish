@@ -37,34 +37,73 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.hub.xml.dom.integration.e2etests;
+package org.glassfish.hk2.configuration.internal;
 
+import java.lang.reflect.Type;
+import java.util.Iterator;
 import java.util.List;
 
-import org.glassfish.hk2.configuration.api.ChildInject;
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.api.ChildIterable;
-import org.glassfish.hk2.configuration.api.Configured;
-import org.glassfish.hk2.configuration.api.ConfiguredBy;
-import org.jvnet.hk2.annotations.Service;
+import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
 /**
  * @author jwells
  *
  */
-@Service @ConfiguredBy(E2ETest.BBEAN_TAG)
-public class BService {
-    @Configured
-    private String parameter;
+public class ChildIterableImpl<T> implements ChildIterable<T> {
+    private final ServiceLocator locator;
+    private final Type childType;
+    private final String prefix;
     
-    @ChildInject
-    private ChildIterable<CService> children;
+    private final ChildFilter baseFilter;
     
-    public String getParameter() {
-        return parameter;
+    /* package */ ChildIterableImpl(ServiceLocator locator, Type childType, String prefix) {
+        this.locator = locator;
+        this.childType = childType;
+        this.prefix = prefix;
+        
+        baseFilter = new ChildFilter(childType, prefix);
     }
-    
-    public ChildIterable<CService> getChildren() {
-        return children;
+
+    /* (non-Javadoc)
+     * @see java.lang.Iterable#iterator()
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public Iterator<T> iterator() {
+        List<?> matches = locator.getAllServices(baseFilter);
+        List<T> tMatches = (List<T>) matches;
+        
+        return tMatches.iterator();
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.configuration.api.ChildIterable#byKey(java.lang.String)
+     */
+    @Override
+    public T byKey(String key) {
+        throw new UnsupportedOperationException();
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.configuration.api.ChildIterable#handleIterator()
+     */
+    @Override
+    public Iterable<ServiceHandle<T>> handleIterator() {
+        List<ServiceHandle<?>> matches = locator.getAllServiceHandles(baseFilter);
+        final List<ServiceHandle<T>> tMatches = ReflectionHelper.<List<ServiceHandle<T>>>cast(matches);
+        
+        return new Iterable<ServiceHandle<T>>() {
+
+            @Override
+            public Iterator<ServiceHandle<T>> iterator() {
+                return tMatches.iterator();
+            }
+            
+        };
     }
 
 }

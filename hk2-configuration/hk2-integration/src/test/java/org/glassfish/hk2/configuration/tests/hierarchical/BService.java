@@ -39,7 +39,6 @@
  */
 package org.glassfish.hk2.configuration.tests.hierarchical;
 
-import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.configuration.api.ChildInject;
 import org.glassfish.hk2.configuration.api.ChildIterable;
 import org.glassfish.hk2.configuration.api.ConfiguredBy;
@@ -60,14 +59,11 @@ public class BService extends NamedService {
     }
     
     // Set by method
-    private ChildIterable<ServiceHandle<DService>> dServicesAsHandles;
+    private ChildIterable<DService> dServicesAsHandles;
     private DService dave;
     
-    @ChildInject(".dave")
-    private ServiceHandle<DService> daveHandle;
-    
     @SuppressWarnings("unused")
-    private void myInitializer(@ChildInject ChildIterable<ServiceHandle<DService>> dServicesAsHandles,
+    private void myInitializer(@ChildInject ChildIterable<DService> dServicesAsHandles,
                                @ChildInject DService dave) {
         this.dServicesAsHandles = dServicesAsHandles;
         this.dave = dave;
@@ -81,15 +77,11 @@ public class BService extends NamedService {
         return dServices;
     }
     
-    public ChildIterable<ServiceHandle<DService>> getDServicesAsHandles() {
+    public ChildIterable<DService> getDServicesAsHandles() {
         return dServicesAsHandles;
     }
     
     public DService getDave() {
         return dave;
-    }
-    
-    public ServiceHandle<DService> getDaveHandle() {
-        return daveHandle;
     }
 }
