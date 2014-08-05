@@ -48,12 +48,18 @@ import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 class ChildFilter implements IndexedFilter {
     private final String requiredType;
     private final String requiredPrefix;
+    private final String requiredSuffix;
     
-    ChildFilter(Type type, String prefix) {
+    ChildFilter(Type type, String prefix, String suffix) {
         Class<?> requiredTypeClass = ReflectionHelper.getRawClass(type);
         
         requiredType = requiredTypeClass.getName();
         requiredPrefix = prefix;
+        requiredSuffix = suffix;
+    }
+    
+    ChildFilter(Type type, String prefix) {
+        this(type, prefix, null);
     }
 
     /* (non-Javadoc)
@@ -63,7 +69,11 @@ class ChildFilter implements IndexedFilter {
     public boolean matches(Descriptor d) {
         if (d.getName() == null) return false;
         
-        return (d.getName().startsWith(requiredPrefix));
+        if (!d.getName().startsWith(requiredPrefix)) return false;
+        
+        if (requiredSuffix == null) return true;
+        
+        return d.getName().endsWith(requiredSuffix);
     }
 
     /* (non-Javadoc)

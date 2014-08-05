@@ -83,9 +83,18 @@ public class ChildIterableImpl<T> implements ChildIterable<T> {
     /* (non-Javadoc)
      * @see org.glassfish.hk2.configuration.api.ChildIterable#byKey(java.lang.String)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public T byKey(String key) {
-        throw new UnsupportedOperationException();
+        if (key == null) throw new IllegalArgumentException();
+        
+        ChildFilter filter = new ChildFilter(childType, prefix, key);
+        
+        ActiveDescriptor<?> result = locator.getBestDescriptor(filter);
+        if (result == null) return null;
+        
+        ServiceHandle<?> handle = locator.getServiceHandle(result);
+        return (T) handle.getService();
     }
 
     /* (non-Javadoc)

@@ -410,7 +410,7 @@ public class HierarchicalTest {
      *   
      * We will then test that we can get the services with the byKey method of ChildIterable
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testByKey() {
         ServiceLocator locator = ServiceLocatorFactory.getInstance().create(null, null, new ServiceLocatorGeneratorImpl());
         
