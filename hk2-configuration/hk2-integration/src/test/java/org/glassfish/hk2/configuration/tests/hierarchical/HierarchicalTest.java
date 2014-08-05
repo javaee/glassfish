@@ -396,6 +396,71 @@ public class HierarchicalTest {
         }
     }
     
+    /**
+     * xml will look like this:
+     *
+     *   <b-beans>
+     *     <b-bean name="alice"/>
+     *       <c-beans>
+     *         <c-bean name="bob" />
+     *       </c-beans>
+     *       <d-bean name="dave" />
+     *     </b-bean>
+     *   </b-beans>
+     *   
+     * We will then test that we can get the services with the byKey method of ChildIterable
+     */
+    @Test @org.junit.Ignore
+    public void testByKey() {
+        ServiceLocator locator = ServiceLocatorFactory.getInstance().create(null, null, new ServiceLocatorGeneratorImpl());
+        
+        ConfigurationUtilities.enableConfigurationSystem(locator);
+        ServiceLocatorUtilities.addClasses(locator, BService.class, CService.class, DService.class);
+        
+        Hub hub = locator.getService(Hub.class);
+        
+        {
+            // Now modify the beans
+            BBeans bbeans2 = new BBeans();
+            
+            BBean alice2 = bbeans2.addBBean(ALICE);
+            
+            CBeans alice2_cbeans = alice2.getCBeans();
+            CBean bob2 = alice2_cbeans.addCBean(BOB);
+            
+            DBean dave2 = alice2.addDBean(DAVE);
+            
+            WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+            
+            WriteableType bbean2_type = wbd.addType(BBEAN_XPATH);
+            bbean2_type.addInstance(getBName(ALICE), alice2);
+            
+            WriteableType cbean_type = wbd.addType(CBEAN_XPATH);
+            
+            // alice2s c-beans
+            cbean_type.addInstance(getCName(alice2, BOB), bob2);
+            
+            WriteableType dbean_type = wbd.addType(DBEAN_XPATH);
+            
+            // alice2s d-beans
+            dbean_type.addInstance(getDName(alice2, DAVE), dave2);
+            
+            wbd.commit();
+        }
+        
+        // An empty BBean is in there, lets get the service
+        BService aliceService = locator.getService(BService.class, getBName(ALICE));
+        
+        ChildIterable<CService> cServices = aliceService.getCServices();
+        ChildIterable<DService> dServices = aliceService.getDServices();
+        
+        Assert.assertNotNull(cServices.byKey(BOB));
+        Assert.assertNotNull(dServices.byKey(DAVE));
+        
+        Assert.assertNull(cServices.byKey(CAROL));
+        Assert.assertNull(dServices.byKey(ED));
+    }
+    
     private static String getBName(String name) {
         return "b-beans." + name;
     }
