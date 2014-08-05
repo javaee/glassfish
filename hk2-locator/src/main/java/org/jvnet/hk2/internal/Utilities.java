@@ -2199,16 +2199,6 @@ public class Utilities {
     }
 
     /**
-     * Casts this thing to the given type
-     * @param o The thing to cast
-     * @return A casted version of o
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> T cast(Object o) {
-        return (T) o;
-    }
-
-    /**
      * Creates the service (without the need for an intermediate ServiceHandle
      * to be created)
      *

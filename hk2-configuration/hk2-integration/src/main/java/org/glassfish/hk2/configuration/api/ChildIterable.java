@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.configuration.api;
 
+import org.glassfish.hk2.api.ServiceHandle;
+
 /**
  * This interface can be used in conjunction with the
  * {@link ChildInject} annotation to get the current
@@ -55,5 +57,15 @@ public interface ChildIterable<T> extends Iterable<T> {
      * @return The child who has the given key
      */
     T byKey(String key);
+    
+    /**
+     * Returns an iterator of the children's Service
+     * Handle, rather than their services
+     * 
+     * @return
+     */
+    Iterable<ServiceHandle<T>> handleIterator();
+    
+    
 
 }

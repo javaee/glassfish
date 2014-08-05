@@ -44,6 +44,7 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
 
+import org.glassfish.hk2.configuration.api.ChildIterable;
 import org.glassfish.hk2.configuration.api.ConfigurationUtilities;
 import org.junit.Assert;
 import org.junit.Before;
@@ -125,8 +126,8 @@ public class E2ETest extends HK2Runner {
         Assert.assertNotNull(bob);
         Assert.assertEquals(BOB, bob.getName());
         
-        List<CService> children = bService.getChildren();
-        Assert.assertEquals(2, children.size());
+        ChildIterable<CService> children = bService.getChildren();
+        
         
         HashSet<String> names = new HashSet<String>();
         for (CService child : children) {
@@ -134,7 +135,8 @@ public class E2ETest extends HK2Runner {
         }
         
         Assert.assertTrue(names.contains(ALICE));
-        Assert.assertTrue(names.contains(ALICE));
+        Assert.assertTrue(names.contains(BOB));
+        Assert.assertEquals(2, names.size());
     }
     
     /**

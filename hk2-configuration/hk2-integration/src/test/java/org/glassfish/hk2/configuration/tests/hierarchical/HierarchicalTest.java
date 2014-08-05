@@ -49,6 +49,7 @@ import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.configuration.api.ChildIterable;
 import org.glassfish.hk2.configuration.api.ConfigurationUtilities;
 import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.configuration.hub.api.ManagerUtilities;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
@@ -97,7 +98,7 @@ public class HierarchicalTest {
      *     </b-bean>
      *   </b-beans>
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testBasicHierarchy() {
         BBeans bbeans = new BBeans();
         
@@ -171,7 +172,7 @@ public class HierarchicalTest {
         
                 Assert.assertTrue(aliceCServicesNames.contains(BOB));
                 Assert.assertTrue(aliceCServicesNames.contains(CAROL));
-                Assert.assertEquals(2, aliceCServicesNames);
+                Assert.assertEquals(2, aliceCServicesNames.size());
             }
         
             ChildIterable<DService> aliceDServices = aliceService.getDServices();
@@ -185,18 +186,19 @@ public class HierarchicalTest {
                 Assert.assertTrue(aliceDServicesNames.contains(DAVE));
                 Assert.assertTrue(aliceDServicesNames.contains(ED));
                 Assert.assertTrue(aliceDServicesNames.contains(FRANK));
-                Assert.assertEquals(3, aliceDServicesNames);
+                Assert.assertEquals(3, aliceDServicesNames.size());
             }
             
             Assert.assertNotNull(aliceService.getDave());
             
-            ChildIterable<ServiceHandle<DService>> aliceDServicesAsHandle = aliceService.getDServicesAsHandles();
+            ChildIterable<DService> aliceDServicesAsHandle = aliceService.getDServicesAsHandles();
             
             {
                 
                 HashSet<String> handleNames = new HashSet<String>();
                 HashSet<String> aliceDServicesNames = new HashSet<String>();
-                for (ServiceHandle<DService> dservice : aliceDServicesAsHandle) {
+                
+                for (ServiceHandle<DService> dservice : aliceDServicesAsHandle.handleIterator()) {
                     aliceDServicesNames.add(dservice.getService().getName());
                     handleNames.add(dservice.getActiveDescriptor().getName());
                 }
@@ -204,15 +206,12 @@ public class HierarchicalTest {
                 Assert.assertTrue(aliceDServicesNames.contains(DAVE));
                 Assert.assertTrue(aliceDServicesNames.contains(ED));
                 Assert.assertTrue(aliceDServicesNames.contains(FRANK));
-                Assert.assertEquals(3, aliceDServicesNames);
+                Assert.assertEquals(3, aliceDServicesNames.size());
                 
                 Assert.assertTrue(handleNames.contains(getDName(alice, DAVE)));
                 Assert.assertTrue(handleNames.contains(getDName(alice, ED)));
                 Assert.assertTrue(handleNames.contains(getDName(alice, FRANK)));
             }
-            
-            Assert.assertNotNull(aliceService.getDaveHandle());
-            Assert.assertNotNull(aliceService.getDaveHandle().getService());
         }
         
         {
@@ -247,12 +246,12 @@ public class HierarchicalTest {
             
             Assert.assertNotNull(giannaService.getDave());
             
-            ChildIterable<ServiceHandle<DService>> giannaDServicesAsHandle = giannaService.getDServicesAsHandles();
+            ChildIterable<DService> giannaDServicesAsHandle = giannaService.getDServicesAsHandles();
             
             {
                 HashSet<String> handleNames = new HashSet<String>();
                 HashSet<String> giannaDServicesNames = new HashSet<String>();
-                for (ServiceHandle<DService> dservice : giannaDServicesAsHandle) {
+                for (ServiceHandle<DService> dservice : giannaDServicesAsHandle.handleIterator()) {
                     giannaDServicesNames.add(dservice.getService().getName());
                     handleNames.add(dservice.getActiveDescriptor().getName());
                 }
@@ -264,10 +263,262 @@ public class HierarchicalTest {
                 Assert.assertTrue(handleNames.contains(getDName(gianna, DAVE)));
                 Assert.assertTrue(handleNames.contains(getDName(gianna, FRANK)));
             }
-            
-            Assert.assertNotNull(giannaService.getDaveHandle());
-            Assert.assertNotNull(giannaService.getDaveHandle().getService());
         }
+    }
+    
+    /**
+     * xml will start like this:
+     *   <b-beans>
+     *     <b-bean name="alice"/>
+     *   </b-beans>
+     *   
+     * and change to this:
+     * 
+     *   <b-beans>
+     *     <b-bean name="alice"/>
+     *       <c-beans>
+     *         <c-bean name="bob" />
+     *       </c-beans>
+     *       <d-bean name="dave" />
+     *     </b-bean>
+     *   </b-beans>
+     *   
+     * and then back to the original
+     */
+    @Test
+    public void testDynamicAdditionAndRemovals() {
+        ServiceLocator locator = ServiceLocatorFactory.getInstance().create(null, null, new ServiceLocatorGeneratorImpl());
+        
+        ConfigurationUtilities.enableConfigurationSystem(locator);
+        ServiceLocatorUtilities.addClasses(locator, BService.class, CService.class, DService.class);
+        
+        Hub hub = locator.getService(Hub.class);
+        
+        {
+            BBeans bbeans = new BBeans();
+        
+            BBean alice = bbeans.addBBean(ALICE);
+        
+            WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+        
+            WriteableType bbean_type = wbd.addType(BBEAN_XPATH);
+            bbean_type.addInstance(getBName(ALICE), alice);
+        
+            wbd.commit();
+        }
+        
+        // An empty BBean is in there, lets get the service
+        BService aliceService = locator.getService(BService.class, getBName(ALICE));
+        
+        ChildIterable<CService> cServices = aliceService.getCServices();
+        ChildIterable<DService> dServices = aliceService.getDServices();
+        
+        for (CService cService : cServices) {
+            Assert.fail("There should be no cServices: " + cService);
+        }
+        
+        for (DService dService : dServices) {
+            Assert.fail("There should be no dServices: " + dService);
+        }
+        
+        {
+            // Now modify the beans
+            BBeans bbeans2 = new BBeans();
+            
+            BBean alice2 = bbeans2.addBBean(ALICE);
+            
+            CBeans alice2_cbeans = alice2.getCBeans();
+            CBean bob2 = alice2_cbeans.addCBean(BOB);
+            
+            DBean dave2 = alice2.addDBean(DAVE);
+            
+            WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+            
+            WriteableType bbean2_type = wbd.getWriteableType(BBEAN_XPATH);
+            bbean2_type.modifyInstance(getBName(ALICE), alice2);
+            
+            WriteableType cbean_type = wbd.addType(CBEAN_XPATH);
+            
+            // alice2s c-beans
+            cbean_type.addInstance(getCName(alice2, BOB), bob2);
+            
+            WriteableType dbean_type = wbd.addType(DBEAN_XPATH);
+            
+            // alice2s d-beans
+            dbean_type.addInstance(getDName(alice2, DAVE), dave2);
+            
+            wbd.commit();
+        }
+        
+        // Alice should NOT have changed
+        BService aliceService2 = locator.getService(BService.class, getBName(ALICE));
+        Assert.assertEquals(aliceService, aliceService2);
+        
+        for (CService cService : cServices) {
+            Assert.assertEquals(cService.getName(), BOB);
+        }
+        
+        for (DService dService : dServices) {
+            Assert.assertEquals(dService.getName(), DAVE);
+        }
+        
+        {
+            BBeans bbeans = new BBeans();
+        
+            BBean alice = bbeans.addBBean(ALICE);
+        
+            WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+        
+            WriteableType bbean_type = wbd.getWriteableType(BBEAN_XPATH);
+            bbean_type.modifyInstance(getBName(ALICE), alice);
+            
+            WriteableType cbean_type = wbd.getWriteableType(CBEAN_XPATH);
+            
+            cbean_type.removeInstance(getCName(alice, BOB));
+            
+            WriteableType dbean_type = wbd.getWriteableType(DBEAN_XPATH);
+            
+            dbean_type.removeInstance(getDName(alice, DAVE));
+        
+            wbd.commit();
+        }
+        
+        // Alice should NOT have changed
+        BService aliceService3 = locator.getService(BService.class, getBName(ALICE));
+        Assert.assertEquals(aliceService, aliceService3);
+        
+        // And these should be back to empty
+        for (CService cService : cServices) {
+            Assert.fail("There should be no cServices: " + cService);
+        }
+        
+        for (DService dService : dServices) {
+            Assert.fail("There should be no dServices: " + dService);
+        }
+    }
+    
+    /**
+     * xml will look like this:
+     *
+     *   <b-beans>
+     *     <b-bean name="alice"/>
+     *       <c-beans>
+     *         <c-bean name="bob" />
+     *       </c-beans>
+     *       <d-bean name="dave" />
+     *     </b-bean>
+     *   </b-beans>
+     *   
+     * We will then test that we can get the services with the byKey method of ChildIterable
+     */
+    @Test // @org.junit.Ignore
+    public void testByKey() {
+        ServiceLocator locator = ServiceLocatorFactory.getInstance().create(null, null, new ServiceLocatorGeneratorImpl());
+        
+        ConfigurationUtilities.enableConfigurationSystem(locator);
+        ServiceLocatorUtilities.addClasses(locator, BService.class, CService.class, DService.class);
+        
+        Hub hub = locator.getService(Hub.class);
+        
+        {
+            // Now modify the beans
+            BBeans bbeans2 = new BBeans();
+            
+            BBean alice2 = bbeans2.addBBean(ALICE);
+            
+            CBeans alice2_cbeans = alice2.getCBeans();
+            CBean bob2 = alice2_cbeans.addCBean(BOB);
+            
+            DBean dave2 = alice2.addDBean(DAVE);
+            
+            WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+            
+            WriteableType bbean2_type = wbd.addType(BBEAN_XPATH);
+            bbean2_type.addInstance(getBName(ALICE), alice2);
+            
+            WriteableType cbean_type = wbd.addType(CBEAN_XPATH);
+            
+            // alice2s c-beans
+            cbean_type.addInstance(getCName(alice2, BOB), bob2);
+            
+            WriteableType dbean_type = wbd.addType(DBEAN_XPATH);
+            
+            // alice2s d-beans
+            dbean_type.addInstance(getDName(alice2, DAVE), dave2);
+            
+            wbd.commit();
+        }
+        
+        // An empty BBean is in there, lets get the service
+        BService aliceService = locator.getService(BService.class, getBName(ALICE));
+        
+        ChildIterable<CService> cServices = aliceService.getCServices();
+        ChildIterable<DService> dServices = aliceService.getDServices();
+        
+        Assert.assertNotNull(cServices.byKey(BOB));
+        Assert.assertNotNull(dServices.byKey(DAVE));
+        
+        Assert.assertNull(cServices.byKey(CAROL));
+        Assert.assertNull(dServices.byKey(ED));
+    }
+    
+    /**
+     * This test fills the hub up with data *prior* to initializing
+     * the configuration system, to ensure it still works
+     */
+    @Test @org.junit.Ignore
+    public void testFillHubPriorToInitializingConfiguration() {
+        ServiceLocator locator = ServiceLocatorFactory.getInstance().create(null, null, new ServiceLocatorGeneratorImpl());
+        
+        ManagerUtilities.enableConfigurationHub(locator);
+        
+        Hub hub = locator.getService(Hub.class);
+        
+        {
+            // Now modify the beans
+            BBeans bbeans2 = new BBeans();
+            
+            BBean alice2 = bbeans2.addBBean(ALICE);
+            
+            CBeans alice2_cbeans = alice2.getCBeans();
+            CBean bob2 = alice2_cbeans.addCBean(BOB);
+            
+            DBean dave2 = alice2.addDBean(DAVE);
+            
+            WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+            
+            WriteableType bbean2_type = wbd.addType(BBEAN_XPATH);
+            bbean2_type.addInstance(getBName(ALICE), alice2);
+            
+            WriteableType cbean_type = wbd.addType(CBEAN_XPATH);
+            
+            // alice2s c-beans
+            cbean_type.addInstance(getCName(alice2, BOB), bob2);
+            
+            WriteableType dbean_type = wbd.addType(DBEAN_XPATH);
+            
+            // alice2s d-beans
+            dbean_type.addInstance(getDName(alice2, DAVE), dave2);
+            
+            wbd.commit();
+        }
+        
+        // Turn on configuration later, after hub has its data already
+        ConfigurationUtilities.enableConfigurationSystem(locator);
+        ServiceLocatorUtilities.addClasses(locator, BService.class, CService.class, DService.class);
+        
+        // An empty BBean is in there, lets get the service
+        BService aliceService = locator.getService(BService.class, getBName(ALICE));
+        Assert.assertNotNull(aliceService);
+        
+        ChildIterable<CService> cServices = aliceService.getCServices();
+        ChildIterable<DService> dServices = aliceService.getDServices();
+        
+        Assert.assertNotNull(cServices.byKey(BOB));
+        Assert.assertNotNull(dServices.byKey(DAVE));
+        
+        Assert.assertNull(cServices.byKey(CAROL));
+        Assert.assertNull(dServices.byKey(ED));
     }
     
     private static String getBName(String name) {

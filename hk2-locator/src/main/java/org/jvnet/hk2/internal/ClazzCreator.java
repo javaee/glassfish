@@ -361,7 +361,7 @@ public class ClazzCreator<T> implements Creator<T> {
 
             if (eventThrower != null) {
                 eventThrower.invokeInstanceListeners(new InstanceLifecycleEventImpl(InstanceLifecycleEventType.PRE_PRODUCTION,
-                    null, Utilities.<Map<Injectee,Object>>cast(allResolved), eventThrower));
+                    null, ReflectionHelper.<Map<Injectee,Object>>cast(allResolved), eventThrower));
             }
 
             failureLocation = "create";
@@ -378,7 +378,7 @@ public class ClazzCreator<T> implements Creator<T> {
 
             if (eventThrower != null) {
                 eventThrower.invokeInstanceListeners(new InstanceLifecycleEventImpl(InstanceLifecycleEventType.POST_PRODUCTION,
-                    retVal, Utilities.<Map<Injectee, Object>>cast(allResolved), eventThrower));
+                    retVal, ReflectionHelper.<Map<Injectee, Object>>cast(allResolved), eventThrower));
             }
 
             return retVal;
@@ -420,7 +420,7 @@ public class ClazzCreator<T> implements Creator<T> {
      */
     @Override
     public List<Injectee> getInjectees() {
-        return Utilities.cast(allInjectees);
+        return ReflectionHelper.cast(allInjectees);
     }
     
     /* package */ ServiceLocatorImpl getServiceLocator() {

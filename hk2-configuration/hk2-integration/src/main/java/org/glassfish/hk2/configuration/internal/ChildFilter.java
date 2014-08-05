@@ -37,34 +37,59 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.hub.xml.dom.integration.e2etests;
+package org.glassfish.hk2.configuration.internal;
 
-import java.util.List;
+import java.lang.reflect.Type;
 
-import org.glassfish.hk2.configuration.api.ChildInject;
-import org.glassfish.hk2.configuration.api.ChildIterable;
-import org.glassfish.hk2.configuration.api.Configured;
-import org.glassfish.hk2.configuration.api.ConfiguredBy;
-import org.jvnet.hk2.annotations.Service;
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.IndexedFilter;
+import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
-/**
- * @author jwells
- *
- */
-@Service @ConfiguredBy(E2ETest.BBEAN_TAG)
-public class BService {
-    @Configured
-    private String parameter;
+class ChildFilter implements IndexedFilter {
+    private final String requiredType;
+    private final String requiredPrefix;
+    private final String requiredSuffix;
     
-    @ChildInject
-    private ChildIterable<CService> children;
-    
-    public String getParameter() {
-        return parameter;
+    ChildFilter(Type type, String prefix, String suffix) {
+        Class<?> requiredTypeClass = ReflectionHelper.getRawClass(type);
+        
+        requiredType = requiredTypeClass.getName();
+        requiredPrefix = prefix;
+        requiredSuffix = suffix;
     }
     
-    public ChildIterable<CService> getChildren() {
-        return children;
+    ChildFilter(Type type, String prefix) {
+        this(type, prefix, null);
     }
 
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Filter#matches(org.glassfish.hk2.api.Descriptor)
+     */
+    @Override
+    public boolean matches(Descriptor d) {
+        if (d.getName() == null) return false;
+        
+        if (!d.getName().startsWith(requiredPrefix)) return false;
+        
+        if (requiredSuffix == null) return true;
+        
+        return d.getName().endsWith(requiredSuffix);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.IndexedFilter#getAdvertisedContract()
+     */
+    @Override
+    public String getAdvertisedContract() {
+        return requiredType;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.IndexedFilter#getName()
+     */
+    @Override
+    public String getName() {
+        return null;
+    }
+    
 }

@@ -1413,4 +1413,14 @@ public final class ReflectionHelper {
     public static MethodWrapper createMethodWrapper(Method wrapMe) {
         return new MethodWrapperImpl(wrapMe);
     }
+    
+    /**
+     * Casts this thing to the given type
+     * @param o The thing to cast
+     * @return A casted version of o
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T cast(Object o) {
+        return (T) o;
+    }
 }
