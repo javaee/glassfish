@@ -106,10 +106,7 @@ public class ChildInjectResolverImpl implements InjectionResolver<ChildInject> {
         
         prefixName = prefixName + childInject.value();
         
-        boolean isList = false;
-        boolean isHandle = false;
         if (ChildIterable.class.equals(requiredClass) && (requiredType instanceof ParameterizedType)) {
-            isList = true;
             ParameterizedType pt = (ParameterizedType) requiredType;
             
             // Replace the required type
@@ -124,31 +121,12 @@ public class ChildInjectResolverImpl implements InjectionResolver<ChildInject> {
         
         List<ActiveDescriptor<?>> matches = locator.getDescriptors(new ChildFilter(requiredType, prefixName));
         
-        if (isList) {
-            ArrayList<Object> retVal = new ArrayList<Object>(matches.size());
-            
-            for (ActiveDescriptor<?> match : matches) {
-                if (isHandle) {
-                    retVal.add(locator.getServiceHandle(match));
-                }
-                else {
-                    retVal.add(locator.getServiceHandle(match).getService());
-                }
-            }
-            
-            return retVal;
-        }
-        
         if (matches.isEmpty()) {
             if (injectee.isOptional()) {
                 return null;
             }
             
             throw new IllegalStateException("Could not find a child injection point for " + injectee);
-        }
-        
-        if (isHandle) {
-            return locator.getServiceHandle(matches.get(0));
         }
         
         return locator.getServiceHandle(matches.get(0)).getService();
