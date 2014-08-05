@@ -37,51 +37,36 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.testing.hk2mockito.internal;
+package org.jvnet.testing.hk2mockito.internal.cache;
 
 import java.lang.reflect.Type;
+import java.util.Map;
+import javax.inject.Inject;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.testing.hk2mockito.internal.HK2Mockito;
 
 /**
- * Cache key for spies created.
+ * Cache service used to track parent child relationship between injectees and
+ * their parent.
  *
  * @author Sharmarke Aden
  */
-public class SpyCacheKey {
+@Service
+public class ParentCache {
 
-    private final Type type;
-    private final Object value;
+    private final Map<Type, Type> cache;
 
-    public SpyCacheKey(Type type, Object value) {
-        this.type = type;
-        this.value = value;
+    @Inject
+    ParentCache(@HK2Mockito Map cache) {
+        this.cache = cache;
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 83 * hash + (this.type != null ? this.type.hashCode() : 0);
-        hash = 83 * hash + (this.value != null ? this.value.hashCode() : 0);
-        return hash;
+    public void put(Type child, Type parent) {
+        cache.put(child, parent);
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final SpyCacheKey other = (SpyCacheKey) obj;
-        if (this.type != other.type && (this.type == null || !this.type.equals(other.type))) {
-            return false;
-        }
-        return this.value == other.value || (this.value != null && this.value.equals(other.value));
-    }
-
-    @Override
-    public String toString() {
-        return "SpyCacheKey{" + "type=" + type + ", value=" + value + '}';
+    public Type get(Type child) {
+        return cache.get(child);
     }
 
 }

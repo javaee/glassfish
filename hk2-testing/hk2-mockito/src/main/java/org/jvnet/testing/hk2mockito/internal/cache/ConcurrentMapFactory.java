@@ -37,12 +37,13 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.testing.hk2mockito.internal;
+package org.jvnet.testing.hk2mockito.internal.cache;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.glassfish.hk2.api.Factory;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.testing.hk2mockito.internal.HK2Mockito;
 
 /**
  * ConcurrentHashMap provider.

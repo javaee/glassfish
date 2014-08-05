@@ -37,35 +37,75 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.testing.hk2mockito.internal;
+package org.jvnet.testing.hk2mockito;
 
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Member;
 import java.lang.reflect.Type;
-import java.util.Map;
 import javax.inject.Inject;
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.InjectionResolver;
+import org.glassfish.hk2.api.Rank;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.testing.hk2mockito.internal.MockitoService;
+import org.jvnet.testing.hk2mockito.internal.cache.ParentCache;
 
 /**
- * Cache service used to track parent child relationship between injectees and
- * their parent.
+ * This class is a custom resolver that creates or finds services and wraps in a
+ * spy.
  *
  * @author Sharmarke Aden
  */
+@Rank(Integer.MAX_VALUE)
 @Service
-public class ParentCache {
+public class HK2MockitoInjectionResolver implements InjectionResolver<Inject> {
 
-    private final Map<Type, Type> cache;
+    private final MockitoService mockitoService;
+    private final ParentCache parentCache;
 
     @Inject
-    ParentCache(@HK2Mockito Map cache) {
-        this.cache = cache;
+    HK2MockitoInjectionResolver(MockitoService mockitoService, ParentCache parentCache) {
+        this.mockitoService = mockitoService;
+        this.parentCache = parentCache;
     }
 
-    public void put(Type child, Type parent) {
-        cache.put(child, parent);
+    @Override
+    public Object resolve(Injectee injectee, ServiceHandle<?> root) {
+        AnnotatedElement parent = injectee.getParent();
+        Member member = (Member) parent;
+        Type requiredType = injectee.getRequiredType();
+        Type parentType = member.getDeclaringClass();
+
+        SUT sut = parent.getAnnotation(SUT.class);
+        SC sc = parent.getAnnotation(SC.class);
+        MC mc = parent.getAnnotation(MC.class);
+
+        Object service;
+
+        parentCache.put(requiredType, parentType);
+
+        if (sut != null) {
+            service = mockitoService.findOrCreateSUT(sut, injectee, root);
+        } else if (sc != null) {
+            service = mockitoService.findOrCreateCollaborator(sc.value(), sc.field(), injectee, root);
+        } else if (mc != null) {
+            service = mockitoService.findOrCreateCollaborator(mc.value(), mc.field(), injectee, root);
+        } else {
+            service = mockitoService.createOrFindService(injectee, root);
+        }
+
+        return service;
     }
 
-    public Type get(Type child) {
-        return cache.get(child);
+    @Override
+    public boolean isConstructorParameterIndicator() {
+        return false;
+    }
+
+    @Override
+    public boolean isMethodParameterIndicator() {
+        return false;
     }
 
 }

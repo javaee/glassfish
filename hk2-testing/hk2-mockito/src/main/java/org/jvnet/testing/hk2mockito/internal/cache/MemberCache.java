@@ -37,13 +37,15 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.testing.hk2mockito.internal;
+package org.jvnet.testing.hk2mockito.internal.cache;
 
 import java.lang.reflect.Type;
 import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.testing.hk2mockito.internal.HK2Mockito;
+import org.jvnet.testing.hk2mockito.internal.MockitoCacheKey;
 
 /**
  * A cache service for tracking spy injectees and spy services.
@@ -53,7 +55,7 @@ import org.jvnet.hk2.annotations.Service;
 @Service
 public class MemberCache {
 
-    private final Map<Type, Map<SpyCacheKey, Object>> cache;
+    private final Map<Type, Map<MockitoCacheKey, Object>> cache;
     private final Provider<Map> cacheProvider;
 
     @Inject
@@ -62,11 +64,11 @@ public class MemberCache {
         this.cacheProvider = cacheProvider;
     }
 
-    public Map<SpyCacheKey, Object> get(Type type) {
+    public Map<MockitoCacheKey, Object> get(Type type) {
         return cache.get(type);
     }
 
-    public Map<SpyCacheKey, Object> add(Type type) {
+    public Map<MockitoCacheKey, Object> add(Type type) {
         Map typeCache = cacheProvider.get();
         cache.put(type, typeCache);
 

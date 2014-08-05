@@ -39,74 +39,38 @@
  */
 package org.jvnet.testing.hk2mockito;
 
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Member;
-import java.lang.reflect.Type;
 import javax.inject.Inject;
-import org.glassfish.hk2.api.Injectee;
-import org.glassfish.hk2.api.InjectionResolver;
-import org.glassfish.hk2.api.Rank;
-import org.glassfish.hk2.api.ServiceHandle;
-import org.jvnet.hk2.annotations.Service;
-import org.jvnet.testing.hk2mockito.internal.ParentCache;
-import org.jvnet.testing.hk2mockito.internal.SpyService;
+import static org.assertj.core.api.Assertions.assertThat;
+import org.jvnet.testing.hk2mockito.fixture.service.ConstructorInjectionGreetingService;
+import org.jvnet.testing.hk2testng.HK2;
+import static org.mockito.Mockito.mockingDetails;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 /**
- * This class is a custom resolver that creates or finds services and wraps in a
- * spy.
  *
  * @author Sharmarke Aden
  */
-@Rank(Integer.MAX_VALUE)
-@Service
-public class HK2MockitoSpyInjectionResolver implements InjectionResolver<Inject> {
-
-    private final SpyService spyService;
-    private final ParentCache parentCache;
+@HK2
+public class WithoutSUTTest {
 
     @Inject
-    HK2MockitoSpyInjectionResolver(SpyService spyService,
-            ParentCache parentCache) {
-        this.spyService = spyService;
-        this.parentCache = parentCache;
+    ConstructorInjectionGreetingService sut;
+
+
+    @BeforeClass
+    public void verifyInjection() {
+        assertThat(sut).isNotNull();
+        assertThat(mockingDetails(sut).isSpy()).isFalse();
     }
 
-    @Override
-    public Object resolve(Injectee injectee, ServiceHandle<?> root) {
-        AnnotatedElement parent = injectee.getParent();
-        Member member = (Member) parent;
-        Type requiredType = injectee.getRequiredType();
-        Type parentType = member.getDeclaringClass();
+    @Test
+    public void callToGreetShouldCallCollboratorGreet() {
+        String greeting = "Hello!";
 
-        SUT sut = parent.getAnnotation(SUT.class);
-        SC sc = parent.getAnnotation(SC.class);
-        MC mc = parent.getAnnotation(MC.class);
+        String result = sut.greet();
 
-        Object service;
-
-        parentCache.put(requiredType, parentType);
-
-        if (sut != null) {
-            service = spyService.findOrCreateSUT(sut, injectee, root);
-        } else if (sc != null) {
-            service = spyService.findOrCreateCollaborator(sc.value(), sc.field(), injectee, root);
-        } else if (mc != null) {
-            service = spyService.findOrCreateCollaborator(mc.value(), mc.field(), injectee, root);
-        } else {
-            service = spyService.createOrFindService(injectee, root);
-        }
-
-        return service;
-    }
-
-    @Override
-    public boolean isConstructorParameterIndicator() {
-        return false;
-    }
-
-    @Override
-    public boolean isMethodParameterIndicator() {
-        return false;
+        assertThat(result).isEqualTo(greeting);
     }
 
 }
