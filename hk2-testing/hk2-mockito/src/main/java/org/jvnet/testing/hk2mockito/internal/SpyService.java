@@ -43,10 +43,10 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Member;
 import java.lang.reflect.Type;
-import java.security.AccessController;
 import static java.security.AccessController.doPrivileged;
 import java.security.PrivilegedAction;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.inject.Inject;
@@ -57,11 +57,12 @@ import static org.glassfish.hk2.api.InjectionResolver.SYSTEM_RESOLVER_NAME;
 import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.utilities.InjecteeImpl;
 import org.glassfish.hk2.utilities.NamedImpl;
-import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import static org.glassfish.hk2.utilities.reflection.ReflectionHelper.getQualifierAnnotations;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.internal.SystemInjecteeImpl;
+import org.jvnet.hk2.internal.Utilities;
+import static org.jvnet.hk2.internal.Utilities.getFieldInjectees;
 import org.jvnet.testing.hk2mockito.HK2MockitoSpyInjectionResolver;
 import org.jvnet.testing.hk2mockito.MC;
 import org.jvnet.testing.hk2mockito.SC;
@@ -84,6 +85,7 @@ public class SpyService {
     private final IterableProvider<InjectionResolver> resolvers;
     private final InjectionResolver<Inject> systemResolver;
     private final ServiceLocator locator;
+    private Class sut;
 
     @Inject
     SpyService(MemberCache memberCache,
@@ -106,7 +108,7 @@ public class SpyService {
 
         for (InjectionResolver resolver : resolvers) {
 
-            if (resolver.getClass().isAssignableFrom(HK2MockitoSpyInjectionResolver.class)) {
+            if (resolver instanceof HK2MockitoSpyInjectionResolver) {
                 continue;
             }
 
@@ -121,6 +123,7 @@ public class SpyService {
     }
 
     public Object findOrCreateSUT(SUT sut, Injectee injectee, ServiceHandle<?> root) {
+        this.sut = (Class) injectee.getRequiredType();
         Member member = (Member) injectee.getParent();
         Type parentType = member.getDeclaringClass();
         prime((Class) parentType);
@@ -168,7 +171,13 @@ public class SpyService {
             key = objectFactory.newKey(requiredType, injectee.getPosition());
         }
 
-        return cache.get(key);
+        service = cache.get(key);
+
+        if (service == null) {
+            service = resolve(injectee, root);
+        }
+
+        return service;
     }
 
     public Object findOrCreateCollaborator(int position,
@@ -215,19 +224,18 @@ public class SpyService {
 
             for (Field field : fields) {
                 String name = field.getName();
-                Class<?> fieldType = field.getType();
+                Class<?> fieldClass = field.getType();
+                Type fieldType = field.getGenericType();
+
                 SC sc = field.getAnnotation(SC.class);
                 MC mc = field.getAnnotation(MC.class);
 
                 if (sc != null) {
                     Set<Annotation> qualifiers = getQualifiers(field);
+                    List<SystemInjecteeImpl> injectees = getFieldInjectees(field, null);
 
-                    InjecteeImpl injectee = new InjecteeImpl(field.getGenericType());
-                    injectee.setPosition(sc.value());
-                    injectee.setRequiredQualifiers(qualifiers);
-                    injectee.setParent(field.getDeclaringClass());
+                    Object service = resolve(injectees.get(0), null);
 
-                    Object service = resolve(injectee, null);
                     if (service != null) {
 
                         SpyCacheKey executableKey = objectFactory.newKey(fieldType, sc.value());
@@ -258,14 +266,14 @@ public class SpyService {
                         settings.extraInterfaces(mc.extraInterfaces());
                     }
 
-                    Object service = objectFactory.newMock(fieldType, settings);
+                    Object service = objectFactory.newMock(fieldClass, settings);
 
-                    SpyCacheKey executableKey = objectFactory.newKey(fieldType, mc.value());
+                    SpyCacheKey executableKey = objectFactory.newKey(fieldClass, mc.value());
                     String fieldName = mc.field();
                     if ("".equals(fieldName)) {
                         fieldName = name;
                     }
-                    SpyCacheKey fieldKey = objectFactory.newKey(fieldType, fieldName);
+                    SpyCacheKey fieldKey = objectFactory.newKey(fieldClass, fieldName);
 
                     cache.put(executableKey, service);
                     cache.put(fieldKey, service);
