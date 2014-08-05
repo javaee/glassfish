@@ -140,6 +140,10 @@ public class ChildInjectResolverImpl implements InjectionResolver<ChildInject> {
         }
         
         if (matches.isEmpty()) {
+            if (injectee.isOptional()) {
+                return null;
+            }
+            
             throw new IllegalStateException("Could not find a child injection point for " + injectee);
         }
         

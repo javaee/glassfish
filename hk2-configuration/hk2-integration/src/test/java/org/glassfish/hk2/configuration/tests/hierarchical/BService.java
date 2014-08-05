@@ -42,6 +42,7 @@ package org.glassfish.hk2.configuration.tests.hierarchical;
 import org.glassfish.hk2.configuration.api.ChildInject;
 import org.glassfish.hk2.configuration.api.ChildIterable;
 import org.glassfish.hk2.configuration.api.ConfiguredBy;
+import org.jvnet.hk2.annotations.Optional;
 
 /**
  * @author jwells
@@ -64,7 +65,7 @@ public class BService extends NamedService {
     
     @SuppressWarnings("unused")
     private void myInitializer(@ChildInject ChildIterable<DService> dServicesAsHandles,
-                               @ChildInject DService dave) {
+                               @ChildInject @Optional DService dave) {
         this.dServicesAsHandles = dServicesAsHandles;
         this.dave = dave;
     }
