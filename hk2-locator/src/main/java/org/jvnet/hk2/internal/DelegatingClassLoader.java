@@ -41,18 +41,29 @@ package org.jvnet.hk2.internal;
 
 import java.net.URL;
 
-import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.Pretty;
 
 /**
  * A classloader that delegates first to an optional parent and then to a delegate loader
  */
-class DelegatingClassLoader<T> extends ClassLoader {
-	
+class DelegatingClassLoader extends ClassLoader {
+	private final Object hardPointer;
 	private final ClassLoader delegates[];
 
-	DelegatingClassLoader(ClassLoader parent, ClassLoader... classLoaderDelegates) {
+	/**
+	 * Constructor for special classloader to give to proxy making code
+	 * 
+	 * @param parent the java-style classloader parent of this loader
+	 * @param hardPointer this is a hard pointer back to a key in a WeakHashMap.  This
+	 * will cause the WeakHashMap to have a hard reference back to the key as long as
+	 * someone has a hard reference to this DelegatingClassLoader.  That will cause
+	 * the key to not get removed until there are no more hard references to this
+	 * DelegatingClassLoader
+	 * @param classLoaderDelegates other classloaders to delegate to
+	 */
+	DelegatingClassLoader(ClassLoader parent, Object hardPointer, ClassLoader... classLoaderDelegates) {
 		super(parent);
+		this.hardPointer = hardPointer;
         delegates=classLoaderDelegates;
     }
 	
@@ -97,39 +108,11 @@ class DelegatingClassLoader<T> extends ClassLoader {
 		}
 		
 		return null;
-	}	
-	
-	@Override
-	public int hashCode() {
-	    int code = (getParent() == null) ? 0 : getParent().hashCode();
-	    
-	    for (ClassLoader delegate : delegates) {
-	        code ^= delegate.hashCode();
-	    }
-	    
-	    return code;
-	}
-	
-	@Override
-	public boolean equals(Object o) {
-	    if (o == null) return false;
-	    if (!(o instanceof DelegatingClassLoader)) return false;
-	    
-	    DelegatingClassLoader<?> other = (DelegatingClassLoader<?>) o;
-	    
-	    if (!GeneralUtilities.safeEquals(getParent(), other.getParent())) return false;
-	    
-	    if (delegates.length != other.delegates.length) return false;
-	    
-	    for (int lcv = 0; lcv < delegates.length; lcv++) {
-	        if (!GeneralUtilities.safeEquals(delegates[lcv], other.delegates[lcv])) return false;
-	    }
-	    
-	    return true;
 	}
 	
 	@Override
 	public String toString() {
-	    return "DelegatingClassLoader(" + getParent() + "," + Pretty.array(delegates) + "," + System.identityHashCode(this) + ")";
+	    return "DelegatingClassLoader(" + getParent() + "," + hardPointer + "," +
+	        Pretty.array(delegates) + "," + System.identityHashCode(this) + ")";
 	}
 }

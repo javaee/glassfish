@@ -42,6 +42,7 @@ package org.jvnet.hk2.internal;
 import java.lang.reflect.Proxy;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.WeakHashMap;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.MultiException;
@@ -60,6 +61,8 @@ import javassist.util.proxy.ProxyObject;
  */
 public class ProxyUtilities {
     private final static Object proxyCreationLock = new Object();
+    private final static WeakHashMap<WeakDelegatingCacheEntry, Object> delegatingLoaderSet =
+            new WeakHashMap<WeakDelegatingCacheEntry, Object>();
     
     private static <T> T secureCreate(final Class<?> superclass,
             final Class<?>[] interfaces,
@@ -70,20 +73,27 @@ public class ProxyUtilities {
          * this classloader must have visibility into the javaassist classloader as well as
          * the superclass' classloader
          */
-        final ClassLoader delegatingLoader = (ClassLoader) AccessController
-                .doPrivileged(new PrivilegedAction<Object>() {
-
-                    @Override
-                    public Object run() {
-                        // create a delegating classloader that attempts to
-                        // load from the superclass' classloader first,
-                        // then hk2-locator's classloader second.
-                        return new DelegatingClassLoader<T>(
-                                superclass.getClassLoader(),
-                                ProxyFactory.class.getClassLoader(),
-                                ProxyCtl.class.getClassLoader());
-                    }
-                });
+        ClassLoader myLoader;
+        synchronized (delegatingLoaderSet) {
+            
+            WeakDelegatingCacheEntry key = new WeakDelegatingCacheEntry(superclass.getClassLoader());
+            WeakDelegatingCacheEntry found = null;
+            for (WeakDelegatingCacheEntry entry : delegatingLoaderSet.keySet()) {
+                if (key.equals(entry)) {
+                    found = entry;
+                    break;
+                }
+            }
+            
+            if (found == null) {
+                found = key;
+                
+                delegatingLoaderSet.put(found, null);
+            }
+            
+            myLoader = found.getDelegator();
+        }
+        final ClassLoader delegatingLoader = myLoader;
 
         if (useJDKProxy) {
             return AccessController.doPrivileged(new PrivilegedAction<T>() {
@@ -189,6 +199,66 @@ public class ProxyUtilities {
         }
 
         return proxy;
+    }
+    
+    /**
+     * The point of this class is to reside in a WeakHashMap as the
+     * key and thus only have weak references to the classloaders
+     * pointed to by this object.  It also reduces the number of
+     * classloaders that are created by calculating the DelegatingClassLoader
+     * only once, though the performance benefit of that is probably
+     * out-weighed by the fact that we have to linearly go through
+     * the WeakHashMap keys to get back the original key object
+     * 
+     * @author jwells
+     *
+     */
+    private static class WeakDelegatingCacheEntry {
+        private final ClassLoader key;
+        private DelegatingClassLoader loader;
+        
+        private WeakDelegatingCacheEntry(ClassLoader key) {
+            this.key = key;
+        }
+        
+        private DelegatingClassLoader getDelegator() {
+            if (loader != null) return loader;
+            
+            final Object backPointer = this;
+            loader = AccessController
+                .doPrivileged(new PrivilegedAction<DelegatingClassLoader>() {
+
+                @Override
+                public DelegatingClassLoader run() {
+                    // create a delegating classloader that attempts to
+                    // load from the superclass' classloader first,
+                    // then hk2-locator's classloader second.
+                    return new DelegatingClassLoader(
+                            key,
+                            backPointer,
+                            ProxyFactory.class.getClassLoader(),
+                            ProxyCtl.class.getClassLoader());
+                }
+            });
+            
+            return loader;
+            
+        }
+        
+        @Override
+        public int hashCode() {
+            return key.hashCode();
+        }
+        
+        @Override
+        public boolean equals(Object o) {
+            if (o == null) return false;
+            if (!(o instanceof WeakDelegatingCacheEntry)) return false;
+            
+            WeakDelegatingCacheEntry other = (WeakDelegatingCacheEntry) o;
+            
+            return key.equals(other.key);
+        }
     }
 
 }
