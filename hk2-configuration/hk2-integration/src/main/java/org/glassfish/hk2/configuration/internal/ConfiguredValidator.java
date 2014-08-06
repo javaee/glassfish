@@ -92,8 +92,6 @@ public class ConfiguredValidator implements Validator {
             return true;
         }
         
-        
-        
         // Unknown operation, I guess it is ok
         return true;
     }

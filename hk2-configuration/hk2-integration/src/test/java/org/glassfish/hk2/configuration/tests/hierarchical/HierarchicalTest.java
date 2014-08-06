@@ -465,9 +465,10 @@ public class HierarchicalTest {
     /**
      * This test fills the hub up with data *prior* to initializing
      * the configuration system, to ensure it still works
+     * @throws InterruptedException 
      */
-    @Test @org.junit.Ignore
-    public void testFillHubPriorToInitializingConfiguration() {
+    @Test // @org.junit.Ignore
+    public void testFillHubPriorToInitializingConfiguration() throws InterruptedException {
         ServiceLocator locator = ServiceLocatorFactory.getInstance().create(null, null, new ServiceLocatorGeneratorImpl());
         
         ManagerUtilities.enableConfigurationHub(locator);
@@ -507,6 +508,74 @@ public class HierarchicalTest {
         ConfigurationUtilities.enableConfigurationSystem(locator);
         ServiceLocatorUtilities.addClasses(locator, BService.class, CService.class, DService.class);
         
+        // An empty BBean is in there, lets get the service
+        BService aliceService = locator.getService(BService.class, getBName(ALICE));
+        Assert.assertNotNull(aliceService);
+        
+        ChildIterable<CService> cServices = aliceService.getCServices();
+        ChildIterable<DService> dServices = aliceService.getDServices();
+        
+        Assert.assertNotNull(cServices.byKey(BOB));
+        Assert.assertNotNull(dServices.byKey(DAVE));
+        
+        Assert.assertNull(cServices.byKey(CAROL));
+        Assert.assertNull(dServices.byKey(ED));
+    }
+    
+    /**
+     * This test fills the hub up with data *prior* to initializing
+     * the configuration system, as well as pre-seeding the locator
+     * with ConfiguredBy services, which exercises a different
+     * code-path
+     * 
+     * @throws InterruptedException 
+     */
+    @Test // @org.junit.Ignore
+    public void testFillHubAndServicesPriorToInitializingConfiguration() throws InterruptedException {
+        ServiceLocator locator = ServiceLocatorFactory.getInstance().create(null, null, new ServiceLocatorGeneratorImpl());
+        
+        ManagerUtilities.enableConfigurationHub(locator);
+        
+        Hub hub = locator.getService(Hub.class);
+        
+        {
+            // Now modify the beans
+            BBeans bbeans2 = new BBeans();
+            
+            BBean alice2 = bbeans2.addBBean(ALICE);
+            
+            CBeans alice2_cbeans = alice2.getCBeans();
+            CBean bob2 = alice2_cbeans.addCBean(BOB);
+            
+            DBean dave2 = alice2.addDBean(DAVE);
+            
+            WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+            
+            WriteableType bbean2_type = wbd.addType(BBEAN_XPATH);
+            bbean2_type.addInstance(getBName(ALICE), alice2);
+            
+            WriteableType cbean_type = wbd.addType(CBEAN_XPATH);
+            
+            // alice2s c-beans
+            cbean_type.addInstance(getCName(alice2, BOB), bob2);
+            
+            WriteableType dbean_type = wbd.addType(DBEAN_XPATH);
+            
+            // alice2s d-beans
+            dbean_type.addInstance(getDName(alice2, DAVE), dave2);
+            
+            wbd.commit();
+        }
+        
+        // THIS IS THE TEST.  Pre-seed (prior to enabling the configuration system)
+        // the ConfiguredBy progenitors.  This takes initialization down a
+        // different code path
+        ServiceLocatorUtilities.addClasses(locator, BService.class, CService.class, DService.class);
+        
+        // Turn on configuration later, after hub has its data already
+        // AND the progenitor services are already in the locator
+        ConfigurationUtilities.enableConfigurationSystem(locator);
+         
         // An empty BBean is in there, lets get the service
         BService aliceService = locator.getService(BService.class, getBName(ALICE));
         Assert.assertNotNull(aliceService);

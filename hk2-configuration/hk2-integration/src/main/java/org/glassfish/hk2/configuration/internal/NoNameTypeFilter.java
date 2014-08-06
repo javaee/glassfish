@@ -69,6 +69,10 @@ class NoNameTypeFilter implements IndexedFilter {
     @Override
     public boolean matches(Descriptor d) {
         if (instanceName == null) {
+            if (typeName == null) {
+                return (d.getName() == null);
+            }
+            
             if (d.getName() != null) return false;
         }
         else {
@@ -105,6 +109,11 @@ class NoNameTypeFilter implements IndexedFilter {
     @Override
     public String getName() {
         return null;
+    }
+    
+    @Override
+    public String toString() {
+        return "NoNameTypeFilter(" + typeName + "," + instanceName + "," + System.identityHashCode(this) + ")";
     }
     
 }

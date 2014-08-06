@@ -87,4 +87,9 @@ public class TypeImpl implements Type {
     /* package */ ClassReflectionHelper getHelper() {
         return helper;
     }
+    
+    @Override
+    public String toString() {
+        return "TypeImpl(" + name + "," + System.identityHashCode(this) + ")";
+    }
 }

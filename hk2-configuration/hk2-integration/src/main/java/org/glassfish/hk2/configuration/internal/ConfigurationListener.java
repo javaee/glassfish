@@ -52,6 +52,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -59,6 +60,7 @@ import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationListener;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.ServiceHandle;
@@ -74,6 +76,7 @@ import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.MethodWrapper;
+import org.glassfish.hk2.utilities.reflection.Pretty;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
 
@@ -98,8 +101,12 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
     @Inject
     private ConfiguredByContext context;
     
-    private final Map<String, ModificationInformation> typeInformation = 
-            new HashMap<String, ModificationInformation>();
+    private final ConcurrentHashMap<String, ModificationInformation> typeInformation = 
+            new ConcurrentHashMap<String, ModificationInformation>();
+    
+    private final Object progenitorLock = new Object();
+    private HashSet<ActiveDescriptor<?>> allProgenitors =
+            new HashSet<ActiveDescriptor<?>>();
     
     @PostConstruct
     private void postConstruct() {
@@ -342,6 +349,13 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
             }
         }
         
+        List<ActiveDescriptor<?>> progenitors = locator.getDescriptors(new NoNameTypeFilter(locator, null, null));
+        
+        synchronized (progenitorLock) {
+            allProgenitors.addAll(progenitors);
+        }
+        config.addActiveDescriptor(DescriptorListener.class);
+        
         // Add all instances
         config.commit();
         
@@ -363,6 +377,21 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
         if (configuredBy == null) return false;
         
         return ConfiguredBy.CreationPolicy.EAGER.equals(configuredBy.creationPolicy());
+    }
+    
+    private String getTypeFromConfiguredBy(ActiveDescriptor<?> descriptor) {
+        if (!descriptor.isReified()) {
+            descriptor = locator.reifyDescriptor(descriptor);
+        }
+        
+        Class<?> implClass = descriptor.getImplementationClass();
+        
+        ConfiguredBy configuredBy = implClass.getAnnotation(ConfiguredBy.class);
+        if (configuredBy == null) {
+            throw new AssertionError("May only give this method ConfiguredBy descriptors");
+        }
+        
+        return configuredBy.value();
     }
 
     /* (non-Javadoc)
@@ -500,6 +529,88 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
             
             preMethods.clear();
             postMethods.clear();
+        }
+        
+    }
+    
+    private void calculateProgenitorAddsAndRemoves() {
+        List<ActiveDescriptor<?>> progenitors;
+        BeanDatabase database = hub.getCurrentDatabase();
+        final DynamicConfiguration config = configurationService.createDynamicConfiguration();
+        final LinkedList<ActiveDescriptor<?>> addedList = new LinkedList<ActiveDescriptor<?>>();
+        final LinkedList<ActiveDescriptor<?>> removedList = new LinkedList<ActiveDescriptor<?>>();
+        
+        synchronized (progenitorLock) {
+            HashSet<ActiveDescriptor<?>> removed = new HashSet<ActiveDescriptor<?>>(allProgenitors);
+            
+            progenitors = locator.getDescriptors(new NoNameTypeFilter(locator, null, null));
+            allProgenitors = new HashSet<ActiveDescriptor<?>>(progenitors);
+            HashSet<ActiveDescriptor<?>> added = new HashSet<ActiveDescriptor<?>>(allProgenitors);
+            
+            added.removeAll(removed);
+            removed.removeAll(progenitors);
+            
+            // Now added contains all of the added progenitors,
+            // and removed contains all of the removed progenitors
+            for (ActiveDescriptor<?> addMe : added) {
+                String typeName = getTypeFromConfiguredBy(addMe);
+                
+                typeInformation.putIfAbsent(typeName, new ModificationInformation());
+                
+                Type type = database.getType(typeName);
+                if (type != null) {
+                    for (Map.Entry<String, Object> instance : type.getInstances().entrySet()) {
+                        String addedInstanceKey = instance.getKey();
+                        Object addedInstanceBean = instance.getValue();
+                        
+                        addedList.add(addInstanceDescriptor(config, addMe, addedInstanceKey, typeName, addedInstanceBean));
+                    }
+                }
+            }
+            
+        }
+        
+        if (!addedList.isEmpty() || !removedList.isEmpty()) {
+            config.commit();
+            
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    
+                    
+                    // Create demand for all the ones we just added
+                    for (ActiveDescriptor<?> descriptor : addedList) {
+                        if (!isEager(descriptor)) continue;
+                        
+                        ServiceHandle<?> handle = locator.getServiceHandle(descriptor);
+                        handle.getService();  // TODO: how to handle errors?
+                    }
+                    
+                    // Destroy the ones we just removed
+                    for (ActiveDescriptor<?> descriptor : removedList) {
+                        ServiceHandle<?> handle = locator.getServiceHandle(descriptor);
+                        handle.destroy();
+                    }
+                    
+                }
+                
+            }).start();
+        }
+    }
+        
+      
+    
+    @Singleton
+    private static class DescriptorListener implements DynamicConfigurationListener {
+        @Inject
+        private ConfigurationListener parent;
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.api.DynamicConfigurationListener#configurationChanged()
+         */
+        @Override
+        public void configurationChanged() {
+            parent.calculateProgenitorAddsAndRemoves();
         }
         
     }
