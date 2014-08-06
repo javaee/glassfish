@@ -46,7 +46,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -103,6 +102,7 @@ public class ChildInjectResolverImpl implements InjectionResolver<ChildInject> {
         ChildInject childInject = getInjectionAnnotation(injectee.getParent(), injectee.getPosition());
         String prefixName = parentDescriptor.getName();
         if (prefixName == null) prefixName = "";
+        String separator = childInject.separator();
         
         prefixName = prefixName + childInject.value();
         
@@ -116,7 +116,7 @@ public class ChildInjectResolverImpl implements InjectionResolver<ChildInject> {
                 return systemResolver.resolve(injectee, root);
             }
             
-            return new ChildIterableImpl<Object>(locator, requiredType, prefixName);
+            return new ChildIterableImpl<Object>(locator, requiredType, prefixName, separator);
         }
         
         List<ActiveDescriptor<?>> matches = locator.getDescriptors(new ChildFilter(requiredType, prefixName));

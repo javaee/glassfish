@@ -86,4 +86,15 @@ public @interface ChildInject {
      * of this injection point
      */
     public String value() default "";
+    
+    /**
+     * This field returns the separator that is used to
+     * separate heirarchical name fields, for use by the
+     * {@link ChildIterable#byKey(String)} method.  This
+     * value will be pre-pended to the name given to the
+     * {@link ChildIterable#byKey(String)} key parameter
+     * @return The separator used to separate a hierachical
+     * namespace
+     */
+    public String separator() default ".";
 }

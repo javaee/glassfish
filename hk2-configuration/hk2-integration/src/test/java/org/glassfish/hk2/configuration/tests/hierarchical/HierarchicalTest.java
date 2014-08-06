@@ -517,7 +517,7 @@ public class HierarchicalTest {
      * 
      * @throws InterruptedException 
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testNamedBobBob() throws InterruptedException {
         ServiceLocator locator = ServiceLocatorFactory.getInstance().create(null, null, new ServiceLocatorGeneratorImpl());
         

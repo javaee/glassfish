@@ -57,13 +57,15 @@ public class ChildIterableImpl<T> implements ChildIterable<T> {
     private final ServiceLocator locator;
     private final Type childType;
     private final String prefix;
+    private final String separator;
     
     private final ChildFilter baseFilter;
     
-    /* package */ ChildIterableImpl(ServiceLocator locator, Type childType, String prefix) {
+    /* package */ ChildIterableImpl(ServiceLocator locator, Type childType, String prefix, String separator) {
         this.locator = locator;
         this.childType = childType;
         this.prefix = prefix;
+        this.separator = separator;
         
         baseFilter = new ChildFilter(childType, prefix);
     }
@@ -88,7 +90,7 @@ public class ChildIterableImpl<T> implements ChildIterable<T> {
     public T byKey(String key) {
         if (key == null) throw new IllegalArgumentException();
         
-        ChildFilter filter = new ChildFilter(childType, prefix, key);
+        ChildFilter filter = new ChildFilter(childType, prefix, separator + key);
         
         ActiveDescriptor<?> result = locator.getBestDescriptor(filter);
         if (result == null) return null;

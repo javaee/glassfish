@@ -51,7 +51,10 @@ import org.glassfish.hk2.api.ServiceHandle;
  */
 public interface ChildIterable<T> extends Iterable<T> {
     /**
-     * Gets the child with the given key
+     * Gets the child with the given key.  The separator
+     * used to determine the full suffix to look for in
+     * the child is given by the {@link ChildInject#separator()}
+     * field
      * 
      * @param key The non-null key of the child to get
      * @return The child who has the given key
