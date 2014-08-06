@@ -42,9 +42,8 @@ package org.jvnet.testing.hk2mockito;
 import javax.inject.Inject;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.jvnet.testing.hk2mockito.fixture.BasicGreetingService;
-import org.jvnet.testing.hk2mockito.fixture.ConstructorInjectionGreetingService;
+import org.jvnet.testing.hk2mockito.fixture.service.MethodInjectionGreetingService;
 import org.jvnet.testing.hk2testng.HK2;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
@@ -57,35 +56,31 @@ import org.testng.annotations.Test;
  * @author Sharmarke Aden
  */
 @HK2
-public class MockInjectionGreentingServiceTest {
+public class MethodInjectionTest {
 
     @SUT
     @Inject
-    ConstructorInjectionGreetingService sut;
-    @MC
+    MethodInjectionGreetingService sut;
+    @SC
     @Inject
     BasicGreetingService collaborator;
-
-    @BeforeClass
-    public void verifyInjection() {
-        assertThat(sut).isNotNull();
-        assertThat(collaborator).isNotNull();
-        assertThat(mockingDetails(sut).isSpy()).isTrue();
-        assertThat(mockingDetails(collaborator).isMock()).isTrue();
-    }
 
     @BeforeMethod
     public void init() {
         reset(sut, collaborator);
     }
 
-    /**
-     * https://java.net/jira/browse/HK2-223
-     */
-    @Test(enabled=false)
+    @BeforeClass
+    public void verifyInjection() {
+        assertThat(sut).isNotNull();
+        assertThat(collaborator).isNotNull();
+        assertThat(mockingDetails(sut).isSpy()).isTrue();
+        assertThat(mockingDetails(collaborator).isSpy()).isTrue();
+    }
+
+    @Test
     public void callToGreetShouldCallCollboratorGreet() {
         String greeting = "Hello!";
-        given(collaborator.greet()).willReturn(greeting);
 
         String result = sut.greet();
 

@@ -37,26 +37,58 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.testing.hk2mockito.fixture;
+package org.jvnet.testing.hk2mockito;
 
 import javax.inject.Inject;
-import org.jvnet.hk2.annotations.Service;
+import javax.inject.Named;
+import static org.assertj.core.api.Assertions.assertThat;
+import org.jvnet.testing.hk2mockito.fixture.NamedGreetingService;
+import org.jvnet.testing.hk2mockito.fixture.named.NamedFieldInjectionGreetingService;
+import org.jvnet.testing.hk2testng.HK2;
+import static org.mockito.Mockito.mockingDetails;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 /**
  *
  * @author Sharmarke Aden
  */
-@Service
-public class MethodInjectionGreetingService {
+@HK2
+public class NamedFieldInjectionTest {
 
-    private BasicGreetingService collaborator;
-
+    @SUT
     @Inject
-    public void setCollaborator(BasicGreetingService collaborator) {
-        this.collaborator = collaborator;
+    NamedFieldInjectionGreetingService sut;
+    @SC
+    @Named("test")
+    @Inject
+    NamedGreetingService collaborator;
+
+    @BeforeMethod
+    public void init() {
+        reset(sut, collaborator);
     }
 
-    public String greet() {
-        return collaborator.greet();
+    @BeforeClass
+    public void verifyInjection() {
+        assertThat(sut).isNotNull();
+        assertThat(collaborator).isNotNull();
+        assertThat(mockingDetails(sut).isSpy()).isTrue();
+        assertThat(mockingDetails(collaborator).isSpy()).isTrue();
     }
+
+    @Test
+    public void callToGreetShouldCallCollboratorGreet() {
+        String greeting = "Hello!";
+
+        String result = sut.greet();
+
+        assertThat(result).isEqualTo(greeting);
+        verify(sut).greet();
+        verify(collaborator).greet();
+    }
+
 }

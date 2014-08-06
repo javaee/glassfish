@@ -43,7 +43,7 @@ import java.io.Closeable;
 import javax.inject.Inject;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.jvnet.testing.hk2mockito.fixture.BasicGreetingService;
-import org.jvnet.testing.hk2mockito.fixture.ConstructorInjectionGreetingService;
+import org.jvnet.testing.hk2mockito.fixture.service.ConstructorInjectionGreetingService;
 import org.jvnet.testing.hk2testng.HK2;
 import org.mockito.Answers;
 import static org.mockito.BDDMockito.given;
@@ -77,7 +77,7 @@ public class CustomMockSettingsInjectionTest {
         assertThat(mockingDetails(sut).isSpy()).isTrue();
         assertThat(mockingDetails(collaborator).isMock()).isTrue();
         MockCreationSettings settings = new MockUtil().getMockHandler(collaborator).getMockSettings();
-        
+
         assertThat(settings.getMockName().toString()).isEqualTo("customName");
         assertThat(settings.getDefaultAnswer()).isEqualTo(Answers.RETURNS_MOCKS.get());
         assertThat(settings.getExtraInterfaces()).containsOnly(Closeable.class);

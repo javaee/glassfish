@@ -37,22 +37,36 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.testing.hk2mockito.fixture;
+package org.jvnet.testing.hk2mockito.internal.cache;
 
+import java.lang.reflect.Type;
+import java.util.Map;
 import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.testing.hk2mockito.internal.HK2Mockito;
 
 /**
+ * Cache service used to track parent child relationship between injectees and
+ * their parent.
  *
  * @author Sharmarke Aden
  */
 @Service
-public class FieldInjectionGreetingService {
+public class ParentCache {
+
+    private final Map<Type, Type> cache;
 
     @Inject
-    private BasicGreetingService collaborator;
-
-    public String greet() {
-        return collaborator.greet();
+    ParentCache(@HK2Mockito Map cache) {
+        this.cache = cache;
     }
+
+    public void put(Type child, Type parent) {
+        cache.put(child, parent);
+    }
+
+    public Type get(Type child) {
+        return cache.get(child);
+    }
+
 }

@@ -37,30 +37,55 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.testing.hk2mockito.internal;
+package org.jvnet.testing.hk2mockito;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import org.glassfish.hk2.api.Factory;
-import org.jvnet.hk2.annotations.Service;
+import javax.inject.Inject;
+import static org.assertj.core.api.Assertions.assertThat;
+import org.jvnet.testing.hk2mockito.fixture.BasicGreetingService;
+import org.jvnet.testing.hk2mockito.fixture.service.ConstructorInjectionGreetingService;
+import org.jvnet.testing.hk2testng.HK2;
+import static org.mockito.Mockito.mockingDetails;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 /**
- * ConcurrentHashMap provider.
  *
  * @author Sharmarke Aden
  */
-@Service
-public class ConcurrentMapFactory implements Factory<Map> {
+@HK2
+public class DisabledSUTSpyingTest {
 
-    @HK2Mockito
-    @Override
-    public Map provide() {
-        return new ConcurrentHashMap();
+    @SUT(false)
+    @Inject
+    ConstructorInjectionGreetingService sut;
+    @SC
+    @Inject
+    BasicGreetingService collaborator;
+
+    @BeforeClass
+    public void verifyInjection() {
+        assertThat(sut).isNotNull();
+        assertThat(collaborator).isNotNull();
+        assertThat(mockingDetails(sut).isSpy()).isFalse();
+        assertThat(mockingDetails(collaborator).isSpy()).isTrue();
     }
 
-    @Override
-    public void dispose(Map map) {
-        map.clear();
+    @BeforeMethod
+    public void init() {
+        reset(collaborator);
+    }
+
+    @Test
+    public void callToGreetShouldCallCollboratorGreet() {
+        String greeting = "Hello!";
+
+        String result = sut.greet();
+
+        assertThat(result).isEqualTo(greeting);
+        verify(collaborator).greet();
     }
 
 }

@@ -37,31 +37,62 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.testing.hk2mockito.internal;
+package org.jvnet.testing.hk2mockito;
 
-import java.lang.reflect.Type;
-import org.jvnet.hk2.annotations.Service;
-import org.mockito.MockSettings;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
+import javax.inject.Inject;
+import static org.assertj.core.api.Assertions.assertThat;
+import org.jvnet.testing.hk2mockito.fixture.BasicGreetingService;
+import org.jvnet.testing.hk2mockito.fixture.service.IndexedInjectionGreetingService;
+import org.jvnet.testing.hk2testng.HK2;
+import static org.mockito.Mockito.mockingDetails;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 /**
- * A factory class used to create various objects.
  *
  * @author Sharmarke Aden
  */
-@Service
-public class ObjectFactory {
+@HK2
+public class IndexedInjectionTest {
 
-    public Object newSpy(Object instance) {
-        return spy(instance);
+    @SUT
+    @Inject
+    IndexedInjectionGreetingService sut;
+    @SC(0)
+    @Inject
+    BasicGreetingService collaborator1;
+    @SC(1)
+    @Inject
+    BasicGreetingService collaborator2;
+
+    @BeforeMethod
+    public void init() {
+        reset(sut, collaborator1, collaborator2);
     }
 
-    public Object newMock(Class<?> type, MockSettings settings) {
-        return mock(type, settings);
+    @BeforeClass
+    public void verifyInjection() {
+        assertThat(sut).isNotNull();
+        assertThat(collaborator1).isNotNull();
+        assertThat(collaborator2).isNotNull();
+        assertThat(mockingDetails(sut).isSpy()).isTrue();
+        assertThat(mockingDetails(collaborator1).isSpy()).isTrue();
+        assertThat(mockingDetails(collaborator2).isSpy()).isTrue();
     }
 
-    public MockitoCacheKey newKey(Type type, Object value) {
-        return new MockitoCacheKey(type, value);
+    @Test
+    public void callToGreetShouldCallCollboratorGreet() {
+        String greeting = "Hello!Hello!";
+
+        String result = sut.greet();
+
+        assertThat(result).isEqualTo(greeting);
+        verify(sut).greet();
+        verify(collaborator1).greet();
+        verify(collaborator2).greet();
     }
+
 }

@@ -43,10 +43,11 @@ import javax.inject.Inject;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.jvnet.testing.hk2mockito.fixture.BasicGreetingService;
 import org.jvnet.testing.hk2testng.HK2;
+import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import org.mockito.internal.util.MockitoSpy;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
@@ -66,11 +67,10 @@ public class BasicGreetingServiceTest {
         reset(sut);
     }
 
-    @Test
+    @BeforeClass
     public void verifyInjection() {
-        assertThat(sut)
-                .isNotNull()
-                .isInstanceOf(MockitoSpy.class);
+        assertThat(sut).isNotNull();
+        assertThat(mockingDetails(sut).isSpy()).isTrue();
     }
 
     @Test
