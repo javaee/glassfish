@@ -420,34 +420,7 @@ public class HierarchicalTest {
         
         Hub hub = locator.getService(Hub.class);
         
-        {
-            // Now modify the beans
-            BBeans bbeans2 = new BBeans();
-            
-            BBean alice2 = bbeans2.addBBean(ALICE);
-            
-            CBeans alice2_cbeans = alice2.getCBeans();
-            CBean bob2 = alice2_cbeans.addCBean(BOB);
-            
-            DBean dave2 = alice2.addDBean(DAVE);
-            
-            WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
-            
-            WriteableType bbean2_type = wbd.addType(BBEAN_XPATH);
-            bbean2_type.addInstance(getBName(ALICE), alice2);
-            
-            WriteableType cbean_type = wbd.addType(CBEAN_XPATH);
-            
-            // alice2s c-beans
-            cbean_type.addInstance(getCName(alice2, BOB), bob2);
-            
-            WriteableType dbean_type = wbd.addType(DBEAN_XPATH);
-            
-            // alice2s d-beans
-            dbean_type.addInstance(getDName(alice2, DAVE), dave2);
-            
-            wbd.commit();
-        }
+        doBasicHubSetup(hub);
         
         // An empty BBean is in there, lets get the service
         BService aliceService = locator.getService(BService.class, getBName(ALICE));
@@ -475,34 +448,7 @@ public class HierarchicalTest {
         
         Hub hub = locator.getService(Hub.class);
         
-        {
-            // Now modify the beans
-            BBeans bbeans2 = new BBeans();
-            
-            BBean alice2 = bbeans2.addBBean(ALICE);
-            
-            CBeans alice2_cbeans = alice2.getCBeans();
-            CBean bob2 = alice2_cbeans.addCBean(BOB);
-            
-            DBean dave2 = alice2.addDBean(DAVE);
-            
-            WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
-            
-            WriteableType bbean2_type = wbd.addType(BBEAN_XPATH);
-            bbean2_type.addInstance(getBName(ALICE), alice2);
-            
-            WriteableType cbean_type = wbd.addType(CBEAN_XPATH);
-            
-            // alice2s c-beans
-            cbean_type.addInstance(getCName(alice2, BOB), bob2);
-            
-            WriteableType dbean_type = wbd.addType(DBEAN_XPATH);
-            
-            // alice2s d-beans
-            dbean_type.addInstance(getDName(alice2, DAVE), dave2);
-            
-            wbd.commit();
-        }
+        doBasicHubSetup(hub);
         
         // Turn on configuration later, after hub has its data already
         ConfigurationUtilities.enableConfigurationSystem(locator);
@@ -538,34 +484,7 @@ public class HierarchicalTest {
         
         Hub hub = locator.getService(Hub.class);
         
-        {
-            // Now modify the beans
-            BBeans bbeans2 = new BBeans();
-            
-            BBean alice2 = bbeans2.addBBean(ALICE);
-            
-            CBeans alice2_cbeans = alice2.getCBeans();
-            CBean bob2 = alice2_cbeans.addCBean(BOB);
-            
-            DBean dave2 = alice2.addDBean(DAVE);
-            
-            WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
-            
-            WriteableType bbean2_type = wbd.addType(BBEAN_XPATH);
-            bbean2_type.addInstance(getBName(ALICE), alice2);
-            
-            WriteableType cbean_type = wbd.addType(CBEAN_XPATH);
-            
-            // alice2s c-beans
-            cbean_type.addInstance(getCName(alice2, BOB), bob2);
-            
-            WriteableType dbean_type = wbd.addType(DBEAN_XPATH);
-            
-            // alice2s d-beans
-            dbean_type.addInstance(getDName(alice2, DAVE), dave2);
-            
-            wbd.commit();
-        }
+        doBasicHubSetup(hub);
         
         // THIS IS THE TEST.  Pre-seed (prior to enabling the configuration system)
         // the ConfiguredBy progenitors.  This takes initialization down a
@@ -588,6 +507,49 @@ public class HierarchicalTest {
         
         Assert.assertNull(cServices.byKey(CAROL));
         Assert.assertNull(dServices.byKey(ED));
+    }
+    
+    /**
+     * xml will look like this:
+     *
+     *   <b-beans>
+     *     <b-bean name="alice"/>
+     *       <c-beans>
+     *         <c-bean name="bob" />
+     *       </c-beans>
+     *       <d-bean name="dave" />
+     *     </b-bean>
+     *   </b-beans>
+     *   
+     * @param hub The hub to populate
+     */
+    private static void doBasicHubSetup(Hub hub) {
+     // Now modify the beans
+        BBeans bbeans2 = new BBeans();
+        
+        BBean alice2 = bbeans2.addBBean(ALICE);
+        
+        CBeans alice2_cbeans = alice2.getCBeans();
+        CBean bob2 = alice2_cbeans.addCBean(BOB);
+        
+        DBean dave2 = alice2.addDBean(DAVE);
+        
+        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+        
+        WriteableType bbean2_type = wbd.addType(BBEAN_XPATH);
+        bbean2_type.addInstance(getBName(ALICE), alice2);
+        
+        WriteableType cbean_type = wbd.addType(CBEAN_XPATH);
+        
+        // alice2s c-beans
+        cbean_type.addInstance(getCName(alice2, BOB), bob2);
+        
+        WriteableType dbean_type = wbd.addType(DBEAN_XPATH);
+        
+        // alice2s d-beans
+        dbean_type.addInstance(getDName(alice2, DAVE), dave2);
+        
+        wbd.commit();
     }
     
     private static String getBName(String name) {
