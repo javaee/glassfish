@@ -37,31 +37,63 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.testing.hk2mockito.internal;
+package org.jvnet.testing.hk2mockito;
 
-import java.lang.reflect.Type;
-import org.jvnet.hk2.annotations.Service;
-import org.mockito.MockSettings;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
+import javax.inject.Inject;
+import static org.assertj.core.api.Assertions.assertThat;
+import org.jvnet.testing.hk2mockito.fixture.NamedGreetingService;
+import org.jvnet.testing.hk2testng.HK2;
+import static org.mockito.Mockito.mockingDetails;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 /**
- * A factory class used to create various objects.
  *
  * @author Sharmarke Aden
  */
-@Service
-public class ObjectFactory {
+@HK2
+public class NamedGreetingServiceTest {
 
-    public Object newSpy(Object instance) {
-        return spy(instance);
+    @SUT
+    @Inject
+    NamedGreetingService sut;
+
+    @BeforeMethod
+    public void init() {
+        reset(sut);
     }
 
-    public Object newMock(Class<?> type, MockSettings settings) {
-        return mock(type, settings);
+    @BeforeClass
+    public void verifyInjection() {
+        assertThat(sut).isNotNull();
+        assertThat(mockingDetails(sut).isSpy()).isTrue();
     }
 
-    public MockitoCacheKey newKey(Type type, Object value) {
-        return new MockitoCacheKey(type, value);
+    @Test
+    public void callToGreetShouldReturnHello() {
+        String greeting = "Hello!";
+
+        String result = sut.greet();
+
+        assertThat(result).isEqualTo(greeting);
+        verify(sut).greet();
+        verify(sut).sayHello();
+    }
+
+    @Test
+    public void callToGreetShouldReturnHola() {
+        String greeting = "Hola!";
+        when(sut.sayHello()).thenReturn(greeting);
+
+        String result = sut.greet();
+
+        assertThat(result).isEqualTo(greeting);
+        verify(sut).greet();
+        verify(sut).sayHello();
+
     }
 }

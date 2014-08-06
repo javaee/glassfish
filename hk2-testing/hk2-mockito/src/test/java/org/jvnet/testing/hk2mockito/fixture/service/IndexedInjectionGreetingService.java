@@ -37,55 +37,31 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.testing.hk2mockito;
+package org.jvnet.testing.hk2mockito.fixture.service;
 
 import javax.inject.Inject;
-import static org.assertj.core.api.Assertions.assertThat;
+import org.jvnet.hk2.annotations.Service;
 import org.jvnet.testing.hk2mockito.fixture.BasicGreetingService;
-import org.jvnet.testing.hk2mockito.fixture.ConstructorInjectionGreetingService;
-import org.jvnet.testing.hk2testng.HK2;
-import static org.mockito.Mockito.mockingDetails;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 /**
  *
  * @author Sharmarke Aden
  */
-@HK2
-public class DisabledSUTSpyingGreentingServiceTest {
+@Service
+public class IndexedInjectionGreetingService {
 
-    @SUT(false)
-    @Inject
-    ConstructorInjectionGreetingService sut;
-    @SC
-    @Inject
-    BasicGreetingService collaborator;
+    private final BasicGreetingService collaborator1;
+    private final BasicGreetingService collaborator2;
 
-    @BeforeClass
-    public void verifyInjection() {
-        assertThat(sut).isNotNull();
-        assertThat(collaborator).isNotNull();
-        assertThat(mockingDetails(sut).isSpy()).isFalse();
-        assertThat(mockingDetails(collaborator).isSpy()).isTrue();
+    @Inject
+    IndexedInjectionGreetingService(BasicGreetingService collaborator1,
+            BasicGreetingService collaborator2) {
+        this.collaborator1 = collaborator1;
+        this.collaborator2 = collaborator2;
     }
 
-    @BeforeMethod
-    public void init() {
-        reset(collaborator);
-    }
-
-    @Test
-    public void callToGreetShouldCallCollboratorGreet() {
-        String greeting = "Hello!";
-
-        String result = sut.greet();
-
-        assertThat(result).isEqualTo(greeting);
-        verify(collaborator).greet();
+    public String greet() {
+        return collaborator1.greet() + collaborator2.greet();
     }
 
 }

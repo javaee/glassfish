@@ -40,28 +40,48 @@
 package org.jvnet.testing.hk2mockito.internal;
 
 import java.lang.reflect.Type;
-import org.jvnet.hk2.annotations.Service;
-import org.mockito.MockSettings;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 
 /**
- * A factory class used to create various objects.
+ * Cache key for spies created.
  *
  * @author Sharmarke Aden
  */
-@Service
-public class ObjectFactory {
+public class MockitoCacheKey {
 
-    public Object newSpy(Object instance) {
-        return spy(instance);
+    private final Type type;
+    private final Object value;
+
+    public MockitoCacheKey(Type type, Object value) {
+        this.type = type;
+        this.value = value;
     }
 
-    public Object newMock(Class<?> type, MockSettings settings) {
-        return mock(type, settings);
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 83 * hash + (this.type != null ? this.type.hashCode() : 0);
+        hash = 83 * hash + (this.value != null ? this.value.hashCode() : 0);
+        return hash;
     }
 
-    public MockitoCacheKey newKey(Type type, Object value) {
-        return new MockitoCacheKey(type, value);
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final MockitoCacheKey other = (MockitoCacheKey) obj;
+        if (this.type != other.type && (this.type == null || !this.type.equals(other.type))) {
+            return false;
+        }
+        return this.value == other.value || (this.value != null && this.value.equals(other.value));
     }
+
+    @Override
+    public String toString() {
+        return "SpyCacheKey{" + "type=" + type + ", value=" + value + '}';
+    }
+
 }

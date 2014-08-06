@@ -37,51 +37,75 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.testing.hk2mockito.internal;
+package org.jvnet.testing.hk2mockito;
 
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Member;
 import java.lang.reflect.Type;
+import javax.inject.Inject;
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.InjectionResolver;
+import org.glassfish.hk2.api.Rank;
+import org.glassfish.hk2.api.ServiceHandle;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.testing.hk2mockito.internal.MockitoService;
+import org.jvnet.testing.hk2mockito.internal.cache.ParentCache;
 
 /**
- * Cache key for spies created.
+ * This class is a custom resolver that creates or finds services and wraps in a
+ * spy.
  *
  * @author Sharmarke Aden
  */
-public class SpyCacheKey {
+@Rank(Integer.MAX_VALUE)
+@Service
+public class HK2MockitoInjectionResolver implements InjectionResolver<Inject> {
 
-    private final Type type;
-    private final Object value;
+    private final MockitoService mockitoService;
+    private final ParentCache parentCache;
 
-    public SpyCacheKey(Type type, Object value) {
-        this.type = type;
-        this.value = value;
+    @Inject
+    HK2MockitoInjectionResolver(MockitoService mockitoService, ParentCache parentCache) {
+        this.mockitoService = mockitoService;
+        this.parentCache = parentCache;
     }
 
     @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 83 * hash + (this.type != null ? this.type.hashCode() : 0);
-        hash = 83 * hash + (this.value != null ? this.value.hashCode() : 0);
-        return hash;
+    public Object resolve(Injectee injectee, ServiceHandle<?> root) {
+        AnnotatedElement parent = injectee.getParent();
+        Member member = (Member) parent;
+        Type requiredType = injectee.getRequiredType();
+        Type parentType = member.getDeclaringClass();
+
+        SUT sut = parent.getAnnotation(SUT.class);
+        SC sc = parent.getAnnotation(SC.class);
+        MC mc = parent.getAnnotation(MC.class);
+
+        Object service;
+
+        parentCache.put(requiredType, parentType);
+
+        if (sut != null) {
+            service = mockitoService.findOrCreateSUT(sut, injectee, root);
+        } else if (sc != null) {
+            service = mockitoService.findOrCreateCollaborator(sc.value(), sc.field(), injectee, root);
+        } else if (mc != null) {
+            service = mockitoService.findOrCreateCollaborator(mc.value(), mc.field(), injectee, root);
+        } else {
+            service = mockitoService.createOrFindService(injectee, root);
+        }
+
+        return service;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final SpyCacheKey other = (SpyCacheKey) obj;
-        if (this.type != other.type && (this.type == null || !this.type.equals(other.type))) {
-            return false;
-        }
-        return this.value == other.value || (this.value != null && this.value.equals(other.value));
+    public boolean isConstructorParameterIndicator() {
+        return false;
     }
 
     @Override
-    public String toString() {
-        return "SpyCacheKey{" + "type=" + type + ", value=" + value + '}';
+    public boolean isMethodParameterIndicator() {
+        return false;
     }
 
 }

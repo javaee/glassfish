@@ -37,31 +37,28 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.testing.hk2mockito.internal;
+package org.jvnet.testing.hk2mockito.fixture.service;
 
-import java.lang.reflect.Type;
+import javax.inject.Inject;
 import org.jvnet.hk2.annotations.Service;
-import org.mockito.MockSettings;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
+import org.jvnet.testing.hk2mockito.fixture.BasicGreetingService;
 
 /**
- * A factory class used to create various objects.
  *
  * @author Sharmarke Aden
  */
 @Service
-public class ObjectFactory {
+public class ConstructorInjectionGreetingService {
 
-    public Object newSpy(Object instance) {
-        return spy(instance);
+    private final BasicGreetingService collaborator;
+
+    @Inject
+    ConstructorInjectionGreetingService(BasicGreetingService collaborator) {
+        this.collaborator = collaborator;
     }
 
-    public Object newMock(Class<?> type, MockSettings settings) {
-        return mock(type, settings);
+    public String greet() {
+        return collaborator.greet();
     }
 
-    public MockitoCacheKey newKey(Type type, Object value) {
-        return new MockitoCacheKey(type, value);
-    }
 }

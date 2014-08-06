@@ -37,40 +37,57 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.testing.hk2mockito.internal;
+package org.jvnet.testing.hk2mockito;
 
-import java.lang.reflect.Type;
-import java.util.Map;
 import javax.inject.Inject;
-import javax.inject.Provider;
-import org.jvnet.hk2.annotations.Service;
+import javax.inject.Named;
+import static org.assertj.core.api.Assertions.assertThat;
+import org.jvnet.testing.hk2mockito.fixture.NamedGreetingService;
+import org.jvnet.testing.hk2mockito.fixture.named.NamedConstructorInjectionGreetingService;
+import org.jvnet.testing.hk2testng.HK2;
+import static org.mockito.Mockito.mockingDetails;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 /**
- * A cache service for tracking spy injectees and spy services.
  *
  * @author Sharmarke Aden
  */
-@Service
-public class MemberCache {
+@HK2
+public class NamedSpyInjectionTest {
 
-    private final Map<Type, Map<SpyCacheKey, Object>> cache;
-    private final Provider<Map> cacheProvider;
-
+    @SUT
     @Inject
-    MemberCache(@HK2Mockito Map cache, @HK2Mockito Provider<Map> cacheProvider) {
-        this.cache = cache;
-        this.cacheProvider = cacheProvider;
+    NamedConstructorInjectionGreetingService sut;
+    @SC
+    @Named("test")
+    @Inject
+    NamedGreetingService collaborator;
+
+    @BeforeMethod
+    public void init() {
+        reset(sut, collaborator);
     }
 
-    public Map<SpyCacheKey, Object> get(Type type) {
-        return cache.get(type);
+    @BeforeClass
+    public void verifyInjection() {
+        assertThat(sut).isNotNull();
+        assertThat(collaborator).isNotNull();
+        assertThat(mockingDetails(sut).isSpy()).isTrue();
+        assertThat(mockingDetails(collaborator).isSpy()).isTrue();
     }
 
-    public Map<SpyCacheKey, Object> add(Type type) {
-        Map typeCache = cacheProvider.get();
-        cache.put(type, typeCache);
+    @Test
+    public void callToGreetShouldCallCollboratorGreet() {
+        String greeting = "Hello!";
 
-        return typeCache;
+        String result = sut.greet();
+
+        assertThat(result).isEqualTo(greeting);
+        verify(sut).greet();
+        verify(collaborator).greet();
     }
-
 }

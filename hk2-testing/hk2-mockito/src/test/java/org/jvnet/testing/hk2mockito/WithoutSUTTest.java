@@ -41,13 +41,10 @@ package org.jvnet.testing.hk2mockito;
 
 import javax.inject.Inject;
 import static org.assertj.core.api.Assertions.assertThat;
-import org.jvnet.testing.hk2mockito.fixture.assisted.AssistedInjectionService;
-import org.jvnet.testing.hk2mockito.fixture.assisted.CustomService;
+import org.jvnet.testing.hk2mockito.fixture.service.ConstructorInjectionGreetingService;
 import org.jvnet.testing.hk2testng.HK2;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
-import org.mockito.internal.util.MockitoSpy;
-import org.testng.annotations.BeforeMethod;
+import static org.mockito.Mockito.mockingDetails;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 /**
@@ -55,28 +52,16 @@ import org.testng.annotations.Test;
  * @author Sharmarke Aden
  */
 @HK2
-public class AssistedInjectionServiceTest {
+public class WithoutSUTTest {
 
-    @SUT
     @Inject
-    AssistedInjectionService sut;
-    @SC
-    @Inject
-    CustomService collaborator;
+    ConstructorInjectionGreetingService sut;
 
-    @BeforeMethod
-    public void init() {
-        reset(sut);
-    }
 
-    @Test
+    @BeforeClass
     public void verifyInjection() {
-        assertThat(sut)
-                .isNotNull()
-                .isInstanceOf(MockitoSpy.class);
-        assertThat(collaborator)
-                .isNotNull()
-                .isInstanceOf(MockitoSpy.class);
+        assertThat(sut).isNotNull();
+        assertThat(mockingDetails(sut).isSpy()).isFalse();
     }
 
     @Test
@@ -86,8 +71,6 @@ public class AssistedInjectionServiceTest {
         String result = sut.greet();
 
         assertThat(result).isEqualTo(greeting);
-        verify(sut).greet();
-        verify(collaborator).greet();
     }
 
 }

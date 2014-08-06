@@ -37,31 +37,42 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.testing.hk2mockito.internal;
+package org.jvnet.testing.hk2mockito.internal.cache;
 
 import java.lang.reflect.Type;
+import java.util.Map;
+import javax.inject.Inject;
+import javax.inject.Provider;
 import org.jvnet.hk2.annotations.Service;
-import org.mockito.MockSettings;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
+import org.jvnet.testing.hk2mockito.internal.HK2Mockito;
+import org.jvnet.testing.hk2mockito.internal.MockitoCacheKey;
 
 /**
- * A factory class used to create various objects.
+ * A cache service for tracking spy injectees and spy services.
  *
  * @author Sharmarke Aden
  */
 @Service
-public class ObjectFactory {
+public class MemberCache {
 
-    public Object newSpy(Object instance) {
-        return spy(instance);
+    private final Map<Type, Map<MockitoCacheKey, Object>> cache;
+    private final Provider<Map> cacheProvider;
+
+    @Inject
+    MemberCache(@HK2Mockito Map cache, @HK2Mockito Provider<Map> cacheProvider) {
+        this.cache = cache;
+        this.cacheProvider = cacheProvider;
     }
 
-    public Object newMock(Class<?> type, MockSettings settings) {
-        return mock(type, settings);
+    public Map<MockitoCacheKey, Object> get(Type type) {
+        return cache.get(type);
     }
 
-    public MockitoCacheKey newKey(Type type, Object value) {
-        return new MockitoCacheKey(type, value);
+    public Map<MockitoCacheKey, Object> add(Type type) {
+        Map typeCache = cacheProvider.get();
+        cache.put(type, typeCache);
+
+        return typeCache;
     }
+
 }

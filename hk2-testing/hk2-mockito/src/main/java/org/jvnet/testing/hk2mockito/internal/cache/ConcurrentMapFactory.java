@@ -37,58 +37,31 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.testing.hk2mockito;
+package org.jvnet.testing.hk2mockito.internal.cache;
 
-import javax.inject.Inject;
-import static org.assertj.core.api.Assertions.assertThat;
-import org.jvnet.testing.hk2mockito.fixture.BasicGreetingService;
-import org.jvnet.testing.hk2mockito.fixture.FieldInjectionGreetingService;
-import org.jvnet.testing.hk2testng.HK2;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
-import org.mockito.internal.util.MockitoSpy;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import org.glassfish.hk2.api.Factory;
+import org.jvnet.hk2.annotations.Service;
+import org.jvnet.testing.hk2mockito.internal.HK2Mockito;
 
 /**
+ * ConcurrentHashMap provider.
  *
  * @author Sharmarke Aden
  */
-@HK2
-public class FieldInjectionGreentingServiceTest {
+@Service
+public class ConcurrentMapFactory implements Factory<Map> {
 
-    @SUT
-    @Inject
-    FieldInjectionGreetingService sut;
-
-    @SC
-    @Inject
-    BasicGreetingService collaborator;
-
-    @BeforeMethod
-    public void init() {
-        reset(sut);
+    @HK2Mockito
+    @Override
+    public Map provide() {
+        return new ConcurrentHashMap();
     }
 
-    @Test
-    public void verifyInjection() {
-        assertThat(sut)
-                .isNotNull()
-                .isInstanceOf(MockitoSpy.class);
-        assertThat(collaborator)
-                .isNotNull()
-                .isInstanceOf(MockitoSpy.class);
-    }
-
-    @Test
-    public void callToGreetShouldCallCollboratorGreet() {
-        String greeting = "Hello!";
-
-        String result = sut.greet();
-
-        assertThat(result).isEqualTo(greeting);
-        verify(sut).greet();
-        verify(collaborator).greet();
+    @Override
+    public void dispose(Map map) {
+        map.clear();
     }
 
 }
