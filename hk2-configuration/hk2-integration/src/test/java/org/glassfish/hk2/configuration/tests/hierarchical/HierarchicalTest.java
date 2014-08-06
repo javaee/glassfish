@@ -510,6 +510,57 @@ public class HierarchicalTest {
     }
     
     /**
+     * This test has two CServices hanging off of the BBean that have name
+     * "bob" and "bobbob".  The trouble is that when doing "byKey" and asking
+     * for "bob" it MAY be possible to get the "bobbob" one if it is
+     * implemented improperly.  (Which it was lol)
+     * 
+     * @throws InterruptedException 
+     */
+    @Test @org.junit.Ignore
+    public void testNamedBobBob() throws InterruptedException {
+        ServiceLocator locator = ServiceLocatorFactory.getInstance().create(null, null, new ServiceLocatorGeneratorImpl());
+        
+        ConfigurationUtilities.enableConfigurationSystem(locator);
+        ServiceLocatorUtilities.addClasses(locator, BService.class, CService.class, DService.class);
+        
+        Hub hub = locator.getService(Hub.class);
+        
+        {
+            BBeans bbeans2 = new BBeans();
+            
+            BBean alice2 = bbeans2.addBBean(ALICE);
+            
+            CBeans alice2_cbeans = alice2.getCBeans();
+            CBean bobbob = alice2_cbeans.addCBean(BOB + BOB);
+            CBean bob2 = alice2_cbeans.addCBean(BOB);
+            
+            WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+            
+            WriteableType bbean2_type = wbd.addType(BBEAN_XPATH);
+            bbean2_type.addInstance(getBName(ALICE), alice2);
+            
+            WriteableType cbean_type = wbd.addType(CBEAN_XPATH);
+            
+            // alice2s c-beans
+            cbean_type.addInstance(getCName(alice2, BOB + BOB), bobbob);
+            cbean_type.addInstance(getCName(alice2, BOB), bob2);
+            
+            wbd.commit();
+        }
+        
+         
+        // An empty BBean is in there, lets get the service
+        BService aliceService = locator.getService(BService.class, getBName(ALICE));
+        Assert.assertNotNull(aliceService);
+        
+        ChildIterable<CService> cServices = aliceService.getCServices();
+        
+        CService found = cServices.byKey(BOB);
+        Assert.assertEquals(BOB, found.getName());
+    }
+    
+    /**
      * xml will look like this:
      *
      *   <b-beans>
