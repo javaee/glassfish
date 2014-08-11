@@ -22,7 +22,7 @@ Use is subject to License Terms-->
 	a:visited{color:#917E9C}
 	a:hover {text-decoration:underline}
 </style>
-<title>GlassFish Server 4.0.1 Quick Start Guide</title>
+<title>GlassFish Server 4.1 Quick Start Guide</title>
 </head>
 <body style="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);"
 link="#594fbf" vlink="#1005fb" alink="#333366"><table width="100%" border="0"
@@ -32,12 +32,12 @@ cellspacing="4" cellpadding="2">
 <td align="right" valign="top"> <a href="http://www.oracle.com">oracle.com</a> </td>
 </tr>
 <tr>
-<td align="left" valign="top" bgcolor="#587993"> <font color="#ffffff"><b>GlassFish Server 4.0.1</b></font></td>
+<td align="left" valign="top" bgcolor="#587993"> <font color="#ffffff"><b>GlassFish Server 4.1</b></font></td>
 </tr>
 </tbody>
 </table><div class="maincontent">
-<a name="aboaa"></a><h1>GlassFish Server 4.0.1 Quick Start Guide</h1>
-<p>GlassFish Server provides a server for the development and deployment of Java Platform, Enterprise Edition (Java EE platform) applications and web technologies based on Java technology. GlassFish Server 4.0.1 provides the following:</p>
+<a name="aboaa"></a><h1>GlassFish Server 4.1 Quick Start Guide</h1>
+<p>GlassFish Server provides a server for the development and deployment of Java Platform, Enterprise Edition (Java EE platform) applications and web technologies based on Java technology. GlassFish Server 4.1 provides the following:</p>
 <ul>
 <li><p>A lightweight and extensible core based on OSGi Alliance standards</p></li>
 <li><p>A web container</p></li>
@@ -53,20 +53,20 @@ cellspacing="4" cellpadding="2">
 <li><p><a href="#gglmh">Starting and Stopping the Database Server</a></p></li>
 <li><p><a href="#ggllq">Starting the Administration Console</a></p></li>
 <li><p><a href="#geyvr">Deploying and Undeploying Applications</a></p></li>
-<li><p><a href="#ghgqg">Removing GlassFish Server 4.0.1 Software</a></p></li>
+<li><p><a href="#ghgqg">Removing GlassFish Server 4.1 Software</a></p></li>
 <li><p><a href="#ggkzh">For More Information</a></p></li>
 </ul>
 <a id="ghgpe" name="ghgpe"></a><a id="GSQSG00030" name="GSQSG00030"></a>
 <h2>About This Quick Start Guide</h2>
 <p>This <i>Quick Start Guide</i> demonstrates key features of GlassFish Server and enables you to quickly learn the basics. Step-by-step procedures introduce you to product features and enable you to use them immediately.</p>
-<p>This guide assumes that you have already obtained and installed the GlassFish Server 4.0.1 software. For more information about installing GlassFish Server 4.0.1, see the <a href="http://glassfish.java.net/docs/4.0/installation-guide.pdf"><cite>Installation Guide</cite></a>.</p>
+<p>This guide assumes that you have already obtained and installed the GlassFish Server 4.1 software. For more information about installing GlassFish Server 4.1, see the <a href="http://glassfish.java.net/docs/4.0/installation-guide.pdf"><cite>Installation Guide</cite></a>.</p>
 <p>Instructions and examples in this guide that apply to all supported operating systems use the forward slash character (<code>/</code>) as path separators in all file names and commands. Ensure that you use the correct character for the system on which GlassFish Server is installed. For example:</p>
 <ul>
 <li><p><b>UNIX, Linux, or Mac OS X systems:</b> <i>as-install</i><code>/bin/asadmin</code></p></li>
 <li><p><b>Windows systems:</b> <i>as-install</i><code>\bin\asadmin</code></p></li>
 </ul>
 <p>This guide provides basic information only. For comprehensive information about GlassFish Server and other entities mentioned in this guide, see <a href="#ggkzh">For More Information</a>.</p>
-<p>To review additional details about this release before you begin using the software, see the <a href="http://glassfish.java.net/docs/4.0.1/release-notes.pdf"><cite>Release Notes</cite></a>. The <i>Release Notes</i> provide important information about the GlassFish Server 4.0.1 release, including details about new features, information about known issues and possible workarounds, and tips for installing and working with GlassFish Server 4.0.1 software.</p>
+<p>To review additional details about this release before you begin using the software, see the <a href="http://glassfish.java.net/docs/4.1/release-notes.pdf"><cite>Release Notes</cite></a>. The <i>Release Notes</i> provide important information about the GlassFish Server 4.1 release, including details about new features, information about known issues and possible workarounds, and tips for installing and working with GlassFish Server 4.1 software.</p>
 
 
 <a id="ghpfg" name="ghpfg"></a><a id="GSQSG00031" name="GSQSG00031"></a>
@@ -324,7 +324,7 @@ cellspacing="4" cellpadding="2">
 <h2>Starting and Stopping the Database Server</h2>
 <p>A database server is not started by default when you start the GlassFish Server domain. If your applications require a database back end, you must start and stop the database server manually.</p>
 <p>The following procedures describe how to start and stop the Java DB server that is bundled with GlassFish Server. For information about starting and stopping other database servers, see the documentation for your specific product.</p>
-<p>For the list of database products supported in this release, see the <a href="http://glassfish.java.net/docs/4.0.1/release-notes.pdf"><cite>Release Notes</cite></a>.</p>
+<p>For the list of database products supported in this release, see the <a href="http://glassfish.java.net/docs/4.1/release-notes.pdf"><cite>Release Notes</cite></a>.</p>
 <p>For more information about database connectivity, see <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSADG00015"><i>Administering Database Connectivity,</i> in <i>Oracle GlassFish Server Administration Guide</i></a>.</p>
 <a id="ggncr" name="ggncr"></a><a id="GSQSG00007" name="GSQSG00007"></a>
 
@@ -605,7 +605,7 @@ Hi, my name is Duke. What's yours?
 
 <a id="ghgqg" name="ghgqg"></a><a id="GSQSG00039" name="GSQSG00039"></a>
 
-<h2>Removing GlassFish Server 4.0.1 Software</h2>
+<h2>Removing GlassFish Server 4.1 Software</h2>
 <p>Before removing the GlassFish Server software, stop the following processes:</p>
 <ul>
 <li><p>All domains and other related processes</p></li>
@@ -620,7 +620,7 @@ Hi, my name is Duke. What's yours?
 <a id="ggkzh" name="ggkzh"></a><a id="GSQSG00040" name="GSQSG00040"></a>
 
 <h2>For More Information</h2>
-<p>Additional resources are available to help you learn more about GlassFish Server 4.0.1 and related technologies.</p>
+<p>Additional resources are available to help you learn more about GlassFish Server 4.1 and related technologies.</p>
 <p>The following resources are described here:</p>
 <ul>
 <li><p><a href="#ghhir">Product Documentation</a></p></li>
@@ -633,7 +633,7 @@ Hi, my name is Duke. What's yours?
 <h3>Product Documentation</h3>
 <p>Comprehensive product documentation is available and includes the following.</p>
 <ul>
-<li><p><a href="http://glassfish.java.net/docs/4.0.1/release-notes.pdf"><cite>Release Notes</cite></a>: Latest details about new features, known issues, and tips for installing and working with GlassFish Server software.</p></li>
+<li><p><a href="http://glassfish.java.net/docs/4.1/release-notes.pdf"><cite>Release Notes</cite></a>: Latest details about new features, known issues, and tips for installing and working with GlassFish Server software.</p></li>
 <li><p>The <a href="http://glassfish.java.net/docs/index.html">GlassFish Product Documentation</a> page: Collection of guides that document GlassFish Server Open Source Edition features and functions.</p></li>
 <li><p><a href="http://wikis.oracle.com/display/GlassFish/Screencasts+and+Other+Videos">GlassFish Server Screencasts</a>: Collection of video recordings that demonstrate various features and provide examples for working with GlassFish Server and related technologies.</p></li>
 <li><p><a href="http://wikis.oracle.com/display/GlassFish/GlassFishFAQIndex">GlassFish Server FAQs</a>: Frequently asked questions covering a variety of GlassFish Server topics.</p></li>
