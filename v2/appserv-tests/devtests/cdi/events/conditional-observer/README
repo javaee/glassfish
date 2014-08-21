@@ -1,4 +1,0 @@
-Test
-- Use of Events
-    - conditional observer methods. ensuring that there is no event notification
-    to a conversation scoped observer when there is no active conversation context

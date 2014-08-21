@@ -1,8 +1,0 @@
-JDBC developer test for resource enable/disable. 
-
-This tests the scenarios of asadmin set on 
-
-resources.jdbc-resource.${resourcename}.enabled=false
-resources.jdbc-resource.${resourcename}.enabled=true
-servers.server.server.resource-ref.$resourcename}.enabled=false
-servers.server.server.resource-ref.${resourcename}.enabled=true

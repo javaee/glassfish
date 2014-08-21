@@ -1,9 +1,0 @@
-create-jms-resource --target server --restype javax.jms.QueueConnectionFactory jms/jms_unit_test_QCF
-
-create-jmsdest --target server --desttype topic jms_unit_test_Topic
-create-jms-resource --target server --restype javax.jms.Topic --property imqDestinationName=jms_unit_test_Topic jms/jms_unit_test_Topic
-
-create-jmsdest --target server --desttype queue jms_unit_result_Queue
-create-jms-resource --target server --restype javax.jms.Queue --property imqDestinationName=jms_unit_result_Queue jms/jms_unit_result_Queue
-
-quit

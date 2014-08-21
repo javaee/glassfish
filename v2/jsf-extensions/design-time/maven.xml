@@ -1,6 +1,0 @@
-<?xml version="1.0"?>
-
-<project default="jsf-extensions:build">
-  <goal name="jsf-extensions:build" prereqs="jar:install"/>
-  <goal name="jsf-extensions:dist" />
-</project>

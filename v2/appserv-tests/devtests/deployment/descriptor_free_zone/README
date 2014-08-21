@@ -1,1 +1,0 @@
-This directory contains tests for deployment of applications that do not have any deployment descriptors.  This is mainly for making sure different packaging senarios are covered during the deployment process.

@@ -1,6 +1,0 @@
-- 2 main build targets all and all-oracle
-  all runs tests against derby database
-  all-oracle runs againsts oracle db
-- Eventually would like to link oracle tests to the target 'all' as well
-- change derby.db.name in config.properties  so that all developers can run
-  the tests without impacting others
