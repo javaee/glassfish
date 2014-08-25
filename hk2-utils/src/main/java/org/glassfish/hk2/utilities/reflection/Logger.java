@@ -42,6 +42,8 @@ package org.glassfish.hk2.utilities.reflection;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
+import org.glassfish.hk2.utilities.general.GeneralUtilities;
+
 /**
  * A logger for HK2.  Currently implemented over the JDK logger
  * 
@@ -54,7 +56,7 @@ public class Logger {
         @Override
         public Boolean run() {
             return Boolean.parseBoolean(
-                System.getProperty("org.jvnet.hk2.logger.debugToStdout", "false"));
+                GeneralUtilities.getSystemProperty("org.jvnet.hk2.logger.debugToStdout", "false"));
         }
             
     });

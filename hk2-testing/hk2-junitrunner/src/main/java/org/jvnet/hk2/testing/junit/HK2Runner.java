@@ -63,6 +63,7 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.junit.Before;
 import org.jvnet.hk2.testing.junit.internal.ClassVisitorImpl;
 import org.jvnet.hk2.testing.junit.internal.ErrorServiceImpl;
@@ -230,7 +231,7 @@ public class HK2Runner {
             return;
         }
         
-        String classPath = System.getProperty(CLASS_PATH_PROP);
+        String classPath = GeneralUtilities.getSystemProperty(CLASS_PATH_PROP, null);
         StringTokenizer st = new StringTokenizer(classPath, File.pathSeparator);
         
         while(st.hasMoreTokens()) {

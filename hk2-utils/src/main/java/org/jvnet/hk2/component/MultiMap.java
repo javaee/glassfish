@@ -48,6 +48,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.glassfish.hk2.utilities.general.GeneralUtilities;
+
 /**
  * Map from a key to multiple values.
  * Order is significant among values, and null values are allowed, although null keys are not.
@@ -362,7 +364,7 @@ public class MultiMap<K, V> implements Serializable, Cloneable {
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
-        final String newline = System.getProperty("line.separator");
+        final String newline = GeneralUtilities.getSystemProperty("line.separator", null);
         builder.append("{");
         for (final K key : store.keySet()) {
             builder.append(key).append(": ");

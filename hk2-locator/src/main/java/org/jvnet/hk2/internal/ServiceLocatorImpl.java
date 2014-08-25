@@ -106,6 +106,7 @@ import org.glassfish.hk2.utilities.InjecteeImpl;
 import org.glassfish.hk2.utilities.cache.CacheKeyFilter;
 import org.glassfish.hk2.utilities.cache.HybridCacheEntry;
 import org.glassfish.hk2.utilities.cache.LRUHybridCache;
+import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.ParameterizedTypeImpl;
@@ -118,27 +119,23 @@ import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl
  */
 public class ServiceLocatorImpl implements ServiceLocator {
     private final static String BIND_TRACING_PATTERN_PROPERTY = "org.jvnet.hk2.properties.bind.tracing.pattern";
-    private final static String BIND_TRACING_PATTERN;
+    private final static String BIND_TRACING_PATTERN = GeneralUtilities.getSystemProperty(BIND_TRACING_PATTERN_PROPERTY, null);
     private final static String BIND_TRACING_STACKS_PROPERTY = "org.jvnet.hk2.properties.bind.tracing.stacks";
-    private final static boolean BIND_TRACING_STACKS;
+    private static boolean BIND_TRACING_STACKS;
     static {
-        BIND_TRACING_PATTERN = AccessController.doPrivileged(new PrivilegedAction<String>() {
+        try {
+            BIND_TRACING_STACKS = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
 
-            @Override
-            public String run() {
-                return System.getProperty(BIND_TRACING_PATTERN_PROPERTY);
-            }
+                @Override
+                public Boolean run() {
+                    return Boolean.parseBoolean(GeneralUtilities.getSystemProperty(BIND_TRACING_STACKS_PROPERTY, "false"));
+                }
 
-        });
-
-        BIND_TRACING_STACKS = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
-
-            @Override
-            public Boolean run() {
-                return Boolean.parseBoolean(System.getProperty(BIND_TRACING_STACKS_PROPERTY, "false"));
-            }
-
-        });
+            });
+        }
+        catch (Throwable th) {
+            BIND_TRACING_STACKS = false;
+        }
 
         if (BIND_TRACING_PATTERN != null) {
             Logger.getLogger().debug("HK2 will trace binds and unbinds of " + BIND_TRACING_PATTERN +

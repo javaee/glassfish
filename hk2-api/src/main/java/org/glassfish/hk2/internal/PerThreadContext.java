@@ -52,6 +52,7 @@ import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.PerThread;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.Visibility;
+import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.Logger;
 
 /**
@@ -63,7 +64,7 @@ public class PerThreadContext implements Context<PerThread> {
 
         @Override
         public Boolean run() {
-            return Boolean.parseBoolean(System.getProperty("org.hk2.debug.perthreadcontext.log", "false"));
+            return Boolean.parseBoolean(GeneralUtilities.getSystemProperty("org.hk2.debug.perthreadcontext.log", "false"));
         }
         
     });

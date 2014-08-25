@@ -39,6 +39,9 @@
  */
 package org.glassfish.hk2.utilities.general;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+
 /**
  * This class contains utilities useful for any code
  * 
@@ -62,6 +65,24 @@ public class GeneralUtilities {
         if (b == null) return false;
         
         return a.equals(b);
+    }
+    
+    public static String getSystemProperty(final String property, final String defaultValue) {
+        try {
+          String retVal = AccessController.doPrivileged(new PrivilegedAction<String>() {
+
+              @Override
+              public String run() {
+                  return System.getProperty(property, defaultValue);
+              }
+
+          });
+          
+          return retVal;
+        }
+        catch (Throwable th) {
+            return defaultValue;
+        }
     }
 
 }
