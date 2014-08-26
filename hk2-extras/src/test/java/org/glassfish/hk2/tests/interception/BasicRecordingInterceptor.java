@@ -39,45 +39,35 @@
  */
 package org.glassfish.hk2.tests.interception;
 
+import javax.inject.Singleton;
+
+import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.tests.extras.internal.Utilities;
-import org.junit.Assert;
-import org.junit.Test;
+import org.glassfish.hk2.extras.interception.Interceptor;
 
 /**
- * Tests for the default interception service
  * @author jwells
+ *
  */
-public class DefaultInterceptionTest {
-    /**
-     * Tests that a non-intercepted method is not intercepted,
-     * while an intercepted method is intercepted
+@Singleton @Interceptor @Recorder
+public class BasicRecordingInterceptor implements MethodInterceptor {
+    private MethodInvocation lastInvocation;
+
+    /* (non-Javadoc)
+     * @see org.aopalliance.intercept.MethodInterceptor#invoke(org.aopalliance.intercept.MethodInvocation)
      */
-    @Test @org.junit.Ignore
-    public void testMethodInterception() {
-        ServiceLocator locator = Utilities.getUniqueLocator(BasicRecordingInterceptor.class,
-                InterceptedService.class);
-        
-        BasicRecordingInterceptor interceptor = locator.getService(BasicRecordingInterceptor.class);
-        Assert.assertNotNull(interceptor);
-        Assert.assertNull(interceptor.getLastInvocation());
-        
-        InterceptedService interceptedService = locator.getService(InterceptedService.class);
-        Assert.assertNotNull(interceptedService);
-        
-        interceptedService.isIntercepted();
-        
-        MethodInvocation invocation = interceptor.getLastInvocation();
-        Assert.assertNotNull(invocation);
-        
-        Assert.assertEquals("getLastInvocation", invocation.getMethod().getName());
-        
-        interceptor.clear();
-        
-        interceptedService.isNotIntercepted();
-        
-        invocation = interceptor.getLastInvocation();
-        Assert.assertNull(invocation);
+    @Override
+    public Object invoke(MethodInvocation arg0) throws Throwable {
+        lastInvocation = arg0;
+        return arg0.proceed();
     }
+    
+    public MethodInvocation getLastInvocation() {
+        return lastInvocation;
+    }
+    
+    public void clear() {
+        lastInvocation = null;
+    }
+
 }

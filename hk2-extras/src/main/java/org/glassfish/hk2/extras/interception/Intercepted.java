@@ -37,47 +37,31 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.interception;
+package org.glassfish.hk2.extras.interception;
 
-import org.aopalliance.intercept.MethodInvocation;
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.tests.extras.internal.Utilities;
-import org.junit.Assert;
-import org.junit.Test;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import javax.inject.Qualifier;
 
 /**
- * Tests for the default interception service
+ * Classes annotated with this qualifier are to be intercepted
+ * with the default interception service implementation.  Either
+ * constructor or method interception can be used.  Use of
+ * {@link InterceptionBinder} annotations will be honored on
+ * classes marked with this annotation
+ * 
  * @author jwells
+ *
  */
-public class DefaultInterceptionTest {
-    /**
-     * Tests that a non-intercepted method is not intercepted,
-     * while an intercepted method is intercepted
-     */
-    @Test @org.junit.Ignore
-    public void testMethodInterception() {
-        ServiceLocator locator = Utilities.getUniqueLocator(BasicRecordingInterceptor.class,
-                InterceptedService.class);
-        
-        BasicRecordingInterceptor interceptor = locator.getService(BasicRecordingInterceptor.class);
-        Assert.assertNotNull(interceptor);
-        Assert.assertNull(interceptor.getLastInvocation());
-        
-        InterceptedService interceptedService = locator.getService(InterceptedService.class);
-        Assert.assertNotNull(interceptedService);
-        
-        interceptedService.isIntercepted();
-        
-        MethodInvocation invocation = interceptor.getLastInvocation();
-        Assert.assertNotNull(invocation);
-        
-        Assert.assertEquals("getLastInvocation", invocation.getMethod().getName());
-        
-        interceptor.clear();
-        
-        interceptedService.isNotIntercepted();
-        
-        invocation = interceptor.getLastInvocation();
-        Assert.assertNull(invocation);
-    }
+@Qualifier
+@Target(TYPE)
+@Retention(RUNTIME)
+@Documented
+public @interface Intercepted {
+
 }

@@ -78,6 +78,11 @@
     <dependencies>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
+            <artifactId>hk2-locator</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.hk2</groupId>
             <artifactId>osgi-resource-locator</artifactId>
             <optional>true</optional>
         </dependency>

@@ -37,47 +37,32 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.interception;
+package org.glassfish.hk2.extras;
 
-import org.aopalliance.intercept.MethodInvocation;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.tests.extras.internal.Utilities;
-import org.junit.Assert;
-import org.junit.Test;
+import org.glassfish.hk2.extras.interception.internal.DefaultInterceptionService;
+import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 
 /**
- * Tests for the default interception service
+ * These are utilities for the extra features of hk2.
+ * Generally they allow for 
  * @author jwells
+ *
  */
-public class DefaultInterceptionTest {
+public class ExtrasUtilities {
     /**
-     * Tests that a non-intercepted method is not intercepted,
-     * while an intercepted method is intercepted
+     * This method adds in a default implementation of the {@link org.glassfish.hk2.api.InterceptionService}
+     * which uses annotations to denote which services should intercept other services.  For more
+     * information see the org.glassfish.hk2.extras.interception package.  This method is
+     * idempotent, if the service is already available it will not add it
+     * 
+     * @param locator The locator to add the default interception service implementation to.  May not be null
      */
-    @Test @org.junit.Ignore
-    public void testMethodInterception() {
-        ServiceLocator locator = Utilities.getUniqueLocator(BasicRecordingInterceptor.class,
-                InterceptedService.class);
-        
-        BasicRecordingInterceptor interceptor = locator.getService(BasicRecordingInterceptor.class);
-        Assert.assertNotNull(interceptor);
-        Assert.assertNull(interceptor.getLastInvocation());
-        
-        InterceptedService interceptedService = locator.getService(InterceptedService.class);
-        Assert.assertNotNull(interceptedService);
-        
-        interceptedService.isIntercepted();
-        
-        MethodInvocation invocation = interceptor.getLastInvocation();
-        Assert.assertNotNull(invocation);
-        
-        Assert.assertEquals("getLastInvocation", invocation.getMethod().getName());
-        
-        interceptor.clear();
-        
-        interceptedService.isNotIntercepted();
-        
-        invocation = interceptor.getLastInvocation();
-        Assert.assertNull(invocation);
+    public static void enableDefaultInterceptorServiceImplementation(ServiceLocator locator) {
+        if (locator.getBestDescriptor(BuilderHelper.createContractFilter(DefaultInterceptionService.class.getName())) == null) {
+            ServiceLocatorUtilities.addClasses(locator, DefaultInterceptionService.class);
+        }
     }
+
 }

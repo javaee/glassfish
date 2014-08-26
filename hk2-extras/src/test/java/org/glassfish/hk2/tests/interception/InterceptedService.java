@@ -39,45 +39,24 @@
  */
 package org.glassfish.hk2.tests.interception;
 
-import org.aopalliance.intercept.MethodInvocation;
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.tests.extras.internal.Utilities;
-import org.junit.Assert;
-import org.junit.Test;
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.extras.interception.Intercepted;
 
 /**
- * Tests for the default interception service
  * @author jwells
+ *
  */
-public class DefaultInterceptionTest {
-    /**
-     * Tests that a non-intercepted method is not intercepted,
-     * while an intercepted method is intercepted
-     */
-    @Test @org.junit.Ignore
-    public void testMethodInterception() {
-        ServiceLocator locator = Utilities.getUniqueLocator(BasicRecordingInterceptor.class,
-                InterceptedService.class);
+@Singleton @Intercepted
+public class InterceptedService {
+    
+    @Recorder
+    public void isIntercepted() {
         
-        BasicRecordingInterceptor interceptor = locator.getService(BasicRecordingInterceptor.class);
-        Assert.assertNotNull(interceptor);
-        Assert.assertNull(interceptor.getLastInvocation());
-        
-        InterceptedService interceptedService = locator.getService(InterceptedService.class);
-        Assert.assertNotNull(interceptedService);
-        
-        interceptedService.isIntercepted();
-        
-        MethodInvocation invocation = interceptor.getLastInvocation();
-        Assert.assertNotNull(invocation);
-        
-        Assert.assertEquals("getLastInvocation", invocation.getMethod().getName());
-        
-        interceptor.clear();
-        
-        interceptedService.isNotIntercepted();
-        
-        invocation = interceptor.getLastInvocation();
-        Assert.assertNull(invocation);
     }
+    
+    public void isNotIntercepted() {
+        
+    }
+
 }

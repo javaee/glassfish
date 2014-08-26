@@ -37,47 +37,25 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.interception;
+package org.glassfish.hk2.tests.extras.internal;
 
-import org.aopalliance.intercept.MethodInvocation;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.tests.extras.internal.Utilities;
-import org.junit.Assert;
-import org.junit.Test;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.extras.ExtrasUtilities;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 
 /**
- * Tests for the default interception service
  * @author jwells
+ *
  */
-public class DefaultInterceptionTest {
-    /**
-     * Tests that a non-intercepted method is not intercepted,
-     * while an intercepted method is intercepted
-     */
-    @Test @org.junit.Ignore
-    public void testMethodInterception() {
-        ServiceLocator locator = Utilities.getUniqueLocator(BasicRecordingInterceptor.class,
-                InterceptedService.class);
-        
-        BasicRecordingInterceptor interceptor = locator.getService(BasicRecordingInterceptor.class);
-        Assert.assertNotNull(interceptor);
-        Assert.assertNull(interceptor.getLastInvocation());
-        
-        InterceptedService interceptedService = locator.getService(InterceptedService.class);
-        Assert.assertNotNull(interceptedService);
-        
-        interceptedService.isIntercepted();
-        
-        MethodInvocation invocation = interceptor.getLastInvocation();
-        Assert.assertNotNull(invocation);
-        
-        Assert.assertEquals("getLastInvocation", invocation.getMethod().getName());
-        
-        interceptor.clear();
-        
-        interceptedService.isNotIntercepted();
-        
-        invocation = interceptor.getLastInvocation();
-        Assert.assertNull(invocation);
+public class Utilities {
+    private static final ServiceLocatorFactory FACTORY = ServiceLocatorFactory.getInstance();
+    
+    public static ServiceLocator getUniqueLocator(Class<?>...classes) {
+        ServiceLocator retVal = FACTORY.create(null);
+        ExtrasUtilities.enableDefaultInterceptorServiceImplementation(retVal);
+        ServiceLocatorUtilities.addClasses(retVal, classes);
+        return retVal;
     }
+
 }
