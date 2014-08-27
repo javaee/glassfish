@@ -39,6 +39,27 @@
  */
 package org.glassfish.hk2.extras.interception.internal;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import org.aopalliance.intercept.ConstructorInterceptor;
+import org.aopalliance.intercept.MethodInterceptor;
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.IndexedFilter;
+import org.glassfish.hk2.api.InterceptionService;
+import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.extras.interception.Intercepted;
+import org.glassfish.hk2.extras.interception.Interceptor;
+
 /**
  * A default implementation of the interception service using annotation to
  * denote services that are to be intercepted and other annotations to match
@@ -46,5 +67,91 @@ package org.glassfish.hk2.extras.interception.internal;
  * 
  * @author jwells
  */
-public class DefaultInterceptionService {
+@Singleton
+public class DefaultInterceptionService implements InterceptionService {
+    private final static IndexedFilter METHOD_FILTER = new IndexedFilter() {
+
+        @Override
+        public boolean matches(Descriptor d) {
+            return d.getQualifiers().contains(Interceptor.class.getName());
+        }
+
+        @Override
+        public String getAdvertisedContract() {
+            return MethodInterceptor.class.getName();
+        }
+
+        @Override
+        public String getName() {
+            return null;
+        }
+        
+    };
+    
+    @Inject
+    private ServiceLocator locator;
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.InterceptionService#getDescriptorFilter()
+     */
+    @Override
+    public Filter getDescriptorFilter() {
+        return new Filter() {
+
+            @Override
+            public boolean matches(Descriptor d) {
+                return d.getQualifiers().contains(Intercepted.class.getName());
+            }
+            
+        };
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.InterceptionService#getMethodInterceptors(java.lang.reflect.Method)
+     */
+    @Override
+    public List<MethodInterceptor> getMethodInterceptors(Method method) {
+        HashSet<String> allBindings = ReflectionUtilities.getAllBindingsFromMethod(method);
+        
+        List<ServiceHandle<?>> allInterceptors = locator.getAllServiceHandles(METHOD_FILTER);
+        
+        ArrayList<MethodInterceptor> retVal = new ArrayList<MethodInterceptor>(allInterceptors.size());
+        
+        for (ServiceHandle<?> handle : allInterceptors) {
+            ActiveDescriptor<?> ad = handle.getActiveDescriptor();
+            if (!ad.isReified()) {
+                ad = locator.reifyDescriptor(ad);
+            }
+            
+            Class<?> interceptorClass = ad.getImplementationClass();
+            
+            HashSet<String> allInterceptorBindings = ReflectionUtilities.getAllBindingsFromClass(interceptorClass);
+            
+            boolean found = false;
+            for (String interceptorBinding : allInterceptorBindings) {
+                if (allBindings.contains(interceptorBinding)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) continue;
+            
+            MethodInterceptor interceptor = (MethodInterceptor) handle.getService();
+            if (interceptor != null) {
+                retVal.add(interceptor);
+            }
+        }
+        
+        return retVal;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.InterceptionService#getConstructorInterceptors(java.lang.reflect.Constructor)
+     */
+    @Override
+    public List<ConstructorInterceptor> getConstructorInterceptors(
+            Constructor<?> constructor) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

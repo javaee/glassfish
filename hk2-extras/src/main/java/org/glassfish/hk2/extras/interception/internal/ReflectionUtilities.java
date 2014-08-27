@@ -37,47 +37,63 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.interception;
+package org.glassfish.hk2.extras.interception.internal;
 
-import org.aopalliance.intercept.MethodInvocation;
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.tests.extras.internal.Utilities;
-import org.junit.Assert;
-import org.junit.Test;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.HashSet;
+
+import org.glassfish.hk2.extras.interception.InterceptionBinder;
 
 /**
- * Tests for the default interception service
  * @author jwells
+ *
  */
-public class DefaultInterceptionTest {
-    /**
-     * Tests that a non-intercepted method is not intercepted,
-     * while an intercepted method is intercepted
-     */
-    @Test // @org.junit.Ignore
-    public void testMethodInterception() {
-        ServiceLocator locator = Utilities.getUniqueLocator(BasicRecordingInterceptor.class,
-                InterceptedService.class);
+public class ReflectionUtilities {
+    public static  HashSet<String> getAllBindingsFromMethod(Method m) {
+        HashSet<String> retVal = getAllBindingsFromClass(m.getDeclaringClass());
         
-        BasicRecordingInterceptor interceptor = locator.getService(BasicRecordingInterceptor.class);
-        Assert.assertNotNull(interceptor);
-        Assert.assertNull(interceptor.getLastInvocation());
+        Annotation allMethodAnnotations[] = m.getAnnotations();
+        for (Annotation aMethodAnnotation : allMethodAnnotations) {
+            if (!isBindingAnnotation(aMethodAnnotation)) continue;
+            
+            getAllBinderAnnotations(aMethodAnnotation, retVal);
+        }
         
-        InterceptedService interceptedService = locator.getService(InterceptedService.class);
-        Assert.assertNotNull(interceptedService);
-        
-        interceptedService.isIntercepted();
-        
-        MethodInvocation invocation = interceptor.getLastInvocation();
-        Assert.assertNotNull(invocation);
-        
-        Assert.assertEquals("isIntercepted", invocation.getMethod().getName());
-        
-        interceptor.clear();
-        
-        interceptedService.isNotIntercepted();
-        
-        invocation = interceptor.getLastInvocation();
-        Assert.assertNull(invocation);
+        return retVal;
     }
+    
+    public static  HashSet<String> getAllBindingsFromClass(Class<?> c) {
+        HashSet<String> retVal = new HashSet<String>();
+        
+        Annotation allClassAnnotations[] = c.getAnnotations();
+        for (Annotation aClassAnnotation : allClassAnnotations) {
+            if (!isBindingAnnotation(aClassAnnotation)) continue;
+            
+            getAllBinderAnnotations(aClassAnnotation, retVal);
+        }
+        
+        return retVal;
+    }
+    
+    private static boolean isBindingAnnotation(Annotation a) {
+        return (a.annotationType().getAnnotation(InterceptionBinder.class)) != null;
+    }
+    
+    private static void getAllBinderAnnotations(Annotation a, HashSet<String> retVal) {
+        String aName = a.annotationType().getName();
+        if (retVal.contains(aName)) return;
+        retVal.add(aName);
+        
+        Annotation subAnnotations[] = a.annotationType().getAnnotations();
+        for (Annotation subAnnotation : subAnnotations) {
+            if (!isBindingAnnotation(subAnnotation)) continue;
+            
+            String subName = subAnnotation.annotationType().getName();
+            if (retVal.contains(subName)) continue;
+            
+            getAllBinderAnnotations(subAnnotation, retVal);
+        }
+    }
+
 }

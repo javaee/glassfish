@@ -44,12 +44,16 @@ import javax.inject.Singleton;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.glassfish.hk2.extras.interception.Interceptor;
+import org.jvnet.hk2.annotations.ContractsProvided;
 
 /**
  * @author jwells
  *
  */
-@Singleton @Interceptor @Recorder
+@Singleton
+@Interceptor
+@Recorder
+@ContractsProvided({BasicRecordingInterceptor.class, MethodInterceptor.class})
 public class BasicRecordingInterceptor implements MethodInterceptor {
     private MethodInvocation lastInvocation;
 
