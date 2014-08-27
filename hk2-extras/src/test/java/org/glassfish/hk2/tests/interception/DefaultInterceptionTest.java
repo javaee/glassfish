@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.tests.interception;
 
+import org.aopalliance.intercept.ConstructorInvocation;
 import org.aopalliance.intercept.MethodInvocation;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.extras.internal.Utilities;
@@ -150,5 +151,28 @@ public class DefaultInterceptionTest {
             Assert.assertEquals("interceptedViaStereotype", interceptor2.getLastInvocation().getMethod().getName());
             Assert.assertEquals("interceptedViaStereotype", interceptor3.getLastInvocation().getMethod().getName());
         }
+    }
+    
+    /**
+     * Tests basic constructor interception
+     */
+    @Test @org.junit.Ignore
+    public void testConstructorInterception() {
+        ServiceLocator locator = Utilities.getUniqueLocator(ConstructorRecordingInterceptor.class,
+                ConstructorInterceptedService.class);
+        
+        ConstructorRecordingInterceptor interceptor = locator.getService(ConstructorRecordingInterceptor.class);
+        Assert.assertNotNull(interceptor);
+        Assert.assertNull(interceptor.getLastInvocation());
+        
+        ConstructorInterceptedService interceptedService = locator.getService(ConstructorInterceptedService.class);
+        Assert.assertNotNull(interceptedService);
+        
+        ConstructorInvocation invocation = interceptor.getLastInvocation();
+        Assert.assertNotNull(invocation);
+        
+        Assert.assertNotNull("isIntercepted", invocation.getConstructor());
+        
+        Assert.assertEquals(ConstructorInterceptedService.class, invocation.getConstructor().getDeclaringClass());
     }
 }

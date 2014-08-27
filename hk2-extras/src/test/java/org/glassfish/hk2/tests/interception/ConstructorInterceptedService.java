@@ -39,27 +39,19 @@
  */
 package org.glassfish.hk2.tests.interception;
 
-import static java.lang.annotation.ElementType.CONSTRUCTOR;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import javax.inject.Singleton;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import org.glassfish.hk2.extras.interception.InterceptionBinder;
+import org.glassfish.hk2.extras.interception.Intercepted;
 
 /**
  * @author jwells
  *
  */
-@Inherited
-@InterceptionBinder
-@Target({TYPE, METHOD, CONSTRUCTOR})
-@Retention(RUNTIME)
-@Documented
-public @interface Recorder {
+@Singleton @Intercepted
+public class ConstructorInterceptedService {
+    
+    @Recorder
+    public ConstructorInterceptedService() {
+    }
 
 }

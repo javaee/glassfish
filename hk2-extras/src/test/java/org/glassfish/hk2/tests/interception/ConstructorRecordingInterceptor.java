@@ -39,27 +39,38 @@
  */
 package org.glassfish.hk2.tests.interception;
 
-import static java.lang.annotation.ElementType.CONSTRUCTOR;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import javax.inject.Singleton;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import org.glassfish.hk2.extras.interception.InterceptionBinder;
+import org.aopalliance.intercept.ConstructorInterceptor;
+import org.aopalliance.intercept.ConstructorInvocation;
+import org.glassfish.hk2.extras.interception.Interceptor;
+import org.jvnet.hk2.annotations.ContractsProvided;
 
 /**
  * @author jwells
  *
  */
-@Inherited
-@InterceptionBinder
-@Target({TYPE, METHOD, CONSTRUCTOR})
-@Retention(RUNTIME)
-@Documented
-public @interface Recorder {
+@Singleton
+@ContractsProvided({ConstructorRecordingInterceptor.class, ConstructorInterceptor.class})
+@Interceptor @RecorderStereotype
+public class ConstructorRecordingInterceptor implements ConstructorInterceptor {
+    private ConstructorInvocation lastInvocation;
+
+    /* (non-Javadoc)
+     * @see org.aopalliance.intercept.ConstructorInterceptor#construct(org.aopalliance.intercept.ConstructorInvocation)
+     */
+    @Override
+    public Object construct(ConstructorInvocation arg0) throws Throwable {
+        lastInvocation = arg0;
+        return arg0.proceed();
+    }
+    
+    public ConstructorInvocation getLastInvocation() {
+        return lastInvocation;
+    }
+    
+    public void clear() {
+        lastInvocation = null;
+    }
 
 }
