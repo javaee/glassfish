@@ -80,4 +80,75 @@ public class DefaultInterceptionTest {
         invocation = interceptor.getLastInvocation();
         Assert.assertNull(invocation);
     }
+    
+    private static void clearInterceptors(BasicRecordingInterceptor a,
+            BasicRecordingInterceptor2 b,
+            BasicRecordingInterceptor3 c) {
+        a.clear();
+        b.clear();
+        c.clear();
+    }
+    
+    /**
+     * Has a class interceptor and services that have some interceptors and not others etc
+     */
+    @SuppressWarnings("deprecation")
+    @Test // @org.junit.Ignore
+    public void testComplexMethodInterception() {
+        ServiceLocator locator = Utilities.getUniqueLocator(BasicRecordingInterceptor.class,
+                BasicRecordingInterceptor2.class,
+                BasicRecordingInterceptor3.class,
+                ComplexInterceptedService.class);
+        
+        BasicRecordingInterceptor interceptor1 = locator.getService(BasicRecordingInterceptor.class);
+        BasicRecordingInterceptor2 interceptor2 = locator.getService(BasicRecordingInterceptor2.class);
+        BasicRecordingInterceptor3 interceptor3 = locator.getService(BasicRecordingInterceptor3.class);
+        
+        ComplexInterceptedService interceptedService = locator.getService(ComplexInterceptedService.class);
+        Assert.assertNotNull(interceptedService);
+        
+        {
+            interceptedService.interceptedByTwo();
+        
+            Assert.assertEquals("interceptedByTwo", interceptor1.getLastInvocation().getMethod().getName());
+            Assert.assertEquals("interceptedByTwo", interceptor2.getLastInvocation().getMethod().getName());
+            Assert.assertNull(interceptor3.getLastInvocation());
+        }
+        
+        clearInterceptors(interceptor1, interceptor2, interceptor3);
+        
+        {
+            interceptedService.interceptedByThree();
+        
+            Assert.assertEquals("interceptedByThree", interceptor1.getLastInvocation().getMethod().getName());
+            Assert.assertNull(interceptor2.getLastInvocation());
+            Assert.assertEquals("interceptedByThree", interceptor3.getLastInvocation().getMethod().getName());
+        }
+        
+        clearInterceptors(interceptor1, interceptor2, interceptor3);
+        
+        {
+            interceptedService.interceptedByClass();
+        
+            Assert.assertEquals("interceptedByClass", interceptor1.getLastInvocation().getMethod().getName());
+            Assert.assertNull(interceptor2.getLastInvocation());
+            Assert.assertNull(interceptor3.getLastInvocation());
+        }
+        
+        {
+            interceptedService.interceptedByAll();
+        
+            Assert.assertEquals("interceptedByAll", interceptor1.getLastInvocation().getMethod().getName());
+            Assert.assertEquals("interceptedByAll", interceptor2.getLastInvocation().getMethod().getName());
+            Assert.assertEquals("interceptedByAll", interceptor3.getLastInvocation().getMethod().getName());
+        }
+        
+        {
+            interceptedService.interceptedViaStereotype();
+        
+            Assert.assertEquals("interceptedViaStereotype", interceptor1.getLastInvocation().getMethod().getName());
+            Assert.assertEquals("interceptedViaStereotype", interceptor2.getLastInvocation().getMethod().getName());
+            Assert.assertEquals("interceptedViaStereotype", interceptor3.getLastInvocation().getMethod().getName());
+        }
+    }
 }
