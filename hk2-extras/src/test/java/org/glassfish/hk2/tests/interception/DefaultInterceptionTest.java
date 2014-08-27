@@ -51,6 +51,9 @@ import org.junit.Test;
  * @author jwells
  */
 public class DefaultInterceptionTest {
+    public static int cInterceptors = 0;
+    public static int mInterceptors = 0;
+    
     /**
      * Tests that a non-intercepted method is not intercepted,
      * while an intercepted method is intercepted
@@ -174,5 +177,45 @@ public class DefaultInterceptionTest {
         Assert.assertNotNull(invocation.getConstructor());
         
         Assert.assertEquals(ConstructorInterceptedService.class, invocation.getConstructor().getDeclaringClass());
+    }
+    
+    /**
+     * Tests a few things:
+     * 1.  Intercepted class has only a class level binder
+     * 2.  There is one binder with multiple interceptors having that binder
+     * 3.  Both method and constructor interception is used
+     * 4.  There is a constructor interceptor that is not used
+     */
+    @Test
+    public void testClassOnlyMultipleIntercptorsWithOneBinder() {
+        ServiceLocator locator = Utilities.getUniqueLocator(MultipleInterceptedService.class,
+                MultiC1.class,
+                MultiC2.class,
+                MultiC3.class,
+                MultiM1.class,
+                MultiM2.class,
+                MultiM3.class,
+                ConstructorRecordingInterceptor.class);
+        
+        Assert.assertSame(0, cInterceptors);
+        Assert.assertSame(0, mInterceptors);
+        
+        MultipleInterceptedService mis = locator.getService(MultipleInterceptedService.class);
+        
+        Assert.assertSame(3, cInterceptors);
+        Assert.assertSame(0, mInterceptors);
+        
+        mis.callMeForAGoodTime();
+        
+        Assert.assertSame(3, cInterceptors);
+        Assert.assertSame(3, mInterceptors);
+        
+        mis.callMeForAGoodTime();
+        
+        Assert.assertSame(3, cInterceptors);
+        Assert.assertSame(6, mInterceptors);
+        
+        ConstructorRecordingInterceptor recorder = locator.getService(ConstructorRecordingInterceptor.class);
+        Assert.assertNull(recorder.getLastInvocation());
     }
 }
