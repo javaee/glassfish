@@ -40,6 +40,7 @@
 package org.glassfish.hk2.extras.interception.internal;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 
@@ -51,6 +52,19 @@ import org.glassfish.hk2.extras.interception.InterceptionBinder;
  */
 public class ReflectionUtilities {
     public static  HashSet<String> getAllBindingsFromMethod(Method m) {
+        HashSet<String> retVal = getAllBindingsFromClass(m.getDeclaringClass());
+        
+        Annotation allMethodAnnotations[] = m.getAnnotations();
+        for (Annotation aMethodAnnotation : allMethodAnnotations) {
+            if (!isBindingAnnotation(aMethodAnnotation)) continue;
+            
+            getAllBinderAnnotations(aMethodAnnotation, retVal);
+        }
+        
+        return retVal;
+    }
+    
+    public static  HashSet<String> getAllBindingsFromConstructor(Constructor<?> m) {
         HashSet<String> retVal = getAllBindingsFromClass(m.getDeclaringClass());
         
         Annotation allMethodAnnotations[] = m.getAnnotations();

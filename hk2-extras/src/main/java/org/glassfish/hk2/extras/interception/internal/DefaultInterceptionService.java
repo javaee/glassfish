@@ -88,6 +88,25 @@ public class DefaultInterceptionService implements InterceptionService {
         
     };
     
+    private final static IndexedFilter CONSTRUCTOR_FILTER = new IndexedFilter() {
+
+        @Override
+        public boolean matches(Descriptor d) {
+            return d.getQualifiers().contains(Interceptor.class.getName());
+        }
+
+        @Override
+        public String getAdvertisedContract() {
+            return ConstructorInterceptor.class.getName();
+        }
+
+        @Override
+        public String getName() {
+            return null;
+        }
+        
+    };
+    
     @Inject
     private ServiceLocator locator;
 
@@ -151,7 +170,37 @@ public class DefaultInterceptionService implements InterceptionService {
     @Override
     public List<ConstructorInterceptor> getConstructorInterceptors(
             Constructor<?> constructor) {
-        // TODO Auto-generated method stub
-        return null;
+        HashSet<String> allBindings = ReflectionUtilities.getAllBindingsFromConstructor(constructor);
+        
+        List<ServiceHandle<?>> allInterceptors = locator.getAllServiceHandles(CONSTRUCTOR_FILTER);
+        
+        ArrayList<ConstructorInterceptor> retVal = new ArrayList<ConstructorInterceptor>(allInterceptors.size());
+        
+        for (ServiceHandle<?> handle : allInterceptors) {
+            ActiveDescriptor<?> ad = handle.getActiveDescriptor();
+            if (!ad.isReified()) {
+                ad = locator.reifyDescriptor(ad);
+            }
+            
+            Class<?> interceptorClass = ad.getImplementationClass();
+            
+            HashSet<String> allInterceptorBindings = ReflectionUtilities.getAllBindingsFromClass(interceptorClass);
+            
+            boolean found = false;
+            for (String interceptorBinding : allInterceptorBindings) {
+                if (allBindings.contains(interceptorBinding)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) continue;
+            
+            ConstructorInterceptor interceptor = (ConstructorInterceptor) handle.getService();
+            if (interceptor != null) {
+                retVal.add(interceptor);
+            }
+        }
+        
+        return retVal;
     }
 }

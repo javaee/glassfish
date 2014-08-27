@@ -156,7 +156,7 @@ public class DefaultInterceptionTest {
     /**
      * Tests basic constructor interception
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testConstructorInterception() {
         ServiceLocator locator = Utilities.getUniqueLocator(ConstructorRecordingInterceptor.class,
                 ConstructorInterceptedService.class);
@@ -171,7 +171,7 @@ public class DefaultInterceptionTest {
         ConstructorInvocation invocation = interceptor.getLastInvocation();
         Assert.assertNotNull(invocation);
         
-        Assert.assertNotNull("isIntercepted", invocation.getConstructor());
+        Assert.assertNotNull(invocation.getConstructor());
         
         Assert.assertEquals(ConstructorInterceptedService.class, invocation.getConstructor().getDeclaringClass());
     }
