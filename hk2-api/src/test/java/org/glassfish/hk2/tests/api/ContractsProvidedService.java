@@ -37,25 +37,21 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.interception;
+package org.glassfish.hk2.tests.api;
 
-import org.glassfish.hk2.api.PerLookup;
-import org.glassfish.hk2.extras.interception.Intercepted;
+import org.jvnet.hk2.annotations.ContractsProvided;
 
 /**
+ * Even though this service should naturally have
+ * only MarkerInterface2, instead it will have
+ * only MarkerInterface because of the ContractsProvided
+ * indicator
+ *  
  * @author jwells
  *
  */
-@PerLookup @Intercepted
-public class InterceptedService {
-    
-    @Recorder @Recorder2 @Recorder3
-    public void isIntercepted() {
-        
-    }
-    
-    public void isNotIntercepted() {
-        
-    }
+@ContractsProvided(MarkerInterface.class)
+public class ContractsProvidedService implements MarkerInterface,
+        MarkerInterface2 {
 
 }

@@ -37,25 +37,71 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.interception;
+package org.glassfish.hk2.utilities;
 
-import org.glassfish.hk2.api.PerLookup;
-import org.glassfish.hk2.extras.interception.Intercepted;
+import java.util.ArrayList;
+
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.IndexedFilter;
+import org.glassfish.hk2.utilities.general.GeneralUtilities;
 
 /**
+ * Creates a filter that matches if at least one
+ * of the sub-filters is a match.  Respects the
+ * rules of {@link IndexedFilter} as well
+ * 
  * @author jwells
  *
  */
-@PerLookup @Intercepted
-public class InterceptedService {
+public class OrFilter implements Filter {
+    private final ArrayList<Filter> allFilters;
     
-    @Recorder @Recorder2 @Recorder3
-    public void isIntercepted() {
+    /**
+     * Creates an OrFilter whose matches methods returns
+     * true if at least one of the filters given returns
+     * true.  If filters is zero length then the matches
+     * method will always return false because none of
+     * the filters returned true!
+     * 
+     * @param filters other filters to be considered in the
+     * Or expression
+     */
+    public OrFilter(Filter...filters) {
         
+        allFilters = new ArrayList<Filter>(filters.length);
+        
+        for (Filter f : filters) {
+            if (f != null) {
+                allFilters.add(f);
+            }
+        }
     }
-    
-    public void isNotIntercepted() {
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Filter#matches(org.glassfish.hk2.api.Descriptor)
+     */
+    @Override
+    public boolean matches(Descriptor d) {
+        for (Filter filter : allFilters) {
+            if (filter instanceof IndexedFilter) {
+                IndexedFilter iFilter = (IndexedFilter) filter;
+                
+                String name = iFilter.getName();
+                if (name != null) {
+                  if (!GeneralUtilities.safeEquals(name, d.getName())) continue;
+                }
+                
+                String contract = iFilter.getAdvertisedContract();
+                if (contract != null) {
+                    if (!d.getAdvertisedContracts().contains(contract)) continue;
+                }
+            }
+            
+            if (filter.matches(d)) return true;
+        }
         
+        return false;
     }
 
 }

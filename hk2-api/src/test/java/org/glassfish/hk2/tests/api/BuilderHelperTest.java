@@ -283,6 +283,55 @@ public class BuilderHelperTest {
     }
     
     /**
+     * Tests the all descriptor filter
+     */
+    @Test
+    public void testConstantWithContractsProvided() {
+        ContractsProvidedService cps = new ContractsProvidedService();
+        ActiveDescriptor<ContractsProvidedService> cDesc = BuilderHelper.createConstantDescriptor(cps);
+        Assert.assertNotNull(cDesc);
+        
+        Assert.assertEquals(ContractsProvidedService.class.getName(), cDesc.getImplementation());
+        Assert.assertEquals(ContractsProvidedService.class, cDesc.getImplementationClass());
+        
+        Assert.assertEquals(1, cDesc.getAdvertisedContracts().size());
+        Assert.assertTrue(cDesc.getAdvertisedContracts().contains(MarkerInterface.class.getName()));
+        
+        Assert.assertEquals(1, cDesc.getContractTypes().size());
+        Assert.assertTrue(cDesc.getContractTypes().contains(MarkerInterface.class));
+        
+        Assert.assertNull(cDesc.getName());
+        
+        Assert.assertEquals(PerLookup.class.getName(), cDesc.getScope());
+        Assert.assertEquals(PerLookup.class, cDesc.getScopeAnnotation());
+        
+        Assert.assertEquals(0, cDesc.getQualifiers().size());
+        
+        Assert.assertEquals(0, cDesc.getQualifierAnnotations().size());
+        
+        Assert.assertEquals(DescriptorType.CLASS, cDesc.getDescriptorType());
+        Assert.assertTrue(cDesc.getMetadata().isEmpty());
+        Assert.assertNull(cDesc.getLoader());
+        Assert.assertEquals(0, cDesc.getRanking());
+        Assert.assertNull(cDesc.getServiceId());
+        Assert.assertNull(cDesc.getLocatorId());
+        Assert.assertTrue(cDesc.isReified());
+        Assert.assertTrue(cDesc.getInjectees().isEmpty());
+        
+        Assert.assertEquals(cps, cDesc.create(null));
+        
+        // Call the destroy, though it should do nothing
+        cDesc.dispose(cps);
+        
+        // Check the cache
+        Assert.assertEquals(cps, cDesc.getCache());
+        Assert.assertTrue(cDesc.isCacheSet());
+        
+        String asString = cDesc.toString();
+        Assert.assertTrue(asString.contains("implementation=org.glassfish.hk2.tests.api.ContractsProvidedService"));
+    }
+    
+    /**
      * Tests the contract filter
      */
     @Test

@@ -41,8 +41,14 @@ package org.glassfish.hk2.tests.interception;
 
 import org.aopalliance.intercept.ConstructorInvocation;
 import org.aopalliance.intercept.MethodInvocation;
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.extras.internal.Utilities;
+import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -217,5 +223,103 @@ public class DefaultInterceptionTest {
         
         ConstructorRecordingInterceptor recorder = locator.getService(ConstructorRecordingInterceptor.class);
         Assert.assertNull(recorder.getLastInvocation());
+    }
+    
+    /**
+     * Tests that method interceptors can be added and removed
+     */
+    @Test // @org.junit.Ignore
+    public void testDynamicMethodInterception() {
+        ServiceLocator locator = Utilities.getUniqueLocator(InterceptedService.class);
+        
+        BasicRecordingInterceptor interceptorConstant = new BasicRecordingInterceptor();
+        BasicRecordingInterceptor2 interceptorConstant2 = new BasicRecordingInterceptor2();
+        BasicRecordingInterceptor3 interceptorConstant3 = new BasicRecordingInterceptor3();
+        
+        {
+            InterceptedService interceptedService = locator.getService(InterceptedService.class);
+            
+            // This is obvious, just sets up a baseline
+            interceptedService.isIntercepted();
+        
+            Assert.assertNull(interceptorConstant.getLastInvocation());
+            Assert.assertNull(interceptorConstant2.getLastInvocation());
+            Assert.assertNull(interceptorConstant3.getLastInvocation());
+            
+            clearInterceptors(interceptorConstant, interceptorConstant2, interceptorConstant3);
+        }
+        
+        ActiveDescriptor<?> interceptorDescriptor = ServiceLocatorUtilities.addOneConstant(locator, interceptorConstant);
+        
+        {
+            InterceptedService interceptedService = locator.getService(InterceptedService.class);
+            
+            // From zero to one
+            interceptedService.isIntercepted();
+        
+            Assert.assertSame("isIntercepted", interceptorConstant.getLastInvocation().getMethod().getName());
+            Assert.assertNull(interceptorConstant2.getLastInvocation());
+            Assert.assertNull(interceptorConstant3.getLastInvocation());
+            
+            clearInterceptors(interceptorConstant, interceptorConstant2, interceptorConstant3);
+        }
+        
+        ServiceLocatorUtilities.removeOneDescriptor(locator, interceptorDescriptor);
+        
+        {
+            InterceptedService interceptedService = locator.getService(InterceptedService.class);
+            
+            // from one to zero
+            interceptedService.isIntercepted();
+        
+            Assert.assertNull(interceptorConstant.getLastInvocation());
+            Assert.assertNull(interceptorConstant2.getLastInvocation());
+            Assert.assertNull(interceptorConstant3.getLastInvocation());
+            
+            clearInterceptors(interceptorConstant, interceptorConstant2, interceptorConstant3);
+        }
+        
+        interceptorDescriptor = ServiceLocatorUtilities.addOneConstant(locator, interceptorConstant);
+        ActiveDescriptor<?> interceptorDescriptor2 = ServiceLocatorUtilities.addOneConstant(locator, interceptorConstant2);
+        
+        {
+            InterceptedService interceptedService = locator.getService(InterceptedService.class);
+            
+            // from zero to two
+            interceptedService.isIntercepted();
+        
+            Assert.assertSame("isIntercepted", interceptorConstant.getLastInvocation().getMethod().getName());
+            Assert.assertSame("isIntercepted", interceptorConstant2.getLastInvocation().getMethod().getName());
+            Assert.assertNull(interceptorConstant3.getLastInvocation());
+            
+            clearInterceptors(interceptorConstant, interceptorConstant2, interceptorConstant3);
+        }
+        
+        // In this next bit we add interceptorConstant3 and remove interceptorConstant2 in the same configuration
+        // run, in order to be sure the system notices the change
+        DynamicConfigurationService dynamicConfigurationService = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dynamicConfigurationService.createDynamicConfiguration();
+        
+        ActiveDescriptor<?> interceptorDescriptor3 = BuilderHelper.createConstantDescriptor(interceptorConstant3);
+        
+        Filter unbindFilter = BuilderHelper.createSpecificDescriptorFilter(interceptorDescriptor2);
+        
+        config.addActiveDescriptor(interceptorDescriptor3);
+        config.addUnbindFilter(unbindFilter);
+        
+        config.commit();
+        
+        {
+            InterceptedService interceptedService = locator.getService(InterceptedService.class);
+            
+            // from two to a different two
+            interceptedService.isIntercepted();
+        
+            Assert.assertSame("isIntercepted", interceptorConstant.getLastInvocation().getMethod().getName());
+            Assert.assertNull(interceptorConstant2.getLastInvocation());
+            Assert.assertSame("isIntercepted", interceptorConstant3.getLastInvocation().getMethod().getName());
+            
+            clearInterceptors(interceptorConstant, interceptorConstant2, interceptorConstant3);
+        }
     }
 }

@@ -45,6 +45,7 @@ import java.lang.reflect.Type;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -72,6 +73,7 @@ import org.glassfish.hk2.internal.SpecificFilterImpl;
 import org.glassfish.hk2.internal.StarFilter;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.jvnet.hk2.annotations.Contract;
+import org.jvnet.hk2.annotations.ContractsProvided;
 import org.jvnet.hk2.annotations.Service;
 
 /**
@@ -374,7 +376,20 @@ public class BuilderHelper {
     public static <T> AbstractActiveDescriptor<T> createConstantDescriptor(T constant) {
         if (constant == null) throw new IllegalArgumentException();
         
-        Set<Type> contracts = ReflectionHelper.getAdvertisedTypesFromObject(constant, Contract.class);
+        Set<Type> contracts;
+        
+        Class<?> cClass = constant.getClass();
+        ContractsProvided provided = cClass.getAnnotation(ContractsProvided.class);
+        
+        if (provided != null) {
+            contracts = new HashSet<Type>();
+            for (Class<?> specified : provided.value()) {
+                contracts.add(specified);
+            }
+        }
+        else {
+            contracts = ReflectionHelper.getAdvertisedTypesFromObject(constant, Contract.class);
+        }
         
         return createConstantDescriptor(constant,
                 ReflectionHelper.getName(constant.getClass()),
