@@ -252,6 +252,11 @@ an automatic listener for anything that it is injected into.
 intercepted are identified using instances of the HK2 [InterceptionService][interceptionservice].  An example of
 how to use the [InterceptionService][interceptionservice] can be found [here][aopexample].
 
+There is an HK2 provided default implementation of the [InterceptionService][interceptionservice] which uses
+annotations to indicate services that should be intercepted, those that should do the intercepting and to
+bind intercepted methods and constructors to their interceptors.  Information about the HK2 provided
+default implementation of the [InterceptionService][interceptionservice] can be found [here][aopdefault].
+
 ### Dynamic Configuration Listeners
 
 A user may register an implementation of [DynamicConfigurationListener][dynamicconfigurationlistener] to be notified  whenever
@@ -352,6 +357,7 @@ Using the [ErrorService][errorservice] can be a convenient place to standardize 
 [aopalliance]: http://aopalliance.sourceforge.net/
 [interceptionservice]: apidocs/org/glassfish/hk2/api/InterceptionService.html
 [aopexample]: aop-example.html
+[aopdefault]: aop-default.html
 [events]: events.html
 [threaded-events-example]: threaded-events-example.html
 [errorservice]: apidocs/org/glassfish/hk2/api/ErrorService.html
