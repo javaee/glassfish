@@ -773,6 +773,30 @@ public class ServiceLocatorUtilitiesTest {
         Assert.assertEquals("value2", multiValues.get(1));
     }
     
+    /**
+     * Ensures that hk2 never tries to create a service it should
+     * not try to create
+     */
+    @Test
+    public void testAddOneConstantWithUncreateableService() {
+        ServiceLocator locator = uniqueCreate();
+        
+        ServiceLocatorUtilities.addClasses(locator, CreateableContractOne.class);
+        
+        ContractOne contractOneOriginal = locator.getService(ContractOne.class);
+        Assert.assertNotNull(contractOneOriginal);
+        
+        UncreateableContractOneImpl uncreateable = new UncreateableContractOneImpl(13);
+        ActiveDescriptor<?> desc = ServiceLocatorUtilities.addOneConstant(locator, uncreateable);
+        desc.setRanking(100);
+        
+        ContractOne contractOne = locator.getService(ContractOne.class);
+        
+        Assert.assertEquals(uncreateable, contractOne);
+        Assert.assertNotEquals(contractOneOriginal, contractOne);
+        
+    }
+    
     private static class BlueImpl extends AnnotationLiteral<Blue> implements Blue {
 
         /**
