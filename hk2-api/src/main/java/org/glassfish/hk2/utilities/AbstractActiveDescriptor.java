@@ -76,6 +76,7 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
     private final static Set<Annotation> EMPTY_QUALIFIER_SET = Collections.emptySet();
 
     private Set<Type> advertisedContracts = new LinkedHashSet<Type>();
+    private Annotation scopeAnnotation;
     private Class<? extends Annotation> scope;
     private Set<Annotation> qualifiers;
     private Long factoryServiceId;
@@ -360,7 +361,7 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
     
     @Override
     public Annotation getScopeAsAnnotation() {
-        throw new AssertionError("not yet implemented");
+        return scopeAnnotation;
     }
     
     /**
@@ -368,11 +369,14 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
      * This method will also modify the scope as a Class
      * and the underlying scope as a String
      * 
-     * @param scope The scope as an {@link Annotation}.  May
+     * @param scopeAnnotation The scope as an {@link Annotation}.  May
      * not be null
      */
-    public void setScopeAsAnnotation(Annotation scope) {
-        throw new AssertionError("not yet implemented");
+    public void setScopeAsAnnotation(Annotation scopeAnnotation) {
+        this.scopeAnnotation = scopeAnnotation;
+        if (scopeAnnotation != null) {
+            setScopeAnnotation(scopeAnnotation.annotationType());
+        }
     }
 
     /* (non-Javadoc)

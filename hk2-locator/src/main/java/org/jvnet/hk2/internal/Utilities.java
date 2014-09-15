@@ -1798,12 +1798,12 @@ public class Utilities {
      * @return The scope of this class or producer method.  If no scope is
      * found will return the dependent scope
      */
-    public static Class<? extends Annotation> getScopeAnnotationType(
+    public static ScopeInfo getScopeAnnotationType(
             AnnotatedElement annotatedGuy,
             Descriptor defaultScope,
             Collector collector) {
         ScopeInfo si = getScopeInfo(annotatedGuy, defaultScope, collector);
-        return si.getAnnoType();
+        return si;
     }
 
     /**

@@ -207,6 +207,7 @@ public class ActiveLinkTest {
         
         Assert.assertEquals(Singleton.class, desc.getScopeAnnotation());
         Assert.assertEquals(Singleton.class.getName(), desc.getScope());
+        Assert.assertNull(desc.getScopeAsAnnotation());  // was not explicitly set
         
         Assert.assertEquals(Boolean.FALSE, desc.isProxiable());
         Assert.assertEquals(DescriptorVisibility.LOCAL, desc.getDescriptorVisibility());
@@ -258,7 +259,7 @@ public class ActiveLinkTest {
     /**
      * Tests that adding the whole annotation adds the class and string
      */
-    @Test @org.junit.Ignore
+    @Test
     public void testDescWithAnnotationGivenDirectly() {
         AbstractActiveDescriptor<?> desc = BuilderHelper.activeLink(ServiceA.class).
                 in(ServiceLocatorUtilities.getSingletonAnnotation()).

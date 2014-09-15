@@ -63,7 +63,7 @@ public class ContextGhostTest {
      * Ensures that you can change from one hard-coded scope on the descriptor
      * to a different scope
      */
-    @Test @org.junit.Ignore
+    @Test
     public void testSwitchFromExplicitScopeToGhostedScope() {
         ServiceLocator locator = LocatorHelper.create();
         ServiceLocatorUtilities.enableLookupExceptions(locator);
@@ -86,7 +86,7 @@ public class ContextGhostTest {
     /**
      * Ensures we can add a scope to a service with no scope at all
      */
-    @Test @org.junit.Ignore
+    @Test
     public void testGiveClassWithNoScopeAScope() {
         ServiceLocator locator = LocatorHelper.create();
         ServiceLocatorUtilities.enableLookupExceptions(locator);
@@ -110,7 +110,7 @@ public class ContextGhostTest {
      * Tests that we can change the value of a field in a
      * scope with a ghost added annotation
      */
-    @Test @org.junit.Ignore
+    @Test
     public void testModifyExistingScopeWithDifferentValue() {
         ServiceLocator locator = LocatorHelper.create();
         ServiceLocatorUtilities.addClasses(locator, GhostedContext.class);

@@ -77,6 +77,7 @@ import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.glassfish.hk2.utilities.reflection.ParameterizedTypeImpl;
 import org.glassfish.hk2.utilities.reflection.Pretty;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
+import org.glassfish.hk2.utilities.reflection.ScopeInfo;
 
 /**
  * @author jwells
@@ -99,6 +100,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T>, Closeable {
 
     // These are used when we are doing the reifying ourselves
     private Class<?> implClass;
+    private Annotation scopeAnnotation;
     private Class<? extends Annotation> scope;
     private Set<Type> contracts;
     private Set<Annotation> qualifiers;
@@ -142,6 +144,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T>, Closeable {
                 preAnalyzed = true;
 
                 implClass = active.getImplementationClass();
+                scopeAnnotation = active.getScopeAsAnnotation();
                 scope = active.getScopeAnnotation();
                 contracts = Collections.unmodifiableSet(active.getContractTypes());
                 qualifiers = Collections.unmodifiableSet(active.getQualifierAnnotations());
@@ -369,7 +372,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T>, Closeable {
     public Annotation getScopeAsAnnotation() {
         checkState();
         
-        throw new AssertionError("not implemented");
+        return scopeAnnotation;
     }
 
     /* (non-Javadoc)
@@ -721,7 +724,10 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T>, Closeable {
             creator = myClazzCreator;
 
             if (!preAnalyzed) {
-                scope = Utilities.getScopeAnnotationType(implClass, baseDescriptor, collector);
+                ScopeInfo si = Utilities.getScopeAnnotationType(implClass, baseDescriptor, collector);
+                scopeAnnotation = si.getScope();
+                scope = si.getAnnoType();
+                
                 contracts = Collections.unmodifiableSet(ReflectionHelper.getTypeClosure(implClass,
                     baseDescriptor.getAdvertisedContracts()));
             }
@@ -761,7 +767,9 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T>, Closeable {
             }
 
             if (!preAnalyzed) {
-                scope = Utilities.getScopeAnnotationType(provideMethod, baseDescriptor, collector);
+                ScopeInfo si = Utilities.getScopeAnnotationType(provideMethod, baseDescriptor, collector);
+                scopeAnnotation = si.getScope();
+                scope = si.getAnnoType();
 
                 contracts = Collections.unmodifiableSet(ReflectionHelper.getTypeClosure(
                         factoryProvidedType,

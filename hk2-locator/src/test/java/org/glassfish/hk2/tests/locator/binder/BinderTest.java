@@ -294,7 +294,7 @@ public class BinderTest {
     /**
      * Tests that adding the whole annotation adds the class and string
      */
-    @Test @org.junit.Ignore
+    @Test
     public void testDescWithAnnotationGivenDirectly() {
         ServiceLocator locator = ServiceLocatorFactory.getInstance().create(null);
         
@@ -307,6 +307,7 @@ public class BinderTest {
         });
         
         ActiveDescriptor<?> desc = locator.getBestDescriptor(BuilderHelper.createContractFilter(Dwarves.class.getName()));
+        desc = locator.reifyDescriptor(desc);
         
         Assert.assertEquals(desc.getScopeAsAnnotation(), ServiceLocatorUtilities.getImmediateAnnotation());
         Assert.assertEquals(desc.getScopeAnnotation(), Immediate.class);

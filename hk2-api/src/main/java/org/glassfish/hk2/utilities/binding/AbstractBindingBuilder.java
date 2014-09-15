@@ -86,6 +86,10 @@ abstract class AbstractBindingBuilder<T> implements
      */
     Set<Annotation> qualifiers = new HashSet<Annotation>();
     /**
+     * Binding scope as annotation
+     */
+    Annotation scopeAnnotation = null;
+    /**
      * Binding scope.
      */
     Class<? extends Annotation> scope = null;
@@ -178,12 +182,8 @@ abstract class AbstractBindingBuilder<T> implements
     
     @Override
     public AbstractBindingBuilder<T> in(Annotation scopeAnnotation) {
-        throw new AssertionError("not implemented");
-        
-        /*
-        this.scope = scopeAnnotation;
+        this.scopeAnnotation = scopeAnnotation;
         return this;
-        */
     }
 
     @Override
@@ -234,6 +234,9 @@ abstract class AbstractBindingBuilder<T> implements
                     .andLoadWith(this.loader)
                     .analyzeWith(this.analyzer);
 
+            if (scopeAnnotation != null) {
+                builder.in(scopeAnnotation);
+            }
             if (scope != null) {
                 builder.in(scope);
             }

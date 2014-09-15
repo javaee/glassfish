@@ -65,6 +65,7 @@ import org.glassfish.hk2.utilities.ActiveDescriptorBuilder;
 public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
     private String name;
     private final HashSet<Type> contracts = new HashSet<Type>();
+    private Annotation scopeAnnotation = null;
     private Class<? extends Annotation> scope = PerLookup.class;
     private final HashSet<Annotation> qualifiers = new HashSet<Annotation>();
     private final HashMap<String, List<String>> metadatas = new HashMap<String, List<String>>();
@@ -106,14 +107,14 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
     }
     
     @Override
-    public ActiveDescriptorBuilder in(Annotation scope)
+    public ActiveDescriptorBuilder in(Annotation scopeAnnotation)
             throws IllegalArgumentException {
-        throw new AssertionError("not yet implemented");
-        /*
-        this.scope = scope;
+        if (scopeAnnotation == null) throw new IllegalArgumentException();
+        
+        this.scopeAnnotation = scopeAnnotation;
+        this.scope = scopeAnnotation.annotationType();
         
         return this;
-        */
     }
     
     /* (non-Javadoc)
@@ -123,6 +124,15 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
     public ActiveDescriptorBuilder in(Class<? extends Annotation> scope)
             throws IllegalArgumentException {
         this.scope = scope;
+        if (scope == null) {
+            scopeAnnotation = null;
+        }
+        else if (scopeAnnotation != null &&  !scope.equals(scopeAnnotation.annotationType())) {
+            throw new IllegalArgumentException("Scope set to different class (" + scope.getName() + ") from the scope annotation (" +
+              scopeAnnotation.annotationType().getName());
+        }
+       
+        
         
         return this;
     }
@@ -250,6 +260,7 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
         return new BuiltActiveDescriptor<T>(
                 implementation,
                 contracts,
+                scopeAnnotation,
                 scope,
                 name,
                 qualifiers,
@@ -280,6 +291,7 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
         return new BuiltActiveDescriptor<T>(
                 implementation,
                 contracts,
+                scopeAnnotation,
                 scope,
                 name,
                 qualifiers,
@@ -311,6 +323,7 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
         
         private BuiltActiveDescriptor(Class<?> implementationClass,
                 Set<Type> advertisedContracts,
+                Annotation scopeAnnotation,
                 Class<? extends Annotation> scope,
                 String name,
                 Set<Annotation> qualifiers,
@@ -336,6 +349,7 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
             
             super.setReified(false);
             super.setLoader(loader);
+            super.setScopeAsAnnotation(scopeAnnotation);
             
             this.implementationClass = implementationClass;
             super.setImplementation(implementationClass.getName());
