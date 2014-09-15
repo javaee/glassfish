@@ -53,6 +53,7 @@ import java.util.Set;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.AnnotationLiteral;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorVisibility;
@@ -65,6 +66,7 @@ import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.Immediate;
 import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.PerThread;
 import org.glassfish.hk2.api.Populator;
 import org.glassfish.hk2.api.ServiceHandle;
@@ -83,6 +85,11 @@ import org.glassfish.hk2.internal.PerThreadContext;
  */
 public abstract class ServiceLocatorUtilities {
     private final static String DEFAULT_LOCATOR_NAME = "default";
+    
+    private final static Singleton SINGLETON = new SingletonImpl();
+    private final static PerLookup PER_LOOKUP = new PerLookupImpl();
+    private final static PerThread PER_THREAD = new PerThreadImpl();
+    private final static Immediate IMMEDIATE = new ImmediateImpl();
 
     /**
      * This method will add the ability to use the {@link PerThread} scope to
@@ -818,5 +825,49 @@ public abstract class ServiceLocatorUtilities {
         for (ActiveDescriptor<?> d : all) {
             output.println(d.toString());
         }
+    }
+    
+    /**
+     * Returns a {@link Singleton} {@link Annotation} implementation
+     * 
+     * @return a {@link Singleton} {@link Annotation} implementation
+     */
+    public static Singleton getSingletonAnnotation() { return SINGLETON; }
+    
+    /**
+     * Returns a {@link PerLookup} {@link Annotation} implementation
+     * 
+     * @return a {@link PerLookup} {@link Annotation} implementation
+     */
+    public static PerLookup getPerLookupAnnotation() { return PER_LOOKUP; }
+    
+    /**
+     * Returns a {@link PerThread} {@link Annotation} implementation
+     * 
+     * @return a {@link PerThread} {@link Annotation} implementation
+     */
+    public static PerThread getPerThreadAnnotation() { return PER_THREAD; }
+    
+    /**
+     * Returns a {@link Immediate} {@link Annotation} implementation
+     * 
+     * @return a {@link Immediate} {@link Annotation} implementation
+     */
+    public static Immediate getImmediateAnnotation() { return IMMEDIATE; }
+    
+    private static class ImmediateImpl extends AnnotationLiteral<Immediate> implements Immediate {
+        private static final long serialVersionUID = -4189466670823669605L;
+    }
+    
+    private static class PerLookupImpl extends AnnotationLiteral<PerLookup> implements PerLookup {
+        private static final long serialVersionUID = 6554011929159736762L;
+    }
+    
+    private static class PerThreadImpl extends AnnotationLiteral<PerThread> implements PerThread {
+        private static final long serialVersionUID = 521793185589873261L;
+    }
+    
+    private static class SingletonImpl extends AnnotationLiteral<Singleton> implements Singleton {
+        private static final long serialVersionUID = -2425625604832777314L;
     }
 }

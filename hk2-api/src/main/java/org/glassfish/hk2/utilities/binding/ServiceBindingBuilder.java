@@ -123,6 +123,14 @@ public interface ServiceBindingBuilder<T> extends BindingBuilder<T> {
      * @param scopeAnnotation scope annotation.
      * @return updated binding.
      */
+    public ScopedBindingBuilder<T> in(Annotation scopeAnnotation);
+    
+    /**
+     * Scope a binding.
+     *
+     * @param scopeAnnotation scope annotation.
+     * @return updated binding.
+     */
     public ScopedBindingBuilder<T> in(Class<? extends Annotation> scopeAnnotation);
 
     /**

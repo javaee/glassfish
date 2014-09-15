@@ -364,6 +364,13 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T>, Closeable {
 
         return contracts;
     }
+    
+    @Override
+    public Annotation getScopeAsAnnotation() {
+        checkState();
+        
+        throw new AssertionError("not implemented");
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ActiveDescriptor#getScopeAnnotation()

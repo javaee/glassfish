@@ -92,6 +92,17 @@ public interface ActiveDescriptorBuilder {
      * @return A DescriptorBuilder with the given scope
      * @throws IllegalArgumentException If in is called more than once
      */
+    public ActiveDescriptorBuilder in(Annotation scope) throws IllegalArgumentException;
+    
+    /**
+     * A scope to be associated with this descriptor object. Note that at the current time a
+     * descriptor can only have one scope, hence this method will throw an IllegalArgumentException
+     * if in is called more than once.
+     * 
+     * @param scope The class of the scope this descriptor is to have.
+     * @return A DescriptorBuilder with the given scope
+     * @throws IllegalArgumentException If in is called more than once
+     */
     public ActiveDescriptorBuilder in(Class<? extends Annotation> scope) throws IllegalArgumentException;
     
     /**

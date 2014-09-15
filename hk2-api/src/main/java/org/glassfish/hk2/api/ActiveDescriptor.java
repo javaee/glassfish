@@ -96,6 +96,14 @@ public interface ActiveDescriptor<T> extends Descriptor, SingleCache<T> {
     public Set<Type> getContractTypes();
     
     /**
+     * Returns the scope as an {@link Annotation}
+     * implementation that this ActiveDescriptor belongs to
+     * 
+     * @return The scope of this ActiveDescriptor as an {@link Annotation}
+     */
+    public Annotation getScopeAsAnnotation();
+    
+    /**
      * Returns the scope that this ActiveDescriptor belongs to
      * 
      * @return The scope of this ActiveDescriptor

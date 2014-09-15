@@ -175,6 +175,16 @@ abstract class AbstractBindingBuilder<T> implements
         this.qualifiers.add(annotation);
         return this;
     }
+    
+    @Override
+    public AbstractBindingBuilder<T> in(Annotation scopeAnnotation) {
+        throw new AssertionError("not implemented");
+        
+        /*
+        this.scope = scopeAnnotation;
+        return this;
+        */
+    }
 
     @Override
     public AbstractBindingBuilder<T> in(Class<? extends Annotation> scopeAnnotation) {

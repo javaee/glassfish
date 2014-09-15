@@ -105,6 +105,17 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
         return this;
     }
     
+    @Override
+    public ActiveDescriptorBuilder in(Annotation scope)
+            throws IllegalArgumentException {
+        throw new AssertionError("not yet implemented");
+        /*
+        this.scope = scope;
+        
+        return this;
+        */
+    }
+    
     /* (non-Javadoc)
      * @see org.glassfish.hk2.utilities.ActiveDescriptorBuilder#in(java.lang.Class)
      */

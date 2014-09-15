@@ -48,6 +48,7 @@ import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.Factory;
+import org.glassfish.hk2.api.Immediate;
 import org.glassfish.hk2.api.ProxyCtl;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
@@ -291,6 +292,28 @@ public class BinderTest {
     }
     
     /**
+     * Tests that adding the whole annotation adds the class and string
+     */
+    @Test @org.junit.Ignore
+    public void testDescWithAnnotationGivenDirectly() {
+        ServiceLocator locator = ServiceLocatorFactory.getInstance().create(null);
+        
+        ServiceLocatorUtilities.bind(locator, new AbstractBinder() {
+            @Override
+            protected void configure() {
+                bind(Dwarves.class).to(Dwarves.class).in(ServiceLocatorUtilities.getImmediateAnnotation());
+            }
+            
+        });
+        
+        ActiveDescriptor<?> desc = locator.getBestDescriptor(BuilderHelper.createContractFilter(Dwarves.class.getName()));
+        
+        Assert.assertEquals(desc.getScopeAsAnnotation(), ServiceLocatorUtilities.getImmediateAnnotation());
+        Assert.assertEquals(desc.getScopeAnnotation(), Immediate.class);
+        Assert.assertEquals(desc.getScope(), Immediate.class.getName()); 
+    }
+    
+    /**
      * Tests that you can use a direct annotation for a name
      */
     @Test
@@ -307,6 +330,8 @@ public class BinderTest {
         Assert.assertTrue(bofur.getQualifiers().contains(Named.class.getName()));
         Assert.assertTrue(bombur.getQualifiers().contains(Named.class.getName()));
     }
+    
+    
     
     private static class NazgulBinder implements Binder {
 

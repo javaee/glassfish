@@ -282,6 +282,11 @@ public class DelegatingNamedActiveDescriptor implements
     public Set<Type> getContractTypes() {
         return parent.getContractTypes();
     }
+    
+    @Override
+    public Annotation getScopeAsAnnotation() {
+        return parent.getScopeAsAnnotation();
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ActiveDescriptor#getScopeAnnotation()

@@ -54,6 +54,7 @@ import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Test;
 
 /**
@@ -252,6 +253,20 @@ public class ActiveLinkTest {
         Assert.assertTrue(desc.getInjectees().isEmpty());
         
         Assert.assertFalse(desc.isReified());
+    }
+    
+    /**
+     * Tests that adding the whole annotation adds the class and string
+     */
+    @Test @org.junit.Ignore
+    public void testDescWithAnnotationGivenDirectly() {
+        AbstractActiveDescriptor<?> desc = BuilderHelper.activeLink(ServiceA.class).
+                in(ServiceLocatorUtilities.getSingletonAnnotation()).
+                build();
+        
+        Assert.assertEquals(desc.getScopeAsAnnotation(), ServiceLocatorUtilities.getSingletonAnnotation());
+        Assert.assertEquals(desc.getScopeAnnotation(), Singleton.class);
+        Assert.assertEquals(desc.getScope(), Singleton.class.getName()); 
     }
     
     private void testSetOfOne(Set<?> set, Object item) {

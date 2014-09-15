@@ -49,7 +49,10 @@ import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ErrorService;
+import org.glassfish.hk2.api.Immediate;
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.PerThread;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
@@ -793,8 +796,68 @@ public class ServiceLocatorUtilitiesTest {
         ContractOne contractOne = locator.getService(ContractOne.class);
         
         Assert.assertEquals(uncreateable, contractOne);
-        Assert.assertNotEquals(contractOneOriginal, contractOne);
+        Assert.assertNotSame(contractOneOriginal, contractOne);
         
+    }
+    
+    /**
+     * Tests getSingleton
+     */
+    @Test
+    public void testGetSingleton() {
+        Singleton fromClass = HasScopes.class.getAnnotation(Singleton.class);
+        Assert.assertNotNull(fromClass);
+        
+        Singleton fromUtility = ServiceLocatorUtilities.getSingletonAnnotation();
+        Assert.assertNotNull(fromUtility);
+        
+        Assert.assertTrue(fromClass.equals(fromUtility));
+        Assert.assertTrue(fromUtility.equals(fromClass));
+    }
+    
+    /**
+     * Tests getPerLookup
+     */
+    @Test
+    public void testGetPerLookup() {
+        PerLookup fromClass = HasScopes.class.getAnnotation(PerLookup.class);
+        Assert.assertNotNull(fromClass);
+        
+        PerLookup fromUtility = ServiceLocatorUtilities.getPerLookupAnnotation();
+        Assert.assertNotNull(fromUtility);
+        
+        Assert.assertTrue(fromClass.equals(fromUtility));
+        Assert.assertTrue(fromUtility.equals(fromClass));
+    }
+    
+    /**
+     * Tests getPerThread
+     */
+    @Test
+    public void testGetPerThread() {
+        PerThread fromClass = HasScopes.class.getAnnotation(PerThread.class);
+        Assert.assertNotNull(fromClass);
+        
+        PerThread fromUtility = ServiceLocatorUtilities.getPerThreadAnnotation();
+        Assert.assertNotNull(fromUtility);
+        
+        Assert.assertTrue(fromClass.equals(fromUtility));
+        Assert.assertTrue(fromUtility.equals(fromClass));
+    }
+    
+    /**
+     * Tests getImmediate
+     */
+    @Test
+    public void testGetImmediate() {
+        Immediate fromClass = HasScopes.class.getAnnotation(Immediate.class);
+        Assert.assertNotNull(fromClass);
+        
+        Immediate fromUtility = ServiceLocatorUtilities.getImmediateAnnotation();
+        Assert.assertNotNull(fromUtility);
+        
+        Assert.assertTrue(fromClass.equals(fromUtility));
+        Assert.assertTrue(fromUtility.equals(fromClass));
     }
     
     private static class BlueImpl extends AnnotationLiteral<Blue> implements Blue {
@@ -815,6 +878,11 @@ public class ServiceLocatorUtilitiesTest {
         private static final long serialVersionUID = 3107298539617537764L;
 
 
+        
+    }
+    
+    @Singleton @PerThread @PerLookup @Immediate
+    private static class HasScopes {
         
     }
 }

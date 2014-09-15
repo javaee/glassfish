@@ -357,6 +357,23 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
             wLock.unlock();
         }
     }
+    
+    @Override
+    public Annotation getScopeAsAnnotation() {
+        throw new AssertionError("not yet implemented");
+    }
+    
+    /**
+     * Sets the scope as an {@link Annotation} implementation.
+     * This method will also modify the scope as a Class
+     * and the underlying scope as a String
+     * 
+     * @param scope The scope as an {@link Annotation}.  May
+     * not be null
+     */
+    public void setScopeAsAnnotation(Annotation scope) {
+        throw new AssertionError("not yet implemented");
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ActiveDescriptor#getScopeAnnotation()
