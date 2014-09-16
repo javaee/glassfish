@@ -105,14 +105,41 @@ public class Utilities {
      *
      * @return the mode
      */
-    public static int getRunLevelMode(Descriptor descriptor) {
+    public static int getRunLevelMode(ServiceLocator locator, Descriptor descriptor) {
+        boolean isReified = false;
+        ActiveDescriptor<?> active = null;
+        if (descriptor instanceof ActiveDescriptor) {
+            active = (ActiveDescriptor<?>) descriptor;
+            
+            isReified = active.isReified();
+            if (isReified) {
+                Annotation anno = active.getScopeAsAnnotation();
+                if (anno instanceof RunLevel) {
+                    RunLevel runLevel = (RunLevel) anno;
+                
+                    return runLevel.mode();
+                }
+            }
+        }
+        
         List<String> list = descriptor.getMetadata().
                 get(RunLevel.RUNLEVEL_MODE_META_TAG);
         
-        int retVal = list == null ?
-                RunLevel.RUNLEVEL_MODE_VALIDATING :
-                Integer.valueOf(list.get(0));
-
-        return retVal;
+        if (list == null || list.isEmpty()) {
+            if (active != null && !isReified) {
+                active = locator.reifyDescriptor(active);
+                
+                Annotation anno = active.getScopeAsAnnotation();
+                if (anno instanceof RunLevel) {
+                    RunLevel runLevel = (RunLevel) anno;
+                
+                    return runLevel.mode();
+                }
+            }
+            
+            return RunLevel.RUNLEVEL_MODE_VALIDATING;
+        }
+        
+        return Integer.parseInt(list.get(0));
     }
 }

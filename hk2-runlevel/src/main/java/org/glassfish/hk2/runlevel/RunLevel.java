@@ -69,12 +69,18 @@ public @interface RunLevel {
     // ----- Constants ------------------------------------------------------
 
     /**
-     * The metadata key for run level value.
+     * The metadata key for run level value.  If this value is
+     * present it MUST match the value of this annotation.  If
+     * this value is set then the system will not have to reify the
+     * descriptor in order to determine its level
      */
     public static final String RUNLEVEL_VAL_META_TAG  = "runLevelValue";
 
     /**
-     * The metadata key for run level mode.
+     * The metadata key for run level mode.  If this value is
+     * present is MUST match the mode of this annotation.  If
+     * this value is set then the system will not have to reify the
+     * descriptor in order to determine its mode
      */
     public static final String RUNLEVEL_MODE_META_TAG = "runLevelMode";
 

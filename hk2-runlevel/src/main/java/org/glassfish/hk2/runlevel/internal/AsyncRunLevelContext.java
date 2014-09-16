@@ -218,7 +218,7 @@ public class AsyncRunLevelContext {
         
         RuntimeException error = null;
         try {
-            int mode = Utilities.getRunLevelMode(activeDescriptor);
+            int mode = Utilities.getRunLevelMode(locator, activeDescriptor);
 
             if (mode == RunLevel.RUNLEVEL_MODE_VALIDATING) {
                 validate(activeDescriptor, localCurrentLevel);
