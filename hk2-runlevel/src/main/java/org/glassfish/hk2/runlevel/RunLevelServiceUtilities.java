@@ -39,6 +39,9 @@
  */
 package org.glassfish.hk2.runlevel;
 
+import java.lang.annotation.Annotation;
+
+import org.glassfish.hk2.api.AnnotationLiteral;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.runlevel.internal.AsyncRunLevelContext;
 import org.glassfish.hk2.runlevel.internal.RunLevelControllerImpl;
@@ -71,6 +74,63 @@ public class RunLevelServiceUtilities {
                 RunLevelContext.class,
                 AsyncRunLevelContext.class,
                 RunLevelControllerImpl.class);
+    }
+    
+    /**
+     * Returns a {@link RunLevel} scope annotation with the
+     * given value and RUNLEVEL_MODE_VALIDATING as the mode
+     * 
+     * @param value The value this RunLevel should take
+     * @return A {@link RunLevel} scope annotation
+     */
+    public static RunLevel getRunLevelAnnotation(int value) {
+        return getRunLevelAnnotation(value, RunLevel.RUNLEVEL_MODE_VALIDATING);
+        
+    }
+    
+    /**
+     * Returns a {@link RunLevel} scope annotation with the
+     * given value and mode
+     * 
+     * @param value The value this RunLevel should take
+     * @param mode The mode the RunLevel should take:<UL>
+     * <LI>RUNLEVEL_MODE_VALIDATING</LI>
+     * <LI>RUNLEVEL_MODE_NON_VALIDATING</LI>
+     * </UL>
+     * @return A {@link RunLevel} scope annotation
+     */
+    public static RunLevel getRunLevelAnnotation(int value, int mode) {
+        return new RunLevelImpl(value, mode);
+    }
+    
+    private static class RunLevelImpl extends AnnotationLiteral<RunLevel> implements RunLevel {
+        private static final long serialVersionUID = -359213687920354669L;
+        
+        private final int value;
+        private final int mode;
+        
+        private RunLevelImpl(int value, int mode) {
+            this.value = value;
+            this.mode = mode;
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.runlevel.RunLevel#value()
+         */
+        @Override
+        public int value() {
+            return value;
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.runlevel.RunLevel#mode()
+         */
+        @Override
+        public int mode() {
+            return mode;
+        }
+
+        
     }
 
 }

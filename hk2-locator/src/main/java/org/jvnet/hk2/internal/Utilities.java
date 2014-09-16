@@ -111,6 +111,7 @@ import org.glassfish.hk2.api.ValidationService;
 import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.NamedImpl;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.Constants;
@@ -647,6 +648,7 @@ public class Utilities {
         ClazzCreator<T> creator;
         Set<Annotation> qualifiers;
         Set<Type> contracts;
+        Annotation scopeAnnotation;
         Class<? extends Annotation> scope;
         String name;
         Boolean proxy = null;
@@ -747,6 +749,8 @@ public class Utilities {
                 analyzerName,
                 metadata,
                 DescriptorType.CLASS);
+        
+        retVal.setScopeAsAnnotation(scopeInfo.getScope());
 
         creator.initialize(retVal, analyzerName, collector);
 
@@ -846,6 +850,8 @@ public class Utilities {
                 null,  // provide methods do not have analyzers
                 metadata,
                 DescriptorType.PROVIDE_METHOD);
+        
+        retVal.setScopeAsAnnotation(scopeInfo.getScope());
 
         collector.throwIfErrors();
 
@@ -1754,7 +1760,7 @@ public class Utilities {
 
 
         if (topLevelElement.isAnnotationPresent(Service.class)) {
-            return new ScopeInfo(null, Singleton.class);
+            return new ScopeInfo(ServiceLocatorUtilities.getSingletonAnnotation(), Singleton.class);
         }
 
         if (defaultScope != null && defaultScope.getScope() != null) {
@@ -1765,7 +1771,7 @@ public class Utilities {
             }
         }
 
-        return new ScopeInfo(null, PerLookup.class);
+        return new ScopeInfo(ServiceLocatorUtilities.getPerLookupAnnotation(), PerLookup.class);
 
     }
 

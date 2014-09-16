@@ -717,7 +717,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
 
                 @Override
                 public boolean matches(Descriptor d) {
-                    return (upToThisLevel == Utilities.getRunLevelValue(d));
+                    return (upToThisLevel == Utilities.getRunLevelValue(locator, d));
                 }
 
                 @Override

@@ -334,7 +334,7 @@ public class AsyncRunLevelContext {
      */
     private void validate(ActiveDescriptor<?> descriptor, int currentLevel) throws IllegalStateException {
 
-        Integer runLevel = Utilities.getRunLevelValue(descriptor);
+        Integer runLevel = Utilities.getRunLevelValue(locator, descriptor);
 
         if (runLevel > currentLevel) {
             throw new IllegalStateException("Service " + descriptor.getImplementation() +
@@ -384,7 +384,7 @@ public class AsyncRunLevelContext {
             while (!orderedCreationList.isEmpty()) {
                 ActiveDescriptor<?> zero = orderedCreationList.get(0);
                 
-                int zeroLevel = Utilities.getRunLevelValue(zero);
+                int zeroLevel = Utilities.getRunLevelValue(locator, zero);
                 
                 if (zeroLevel < level) return retVal;
                 

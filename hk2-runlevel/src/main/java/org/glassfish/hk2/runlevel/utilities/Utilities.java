@@ -39,9 +39,12 @@
  */
 package org.glassfish.hk2.runlevel.utilities;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.runlevel.RunLevel;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
 
 /**
@@ -57,15 +60,42 @@ public class Utilities {
      *
      * @return the run level
      */
-    public static Integer getRunLevelValue(Descriptor descriptor) {
+    public static int getRunLevelValue(ServiceLocator locator, Descriptor descriptor) {
+        boolean isReified = false;
+        ActiveDescriptor<?> active = null;
+        if (descriptor instanceof ActiveDescriptor) {
+            active = (ActiveDescriptor<?>) descriptor;
+            
+            isReified = active.isReified();
+            if (isReified) {
+                Annotation anno = active.getScopeAsAnnotation();
+                if (anno instanceof RunLevel) {
+                    RunLevel runLevel = (RunLevel) anno;
+                
+                    return runLevel.value();
+                }
+            }
+        }
+        
         List<String> list = descriptor.getMetadata().
                 get(RunLevel.RUNLEVEL_VAL_META_TAG);
         
         if (list == null || list.isEmpty()) {
+            if (active != null && !isReified) {
+                active = locator.reifyDescriptor(active);
+                
+                Annotation anno = active.getScopeAsAnnotation();
+                if (anno instanceof RunLevel) {
+                    RunLevel runLevel = (RunLevel) anno;
+                
+                    return runLevel.value();
+                }
+            }
+            
             return RunLevel.RUNLEVEL_VAL_IMMEDIATE;
         }
         
-        return Integer.valueOf(list.get(0));
+        return Integer.parseInt(list.get(0));
     }
 
     /**

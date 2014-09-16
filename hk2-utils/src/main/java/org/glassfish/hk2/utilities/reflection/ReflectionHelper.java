@@ -464,7 +464,7 @@ public final class ReflectionHelper {
      * @param annoDefault The default that this should have if no scope could be found
      * @return The class of the scope annotation
      */
-    public static Class<? extends Annotation> getScopeFromObject(Object t, Class<? extends Annotation> annoDefault) {
+    public static Annotation getScopeFromObject(Object t, Annotation annoDefault) {
         if (t == null) return annoDefault;
 
         return getScopeFromClass(t.getClass(), annoDefault);
@@ -476,14 +476,14 @@ public final class ReflectionHelper {
      * @param annoDefault The scope that should be returned if no scope could be found
      * @return The class of the scope annotation
      */
-    public static Class<? extends Annotation> getScopeFromClass(Class<?> clazz, Class<? extends Annotation> annoDefault) {
+    public static Annotation getScopeFromClass(Class<?> clazz, Annotation annoDefault) {
         if (clazz == null) return annoDefault;
 
         for (Annotation annotation : clazz.getAnnotations()) {
             Class<? extends Annotation> annoClass = annotation.annotationType();
 
             if (annoClass.isAnnotationPresent(Scope.class)) {
-                return annoClass;
+                return annotation;
             }
 
         }

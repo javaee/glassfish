@@ -492,7 +492,7 @@ public class BuilderHelper {
         
         Set<String> contracts = ReflectionHelper.getContractsFromClass(clazz, Contract.class);
         String name = ReflectionHelper.getName(clazz);
-        String scope = ReflectionHelper.getScopeFromClass(clazz, PerLookup.class).getName();
+        String scope = ReflectionHelper.getScopeFromClass(clazz, ServiceLocatorUtilities.getPerLookupAnnotation()).annotationType().getName();
         Set<String> qualifiers = ReflectionHelper.getQualifiersFromClass(clazz);
         DescriptorType type = DescriptorType.CLASS;
         if (Factory.class.isAssignableFrom(clazz)) {
