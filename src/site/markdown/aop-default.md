@@ -192,3 +192,4 @@ on your classpath.
 [contractsprovided]: apidocs/org/glassfish/hk2/api/ContractsProvided.html
 [extrasutilities]: apidocs/org/glassfish/hk2/extras/ExtrasUtilities.html
 [interceptionbinder]: apidocs/org/glassfish/hk2/extras/interception/InterceptionBinder.html
+[interceptororderingservice]: apidocs/org/glassfish/hk2/extras/interception/InterceptorOrderingService.html
