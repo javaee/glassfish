@@ -159,6 +159,23 @@ public @interface SecurelyTraceable {
 }
 ```java
 
+### Interceptor Ordering and Customization
+
+Normally interceptors will run in their natural HK2 ordering (based on Rank and serivce/locator id)
+but sometimes it is convenient to re-order the interceptors based on some external configuration. 
+It may also be convenient to add or remove interceptors that will run with some method or
+constructor.  The default implementation of the interception service has defined its own plugin service
+named the [InterceptorOrderingService][interceptororderingservice] that allows users to add, modify
+or remove the set of intereceptors that would normally be run on a method or constructor.
+
+The methods of the [InterceptorOrderingService][interceptororderingservice] are supplied with
+the list of interceptors that would be run on the given Method or Constructor.  The
+implementations of those methods can either return the list as-is (or return null) or they can
+return their own list with a set of interceptors that should be run instead (and in what order).
+If there are more than one implementation of the [InterceptorOrderingService][interceptororderingservice]
+then all implementations are run in hk2 ranking order with the results of the previous service
+being given to the next service.  In this way chains of interceptor ordering modifiers can be used together.
+
 ### Getting it all started
 
 In order to enable the default implementation of the [InterceptionService][interceptionservice]

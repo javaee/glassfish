@@ -70,7 +70,8 @@ public interface InterceptorOrderingService {
      * that will be used to intercept the given method.  This means that the interceptors
      * can be removed (if an empty list is returned) or modified.  Modifications can
      * include changes of order, additions and/or removals of the interceptors
-     * passed into the method
+     * passed into the method.  If this method throws an exception the exception
+     * will be ignored and the interceptor list passed in will be used
      *  
      * @param method The method that is to be intercepted
      * @param currentList The list that will be used to intercept the method if this
@@ -89,7 +90,8 @@ public interface InterceptorOrderingService {
      * that will be used to intercept the given constructor.  This means that the interceptors
      * can be removed (if an empty list is returned) or modified.  Modifications can
      * include changes of order, additions and/or removals of the interceptors
-     * passed into the method
+     * passed into the method.  If this method throws an exception the exception
+     * will be ignored and the interceptor list passed in will be used
      *  
      * @param constructor The constructor that is to be intercepted
      * @param currentList The list that will be used to intercept the constructor if this

@@ -139,5 +139,43 @@ public class InterceptorOrderingTest {
         // Infinity should be last (and NOT re-ordered)
         Assert.assertEquals(NonServiceMethodInterceptorInfinity.class, interceptors.get(9).getClass());
     }
+    
+    /**
+     * Tests that we can reverse the natural ordering
+     * of interceptors
+     */
+    @Test // @org.junit.Ignore
+    public void testReverseOrderingWithThrowingOrderer() {
+        ServiceLocator locator = Utilities.getUniqueLocator(AService.class,
+                ConstructorInterceptorOne.class,
+                ConstructorInterceptorTwo.class,
+                ConstructorInterceptorThree.class,
+                Recorder.class,
+                MethodInterceptorOne.class,
+                MethodInterceptorTwo.class,
+                MethodInterceptorThree.class,
+                Reverser.class,
+                ThrowingOrderer.class);
+        
+        AService aService = locator.getService(AService.class);
+        aService.callMe();
+        
+        Recorder recorder = locator.getService(Recorder.class);
+        
+        // Three constructor interceptors, three method interceptors
+        List<Object> interceptors = recorder.get();
+        
+        Assert.assertEquals(6, interceptors.size());
+        
+        // The order should be REVERSED (3-2-1)
+        Assert.assertEquals(ConstructorInterceptorThree.class, interceptors.get(0).getClass());
+        Assert.assertEquals(ConstructorInterceptorTwo.class, interceptors.get(1).getClass());
+        Assert.assertEquals(ConstructorInterceptorOne.class, interceptors.get(2).getClass());
+        
+        Assert.assertEquals(MethodInterceptorThree.class, interceptors.get(3).getClass());
+        Assert.assertEquals(MethodInterceptorTwo.class, interceptors.get(4).getClass());
+        Assert.assertEquals(MethodInterceptorOne.class, interceptors.get(5).getClass());
+        
+    }
 
 }
