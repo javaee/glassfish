@@ -87,5 +87,57 @@ public class InterceptorOrderingTest {
         Assert.assertEquals(MethodInterceptorOne.class, interceptors.get(5).getClass());
         
     }
+    
+    /**
+     * Has multiple ordering services, one of which returns the original
+     * list, one of which is the reverser and one of which adds services
+     * to the start and end of the list (and runs last due to low rank)
+     */
+    @Test // @org.junit.Ignore
+    public void testOrderingServiceChain() {
+        ServiceLocator locator = Utilities.getUniqueLocator(AService.class,
+                ConstructorInterceptorOne.class,
+                ConstructorInterceptorTwo.class,
+                ConstructorInterceptorThree.class,
+                Recorder.class,
+                MethodInterceptorOne.class,
+                MethodInterceptorTwo.class,
+                MethodInterceptorThree.class,
+                AddToBeginningAndEndOrderer.class,
+                Reverser.class,
+                DoNothingOrderer.class);
+        
+        AService aService = locator.getService(AService.class);
+        aService.callMe();
+        
+        Recorder recorder = locator.getService(Recorder.class);
+        
+        // Three constructor interceptors, three method interceptors
+        List<Object> interceptors = recorder.get();
+        
+        Assert.assertEquals(10, interceptors.size());
+        
+        // Zero should be first (and NOT re-ordered)
+        Assert.assertEquals(NonServiceConstructorInterceptorZero.class, interceptors.get(0).getClass());
+        
+        // The order should be REVERSED (3-2-1)
+        Assert.assertEquals(ConstructorInterceptorThree.class, interceptors.get(1).getClass());
+        Assert.assertEquals(ConstructorInterceptorTwo.class, interceptors.get(2).getClass());
+        Assert.assertEquals(ConstructorInterceptorOne.class, interceptors.get(3).getClass());
+        
+        // Inifinity should be last (and NOT re-ordered)
+        Assert.assertEquals(NonServiceConstructorInterceptorInfinity.class, interceptors.get(4).getClass());
+        
+        // Zero should be first (and NOT re-ordered)
+        Assert.assertEquals(NonServiceMethodInterceptorZero.class, interceptors.get(5).getClass());
+        
+        // The order should be REVERSED (3-2-1)
+        Assert.assertEquals(MethodInterceptorThree.class, interceptors.get(6).getClass());
+        Assert.assertEquals(MethodInterceptorTwo.class, interceptors.get(7).getClass());
+        Assert.assertEquals(MethodInterceptorOne.class, interceptors.get(8).getClass());
+        
+        // Infinity should be last (and NOT re-ordered)
+        Assert.assertEquals(NonServiceMethodInterceptorInfinity.class, interceptors.get(9).getClass());
+    }
 
 }
