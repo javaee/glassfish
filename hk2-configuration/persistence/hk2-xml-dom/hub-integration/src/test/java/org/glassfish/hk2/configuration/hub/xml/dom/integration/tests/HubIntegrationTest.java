@@ -42,6 +42,7 @@ package org.glassfish.hk2.configuration.hub.xml.dom.integration.tests;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.inject.Inject;
 
@@ -50,11 +51,13 @@ import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationUtilities;
+import org.glassfish.hk2.configuration.hub.xml.dom.integration.tests.common.ConfigHubIntegrationUtilities;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.jvnet.hk2.config.ConfigParser;
+import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.testing.junit.HK2Runner;
 
 /**
@@ -72,12 +75,14 @@ public class HubIntegrationTest extends HK2Runner {
     private final static String FBEAN_TAG = "/h-bean/d-bean/e-bean/f-bean";
     private final static String G0BEAN_TAG = "/h-bean/d-bean/e-bean/f-bean/g-bean";
     private final static String G1BEAN_TAG = "/h-bean/d-bean/e-bean/f-bean/g-bean/g-bean";
+    private final static String PBEAN_TAG = "/p-bean";
     
     private final static String ABEAN_INSTANCE_NAME = "a-bean";
     private final static String BBEAN_INSTANCE_NAME = "b-bean";
     private final static String DBEAN_ALICE_INSTANCE_NAME = "h-bean.alice";
     private final static String DBEAN_BOB_INSTANCE_NAME = "h-bean.bob";
     private final static String DBEAN_HOLYOKE_INSTANCE_NAME = "h-bean.holyoke";
+    private final static String PBEAN_NAME = "p-bean";
     
     public final static String ALICE = "alice";
     public final static String BOB = "bob";
@@ -461,6 +466,42 @@ public class HubIntegrationTest extends HK2Runner {
         
         bob = (Map<String, Object>) beanDatabase.getInstance(CBEAN_TAG, BOB_INSTANCE_NAME);
         Assert.assertNull(bob);
+    }
+    
+    /**
+     * Tests that a translation also adds in a Propery object for a Bean
+     * that implements PropertyBag
+     */
+    @SuppressWarnings("unchecked")
+    @Test @org.junit.Ignore
+    public void testTranslateAPropertyBag() {
+        ServiceLocator testLocator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
+        ServiceLocatorUtilities.addClasses(testLocator, BBeanTranslator.class);
+        XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
+        
+        ConfigParser parser = new ConfigParser(testLocator);
+        URL url = getClass().getClassLoader().getResource("props.xml");
+        Assert.assertNotNull(url);
+        
+        parser.parse(url);
+        
+        Hub hub = testLocator.getService(Hub.class);
+        BeanDatabase beanDatabase = hub.getCurrentDatabase();
+        
+        Type pType = beanDatabase.getType(PBEAN_TAG);
+        Assert.assertNotNull(pType);
+        
+        Map<String, Object> pbean = (Map<String, Object>) pType.getInstance(PBEAN_NAME);
+        Assert.assertNotNull(pbean);
+        
+        Properties props = (Properties) pbean.get("properties");
+        Assert.assertNotNull(props);
+        
+        Assert.assertEquals("Basset Hound", props.get("Liberty"));
+        Assert.assertEquals("American Eskimo Mix", props.get("Shakespeare"));
+        Assert.assertEquals("American Eskimo", props.get("Hattie"));
+        Assert.assertEquals("American Eskimo", props.get("Cannon"));
+        Assert.assertEquals("Australian Shephard Mix", props.get("DArgo"));
     }
 
 }

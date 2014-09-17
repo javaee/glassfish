@@ -1,0 +1,7 @@
+<p-bean>
+  <property name="Liberty" value="Basset Hound" />
+  <property name="Shakespeare" value="American Eskimo Mix" />
+  <property name="Hattie" value="American Eskimo" />
+  <property name="Cannon" value="American Eskimo" />
+  <property name="DArgo" value="Australian Shephard Mix" />
+</p-bean>

@@ -37,55 +37,17 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.hub.xml.dom.integration;
+package org.glassfish.hk2.configuration.hub.xml.dom.integration.tests;
 
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.configuration.hub.api.ManagerUtilities;
-import org.glassfish.hk2.configuration.hub.xml.dom.integration.internal.ConfigListener;
-import org.glassfish.hk2.configuration.hub.xml.dom.integration.internal.MapTranslator;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.types.PropertyBag;
 
 /**
  * @author jwells
  *
  */
-public class XmlDomIntegrationUtilities {
-    /**
-     * If there is no key associated with a configured bean then the
-     * instance name of that bean will be this string
-     */
-    public final static String DEFAULT_INSTANCE_NAME = "HK2_CONFIG_DEFAULT";
-    
-    /**
-     * This enables the XmlDomIntegration layer of the system.
-     * It is idempotent
-     * 
-     * @param locator The non-null locator to add hk2-config integration to
-     */
-    public final static void enableHk2ConfigDomIntegration(ServiceLocator locator) {
-        ManagerUtilities.enableConfigurationHub(locator);
-        
-        if (locator.getService(ConfigListener.class) != null) return;
-        
-        ServiceLocatorUtilities.addClasses(locator, ConfigListener.class);
-    }
-    
-    /**
-     * This adds in an implementation of {@link XmlDomTranslationService} that
-     * converts the hk2-config bean into a bean-like map.  The type and
-     * instance names remain the same.  This method is idempotent.
-     * <p>
-     * If the incoming bean implements PropertyBag then an extra field
-     * will be added to the map of type Properties with the name
-     * &quot;properties&quot; which contains the properties associated with
-     * the bean
-     * 
-     * @param locator The locator to add the translation service to
-     */
-    public final static void enableMapTranslator(ServiceLocator locator) {
-        if (locator.getService(MapTranslator.class) != null) return;
-        
-        ServiceLocatorUtilities.addClasses(locator, MapTranslator.class);
-    }
+@Configured
+public interface PBean extends PropertyBag, ConfigBeanProxy {
 
 }
