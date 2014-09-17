@@ -39,14 +39,19 @@
  */
 package org.glassfish.hk2.configuration.hub.xml.dom.integration.internal;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomHubData;
+import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationUtilities;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomTranslationService;
 import org.glassfish.hk2.utilities.reflection.BeanReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
+import org.jvnet.hk2.config.types.Property;
+import org.jvnet.hk2.config.types.PropertyBag;
 
 /**
  * @author jwells
@@ -66,6 +71,17 @@ public class MapTranslator implements XmlDomTranslationService {
         
         Map<String, Object> beanLikeMap = BeanReflectionHelper.convertJavaBeanToBeanLikeMap(
                 new ClassReflectionHelperImpl(), bean);
+        
+        if ((bean instanceof PropertyBag) && !beanLikeMap.containsKey(XmlDomIntegrationUtilities.PROPERTIES)) {
+            List<Property> props = ((PropertyBag) bean).getProperty();
+            
+            Properties addMe = new Properties();
+            for (Property prop : props) {
+                addMe.setProperty(prop.getName(), prop.getValue());
+            }
+            
+            beanLikeMap.put(XmlDomIntegrationUtilities.PROPERTIES, addMe);
+        }
         
         return new XmlDomHubData(hk2ConfigBeanData.getType(),
                 hk2ConfigBeanData.getInstanceKey(),

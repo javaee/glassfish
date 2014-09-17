@@ -241,9 +241,6 @@ public class ConfigParser {
             }
         }
 
-
-        dom.register();
-
         if (children==null) {
             children = new ArrayList<Dom.Child>();
         }
@@ -251,8 +248,11 @@ public class ConfigParser {
 
         if(!children.isEmpty())
             dom.setChildren(children);
+        
+        dom.register();
 
         dom.initializationCompleted();
+        
         return dom;
     }
 

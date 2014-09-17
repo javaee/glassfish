@@ -57,6 +57,12 @@ public class XmlDomIntegrationUtilities {
     public final static String DEFAULT_INSTANCE_NAME = "HK2_CONFIG_DEFAULT";
     
     /**
+     * The name of the field that will be filled in if the config bean
+     * is of type PropertyBag
+     */
+    public final static String PROPERTIES = "properties";
+    
+    /**
      * This enables the XmlDomIntegration layer of the system.
      * It is idempotent
      * 

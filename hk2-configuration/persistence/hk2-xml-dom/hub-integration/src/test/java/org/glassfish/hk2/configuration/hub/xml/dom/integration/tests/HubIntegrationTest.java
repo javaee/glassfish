@@ -473,7 +473,7 @@ public class HubIntegrationTest extends HK2Runner {
      * that implements PropertyBag
      */
     @SuppressWarnings("unchecked")
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testTranslateAPropertyBag() {
         ServiceLocator testLocator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
         ServiceLocatorUtilities.addClasses(testLocator, BBeanTranslator.class);
@@ -494,7 +494,7 @@ public class HubIntegrationTest extends HK2Runner {
         Map<String, Object> pbean = (Map<String, Object>) pType.getInstance(PBEAN_NAME);
         Assert.assertNotNull(pbean);
         
-        Properties props = (Properties) pbean.get("properties");
+        Properties props = (Properties) pbean.get(XmlDomIntegrationUtilities.PROPERTIES);
         Assert.assertNotNull(props);
         
         Assert.assertEquals("Basset Hound", props.get("Liberty"));
