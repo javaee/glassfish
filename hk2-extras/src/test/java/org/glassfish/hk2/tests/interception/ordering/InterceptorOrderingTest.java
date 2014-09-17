@@ -43,7 +43,6 @@ import java.util.List;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.extras.internal.Utilities;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -56,7 +55,7 @@ public class InterceptorOrderingTest {
      * Tests that we can reverse the natural ordering
      * of interceptors
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testReverseOrdering() {
         ServiceLocator locator = Utilities.getUniqueLocator(AService.class,
                 ConstructorInterceptorOne.class,

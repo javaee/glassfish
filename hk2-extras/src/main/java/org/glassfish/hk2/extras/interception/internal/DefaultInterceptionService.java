@@ -42,6 +42,7 @@ package org.glassfish.hk2.extras.interception.internal;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -55,10 +56,12 @@ import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.InterceptionService;
+import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.extras.interception.Intercepted;
 import org.glassfish.hk2.extras.interception.Interceptor;
+import org.glassfish.hk2.extras.interception.InterceptorOrderingService;
 
 /**
  * A default implementation of the interception service using annotation to
@@ -109,6 +112,9 @@ public class DefaultInterceptionService implements InterceptionService {
     
     @Inject
     private ServiceLocator locator;
+    
+    @Inject
+    private IterableProvider<InterceptorOrderingService> orderers;
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.InterceptionService#getDescriptorFilter()
@@ -124,6 +130,48 @@ public class DefaultInterceptionService implements InterceptionService {
             
         };
     }
+    
+    private List<MethodInterceptor> orderMethods(Method method, List<MethodInterceptor> current) {
+        List<MethodInterceptor> retVal = current;
+        
+        for (InterceptorOrderingService orderer : orderers) {
+            List<MethodInterceptor> given = Collections.unmodifiableList(retVal);
+            List<MethodInterceptor> returned;
+            try {
+                returned = orderer.modifyMethodInterceptors(method, given);
+            }
+            catch (Throwable th) {
+                returned = null;
+            }
+            
+            if (returned != null && returned != given) {
+                retVal = new ArrayList<MethodInterceptor>(returned);
+            }
+        }
+        
+        return retVal;
+    }
+    
+    private List<ConstructorInterceptor> orderConstructors(Constructor<?> constructor, List<ConstructorInterceptor> current) {
+        List<ConstructorInterceptor> retVal = current;
+        
+        for (InterceptorOrderingService orderer : orderers) {
+            List<ConstructorInterceptor> given = Collections.unmodifiableList(retVal);
+            List<ConstructorInterceptor> returned;
+            try {
+                returned = orderer.modifyConstructorInterceptors(constructor, given);
+            }
+            catch (Throwable th) {
+                returned = null;
+            }
+            
+            if (returned != null && returned != given) {
+                retVal = new ArrayList<ConstructorInterceptor>(returned);
+            }
+        }
+        
+        return retVal;
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.InterceptionService#getMethodInterceptors(java.lang.reflect.Method)
@@ -134,7 +182,7 @@ public class DefaultInterceptionService implements InterceptionService {
         
         List<ServiceHandle<?>> allInterceptors = locator.getAllServiceHandles(METHOD_FILTER);
         
-        ArrayList<MethodInterceptor> retVal = new ArrayList<MethodInterceptor>(allInterceptors.size());
+        List<MethodInterceptor> retVal = new ArrayList<MethodInterceptor>(allInterceptors.size());
         
         for (ServiceHandle<?> handle : allInterceptors) {
             ActiveDescriptor<?> ad = handle.getActiveDescriptor();
@@ -161,6 +209,7 @@ public class DefaultInterceptionService implements InterceptionService {
             }
         }
         
+        retVal = orderMethods(method, retVal);
         return retVal;
     }
 
@@ -174,7 +223,7 @@ public class DefaultInterceptionService implements InterceptionService {
         
         List<ServiceHandle<?>> allInterceptors = locator.getAllServiceHandles(CONSTRUCTOR_FILTER);
         
-        ArrayList<ConstructorInterceptor> retVal = new ArrayList<ConstructorInterceptor>(allInterceptors.size());
+        List<ConstructorInterceptor> retVal = new ArrayList<ConstructorInterceptor>(allInterceptors.size());
         
         for (ServiceHandle<?> handle : allInterceptors) {
             ActiveDescriptor<?> ad = handle.getActiveDescriptor();
@@ -201,6 +250,7 @@ public class DefaultInterceptionService implements InterceptionService {
             }
         }
         
+        retVal = orderConstructors(constructor, retVal);
         return retVal;
     }
 }
