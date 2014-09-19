@@ -75,7 +75,7 @@ public interface BeanDatabase {
      * @return The bean from the given type with the given name.  Will return
      * null if the type does not exist or an instance with that key does not exist
      */
-    public Object getInstance(String type, String instanceKey);
+    public Instance getInstance(String type, String instanceKey);
     
     /**
      * Dumps the type and instance names to stderr

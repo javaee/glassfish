@@ -47,6 +47,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
 import org.glassfish.hk2.configuration.persistence.properties.PropertyFileBean;
@@ -141,7 +142,7 @@ public class PropertiesTest extends HK2Runner {
             pfh.readProperties(p);
             
             {
-                Map<String, Object> instance1 = (Map<String, Object>) hub.getCurrentDatabase().getInstance(TYPE1, INSTANCE1);
+                Map<String, Object> instance1 = (Map<String, Object>) hub.getCurrentDatabase().getInstance(TYPE1, INSTANCE1).getBean();
                 Assert.assertEquals("I1", instance1.get("name"));
                 Assert.assertEquals("300 Packer Blvd", instance1.get("address"));
                 Assert.assertEquals("Philadelphia", instance1.get("city"));
@@ -150,7 +151,7 @@ public class PropertiesTest extends HK2Runner {
             }
             
             {
-                Map<String, Object> instance2 = (Map<String, Object>) hub.getCurrentDatabase().getInstance(TYPE1, INSTANCE2);
+                Map<String, Object> instance2 = (Map<String, Object>) hub.getCurrentDatabase().getInstance(TYPE1, INSTANCE2).getBean();
                 Assert.assertEquals("I2", instance2.get("name"));
                 Assert.assertEquals("310 Packer Blvd", instance2.get("address"));
                 Assert.assertEquals("Philadelphia", instance2.get("city"));
@@ -159,7 +160,7 @@ public class PropertiesTest extends HK2Runner {
             }
             
             {
-                Map<String, Object> instance1 = (Map<String, Object>) hub.getCurrentDatabase().getInstance(TYPE2, INSTANCE1);
+                Map<String, Object> instance1 = (Map<String, Object>) hub.getCurrentDatabase().getInstance(TYPE2, INSTANCE1).getBean();
                 Assert.assertEquals("I1", instance1.get("name"));
                 Assert.assertEquals("Taylor Avenue", instance1.get("address"));
                 Assert.assertEquals("Beach Haven", instance1.get("city"));
@@ -210,7 +211,7 @@ public class PropertiesTest extends HK2Runner {
             
             pfh.readProperties(p);
             
-            Object o = hub.getCurrentDatabase().getInstance(FooBean.TYPE_NAME, DEFAULT_INSTANCE_NAME);
+            Object o = hub.getCurrentDatabase().getInstance(FooBean.TYPE_NAME, DEFAULT_INSTANCE_NAME).getBean();
             Assert.assertNotNull(o);
             Assert.assertTrue(o instanceof FooBean);
             
@@ -242,7 +243,9 @@ public class PropertiesTest extends HK2Runner {
     
     @SuppressWarnings("unchecked")
     private String getHubValue(String type, String instance, String param) {
-        Map<String, Object> blm = (Map<String, Object>) hub.getCurrentDatabase().getInstance(type, instance);
+        Instance i = hub.getCurrentDatabase().getInstance(type, instance);
+        if (i == null) return null;
+        Map<String, Object> blm = (Map<String,Object>) i.getBean();
         if (blm == null) return null;
         
         return (String) blm.get(param);

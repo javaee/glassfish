@@ -44,6 +44,7 @@ import java.beans.PropertyChangeEvent;
 import javax.inject.Inject;
 
 import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
 import org.glassfish.hk2.configuration.persistence.properties.PropertyFileBean;
@@ -108,8 +109,9 @@ public class PropertyFileServiceImpl implements PropertyFileService {
             
             WriteableType wt = wbd.findOrAddWriteableType(PropertyFileBean.TYPE_NAME);
             
-            PropertyFileBean oldBean = (PropertyFileBean) wt.getInstance(PropertyFileBean.INSTANCE_NAME);
-            if (oldBean != null) {
+            Instance oldInstance = wt.getInstance(PropertyFileBean.INSTANCE_NAME);
+            if (oldInstance != null) {
+                PropertyFileBean oldBean = (PropertyFileBean) oldInstance.getBean();
                 wt.modifyInstance(PropertyFileBean.INSTANCE_NAME, propertyFileBean,
                         new PropertyChangeEvent(propertyFileBean,
                                 "typeMapping",

@@ -51,13 +51,11 @@ import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationUtilities;
-import org.glassfish.hk2.configuration.hub.xml.dom.integration.tests.common.ConfigHubIntegrationUtilities;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.jvnet.hk2.config.ConfigParser;
-import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.testing.junit.HK2Runner;
 
 /**
@@ -125,7 +123,7 @@ public class HubIntegrationTest extends HK2Runner {
         Assert.assertEquals(100L, abean.getLongParameter());
         
         BeanDatabase beanDatabase = hub.getCurrentDatabase();
-        Object instance = beanDatabase.getInstance(ABEAN_TAG, ABEAN_INSTANCE_NAME);
+        Object instance = beanDatabase.getInstance(ABEAN_TAG, ABEAN_INSTANCE_NAME).getBean();
         Assert.assertNotNull(instance);
         
         Assert.assertTrue(instance instanceof ABean);
@@ -172,8 +170,8 @@ public class HubIntegrationTest extends HK2Runner {
         Object bInstance = beanDatabase.getInstance(BBEAN_TAG, BBEAN_INSTANCE_NAME);
         Assert.assertNotNull(bInstance);
         
-        Object aliceInstance = beanDatabase.getInstance(CBEAN_TAG, ALICE_INSTANCE_NAME);
-        Object bobInstance = beanDatabase.getInstance(CBEAN_TAG, BOB_INSTANCE_NAME);
+        Object aliceInstance = beanDatabase.getInstance(CBEAN_TAG, ALICE_INSTANCE_NAME).getBean();
+        Object bobInstance = beanDatabase.getInstance(CBEAN_TAG, BOB_INSTANCE_NAME).getBean();
         
         Assert.assertNotNull(aliceInstance);
         Assert.assertNotNull(bobInstance);
@@ -195,7 +193,7 @@ public class HubIntegrationTest extends HK2Runner {
         
         String eBeanInstanceName = "h-bean." + dbeanName + ".e-bean";
         
-        Object ebeanInstance = hub.getCurrentDatabase().getInstance(EBEAN_TAG, eBeanInstanceName);
+        Object ebeanInstance = hub.getCurrentDatabase().getInstance(EBEAN_TAG, eBeanInstanceName).getBean();
         Assert.assertNotNull(ebeanInstance);
         
         List<FBean> fbeans = ((EBean) ebeanInstance).getFBeans();
@@ -206,7 +204,7 @@ public class HubIntegrationTest extends HK2Runner {
             String fbeanName = fbean.getName();
             
             String fbeanInstanceName = eBeanInstanceName + "." + fbeanName;
-            Object fbeanInstance = hub.getCurrentDatabase().getInstance(FBEAN_TAG, fbeanInstanceName);
+            Object fbeanInstance = hub.getCurrentDatabase().getInstance(FBEAN_TAG, fbeanInstanceName).getBean();
             Assert.assertNotNull(fbeanInstance);
             
             if (CAROL.equals(fbeanName)) {
@@ -217,7 +215,7 @@ public class HubIntegrationTest extends HK2Runner {
                 
                 String daveGBeanInstanceName = fbeanInstanceName + "." + DAVE;
                 
-                Object daveGBeanInstance = hub.getCurrentDatabase().getInstance(G0BEAN_TAG, daveGBeanInstanceName);
+                Object daveGBeanInstance = hub.getCurrentDatabase().getInstance(G0BEAN_TAG, daveGBeanInstanceName).getBean();
                 Assert.assertNotNull(daveGBeanInstance);
                 Assert.assertEquals(DAVE, ((GBean) daveGBeanInstance).getName());
                 
@@ -228,7 +226,7 @@ public class HubIntegrationTest extends HK2Runner {
                 
                 String englebertGBeanInstanceName = daveGBeanInstanceName + "." + ENGLEBERT;
                 
-                Object englebertGBeanInstance = hub.getCurrentDatabase().getInstance(G1BEAN_TAG, englebertGBeanInstanceName);
+                Object englebertGBeanInstance = hub.getCurrentDatabase().getInstance(G1BEAN_TAG, englebertGBeanInstanceName).getBean();
                 Assert.assertNotNull(englebertGBeanInstance);
                 Assert.assertEquals(ENGLEBERT, ((GBean) englebertGBeanInstance).getName());
             }
@@ -240,7 +238,7 @@ public class HubIntegrationTest extends HK2Runner {
                 
                 String garyGBeanInstanceName = fbeanInstanceName + "." + GARY;
                 
-                Object garyGBeanInstance = hub.getCurrentDatabase().getInstance(G0BEAN_TAG, garyGBeanInstanceName);
+                Object garyGBeanInstance = hub.getCurrentDatabase().getInstance(G0BEAN_TAG, garyGBeanInstanceName).getBean();
                 Assert.assertNotNull(garyGBeanInstance);
                 Assert.assertEquals(GARY, ((GBean) garyGBeanInstance).getName());
             }
@@ -272,7 +270,7 @@ public class HubIntegrationTest extends HK2Runner {
             DBean alice = testLocator.getService(DBean.class, ALICE);
             Assert.assertNotNull(alice);
         
-            Object aliceInstance = beanDatabase.getInstance(DBEAN_TAG, DBEAN_ALICE_INSTANCE_NAME);
+            Object aliceInstance = beanDatabase.getInstance(DBEAN_TAG, DBEAN_ALICE_INSTANCE_NAME).getBean();
             Assert.assertNotNull(aliceInstance);
             
             Assert.assertEquals(ALICE, ((DBean) aliceInstance).getName());
@@ -284,7 +282,7 @@ public class HubIntegrationTest extends HK2Runner {
             DBean bob = testLocator.getService(DBean.class, BOB);
             Assert.assertNotNull(bob);
         
-            Object bobInstance = beanDatabase.getInstance(DBEAN_TAG, DBEAN_BOB_INSTANCE_NAME);
+            Object bobInstance = beanDatabase.getInstance(DBEAN_TAG, DBEAN_BOB_INSTANCE_NAME).getBean();
             Assert.assertNotNull(bobInstance);
             
             Assert.assertEquals(BOB, ((DBean) bobInstance).getName());
@@ -309,8 +307,7 @@ public class HubIntegrationTest extends HK2Runner {
         Hub hub = testLocator.getService(Hub.class);
         BeanDatabase beanDatabase = hub.getCurrentDatabase();
         
-        DBean holyoke = (DBean) beanDatabase.getInstance(DBEAN_TAG, DBEAN_HOLYOKE_INSTANCE_NAME);
-        Assert.assertNull(holyoke);
+        Assert.assertNull(beanDatabase.getInstance(DBEAN_TAG, DBEAN_HOLYOKE_INSTANCE_NAME));
         Assert.assertNull(testLocator.getService(DBean.class, HOLYOKE));
         
         HBean hbean = testLocator.getService(HBean.class);
@@ -322,7 +319,7 @@ public class HubIntegrationTest extends HK2Runner {
         
         beanDatabase = hub.getCurrentDatabase();
         
-        holyoke = (DBean) beanDatabase.getInstance(DBEAN_TAG, DBEAN_HOLYOKE_INSTANCE_NAME);
+        DBean holyoke = (DBean) beanDatabase.getInstance(DBEAN_TAG, DBEAN_HOLYOKE_INSTANCE_NAME).getBean();
         Assert.assertNotNull(holyoke);
         Assert.assertEquals(HOLYOKE, holyoke.getName());
     }
@@ -343,7 +340,7 @@ public class HubIntegrationTest extends HK2Runner {
         Hub hub = testLocator.getService(Hub.class);
         BeanDatabase beanDatabase = hub.getCurrentDatabase();
         
-        DBean bob = (DBean) beanDatabase.getInstance(DBEAN_TAG, DBEAN_BOB_INSTANCE_NAME);
+        DBean bob = (DBean) beanDatabase.getInstance(DBEAN_TAG, DBEAN_BOB_INSTANCE_NAME).getBean();
         Assert.assertNotNull(bob);
         
         DBean bobService = testLocator.getService(DBean.class, BOB);
@@ -385,17 +382,15 @@ public class HubIntegrationTest extends HK2Runner {
         bType = beanDatabase.getType(BBEAN_TAG_TRANSLATED);
         Assert.assertNotNull(bType);
         
-        CBean alice = (CBean) beanDatabase.getInstance(CBEAN_TAG_TRANSLATED, ALICE);
+        CBean alice = (CBean) beanDatabase.getInstance(CBEAN_TAG_TRANSLATED, ALICE).getBean();
         Assert.assertNotNull(alice);
         
-        alice = (CBean) beanDatabase.getInstance(CBEAN_TAG, ALICE_INSTANCE_NAME);
-        Assert.assertNull(alice);
+        Assert.assertNull(beanDatabase.getInstance(CBEAN_TAG, ALICE_INSTANCE_NAME));
         
-        CBean bob = (CBean) beanDatabase.getInstance(CBEAN_TAG_TRANSLATED, BOB);
+        CBean bob = (CBean) beanDatabase.getInstance(CBEAN_TAG_TRANSLATED, BOB).getBean();
         Assert.assertNotNull(bob);
         
-        bob = (CBean) beanDatabase.getInstance(CBEAN_TAG, BOB_INSTANCE_NAME);
-        Assert.assertNull(bob);
+        Assert.assertNull(beanDatabase.getInstance(CBEAN_TAG, BOB_INSTANCE_NAME));
     }
     
     /**
@@ -419,11 +414,11 @@ public class HubIntegrationTest extends HK2Runner {
         Type bType = beanDatabase.getType(BBEAN_TAG);
         Assert.assertNotNull(bType);
         
-        Map<String, Object> alice = (Map<String, Object>) beanDatabase.getInstance(CBEAN_TAG, ALICE_INSTANCE_NAME);
+        Map<String, Object> alice = (Map<String, Object>) beanDatabase.getInstance(CBEAN_TAG, ALICE_INSTANCE_NAME).getBean();
         Assert.assertNotNull(alice);
         Assert.assertEquals(ALICE, alice.get(NAME_MAP_KEY));
         
-        Map<String, Object> bob = (Map<String, Object>) beanDatabase.getInstance(CBEAN_TAG, BOB_INSTANCE_NAME);
+        Map<String, Object> bob = (Map<String, Object>) beanDatabase.getInstance(CBEAN_TAG, BOB_INSTANCE_NAME).getBean();
         Assert.assertNotNull(bob);
         Assert.assertEquals(BOB, bob.get(NAME_MAP_KEY));
     }
@@ -453,19 +448,18 @@ public class HubIntegrationTest extends HK2Runner {
         bType = beanDatabase.getType(BBEAN_TAG_TRANSLATED);
         Assert.assertNotNull(bType);
         
-        Map<String, Object> alice = (Map<String, Object>) beanDatabase.getInstance(CBEAN_TAG_TRANSLATED, ALICE);
+        Map<String, Object> alice = (Map<String, Object>) beanDatabase.getInstance(CBEAN_TAG_TRANSLATED, ALICE).getBean();
         Assert.assertNotNull(alice);
         Assert.assertEquals(ALICE, alice.get(NAME_MAP_KEY));
         
         alice = (Map<String, Object>) beanDatabase.getInstance(CBEAN_TAG, ALICE_INSTANCE_NAME);
         Assert.assertNull(alice);
         
-        Map<String, Object> bob = (Map<String, Object>) beanDatabase.getInstance(CBEAN_TAG_TRANSLATED, BOB);
+        Map<String, Object> bob = (Map<String, Object>) beanDatabase.getInstance(CBEAN_TAG_TRANSLATED, BOB).getBean();
         Assert.assertNotNull(bob);
         Assert.assertEquals(BOB, bob.get(NAME_MAP_KEY));
         
-        bob = (Map<String, Object>) beanDatabase.getInstance(CBEAN_TAG, BOB_INSTANCE_NAME);
-        Assert.assertNull(bob);
+        Assert.assertNull(beanDatabase.getInstance(CBEAN_TAG, BOB_INSTANCE_NAME));
     }
     
     /**
@@ -491,7 +485,7 @@ public class HubIntegrationTest extends HK2Runner {
         Type pType = beanDatabase.getType(PBEAN_TAG);
         Assert.assertNotNull(pType);
         
-        Map<String, Object> pbean = (Map<String, Object>) pType.getInstance(PBEAN_NAME);
+        Map<String, Object> pbean = (Map<String, Object>) pType.getInstance(PBEAN_NAME).getBean();
         Assert.assertNotNull(pbean);
         
         Properties props = (Properties) pbean.get(XmlDomIntegrationUtilities.PROPERTIES);

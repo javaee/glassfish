@@ -39,62 +39,31 @@
  */
 package org.glassfish.hk2.configuration.hub.internal;
 
-import java.util.Collections;
-import java.util.Map;
-
 import org.glassfish.hk2.configuration.hub.api.Instance;
-import org.glassfish.hk2.configuration.hub.api.Type;
-import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 
 /**
  * @author jwells
  *
  */
-public class TypeImpl implements Type {
-    private final String name;
-    private final Map<String, Instance> instances;
-    private final ClassReflectionHelper helper;
+public class InstanceImpl implements Instance {
+    private final Object bean;
     private Object metadata;
     
-    /* package */ TypeImpl(Type baseType, ClassReflectionHelper helper) {
-        name = baseType.getName();
-        instances = Collections.unmodifiableMap(baseType.getInstances());
-        this.helper = helper;
-        this.metadata = baseType.getMetadata();
+    /* package */ InstanceImpl(Object bean, Object metadata) {
+        this.bean = bean;
+        this.metadata = metadata;
     }
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.configuration.hub.api.Type#getName()
+     * @see org.glassfish.hk2.configuration.hub.api.Instance#getBean()
      */
     @Override
-    public String getName() {
-        return name;
+    public Object getBean() {
+        return bean;
     }
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.configuration.hub.api.Type#getInstances()
-     */
-    @Override
-    public Map<String, Instance> getInstances() {
-        return instances;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.configuration.hub.api.Type#getInstance(java.lang.Object)
-     */
-    @Override
-    public Instance getInstance(String key) {
-        return instances.get(key);
-    }
-    
-    /* package */ ClassReflectionHelper getHelper() {
-        return helper;
-    }
-    
-    
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.configuration.hub.api.Type#getMetadata()
+     * @see org.glassfish.hk2.configuration.hub.api.Instance#getMetadata()
      */
     @Override
     public synchronized Object getMetadata() {
@@ -102,16 +71,12 @@ public class TypeImpl implements Type {
     }
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.configuration.hub.api.Type#setMetadata(java.lang.Object)
+     * @see org.glassfish.hk2.configuration.hub.api.Instance#setMetadata(java.lang.Object)
      */
     @Override
-    public synchronized void setMetadata(Object metadata) {
+    public void setMetadata(Object metadata) {
         this.metadata = metadata;
-        
+
     }
-    
-    @Override
-    public String toString() {
-        return "TypeImpl(" + name + "," + System.identityHashCode(this) + ")";
-    }
+
 }

@@ -85,6 +85,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
+import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.utilities.reflection.BeanReflectionHelper;
 
@@ -123,7 +124,7 @@ public class BeanDatabaseImpl implements BeanDatabase {
      * @see org.glassfish.hk2.configuration.hub.api.BeanDatabase#getInstance(java.lang.String, java.lang.Object)
      */
     @Override
-    public synchronized Object getInstance(String type, String instanceKey) {
+    public synchronized Instance getInstance(String type, String instanceKey) {
         Type t = getType(type);
         if (t == null) return null;
         

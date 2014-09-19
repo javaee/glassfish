@@ -72,6 +72,7 @@ import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener;
 import org.glassfish.hk2.configuration.hub.api.Change;
 import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
@@ -342,9 +343,9 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
             for (ActiveDescriptor<?> typeDescriptor : typeDescriptors) {
                 // These match the type, so now we have to add one per instance
                 
-                Map<String, Object> typeInstances = type.getInstances();
-                for (Map.Entry<String, Object> entry : typeInstances.entrySet()) {
-                    added.add(addInstanceDescriptor(config, typeDescriptor, entry.getKey(), typeName, entry.getValue()));
+                Map<String, Instance> typeInstances = type.getInstances();
+                for (Map.Entry<String, Instance> entry : typeInstances.entrySet()) {
+                    added.add(addInstanceDescriptor(config, typeDescriptor, entry.getKey(), typeName, entry.getValue().getBean()));
                 }
             }
         }
@@ -413,7 +414,7 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
                 }
                 
                 String addedInstanceKey = change.getInstanceKey();
-                Object addedInstanceBean = change.getInstanceValue();
+                Object addedInstanceBean = change.getInstanceValue().getBean();
                 
                 List<ActiveDescriptor<?>> typeDescriptors = locator.getDescriptors(new NoNameTypeFilter(locator, change.getChangeType().getName(), null));
                 
@@ -559,9 +560,9 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
                 
                 Type type = database.getType(typeName);
                 if (type != null) {
-                    for (Map.Entry<String, Object> instance : type.getInstances().entrySet()) {
+                    for (Map.Entry<String, Instance> instance : type.getInstances().entrySet()) {
                         String addedInstanceKey = instance.getKey();
-                        Object addedInstanceBean = instance.getValue();
+                        Object addedInstanceBean = instance.getValue().getBean();
                         
                         addedList.add(addInstanceDescriptor(config, addMe, addedInstanceKey, typeName, addedInstanceBean));
                     }

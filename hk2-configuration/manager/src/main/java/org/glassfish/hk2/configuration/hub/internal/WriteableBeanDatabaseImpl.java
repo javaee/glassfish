@@ -48,6 +48,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.glassfish.hk2.configuration.hub.api.Change;
+import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
@@ -95,7 +96,7 @@ public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase {
      * @see org.glassfish.hk2.configuration.hub.api.BeanDatabase#getInstance(java.lang.String, java.lang.Object)
      */
     @Override
-    public synchronized Object getInstance(String type, String instanceKey) {
+    public synchronized Instance getInstance(String type, String instanceKey) {
         Type t = getType(type);
         if (t == null) return null;
         
@@ -138,7 +139,7 @@ public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase {
         WriteableTypeImpl retVal = types.remove(typeName);
         if (retVal == null) return null;
         
-        Map<String, Object> instances = retVal.getInstances();
+        Map<String, Instance> instances = retVal.getInstances();
         for (String key : new HashSet<String>(instances.keySet())) {
             retVal.removeInstance(key);
         }

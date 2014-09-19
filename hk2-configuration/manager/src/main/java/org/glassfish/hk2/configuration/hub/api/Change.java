@@ -93,7 +93,7 @@ public interface Change {
      * @return The value of the instance that was added, removed or modified.
      * Returns null for change category REMOVE_TYPE or ADD_TYPE
      */
-    public Object getInstanceValue();
+    public Instance getInstanceValue();
     
     /**
      * Returns a list of properties that were changed if the change category

@@ -51,6 +51,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
 import org.glassfish.hk2.configuration.persistence.properties.PropertyFileBean;
@@ -313,9 +314,10 @@ public class PropertyFileHandleImpl implements PropertyFileHandle {
     }
     
     private Object convertBean(String typeName, Map<String, String> rawBean) {
-        PropertyFileBean propertyFileBean = (PropertyFileBean) hub.getCurrentDatabase().getInstance(
+        Instance instance = hub.getCurrentDatabase().getInstance(
                 PropertyFileBean.TYPE_NAME,
                 PropertyFileBean.INSTANCE_NAME);
+        PropertyFileBean propertyFileBean = (PropertyFileBean) ((instance == null) ? null : instance.getBean());
         if (propertyFileBean == null) return rawBean;
         
         Class<?> beanClass = propertyFileBean.getTypeMapping(typeName);

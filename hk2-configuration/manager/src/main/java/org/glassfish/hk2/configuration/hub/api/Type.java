@@ -62,7 +62,7 @@ public interface Type {
      * @return A read-only and possibly empty map of instances associated
      * with this type
      */
-    public Map<String, Object> getInstances();
+    public Map<String, Instance> getInstances();
     
     /**
      * Gets the instance associated with this key, or null if there is none
@@ -70,5 +70,24 @@ public interface Type {
      * @param key The non-null key for the instance
      * @return The resulting instance or null if there is none
      */
-    public Object getInstance(String key);
+    public Instance getInstance(String key);
+    
+    /**
+     * Gets information about this type.  Can be
+     * used to describe the type in some useful way
+     * 
+     * @return The possibly null metadata associated
+     * with this type
+     */
+    public Object getMetadata();
+    
+    /**
+     * Sets an object containing information about this
+     * type.  Can be used to describe the type in
+     * some useful way
+     * 
+     * @param metadata The possibly null metadata
+     * to be associated with this type
+     */
+    public void setMetadata(Object metadata);
 }

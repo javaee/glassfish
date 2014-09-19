@@ -213,7 +213,7 @@ public class HubTest extends HK2Runner {
                 Assert.assertEquals(oneInstanceType.getName(), instanceChange.getChangeType().getName());
                 Assert.assertEquals(1, instanceChange.getChangeType().getInstances().size());
                 Assert.assertEquals(ALICE, instanceChange.getInstanceKey());
-                Assert.assertEquals(oneFieldBeanLikeMap, instanceChange.getInstanceValue());
+                Assert.assertEquals(oneFieldBeanLikeMap, instanceChange.getInstanceValue().getBean());
                 Assert.assertNull(instanceChange.getModifiedProperties());
             }
         }
@@ -291,7 +291,7 @@ public class HubTest extends HK2Runner {
                 Assert.assertEquals(oneInstanceType.getName(), instanceChange.getChangeType().getName());
                 Assert.assertEquals(1, instanceChange.getChangeType().getInstances().size());
                 Assert.assertEquals(ALICE, instanceChange.getInstanceKey());
-                Assert.assertEquals(oneFieldBeanLikeMap, instanceChange.getInstanceValue());
+                Assert.assertEquals(oneFieldBeanLikeMap, instanceChange.getInstanceValue().getBean());
                 Assert.assertNull(instanceChange.getModifiedProperties());
             }
         }
@@ -351,7 +351,7 @@ public class HubTest extends HK2Runner {
                 Assert.assertEquals(TYPE_TWO, instanceChange.getChangeType().getName());
                 Assert.assertEquals(1, instanceChange.getChangeType().getInstances().size());
                 Assert.assertEquals(ALICE, instanceChange.getInstanceKey());
-                Assert.assertEquals(newBean, instanceChange.getInstanceValue());
+                Assert.assertEquals(newBean, instanceChange.getInstanceValue().getBean());
                 
                 List<PropertyChangeEvent> propertyChanges = instanceChange.getModifiedProperties();
                 Assert.assertNotNull(propertyChanges);
@@ -367,7 +367,7 @@ public class HubTest extends HK2Runner {
             
             typeTwo = hub.getCurrentDatabase().getType(TYPE_TWO);
             
-            GenericJavaBean bean = (GenericJavaBean) typeTwo.getInstance(ALICE);
+            GenericJavaBean bean = (GenericJavaBean) typeTwo.getInstance(ALICE).getBean();
             
             Assert.assertEquals(ALICE, bean.getName());
             Assert.assertEquals(OTHER_PROPERTY_VALUE2, bean.getOther());
@@ -427,7 +427,7 @@ public class HubTest extends HK2Runner {
                 Assert.assertEquals(TYPE_TWO, instanceChange.getChangeType().getName());
                 Assert.assertEquals(1, instanceChange.getChangeType().getInstances().size());
                 Assert.assertEquals(ALICE, instanceChange.getInstanceKey());
-                Assert.assertEquals(newBean, instanceChange.getInstanceValue());
+                Assert.assertEquals(newBean, instanceChange.getInstanceValue().getBean());
                 
                 List<PropertyChangeEvent> propertyChanges = instanceChange.getModifiedProperties();
                 Assert.assertNotNull(propertyChanges);
@@ -443,7 +443,7 @@ public class HubTest extends HK2Runner {
             
             typeTwo = hub.getCurrentDatabase().getType(TYPE_TWO);
             
-            GenericJavaBean bean = (GenericJavaBean) typeTwo.getInstance(ALICE);
+            GenericJavaBean bean = (GenericJavaBean) typeTwo.getInstance(ALICE).getBean();
             
             Assert.assertEquals(ALICE, bean.getName());
             Assert.assertEquals(OTHER_PROPERTY_VALUE2, bean.getOther());
@@ -474,14 +474,14 @@ public class HubTest extends HK2Runner {
         try {
             wbd = hub.getWriteableDatabaseCopy();
             
-            GenericJavaBean gjb = (GenericJavaBean) wbd.getInstance(TYPE_TWO, ALICE);
+            GenericJavaBean gjb = (GenericJavaBean) wbd.getInstance(TYPE_TWO, ALICE).getBean();
             Assert.assertNotNull(gjb);
             Assert.assertEquals(addedBean, gjb);
         
             WriteableType wt = wbd.findOrAddWriteableType(TYPE_TWO);
             Assert.assertNotNull(wt);
             
-            gjb = (GenericJavaBean) wt.getInstance(ALICE);
+            gjb = (GenericJavaBean) wt.getInstance(ALICE).getBean();
             Assert.assertNotNull(gjb);
             Assert.assertEquals(addedBean, gjb);
             
@@ -520,7 +520,7 @@ public class HubTest extends HK2Runner {
             WriteableType wt = wbd.getWriteableType(TYPE_TWO);
             Assert.assertNotNull(wt);
             
-            GenericJavaBean removed = (GenericJavaBean) wt.removeInstance(ALICE);
+            GenericJavaBean removed = (GenericJavaBean) wt.removeInstance(ALICE).getBean();
             Assert.assertNotNull(removed);
             Assert.assertEquals(ALICE, removed.getName());
         
@@ -539,7 +539,7 @@ public class HubTest extends HK2Runner {
                 Assert.assertEquals(TYPE_TWO, instanceChange.getChangeType().getName());
                 Assert.assertEquals(1, instanceChange.getChangeType().getInstances().size());
                 Assert.assertEquals(ALICE, instanceChange.getInstanceKey());
-                Assert.assertEquals(removed, instanceChange.getInstanceValue());
+                Assert.assertEquals(removed, instanceChange.getInstanceValue().getBean());
                 Assert.assertNull(instanceChange.getModifiedProperties());
             }
             
@@ -549,7 +549,7 @@ public class HubTest extends HK2Runner {
             Assert.assertNull(bean);
             
             // Make sure Bob is still there though!
-            bean = (GenericJavaBean) typeTwo.getInstance(BOB);
+            bean = (GenericJavaBean) typeTwo.getInstance(BOB).getBean();
             Assert.assertNotNull(bean);
             Assert.assertEquals(BOB, bean.getName());
         }

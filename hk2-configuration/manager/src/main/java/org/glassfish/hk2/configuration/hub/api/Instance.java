@@ -37,81 +37,37 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.hub.internal;
-
-import java.util.Collections;
-import java.util.Map;
-
-import org.glassfish.hk2.configuration.hub.api.Instance;
-import org.glassfish.hk2.configuration.hub.api.Type;
-import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
+package org.glassfish.hk2.configuration.hub.api;
 
 /**
  * @author jwells
  *
  */
-public class TypeImpl implements Type {
-    private final String name;
-    private final Map<String, Instance> instances;
-    private final ClassReflectionHelper helper;
-    private Object metadata;
-    
-    /* package */ TypeImpl(Type baseType, ClassReflectionHelper helper) {
-        name = baseType.getName();
-        instances = Collections.unmodifiableMap(baseType.getInstances());
-        this.helper = helper;
-        this.metadata = baseType.getMetadata();
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.configuration.hub.api.Type#getName()
+public interface Instance {
+    /**
+     * Gets the bean (or bean-like-map) associated with
+     * this instance
+     * 
+     * @return The non-null bean or bean-like map
      */
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.configuration.hub.api.Type#getInstances()
-     */
-    @Override
-    public Map<String, Instance> getInstances() {
-        return instances;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.configuration.hub.api.Type#getInstance(java.lang.Object)
-     */
-    @Override
-    public Instance getInstance(String key) {
-        return instances.get(key);
-    }
+    public Object getBean();
     
-    /* package */ ClassReflectionHelper getHelper() {
-        return helper;
-    }
-    
-    
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.configuration.hub.api.Type#getMetadata()
+    /**
+     * Gets information about this instance.  Can be
+     * used to describe the bean in some useful way
+     * 
+     * @return The possibly null metadata associated
+     * with this instance
      */
-    @Override
-    public synchronized Object getMetadata() {
-        return metadata;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.configuration.hub.api.Type#setMetadata(java.lang.Object)
-     */
-    @Override
-    public synchronized void setMetadata(Object metadata) {
-        this.metadata = metadata;
-        
-    }
+    public Object getMetadata();
     
-    @Override
-    public String toString() {
-        return "TypeImpl(" + name + "," + System.identityHashCode(this) + ")";
-    }
+    /**
+     * Sets an object containing information about this
+     * instance.  Can be used to describe the bean in
+     * some useful way
+     * 
+     * @param metadata The possibly null metadata
+     * to be associated with this instance
+     */
+    public void setMetadata(Object metadata);
 }
