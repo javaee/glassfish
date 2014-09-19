@@ -121,6 +121,7 @@ public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase {
                                    wti,
                                    null,
                                    null,
+                                   null,
                                    null));
         
         types.put(typeName, wti);
@@ -146,6 +147,7 @@ public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase {
         
         changes.add(new ChangeImpl(Change.ChangeCategory.REMOVE_TYPE,
                 retVal,
+                null,
                 null,
                 null,
                 null));

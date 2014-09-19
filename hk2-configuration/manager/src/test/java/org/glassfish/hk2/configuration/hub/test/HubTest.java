@@ -46,6 +46,7 @@ import java.util.Map;
 
 import org.glassfish.hk2.configuration.hub.api.Change;
 import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.ManagerUtilities;
 import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
@@ -65,6 +66,9 @@ public class HubTest extends HK2Runner {
     private final static String TYPE_TWO = "TypeTwo";
     private final static String TYPE_THREE = "TypeThree";
     private final static String TYPE_FOUR = "TypeFour";
+    private final static String TYPE_FIVE = "TypeFive";
+    private final static String TYPE_SIX = "TypeSix";
+    private final static String TYPE_SEVEN = "TypeSeven";
     
     private final static String NAME_PROPERTY = "name";
     private final static String OTHER_PROPERTY = "other";
@@ -152,6 +156,7 @@ public class HubTest extends HK2Runner {
             Assert.assertNull(change.getInstanceKey());
             Assert.assertNull(change.getInstanceValue());
             Assert.assertNull(change.getModifiedProperties());
+            Assert.assertNull(change.getOriginalInstanceValue());
         }
         finally {
             // Cleanup
@@ -204,6 +209,7 @@ public class HubTest extends HK2Runner {
                 Assert.assertNull(typeChange.getInstanceKey());
                 Assert.assertNull(typeChange.getInstanceValue());
                 Assert.assertNull(typeChange.getModifiedProperties());
+                Assert.assertNull(typeChange.getOriginalInstanceValue());
             }
             
             {
@@ -215,6 +221,7 @@ public class HubTest extends HK2Runner {
                 Assert.assertEquals(ALICE, instanceChange.getInstanceKey());
                 Assert.assertEquals(oneFieldBeanLikeMap, instanceChange.getInstanceValue().getBean());
                 Assert.assertNull(instanceChange.getModifiedProperties());
+                Assert.assertNull(instanceChange.getOriginalInstanceValue());
             }
         }
         finally {
@@ -244,6 +251,16 @@ public class HubTest extends HK2Runner {
         WriteableType wt = wbd.findOrAddWriteableType(typeName);
         
         wt.addInstance(instanceKey, instanceValue);
+        
+        wbd.commit();
+    }
+    
+    private void addTypeAndInstance(String typeName, String instanceKey, Object instanceValue, Object metadata) {
+        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+        
+        WriteableType wt = wbd.findOrAddWriteableType(typeName);
+        
+        wt.addInstance(instanceKey, instanceValue, metadata);
         
         wbd.commit();
     }
@@ -293,6 +310,7 @@ public class HubTest extends HK2Runner {
                 Assert.assertEquals(ALICE, instanceChange.getInstanceKey());
                 Assert.assertEquals(oneFieldBeanLikeMap, instanceChange.getInstanceValue().getBean());
                 Assert.assertNull(instanceChange.getModifiedProperties());
+                Assert.assertNull(instanceChange.getOriginalInstanceValue());
             }
         }
         finally {
@@ -313,7 +331,8 @@ public class HubTest extends HK2Runner {
      */
     @Test
     public void testModifyProperty() {
-        addTypeAndInstance(TYPE_TWO, ALICE, new GenericJavaBean(ALICE, OTHER_PROPERTY_VALUE1));
+        GenericJavaBean oldBean = new GenericJavaBean(ALICE, OTHER_PROPERTY_VALUE1);
+        addTypeAndInstance(TYPE_TWO, ALICE, oldBean);
         
         GenericBeanDatabaseUpdateListener listener = null;
         WriteableBeanDatabase wbd = null;
@@ -352,6 +371,7 @@ public class HubTest extends HK2Runner {
                 Assert.assertEquals(1, instanceChange.getChangeType().getInstances().size());
                 Assert.assertEquals(ALICE, instanceChange.getInstanceKey());
                 Assert.assertEquals(newBean, instanceChange.getInstanceValue().getBean());
+                Assert.assertEquals(oldBean, instanceChange.getOriginalInstanceValue().getBean());
                 
                 List<PropertyChangeEvent> propertyChanges = instanceChange.getModifiedProperties();
                 Assert.assertNotNull(propertyChanges);
@@ -390,7 +410,8 @@ public class HubTest extends HK2Runner {
      */
     @Test
     public void testModifyPropertyWithAutomaticPropertyChangeEvent() {
-        addTypeAndInstance(TYPE_TWO, ALICE, new GenericJavaBean(ALICE, OTHER_PROPERTY_VALUE1));
+        GenericJavaBean oldBean = new GenericJavaBean(ALICE, OTHER_PROPERTY_VALUE1);
+        addTypeAndInstance(TYPE_TWO, ALICE, oldBean);
         
         GenericBeanDatabaseUpdateListener listener = null;
         WriteableBeanDatabase wbd = null;
@@ -428,6 +449,7 @@ public class HubTest extends HK2Runner {
                 Assert.assertEquals(1, instanceChange.getChangeType().getInstances().size());
                 Assert.assertEquals(ALICE, instanceChange.getInstanceKey());
                 Assert.assertEquals(newBean, instanceChange.getInstanceValue().getBean());
+                Assert.assertEquals(oldBean, instanceChange.getOriginalInstanceValue().getBean());
                 
                 List<PropertyChangeEvent> propertyChanges = instanceChange.getModifiedProperties();
                 Assert.assertNotNull(propertyChanges);
@@ -541,6 +563,7 @@ public class HubTest extends HK2Runner {
                 Assert.assertEquals(ALICE, instanceChange.getInstanceKey());
                 Assert.assertEquals(removed, instanceChange.getInstanceValue().getBean());
                 Assert.assertNull(instanceChange.getModifiedProperties());
+                Assert.assertNull(instanceChange.getOriginalInstanceValue());
             }
             
             typeTwo = hub.getCurrentDatabase().getType(TYPE_TWO);
@@ -614,6 +637,7 @@ public class HubTest extends HK2Runner {
                 }
                 
                 Assert.assertNull(instanceChange.getModifiedProperties());
+                Assert.assertNull(instanceChange.getOriginalInstanceValue());
             }
             
             {
@@ -630,6 +654,7 @@ public class HubTest extends HK2Runner {
                 }
                 
                 Assert.assertNull(instanceChange.getModifiedProperties());
+                Assert.assertNull(instanceChange.getOriginalInstanceValue());
             }
             
             {
@@ -639,6 +664,7 @@ public class HubTest extends HK2Runner {
                 Assert.assertEquals(TYPE_FOUR, instanceChange.getChangeType().getName());
                 Assert.assertEquals(0, instanceChange.getChangeType().getInstances().size());
                 Assert.assertNull(instanceChange.getModifiedProperties());
+                Assert.assertNull(instanceChange.getOriginalInstanceValue());
             }
             
             
@@ -649,6 +675,144 @@ public class HubTest extends HK2Runner {
                 hub.removeListener(listener);
             }
         }
+    }
+    
+    /**
+     * Tests that I can set, get and set again and get again
+     */
+    @Test
+    public void testMetadataOnType() {
+        addType(TYPE_FIVE);
+        
+        try {
+            Type five = hub.getCurrentDatabase().getType(TYPE_FIVE);
+            Assert.assertNull(five.getMetadata());
+        
+            Object o1 = new Object();
+            five.setMetadata(o1);
+        
+            Assert.assertEquals(o1, five.getMetadata());
+        
+            Object o2 = new Object();
+            five.setMetadata(o2);
+        
+            Assert.assertEquals(o2, five.getMetadata());
+        
+            five.setMetadata(null);
+            Assert.assertNull(five.getMetadata());
+        }
+        finally {
+            removeType(TYPE_FIVE);
+        }
+        
+    }
+    
+    /**
+     * Tests that I can set, get and set again and get again
+     */
+    @Test
+    public void testMetadataOnInstance() {
+        GenericBeanDatabaseUpdateListener listener = null;
+        WriteableBeanDatabase wbd = null;
+        
+        try {
+            listener = new GenericBeanDatabaseUpdateListener();
+            hub.addListener(listener);
+            
+            wbd = hub.getWriteableDatabaseCopy();
+            
+            WriteableType wt = wbd.findOrAddWriteableType(TYPE_SIX);
+            
+            Object metadata = new Object();
+            wt.addInstance(ALICE, new GenericJavaBean(ALICE, OTHER_PROPERTY_VALUE1), metadata);
+            
+            wbd.commit();
+            
+            List<Change> changes = listener.getLastSetOfChanges();
+            
+            Assert.assertEquals(2, changes.size());
+            
+            Change instanceChange = changes.get(1);
+            
+            Assert.assertEquals(Change.ChangeCategory.ADD_INSTANCE, instanceChange.getChangeCategory());
+            Instance instance = instanceChange.getInstanceValue();
+            Assert.assertNotNull(instance);
+            
+            Assert.assertEquals(metadata, instance.getMetadata());
+            
+            Instance directInstance = hub.getCurrentDatabase().getInstance(TYPE_SIX, ALICE);
+            Assert.assertNotNull(directInstance);
+            
+            Assert.assertEquals(metadata, directInstance.getMetadata());
+            
+            Object metadata2 = new Object();
+            directInstance.setMetadata(metadata2);
+            
+            Assert.assertEquals(metadata2, directInstance.getMetadata());
+            
+            directInstance.setMetadata(null);
+            Assert.assertNull(directInstance.getMetadata());
+        }
+        finally {
+            if (listener != null) {
+                hub.removeListener(listener);
+            }
+            
+            removeType(TYPE_SIX);
+        }
+        
+    }
+    
+    /**
+     * Tests that I can set, get and set again and get again
+     */
+    @Test
+    public void testMetadataOnPropertyChange() {
+        Object originalMetadata = new Object();
+        GenericJavaBean oldBean = new GenericJavaBean(ALICE, OTHER_PROPERTY_VALUE1);
+        addTypeAndInstance(TYPE_SEVEN, ALICE, oldBean, originalMetadata);
+        
+        GenericBeanDatabaseUpdateListener listener = null;
+        WriteableBeanDatabase wbd = null;
+        
+        try {
+            listener = new GenericBeanDatabaseUpdateListener();
+            hub.addListener(listener);
+            
+            GenericJavaBean newBean = new GenericJavaBean(ALICE, OTHER_PROPERTY_VALUE2);
+            
+            wbd = hub.getWriteableDatabaseCopy();
+            
+            WriteableType wt = wbd.getWriteableType(TYPE_SEVEN);
+            
+            wt.modifyInstance(ALICE, newBean);
+            
+            wbd.commit();
+            
+            List<Change> changes = listener.getLastSetOfChanges();
+            
+            Assert.assertEquals(1, changes.size());
+            
+            Change instanceChange = changes.get(0);
+            
+            Assert.assertEquals(Change.ChangeCategory.MODIFY_INSTANCE, instanceChange.getChangeCategory());
+            Instance instance = instanceChange.getInstanceValue();
+            Instance originalInstance = instanceChange.getOriginalInstanceValue();
+            
+            Assert.assertNotNull(instance);
+            Assert.assertNotNull(originalInstance);
+            
+            Assert.assertEquals(originalMetadata, instance.getMetadata());
+            Assert.assertEquals(originalMetadata, originalInstance.getMetadata());
+        }
+        finally {
+            if (listener != null) {
+                hub.removeListener(listener);
+            }
+            
+            removeType(TYPE_SEVEN);
+        }
+        
     }
 
 }

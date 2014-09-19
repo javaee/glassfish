@@ -56,17 +56,20 @@ public class ChangeImpl implements Change {
     private final Type changeType;
     private final String instanceKey;
     private final Instance instanceValue;
+    private final Instance originalInstanceValue;
     private final List<PropertyChangeEvent> propertyChanges;
     
     /* package */ ChangeImpl(ChangeCategory changeCategory,
                              Type changeType,
                              String instanceKey,
                              Instance instanceValue,
+                             Instance originalInstanceValue,
                              List<PropertyChangeEvent> propertyChanges) {
         this.changeCategory = changeCategory;
         this.changeType = changeType;
         this.instanceKey = instanceKey;
         this.instanceValue = instanceValue;
+        this.originalInstanceValue = originalInstanceValue;
         this.propertyChanges = propertyChanges;
     }
     
@@ -101,6 +104,14 @@ public class ChangeImpl implements Change {
     public Instance getInstanceValue() {
         return instanceValue;
     }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.configuration.hub.api.Change#getOriginalInstanceValue()
+     */
+    @Override
+    public Instance getOriginalInstanceValue() {
+        return originalInstanceValue;
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.configuration.hub.api.Change#getModifiedProperties()
@@ -111,4 +122,6 @@ public class ChangeImpl implements Change {
         
         return Collections.unmodifiableList(propertyChanges);
     }
+
+    
 }

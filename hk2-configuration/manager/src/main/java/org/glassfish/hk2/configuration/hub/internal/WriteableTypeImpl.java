@@ -121,6 +121,7 @@ public class WriteableTypeImpl implements WriteableType {
                                    this,
                                    key,
                                    ii,
+                                   null,
                                    null));
         
         beanMap.put(key, ii);
@@ -140,6 +141,7 @@ public class WriteableTypeImpl implements WriteableType {
                 this,
                 key,
                 removedValue,
+                null,
                 null));
         
         return removedValue;
@@ -151,15 +153,6 @@ public class WriteableTypeImpl implements WriteableType {
     @Override
     public synchronized PropertyChangeEvent[] modifyInstance(String key, Object newBean,
             PropertyChangeEvent... propChanges) {
-        return modifyInstance(key, newBean, null, propChanges);
-    }
-    
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.configuration.hub.api.WriteableType#modifyInstance(java.lang.Object, java.lang.Object, java.beans.PropertyChangeEvent[])
-     */
-    @Override
-    public synchronized PropertyChangeEvent[] modifyInstance(String key, Object newBean,
-            Object metadata, PropertyChangeEvent... propChanges) {
         if (key == null || newBean == null) throw new IllegalArgumentException();
         
         Instance oldInstance = beanMap.get(key);
@@ -167,7 +160,7 @@ public class WriteableTypeImpl implements WriteableType {
             throw new IllegalStateException("Attempting to modify bean with key " + key + " but no such bean exists");
         }
         
-        InstanceImpl newInstance = new InstanceImpl(newBean, metadata);
+        InstanceImpl newInstance = new InstanceImpl(newBean, oldInstance.getMetadata());
         
         if (propChanges.length == 0) {
             propChanges = BeanReflectionHelper.getChangeEvents(helper, oldInstance.getBean(), newInstance.getBean());
@@ -184,6 +177,7 @@ public class WriteableTypeImpl implements WriteableType {
                 this,
                 key,
                 newInstance,
+                oldInstance,
                 propChangesList));
         
         return propChanges;

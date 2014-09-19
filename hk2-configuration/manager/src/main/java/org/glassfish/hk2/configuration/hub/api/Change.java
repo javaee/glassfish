@@ -88,12 +88,21 @@ public interface Change {
     
     /**
      * Returns the value of the instance that was removed, added or modified
-     * for the categories ADD_INSTANCE, REMOVE_INSTANCE and MODIFY_INSTANCE
+     * for the categories ADD_INSTANCE, REMOVE_INSTANCE and MODIFY_INSTANCE.
+     * In the MODIFY_INSTANCE case this will return the new Instance value
      * 
      * @return The value of the instance that was added, removed or modified.
      * Returns null for change category REMOVE_TYPE or ADD_TYPE
      */
     public Instance getInstanceValue();
+    
+    /**
+     * Returns the original Instance for the category MODIFY_INSTANCE
+     * 
+     * @return The original Instance for this key if the category is
+     * MODIFY_INSTANCE.  Returns null for all other category of change
+     */
+    public Instance getOriginalInstanceValue();
     
     /**
      * Returns a list of properties that were changed if the change category
