@@ -123,6 +123,13 @@
             <groupId>org.glassfish.hk2.external</groupId>
             <artifactId>bean-validator</artifactId>
         </dependency>
+
+        <!-- hk2-config tests use hibernate-validator which requires javax.el-api -->
+        <dependency>
+          <groupId>javax.el</groupId>
+          <artifactId>javax.el-api</artifactId>
+          <scope>test</scope>
+       </dependency>
     </dependencies>
     <profiles>
         <profile>

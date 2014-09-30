@@ -114,6 +114,7 @@
                             javax.enterprise.inject.*; resolution:=optional,
                             javax.enterprise.util.*; resolution:=optional,
                             javax.interceptor.*; resolution:=optional,
+                            com.thoughtworks.paranamer.*; resolution:=optional,
                             org.hibernate.validator.*; version=${hibernate-validator.version},
                             *
                         </Import-Package>

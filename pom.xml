@@ -199,7 +199,7 @@
         <org.jboss.logging.version>3.1.0.GA</org.jboss.logging.version>
         <javax.validation.osgi.version>1.1.0</javax.validation.osgi.version>
         <jtype.version>0.1.0</jtype.version>        
-
+        <javax.el.version>3.0.0</javax.el.version>
         <findbugs.exclude />
         <findbugs.threshold>High</findbugs.threshold>
         

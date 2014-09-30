@@ -138,5 +138,11 @@
             <scope>test</scope>
             <version>${project.version}</version>
         </dependency>
+        <!-- ctm tests use hibernate-validator which requires javax.el-api -->
+        <dependency>
+          <groupId>javax.el</groupId>
+          <artifactId>javax.el-api</artifactId>
+          <scope>test</scope>
+       </dependency>
     </dependencies>
 </project>

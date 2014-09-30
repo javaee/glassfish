@@ -147,7 +147,7 @@ public class OSGiTest {
                                 "no-hk2-bundle").version(projectVersion).startLevel(4)),
                 provision(mavenBundle().groupId(ServiceLocatorHk2MainTest.GROUP_ID).artifactId(
                                 "sdp-management-bundle").version(projectVersion).startLevel(4)),
-
+                provision(mavenBundle().groupId("javax.el").artifactId("javax.el-api").version("3.0.0")),
                 // systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level")
                 //      .value("DEBUG"),
                 cleanCaches()
