@@ -51,6 +51,7 @@ import java.util.concurrent.TimeoutException;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.IndexedFilter;
+import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
@@ -744,12 +745,12 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
             if (!useThreads) runnersToCreate = 0;
             
             for (int lcv = 0; lcv < runnersToCreate; lcv++) {
-                QueueRunner runner = new QueueRunner(jobsLock, jobs, this, lock, maxThreads);
+                QueueRunner runner = new QueueRunner(locator, asyncContext, jobsLock, jobs, this, lock, maxThreads);
                 
                 executor.execute(runner);
             }
             
-            QueueRunner myRunner = new QueueRunner(jobsLock, jobs, this, lock, maxThreads);
+            QueueRunner myRunner = new QueueRunner(locator, asyncContext, jobsLock, jobs, this, lock, maxThreads);
             myRunner.run();
         }
         
@@ -1074,19 +1075,25 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
     }
     
     private static class QueueRunner implements Runnable {
+        private final ServiceLocator locator;
+        private final AsyncRunLevelContext asyncContext;
         private final Object queueLock;
         private final List<ServiceHandle<?>> queue;
         private final UpOneLevel parent;
         private final Object parentLock;
         private final int maxThreads;
         private ServiceHandle<?> wouldHaveBlocked;
-        private HashSet<ActiveDescriptor<?>> alreadyTried = new HashSet<ActiveDescriptor<?>>();
+        private final HashSet<ActiveDescriptor<?>> alreadyTried = new HashSet<ActiveDescriptor<?>>();
         
-        private QueueRunner(Object queueLock,
+        private QueueRunner(ServiceLocator locator,
+                AsyncRunLevelContext asyncContext,
+                Object queueLock,
                 List<ServiceHandle<?>> queue,
                 UpOneLevel parent,
                 Object parentLock,
                 int maxThreads) {
+            this.locator = locator;
+            this.asyncContext = asyncContext;
             this.queueLock = queueLock;
             this.queue = queue;
             this.parent = parent;
@@ -1117,7 +1124,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                     }
                     else {
                         int currentlyEmptyThreads = maxThreads - parent.getJobsRunning();
-                        block = queue.size() <= currentlyEmptyThreads;
+                        block = (queue.size() <= currentlyEmptyThreads);
                     }
                     
                     if (block) {
@@ -1149,6 +1156,54 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
             
         }
         
+        /**
+         * This method does a preliminary check of whether or not the descriptor (or any children) would cause
+         * the thread to block.  If this method returns true then we do not try this service, which can save
+         * on going down the getService stack and on the throwing and creation of WouldBlockException
+         * 
+         * @param cycleChecker To ensure we are not caught in a cycle
+         * @param checkMe The descriptor to check
+         * @return false if as far as we know this descriptor would NOT block, true if we think if we tried
+         * this descriptor right now that it would block
+         */
+        private boolean isWouldBlockRightNow(HashSet<ActiveDescriptor<?>> cycleChecker, ActiveDescriptor<?> checkMe) {
+            if (checkMe == null) return false;
+            
+            if (cycleChecker.contains(checkMe)) return false;
+            cycleChecker.add(checkMe);
+            
+            if (asyncContext.wouldBlockRightNow(checkMe)) {
+                return true;
+            }
+            
+            if (!checkMe.isReified()) {
+                checkMe = locator.reifyDescriptor(checkMe);
+            }
+            
+            for (Injectee ip : checkMe.getInjectees()) {
+                ActiveDescriptor<?> childService;
+                try {
+                    childService = locator.getInjecteeDescriptor(ip);
+                }
+                catch (MultiException me) {
+                    continue;
+                }
+                
+                if (childService == null) continue;
+                
+                if (!childService.getScope().equals(RunLevel.class.getName())) continue;
+                
+                if (isWouldBlockRightNow(cycleChecker, childService)) {
+                    if (asyncContext.wouldBlockRightNow(checkMe)) {
+                        return true;
+                    }
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+        
         private void oneJob(ServiceHandle<?> fService, boolean block) {
             fService.setServiceData(!block);
             boolean completed = true;
@@ -1156,6 +1211,12 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                 boolean ok;
                 synchronized (parentLock) {
                     ok = (!parent.cancelled && (parent.accumulatedExceptions == null));
+                }
+                
+                if (!block && isWouldBlockRightNow(new HashSet<ActiveDescriptor<?>>(), fService.getActiveDescriptor())) {
+                    wouldHaveBlocked = fService;
+                    completed = false;
+                    ok = false;
                 }
                 
                 if (ok) {
