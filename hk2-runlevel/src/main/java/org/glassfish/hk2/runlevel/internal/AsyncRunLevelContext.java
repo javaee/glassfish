@@ -293,6 +293,12 @@ public class AsyncRunLevelContext {
         }
     }
     
+    /* package */ boolean wouldBlockRightNow(ActiveDescriptor<?> desc) {
+        synchronized (this) {
+            return creatingDescriptors.containsKey(desc);
+        }
+    }
+    
     /**
      * No need to lock this, it is called with the lock already held
      * 
