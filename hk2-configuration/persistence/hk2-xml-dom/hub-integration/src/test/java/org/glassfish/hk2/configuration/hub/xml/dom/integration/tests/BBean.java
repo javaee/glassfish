@@ -61,5 +61,6 @@ public interface BBean extends ConfigBeanProxy {
     
     @Element("*")
     public List<CBean> getCBeans();
+    public void setCBeans(List<CBean> cBeans);
 
 }

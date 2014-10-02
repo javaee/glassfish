@@ -43,8 +43,6 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.inject.Inject;
-
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
@@ -53,13 +51,12 @@ import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationUtilities;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.tests.BBean;
+import org.glassfish.hk2.configuration.hub.xml.dom.integration.tests.CBean;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.tests.common.ConfigHubIntegrationUtilities;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.jvnet.hk2.config.ConfigParser;
-import org.jvnet.hk2.testing.junit.HK2Runner;
 
 /**
  * Tests writing back to the beans from a translated map copy
@@ -67,13 +64,21 @@ import org.jvnet.hk2.testing.junit.HK2Runner;
  * @author jwells
  */
 public class WritebackTest {
-    public final static String BBEAN_TAG = "/b-bean";
+    private final static String BBEAN_TAG = "/b-bean";
     private final static String BBEAN_INSTANCE_NAME = "b-bean";
+    
+    private final static String CBEAN_TAG = "/b-bean/c-bean";
+    private final static String CAROL_INSTANCE_NAME = "b-bean.carol";
+    private final static String BOB_INSTANCE_NAME = "b-bean.bob";
     
     private final static String HELLO = "hello";
     private final static String SAILOR = "sailor";
     
     private final static String BBEAN_PARAMETER_NAME = "parameter";
+    private final static String NAME_PARAMETER_NAME = "name";
+    
+    private final static String BOB = "bob";
+    private final static String CAROL = "carol";
     
     @SuppressWarnings("unchecked")
     @Test // @org.junit.Ignore
@@ -115,6 +120,73 @@ public class WritebackTest {
         
         // This is the test.  Check that the parameter got set on BBean
         Assert.assertEquals(SAILOR, bbean.getParameter());
+    }
+    
+    /**
+     * Tests we can add an instance and have it reflected back in the hk2-config beans
+     */
+    @Test @org.junit.Ignore
+    public void testWritebackANewChildBean() {
+        ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
+        XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
+        
+        Hub hub = testLocator.getService(Hub.class);
+        Assert.assertNotNull(hub);
+        
+        Assert.assertNull(hub.getCurrentDatabase().getType(CBEAN_TAG));
+        
+        ConfigParser parser = new ConfigParser(testLocator);
+        URL url = getClass().getClassLoader().getResource("complex1.xml");
+        Assert.assertNotNull(url);
+        
+        parser.parse(url);
+        
+        // Add a Carol CBean
+        HashMap<String, Object> carolBean = new HashMap<String, Object>();
+        carolBean.put(NAME_PARAMETER_NAME, CAROL);
+        
+        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+        WriteableType beanWriteableType = wbd.findOrAddWriteableType(CBEAN_TAG);
+        beanWriteableType.addInstance(CAROL_INSTANCE_NAME, carolBean);
+        
+        wbd.commit();
+        
+        CBean carolService = testLocator.getService(CBean.class, CAROL);
+        Assert.assertNotNull(carolService);
+        
+        Assert.assertEquals(CAROL, carolService.getName());
+    }
+    
+    /**
+     * Tests we can remove an instance and have it reflected back in the hk2-config beans
+     */
+    @Test @org.junit.Ignore
+    public void testWritebackAndRemoveAChildBean() {
+        ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
+        XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
+        
+        Hub hub = testLocator.getService(Hub.class);
+        Assert.assertNotNull(hub);
+        
+        Assert.assertNull(hub.getCurrentDatabase().getType(CBEAN_TAG));
+        
+        ConfigParser parser = new ConfigParser(testLocator);
+        URL url = getClass().getClassLoader().getResource("complex1.xml");
+        Assert.assertNotNull(url);
+        
+        parser.parse(url);
+        
+        // Remove a Alice CBean
+        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+        WriteableType beanWriteableType = wbd.findOrAddWriteableType(CBEAN_TAG);
+        beanWriteableType.removeInstance(BOB_INSTANCE_NAME);
+        
+        wbd.commit();
+        
+        ServiceLocatorUtilities.dumpAllDescriptors(testLocator);
+        
+        CBean bobService = testLocator.getService(CBean.class, BOB);
+        Assert.assertNull(bobService);
     }
 
 }
