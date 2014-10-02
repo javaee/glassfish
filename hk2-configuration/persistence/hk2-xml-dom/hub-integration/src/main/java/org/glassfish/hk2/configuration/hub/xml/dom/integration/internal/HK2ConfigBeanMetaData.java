@@ -37,32 +37,28 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.hub.xml.dom.integration.tests.common;
+package org.glassfish.hk2.configuration.hub.xml.dom.integration.internal;
 
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationUtilities;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 
 /**
  * @author jwells
  *
  */
-public class ConfigHubIntegrationUtilities {
-    private final static ServiceLocatorFactory factory = ServiceLocatorFactory.getInstance();
+public class HK2ConfigBeanMetaData {
+    private final ConfigBeanProxy configBean;
     
-    /**
-     * Creates an unnamed, untracked service locator
-     * @return An unnamed, untracked service locator
-     */
-    public static ServiceLocator create() {
-        return factory.create(null);
+    /* package */ HK2ConfigBeanMetaData(ConfigBeanProxy configBean) {
+        this.configBean = configBean;
     }
     
-    public static ServiceLocator createPopulateAndConfigInit() {
-        ServiceLocator testLocator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
-        XmlDomIntegrationUtilities.enableHk2ConfigDomIntegration(testLocator);
-        return testLocator;
+    /* package */ ConfigBeanProxy getConfigBean() {
+        return configBean;
+    }
+    
+    @Override
+    public String toString() {
+        return "HK2ConfigBeanMetaData(" + configBean + "," + System.identityHashCode(this) + ")";
     }
 
 }

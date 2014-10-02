@@ -123,5 +123,11 @@ public class ChangeImpl implements Change {
         return Collections.unmodifiableList(propertyChanges);
     }
 
-    
+    @Override
+    public String toString() {
+        return "ChangeImpl(" + changeCategory +
+                ",type=" + changeType +
+                ",instanceKey=" + instanceKey +
+                ",sid=" + System.identityHashCode(this) + ")";
+    }
 }

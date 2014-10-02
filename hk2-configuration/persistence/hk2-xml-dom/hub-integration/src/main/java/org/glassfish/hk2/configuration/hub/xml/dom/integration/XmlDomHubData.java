@@ -51,11 +51,13 @@ public class XmlDomHubData {
     private final Object bean;
     private final String type;
     private final String instanceKey;
+    private final Object metadata;
     
-    public XmlDomHubData(String type, String instanceKey, Object bean) {
+    public XmlDomHubData(String type, String instanceKey, Object bean, Object metadata) {
         this.type = type;
         this.instanceKey = instanceKey;
         this.bean = bean;
+        this.metadata = metadata;
     }
 
     /**
@@ -79,6 +81,11 @@ public class XmlDomHubData {
         return instanceKey;
     }
     
-    
+    /**
+     * @return Any metadata to be associated with the instance
+     */
+    public Object getMetadata() {
+        return metadata;
+    }
 
 }

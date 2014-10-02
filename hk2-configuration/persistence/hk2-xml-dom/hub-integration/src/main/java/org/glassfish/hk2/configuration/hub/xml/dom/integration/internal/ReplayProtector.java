@@ -39,61 +39,84 @@
  */
 package org.glassfish.hk2.configuration.hub.xml.dom.integration.internal;
 
+import java.beans.PropertyChangeEvent;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
 import javax.inject.Singleton;
 
-import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomHubData;
-import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationUtilities;
-import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomTranslationService;
-import org.glassfish.hk2.utilities.reflection.BeanReflectionHelper;
-import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.types.Property;
-import org.jvnet.hk2.config.types.PropertyBag;
+import org.glassfish.hk2.utilities.general.GeneralUtilities;
 
 /**
+ * To stop this code from burning enough CPU cycles to find ET
+ * 
  * @author jwells
  *
  */
 @Singleton
-public class MapTranslator implements XmlDomTranslationService {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomTranslationService#translate(org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomHubData)
-     */
-    @Override
-    public XmlDomHubData translate(XmlDomHubData hk2ConfigBeanData) {
-        Object bean = hk2ConfigBeanData.getBean();
-        if (bean == null) return null;
-        
-        ConfigBeanProxy metadataBean = null;
-        if (bean instanceof ConfigBeanProxy) {
-            metadataBean = (ConfigBeanProxy) bean;
+public class ReplayProtector {
+    private final LinkedList<HashSet<Event>> happened = new LinkedList<HashSet<Event>>();
+    
+    public synchronized boolean isReplay(PropertyChangeEvent[] events) {
+        HashSet<Event> checkMe = new HashSet<Event>();
+        for (PropertyChangeEvent event : events) {
+            checkMe.add(new Event(event));
         }
         
-        if (bean instanceof Map) return null;
-        
-        Map<String, Object> beanLikeMap = BeanReflectionHelper.convertJavaBeanToBeanLikeMap(
-                new ClassReflectionHelperImpl(), bean);
-        
-        if ((bean instanceof PropertyBag) && !beanLikeMap.containsKey(XmlDomIntegrationUtilities.PROPERTIES)) {
-            List<Property> props = ((PropertyBag) bean).getProperty();
+        Iterator<HashSet<Event>> iterator = happened.iterator();
+        while (iterator.hasNext()) {
+            HashSet<Event> next = iterator.next();
             
-            Properties addMe = new Properties();
-            for (Property prop : props) {
-                addMe.setProperty(prop.getName(), prop.getValue());
+            if (next.size() == checkMe.size() && next.containsAll(checkMe)) {
+                // MATCHES!
+                iterator.remove();
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    public synchronized void addListOfChangesHappening(List<PropertyChangeEvent> changes) {
+        HashSet<Event> addMe = new HashSet<Event>();
+        
+        for (PropertyChangeEvent change : changes) {
+            addMe.add(new Event(change));
+        }
+        
+        happened.add(addMe);
+    }
+    
+    private static class Event {
+        private final PropertyChangeEvent event;
+        
+        private Event(PropertyChangeEvent event) {
+            this.event = event;
+        }
+        
+        @Override
+        public int hashCode() {
+            int retVal = event.getPropertyName().hashCode();
+            if (event.getNewValue() != null) {
+                retVal ^= event.getNewValue().hashCode();
             }
             
-            beanLikeMap.put(XmlDomIntegrationUtilities.PROPERTIES, addMe);
+            return retVal;
         }
         
-        return new XmlDomHubData(hk2ConfigBeanData.getType(),
-                hk2ConfigBeanData.getInstanceKey(),
-                beanLikeMap,
-                new HK2ConfigBeanMetaData(metadataBean));
+        @Override
+        public boolean equals(Object o) {
+            if (o == null) return false;
+            if (!(o instanceof Event)) return false;
+            
+            Event other = (Event) o;
+            
+            if (!event.getPropertyName().equals(other.event.getPropertyName())) return false;
+            return GeneralUtilities.safeEquals(event.getNewValue(), other.event.getNewValue());
+        }
     }
 
 }

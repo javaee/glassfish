@@ -60,7 +60,8 @@ public class BBeanTranslator implements XmlDomTranslationService {
             // Type changes, name remains the same
             return new XmlDomHubData(HubIntegrationTest.BBEAN_TAG_TRANSLATED,
                     hk2ConfigBeanData.getInstanceKey(),
-                    hk2ConfigBeanData.getBean());
+                    hk2ConfigBeanData.getBean(),
+                    hk2ConfigBeanData.getMetadata());
         }
         
         if (hk2ConfigBeanData.getType().equals(HubIntegrationTest.CBEAN_TAG)) {
@@ -77,7 +78,8 @@ public class BBeanTranslator implements XmlDomTranslationService {
             
             return new XmlDomHubData(HubIntegrationTest.CBEAN_TAG_TRANSLATED,
                     newInstanceName,
-                    hk2ConfigBeanData.getBean());
+                    hk2ConfigBeanData.getBean(),
+                    hk2ConfigBeanData.getMetadata());
         }
         
         return null;

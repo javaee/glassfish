@@ -53,6 +53,7 @@ import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationUtilities;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.tests.BBean;
+import org.glassfish.hk2.configuration.hub.xml.dom.integration.tests.common.ConfigHubIntegrationUtilities;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Before;
@@ -75,9 +76,9 @@ public class WritebackTest {
     private final static String BBEAN_PARAMETER_NAME = "parameter";
     
     @SuppressWarnings("unchecked")
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testWritebackAnAttribute() {
-        ServiceLocator testLocator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
+        ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
         XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
         
         Hub hub = testLocator.getService(Hub.class);
@@ -108,6 +109,7 @@ public class WritebackTest {
         WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
         WriteableType wt = wbd.getWriteableType(BBEAN_TAG);
         wt.modifyInstance(BBEAN_INSTANCE_NAME, newBean);
+        
         
         wbd.commit();
         
