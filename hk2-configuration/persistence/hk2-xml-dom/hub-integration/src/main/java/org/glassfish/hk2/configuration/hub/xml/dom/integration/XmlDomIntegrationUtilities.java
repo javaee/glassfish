@@ -100,13 +100,16 @@ public class XmlDomIntegrationUtilities {
         
         ServiceLocatorUtilities.addClasses(locator,
                 ReplayProtector.class,
+                WritebackHubListener.class,
                 MapTranslator.class);
         
         Hub hub = locator.getService(Hub.class);
         if (hub != null) {
-            ReplayProtector rp = locator.getService(ReplayProtector.class);
+            WritebackHubListener rp = locator.getService(WritebackHubListener.class);
             
-            hub.addListener(new WritebackHubListener(rp));
+            if (rp != null) {
+                hub.addListener(rp);
+            }
         }
     }
 

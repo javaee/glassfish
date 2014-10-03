@@ -125,7 +125,7 @@ public class WritebackTest {
     /**
      * Tests we can add an instance and have it reflected back in the hk2-config beans
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testWritebackANewChildBean() {
         ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
         XmlDomIntegrationUtilities.enableMapTranslator(testLocator);

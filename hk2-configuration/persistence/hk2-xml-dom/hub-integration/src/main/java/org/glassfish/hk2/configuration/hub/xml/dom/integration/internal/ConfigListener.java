@@ -40,6 +40,7 @@
 package org.glassfish.hk2.configuration.hub.xml.dom.integration.internal;
 
 import java.beans.PropertyChangeEvent;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -318,6 +319,12 @@ public class ConfigListener implements DynamicConfigurationListener {
         public synchronized UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
             if (replayProtector.isReplay(events)) {
                 return null;
+            }
+            
+            if (events.length == 1) {
+                PropertyChangeEvent event = events[0];
+                
+                if (event.getPropertyName().equals("*")) return null;
             }
             
             // Must force re-translation

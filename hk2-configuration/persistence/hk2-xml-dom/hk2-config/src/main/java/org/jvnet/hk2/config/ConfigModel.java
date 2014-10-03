@@ -300,7 +300,7 @@ public final class ConfigModel {
         return prop;
     }
 
-    public String trimPrefix(String name) {
+    public static String trimPrefix(String name) {
 
         // first, trim off the prefix
         for (String p : Dom.PROPERTY_PREFIX) {
@@ -314,7 +314,7 @@ public final class ConfigModel {
 
     }
 
-    public String camelCaseToXML(String camelCase) {
+    public static String camelCaseToXML(String camelCase) {
         
         // tokenize by finding 'x|X' and 'X|Xx' then insert '-'.
         StringBuilder buf = new StringBuilder(camelCase.length()+5);

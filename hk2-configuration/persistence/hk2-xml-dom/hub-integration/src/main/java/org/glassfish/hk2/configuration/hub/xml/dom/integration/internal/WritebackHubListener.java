@@ -43,17 +43,26 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener;
 import org.glassfish.hk2.configuration.hub.api.Change;
+import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
+import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationCommitMessage;
 import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ConfigModel;
 import org.jvnet.hk2.config.ConfigSupport;
+import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
 
@@ -61,13 +70,19 @@ import org.jvnet.hk2.config.TransactionFailure;
  * Listens for updates
  * @author jwells
  */
+@Singleton
 public class WritebackHubListener implements BeanDatabaseUpdateListener {
     private final static String SET_PREFIX = "set";
+    private final static String GET_PREFIX = "get";
+    private final static String STAR = "*";
     
-    private final ReplayProtector replayProtector;
+    @Inject
+    private ReplayProtector replayProtector;
     
-    public WritebackHubListener(ReplayProtector replayProtector) {
-        this.replayProtector = replayProtector;
+    @Inject
+    private Hub hub;
+    
+    private WritebackHubListener() {
     }
 
     /* (non-Javadoc)
@@ -118,7 +133,36 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
         return foundMethod;
     }
     
-    private void doModification(Change change, Map<String, Object> beanLikeMap, HK2ConfigBeanMetaData metadata, ConfigBeanProxy originalConfigBean) {
+    private static Method findChildGetterMethod(Dom parentDom, String xmlName, Class<?> childType) {
+        ConfigModel model = parentDom.model;
+        
+        for (Method m : parentDom.getImplementationClass().getMethods()) {
+            String methodName = m.getName();
+            if (!methodName.startsWith(GET_PREFIX)) continue;
+            
+            Class<?> params[] = m.getParameterTypes();
+            if (params.length != 0) continue;
+            
+            Class<?> retType = m.getReturnType();
+            
+            if (retType == null || !List.class.equals(retType)) continue;
+            
+            ConfigModel.Property prop = model.toProperty(m);
+            if (prop == null) continue;
+            
+            String methodXmlName = prop.xmlName();
+            if (STAR.equals(prop.xmlName())) {
+                methodXmlName = childType.getSimpleName();
+                methodXmlName = ConfigModel.camelCaseToXML(methodXmlName);
+            }
+            
+            return m;
+        }
+        
+        return null;
+    }
+    
+    private void doModification(Change change, ConfigBeanProxy originalConfigBean) {
         List<PropertyChangeEvent> modified = new LinkedList<PropertyChangeEvent>();
         
         for (PropertyChangeEvent propChange : change.getModifiedProperties()) {
@@ -138,6 +182,11 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
                     // Going from null to null, who cares?, and should not be possible
                     continue;
                 }
+            }
+            
+            if (List.class.isAssignableFrom(setterType)) {
+                // This is a child, do not handle here
+                continue;
             }
             
             Method setter = findSetterMethod(propName, originalConfigBean.getClass(), setterType);
@@ -165,6 +214,59 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
         
     }
     
+    private void doBeanInitialization(Map<String, Object> initialValues, ConfigBeanProxy originalConfigBean) {
+        
+        Dom dom = Dom.unwrap(originalConfigBean);
+        if (dom == null) {
+            return;
+        }
+        
+        Set<String> attributeNames = dom.model.getAttributeNames();
+        
+        for (Map.Entry<String, Object> entry : initialValues.entrySet()) {
+            String propName = entry.getKey();
+            Object newValue = entry.getValue();
+            
+            if (attributeNames.contains(propName)) {
+                String strValue;
+                if (newValue == null) {
+                    strValue = null;
+                }
+                else {
+                    strValue = newValue.toString();
+                }
+                
+                dom.attribute(propName, strValue);
+                
+                continue;
+            }
+            
+            if (newValue == null) continue;
+            Class<?> setterType = newValue.getClass();
+            
+            if (List.class.isAssignableFrom(setterType)) {
+                // This is a child, do not handle here
+                continue;
+            }
+            
+            Method setter = findSetterMethod(propName, originalConfigBean.getClass(), setterType);
+            if (setter == null) {
+                // This is not a settable attribute (or we cannot find the setter), skip it
+                continue;
+            }
+            
+            try {
+                setter.invoke(originalConfigBean, newValue);
+            }
+            catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+            catch (InvocationTargetException e) {
+                // TODO:  What to do here?
+            }
+        }
+    }
+    
     private void modifyInstance(final Change change, final Map<String, Object> beanLikeMap, final HK2ConfigBeanMetaData metadata) {
         ConfigBeanProxy originalConfigBean = metadata.getConfigBean();
         
@@ -174,7 +276,7 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
                 @Override
                 public Object run(ConfigBeanProxy param) throws PropertyVetoException,
                         TransactionFailure {
-                    doModification(change, beanLikeMap, metadata, param);
+                    doModification(change, param);
                     
                     return null;
                 }
@@ -185,8 +287,102 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+    
+    private static String getElementName(String typeName) {
+        int index = typeName.lastIndexOf('/');
+        if (index < 0) return typeName;
         
+        return typeName.substring(index + 1);
+    }
+    
+    private Instance findParent(String childTypeName, String childInstanceName) {
+        int index = childTypeName.lastIndexOf('/');
+        if (index < 0) return null;
         
+        String parentTypeName = childTypeName.substring(0, index);
+        
+        index = childInstanceName.lastIndexOf('.');
+        if (index < 0) return null;
+        
+        String parentInstanceName = childInstanceName.substring(0, index);
+        
+        Instance retVal = hub.getCurrentDatabase().getInstance(parentTypeName, parentInstanceName);
+        return retVal;
+    }
+    
+    private void addChild(final Change change, final Map<String, Object> newGuy) {
+        Instance instance = change.getInstanceValue();
+        String instanceName = change.getInstanceKey();
+        Type instanceType = change.getChangeType();
+        String typeName = instanceType.getName();
+        
+        Instance parent = findParent(typeName, instanceName);
+        if (parent == null) return;
+        
+        Object rawParentMetadata = parent.getMetadata();
+        if (rawParentMetadata == null || !(rawParentMetadata instanceof HK2ConfigBeanMetaData)) {
+            return;
+        }
+        HK2ConfigBeanMetaData parentMetadata = (HK2ConfigBeanMetaData) rawParentMetadata;
+        
+        ConfigBeanProxy parentConfigBean = parentMetadata.getConfigBean();
+        if (parentConfigBean == null) return;
+        
+        Dom parentDom = Dom.unwrap(parentConfigBean);
+        if (parentDom == null) return;
+        
+        final String childElementName = getElementName(typeName);
+        Dom childDom = parentDom.element(childElementName);
+        if (childDom == null) return;
+        
+        final Class<? extends ConfigBeanProxy> childClass = (Class<? extends ConfigBeanProxy>) childDom.getImplementationClass();
+        
+        Object child = null;
+        try {
+             child = ConfigSupport.apply(new SingleConfigCode<ConfigBeanProxy>() {
+
+                @Override
+                public Object run(ConfigBeanProxy writeableBean) throws PropertyVetoException,
+                        TransactionFailure {
+                    Dom parentDom = Dom.unwrap(writeableBean);
+                    
+                    Method parentListMethod = findChildGetterMethod(parentDom, childElementName, childClass);
+                    if (parentListMethod == null) return null;
+                    
+                    ConfigBeanProxy child = writeableBean.createChild(childClass);
+                    
+                    doBeanInitialization(newGuy, child);
+                    
+                    List<ConfigBeanProxy> addToMe = null;
+                    try {
+                        Object result = parentListMethod.invoke(writeableBean);
+                        if (result instanceof List) {
+                            addToMe = (List<ConfigBeanProxy>) result;
+                        }
+                    }
+                    catch (IllegalAccessException e) {
+                        return null;
+                    }
+                    catch (InvocationTargetException e) {
+                        return null;
+                    }
+                    
+                    addToMe.add(child);
+                    
+                    return child;
+                }
+                
+            }, parentConfigBean);
+        }
+        catch (TransactionFailure e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        if (child != null) {
+            instance.setMetadata(new HK2ConfigBeanMetaData((ConfigBeanProxy) child));
+        }
     }
 
     /* (non-Javadoc)
@@ -212,28 +408,27 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
             }
             Map<String, Object> beanLikeMap = (Map<String,Object>) rawBean;
             
-            Object rawMetaData = instance.getMetadata();
-            if (rawMetaData == null ||
-                    !(rawMetaData instanceof HK2ConfigBeanMetaData)) {
-                // Not our metadata, forget it
-                continue;
-            }
-            HK2ConfigBeanMetaData metadata = (HK2ConfigBeanMetaData) rawMetaData;
-            if (metadata.getConfigBean() == null) {
-                // We did put it in, but it was not a ConfigBeanProxy (can't happen... probably)
-                continue;
-            }
-            
             Change.ChangeCategory category = change.getChangeCategory();
             
             if (category.equals(Change.ChangeCategory.MODIFY_INSTANCE)) {
+                Object rawMetaData = instance.getMetadata();
+                if (rawMetaData == null ||
+                        !(rawMetaData instanceof HK2ConfigBeanMetaData)) {
+                    // Not our metadata, forget it
+                    continue;
+                }
+                HK2ConfigBeanMetaData metadata = (HK2ConfigBeanMetaData) rawMetaData;
+                if (metadata.getConfigBean() == null) {
+                    // We did put it in, but it was not a ConfigBeanProxy (can't happen... probably)
+                    continue;
+                }
+                
                 modifyInstance(change, beanLikeMap, metadata);
             }
-            
-            if (category.equals(Change.ChangeCategory.ADD_INSTANCE)) {
-                throw new AssertionError("not yet implemented");
+            else if (category.equals(Change.ChangeCategory.ADD_INSTANCE)) {
+                addChild(change, beanLikeMap);
             }
-            if (category.equals(Change.ChangeCategory.REMOVE_INSTANCE)) {
+            else if (category.equals(Change.ChangeCategory.REMOVE_INSTANCE)) {
                 throw new AssertionError("not yet implemented");
             }
             
