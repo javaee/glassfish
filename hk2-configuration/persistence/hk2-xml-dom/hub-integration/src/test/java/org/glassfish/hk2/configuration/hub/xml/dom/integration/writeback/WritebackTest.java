@@ -160,7 +160,7 @@ public class WritebackTest {
     /**
      * Tests we can remove an instance and have it reflected back in the hk2-config beans
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testWritebackAndRemoveAChildBean() {
         ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
         XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
@@ -182,8 +182,6 @@ public class WritebackTest {
         beanWriteableType.removeInstance(BOB_INSTANCE_NAME);
         
         wbd.commit();
-        
-        ServiceLocatorUtilities.dumpAllDescriptors(testLocator);
         
         CBean bobService = testLocator.getService(CBean.class, BOB);
         Assert.assertNull(bobService);

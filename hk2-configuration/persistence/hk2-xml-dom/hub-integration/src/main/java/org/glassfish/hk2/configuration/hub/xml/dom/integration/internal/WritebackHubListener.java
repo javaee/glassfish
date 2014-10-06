@@ -43,7 +43,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -296,6 +295,13 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
         return typeName.substring(index + 1);
     }
     
+    private static String getInstanceKey(String instanceName) {
+        int index = instanceName.lastIndexOf('.');
+        if (index < 0) return instanceName;
+        
+        return instanceName.substring(index + 1);
+    }
+    
     private Instance findParent(String childTypeName, String childInstanceName) {
         int index = childTypeName.lastIndexOf('/');
         if (index < 0) return null;
@@ -384,6 +390,93 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
             instance.setMetadata(new HK2ConfigBeanMetaData((ConfigBeanProxy) child));
         }
     }
+    
+    private void removeChild(final Change change) {
+        String instanceName = change.getInstanceKey();
+        Type instanceType = change.getChangeType();
+        String typeName = instanceType.getName();
+        
+        Instance parent = findParent(typeName, instanceName);
+        if (parent == null) return;
+        
+        Object rawParentMetadata = parent.getMetadata();
+        if (rawParentMetadata == null || !(rawParentMetadata instanceof HK2ConfigBeanMetaData)) {
+            return;
+        }
+        HK2ConfigBeanMetaData parentMetadata = (HK2ConfigBeanMetaData) rawParentMetadata;
+        
+        ConfigBeanProxy parentConfigBean = parentMetadata.getConfigBean();
+        if (parentConfigBean == null) return;
+        
+        Dom parentDom = Dom.unwrap(parentConfigBean);
+        if (parentDom == null) return;
+        
+        final String childElementName = getElementName(typeName);
+        Dom childDom = parentDom.element(childElementName);
+        if (childDom == null) return;
+        
+        final Class<? extends ConfigBeanProxy> childClass = (Class<? extends ConfigBeanProxy>) childDom.getImplementationClass();
+        
+        final String instanceKey = getInstanceKey(instanceName);
+        
+        try {
+             ConfigSupport.apply(new SingleConfigCode<ConfigBeanProxy>() {
+
+                @Override
+                public Object run(ConfigBeanProxy writeableBean) throws PropertyVetoException,
+                        TransactionFailure {
+                    Dom parentDom = Dom.unwrap(writeableBean);
+                    
+                    Method parentListMethod = findChildGetterMethod(parentDom, childElementName, childClass);
+                    if (parentListMethod == null) return null;
+                    
+                    List<ConfigBeanProxy> addToMe = null;
+                    try {
+                        Object result = parentListMethod.invoke(writeableBean);
+                        if (result instanceof List) {
+                            addToMe = (List<ConfigBeanProxy>) result;
+                        }
+                    }
+                    catch (IllegalAccessException e) {
+                        return null;
+                    }
+                    catch (InvocationTargetException e) {
+                        return null;
+                    }
+                    
+                    Dom removeMeDom = null;
+                    ConfigBeanProxy removeMe = null;
+                    for (ConfigBeanProxy candidate : addToMe) {
+                        Dom candidateDom = Dom.unwrap(candidate);
+                        if (candidateDom == null) continue;
+                        
+                        String candidateKey = candidateDom.getKey();
+                        if (candidateKey == null) continue;
+                        
+                        if (instanceKey.equals(candidateKey)) {
+                            removeMe = candidate;
+                            removeMeDom = candidateDom;
+                            break;
+                        }
+                        
+                    }
+                    
+                    if (removeMe != null) {
+                        parentDom.removeChild(removeMeDom);
+                        
+                        addToMe.remove(removeMe);
+                    }
+                    
+                    return null;
+                }
+                
+            }, parentConfigBean);
+        }
+        catch (TransactionFailure e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener#databaseHasChanged(org.glassfish.hk2.configuration.hub.api.BeanDatabase, java.lang.Object, java.util.List)
@@ -429,7 +522,7 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
                 addChild(change, beanLikeMap);
             }
             else if (category.equals(Change.ChangeCategory.REMOVE_INSTANCE)) {
-                throw new AssertionError("not yet implemented");
+                removeChild(change);
             }
             
             // Others we just ignore 
