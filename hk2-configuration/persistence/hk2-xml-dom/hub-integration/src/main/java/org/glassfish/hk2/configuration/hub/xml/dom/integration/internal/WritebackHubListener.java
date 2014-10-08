@@ -91,6 +91,7 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
     @Override
     public void initialize(BeanDatabase database) {
         // This guy only does something on known modifications, so do nothing
+        Logger.getLogger().debug("WRITEBACK: The writeback system has been enabled");
     }
     
     private static Method getMethod(Class<?> clazz, String methodName, Class<?>[] setterType) {
@@ -547,18 +548,24 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
      * @see org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener#databaseHasChanged(org.glassfish.hk2.configuration.hub.api.BeanDatabase, java.lang.Object, java.util.List)
      */
     @SuppressWarnings("unchecked")
-    @Override
-    public void databaseHasChanged(BeanDatabase newDatabase,
-            Object commitMessage, List<Change> changes) {
+    private void internalDatabaseHasChanged(BeanDatabase newDatabase,
+            Object commitMessage, List<Change> changes) throws Throwable {
+        Logger.getLogger().debug("WRITEBACK: Change in Hub detected");
         if ((commitMessage != null) &&
                 (commitMessage instanceof XmlDomIntegrationCommitMessage)) {
             // This is a change coming from the bean into the map, not
             // the other way around, so stop right now
+            Logger.getLogger().debug("WRITEBACK: Change ignored as hub-integration was responsible");
+            
             return;
         }
         
         for (Change change : changes) {
+            Logger.getLogger().debug("WRITEBACK: Processing change: " + change);
+            
             Instance instance = change.getInstanceValue();
+            if (instance == null) continue;
+            
             Object rawBean = instance.getBean();
             if (!(rawBean instanceof Map)) {
                 // Not translated, forget it
@@ -592,7 +599,21 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
             
             // Others we just ignore 
         }
+        
+        Logger.getLogger().debug("WRITEBACK: All changes processed");
 
+    }
+    
+    @Override
+    public void databaseHasChanged(BeanDatabase newDatabase,
+            Object commitMessage, List<Change> changes) {
+        try {
+            internalDatabaseHasChanged(newDatabase, commitMessage, changes);
+        }
+        catch (Throwable th) {
+            Logger.getLogger().debug(getClass().getName(), "databaseHasChanged", th);
+        }
+        
     }
 
 }

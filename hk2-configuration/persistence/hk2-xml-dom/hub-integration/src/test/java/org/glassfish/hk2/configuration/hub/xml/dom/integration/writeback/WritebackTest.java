@@ -52,8 +52,9 @@ import org.glassfish.hk2.configuration.hub.api.WriteableType;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationUtilities;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.tests.BBean;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.tests.CBean;
+import org.glassfish.hk2.configuration.hub.xml.dom.integration.tests.DBean;
+import org.glassfish.hk2.configuration.hub.xml.dom.integration.tests.EBean;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.tests.common.ConfigHubIntegrationUtilities;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Test;
 import org.jvnet.hk2.config.ConfigParser;
@@ -70,6 +71,12 @@ public class WritebackTest {
     private final static String CBEAN_TAG = "/b-bean/c-bean";
     private final static String CAROL_INSTANCE_NAME = "b-bean.carol";
     private final static String BOB_INSTANCE_NAME = "b-bean.bob";
+    
+    private final static String DBEAN_TAG = "/d-bean";
+    // private final static String DBEAN_INSTANCE_NAME = "d-bean";
+    
+    private final static String EBEAN_TAG = "/e-bean";
+    private final static String EBEAN_INSTANCE_NAME = "d-bean.e-bean";
     
     private final static String HELLO = "hello";
     private final static String SAILOR = "sailor";
@@ -185,6 +192,45 @@ public class WritebackTest {
         
         CBean bobService = testLocator.getService(CBean.class, BOB);
         Assert.assertNull(bobService);
+    }
+    
+    /**
+     * Tests we can add a single complex child bean
+     */
+    @Test @org.junit.Ignore
+    public void testWritebackSingleComplexChildBean() {
+        ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
+        XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
+        
+        Hub hub = testLocator.getService(Hub.class);
+        Assert.assertNotNull(hub);
+        
+        Assert.assertNull(hub.getCurrentDatabase().getType(DBEAN_TAG));
+        
+        ConfigParser parser = new ConfigParser(testLocator);
+        URL url = getClass().getClassLoader().getResource("complex3.xml");
+        Assert.assertNotNull(url);
+        
+        parser.parse(url);
+        
+        DBean dbean = testLocator.getService(DBean.class);
+        Assert.assertNotNull(dbean);
+        
+        EBean ebean = testLocator.getService(EBean.class);
+        Assert.assertNull(ebean);
+        
+        Map<String, Object> ebeanMap = new HashMap<String, Object>();
+        
+        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+        WriteableType beanWriteableType = wbd.findOrAddWriteableType(EBEAN_TAG);
+        beanWriteableType.addInstance(EBEAN_INSTANCE_NAME, ebeanMap);
+        
+        wbd.commit();
+        
+        ebean = testLocator.getService(EBean.class);
+        Assert.assertNotNull(ebean);
+        
+        Assert.assertTrue(ebean.getFBeans().isEmpty());
     }
 
 }
