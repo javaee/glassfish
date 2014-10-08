@@ -58,6 +58,7 @@ import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationCommitMessage;
+import org.glassfish.hk2.utilities.reflection.Logger;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigModel;
 import org.jvnet.hk2.config.ConfigSupport;
@@ -169,6 +170,10 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
             Class<?> setterType;
             
             Object newValue = propChange.getNewValue();
+            Logger.getLogger().debug("WRITEBACK: Modifying property " + propName +
+                    " to value " + newValue +
+                    " from value " + propChange.getOldValue());
+            
             if (newValue != null) {
                 setterType = newValue.getClass();
             }
@@ -185,12 +190,18 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
             
             if (List.class.isAssignableFrom(setterType)) {
                 // This is a child, do not handle here
+                Logger.getLogger().debug("WRITEBACK: Not modifying property " + propName +
+                        " because it is of type List and is therefor a child");
+                
                 continue;
             }
             
             Method setter = findSetterMethod(propName, originalConfigBean.getClass(), setterType);
             if (setter == null) {
                 // This is not a settable attribute (or we cannot find the setter), skip it
+                Logger.getLogger().debug("WRITEBACK: Not modifying property " + propName +
+                        " because we could not find a setter for it, it may be write-only");
+                
                 continue;
             }
             
@@ -201,9 +212,11 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
                 throw new RuntimeException(e);
             }
             catch (InvocationTargetException e) {
-                // TODO:  What to do here?
+                Logger.getLogger().debug(getClass().getName(), setter.getName(), e.getTargetException());
             }
             
+            Logger.getLogger().debug("WRITEBACK: property " + propName +
+                    " successfully modified");
             modified.add(propChange);
         }
         
@@ -323,24 +336,40 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
         Type instanceType = change.getChangeType();
         String typeName = instanceType.getName();
         
+        Logger.getLogger().debug("WRITEBACK: adding child with type " + typeName + " and instance " + instanceName);
+        
         Instance parent = findParent(typeName, instanceName);
-        if (parent == null) return;
+        if (parent == null) {
+            Logger.getLogger().debug("WRITEBACK: could not find parent of type " + typeName + " and instance " + instanceName);
+            return;
+        }
         
         Object rawParentMetadata = parent.getMetadata();
         if (rawParentMetadata == null || !(rawParentMetadata instanceof HK2ConfigBeanMetaData)) {
+            Logger.getLogger().debug("WRITEBACK: No metadata for type " + typeName + " and instance " + instanceName);
             return;
         }
         HK2ConfigBeanMetaData parentMetadata = (HK2ConfigBeanMetaData) rawParentMetadata;
         
         ConfigBeanProxy parentConfigBean = parentMetadata.getConfigBean();
-        if (parentConfigBean == null) return;
+        if (parentConfigBean == null) {
+            Logger.getLogger().debug("WRITEBACK: No configuration bean for type " + typeName + " and instance " + instanceName);
+            return;
+        }
         
         Dom parentDom = Dom.unwrap(parentConfigBean);
-        if (parentDom == null) return;
+        if (parentDom == null) {
+            Logger.getLogger().debug("WRITEBACK: No parent Dom for type " + typeName + " and instance " + instanceName);
+            return;
+        }
         
         final String childElementName = getElementName(typeName);
         Dom childDom = parentDom.element(childElementName);
-        if (childDom == null) return;
+        if (childDom == null) {
+            Logger.getLogger().debug("WRITEBACK: No parent Dom for type " + typeName + " and instance " + instanceName +
+                    " with element name " + childElementName);
+            return;
+        }
         
         final Class<? extends ConfigBeanProxy> childClass = (Class<? extends ConfigBeanProxy>) childDom.getImplementationClass();
         
@@ -354,7 +383,10 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
                     Dom parentDom = Dom.unwrap(writeableBean);
                     
                     Method parentListMethod = findChildGetterMethod(parentDom, childElementName, childClass);
-                    if (parentListMethod == null) return null;
+                    if (parentListMethod == null) {
+                        Logger.getLogger().debug("WRITEBACK: Could not find parent list method for " + childElementName + " of class " + childClass.getName());
+                        return null;
+                    }
                     
                     ConfigBeanProxy child = writeableBean.createChild(childClass);
                     
@@ -368,9 +400,10 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
                         }
                     }
                     catch (IllegalAccessException e) {
-                        return null;
+                        throw new RuntimeException(e);
                     }
                     catch (InvocationTargetException e) {
+                        Logger.getLogger().debug(getClass().getName(), "run", e.getTargetException());
                         return null;
                     }
                     
@@ -386,8 +419,14 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
             e.printStackTrace();
         }
         
+        
+        
         if (child != null) {
+            Logger.getLogger().debug("WRITEBACK: added child of type " + typeName + " and instance " + instanceName);
             instance.setMetadata(new HK2ConfigBeanMetaData((ConfigBeanProxy) child));
+        }
+        else {
+            Logger.getLogger().debug("WRITEBACK: failed to add child of type " + typeName + " and instance " + instanceName);
         }
     }
     
@@ -396,24 +435,39 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
         Type instanceType = change.getChangeType();
         String typeName = instanceType.getName();
         
+        Logger.getLogger().debug("WRITEBACK: removing type " + typeName + " of instance " + instanceName);
+        
         Instance parent = findParent(typeName, instanceName);
-        if (parent == null) return;
+        if (parent == null) {
+            Logger.getLogger().debug("WRITEBACK: during removal could not find parent of type " + typeName + " of instance " + instanceName);
+            return;
+        }
         
         Object rawParentMetadata = parent.getMetadata();
         if (rawParentMetadata == null || !(rawParentMetadata instanceof HK2ConfigBeanMetaData)) {
+            Logger.getLogger().debug("WRITEBACK: during removal could not find metadata of type " + typeName + " of instance " + instanceName);
             return;
         }
         HK2ConfigBeanMetaData parentMetadata = (HK2ConfigBeanMetaData) rawParentMetadata;
         
         ConfigBeanProxy parentConfigBean = parentMetadata.getConfigBean();
-        if (parentConfigBean == null) return;
+        if (parentConfigBean == null) {
+            Logger.getLogger().debug("WRITEBACK: during removal could not find parent config bean of type " + typeName + " of instance " + instanceName);
+            return;
+        }
         
         Dom parentDom = Dom.unwrap(parentConfigBean);
-        if (parentDom == null) return;
+        if (parentDom == null) {
+            Logger.getLogger().debug("WRITEBACK: during removal could not find parent Dom of type " + typeName + " of instance " + instanceName);
+            return;
+        }
         
         final String childElementName = getElementName(typeName);
         Dom childDom = parentDom.element(childElementName);
-        if (childDom == null) return;
+        if (childDom == null) {
+            Logger.getLogger().debug("WRITEBACK: during removal could not find instance Dom of type " + typeName + " of instance " + instanceName);
+            return;
+        }
         
         final Class<? extends ConfigBeanProxy> childClass = (Class<? extends ConfigBeanProxy>) childDom.getImplementationClass();
         
@@ -428,7 +482,11 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
                     Dom parentDom = Dom.unwrap(writeableBean);
                     
                     Method parentListMethod = findChildGetterMethod(parentDom, childElementName, childClass);
-                    if (parentListMethod == null) return null;
+                    if (parentListMethod == null) {
+                        Logger.getLogger().debug("WRITEBACK: during removal could not find getter for element " + childElementName +
+                                " of class " + childClass);
+                        return null;
+                    }
                     
                     List<ConfigBeanProxy> addToMe = null;
                     try {
@@ -438,9 +496,11 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
                         }
                     }
                     catch (IllegalAccessException e) {
-                        return null;
+                        throw new RuntimeException(e);
                     }
                     catch (InvocationTargetException e) {
+                        Logger.getLogger().debug(getClass().getName(), "run", e.getTargetException());
+                        
                         return null;
                     }
                     
@@ -462,9 +522,15 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
                     }
                     
                     if (removeMe != null) {
+                        Logger.getLogger().debug("WRITEBACK: during removal removing service of type " + removeMeDom.getImplementation());
+                        
                         parentDom.removeChild(removeMeDom);
                         
                         addToMe.remove(removeMe);
+                    }
+                    else {
+                        Logger.getLogger().debug("WRITEBACK: during removal NOT removing unfound type for " + childElementName +
+                                " of class " + childClass);
                     }
                     
                     return null;
@@ -473,8 +539,7 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
             }, parentConfigBean);
         }
         catch (TransactionFailure e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            Logger.getLogger().debug(getClass().getName(), "removeChild", e);
         }
     }
 
