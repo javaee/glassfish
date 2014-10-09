@@ -79,4 +79,8 @@ public class InstanceImpl implements Instance {
 
     }
 
+    @Override
+    public String toString() {
+        return "InstanceImpl(" + bean + "," + metadata + "," + System.identityHashCode(this) + ")";
+    }
 }
