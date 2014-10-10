@@ -114,9 +114,7 @@ public class WriteableTypeImpl implements WriteableType {
      */
     @Override
     public synchronized void addInstance(String key, Object bean, Object metadata) {
-        System.out.println("JRW(10) WTI key=" + key + " m=" + metadata);
         if (key == null || bean == null) throw new IllegalArgumentException();
-        System.out.println("JRW(20) WTI key=" + key + " m=" + metadata);
         
         InstanceImpl ii = new InstanceImpl(bean, metadata);
         

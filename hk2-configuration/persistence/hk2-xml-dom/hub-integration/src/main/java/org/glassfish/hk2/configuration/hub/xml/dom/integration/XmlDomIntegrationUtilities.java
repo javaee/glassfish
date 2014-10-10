@@ -44,7 +44,6 @@ import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.ManagerUtilities;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.internal.ConfigListener;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.internal.MapTranslator;
-import org.glassfish.hk2.configuration.hub.xml.dom.integration.internal.ReplayProtector;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.internal.WritebackHubListener;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 
@@ -77,7 +76,6 @@ public class XmlDomIntegrationUtilities {
         if (locator.getService(ConfigListener.class) != null) return;
         
         ServiceLocatorUtilities.addClasses(locator,
-                ReplayProtector.class,
                 ConfigListener.class);
     }
     
@@ -99,7 +97,6 @@ public class XmlDomIntegrationUtilities {
         ManagerUtilities.enableConfigurationHub(locator);
         
         ServiceLocatorUtilities.addClasses(locator,
-                ReplayProtector.class,
                 WritebackHubListener.class,
                 MapTranslator.class);
         
