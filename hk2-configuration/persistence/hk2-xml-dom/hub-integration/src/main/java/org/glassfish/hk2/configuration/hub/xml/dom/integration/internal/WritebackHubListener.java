@@ -50,7 +50,6 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener;
 import org.glassfish.hk2.configuration.hub.api.Change;
@@ -58,7 +57,6 @@ import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationCommitMessage;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigBeanProxy;
@@ -79,9 +77,6 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
     private final static String SET_PREFIX = "set";
     private final static String GET_PREFIX = "get";
     private final static String STAR = "*";
-    
-    @Inject
-    private ServiceLocator locator;
     
     @Inject
     private ConfigListener configListener;
@@ -141,7 +136,7 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
         return foundMethod;
     }
     
-    private static MethodAndElementName findChildGetterMethod(Dom parentDom, String xmlName, Class<?> childType, boolean single) {
+    private static MethodAndElementName findChildGetterMethod(Dom parentDom, String xmlName, Class<?> childType) {
         ConfigModel model = parentDom.model;
         
         for (Method m : parentDom.getImplementationClass().getMethods()) {
@@ -153,11 +148,17 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
             
             Class<?> retType = m.getReturnType();
             
-            if (single) {
-                if (retType == null || !childType.equals(retType)) continue;
+            boolean single;
+            if (retType == null) continue;
+            
+            if (childType.equals(retType)) {
+                single = true;
+            }
+            else if (List.class.equals(retType)) {
+                single = false;
             }
             else {
-                if (retType == null || !List.class.equals(retType)) continue;
+                continue;
             }
             
             ConfigModel.Property prop = model.toProperty(m);
@@ -174,10 +175,10 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
                 continue;
             }
             
-            return new MethodAndElementName(m, elementName);
+            return new MethodAndElementName(m, elementName, single);
         }
         
-        return new MethodAndElementName(null, null);
+        return new MethodAndElementName(null, null, true);
     }
     
     private void doModification(Change change, ConfigBeanProxy originalConfigBean) {
@@ -351,7 +352,6 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
         }
         
         Class<? extends ConfigBeanProxy> childClass;
-        boolean single;
         
         final String childElementName = getElementName(typeName);
         Dom childDom = parentDom.element(childElementName);
@@ -374,17 +374,15 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
             ConfigModel model = node.getModel();
             
             childClass = model.getProxyType();
-            single = true;
         }
         else {
             childClass = (Class<? extends ConfigBeanProxy>) childDom.getImplementationClass();
-            single = false;
         }
         
         final Class<? extends ConfigBeanProxy> fChildClass = childClass;
-        final boolean fSingle = single;
         
-        MethodAndElementName maen = findChildGetterMethod(parentDom, childElementName, fChildClass, fSingle);
+        
+        MethodAndElementName maen = findChildGetterMethod(parentDom, childElementName, fChildClass);
         
         configListener.addKnownChange(maen.elementName);
         ConfigBeanProxy child = null;
@@ -459,15 +457,13 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
             return;
         }
         
-        boolean single = (parentDom.element(childElementName) == null) ? true : false;
-        
-        MethodAndElementName maen = findChildGetterMethod(parentDom, childElementName, childDom.getImplementationClass(), single);
-        if (maen == null) {
+        MethodAndElementName maen = findChildGetterMethod(parentDom, childElementName, childDom.getImplementationClass());
+        if (maen == null || maen.method == null) {
             Logger.getLogger().debug("WRITEBACK: during removal could not find proper getter to remove child " + typeName + " of instance " + instanceName);
             return;
         }
         
-        if (!single) {
+        if (!maen.single) {
             String instanceKey = getInstanceKey(instanceName);
             
             // Need to find the proper child to remove
@@ -682,10 +678,12 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
     private final static class MethodAndElementName {
         private final Method method;
         private final String elementName;  // Could be "*"
+        private final boolean single;
         
-        private MethodAndElementName(Method m, String e) {
+        private MethodAndElementName(Method m, String e, boolean s) {
             this.method = m;
             this.elementName = e;
+            this.single = s;
         }
     }
 

@@ -233,7 +233,7 @@ public class WritebackTest {
     /**
      * Tests we can remove a single complex child bean
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testWritebackRemoveSingleComplexChildBean() {
         ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
         XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
