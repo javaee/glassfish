@@ -50,6 +50,7 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener;
 import org.glassfish.hk2.configuration.hub.api.Change;
@@ -57,6 +58,7 @@ import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationCommitMessage;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigBeanProxy;
@@ -77,6 +79,9 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
     private final static String SET_PREFIX = "set";
     private final static String GET_PREFIX = "get";
     private final static String STAR = "*";
+    
+    @Inject
+    private ServiceLocator locator;
     
     @Inject
     private ConfigListener configListener;
@@ -374,7 +379,6 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
         else {
             childClass = (Class<? extends ConfigBeanProxy>) childDom.getImplementationClass();
             single = false;
-            
         }
         
         final Class<? extends ConfigBeanProxy> fChildClass = childClass;
@@ -436,13 +440,13 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
         }
         HK2ConfigBeanMetaData parentMetadata = (HK2ConfigBeanMetaData) rawParentMetadata;
         
-        ConfigBeanProxy parentConfigBean = parentMetadata.getConfigBean();
-        if (parentConfigBean == null) {
+        ConfigBeanProxy parentConfigBeanProxy = parentMetadata.getConfigBean();
+        if (parentConfigBeanProxy == null) {
             Logger.getLogger().debug("WRITEBACK: during removal could not find parent config bean of type " + typeName + " of instance " + instanceName);
             return;
         }
         
-        Dom parentDom = Dom.unwrap(parentConfigBean);
+        Dom parentDom = Dom.unwrap(parentConfigBeanProxy);
         if (parentDom == null) {
             Logger.getLogger().debug("WRITEBACK: during removal could not find parent Dom of type " + typeName + " of instance " + instanceName);
             return;
@@ -455,6 +459,80 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
             return;
         }
         
+        boolean single = (parentDom.element(childElementName) == null) ? true : false;
+        
+        MethodAndElementName maen = findChildGetterMethod(parentDom, childElementName, childDom.getImplementationClass(), single);
+        if (maen == null) {
+            Logger.getLogger().debug("WRITEBACK: during removal could not find proper getter to remove child " + typeName + " of instance " + instanceName);
+            return;
+        }
+        
+        if (!single) {
+            String instanceKey = getInstanceKey(instanceName);
+            
+            // Need to find the proper child to remove
+            Method parentListMethod = maen.method;
+            if (parentListMethod == null) {
+                Logger.getLogger().debug("WRITEBACK: during removal could not find getter for element " + childElementName +
+                        " of class " + childDom.getImplementationClass().getName());
+                return;
+            }
+            
+            List<ConfigBeanProxy> removeFromMe = null;
+            try {
+                Object result = parentListMethod.invoke(parentConfigBeanProxy);
+                if (result instanceof List) {
+                    removeFromMe = (List<ConfigBeanProxy>) result;
+                }
+            }
+            catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+            catch (InvocationTargetException e) {
+                Logger.getLogger().debug(getClass().getName(), "removeChild", e.getTargetException());
+                
+                return;
+            }
+            
+            Dom removeMeDom = null;
+            for (ConfigBeanProxy candidate : removeFromMe) {
+                Dom candidateDom = Dom.unwrap(candidate);
+                if (candidateDom == null) continue;
+                
+                String candidateKey = candidateDom.getKey();
+                if (candidateKey == null) continue;
+                
+                if (instanceKey.equals(candidateKey)) {
+                    removeMeDom = candidateDom;
+                    break;
+                }
+            }
+            
+            childDom = removeMeDom;
+        }
+        
+        if ((parentDom instanceof ConfigBean) && (childDom instanceof ConfigBean)) {
+            ConfigBean parentConfigBean = (ConfigBean) parentDom;
+            ConfigBean childConfigBean = (ConfigBean) childDom;
+            
+            boolean success = false;
+            configListener.addKnownChange(maen.elementName);
+            try {
+                ConfigSupport.deleteChild(parentConfigBean, childConfigBean);
+
+                success = true;
+            }
+            catch (TransactionFailure e) {
+                Logger.getLogger().debug(getClass().getName(), "removeChild", e);
+            }
+            finally {
+                if (!success) {
+                    configListener.removeKnownChange(maen.elementName);
+                }
+            }
+        }
+        
+        /*
         final Class<? extends ConfigBeanProxy> childClass = (Class<? extends ConfigBeanProxy>) childDom.getImplementationClass();
         final String instanceKey = getInstanceKey(instanceName);
         
@@ -526,6 +604,7 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
         catch (TransactionFailure e) {
             Logger.getLogger().debug(getClass().getName(), "removeChild", e);
         }
+        */
     }
 
     /* (non-Javadoc)
