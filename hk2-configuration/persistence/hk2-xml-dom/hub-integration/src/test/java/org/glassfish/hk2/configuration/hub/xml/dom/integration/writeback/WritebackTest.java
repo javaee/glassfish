@@ -229,5 +229,45 @@ public class WritebackTest {
         
         Assert.assertNotNull(jbean.getKBean());
     }
+    
+    /**
+     * Tests we can remove a single complex child bean
+     */
+    @Test @org.junit.Ignore
+    public void testWritebackRemoveSingleComplexChildBean() {
+        ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
+        XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
+        
+        Hub hub = testLocator.getService(Hub.class);
+        Assert.assertNotNull(hub);
+        
+        Assert.assertNull(hub.getCurrentDatabase().getType(KBEAN_TAG));
+        
+        ConfigParser parser = new ConfigParser(testLocator);
+        URL url = getClass().getClassLoader().getResource("complex4.xml");
+        Assert.assertNotNull(url);
+        
+        parser.parse(url);
+        
+        JBean jbean = testLocator.getService(JBean.class);
+        Assert.assertNotNull(jbean);
+        
+        KBean kbean = testLocator.getService(KBean.class);
+        Assert.assertNotNull(kbean);
+        
+        Assert.assertEquals(12, kbean.getEpoch());
+        Assert.assertEquals(34, kbean.getAge());
+        
+        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+        WriteableType beanWriteableType = wbd.findOrAddWriteableType(KBEAN_TAG);
+        beanWriteableType.removeInstance(KBEAN_INSTANCE_NAME);
+        
+        wbd.commit();
+        
+        kbean = testLocator.getService(KBean.class);
+        Assert.assertNull(kbean);
+        
+        Assert.assertNull(jbean.getKBean());
+    }
 
 }

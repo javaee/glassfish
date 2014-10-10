@@ -1,0 +1,5 @@
+<j-bean>
+  <k-bean epoch="12">
+    <age>34</age>
+  </k-bean>
+</j-bean>
