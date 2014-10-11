@@ -75,11 +75,11 @@ public class WritebackTest {
     private final static String KBEAN_TAG = "/j-bean/k-bean";
     private final static String KBEAN_INSTANCE_NAME = "j-bean.k-bean";
     
-    private final static String MBEAN_TAG = "/j-bean/k-bean/m-bean";
+    private final static String MBEAN_TAG = "/j-bean/k-bean/not-derivable-tag";
     private final static String DAVE_INSTANCE_NAME = "j-bean.k-bean.dave";
     private final static String EATON_INSTANCE_NAME = "j-bean.k-bean.eaton";
     
-    private final static String LBEAN_TAG = "/j-bean/l-bean";
+    private final static String LBEAN_TAG = "/j-bean/l-beans";
     private final static String FRANK_INSTANCE_NAME = "j-bean.frank";
     
     private final static String HELLO = "hello";
@@ -284,7 +284,7 @@ public class WritebackTest {
      * Adds children with grand-children and non-related beans
      * as well all in on nasty database transaction
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testMultipleBeansAddedRelatedAndNotRelated() {
         ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
         XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
@@ -314,12 +314,12 @@ public class WritebackTest {
         
         WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
         
-        WriteableType kbeanWriteableType = wbd.findOrAddWriteableType(KBEAN_TAG);
-        kbeanWriteableType.addInstance(KBEAN_INSTANCE_NAME, kbeanMap);
-        
         WriteableType mbeanWriteableType = wbd.findOrAddWriteableType(MBEAN_TAG);
         mbeanWriteableType.addInstance(DAVE_INSTANCE_NAME, mbeanDaveMap);
         mbeanWriteableType.addInstance(EATON_INSTANCE_NAME, mbeanEatonMap);
+        
+        WriteableType kbeanWriteableType = wbd.findOrAddWriteableType(KBEAN_TAG);
+        kbeanWriteableType.addInstance(KBEAN_INSTANCE_NAME, kbeanMap);
         
         WriteableType lbeanWriteableType = wbd.findOrAddWriteableType(LBEAN_TAG);
         lbeanWriteableType.addInstance(FRANK_INSTANCE_NAME, lbeanFrankMap);

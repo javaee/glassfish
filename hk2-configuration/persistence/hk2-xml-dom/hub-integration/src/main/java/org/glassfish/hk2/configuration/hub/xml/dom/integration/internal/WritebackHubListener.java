@@ -43,9 +43,11 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -53,6 +55,7 @@ import javax.inject.Singleton;
 import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener;
 import org.glassfish.hk2.configuration.hub.api.Change;
+import org.glassfish.hk2.configuration.hub.api.Change.ChangeCategory;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.Type;
@@ -77,6 +80,72 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
     private final static String SET_PREFIX = "set";
     private final static String GET_PREFIX = "get";
     private final static String STAR = "*";
+    
+    private final static int BEFORE = -1;
+    private final static int AFTER = 0;
+    
+    private final static Comparator<Change> CHANGE_COMPARATOR = new Comparator<Change>() {
+
+        @Override
+        public int compare(Change o1, Change o2) {
+            ChangeCategory category1 = o1.getChangeCategory();
+            ChangeCategory category2 = o2.getChangeCategory();
+            
+            if (!category1.equals(category2)) {
+                switch(category1) {
+                case ADD_INSTANCE:
+                    switch(category2) {
+                    case REMOVE_INSTANCE:
+                        return AFTER;
+                    case MODIFY_INSTANCE:
+                        return AFTER;
+                    default:
+                        return 0;
+                    }
+                case REMOVE_INSTANCE:
+                    switch(category2) {
+                    case ADD_INSTANCE:
+                        return BEFORE;
+                    case MODIFY_INSTANCE:
+                        return AFTER;
+                    default:
+                        return 0;
+                    }
+                default:  // MODIFY_INSTANCE
+                    switch(category2) {
+                    case ADD_INSTANCE:
+                        return BEFORE;
+                    case REMOVE_INSTANCE:
+                        return BEFORE;
+                    default:
+                        return 0;
+                    }
+                }
+            }
+            
+            String instance1 = o1.getInstanceKey();
+            String instance2 = o2.getInstanceKey();
+            
+            String type1 = o1.getChangeType().getName();
+            String type2 = o2.getChangeType().getName();
+            
+            // Categories are the same
+            if (category1.equals(ChangeCategory.ADD_INSTANCE) ||
+                category1.equals(ChangeCategory.MODIFY_INSTANCE)) {
+                int retVal = type1.compareTo(type2);
+                if (retVal != 0) return retVal;
+                
+                return instance1.compareTo(instance2);
+            }
+            
+            // Remove case is backwards
+            int retVal = type2.compareTo(type1);
+            if (retVal != 0) return retVal;
+            
+            return instance2.compareTo(instance1);
+        }
+        
+    };
     
     @Inject
     private ConfigListener configListener;
@@ -528,79 +597,6 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
             }
         }
         
-        /*
-        final Class<? extends ConfigBeanProxy> childClass = (Class<? extends ConfigBeanProxy>) childDom.getImplementationClass();
-        final String instanceKey = getInstanceKey(instanceName);
-        
-        try {
-             ConfigSupport.apply(new SingleConfigCode<ConfigBeanProxy>() {
-
-                @Override
-                public Object run(ConfigBeanProxy writeableBean) throws PropertyVetoException,
-                        TransactionFailure {
-                    Dom parentDom = Dom.unwrap(writeableBean);
-                    
-                    Method parentListMethod = findChildGetterMethod(parentDom, childElementName, childClass, false).method;
-                    if (parentListMethod == null) {
-                        Logger.getLogger().debug("WRITEBACK: during removal could not find getter for element " + childElementName +
-                                " of class " + childClass);
-                        return null;
-                    }
-                    
-                    List<ConfigBeanProxy> addToMe = null;
-                    try {
-                        Object result = parentListMethod.invoke(writeableBean);
-                        if (result instanceof List) {
-                            addToMe = (List<ConfigBeanProxy>) result;
-                        }
-                    }
-                    catch (IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    }
-                    catch (InvocationTargetException e) {
-                        Logger.getLogger().debug(getClass().getName(), "run", e.getTargetException());
-                        
-                        return null;
-                    }
-                    
-                    Dom removeMeDom = null;
-                    ConfigBeanProxy removeMe = null;
-                    for (ConfigBeanProxy candidate : addToMe) {
-                        Dom candidateDom = Dom.unwrap(candidate);
-                        if (candidateDom == null) continue;
-                        
-                        String candidateKey = candidateDom.getKey();
-                        if (candidateKey == null) continue;
-                        
-                        if (instanceKey.equals(candidateKey)) {
-                            removeMe = candidate;
-                            removeMeDom = candidateDom;
-                            break;
-                        }
-                        
-                    }
-                    
-                    if (removeMe != null) {
-                        Logger.getLogger().debug("WRITEBACK: during removal removing service of type " + removeMeDom.getImplementation());
-                        
-                        parentDom.removeChild(removeMeDom);
-                        
-                        addToMe.remove(removeMe);
-                    }
-                    else {
-                        Logger.getLogger().debug("WRITEBACK: during removal NOT removing unfound type for " + childElementName +
-                                " of class " + childClass);
-                    }
-                    
-                    return null;
-                }
-                
-            }, parentConfigBean);
-        }
-        catch (TransactionFailure e) {
-            Logger.getLogger().debug(getClass().getName(), "removeChild", e);
-        }
-        */
     }
 
     /* (non-Javadoc)
@@ -619,7 +615,19 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
             return;
         }
         
+        TreeSet<Change> sortedChanges = new TreeSet<Change>(CHANGE_COMPARATOR);
         for (Change change : changes) {
+            ChangeCategory category = change.getChangeCategory();
+            
+            if (category.equals(ChangeCategory.ADD_INSTANCE) ||
+                category.equals(ChangeCategory.MODIFY_INSTANCE) ||
+                category.equals(ChangeCategory.REMOVE_INSTANCE)) {
+                sortedChanges.add(change);
+            }
+            
+        }
+        
+        for (Change change : sortedChanges) {
             Logger.getLogger().debug("WRITEBACK: Processing change: " + change);
             
             Instance instance = change.getInstanceValue();
