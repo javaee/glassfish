@@ -39,26 +39,15 @@
  */
 package org.glassfish.hk2.configuration.hub.xml.dom.integration.writeback;
 
-import java.util.List;
-
-import org.jvnet.hk2.config.Attribute;
+import org.glassfish.hk2.configuration.hub.xml.dom.integration.tests.NamedBean;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
 
 /**
  * @author jwells
  *
  */
 @Configured
-public interface KBean extends ConfigBeanProxy {
-    @Element
-    public int getAge();
-    
-    @Attribute
-    public int getEpoch();
-    
-    @Element("not-derivable-tag")
-    public List<MBean> getMBeans();
-    public void setMBeans(List<MBean> mbeans);
+public interface MBean extends NamedBean, ConfigBeanProxy {
+
 }
