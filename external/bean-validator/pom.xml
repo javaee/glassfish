@@ -79,8 +79,6 @@
                         <Export-Package>
                             javax.validation.*; version=${javax.validation.osgi.version},
                             org.hibernate.validator.*; version=${hibernate-validator.version},
-                            org.hibernate.validator.internal.cdi; version=${hibernate-validator.version},
-                            org.hibernate.validator.internal.cdi.interceptor; version=${hibernate-validator.version},
                             org.glassfish.validation; version=${hibernate-validator.version}
                         </Export-Package>
 
