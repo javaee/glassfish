@@ -69,12 +69,17 @@ public class HubTest extends HK2Runner {
     private final static String TYPE_FIVE = "TypeFive";
     private final static String TYPE_SIX = "TypeSix";
     private final static String TYPE_SEVEN = "TypeSeven";
+    private final static String TYPE_EIGHT = "TypeEight";
+    private final static String TYPE_NINE = "TypeNine";
+    private final static String TYPE_TEN = "TypeTen";
+    private final static String TYPE_ELEVEN = "TypeEleven";
     
     private final static String NAME_PROPERTY = "name";
     private final static String OTHER_PROPERTY = "other";
     
     private final static String ALICE = "Alice";
     private final static String BOB = "Bob";
+    private final static String CAROL = "Carol";
     
     private final static String OTHER_PROPERTY_VALUE1 = "value1";
     private final static String OTHER_PROPERTY_VALUE2 = "value2";
@@ -674,6 +679,206 @@ public class HubTest extends HK2Runner {
             if (listener != null) {
                 hub.removeListener(listener);
             }
+        }
+    }
+    
+    /**
+     * Tests removing an type with multiple types and multiple instances
+     */
+    @Test
+    public void testRemoveMultipleTypeWithMultipleInstances() {
+        addTypeAndInstance(TYPE_EIGHT, ALICE, new GenericJavaBean(ALICE, OTHER_PROPERTY_VALUE1));
+        addTypeAndInstance(TYPE_NINE, ALICE, new GenericJavaBean(ALICE, OTHER_PROPERTY_VALUE1));
+        addTypeAndInstance(TYPE_TEN, ALICE, new GenericJavaBean(ALICE, OTHER_PROPERTY_VALUE1));
+        addTypeAndInstance(TYPE_ELEVEN, ALICE, new GenericJavaBean(ALICE, OTHER_PROPERTY_VALUE1));
+        
+        GenericBeanDatabaseUpdateListener listener = null;
+        WriteableBeanDatabase wbd = null;
+        
+        try {
+            listener = new GenericBeanDatabaseUpdateListener();
+            
+            wbd = hub.getWriteableDatabaseCopy();
+            
+            wbd.findOrAddWriteableType(TYPE_EIGHT).addInstance(BOB, new GenericJavaBean(BOB, OTHER_PROPERTY_VALUE1));
+            wbd.findOrAddWriteableType(TYPE_NINE).addInstance(BOB, new GenericJavaBean(BOB, OTHER_PROPERTY_VALUE1));
+            wbd.findOrAddWriteableType(TYPE_TEN).addInstance(BOB, new GenericJavaBean(BOB, OTHER_PROPERTY_VALUE1));
+            
+            wbd.findOrAddWriteableType(TYPE_EIGHT).addInstance(CAROL, new GenericJavaBean(CAROL, OTHER_PROPERTY_VALUE1));
+            wbd.findOrAddWriteableType(TYPE_NINE).addInstance(CAROL, new GenericJavaBean(BOB, OTHER_PROPERTY_VALUE1));
+            wbd.findOrAddWriteableType(TYPE_TEN).addInstance(CAROL, new GenericJavaBean(BOB, OTHER_PROPERTY_VALUE1));
+            
+            wbd.commit();
+            
+            hub.addListener(listener);
+            
+            wbd = hub.getWriteableDatabaseCopy();
+            
+            Type removed8 = wbd.removeType(TYPE_EIGHT);
+            Assert.assertNotNull(removed8);
+            Assert.assertEquals(TYPE_EIGHT, removed8.getName());
+            
+            Type removed10 = wbd.removeType(TYPE_TEN);
+            Assert.assertNotNull(removed10);
+            Assert.assertEquals(TYPE_TEN, removed10.getName());
+            
+            Type removed9 = wbd.removeType(TYPE_NINE);
+            Assert.assertNotNull(removed9);
+            Assert.assertEquals(TYPE_NINE, removed9.getName());
+            
+            wbd.commit();
+        
+            Type typeEight = hub.getCurrentDatabase().getType(TYPE_EIGHT);
+            Assert.assertNull(typeEight);
+            
+            Type typeNine = hub.getCurrentDatabase().getType(TYPE_NINE);
+            Assert.assertNull(typeNine);
+            
+            Type typeTen = hub.getCurrentDatabase().getType(TYPE_TEN);
+            Assert.assertNull(typeTen);
+            
+            List<Change> changes = listener.getLastSetOfChanges();
+            
+            Assert.assertEquals(12, changes.size());
+            
+            {
+                Change instanceChange = changes.get(0);
+            
+                Assert.assertEquals(Change.ChangeCategory.REMOVE_INSTANCE, instanceChange.getChangeCategory());
+                Assert.assertEquals(TYPE_EIGHT, instanceChange.getChangeType().getName());
+                Assert.assertEquals(0, instanceChange.getChangeType().getInstances().size());
+                Assert.assertEquals(ALICE, instanceChange.getInstanceKey());
+                Assert.assertNull(instanceChange.getModifiedProperties());
+                Assert.assertNull(instanceChange.getOriginalInstanceValue());
+            }
+            
+            {
+                Change instanceChange = changes.get(1);
+            
+                Assert.assertEquals(Change.ChangeCategory.REMOVE_INSTANCE, instanceChange.getChangeCategory());
+                Assert.assertEquals(TYPE_EIGHT, instanceChange.getChangeType().getName());
+                Assert.assertEquals(0, instanceChange.getChangeType().getInstances().size());
+                Assert.assertEquals(BOB, instanceChange.getInstanceKey());
+                Assert.assertNull(instanceChange.getModifiedProperties());
+                Assert.assertNull(instanceChange.getOriginalInstanceValue());
+            }
+            
+            {
+                Change instanceChange = changes.get(2);
+            
+                Assert.assertEquals(Change.ChangeCategory.REMOVE_INSTANCE, instanceChange.getChangeCategory());
+                Assert.assertEquals(TYPE_EIGHT, instanceChange.getChangeType().getName());
+                Assert.assertEquals(0, instanceChange.getChangeType().getInstances().size());
+                Assert.assertEquals(CAROL, instanceChange.getInstanceKey());
+                Assert.assertNull(instanceChange.getModifiedProperties());
+                Assert.assertNull(instanceChange.getOriginalInstanceValue());
+            }
+            
+            {
+                Change instanceChange = changes.get(3);
+            
+                Assert.assertEquals(Change.ChangeCategory.REMOVE_TYPE, instanceChange.getChangeCategory());
+                Assert.assertEquals(TYPE_EIGHT, instanceChange.getChangeType().getName());
+                Assert.assertEquals(0, instanceChange.getChangeType().getInstances().size());
+                Assert.assertNull(instanceChange.getModifiedProperties());
+                Assert.assertNull(instanceChange.getOriginalInstanceValue());
+            }
+            
+            {
+                Change instanceChange = changes.get(4);
+            
+                Assert.assertEquals(Change.ChangeCategory.REMOVE_INSTANCE, instanceChange.getChangeCategory());
+                Assert.assertEquals(TYPE_TEN, instanceChange.getChangeType().getName());
+                Assert.assertEquals(0, instanceChange.getChangeType().getInstances().size());
+                Assert.assertEquals(ALICE, instanceChange.getInstanceKey());
+                Assert.assertNull(instanceChange.getModifiedProperties());
+                Assert.assertNull(instanceChange.getOriginalInstanceValue());
+            }
+            
+            {
+                Change instanceChange = changes.get(5);
+            
+                Assert.assertEquals(Change.ChangeCategory.REMOVE_INSTANCE, instanceChange.getChangeCategory());
+                Assert.assertEquals(TYPE_TEN, instanceChange.getChangeType().getName());
+                Assert.assertEquals(0, instanceChange.getChangeType().getInstances().size());
+                Assert.assertEquals(BOB, instanceChange.getInstanceKey());
+                Assert.assertNull(instanceChange.getModifiedProperties());
+                Assert.assertNull(instanceChange.getOriginalInstanceValue());
+            }
+            
+            {
+                Change instanceChange = changes.get(6);
+            
+                Assert.assertEquals(Change.ChangeCategory.REMOVE_INSTANCE, instanceChange.getChangeCategory());
+                Assert.assertEquals(TYPE_TEN, instanceChange.getChangeType().getName());
+                Assert.assertEquals(0, instanceChange.getChangeType().getInstances().size());
+                Assert.assertEquals(CAROL, instanceChange.getInstanceKey());
+                Assert.assertNull(instanceChange.getModifiedProperties());
+                Assert.assertNull(instanceChange.getOriginalInstanceValue());
+            }
+            
+            {
+                Change instanceChange = changes.get(7);
+            
+                Assert.assertEquals(Change.ChangeCategory.REMOVE_TYPE, instanceChange.getChangeCategory());
+                Assert.assertEquals(TYPE_TEN, instanceChange.getChangeType().getName());
+                Assert.assertEquals(0, instanceChange.getChangeType().getInstances().size());
+                Assert.assertNull(instanceChange.getModifiedProperties());
+                Assert.assertNull(instanceChange.getOriginalInstanceValue());
+            }
+            
+            {
+                Change instanceChange = changes.get(8);
+            
+                Assert.assertEquals(Change.ChangeCategory.REMOVE_INSTANCE, instanceChange.getChangeCategory());
+                Assert.assertEquals(TYPE_NINE, instanceChange.getChangeType().getName());
+                Assert.assertEquals(0, instanceChange.getChangeType().getInstances().size());
+                Assert.assertEquals(ALICE, instanceChange.getInstanceKey());
+                Assert.assertNull(instanceChange.getModifiedProperties());
+                Assert.assertNull(instanceChange.getOriginalInstanceValue());
+            }
+            
+            {
+                Change instanceChange = changes.get(9);
+            
+                Assert.assertEquals(Change.ChangeCategory.REMOVE_INSTANCE, instanceChange.getChangeCategory());
+                Assert.assertEquals(TYPE_NINE, instanceChange.getChangeType().getName());
+                Assert.assertEquals(0, instanceChange.getChangeType().getInstances().size());
+                Assert.assertEquals(BOB, instanceChange.getInstanceKey());
+                Assert.assertNull(instanceChange.getModifiedProperties());
+                Assert.assertNull(instanceChange.getOriginalInstanceValue());
+            }
+            
+            {
+                Change instanceChange = changes.get(10);
+            
+                Assert.assertEquals(Change.ChangeCategory.REMOVE_INSTANCE, instanceChange.getChangeCategory());
+                Assert.assertEquals(TYPE_NINE, instanceChange.getChangeType().getName());
+                Assert.assertEquals(0, instanceChange.getChangeType().getInstances().size());
+                Assert.assertEquals(CAROL, instanceChange.getInstanceKey());
+                Assert.assertNull(instanceChange.getModifiedProperties());
+                Assert.assertNull(instanceChange.getOriginalInstanceValue());
+            }
+            
+            {
+                Change instanceChange = changes.get(11);
+            
+                Assert.assertEquals(Change.ChangeCategory.REMOVE_TYPE, instanceChange.getChangeCategory());
+                Assert.assertEquals(TYPE_NINE, instanceChange.getChangeType().getName());
+                Assert.assertEquals(0, instanceChange.getChangeType().getInstances().size());
+                Assert.assertNull(instanceChange.getModifiedProperties());
+                Assert.assertNull(instanceChange.getOriginalInstanceValue());
+            }
+            
+            
+        }
+        finally {
+            // Cleanup
+            if (listener != null) {
+                hub.removeListener(listener);
+            }
+            
+            removeType(TYPE_ELEVEN);
         }
     }
     

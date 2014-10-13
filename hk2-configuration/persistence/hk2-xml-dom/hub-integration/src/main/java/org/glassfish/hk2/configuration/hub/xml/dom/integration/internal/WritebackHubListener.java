@@ -79,7 +79,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 public class WritebackHubListener implements BeanDatabaseUpdateListener {
     private final static String SET_PREFIX = "set";
     private final static String GET_PREFIX = "get";
-    private final static String STAR = "*";
+    /* package */ final static String STAR = "*";
     
     private final static int BEFORE = -1;
     private final static int AFTER = 0;

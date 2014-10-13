@@ -341,5 +341,62 @@ public class WritebackTest {
         Assert.assertNotNull(frank);
         Assert.assertEquals(FRANK, frank.getName());
     }
+    
+    /**
+     * Removes children with grand-children and non-related beans
+     * as well all in on nasty database transaction
+     */
+    @Test @org.junit.Ignore
+    public void testMultipleBeansRemoveRelatedAndNotRelated() {
+        ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
+        XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
+        
+        Hub hub = testLocator.getService(Hub.class);
+        Assert.assertNotNull(hub);
+        
+        ConfigParser parser = new ConfigParser(testLocator);
+        URL url = getClass().getClassLoader().getResource("complex5.xml");
+        Assert.assertNotNull(url);
+        
+        parser.parse(url);
+        
+        JBean jbean = testLocator.getService(JBean.class);
+        Assert.assertNotNull(jbean);
+        
+        KBean kbean = testLocator.getService(KBean.class);
+        Assert.assertNotNull(kbean);
+        
+        MBean dave = testLocator.getService(MBean.class, DAVE);
+        Assert.assertNotNull(dave);
+        Assert.assertEquals(DAVE, dave.getName());
+        
+        MBean eaton = testLocator.getService(MBean.class, EATON);
+        Assert.assertNotNull(eaton);
+        Assert.assertEquals(EATON, eaton.getName());
+        
+        LBean frank = testLocator.getService(LBean.class, FRANK);
+        Assert.assertNotNull(frank);
+        Assert.assertEquals(FRANK, frank.getName());
+        
+        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+        
+        wbd.removeType(KBEAN_TAG);
+        wbd.removeType(MBEAN_TAG);
+        wbd.removeType(LBEAN_TAG);
+        
+        wbd.commit();
+        
+        kbean = testLocator.getService(KBean.class);
+        Assert.assertNull(kbean);
+        
+        dave = testLocator.getService(MBean.class, DAVE);
+        Assert.assertNull(dave);
+        
+        eaton = testLocator.getService(MBean.class, EATON);
+        Assert.assertNull(eaton);
+        
+        frank = testLocator.getService(LBean.class, FRANK);
+        Assert.assertNull(frank);
+    }
 
 }

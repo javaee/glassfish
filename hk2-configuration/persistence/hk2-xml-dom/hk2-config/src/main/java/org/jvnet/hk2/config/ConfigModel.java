@@ -41,11 +41,9 @@ package org.jvnet.hk2.config;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.HK2Loader;
-import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.HK2LoaderImpl;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
-import org.jvnet.hk2.component.MultiMap;
 import org.jvnet.tiger_types.Types;
 
 import java.lang.reflect.ParameterizedType;
@@ -53,7 +51,15 @@ import java.lang.reflect.Type;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.*;
+import java.util.AbstractList;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Describes the configuration model for a particular class (called "target type" in this class.)

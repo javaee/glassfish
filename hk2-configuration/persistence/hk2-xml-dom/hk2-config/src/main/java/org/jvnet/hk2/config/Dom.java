@@ -42,7 +42,6 @@ package org.jvnet.hk2.config;
 import org.glassfish.hk2.api.*;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.AliasDescriptor;
-import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.jvnet.hk2.config.provider.internal.Creator;
@@ -135,6 +134,11 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
          * as well as for all the descendants.
          */
         protected abstract boolean isEmpty();
+        
+        @Override
+        public String toString() {
+            return "Dom.Child(" + name + "," + System.identityHashCode(this) + ")";
+        }
     }
 
     static final class NodeChild extends Child {
@@ -158,6 +162,11 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
         @Override
         protected boolean isEmpty() {
             return dom.isEmpty();
+        }
+        
+        @Override
+        public String toString() {
+            return "Dom.NodeChild(" + dom.getImplementation() + "," + super.toString() + ")";
         }
     }
 

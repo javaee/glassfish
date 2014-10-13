@@ -1,0 +1,8 @@
+<j-bean>
+  <k-bean epoch="12">
+    <age>34</age>
+    <not-derivable-tag name="dave"/>
+    <not-derivable-tag name="eaton"/>
+  </k-bean>
+  <l-beans name="frank"/>
+</j-bean>

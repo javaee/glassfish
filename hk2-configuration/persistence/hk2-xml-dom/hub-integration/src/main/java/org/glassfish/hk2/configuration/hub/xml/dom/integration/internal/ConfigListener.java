@@ -45,6 +45,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -100,6 +101,28 @@ public class ConfigListener implements DynamicConfigurationListener {
     
     private final LinkedList<String> knownChangedProperties = new LinkedList<String>();
     
+    private static String getTagName(ConfigModel childModel, Dom parent, String defaultTagName) {
+        if (parent == null) return defaultTagName;
+        
+        Set<String> parentElementNames = parent.model.getElementNames();
+        for (String parentElementName : parentElementNames) {
+            ConfigModel.Property property = parent.model.getElement(parentElementName);
+            if (property == null) continue;
+            if (!(property instanceof ConfigModel.Node)) continue;
+            
+            ConfigModel.Node parentNode = (ConfigModel.Node) property;
+            
+            if (parentNode.getModel() == childModel) {
+                if (WritebackHubListener.STAR.equals(parentElementName)) {
+                    return defaultTagName;
+                }
+                
+                return parentElementName;
+            }
+        }
+        return defaultTagName;
+    }
+    
     private HubKey getHubKey(ActiveDescriptor<?> descriptor) {
         ServiceHandle<?> handle = locator.getServiceHandle(descriptor);
         ConfigBeanProxy configBeanProxy = (ConfigBeanProxy) handle.getService();
@@ -111,8 +134,10 @@ public class ConfigListener implements DynamicConfigurationListener {
         LinkedList<String> nameTags = new LinkedList<String>();
         while (dom != null) {
             ConfigModel model = dom.model;
+            Dom parent = dom.parent();
             
             String tagName = model.getTagName();
+            tagName = getTagName(model, parent, tagName);
             if (tagName != null) {
                 xpathTags.addFirst(tagName);
             }
