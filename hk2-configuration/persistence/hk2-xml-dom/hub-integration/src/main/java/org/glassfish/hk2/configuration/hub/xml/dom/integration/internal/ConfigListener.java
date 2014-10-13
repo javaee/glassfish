@@ -42,11 +42,13 @@ package org.glassfish.hk2.configuration.hub.xml.dom.integration.internal;
 import java.beans.PropertyChangeEvent;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfigurationListener;
@@ -61,7 +63,7 @@ import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegration
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationUtilities;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomTranslationService;
 import org.glassfish.hk2.utilities.BuilderHelper;
-import org.jvnet.hk2.annotations.Service;
+import org.glassfish.hk2.utilities.reflection.Logger;
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigModel;
@@ -74,12 +76,19 @@ import org.jvnet.hk2.config.UnprocessedChangeEvents;
  * 
  * @author jwells
  */
-@Service
+@Singleton
 public class ConfigListener implements DynamicConfigurationListener {
     private final static int MAX_TRIES = 10000;
     private final static IndexedFilter CONFIG_FILTER = BuilderHelper.createContractFilter(ConfigBean.class.getName());
     private final static String TYPE_CONNECTOR = "/";
     private final static String INSTANCE_CONNECTOR = ".";
+    private final static ThreadLocal<Boolean> skipper = new ThreadLocal<Boolean>() {
+        @Override
+        protected Boolean initialValue() {
+            return false;
+        }
+        
+    };
     
     @Inject
     private ServiceLocator locator;
@@ -88,6 +97,8 @@ public class ConfigListener implements DynamicConfigurationListener {
     private Hub hub;
     
     private final HashMap<ActiveDescriptor<?>, HubKey> descriptors = new HashMap<ActiveDescriptor<?>, HubKey>();
+    
+    private final LinkedList<String> knownChangedProperties = new LinkedList<String>();
     
     private HubKey getHubKey(ActiveDescriptor<?> descriptor) {
         ServiceHandle<?> handle = locator.getServiceHandle(descriptor);
@@ -107,6 +118,10 @@ public class ConfigListener implements DynamicConfigurationListener {
             }
             
             if (model.key != null) {
+                if (dom.getKey() == null) {
+                    // Do not really know what to do here
+                    throw new AssertionError("Bean " + dom.getImplementation() + " has a key field but the key is null");
+                }
                 nameTags.addFirst(dom.getKey());
             }
             else if (tagName != null) {
@@ -139,6 +154,7 @@ public class ConfigListener implements DynamicConfigurationListener {
         HubKey retVal = new HubKey(handle,
                 typeBuffer.toString(),
                 instanceBuffer.toString(),
+                null,
                 locator.getAllServices(XmlDomTranslationService.class));
         topDom.addListener(retVal);
         return retVal;
@@ -147,6 +163,7 @@ public class ConfigListener implements DynamicConfigurationListener {
     private void addInstance(ActiveDescriptor<?> descriptor) {
         HubKey hubKey = getHubKey(descriptor);
         Object target = hubKey.getTranslatedService();
+        Object metadata = hubKey.getTranslatedMetadata();
         
         // Must add this in prior to telling the database about
         // it to stop infinite recursions
@@ -157,7 +174,7 @@ public class ConfigListener implements DynamicConfigurationListener {
             
             WriteableType wt = wbd.findOrAddWriteableType(hubKey.getTranslatedType());
             
-            wt.addInstance(hubKey.getTranslatedInstance(), target);
+            wt.addInstance(hubKey.getTranslatedInstance(), target, metadata);
             
             try {
                 wbd.commit(new XmlDomIntegrationCommitMessage() {});
@@ -193,6 +210,51 @@ public class ConfigListener implements DynamicConfigurationListener {
     @Override
     @PostConstruct
     public void configurationChanged() {
+        try {
+          internalConfigurationChanged();
+        }
+        catch (Throwable th) {
+            Logger.getLogger().debug(getClass().getName(), "configurationChanged", th);
+        }
+    }
+    
+    /* package */ void addKnownChange(String property) {
+        synchronized (knownChangedProperties) {
+            knownChangedProperties.add(property);
+        }
+        
+        
+    }
+    
+    /* package */ void removeKnownChange(String property) {
+        synchronized (knownChangedProperties) {
+            Iterator<String> iterator = knownChangedProperties.iterator();
+            while (iterator.hasNext()) {
+                String removeMe = iterator.next();
+                if (removeMe != null && removeMe.equals(property)) {
+                    iterator.remove();
+                    return;
+                }
+            }
+        }
+        
+        
+    }
+    
+    /* package */ void skip() {
+        skipper.set(true);
+    }
+    
+    /* package */ void unskip() {
+        skipper.set(false);
+    }
+    
+    private void internalConfigurationChanged() {
+        if (skipper.get()) {
+            Logger.getLogger().debug("WRITEBACK: Ignoring configuration because we are responsible");
+            return;
+        }
+        
         List<ActiveDescriptor<?>> currentDescriptors = locator.getDescriptors(CONFIG_FILTER);
         
         synchronized (descriptors) {
@@ -218,16 +280,19 @@ public class ConfigListener implements DynamicConfigurationListener {
         private final ServiceHandle<?> iHandle;
         private final String iType;
         private final String iInstance;
+        private final Object iMetadata;
         private final List<XmlDomTranslationService> translators;
         
         private String translatedType;
         private String translatedInstance;
         private Object translatedService;
+        private Object translatedMetadata;
         
-        private HubKey(ServiceHandle<?> handle, String type, String instance, List<XmlDomTranslationService> translators) {
+        private HubKey(ServiceHandle<?> handle, String type, String instance, Object metadata, List<XmlDomTranslationService> translators) {
             this.iHandle = handle;
             this.iType = type;
             this.iInstance = instance;
+            this.iMetadata = metadata;
             this.translators = translators;
         }
         
@@ -236,10 +301,11 @@ public class ConfigListener implements DynamicConfigurationListener {
                 translatedType = iType;
                 translatedInstance = iInstance;
                 translatedService = iHandle.getService();
+                translatedMetadata = iMetadata;
                 return;
             }
             
-            XmlDomHubData original = new XmlDomHubData(iType, iInstance, iHandle.getService());
+            XmlDomHubData original = new XmlDomHubData(iType, iInstance, iHandle.getService(), iMetadata);
             XmlDomHubData userData = original;
             
             for (XmlDomTranslationService translator : translators) {
@@ -264,6 +330,7 @@ public class ConfigListener implements DynamicConfigurationListener {
             translatedType = userData.getType();
             translatedInstance = userData.getInstanceKey();
             translatedService = userData.getBean();
+            translatedMetadata = userData.getMetadata();
         }
         
         private synchronized String getTranslatedType() {
@@ -290,11 +357,35 @@ public class ConfigListener implements DynamicConfigurationListener {
             return translatedService;
         }
         
+        private synchronized Object getTranslatedMetadata() {
+            if (translatedType == null) {
+                translate();
+            }
+            
+            return translatedMetadata;
+        }
+        
         /* (non-Javadoc)
          * @see org.jvnet.hk2.config.ConfigListener#changed(java.beans.PropertyChangeEvent[])
          */
         @Override
         public synchronized UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
+            synchronized (knownChangedProperties) {
+                Iterator<String> iterator = knownChangedProperties.iterator();
+                while (iterator.hasNext()) {
+                    String knownProperty = iterator.next();
+                    
+                    for (PropertyChangeEvent event : events) {
+                        if (event.getPropertyName() != null && event.getPropertyName().equals(knownProperty)) {
+                            iterator.remove();
+                        }
+                        
+                        Logger.getLogger().debug("WRITEBACK: ConfigListener ignoring property changes due to detected replay");
+                        return null;
+                    }
+                }
+            }
+            
             // Must force re-translation
             translate();
             

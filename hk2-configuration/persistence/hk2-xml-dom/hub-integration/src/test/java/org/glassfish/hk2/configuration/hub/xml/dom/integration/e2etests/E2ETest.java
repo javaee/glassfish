@@ -46,6 +46,7 @@ import java.util.List;
 
 import org.glassfish.hk2.configuration.api.ChildIterable;
 import org.glassfish.hk2.configuration.api.ConfigurationUtilities;
+import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationUtilities;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -79,6 +80,7 @@ public class E2ETest extends HK2Runner {
         super.initialize("E2ETest", null, null);
         
         ConfigurationUtilities.enableConfigurationSystem(testLocator);
+        XmlDomIntegrationUtilities.enableHk2ConfigDomIntegration(testLocator);
     }
     
     /**

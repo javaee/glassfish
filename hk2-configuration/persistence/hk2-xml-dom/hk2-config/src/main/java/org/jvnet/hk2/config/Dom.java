@@ -1305,7 +1305,7 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
         w.writeEndElement();
     }
 
-    private void release() {
+    public void release() {
         if (domDescriptor != null) { // children added via createProxy are not registered in serviceLocator
             ServiceLocatorUtilities.removeOneDescriptor(getHabitat(), domDescriptor, true);
         }

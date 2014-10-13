@@ -51,5 +51,6 @@ import org.jvnet.hk2.config.Element;
 public interface DBean extends NamedBean, ConfigBeanProxy {
     @Element
     public EBean getEBean();
+    public void setEBean(EBean ebean);
 
 }

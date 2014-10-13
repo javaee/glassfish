@@ -57,8 +57,10 @@ import org.jvnet.hk2.config.Element;
 public interface BBean extends ConfigBeanProxy {
     @Attribute
     public String getParameter();
+    public void setParameter(String value);
     
     @Element("*")
     public List<CBean> getCBeans();
+    public void setCBeans(List<CBean> cBeans);
 
 }

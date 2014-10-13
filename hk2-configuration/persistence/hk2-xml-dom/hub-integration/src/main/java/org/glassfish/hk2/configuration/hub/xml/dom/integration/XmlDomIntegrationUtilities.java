@@ -40,9 +40,11 @@
 package org.glassfish.hk2.configuration.hub.xml.dom.integration;
 
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.ManagerUtilities;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.internal.ConfigListener;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.internal.MapTranslator;
+import org.glassfish.hk2.configuration.hub.xml.dom.integration.internal.WritebackHubListener;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 
 /**
@@ -73,7 +75,8 @@ public class XmlDomIntegrationUtilities {
         
         if (locator.getService(ConfigListener.class) != null) return;
         
-        ServiceLocatorUtilities.addClasses(locator, ConfigListener.class);
+        ServiceLocatorUtilities.addClasses(locator,
+                ConfigListener.class);
     }
     
     /**
@@ -91,7 +94,20 @@ public class XmlDomIntegrationUtilities {
     public final static void enableMapTranslator(ServiceLocator locator) {
         if (locator.getService(MapTranslator.class) != null) return;
         
-        ServiceLocatorUtilities.addClasses(locator, MapTranslator.class);
+        ManagerUtilities.enableConfigurationHub(locator);
+        
+        ServiceLocatorUtilities.addClasses(locator,
+                WritebackHubListener.class,
+                MapTranslator.class);
+        
+        Hub hub = locator.getService(Hub.class);
+        if (hub != null) {
+            WritebackHubListener rp = locator.getService(WritebackHubListener.class);
+            
+            if (rp != null) {
+                hub.addListener(rp);
+            }
+        }
     }
 
 }

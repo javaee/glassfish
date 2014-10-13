@@ -66,6 +66,7 @@ public class WriteableTypeImpl implements WriteableType {
     /* package */ WriteableTypeImpl(WriteableBeanDatabaseImpl parent, TypeImpl mother) {
         this.parent = parent;
         this.name = mother.getName();
+        this.metadata = mother.getMetadata();
         beanMap.putAll(mother.getInstances());
         helper = mother.getHelper();
     }
@@ -201,7 +202,11 @@ public class WriteableTypeImpl implements WriteableType {
     @Override
     public synchronized void setMetadata(Object metadata) {
         this.metadata = metadata;
-        
+    }
+    
+    @Override
+    public String toString() {
+        return "WriteableTypeImpl(" + name + "," + metadata + "," + System.identityHashCode(this) + ")";
     }
 
 }

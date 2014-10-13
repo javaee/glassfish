@@ -51,6 +51,8 @@ import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationUtilities;
+import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomTranslationService;
+import org.glassfish.hk2.configuration.hub.xml.dom.integration.tests.common.ConfigHubIntegrationUtilities;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Before;
@@ -102,6 +104,8 @@ public class HubIntegrationTest extends HK2Runner {
     @Before
     public void before() {
         super.initialize("HubIntegrationTest", null, null);
+        
+        XmlDomIntegrationUtilities.enableHk2ConfigDomIntegration(testLocator);
     }
     
     /**
@@ -296,7 +300,7 @@ public class HubIntegrationTest extends HK2Runner {
      */
     @Test // @org.junit.Ignore
     public void testAddDBeanToHBean() {
-        ServiceLocator testLocator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
+        ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
         
         ConfigParser parser = new ConfigParser(testLocator);
         URL url = getClass().getClassLoader().getResource("complex2.xml");
@@ -329,7 +333,7 @@ public class HubIntegrationTest extends HK2Runner {
      */
     @Test // @org.junit.Ignore
     public void testRemoveDBeanFromHBean() {
-        ServiceLocator testLocator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
+        ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
         
         ConfigParser parser = new ConfigParser(testLocator);
         URL url = getClass().getClassLoader().getResource("complex2.xml");
@@ -364,7 +368,7 @@ public class HubIntegrationTest extends HK2Runner {
      */
     @Test // @org.junit.Ignore
     public void testTranslateNameAndInstanceName() {
-        ServiceLocator testLocator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
+        ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
         ServiceLocatorUtilities.addClasses(testLocator, BBeanTranslator.class);
         
         ConfigParser parser = new ConfigParser(testLocator);
@@ -399,7 +403,7 @@ public class HubIntegrationTest extends HK2Runner {
     @SuppressWarnings("unchecked")
     @Test // @org.junit.Ignore
     public void testTranslateBeanToMap() {
-        ServiceLocator testLocator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
+        ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
         XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
         
         ConfigParser parser = new ConfigParser(testLocator);
@@ -429,7 +433,7 @@ public class HubIntegrationTest extends HK2Runner {
     @SuppressWarnings("unchecked")
     @Test // @org.junit.Ignore
     public void testTranslateNameAndInstanceNameAndObject() {
-        ServiceLocator testLocator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
+        ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
         ServiceLocatorUtilities.addClasses(testLocator, BBeanTranslator.class);
         XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
         
@@ -469,7 +473,8 @@ public class HubIntegrationTest extends HK2Runner {
     @SuppressWarnings("unchecked")
     @Test // @org.junit.Ignore
     public void testTranslateAPropertyBag() {
-        ServiceLocator testLocator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
+        ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
+        
         ServiceLocatorUtilities.addClasses(testLocator, BBeanTranslator.class);
         XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
         

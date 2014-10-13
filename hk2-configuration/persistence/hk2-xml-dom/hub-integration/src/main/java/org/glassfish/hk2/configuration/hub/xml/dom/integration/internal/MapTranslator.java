@@ -50,6 +50,7 @@ import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegration
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomTranslationService;
 import org.glassfish.hk2.utilities.reflection.BeanReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBag;
 
@@ -67,6 +68,12 @@ public class MapTranslator implements XmlDomTranslationService {
     public XmlDomHubData translate(XmlDomHubData hk2ConfigBeanData) {
         Object bean = hk2ConfigBeanData.getBean();
         if (bean == null) return null;
+        
+        ConfigBeanProxy metadataBean = null;
+        if (bean instanceof ConfigBeanProxy) {
+            metadataBean = (ConfigBeanProxy) bean;
+        }
+        
         if (bean instanceof Map) return null;
         
         Map<String, Object> beanLikeMap = BeanReflectionHelper.convertJavaBeanToBeanLikeMap(
@@ -85,7 +92,8 @@ public class MapTranslator implements XmlDomTranslationService {
         
         return new XmlDomHubData(hk2ConfigBeanData.getType(),
                 hk2ConfigBeanData.getInstanceKey(),
-                beanLikeMap);
+                beanLikeMap,
+                new HK2ConfigBeanMetaData(metadataBean));
     }
 
 }

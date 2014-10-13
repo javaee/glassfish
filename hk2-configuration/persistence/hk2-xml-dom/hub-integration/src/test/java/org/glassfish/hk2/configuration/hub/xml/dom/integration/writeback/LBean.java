@@ -37,32 +37,17 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.hub.xml.dom.integration.tests.common;
+package org.glassfish.hk2.configuration.hub.xml.dom.integration.writeback;
 
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationUtilities;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.glassfish.hk2.configuration.hub.xml.dom.integration.tests.NamedBean;
+import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.Configured;
 
 /**
  * @author jwells
  *
  */
-public class ConfigHubIntegrationUtilities {
-    private final static ServiceLocatorFactory factory = ServiceLocatorFactory.getInstance();
-    
-    /**
-     * Creates an unnamed, untracked service locator
-     * @return An unnamed, untracked service locator
-     */
-    public static ServiceLocator create() {
-        return factory.create(null);
-    }
-    
-    public static ServiceLocator createPopulateAndConfigInit() {
-        ServiceLocator testLocator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
-        XmlDomIntegrationUtilities.enableHk2ConfigDomIntegration(testLocator);
-        return testLocator;
-    }
+@Configured
+public interface LBean extends NamedBean, ConfigBeanProxy {
 
 }
