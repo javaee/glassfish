@@ -78,9 +78,11 @@ public class WritebackTest {
     private final static String MBEAN_TAG = "/j-bean/k-bean/not-derivable-tag";
     private final static String DAVE_INSTANCE_NAME = "j-bean.k-bean.dave";
     private final static String EATON_INSTANCE_NAME = "j-bean.k-bean.eaton";
+    private final static String GIANNA_INSTANCE_NAME = "j-bean.k-bean.gianna";
     
     private final static String LBEAN_TAG = "/j-bean/l-beans";
     private final static String FRANK_INSTANCE_NAME = "j-bean.frank";
+    private final static String HELEN_INSTANCE_NAME = "j-bean.helen";
     
     private final static String HELLO = "hello";
     private final static String SAILOR = "sailor";
@@ -93,6 +95,11 @@ public class WritebackTest {
     private final static String DAVE = "dave";
     private final static String EATON = "eaton";
     private final static String FRANK = "frank";
+    private final static String GIANNA = "gianna";
+    private final static String HELEN = "helen";
+    
+    private final static String AGE = "age";
+    private final static String EPOCH = "epoch";
     
     @SuppressWarnings("unchecked")
     @Test // @org.junit.Ignore
@@ -400,6 +407,97 @@ public class WritebackTest {
         Assert.assertNull(frank);
         
         Assert.assertNull(testLocator.getService(JBean.class));
+    }
+    
+    /**
+     * Adds children with grand-children and non-related beans
+     * as well all in on nasty database transaction
+     */
+    @SuppressWarnings("unchecked")
+    @Test @org.junit.Ignore
+    public void testMultipleBeansAddRemoveAndModify() {
+        ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
+        XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
+        
+        Hub hub = testLocator.getService(Hub.class);
+        Assert.assertNotNull(hub);
+        
+        ConfigParser parser = new ConfigParser(testLocator);
+        URL url = getClass().getClassLoader().getResource("complex5.xml");
+        Assert.assertNotNull(url);
+        
+        parser.parse(url);
+        
+        JBean jbean = testLocator.getService(JBean.class);
+        Assert.assertNotNull(jbean);
+        
+        KBean kbean = testLocator.getService(KBean.class);
+        Assert.assertNotNull(kbean);
+        Assert.assertEquals(12, kbean.getEpoch());
+        Assert.assertEquals(34, kbean.getAge());
+        
+        MBean dave = testLocator.getService(MBean.class, DAVE);
+        Assert.assertNotNull(dave);
+        Assert.assertEquals(DAVE, dave.getName());
+        
+        MBean eaton = testLocator.getService(MBean.class, EATON);
+        Assert.assertNotNull(eaton);
+        Assert.assertEquals(EATON, eaton.getName());
+        
+        LBean frank = testLocator.getService(LBean.class, FRANK);
+        Assert.assertNotNull(frank);
+        Assert.assertEquals(FRANK, frank.getName());
+        
+        Map<String, Object> kbeanMap = new HashMap<String, Object>();
+        Map<String, Object> existingKBeanMap = (Map<String, Object>) hub.
+                getCurrentDatabase().getInstance(KBEAN_TAG, KBEAN_INSTANCE_NAME).getBean();
+        kbeanMap.putAll(existingKBeanMap);
+        kbeanMap.put(AGE, new Integer(33));
+        kbeanMap.put(EPOCH, new Integer(13));
+        
+        Map<String, Object> mbeanGiannaMap = new HashMap<String, Object>();
+        mbeanGiannaMap.put(NAME_PARAMETER_NAME, GIANNA);
+        
+        Map<String, Object> lbeanHelenMap = new HashMap<String, Object>();
+        lbeanHelenMap.put(NAME_PARAMETER_NAME, HELEN);
+        
+        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+        
+        WriteableType mbeanWriteableType = wbd.findOrAddWriteableType(MBEAN_TAG);
+        mbeanWriteableType.removeInstance(DAVE_INSTANCE_NAME);
+        mbeanWriteableType.addInstance(GIANNA_INSTANCE_NAME, mbeanGiannaMap);
+        
+        WriteableType kbeanWriteableType = wbd.findOrAddWriteableType(KBEAN_TAG);
+        kbeanWriteableType.modifyInstance(KBEAN_INSTANCE_NAME, kbeanMap);
+        
+        WriteableType lbeanWriteableType = wbd.findOrAddWriteableType(LBEAN_TAG);
+        lbeanWriteableType.addInstance(HELEN_INSTANCE_NAME, lbeanHelenMap);
+        
+        wbd.commit();
+        
+        kbean = testLocator.getService(KBean.class);
+        Assert.assertNotNull(kbean);
+        Assert.assertEquals(13, kbean.getEpoch());
+        Assert.assertEquals(33, kbean.getAge());
+        
+        dave = testLocator.getService(MBean.class, DAVE);
+        Assert.assertNull(dave);
+        
+        eaton = testLocator.getService(MBean.class, EATON);
+        Assert.assertNotNull(eaton);
+        Assert.assertEquals(EATON, eaton.getName());
+        
+        MBean gianna = testLocator.getService(MBean.class, GIANNA);
+        Assert.assertNotNull(gianna);
+        Assert.assertEquals(GIANNA, gianna.getName());
+        
+        frank = testLocator.getService(LBean.class, FRANK);
+        Assert.assertNotNull(frank);
+        Assert.assertEquals(FRANK, frank.getName());
+        
+        LBean helen = testLocator.getService(LBean.class, HELEN);
+        Assert.assertNotNull(helen);
+        Assert.assertEquals(HELEN, frank.getName());
     }
 
 }

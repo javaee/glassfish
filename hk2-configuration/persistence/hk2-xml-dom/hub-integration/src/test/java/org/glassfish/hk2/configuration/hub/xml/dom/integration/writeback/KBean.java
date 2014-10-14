@@ -54,9 +54,11 @@ import org.jvnet.hk2.config.Element;
 public interface KBean extends ConfigBeanProxy {
     @Element
     public int getAge();
+    public void setAge(int age);
     
     @Attribute
     public int getEpoch();
+    public void setEpoch(int epoch);
     
     @Element("not-derivable-tag")
     public List<MBean> getMBeans();
