@@ -70,7 +70,7 @@ public class WritebackTest {
     private final static String CAROL_INSTANCE_NAME = "b-bean.carol";
     private final static String BOB_INSTANCE_NAME = "b-bean.bob";
     
-    // private final static String JBEAN_TAG = "/j-bean";
+    private final static String JBEAN_TAG = "/j-bean";
     
     private final static String KBEAN_TAG = "/j-bean/k-bean";
     private final static String KBEAN_INSTANCE_NAME = "j-bean.k-bean";
@@ -382,6 +382,7 @@ public class WritebackTest {
         
         wbd.removeType(KBEAN_TAG);
         wbd.removeType(MBEAN_TAG);
+        wbd.removeType(JBEAN_TAG);
         wbd.removeType(LBEAN_TAG);
         
         wbd.commit();
@@ -397,6 +398,8 @@ public class WritebackTest {
         
         frank = testLocator.getService(LBean.class, FRANK);
         Assert.assertNull(frank);
+        
+        Assert.assertNull(testLocator.getService(JBean.class));
     }
 
 }

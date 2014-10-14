@@ -390,26 +390,41 @@ public class ConfigListener implements DynamicConfigurationListener {
             return translatedMetadata;
         }
         
+        private String getPrettyEventList(PropertyChangeEvent[] events) {
+            StringBuffer sb = new StringBuffer("[");
+            
+            boolean first=true;
+            for (PropertyChangeEvent event : events) {
+                if (first) {
+                    first = false;
+                    sb.append(event.getPropertyName());
+                }
+                else {
+                    sb.append("," + event.getPropertyName());
+                }
+            }
+            
+            sb.append("]");
+            return sb.toString();
+        }
+        
         /* (non-Javadoc)
          * @see org.jvnet.hk2.config.ConfigListener#changed(java.beans.PropertyChangeEvent[])
          */
         @Override
         public synchronized UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
             synchronized (knownChangedProperties) {
-                Iterator<String> iterator = knownChangedProperties.iterator();
-                while (iterator.hasNext()) {
-                    String knownProperty = iterator.next();
-                    
+                for (String knownProperty : knownChangedProperties) {
                     for (PropertyChangeEvent event : events) {
                         if (event.getPropertyName() != null && event.getPropertyName().equals(knownProperty)) {
-                            iterator.remove();
+                            Logger.getLogger().debug("WRITEBACK: ConfigListener ignoring property changes due to detected replay of " +
+                                    knownProperty + " within " + getPrettyEventList(events));
+                                return null;
                         }
-                        
-                        Logger.getLogger().debug("WRITEBACK: ConfigListener ignoring property changes due to detected replay");
-                        return null;
                     }
                 }
             }
+            Logger.getLogger().debug("WRITEBACK: Processing changes: " + getPrettyEventList(events));
             
             // Must force re-translation
             translate();

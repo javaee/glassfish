@@ -45,6 +45,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
@@ -291,22 +292,14 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
                 continue;
             }
             
-            boolean success = false;
-            configListener.addKnownChange(propChange.getPropertyName());
             try {
                 setter.invoke(originalConfigBean, newValue);
-                success = true;
             }
             catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
             catch (InvocationTargetException e) {
                 Logger.getLogger().debug(getClass().getName(), setter.getName(), e.getTargetException());
-            }
-            finally {
-                if (!success) {
-                    configListener.removeKnownChange(propChange.getPropertyName());
-                }
             }
             
             Logger.getLogger().debug("WRITEBACK: property " + propName +
@@ -317,6 +310,11 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
     private void modifyInstance(final Change change, final Map<String, Object> beanLikeMap, final HK2ConfigBeanMetaData metadata) {
         ConfigBeanProxy originalConfigBean = metadata.getConfigBean();
         
+        LinkedList<String> added = new LinkedList<String>();
+        for (PropertyChangeEvent propChange : change.getModifiedProperties()) {
+            configListener.addKnownChange(propChange.getPropertyName());
+            added.add(propChange.getPropertyName());
+        }
         try {
             ConfigSupport.apply(new SingleConfigCode<ConfigBeanProxy>() {
 
@@ -333,6 +331,11 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
         catch (TransactionFailure e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
+        }
+        finally {
+            for (String remove : added) {
+                configListener.removeKnownChange(remove);
+            }
         }
     }
     
@@ -494,27 +497,49 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
         
         Logger.getLogger().debug("WRITEBACK: removing type " + typeName + " of instance " + instanceName);
         
+        Dom parentDom = null;
+        ConfigBeanProxy parentConfigBeanProxy = null;
+        
         Instance parent = findParent(typeName, instanceName);
         if (parent == null) {
-            Logger.getLogger().debug("WRITEBACK: during removal could not find parent of type " + typeName + " of instance " + instanceName);
-            return;
+            Object childMetadataRaw = change.getInstanceValue().getMetadata();
+            if (childMetadataRaw == null || !(childMetadataRaw instanceof HK2ConfigBeanMetaData)) {
+                Logger.getLogger().debug("WRITEBACK: during child removal could not find metadata of type " + typeName + " of instance " + instanceName);
+                return;
+                
+            }
+            HK2ConfigBeanMetaData childMetadata = (HK2ConfigBeanMetaData) childMetadataRaw;
+            
+            ConfigBeanProxy childProxy = childMetadata.getConfigBean();
+            Dom childDom = Dom.unwrap(childProxy);
+            if (childDom == null) {
+                Logger.getLogger().debug("WRITEBACK: during removal could not find parent of type " + typeName + " of instance " + instanceName);
+                return;
+            }
+            
+            parentDom = childDom.parent();
+            if (parentDom != null) {
+                parentConfigBeanProxy = parentDom.createProxy();
+            }
+        }
+        else {
+            Object rawParentMetadata = parent.getMetadata();
+            if (rawParentMetadata == null || !(rawParentMetadata instanceof HK2ConfigBeanMetaData)) {
+                Logger.getLogger().debug("WRITEBACK: during removal could not find metadata of type " + typeName + " of instance " + instanceName);
+                return;
+            }
+            HK2ConfigBeanMetaData parentMetadata = (HK2ConfigBeanMetaData) rawParentMetadata;
+        
+            parentConfigBeanProxy = parentMetadata.getConfigBean();
+            if (parentConfigBeanProxy == null) {
+                Logger.getLogger().debug("WRITEBACK: during removal could not find parent config bean of type " + typeName + " of instance " + instanceName);
+                return;
+            }
+        
+            parentDom = Dom.unwrap(parentConfigBeanProxy);
         }
         
-        Object rawParentMetadata = parent.getMetadata();
-        if (rawParentMetadata == null || !(rawParentMetadata instanceof HK2ConfigBeanMetaData)) {
-            Logger.getLogger().debug("WRITEBACK: during removal could not find metadata of type " + typeName + " of instance " + instanceName);
-            return;
-        }
-        HK2ConfigBeanMetaData parentMetadata = (HK2ConfigBeanMetaData) rawParentMetadata;
-        
-        ConfigBeanProxy parentConfigBeanProxy = parentMetadata.getConfigBean();
-        if (parentConfigBeanProxy == null) {
-            Logger.getLogger().debug("WRITEBACK: during removal could not find parent config bean of type " + typeName + " of instance " + instanceName);
-            return;
-        }
-        
-        Dom parentDom = Dom.unwrap(parentConfigBeanProxy);
-        if (parentDom == null) {
+        if (parentDom == null || parentConfigBeanProxy == null) {
             Logger.getLogger().debug("WRITEBACK: during removal could not find parent Dom of type " + typeName + " of instance " + instanceName);
             return;
         }
@@ -580,20 +605,15 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
             ConfigBean parentConfigBean = (ConfigBean) parentDom;
             ConfigBean childConfigBean = (ConfigBean) childDom;
             
-            boolean success = false;
             configListener.addKnownChange(maen.elementName);
             try {
                 ConfigSupport.deleteChild(parentConfigBean, childConfigBean);
-
-                success = true;
             }
             catch (TransactionFailure e) {
                 Logger.getLogger().debug(getClass().getName(), "removeChild", e);
             }
             finally {
-                if (!success) {
-                    configListener.removeKnownChange(maen.elementName);
-                }
+                configListener.removeKnownChange(maen.elementName);
             }
         }
         
