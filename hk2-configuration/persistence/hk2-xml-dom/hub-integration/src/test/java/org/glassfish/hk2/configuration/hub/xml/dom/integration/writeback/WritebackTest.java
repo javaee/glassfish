@@ -346,7 +346,7 @@ public class WritebackTest {
      * Removes children with grand-children and non-related beans
      * as well all in on nasty database transaction
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testMultipleBeansRemoveRelatedAndNotRelated() {
         ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
         XmlDomIntegrationUtilities.enableMapTranslator(testLocator);

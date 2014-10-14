@@ -521,6 +521,13 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
             if (parentDom != null) {
                 parentConfigBeanProxy = parentDom.createProxy();
             }
+            else {
+                // This is a root node.  Just unregister it
+                childDom.release();
+                
+                Logger.getLogger().debug("WRITEBACK: released root of type " + typeName + " and instance " + instanceName);
+                return;
+            }
         }
         else {
             Object rawParentMetadata = parent.getMetadata();
