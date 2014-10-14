@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -146,12 +146,23 @@ public class Utilities {
 
         });
     }
-    
-    private final static Object lock = new Object();
-    
-    private final static WeakHashMap<Class<?>, String> autoAnalyzerNameCache = new WeakHashMap<Class<?>, String>();
-    private final static WeakHashMap<AnnotatedElement, SoftAnnotatedElementAnnotationInfo> annotationCache =
-            new WeakHashMap<AnnotatedElement, SoftAnnotatedElementAnnotationInfo>();
+
+    private final static ThreadLocal<WeakHashMap<Class<?>, String>> threadLocalAutoAnalyzerNameCache =
+            new ThreadLocal<WeakHashMap<Class<?>, String>>() {
+                @Override
+                protected WeakHashMap<Class<?>, String> initialValue() {
+                    return new WeakHashMap<Class<?>, String>();
+                }
+            };
+
+    private final static ThreadLocal<WeakHashMap<AnnotatedElement, SoftAnnotatedElementAnnotationInfo>>
+    threadLocalAnnotationCache =
+            new ThreadLocal<WeakHashMap<AnnotatedElement, SoftAnnotatedElementAnnotationInfo>>() {
+                @Override
+                protected WeakHashMap<AnnotatedElement, SoftAnnotatedElementAnnotationInfo> initialValue() {
+                    return new WeakHashMap<AnnotatedElement, SoftAnnotatedElementAnnotationInfo>();
+                }
+            };
     
     private final static AnnotationInformation DEFAULT_ANNOTATION_INFORMATION = new AnnotationInformation(
             Collections.<Annotation>emptySet(),
@@ -762,7 +773,7 @@ public class Utilities {
     /**
      * Creates a reified automatically generated descriptor
      *
-     * @param clazz The class to create the desciptor for
+     * @param parentClazz The class to create the desciptor for
      * @param locator The service locator for whom we are creating this
      * @return A reified active descriptor
      *
@@ -1580,21 +1591,17 @@ public class Utilities {
     }
     
     private static AnnotatedElementAnnotationInfo computeElementAnnotationInfo(AnnotatedElement ae) {
-        synchronized (lock) {
             AnnotatedElementAnnotationInfo hard;
-            SoftAnnotatedElementAnnotationInfo soft = annotationCache.get(ae);
+            SoftAnnotatedElementAnnotationInfo soft = threadLocalAnnotationCache.get().get(ae);
             if (soft != null) {
                 hard = soft.harden(ae);
             }
             else {
                 hard = computeAEAI(ae);
-                
                 soft = hard.soften();
-                annotationCache.put(ae, soft);
+                threadLocalAnnotationCache.get().put(ae, soft);
             }
-            
             return hard;
-        }
     }
 
     /**
@@ -1693,18 +1700,16 @@ public class Utilities {
      * @return The name of the analyzer (null for default)
      */
     public static String getAutoAnalyzerName(Class<?> c) {
-        synchronized (lock) {
-            String retVal = autoAnalyzerNameCache.get(c);
+            String retVal = threadLocalAutoAnalyzerNameCache.get().get(c);
             if (retVal != null) return retVal;
             
             Service s = c.getAnnotation(Service.class);
             if (s == null) return null;
             
             retVal = s.analyzer();
-            autoAnalyzerNameCache.put(c, retVal);
+            threadLocalAutoAnalyzerNameCache.get().put(c, retVal);
 
             return retVal;
-        }
     }
 
     @SuppressWarnings("unchecked")
