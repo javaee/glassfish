@@ -41,6 +41,7 @@ package org.glassfish.hk2.configuration.hub.test;
 
 import java.beans.PropertyChangeEvent;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -682,6 +683,15 @@ public class HubTest extends HK2Runner {
         }
     }
     
+    private static void checkInstances(HashSet<String> checkMe) {
+        Assert.assertTrue(checkMe.contains(ALICE));
+        Assert.assertTrue(checkMe.contains(BOB));
+        Assert.assertTrue(checkMe.contains(CAROL));
+        Assert.assertEquals(3, checkMe.size());
+        
+        checkMe.clear();
+    }
+    
     /**
      * Tests removing an type with multiple types and multiple instances
      */
@@ -741,13 +751,14 @@ public class HubTest extends HK2Runner {
             
             Assert.assertEquals(12, changes.size());
             
+            HashSet<String> instanceKeys = new HashSet<String>();
             {
                 Change instanceChange = changes.get(0);
             
                 Assert.assertEquals(Change.ChangeCategory.REMOVE_INSTANCE, instanceChange.getChangeCategory());
                 Assert.assertEquals(TYPE_EIGHT, instanceChange.getChangeType().getName());
                 Assert.assertEquals(0, instanceChange.getChangeType().getInstances().size());
-                Assert.assertEquals(ALICE, instanceChange.getInstanceKey());
+                instanceKeys.add(instanceChange.getInstanceKey());
                 Assert.assertNull(instanceChange.getModifiedProperties());
                 Assert.assertNull(instanceChange.getOriginalInstanceValue());
             }
@@ -758,7 +769,7 @@ public class HubTest extends HK2Runner {
                 Assert.assertEquals(Change.ChangeCategory.REMOVE_INSTANCE, instanceChange.getChangeCategory());
                 Assert.assertEquals(TYPE_EIGHT, instanceChange.getChangeType().getName());
                 Assert.assertEquals(0, instanceChange.getChangeType().getInstances().size());
-                Assert.assertEquals(BOB, instanceChange.getInstanceKey());
+                instanceKeys.add(instanceChange.getInstanceKey());
                 Assert.assertNull(instanceChange.getModifiedProperties());
                 Assert.assertNull(instanceChange.getOriginalInstanceValue());
             }
@@ -769,10 +780,12 @@ public class HubTest extends HK2Runner {
                 Assert.assertEquals(Change.ChangeCategory.REMOVE_INSTANCE, instanceChange.getChangeCategory());
                 Assert.assertEquals(TYPE_EIGHT, instanceChange.getChangeType().getName());
                 Assert.assertEquals(0, instanceChange.getChangeType().getInstances().size());
-                Assert.assertEquals(CAROL, instanceChange.getInstanceKey());
+                instanceKeys.add(instanceChange.getInstanceKey());
                 Assert.assertNull(instanceChange.getModifiedProperties());
                 Assert.assertNull(instanceChange.getOriginalInstanceValue());
             }
+            
+            checkInstances(instanceKeys);
             
             {
                 Change instanceChange = changes.get(3);
@@ -790,7 +803,7 @@ public class HubTest extends HK2Runner {
                 Assert.assertEquals(Change.ChangeCategory.REMOVE_INSTANCE, instanceChange.getChangeCategory());
                 Assert.assertEquals(TYPE_TEN, instanceChange.getChangeType().getName());
                 Assert.assertEquals(0, instanceChange.getChangeType().getInstances().size());
-                Assert.assertEquals(ALICE, instanceChange.getInstanceKey());
+                instanceKeys.add(instanceChange.getInstanceKey());
                 Assert.assertNull(instanceChange.getModifiedProperties());
                 Assert.assertNull(instanceChange.getOriginalInstanceValue());
             }
@@ -801,7 +814,7 @@ public class HubTest extends HK2Runner {
                 Assert.assertEquals(Change.ChangeCategory.REMOVE_INSTANCE, instanceChange.getChangeCategory());
                 Assert.assertEquals(TYPE_TEN, instanceChange.getChangeType().getName());
                 Assert.assertEquals(0, instanceChange.getChangeType().getInstances().size());
-                Assert.assertEquals(BOB, instanceChange.getInstanceKey());
+                instanceKeys.add(instanceChange.getInstanceKey());
                 Assert.assertNull(instanceChange.getModifiedProperties());
                 Assert.assertNull(instanceChange.getOriginalInstanceValue());
             }
@@ -812,10 +825,12 @@ public class HubTest extends HK2Runner {
                 Assert.assertEquals(Change.ChangeCategory.REMOVE_INSTANCE, instanceChange.getChangeCategory());
                 Assert.assertEquals(TYPE_TEN, instanceChange.getChangeType().getName());
                 Assert.assertEquals(0, instanceChange.getChangeType().getInstances().size());
-                Assert.assertEquals(CAROL, instanceChange.getInstanceKey());
+                instanceKeys.add(instanceChange.getInstanceKey());
                 Assert.assertNull(instanceChange.getModifiedProperties());
                 Assert.assertNull(instanceChange.getOriginalInstanceValue());
             }
+            
+            checkInstances(instanceKeys);
             
             {
                 Change instanceChange = changes.get(7);
@@ -833,7 +848,7 @@ public class HubTest extends HK2Runner {
                 Assert.assertEquals(Change.ChangeCategory.REMOVE_INSTANCE, instanceChange.getChangeCategory());
                 Assert.assertEquals(TYPE_NINE, instanceChange.getChangeType().getName());
                 Assert.assertEquals(0, instanceChange.getChangeType().getInstances().size());
-                Assert.assertEquals(ALICE, instanceChange.getInstanceKey());
+                instanceKeys.add(instanceChange.getInstanceKey());
                 Assert.assertNull(instanceChange.getModifiedProperties());
                 Assert.assertNull(instanceChange.getOriginalInstanceValue());
             }
@@ -844,7 +859,7 @@ public class HubTest extends HK2Runner {
                 Assert.assertEquals(Change.ChangeCategory.REMOVE_INSTANCE, instanceChange.getChangeCategory());
                 Assert.assertEquals(TYPE_NINE, instanceChange.getChangeType().getName());
                 Assert.assertEquals(0, instanceChange.getChangeType().getInstances().size());
-                Assert.assertEquals(BOB, instanceChange.getInstanceKey());
+                instanceKeys.add(instanceChange.getInstanceKey());
                 Assert.assertNull(instanceChange.getModifiedProperties());
                 Assert.assertNull(instanceChange.getOriginalInstanceValue());
             }
@@ -855,10 +870,12 @@ public class HubTest extends HK2Runner {
                 Assert.assertEquals(Change.ChangeCategory.REMOVE_INSTANCE, instanceChange.getChangeCategory());
                 Assert.assertEquals(TYPE_NINE, instanceChange.getChangeType().getName());
                 Assert.assertEquals(0, instanceChange.getChangeType().getInstances().size());
-                Assert.assertEquals(CAROL, instanceChange.getInstanceKey());
+                instanceKeys.add(instanceChange.getInstanceKey());
                 Assert.assertNull(instanceChange.getModifiedProperties());
                 Assert.assertNull(instanceChange.getOriginalInstanceValue());
             }
+            
+            checkInstances(instanceKeys);
             
             {
                 Change instanceChange = changes.get(11);
