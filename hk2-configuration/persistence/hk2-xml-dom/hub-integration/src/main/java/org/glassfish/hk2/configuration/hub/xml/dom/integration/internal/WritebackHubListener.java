@@ -82,8 +82,21 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
     private final static String GET_PREFIX = "get";
     /* package */ final static String STAR = "*";
     
+    private final static Map<Class<?>, Class<?>> SCALAR_MAP = new HashMap<Class<?>, Class<?>>();
+    
+    static {
+        SCALAR_MAP.put(Boolean.class, boolean.class);
+        SCALAR_MAP.put(Character.class, char.class);
+        SCALAR_MAP.put(Byte.class, byte.class);
+        SCALAR_MAP.put(Short.class, short.class);
+        SCALAR_MAP.put(Integer.class, int.class);
+        SCALAR_MAP.put(Long.class, long.class);
+        SCALAR_MAP.put(Float.class, float.class);
+        SCALAR_MAP.put(Double.class, double.class);
+    }
+    
     private final static int BEFORE = -1;
-    private final static int AFTER = 0;
+    private final static int AFTER = 1;
     
     private final static Comparator<Change> CHANGE_COMPARATOR = new Comparator<Change>() {
 
@@ -200,6 +213,17 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
             
             foundMethod = getMethod(clazz, trySetterName, setterTypes);
             if (foundMethod != null) break;
+            
+            // foundMethod is null, but there may be a second chance
+            Class<?> scalarType = SCALAR_MAP.get(setterType);
+            if (scalarType != null) {
+                Class<?> scalarTypes[] = new Class<?>[1];
+                scalarTypes[0] = scalarType;
+                
+                foundMethod = getMethod(clazz, trySetterName, scalarTypes);
+                if (foundMethod != null) break;
+            }
+            
             if (finished) break;
         }
         
@@ -651,7 +675,6 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
                 category.equals(ChangeCategory.REMOVE_INSTANCE)) {
                 sortedChanges.add(change);
             }
-            
         }
         
         for (Change change : sortedChanges) {

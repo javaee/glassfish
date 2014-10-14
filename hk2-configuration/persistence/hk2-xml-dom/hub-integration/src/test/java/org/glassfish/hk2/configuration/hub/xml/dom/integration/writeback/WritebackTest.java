@@ -136,7 +136,6 @@ public class WritebackTest {
         WriteableType wt = wbd.getWriteableType(BBEAN_TAG);
         wt.modifyInstance(BBEAN_INSTANCE_NAME, newBean);
         
-        
         wbd.commit();
         
         // This is the test.  Check that the parameter got set on BBean
@@ -410,11 +409,11 @@ public class WritebackTest {
     }
     
     /**
-     * Adds children with grand-children and non-related beans
-     * as well all in on nasty database transaction
+     * Modifies, adds children and removes children from Kbean (and
+     * does an add of l-bean just for grins)
      */
     @SuppressWarnings("unchecked")
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testMultipleBeansAddRemoveAndModify() {
         ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
         XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
@@ -497,7 +496,7 @@ public class WritebackTest {
         
         LBean helen = testLocator.getService(LBean.class, HELEN);
         Assert.assertNotNull(helen);
-        Assert.assertEquals(HELEN, frank.getName());
+        Assert.assertEquals(HELEN, helen.getName());
     }
 
 }
