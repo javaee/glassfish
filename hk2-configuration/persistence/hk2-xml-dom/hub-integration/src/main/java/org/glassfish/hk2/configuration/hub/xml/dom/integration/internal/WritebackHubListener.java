@@ -524,50 +524,31 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
         Dom parentDom = null;
         ConfigBeanProxy parentConfigBeanProxy = null;
         
-        Instance parent = findParent(typeName, instanceName);
-        if (parent == null) {
-            Object childMetadataRaw = change.getInstanceValue().getMetadata();
-            if (childMetadataRaw == null || !(childMetadataRaw instanceof HK2ConfigBeanMetaData)) {
-                Logger.getLogger().debug("WRITEBACK: during child removal could not find metadata of type " + typeName + " of instance " + instanceName);
-                return;
+        Object childMetadataRaw = change.getInstanceValue().getMetadata();
+        if (childMetadataRaw == null || !(childMetadataRaw instanceof HK2ConfigBeanMetaData)) {
+            Logger.getLogger().debug("WRITEBACK: during child removal could not find metadata of type " + typeName + " of instance " + instanceName);
+            return;
                 
-            }
-            HK2ConfigBeanMetaData childMetadata = (HK2ConfigBeanMetaData) childMetadataRaw;
+        }
+        HK2ConfigBeanMetaData childMetadata = (HK2ConfigBeanMetaData) childMetadataRaw;
             
-            ConfigBeanProxy childProxy = childMetadata.getConfigBean();
-            Dom childDom = Dom.unwrap(childProxy);
-            if (childDom == null) {
-                Logger.getLogger().debug("WRITEBACK: during removal could not find parent of type " + typeName + " of instance " + instanceName);
-                return;
-            }
+        ConfigBeanProxy childProxy = childMetadata.getConfigBean();
+        Dom childDom = Dom.unwrap(childProxy);
+        if (childDom == null) {
+            Logger.getLogger().debug("WRITEBACK: during removal could not find parent of type " + typeName + " of instance " + instanceName);
+            return;
+        }
             
-            parentDom = childDom.parent();
-            if (parentDom != null) {
-                parentConfigBeanProxy = parentDom.createProxy();
-            }
-            else {
-                // This is a root node.  Just unregister it
-                childDom.release();
-                
-                Logger.getLogger().debug("WRITEBACK: released root of type " + typeName + " and instance " + instanceName);
-                return;
-            }
+        parentDom = childDom.parent();
+        if (parentDom != null) {
+            parentConfigBeanProxy = parentDom.createProxy();
         }
         else {
-            Object rawParentMetadata = parent.getMetadata();
-            if (rawParentMetadata == null || !(rawParentMetadata instanceof HK2ConfigBeanMetaData)) {
-                Logger.getLogger().debug("WRITEBACK: during removal could not find metadata of type " + typeName + " of instance " + instanceName);
-                return;
-            }
-            HK2ConfigBeanMetaData parentMetadata = (HK2ConfigBeanMetaData) rawParentMetadata;
-        
-            parentConfigBeanProxy = parentMetadata.getConfigBean();
-            if (parentConfigBeanProxy == null) {
-                Logger.getLogger().debug("WRITEBACK: during removal could not find parent config bean of type " + typeName + " of instance " + instanceName);
-                return;
-            }
-        
-            parentDom = Dom.unwrap(parentConfigBeanProxy);
+            // This is a root node.  Just unregister it
+            childDom.release();
+                
+            Logger.getLogger().debug("WRITEBACK: released root of type " + typeName + " and instance " + instanceName);
+            return;
         }
         
         if (parentDom == null || parentConfigBeanProxy == null) {
@@ -576,7 +557,7 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
         }
         
         final String childElementName = getElementName(typeName);
-        Dom childDom = parentDom.element(childElementName);
+        childDom = parentDom.element(childElementName);
         if (childDom == null) {
             Logger.getLogger().debug("WRITEBACK: during removal could not find instance Dom of type " + typeName + " of instance " + instanceName);
             return;
