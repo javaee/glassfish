@@ -71,7 +71,7 @@ public interface Validator {
      * be returned
      * @throws RuntimeException Any exception from this method will also cause the candidate
      * to not be available.  However, the preferred method of indicating an validation failure
-     * is to return null
+     * is to return false
      */
     public boolean validate(ValidationInformation info);
 }

@@ -116,6 +116,11 @@ public class RunLevelContext implements Context<RunLevel> {
     public boolean isActive() {
         return true;
     }
+    
+    @Override
+    public boolean isPermanentlyActive() {
+        return true;
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Context#shutdown()
