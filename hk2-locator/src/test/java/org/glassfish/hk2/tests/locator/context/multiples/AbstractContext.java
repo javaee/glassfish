@@ -37,46 +37,63 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.context.ghost;
+package org.glassfish.hk2.tests.locator.context.multiples;
 
 import java.lang.annotation.Annotation;
-
-import javax.inject.Singleton;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.ServiceHandle;
 
 /**
+ * We do not care about multi-threaded stuff with this implementation
+ * 
  * @author jwells
  *
  */
-@Singleton
-public class GhostedContext implements Context<GhostedScope> {
+public abstract class AbstractContext implements Context<MultiScope> {
+    private final HashMap<ActiveDescriptor<?>, Object> instances = new HashMap<ActiveDescriptor<?>, Object>();
+    private boolean active = false;
+    
+    public abstract AbstractContext getNextContext();
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Context#getScope()
      */
     @Override
     public Class<? extends Annotation> getScope() {
-        return GhostedScope.class;
+        return MultiScope.class;
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Context#findOrCreate(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.ServiceHandle)
      */
+    @SuppressWarnings("unchecked")
     @Override
-    public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor,
+    public synchronized <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor,
             ServiceHandle<?> root) {
-        return activeDescriptor.create(root);
+        U retVal = (U) instances.get(activeDescriptor);
+        if (retVal != null) return retVal;
+        
+        retVal = activeDescriptor.create(root);
+        instances.put(activeDescriptor, retVal);
+        
+        // Everytime we create something we move it on
+        // to the next guy in line
+        deactivate();
+        
+        return retVal;
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Context#containsKey(org.glassfish.hk2.api.ActiveDescriptor)
      */
     @Override
-    public boolean containsKey(ActiveDescriptor<?> descriptor) {
-        return false;
+    public synchronized boolean containsKey(ActiveDescriptor<?> descriptor) {
+        return instances.containsKey(descriptor);
     }
 
     /* (non-Javadoc)
@@ -85,7 +102,7 @@ public class GhostedContext implements Context<GhostedScope> {
     @Override
     public void destroyOne(ActiveDescriptor<?> descriptor) {
         // Do nothing
-
+        
     }
 
     /* (non-Javadoc)
@@ -95,22 +112,36 @@ public class GhostedContext implements Context<GhostedScope> {
     public boolean supportsNullCreation() {
         return false;
     }
+    
+    protected void activate() {
+        active = true;
+    }
+    
+    private void deactivate() {
+        AbstractContext next = getNextContext();
+        active = false;
+        next.activate();
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Context#isActive()
      */
     @Override
     public boolean isActive() {
-        return true;
+        return active;
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Context#shutdown()
      */
     @Override
-    public void shutdown() {
-        // Do nothing
-
+    public synchronized void shutdown() {
+        instances.clear();
+    }
+    
+    public synchronized Map<ActiveDescriptor<?>, Object> getInstances() {
+        return Collections.unmodifiableMap(instances);
+        
     }
 
 }

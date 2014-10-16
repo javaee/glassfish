@@ -37,80 +37,33 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.context.ghost;
+package org.glassfish.hk2.tests.locator.context.multiples;
 
-import java.lang.annotation.Annotation;
-
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.inject.Singleton;
-
-import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Context;
-import org.glassfish.hk2.api.ServiceHandle;
 
 /**
  * @author jwells
  *
  */
 @Singleton
-public class GhostedContext implements Context<GhostedScope> {
+public class MultiContextA extends AbstractContext {
+    @Inject
+    private MultiContextB next;
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#getScope()
+     * @see org.glassfish.hk2.tests.locator.context.multiples.AbstractContext#getNextContext()
      */
     @Override
-    public Class<? extends Annotation> getScope() {
-        return GhostedScope.class;
+    public AbstractContext getNextContext() {
+        return next;
+    }
+    
+    @PostConstruct
+    private void postConstruct() {
+        activate();
     }
 
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#findOrCreate(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.ServiceHandle)
-     */
-    @Override
-    public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor,
-            ServiceHandle<?> root) {
-        return activeDescriptor.create(root);
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#containsKey(org.glassfish.hk2.api.ActiveDescriptor)
-     */
-    @Override
-    public boolean containsKey(ActiveDescriptor<?> descriptor) {
-        return false;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#destroyOne(org.glassfish.hk2.api.ActiveDescriptor)
-     */
-    @Override
-    public void destroyOne(ActiveDescriptor<?> descriptor) {
-        // Do nothing
-
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#supportsNullCreation()
-     */
-    @Override
-    public boolean supportsNullCreation() {
-        return false;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#isActive()
-     */
-    @Override
-    public boolean isActive() {
-        return true;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#shutdown()
-     */
-    @Override
-    public void shutdown() {
-        // Do nothing
-
-    }
-
+    
 }

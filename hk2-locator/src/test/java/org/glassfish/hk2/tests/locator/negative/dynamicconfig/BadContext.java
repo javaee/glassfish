@@ -86,11 +86,6 @@ public class BadContext<T> implements Context<T> {
     public boolean isActive() {
         throw new AssertionError("not called");
     }
-    
-    @Override
-    public boolean isPermanentlyActive() {
-        throw new AssertionError("not called");
-    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Context#supportsNullCreation()

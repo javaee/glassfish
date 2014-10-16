@@ -99,11 +99,6 @@ public class FruitContext implements Context<FruitScope> {
         return true;
     }
     
-    @Override
-    public boolean isPermanentlyActive() {
-        return true;
-    }
-    
     public HashMap<ActiveDescriptor<?>, Object> getContextStoredFruits() {
         return fruits;
     }

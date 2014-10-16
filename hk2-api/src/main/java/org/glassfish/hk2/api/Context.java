@@ -105,24 +105,11 @@ public interface Context<T> {
     public boolean supportsNullCreation();
     
     /**
-     * True if this context is active, false otherwise.  If this
-     * method always returns true then {@link #isPermanentlyActive()}
-     * should also return true
+     * True if this context is active, false otherwise
      * 
      * @return true if this context is active, false otherwise
      */
     public boolean isActive();
-    
-    /**
-     * This should return true if this Context is *always* active and
-     * never needs to be checked if it is currently active
-     * 
-     * @return If this returns true it is assumed the {@link #isActive()}
-     * method always returns true and need not be consulted.  If this
-     * returns false the the {@link #isActive()} method will be consulted
-     * whenever a service in this context is discovered
-     */
-    public boolean isPermanentlyActive();
 
     /**
      * Shut down this context.

@@ -37,80 +37,23 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.context.ghost;
+package org.glassfish.hk2.tests.locator.context.multiples;
 
-import java.lang.annotation.Annotation;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import javax.inject.Singleton;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Context;
-import org.glassfish.hk2.api.ServiceHandle;
+import javax.inject.Scope;
 
 /**
  * @author jwells
  *
  */
-@Singleton
-public class GhostedContext implements Context<GhostedScope> {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#getScope()
-     */
-    @Override
-    public Class<? extends Annotation> getScope() {
-        return GhostedScope.class;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#findOrCreate(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.ServiceHandle)
-     */
-    @Override
-    public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor,
-            ServiceHandle<?> root) {
-        return activeDescriptor.create(root);
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#containsKey(org.glassfish.hk2.api.ActiveDescriptor)
-     */
-    @Override
-    public boolean containsKey(ActiveDescriptor<?> descriptor) {
-        return false;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#destroyOne(org.glassfish.hk2.api.ActiveDescriptor)
-     */
-    @Override
-    public void destroyOne(ActiveDescriptor<?> descriptor) {
-        // Do nothing
-
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#supportsNullCreation()
-     */
-    @Override
-    public boolean supportsNullCreation() {
-        return false;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#isActive()
-     */
-    @Override
-    public boolean isActive() {
-        return true;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#shutdown()
-     */
-    @Override
-    public void shutdown() {
-        // Do nothing
-
-    }
+@Scope
+@Retention(RUNTIME)
+@Target( { TYPE })
+public @interface MultiScope {
 
 }

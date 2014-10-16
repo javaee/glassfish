@@ -90,11 +90,6 @@ public class SpringScopeContext implements Context<SpringScope> {
     }
 
     @Override
-    public boolean isPermanentlyActive() {
-        return true;
-    }
-
-    @Override
     public void shutdown() {
         // Do nothing
         

@@ -128,11 +128,6 @@ public class RequestContext implements Context<RequestScope> {
     public boolean isActive() {
         return inRequest;
     }
-    
-    @Override
-    public boolean isPermanentlyActive() {
-        return false;
-    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Context#supportsNullCreation()

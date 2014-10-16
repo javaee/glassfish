@@ -37,80 +37,57 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.context.ghost;
+package org.glassfish.hk2.tests.locator.context.multiples;
 
-import java.lang.annotation.Annotation;
-
-import javax.inject.Singleton;
+import java.util.Map;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Context;
-import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * @author jwells
  *
  */
-@Singleton
-public class GhostedContext implements Context<GhostedScope> {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#getScope()
-     */
-    @Override
-    public Class<? extends Annotation> getScope() {
-        return GhostedScope.class;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#findOrCreate(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.ServiceHandle)
-     */
-    @Override
-    public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor,
-            ServiceHandle<?> root) {
-        return activeDescriptor.create(root);
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#containsKey(org.glassfish.hk2.api.ActiveDescriptor)
-     */
-    @Override
-    public boolean containsKey(ActiveDescriptor<?> descriptor) {
-        return false;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#destroyOne(org.glassfish.hk2.api.ActiveDescriptor)
-     */
-    @Override
-    public void destroyOne(ActiveDescriptor<?> descriptor) {
-        // Do nothing
-
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#supportsNullCreation()
-     */
-    @Override
-    public boolean supportsNullCreation() {
-        return false;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#isActive()
-     */
-    @Override
-    public boolean isActive() {
-        return true;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#shutdown()
-     */
-    @Override
-    public void shutdown() {
-        // Do nothing
-
+public class MultipleContextsTest {
+    @Test @org.junit.Ignore
+    public void testMultipleRollingContexts() {
+        ServiceLocator locator = LocatorHelper.getServiceLocator(MultiContextA.class,
+                MultiContextB.class,
+                MultiContextC.class,
+                Service1.class,
+                Service2.class,
+                Service3.class,
+                Service4.class,
+                Service5.class,
+                Service6.class);
+        
+        Assert.assertNotNull(locator.getService(Service1.class));
+        Assert.assertNotNull(locator.getService(Service2.class));
+        Assert.assertNotNull(locator.getService(Service3.class));
+        Assert.assertNotNull(locator.getService(Service4.class));
+        Assert.assertNotNull(locator.getService(Service5.class));
+        Assert.assertNotNull(locator.getService(Service6.class));
+        
+        MultiContextA contextA = locator.getService(MultiContextA.class);
+        Assert.assertNotNull(contextA);
+        
+        MultiContextB contextB = locator.getService(MultiContextB.class);
+        Assert.assertNotNull(contextB);
+        
+        MultiContextC contextC = locator.getService(MultiContextC.class);
+        Assert.assertNotNull(contextC);
+        
+        Map<ActiveDescriptor<?>, Object> aInstances = contextA.getInstances();
+        Assert.assertEquals(2, aInstances.size());
+        
+        Map<ActiveDescriptor<?>, Object> bInstances = contextB.getInstances();
+        Assert.assertEquals(2, bInstances.size());
+        
+        Map<ActiveDescriptor<?>, Object> cInstances = contextC.getInstances();
+        Assert.assertEquals(2, cInstances.size());
     }
 
 }

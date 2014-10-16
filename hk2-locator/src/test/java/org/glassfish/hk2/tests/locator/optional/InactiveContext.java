@@ -102,11 +102,6 @@ public class InactiveContext implements Context<InactiveScope> {
     public boolean isActive() {
         return false;
     }
-    
-    @Override
-    public boolean isPermanentlyActive() {
-        return false;
-    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Context#shutdown()

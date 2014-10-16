@@ -106,11 +106,6 @@ public class GuiceScopeContext implements Context<GuiceScope> {
     public boolean isActive() {
         return true;
     }
-    
-    @Override
-    public boolean isPermanentlyActive() {
-        return true;
-    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Context#shutdown()

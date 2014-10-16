@@ -94,11 +94,6 @@ public class ImmediateContext implements Context<Immediate>{
     public boolean isActive() {
         return true;
     }
-    
-    @Override
-    public boolean isPermanentlyActive() {
-        return true;
-    }
 
     @Override
     public void shutdown() {

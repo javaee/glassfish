@@ -107,11 +107,6 @@ public class TenantScopedContext implements Context<TenantScoped> {
         return manager.getCurrentTenant() != null;
     }
 
-    @Override
-    public boolean isPermanentlyActive() {
-        return false;
-    }
-
     /* (non-Javadoc)
     * @see org.glassfish.hk2.api.Context#isActive()
     */
