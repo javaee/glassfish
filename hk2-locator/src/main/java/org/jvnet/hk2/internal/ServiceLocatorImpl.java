@@ -2039,6 +2039,11 @@ public class ServiceLocatorImpl implements ServiceLocator {
     /* package */ Context<?> resolveContext(Class<? extends Annotation> scope) throws IllegalStateException {
         if (scope.equals(Singleton.class)) return singletonContext;
         if (scope.equals(PerLookup.class)) return perLookupContext;
+        Context<?> retVal = contextCache.compute(scope);
+        if (retVal.isActive()) return retVal;
+        
+        // Not active anymore, maybe there is another.  But first, clear the cache!
+        contextCache.remove(scope);
         return contextCache.compute(scope);
     }
 

@@ -52,7 +52,7 @@ import org.junit.Test;
  *
  */
 public class MultipleContextsTest {
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testMultipleRollingContexts() {
         ServiceLocator locator = LocatorHelper.getServiceLocator(MultiContextA.class,
                 MultiContextB.class,
