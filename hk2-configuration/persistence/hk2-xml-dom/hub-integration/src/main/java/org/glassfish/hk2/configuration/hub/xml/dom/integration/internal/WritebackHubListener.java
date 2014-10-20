@@ -43,6 +43,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -249,6 +250,18 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
                 single = true;
             }
             else if (List.class.equals(retType)) {
+                java.lang.reflect.Type pTypeRaw = m.getGenericReturnType();
+                if (!(pTypeRaw instanceof ParameterizedType)) {
+                    // To work with our stuff your lists must be parameterized
+                    continue;
+                }
+                
+                ParameterizedType pType = (ParameterizedType) pTypeRaw;
+                if (pType.getActualTypeArguments().length != 1) continue;
+                
+                if (!(pType.getActualTypeArguments()[0] instanceof Class)) continue;
+                if (!childType.equals((Class<?>) pType.getActualTypeArguments()[0])) continue;
+                
                 single = false;
             }
             else {
@@ -260,19 +273,21 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
             
             String methodXmlName = prop.xmlName();
             String elementName = methodXmlName;
+            boolean hasStar = false;
             if (STAR.equals(elementName)) {
                 methodXmlName = childType.getSimpleName();
                 methodXmlName = ConfigModel.camelCaseToXML(methodXmlName);
+                hasStar = true;
             }
             
             if (!methodXmlName.equals(xmlName)) {
                 continue;
             }
             
-            return new MethodAndElementName(m, elementName, single);
+            return new MethodAndElementName(m, methodXmlName, single, hasStar);
         }
         
-        return new MethodAndElementName(null, null, true);
+        return new MethodAndElementName(null, null, true, false);
     }
     
     private void doModification(Change change, ConfigBeanProxy originalConfigBean) {
@@ -481,6 +496,9 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
         MethodAndElementName maen = findChildGetterMethod(parentDom, childElementName, fChildClass);
         
         configListener.addKnownChange(maen.elementName);
+        if (maen.hasStar) {
+            configListener.addKnownChange(STAR);
+        }
         ConfigBeanProxy child = null;
         configListener.skip();
         try {
@@ -499,9 +517,10 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
         }
         finally {
             configListener.unskip();
-            if (child == null) {
-                configListener.removeKnownChange(maen.elementName);
+            if (maen.hasStar) {
+                configListener.removeKnownChange(STAR);
             }
+            configListener.removeKnownChange(maen.elementName);
         }
         
         if (child != null) {
@@ -618,6 +637,9 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
             ConfigBean childConfigBean = (ConfigBean) childDom;
             
             configListener.addKnownChange(maen.elementName);
+            if (maen.hasStar) {
+                configListener.addKnownChange(STAR);
+            }
             try {
                 ConfigSupport.deleteChild(parentConfigBean, childConfigBean);
             }
@@ -625,10 +647,12 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
                 Logger.getLogger().debug(getClass().getName(), "removeChild", e);
             }
             finally {
+                if (maen.hasStar) {
+                    configListener.removeKnownChange(STAR);
+                }
                 configListener.removeKnownChange(maen.elementName);
             }
         }
-        
     }
 
     /* (non-Javadoc)
@@ -718,11 +742,13 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
         private final Method method;
         private final String elementName;  // Could be "*"
         private final boolean single;
+        private final boolean hasStar;
         
-        private MethodAndElementName(Method m, String e, boolean s) {
+        private MethodAndElementName(Method m, String e, boolean s, boolean hasStar) {
             this.method = m;
             this.elementName = e;
             this.single = s;
+            this.hasStar = hasStar;
         }
     }
 

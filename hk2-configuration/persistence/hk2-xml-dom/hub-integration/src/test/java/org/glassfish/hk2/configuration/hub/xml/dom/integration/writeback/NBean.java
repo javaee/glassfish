@@ -39,30 +39,16 @@
  */
 package org.glassfish.hk2.configuration.hub.xml.dom.integration.writeback;
 
-import java.util.List;
-
+import org.glassfish.hk2.configuration.hub.xml.dom.integration.tests.NamedBean;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
+import org.jvnet.hk2.config.types.PropertyBag;
 
 /**
- * This bean has both a child list and a complex child element
- * 
  * @author jwells
  *
  */
 @Configured
-public interface JBean extends ConfigBeanProxy {
-    @Element
-    public KBean getKBean();
-    public void setKBean(KBean kbean);
-    
-    @Element
-    public List<LBean> getLBeans();
-    public void setLBeans(List<LBean> lbeans);
-    
-    @Element("*")
-    public List<NBean> getNBeans();
-    public void setNBeans(List<NBean> nbeans);
+public interface NBean extends NamedBean, PropertyBag, Auditable, ConfigBeanProxy {
 
 }

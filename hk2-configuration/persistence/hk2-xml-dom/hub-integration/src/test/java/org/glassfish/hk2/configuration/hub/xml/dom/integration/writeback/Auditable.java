@@ -39,30 +39,59 @@
  */
 package org.glassfish.hk2.configuration.hub.xml.dom.integration.writeback;
 
-import java.util.List;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
+import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
+import org.jvnet.hk2.config.DuckTyped;
 
 /**
- * This bean has both a child list and a complex child element
- * 
  * @author jwells
  *
  */
 @Configured
-public interface JBean extends ConfigBeanProxy {
-    @Element
-    public KBean getKBean();
-    public void setKBean(KBean kbean);
+public interface Auditable extends ConfigBeanProxy {
+  @Attribute
+  String getCreatedOn();
+  void setCreatedOn(String date);
+
+  @Attribute
+  String getUpdatedOn();
+  void setUpdatedOn(String date);
+
+  @DuckTyped
+  Date getCreatedOnDate();
+
+  @DuckTyped
+  Date getUpdatedOnDate();
+
+  class Duck {
+    private static final DateFormat ISO_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssX");
     
-    @Element
-    public List<LBean> getLBeans();
-    public void setLBeans(List<LBean> lbeans);
+    public static Date getCreatedOnDate(final Auditable auditable) {
+      return date(auditable.getCreatedOn());
+    }
+
+    public static Date getUpdatedOnDate(final Auditable auditable) {
+      return date(auditable.getUpdatedOn());
+    }
     
-    @Element("*")
-    public List<NBean> getNBeans();
-    public void setNBeans(List<NBean> nbeans);
+    private static Date date(String dateString) {
+      if (dateString != null) {
+        try {
+          return ISO_DATE_FORMAT.parse(dateString);
+        } catch (ParseException e) {
+          // TODO: log ParseException
+        }
+      }
+      return null;
+    }
+  
+  }
+
 
 }
