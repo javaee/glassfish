@@ -48,6 +48,7 @@ import org.jvnet.hk2.config.Attribute;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.DuckTyped;
+import org.jvnet.hk2.config.Element;
 
 /**
  * @author jwells
@@ -62,6 +63,14 @@ public interface Auditable extends ConfigBeanProxy {
   @Attribute
   String getUpdatedOn();
   void setUpdatedOn(String date);
+  
+  @Element
+  public long getSomeNumber();
+  public void setSomeNumber(long someNumber);
+  
+  @Element("another-number")
+  public int getSomeOtherNumber();
+  public void setSomeOtherNumber(int someOtherNumber);
 
   @DuckTyped
   Date getCreatedOnDate();

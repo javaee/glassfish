@@ -59,6 +59,26 @@ public class BeanReflectionHelper {
     private final static String IS = "is";
     
     /**
+     * Returns the bean version of the property name if the method
+     * is a getter, or returns null if the method is not a getter
+     * 
+     * @param method The method to get the property name from
+     * @return The java-bean version of the property name or null
+     * if the method is not a java-bean getter
+     */
+    public static String getBeanPropertyNameFromGetter(final Method method) {
+        return isAGetter(new MethodWrapper() {
+
+            @Override
+            public Method getMethod() {
+                return method;
+            }
+            
+        });
+        
+    }
+    
+    /**
      * Returns the property name if this is a getter
      * 
      * @param method The method to investigate for being a property

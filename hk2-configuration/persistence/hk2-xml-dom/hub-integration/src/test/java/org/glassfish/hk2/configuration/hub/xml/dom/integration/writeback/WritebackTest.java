@@ -84,11 +84,18 @@ public class WritebackTest {
     private final static String FRANK_INSTANCE_NAME = "j-bean.frank";
     private final static String HELEN_INSTANCE_NAME = "j-bean.helen";
     
+    private final static String NBEAN_TAG = "/j-bean/n-bean";
+    private final static String IAGO_INSTANCE_NAME = "j-bean.iago";
+    
     private final static String HELLO = "hello";
     private final static String SAILOR = "sailor";
     
     private final static String BBEAN_PARAMETER_NAME = "parameter";
     private final static String NAME_PARAMETER_NAME = "name";
+    private final static String CREATED_ON_PARAMETER_NAME = "createdOn";
+    private final static String UPDATED_ON_PARAMETER_NAME = "updatedOn";
+    private final static String SOME_NUMBER_PARAMETER_NAME = "someNumber";
+    private final static String ANOTHER_NUMBER_PARAMETER_NAME = "someOtherNumber";
     
     private final static String BOB = "bob";
     private final static String CAROL = "carol";
@@ -97,6 +104,7 @@ public class WritebackTest {
     private final static String FRANK = "frank";
     private final static String GIANNA = "gianna";
     private final static String HELEN = "helen";
+    private final static String IAGO = "iago";
     
     private final static String AGE = "age";
     private final static String EPOCH = "epoch";
@@ -497,6 +505,51 @@ public class WritebackTest {
         LBean helen = testLocator.getService(LBean.class, HELEN);
         Assert.assertNotNull(helen);
         Assert.assertEquals(HELEN, helen.getName());
+    }
+    
+    /**
+     * Tests adding beans that have some properties that are not Strings
+     */
+    @Test // @org.junit.Ignore
+    public void testBeansAddedWithMoreComplexProperties() {
+        ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
+        XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
+        
+        Hub hub = testLocator.getService(Hub.class);
+        Assert.assertNotNull(hub);
+        
+        ConfigParser parser = new ConfigParser(testLocator);
+        URL url = getClass().getClassLoader().getResource("complex3.xml");
+        Assert.assertNotNull(url);
+        
+        parser.parse(url);
+        
+        JBean jbean = testLocator.getService(JBean.class);
+        Assert.assertNotNull(jbean);
+        
+        Map<String, Object> nbeanMap = new HashMap<String, Object>();
+        
+        nbeanMap.put(NAME_PARAMETER_NAME, IAGO);
+        nbeanMap.put(CREATED_ON_PARAMETER_NAME, "1000");
+        nbeanMap.put(UPDATED_ON_PARAMETER_NAME, "1000");
+        nbeanMap.put(SOME_NUMBER_PARAMETER_NAME, new Long(1000));
+        nbeanMap.put(ANOTHER_NUMBER_PARAMETER_NAME, new Integer(1000));
+        
+        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+        
+        WriteableType nbeanWriteableType = wbd.findOrAddWriteableType(NBEAN_TAG);
+        nbeanWriteableType.addInstance(IAGO_INSTANCE_NAME, nbeanMap);
+        
+        wbd.commit();
+        
+        NBean nbean = testLocator.getService(NBean.class, IAGO);
+        Assert.assertNotNull(nbean);
+        
+        Assert.assertEquals("1000", nbean.getCreatedOn());
+        Assert.assertEquals("1000", nbean.getUpdatedOn());
+        Assert.assertEquals(1000, nbean.getSomeNumber());
+        Assert.assertEquals(1000, nbean.getSomeOtherNumber());
+        Assert.assertEquals(IAGO, nbean.getName());
     }
 
 }

@@ -62,6 +62,7 @@ import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationCommitMessage;
+import org.glassfish.hk2.utilities.reflection.BeanReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.jvnet.hk2.config.ConfigBean;
 import org.jvnet.hk2.config.ConfigBeanProxy;
@@ -407,7 +408,7 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
         return retVal;
     }
     
-    private static Map<String, String> stringify(Map<String, Object> convertMe) {
+    private static Map<String, String> stringify(Map<String, Object> convertMe, Map<String, String> keyTranslator) {
         HashMap<String, String> retVal = new HashMap<String, String>();
         
         for (Map.Entry<String, Object> entry : convertMe.entrySet()) {
@@ -422,7 +423,27 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
                 value = rawValue.toString();
             }
             
-            retVal.put(key, value);
+            String translatedKey = keyTranslator.get(key);
+            if (translatedKey == null) continue;
+            retVal.put(translatedKey, value);
+        }
+        
+        return retVal;
+    }
+    
+    private static Map<String, String> getBeanToXmlMapping(Class<?> childClass, ConfigModel childModel) {
+        HashMap<String, String> retVal = new HashMap<String, String>();
+        
+        for (Method method : childClass.getMethods()) {
+            String beanName = BeanReflectionHelper.getBeanPropertyNameFromGetter(method);
+            if (beanName == null) continue;
+            
+            Property property = childModel.toProperty(method);
+            if (property == null) continue;
+            
+            String xmlName = property.xmlName;
+            
+            retVal.put(beanName, xmlName);
         }
         
         return retVal;
@@ -466,12 +487,19 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
         
         final String childElementName = getElementName(typeName);
         Dom childDom = parentDom.element(childElementName);
+        ConfigModel childModel;
         if (childDom == null) {
             Property property = parentDom.model.getElement(childElementName);
             if (property == null) {
-                Logger.getLogger().debug("WRITEBACK: No available child Dom for type " + typeName + " and instance " + instanceName +
+                Property starProp = parentDom.model.getElement(STAR);
+                if (starProp != null) {
+                    property = starProp;
+                }
+                else {
+                    Logger.getLogger().debug("WRITEBACK: No available child Dom for type " + typeName + " and instance " + instanceName +
                         " with element name " + childElementName + ".  Available names=" + parentDom.model.getElementNames());
-                return;
+                    return;
+                }
             }
             
             if (!(property instanceof Node)) {
@@ -482,16 +510,18 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
             }
             
             Node node = (Node) property;
-            ConfigModel model = node.getModel();
+            childModel = node.getModel();
             
-            childClass = model.getProxyType();
+            childClass = childModel.getProxyType();
         }
         else {
+            childModel = childDom.model;
             childClass = (Class<? extends ConfigBeanProxy>) childDom.getImplementationClass();
         }
         
         final Class<? extends ConfigBeanProxy> fChildClass = childClass;
         
+        Map<String, String> beanXmlMapping = getBeanToXmlMapping(fChildClass, childModel);
         
         MethodAndElementName maen = findChildGetterMethod(parentDom, childElementName, fChildClass);
         
@@ -504,7 +534,7 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
         try {
             if (parentDom instanceof ConfigBean) {
                 try {
-                    ConfigBean bean = ConfigSupport.createAndSet((ConfigBean) parentDom, fChildClass, stringify(newGuy));
+                    ConfigBean bean = ConfigSupport.createAndSet((ConfigBean) parentDom, fChildClass, stringify(newGuy, beanXmlMapping));
                     child = bean.getProxy(fChildClass);
                 }
                 catch (TransactionFailure e) {
