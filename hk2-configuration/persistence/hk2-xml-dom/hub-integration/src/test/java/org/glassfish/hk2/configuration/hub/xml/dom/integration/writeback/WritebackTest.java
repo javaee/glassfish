@@ -42,6 +42,7 @@ package org.glassfish.hk2.configuration.hub.xml.dom.integration.writeback;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Hub;
@@ -87,7 +88,7 @@ public class WritebackTest {
     private final static String NBEAN_TAG = "/j-bean/n-bean";
     private final static String IAGO_INSTANCE_NAME = "j-bean.iago";
     
-    private final static String OBEAN_TAG = "/o-bean";
+    // private final static String OBEAN_TAG = "/o-bean";
     private final static String O_NBEAN_TAG = "/o-bean/n-bean";
     private final static String O_MBEAN_TAG = "/o-bean/m-bean";
     private final static String JOHN_INSTANCE_NAME = "o-bean.john";
@@ -116,6 +117,15 @@ public class WritebackTest {
     
     private final static String AGE = "age";
     private final static String EPOCH = "epoch";
+    
+    private final static String PROP_A_KEY = "A";
+    private final static String PROP_A_VALUE1 = "VA1";
+    private final static String PROP_A_VALUE2 = "VA2";
+    private final static String PROP_B_KEY = "B";
+    private final static String PROP_B_VALUE = "VB";
+    private final static String PROP_C_KEY = "C";
+    private final static String PROP_C_VALUE = "VC";
+    
     
     @SuppressWarnings("unchecked")
     @Test // @org.junit.Ignore
@@ -607,8 +617,50 @@ public class WritebackTest {
         
         MBean mbean = testLocator.getService(MBean.class, KAREN);
         Assert.assertNotNull(mbean);
+    }
+    
+    /**
+     * Tests that we can add properties to a bean that is a PropertyBag, and
+     * that we can also modify that bean by modifying the Hub
+     */
+    @Test @org.junit.Ignore
+    public void testPropertyBagAddAndModify() {
+        ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
+        XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
         
+        Hub hub = testLocator.getService(Hub.class);
+        Assert.assertNotNull(hub);
         
+        ConfigParser parser = new ConfigParser(testLocator);
+        URL url = getClass().getClassLoader().getResource("complex3.xml");
+        Assert.assertNotNull(url);
+        
+        parser.parse(url);
+        
+        JBean jbean = testLocator.getService(JBean.class);
+        Assert.assertNotNull(jbean);
+        
+        Map<String, Object> nbeanMap = new HashMap<String, Object>();
+        
+        Properties newProps = new Properties();
+        newProps.put(PROP_A_KEY, PROP_A_VALUE1);
+        newProps.put(PROP_B_KEY, PROP_B_VALUE);
+        
+        nbeanMap.put(NAME_PARAMETER_NAME, IAGO);
+        nbeanMap.put(XmlDomIntegrationUtilities.PROPERTIES, newProps);
+        
+        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+        
+        WriteableType nbeanWriteableType = wbd.findOrAddWriteableType(NBEAN_TAG);
+        nbeanWriteableType.addInstance(IAGO_INSTANCE_NAME, nbeanMap);
+        
+        wbd.commit();
+        
+        NBean nbean = testLocator.getService(NBean.class, IAGO);
+        Assert.assertNotNull(nbean);
+        
+        Assert.assertEquals(PROP_A_VALUE1, nbean.getPropertyValue(PROP_A_KEY));
+        Assert.assertEquals(PROP_B_VALUE, nbean.getPropertyValue(PROP_B_KEY));
     }
 
 }
