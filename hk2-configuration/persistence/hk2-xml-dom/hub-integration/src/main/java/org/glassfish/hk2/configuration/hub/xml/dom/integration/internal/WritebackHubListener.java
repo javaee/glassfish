@@ -49,6 +49,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.TreeSet;
 
 import javax.inject.Inject;
@@ -62,6 +63,7 @@ import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationCommitMessage;
+import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationUtilities;
 import org.glassfish.hk2.utilities.reflection.BeanReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.jvnet.hk2.config.ConfigBean;
@@ -73,6 +75,7 @@ import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.types.PropertyBag;
 
 /**
  * Listens for updates
@@ -83,6 +86,10 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
     private final static String SET_PREFIX = "set";
     private final static String GET_PREFIX = "get";
     /* package */ final static String STAR = "*";
+    
+    private final static String PROPERTY_NAME_FIELD = "name";
+    private final static String PROPERTY_VALUE_FIELD = "value";
+    private final static String PROPERTY_PROPERTY = "property";
     
     private final static Map<Class<?>, Class<?>> SCALAR_MAP = new HashMap<Class<?>, Class<?>>();
     
@@ -541,12 +548,45 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
         configListener.skip();
         try {
             if (parentDom instanceof ConfigBean) {
+                ConfigBean bean = null;
                 try {
-                    ConfigBean bean = ConfigSupport.createAndSet((ConfigBean) parentDom, fChildClass, stringify(newGuy, beanXmlMapping));
+                    bean = ConfigSupport.createAndSet((ConfigBean) parentDom, fChildClass, stringify(newGuy, beanXmlMapping));
                     child = bean.getProxy(fChildClass);
                 }
                 catch (TransactionFailure e) {
                     Logger.getLogger().debug(getClass().getName(), "addChild", e);
+                }
+                
+                
+                Object propsRaw = newGuy.get(XmlDomIntegrationUtilities.PROPERTIES);
+                if (propsRaw != null && (propsRaw instanceof Properties) &&
+                        child != null && (child instanceof PropertyBag) &&
+                        bean != null) {
+                    Properties props = (Properties) propsRaw;
+                    
+                    configListener.addKnownChange(PROPERTY_PROPERTY);
+                    try {
+                        for (Map.Entry<Object, Object> entry : props.entrySet()) {
+                            String key = (String) entry.getKey();
+                            String value = (String) entry.getValue();
+                        
+                            HashMap<String, String> propertyTypeValues = new HashMap<String, String>();
+                            propertyTypeValues.put(PROPERTY_NAME_FIELD, key);
+                            propertyTypeValues.put(PROPERTY_VALUE_FIELD, value);
+                        
+                            try {
+                                ConfigSupport.createAndSet(bean, org.jvnet.hk2.config.types.Property.class, propertyTypeValues);
+                            }
+                            catch (TransactionFailure e) {
+                                Logger.getLogger().debug("WRITEBACK: Could not add property with key " +
+                                    key + " and value=" + value);
+                            }
+                        }
+                    }
+                    finally {
+                        configListener.removeKnownChange(PROPERTY_PROPERTY);
+                    }
+                    
                 }
             }
             else {

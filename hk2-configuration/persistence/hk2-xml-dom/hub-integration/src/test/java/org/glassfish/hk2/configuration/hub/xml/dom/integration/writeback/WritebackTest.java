@@ -623,7 +623,7 @@ public class WritebackTest {
      * Tests that we can add properties to a bean that is a PropertyBag, and
      * that we can also modify that bean by modifying the Hub
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testPropertyBagAddAndModify() {
         ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
         XmlDomIntegrationUtilities.enableMapTranslator(testLocator);

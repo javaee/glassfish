@@ -40,6 +40,7 @@
 package org.glassfish.hk2.configuration.hub.xml.dom.integration.internal;
 
 import java.beans.PropertyChangeEvent;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -414,6 +415,8 @@ public class ConfigListener implements DynamicConfigurationListener {
         @Override
         public synchronized UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
             synchronized (knownChangedProperties) {
+                Logger.getLogger().debug("WRITEBACK: ConfigListener processing events: " +
+                  getPrettyEventList(events) + " with known properties " + knownChangedProperties);
                 for (String knownProperty : knownChangedProperties) {
                     for (PropertyChangeEvent event : events) {
                         if (event.getPropertyName() != null && event.getPropertyName().equals(knownProperty)) {
