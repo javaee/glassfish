@@ -483,11 +483,12 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
             return;
         }
         
+        ConfigModel childModel;
         Class<? extends ConfigBeanProxy> childClass;
         
         final String childElementName = getElementName(typeName);
         Dom childDom = parentDom.element(childElementName);
-        ConfigModel childModel;
+        
         if (childDom == null) {
             Property property = parentDom.model.getElement(childElementName);
             if (property == null) {
@@ -524,6 +525,13 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
         Map<String, String> beanXmlMapping = getBeanToXmlMapping(fChildClass, childModel);
         
         MethodAndElementName maen = findChildGetterMethod(parentDom, childElementName, fChildClass);
+        
+        if (maen.method == null) {
+            Logger.getLogger().debug("WRITEBACK: Could not find getter for " + typeName + " and instance " + instanceName +
+                    " with element name " + childElementName + " and child class " + fChildClass.getName() +
+                    ".  This can sometimes happen if a bean has two fields marked @Element(\"*\")");
+            return;
+        }
         
         configListener.addKnownChange(maen.elementName);
         if (maen.hasStar) {
@@ -779,6 +787,11 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
             this.elementName = e;
             this.single = s;
             this.hasStar = hasStar;
+        }
+        
+        @Override
+        public String toString() {
+            return "MethodAndElementName(" + method + "," + elementName + "," + single + "," + hasStar + ")";
         }
     }
 

@@ -87,6 +87,12 @@ public class WritebackTest {
     private final static String NBEAN_TAG = "/j-bean/n-bean";
     private final static String IAGO_INSTANCE_NAME = "j-bean.iago";
     
+    private final static String OBEAN_TAG = "/o-bean";
+    private final static String O_NBEAN_TAG = "/o-bean/n-bean";
+    private final static String O_MBEAN_TAG = "/o-bean/m-bean";
+    private final static String JOHN_INSTANCE_NAME = "o-bean.john";
+    private final static String KAREN_INSTANCE_NAME = "o-bean.karen";
+    
     private final static String HELLO = "hello";
     private final static String SAILOR = "sailor";
     
@@ -105,6 +111,8 @@ public class WritebackTest {
     private final static String GIANNA = "gianna";
     private final static String HELEN = "helen";
     private final static String IAGO = "iago";
+    private final static String JOHN = "john";
+    private final static String KAREN = "karen";
     
     private final static String AGE = "age";
     private final static String EPOCH = "epoch";
@@ -550,6 +558,57 @@ public class WritebackTest {
         Assert.assertEquals(1000, nbean.getSomeNumber());
         Assert.assertEquals(1000, nbean.getSomeOtherNumber());
         Assert.assertEquals(IAGO, nbean.getName());
+    }
+    
+    /**
+     * Tests adding beans with multiple * elements
+     * 
+     * This test is ignored because the base hk2-config does
+     * not seem to properly support two @Element("*") fields.
+     * See OBean for an example
+     */
+    @Test @org.junit.Ignore
+    public void testBeanWithMultipleStarElements() {
+        ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
+        XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
+        
+        Hub hub = testLocator.getService(Hub.class);
+        Assert.assertNotNull(hub);
+        
+        ConfigParser parser = new ConfigParser(testLocator);
+        URL url = getClass().getClassLoader().getResource("complex6.xml");
+        Assert.assertNotNull(url);
+        
+        parser.parse(url);
+        
+        OBean obean = testLocator.getService(OBean.class);
+        Assert.assertNotNull(obean);
+        
+        Map<String, Object> nbeanMap = new HashMap<String, Object>();
+        
+        nbeanMap.put(NAME_PARAMETER_NAME, JOHN);
+        
+        Map<String, Object> mbeanMap = new HashMap<String, Object>();
+        
+        mbeanMap.put(NAME_PARAMETER_NAME, KAREN);
+        
+        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+        
+        WriteableType nbeanWriteableType = wbd.findOrAddWriteableType(O_NBEAN_TAG);
+        nbeanWriteableType.addInstance(JOHN_INSTANCE_NAME, nbeanMap);
+        
+        WriteableType mbeanWriteableType = wbd.findOrAddWriteableType(O_MBEAN_TAG);
+        mbeanWriteableType.addInstance(KAREN_INSTANCE_NAME, mbeanMap);
+        
+        wbd.commit();
+        
+        NBean nbean = testLocator.getService(NBean.class, JOHN);
+        Assert.assertNotNull(nbean);
+        
+        MBean mbean = testLocator.getService(MBean.class, KAREN);
+        Assert.assertNotNull(mbean);
+        
+        
     }
 
 }
