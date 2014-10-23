@@ -623,7 +623,7 @@ public class WritebackTest {
      * Tests that we can add properties to a bean that is a PropertyBag, and
      * that we can also modify that bean by modifying the Hub
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testPropertyBagAddAndModify() {
         ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
         XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
@@ -640,21 +640,23 @@ public class WritebackTest {
         JBean jbean = testLocator.getService(JBean.class);
         Assert.assertNotNull(jbean);
         
-        Map<String, Object> nbeanMap = new HashMap<String, Object>();
+        {
+            Map<String, Object> nbeanMap = new HashMap<String, Object>();
         
-        Properties newProps = new Properties();
-        newProps.put(PROP_A_KEY, PROP_A_VALUE1);
-        newProps.put(PROP_B_KEY, PROP_B_VALUE);
+            Properties newProps = new Properties();
+            newProps.put(PROP_A_KEY, PROP_A_VALUE1);
+            newProps.put(PROP_B_KEY, PROP_B_VALUE);
         
-        nbeanMap.put(NAME_PARAMETER_NAME, IAGO);
-        nbeanMap.put(XmlDomIntegrationUtilities.PROPERTIES, newProps);
+            nbeanMap.put(NAME_PARAMETER_NAME, IAGO);
+            nbeanMap.put(XmlDomIntegrationUtilities.PROPERTIES, newProps);
         
-        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+            WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
         
-        WriteableType nbeanWriteableType = wbd.findOrAddWriteableType(NBEAN_TAG);
-        nbeanWriteableType.addInstance(IAGO_INSTANCE_NAME, nbeanMap);
+            WriteableType nbeanWriteableType = wbd.findOrAddWriteableType(NBEAN_TAG);
+            nbeanWriteableType.addInstance(IAGO_INSTANCE_NAME, nbeanMap);
         
-        wbd.commit();
+            wbd.commit();
+        }
         
         NBean nbean = testLocator.getService(NBean.class, IAGO);
         Assert.assertNotNull(nbean);
@@ -663,23 +665,25 @@ public class WritebackTest {
         Assert.assertEquals(PROP_B_VALUE, nbean.getPropertyValue(PROP_B_KEY));
         Assert.assertNull(nbean.getPropertyValue(PROP_C_KEY));
         
-        // Now modify the properties just added!
-        nbeanMap = new HashMap<String, Object>();
+        {
+            // Now modify the properties just added!
+            HashMap<String, Object> nbeanMap = new HashMap<String, Object>();
         
-        Properties modProps = new Properties();
-        newProps.put(PROP_A_KEY, PROP_A_VALUE2);
-        // PropertyB is being removed
-        newProps.put(PROP_C_KEY, PROP_C_VALUE);
+            Properties modProps = new Properties();
+            modProps.put(PROP_A_KEY, PROP_A_VALUE2);
+            // PropertyB is being removed
+            modProps.put(PROP_C_KEY, PROP_C_VALUE);
         
-        nbeanMap.put(NAME_PARAMETER_NAME, IAGO);
-        nbeanMap.put(XmlDomIntegrationUtilities.PROPERTIES, modProps);
+            nbeanMap.put(NAME_PARAMETER_NAME, IAGO);
+            nbeanMap.put(XmlDomIntegrationUtilities.PROPERTIES, modProps);
         
-        wbd = hub.getWriteableDatabaseCopy();
+            WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
         
-        nbeanWriteableType = wbd.getWriteableType(NBEAN_TAG);
-        nbeanWriteableType.modifyInstance(IAGO_INSTANCE_NAME, nbeanMap);
+            WriteableType nbeanWriteableType = wbd.getWriteableType(NBEAN_TAG);
+            nbeanWriteableType.modifyInstance(IAGO_INSTANCE_NAME, nbeanMap);
         
-        wbd.commit();
+            wbd.commit();
+        }
         
         Assert.assertEquals(PROP_A_VALUE2, nbean.getPropertyValue(PROP_A_KEY));
         Assert.assertNull(nbean.getPropertyValue(PROP_B_KEY));

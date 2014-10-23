@@ -46,10 +46,13 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.TreeSet;
 
 import javax.inject.Inject;
@@ -64,6 +67,7 @@ import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationCommitMessage;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationUtilities;
+import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.BeanReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.jvnet.hk2.config.ConfigBean;
@@ -376,13 +380,92 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
             }, originalConfigBean);
         }
         catch (TransactionFailure e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            Logger.getLogger().debug(getClass().getName(), "modifyInstance", e);
         }
         finally {
             for (String remove : added) {
                 configListener.removeKnownChange(remove);
             }
+        }
+        
+        if (!(originalConfigBean instanceof PropertyBag)) return;
+        
+        Dom dom = Dom.unwrap(originalConfigBean);
+        if (!(dom instanceof ConfigBean)) return;
+        
+        configListener.skip();
+        try {
+            ConfigBean configBean = (ConfigBean) dom;
+        
+            // Now we need to add, remove or modify the properties
+            for (PropertyChangeEvent propChange : change.getModifiedProperties()) {
+                if (!XmlDomIntegrationUtilities.PROPERTIES.equals(propChange.getPropertyName())) continue;
+                if (propChange.getNewValue() == null || !(propChange.getNewValue() instanceof Properties)) continue;
+                Properties newProperties = (Properties) propChange.getNewValue();
+            
+                // The residue are new properties that need to be added
+                Set<String> residue = new HashSet<String>();
+                for (Object o : newProperties.keySet()) {
+                    residue.add((String) o);
+                }
+            
+                PropertyBag bag = (PropertyBag) originalConfigBean;
+            
+                List<org.jvnet.hk2.config.types.Property> oldProperties = bag.getProperty();
+            
+                for (org.jvnet.hk2.config.types.Property oldProperty : oldProperties) {
+                    if (!newProperties.containsKey(oldProperty.getName())) {
+                        Dom domProp = Dom.unwrap(oldProperty);
+                        if (domProp == null) continue;
+                        if (!(domProp instanceof ConfigBean)) continue;
+                        
+                        configListener.addKnownChange(PROPERTY_PROPERTY);
+                        try {
+                            ConfigSupport.deleteChild(configBean, (ConfigBean) domProp);
+                        }
+                        catch (TransactionFailure e) {
+                            Logger.getLogger().debug(getClass().getName(), "modifyInstance-deleteChild", e);
+                        }
+                        finally {
+                            configListener.removeKnownChange(PROPERTY_PROPERTY);
+                        }
+                    }
+                    else if (residue.remove(oldProperty.getName())) {
+                        String oldValue = oldProperty.getValue();
+                        final String newValue = newProperties.getProperty(oldProperty.getName());
+                        
+                        if (!GeneralUtilities.safeEquals(oldValue, newValue)) {
+                            try {
+                                ConfigSupport.apply(new SingleConfigCode<org.jvnet.hk2.config.types.Property>() {
+
+                                    @Override
+                                    public Object run(
+                                            org.jvnet.hk2.config.types.Property param)
+                                            throws PropertyVetoException,
+                                            TransactionFailure {
+                                        param.setValue(newValue);
+                                        return null;
+                                    }
+                                    
+                                }, oldProperty);
+                            }
+                            catch (TransactionFailure e) {
+                                Logger.getLogger().debug(getClass().getName(), "modifyInstance-apply", e);
+                            }
+                            
+                        }
+                        
+                    }
+                
+                }
+            
+                for (String newKey : residue) {
+                    addProperty(configBean, newKey, newProperties.getProperty(newKey));
+                }
+            }
+        }
+        finally {
+            configListener.unskip();
         }
     }
     
@@ -454,6 +537,28 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
         }
         
         return retVal;
+    }
+    
+    private void addProperty(ConfigBean parent, String key, String value) {
+        
+        configListener.addKnownChange(PROPERTY_PROPERTY);
+        try {
+            HashMap<String, String> propertyTypeValues = new HashMap<String, String>();
+            propertyTypeValues.put(PROPERTY_NAME_FIELD, key);
+            propertyTypeValues.put(PROPERTY_VALUE_FIELD, value);
+    
+            try {
+                ConfigSupport.createAndSet(parent, org.jvnet.hk2.config.types.Property.class, propertyTypeValues);
+            }
+            catch (TransactionFailure e) {
+                Logger.getLogger().debug("WRITEBACK: Could not add property with key " +
+                    key + " and value=" + value);
+            }
+        }
+        finally {
+            configListener.removeKnownChange(PROPERTY_PROPERTY);
+        }
+        
     }
     
     @SuppressWarnings("unchecked")
@@ -564,29 +669,12 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
                         bean != null) {
                     Properties props = (Properties) propsRaw;
                     
-                    configListener.addKnownChange(PROPERTY_PROPERTY);
-                    try {
-                        for (Map.Entry<Object, Object> entry : props.entrySet()) {
-                            String key = (String) entry.getKey();
-                            String value = (String) entry.getValue();
-                        
-                            HashMap<String, String> propertyTypeValues = new HashMap<String, String>();
-                            propertyTypeValues.put(PROPERTY_NAME_FIELD, key);
-                            propertyTypeValues.put(PROPERTY_VALUE_FIELD, value);
-                        
-                            try {
-                                ConfigSupport.createAndSet(bean, org.jvnet.hk2.config.types.Property.class, propertyTypeValues);
-                            }
-                            catch (TransactionFailure e) {
-                                Logger.getLogger().debug("WRITEBACK: Could not add property with key " +
-                                    key + " and value=" + value);
-                            }
-                        }
+                    for (Map.Entry<Object, Object> entry : props.entrySet()) {
+                        String key = (String) entry.getKey();
+                        String value = (String) entry.getValue();
+                            
+                        addProperty(bean, key, value);   
                     }
-                    finally {
-                        configListener.removeKnownChange(PROPERTY_PROPERTY);
-                    }
-                    
                 }
             }
             else {
