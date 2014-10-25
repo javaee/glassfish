@@ -666,7 +666,8 @@
                         ${basedir}/hk2-inhabitant-generator/src/main/java;
                         ${basedir}/hk2-configuration/manager/src/main/java;
                         ${basedir}/hk2-configuration/hk2-integration/src/main/java;
-                        ${basedir}/hk2-configuration/persistence/property-file/src/main/java
+                        ${basedir}/hk2-configuration/persistence/property-file/src/main/java;
+                        ${basedir}/hk2-extras/src/main/java
                     </sourcepath>
                     <doctitle>HK2 API Documentation</doctitle>
                     <windowtitle>HK2 API Documentation</windowtitle>

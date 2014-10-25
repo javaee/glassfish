@@ -1,6 +1,6 @@
 ## Default Interception Service Implementation
 
-In the hk2-extras module there is a default implementation of the [InterceptionService][interceptionserivice] which
+In the hk2-extras module there is a default implementation of the [InterceptionService][interceptionservice] which
 uses annotations to determine what services are to be intercepted and which interceptors should
 be used.  This page describes this default implementation.
 
@@ -9,7 +9,7 @@ be used.  This page describes this default implementation.
 All services to be intercepted by this implementation must be annotated with the
 [Intercepted][intercepted] qualifier.  The [Intercepted][intercepted] qualifier may
 only be placed on classes.  Here is an example of a service that can used method or
-constructor interception when using the default [InterceptionService][interceptionserivice]
+constructor interception when using the default [InterceptionService][interceptionservice]
 implementation:
 
 ```java
@@ -183,7 +183,7 @@ you will need to use the enableDefaultInterceptorServiceImplementation method of
 the [ExtrasUtilities][extrasutilities] class.  You will also need to include the hk2-extras module
 on your classpath.
 
-[interceptionserivice]: apidocs/org/glassfish/hk2/api/InterceptionService.html
+[interceptionservice]: apidocs/org/glassfish/hk2/api/InterceptionService.html
 [intercepted]: apidocs/org/glassfish/hk2/extras/interception/Intercepted.html
 [interceptor]: apidocs/org/glassfish/hk2/extras/interception/Interceptor.html
 [methodinterceptor]: http://aopalliance.sourceforge.net/doc/org/aopalliance/intercept/MethodInterceptor.html
