@@ -46,6 +46,7 @@ import java.util.List;
 import org.aopalliance.intercept.ConstructorInterceptor;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.extras.interception.InterceptorOrderingService;
 
 /**
@@ -59,8 +60,8 @@ public class DoNothingOrderer implements InterceptorOrderingService {
      * @see org.glassfish.hk2.extras.interception.InterceptorOrderingService#modifyMethodInterceptors(java.lang.reflect.Method, java.util.List)
      */
     @Override
-    public List<MethodInterceptor> modifyMethodInterceptors(Method method,
-            List<MethodInterceptor> currentList) {
+    public List<ServiceHandle<MethodInterceptor>> modifyMethodInterceptors(Method method,
+            List<ServiceHandle<MethodInterceptor>> currentList) {
         return currentList;
     }
 
@@ -68,8 +69,8 @@ public class DoNothingOrderer implements InterceptorOrderingService {
      * @see org.glassfish.hk2.extras.interception.InterceptorOrderingService#modifyConstructorInterceptors(java.lang.reflect.Constructor, java.util.List)
      */
     @Override
-    public List<ConstructorInterceptor> modifyConstructorInterceptors(
-            Constructor<?> constructor, List<ConstructorInterceptor> currentList) {
+    public List<ServiceHandle<ConstructorInterceptor>> modifyConstructorInterceptors(
+            Constructor<?> constructor, List<ServiceHandle<ConstructorInterceptor>> currentList) {
         return currentList;
     }
 

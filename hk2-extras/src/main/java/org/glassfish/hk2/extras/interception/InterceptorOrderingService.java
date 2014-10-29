@@ -45,6 +45,8 @@ import java.util.List;
 
 import org.aopalliance.intercept.ConstructorInterceptor;
 import org.aopalliance.intercept.MethodInterceptor;
+import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -71,7 +73,11 @@ public interface InterceptorOrderingService {
      * can be removed (if an empty list is returned) or modified.  Modifications can
      * include changes of order, additions and/or removals of the interceptors
      * passed into the method.  If this method throws an exception the exception
-     * will be ignored and the interceptor list passed in will be used
+     * will be ignored and the interceptor list passed in will be used.
+     * 
+     * If the implementation would like to return MethodInterceptors that are not hk2
+     * services it is recommended that they use {@link BuilderHelper#createConstantServiceHandle(Object)}
+     * to create ServiceHandles representing their MethodInterceptors
      *  
      * @param method The method that is to be intercepted
      * @param currentList The list that will be used to intercept the method if this
@@ -80,7 +86,7 @@ public interface InterceptorOrderingService {
      * returned list must be ordered.  If this method returns null then the list passed
      * in will be used
      */
-    public List<MethodInterceptor> modifyMethodInterceptors(Method method, List<MethodInterceptor> currentList);
+    public List<ServiceHandle<MethodInterceptor>> modifyMethodInterceptors(Method method, List<ServiceHandle<MethodInterceptor>> currentList);
     
     /**
      * This method is called for each constructor that may be intercepted by the default
@@ -92,6 +98,10 @@ public interface InterceptorOrderingService {
      * include changes of order, additions and/or removals of the interceptors
      * passed into the method.  If this method throws an exception the exception
      * will be ignored and the interceptor list passed in will be used
+     *
+     * If the implementation would like to return ConstructorInterceptors that are not hk2
+     * services it is recommended that they use {@link BuilderHelper#createConstantServiceHandle(Object)}
+     * to create ServiceHandles representing their ConstructorInterceptors
      *  
      * @param constructor The constructor that is to be intercepted
      * @param currentList The list that will be used to intercept the constructor if this
@@ -100,6 +110,6 @@ public interface InterceptorOrderingService {
      * returned list must be ordered.  If this method returns null then the list passed
      * in will be used
      */
-    public List<ConstructorInterceptor> modifyConstructorInterceptors(Constructor<?> constructor, List<ConstructorInterceptor> currentList);
+    public List<ServiceHandle<ConstructorInterceptor>> modifyConstructorInterceptors(Constructor<?> constructor, List<ServiceHandle<ConstructorInterceptor>> currentList);
 
 }

@@ -59,7 +59,9 @@ public interface ServiceHandle<T> {
     /**
      * Returns the ActiveDescriptor associated with this service handle
      * 
-     * @return The ActiveDescriptor associated with this handle
+     * @return The ActiveDescriptor associated with this handle. Can return
+     * null in cases where the Handle describes a service not associated with
+     * an hk2 service, such as a constant service
      */
     public ActiveDescriptor<T> getActiveDescriptor();
     

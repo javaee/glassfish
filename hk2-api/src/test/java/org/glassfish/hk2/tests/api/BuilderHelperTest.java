@@ -60,6 +60,7 @@ import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.tests.contracts.AnotherContract;
 import org.glassfish.hk2.tests.contracts.SomeContract;
 import org.glassfish.hk2.tests.services.AnotherService;
@@ -688,5 +689,34 @@ public class BuilderHelperTest {
         }
         
         
+    }
+    
+    private final static String FOO = "foo";
+    private final static String BAR = "bar";
+    
+    @Test
+    public void testCreateServiceHandle() {
+        ServiceHandle<String> handle = BuilderHelper.createConstantServiceHandle(FOO);
+        Assert.assertNotNull(handle);
+        
+        Assert.assertEquals(FOO, handle.getService());
+        Assert.assertNull(handle.getActiveDescriptor());
+        Assert.assertNull(handle.getServiceData());
+        
+        handle.setServiceData(BAR);
+        Assert.assertEquals(BAR, handle.getServiceData());
+        
+        ServiceHandle<Object> nullMe = BuilderHelper.createConstantServiceHandle(null);
+        Assert.assertNotNull(nullMe);
+        
+        Assert.assertNull(nullMe.getService());
+        Assert.assertNull(nullMe.getActiveDescriptor());
+        Assert.assertNull(nullMe.getServiceData());
+        
+        nullMe.setServiceData(FOO);
+        Assert.assertEquals(FOO, nullMe.getServiceData());
+        
+        nullMe.setServiceData(null);
+        Assert.assertNull(nullMe.getServiceData());
     }
 }

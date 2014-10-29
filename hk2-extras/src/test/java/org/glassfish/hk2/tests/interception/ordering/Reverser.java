@@ -48,6 +48,7 @@ import javax.inject.Singleton;
 
 import org.aopalliance.intercept.ConstructorInterceptor;
 import org.aopalliance.intercept.MethodInterceptor;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.extras.interception.InterceptorOrderingService;
 
 /**
@@ -61,12 +62,12 @@ public class Reverser implements InterceptorOrderingService {
      * @see org.glassfish.hk2.extras.interception.InterceptorOrderingService#modifyMethodInterceptors(java.lang.reflect.Method, java.util.List)
      */
     @Override
-    public List<MethodInterceptor> modifyMethodInterceptors(Method method,
-            List<MethodInterceptor> currentList) {
+    public List<ServiceHandle<MethodInterceptor>> modifyMethodInterceptors(Method method,
+            List<ServiceHandle<MethodInterceptor>> currentList) {
         
-        LinkedList<MethodInterceptor> retVal = new LinkedList<MethodInterceptor>();
+        LinkedList<ServiceHandle<MethodInterceptor>> retVal = new LinkedList<ServiceHandle<MethodInterceptor>>();
         
-        for (MethodInterceptor mi : currentList) {
+        for (ServiceHandle<MethodInterceptor> mi : currentList) {
             retVal.addFirst(mi);
             
         }
@@ -78,11 +79,11 @@ public class Reverser implements InterceptorOrderingService {
      * @see org.glassfish.hk2.extras.interception.InterceptorOrderingService#modifyConstructorInterceptors(java.lang.reflect.Constructor, java.util.List)
      */
     @Override
-    public List<ConstructorInterceptor> modifyConstructorInterceptors(
-            Constructor<?> constructor, List<ConstructorInterceptor> currentList) {
-        LinkedList<ConstructorInterceptor> retVal = new LinkedList<ConstructorInterceptor>();
+    public List<ServiceHandle<ConstructorInterceptor>> modifyConstructorInterceptors(
+            Constructor<?> constructor, List<ServiceHandle<ConstructorInterceptor>> currentList) {
+        LinkedList<ServiceHandle<ConstructorInterceptor>> retVal = new LinkedList<ServiceHandle<ConstructorInterceptor>>();
         
-        for (ConstructorInterceptor ci : currentList) {
+        for (ServiceHandle<ConstructorInterceptor> ci : currentList) {
             retVal.addFirst(ci);
             
         }

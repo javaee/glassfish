@@ -45,6 +45,7 @@ import java.util.List;
 
 import org.aopalliance.intercept.ConstructorInterceptor;
 import org.aopalliance.intercept.MethodInterceptor;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.extras.interception.InterceptorOrderingService;
 
 /**
@@ -57,8 +58,8 @@ public class ThrowingOrderer implements InterceptorOrderingService {
      * @see org.glassfish.hk2.extras.interception.InterceptorOrderingService#modifyMethodInterceptors(java.lang.reflect.Method, java.util.List)
      */
     @Override
-    public List<MethodInterceptor> modifyMethodInterceptors(Method method,
-            List<MethodInterceptor> currentList) {
+    public List<ServiceHandle<MethodInterceptor>> modifyMethodInterceptors(Method method,
+            List<ServiceHandle<MethodInterceptor>> currentList) {
         throw new AssertionError("Expected ignored exception");
     }
 
@@ -66,8 +67,8 @@ public class ThrowingOrderer implements InterceptorOrderingService {
      * @see org.glassfish.hk2.extras.interception.InterceptorOrderingService#modifyConstructorInterceptors(java.lang.reflect.Constructor, java.util.List)
      */
     @Override
-    public List<ConstructorInterceptor> modifyConstructorInterceptors(
-            Constructor<?> constructor, List<ConstructorInterceptor> currentList) {
+    public List<ServiceHandle<ConstructorInterceptor>> modifyConstructorInterceptors(
+            Constructor<?> constructor, List<ServiceHandle<ConstructorInterceptor>> currentList) {
         throw new AssertionError("Expected ignored exception");
     }
 

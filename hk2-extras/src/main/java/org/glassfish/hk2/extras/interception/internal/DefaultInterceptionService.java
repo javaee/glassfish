@@ -131,12 +131,12 @@ public class DefaultInterceptionService implements InterceptionService {
         };
     }
     
-    private List<MethodInterceptor> orderMethods(Method method, List<MethodInterceptor> current) {
-        List<MethodInterceptor> retVal = current;
+    private List<ServiceHandle<MethodInterceptor>> orderMethods(Method method, List<ServiceHandle<MethodInterceptor>> current) {
+        List<ServiceHandle<MethodInterceptor>> retVal = current;
         
         for (InterceptorOrderingService orderer : orderers) {
-            List<MethodInterceptor> given = Collections.unmodifiableList(retVal);
-            List<MethodInterceptor> returned;
+            List<ServiceHandle<MethodInterceptor>> given = Collections.unmodifiableList(retVal);
+            List<ServiceHandle<MethodInterceptor>> returned;
             try {
                 returned = orderer.modifyMethodInterceptors(method, given);
             }
@@ -145,19 +145,19 @@ public class DefaultInterceptionService implements InterceptionService {
             }
             
             if (returned != null && returned != given) {
-                retVal = new ArrayList<MethodInterceptor>(returned);
+                retVal = new ArrayList<ServiceHandle<MethodInterceptor>>(returned);
             }
         }
         
         return retVal;
     }
     
-    private List<ConstructorInterceptor> orderConstructors(Constructor<?> constructor, List<ConstructorInterceptor> current) {
-        List<ConstructorInterceptor> retVal = current;
+    private List<ServiceHandle<ConstructorInterceptor>> orderConstructors(Constructor<?> constructor, List<ServiceHandle<ConstructorInterceptor>> current) {
+        List<ServiceHandle<ConstructorInterceptor>> retVal = current;
         
         for (InterceptorOrderingService orderer : orderers) {
-            List<ConstructorInterceptor> given = Collections.unmodifiableList(retVal);
-            List<ConstructorInterceptor> returned;
+            List<ServiceHandle<ConstructorInterceptor>> given = Collections.unmodifiableList(retVal);
+            List<ServiceHandle<ConstructorInterceptor>> returned;
             try {
                 returned = orderer.modifyConstructorInterceptors(constructor, given);
             }
@@ -166,7 +166,7 @@ public class DefaultInterceptionService implements InterceptionService {
             }
             
             if (returned != null && returned != given) {
-                retVal = new ArrayList<ConstructorInterceptor>(returned);
+                retVal = new ArrayList<ServiceHandle<ConstructorInterceptor>>(returned);
             }
         }
         
@@ -176,13 +176,14 @@ public class DefaultInterceptionService implements InterceptionService {
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.InterceptionService#getMethodInterceptors(java.lang.reflect.Method)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public List<MethodInterceptor> getMethodInterceptors(Method method) {
         HashSet<String> allBindings = ReflectionUtilities.getAllBindingsFromMethod(method);
         
         List<ServiceHandle<?>> allInterceptors = locator.getAllServiceHandles(METHOD_FILTER);
         
-        List<MethodInterceptor> retVal = new ArrayList<MethodInterceptor>(allInterceptors.size());
+        List<ServiceHandle<MethodInterceptor>> handles = new ArrayList<ServiceHandle<MethodInterceptor>>(allInterceptors.size());
         
         for (ServiceHandle<?> handle : allInterceptors) {
             ActiveDescriptor<?> ad = handle.getActiveDescriptor();
@@ -203,19 +204,29 @@ public class DefaultInterceptionService implements InterceptionService {
             }
             if (!found) continue;
             
-            MethodInterceptor interceptor = (MethodInterceptor) handle.getService();
+            ServiceHandle<MethodInterceptor> interceptor = (ServiceHandle<MethodInterceptor>) handle;
             if (interceptor != null) {
-                retVal.add(interceptor);
+                handles.add(interceptor);
             }
         }
         
-        retVal = orderMethods(method, retVal);
+        handles = orderMethods(method, handles);
+        
+        if (handles.isEmpty()) return Collections.emptyList();
+        
+        List<MethodInterceptor> retVal = new ArrayList<MethodInterceptor>(handles.size());
+        for (ServiceHandle<MethodInterceptor> handle : handles) {
+            MethodInterceptor interceptor = handle.getService();
+            if (interceptor == null) continue;
+            retVal.add(interceptor);
+        }
         return retVal;
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.InterceptionService#getConstructorInterceptors(java.lang.reflect.Constructor)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public List<ConstructorInterceptor> getConstructorInterceptors(
             Constructor<?> constructor) {
@@ -223,7 +234,7 @@ public class DefaultInterceptionService implements InterceptionService {
         
         List<ServiceHandle<?>> allInterceptors = locator.getAllServiceHandles(CONSTRUCTOR_FILTER);
         
-        List<ConstructorInterceptor> retVal = new ArrayList<ConstructorInterceptor>(allInterceptors.size());
+        List<ServiceHandle<ConstructorInterceptor>> handles = new ArrayList<ServiceHandle<ConstructorInterceptor>>(allInterceptors.size());
         
         for (ServiceHandle<?> handle : allInterceptors) {
             ActiveDescriptor<?> ad = handle.getActiveDescriptor();
@@ -244,13 +255,22 @@ public class DefaultInterceptionService implements InterceptionService {
             }
             if (!found) continue;
             
-            ConstructorInterceptor interceptor = (ConstructorInterceptor) handle.getService();
+            ServiceHandle<ConstructorInterceptor> interceptor = (ServiceHandle<ConstructorInterceptor>) handle;
             if (interceptor != null) {
-                retVal.add(interceptor);
+                handles.add(interceptor);
             }
         }
         
-        retVal = orderConstructors(constructor, retVal);
+        handles = orderConstructors(constructor, handles);
+        
+        if (handles.isEmpty()) return Collections.emptyList();
+        
+        List<ConstructorInterceptor> retVal = new ArrayList<ConstructorInterceptor>(handles.size());
+        for (ServiceHandle<ConstructorInterceptor> handle : handles) {
+            ConstructorInterceptor interceptor = handle.getService();
+            if (interceptor == null) continue;
+            retVal.add(interceptor);
+        }
         return retVal;
     }
 }

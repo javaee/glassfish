@@ -51,7 +51,9 @@ import javax.inject.Singleton;
 import org.aopalliance.intercept.ConstructorInterceptor;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.glassfish.hk2.api.Rank;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.extras.interception.InterceptorOrderingService;
+import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
  * @author jwells
@@ -59,22 +61,22 @@ import org.glassfish.hk2.extras.interception.InterceptorOrderingService;
  */
 @Singleton @Rank(Integer.MIN_VALUE)
 public class AddToBeginningAndEndOrderer implements InterceptorOrderingService {
-    private MethodInterceptor zeroM;
-    private MethodInterceptor infinM;
+    private ServiceHandle<MethodInterceptor> zeroM;
+    private ServiceHandle<MethodInterceptor> infinM;
     
-    private ConstructorInterceptor zeroC;
-    private ConstructorInterceptor infinC;
+    private ServiceHandle<ConstructorInterceptor> zeroC;
+    private ServiceHandle<ConstructorInterceptor> infinC;
     
     @Inject
     private Recorder recorder;
     
     @PostConstruct
     private void postConstruct() {
-        zeroM = new NonServiceMethodInterceptorZero(recorder);
-        infinM = new NonServiceMethodInterceptorInfinity(recorder);
+        zeroM = BuilderHelper.createConstantServiceHandle((MethodInterceptor) new NonServiceMethodInterceptorZero(recorder));
+        infinM = BuilderHelper.createConstantServiceHandle((MethodInterceptor) new NonServiceMethodInterceptorInfinity(recorder));
         
-        zeroC = new NonServiceConstructorInterceptorZero(recorder);
-        infinC = new NonServiceConstructorInterceptorInfinity(recorder);
+        zeroC = BuilderHelper.createConstantServiceHandle((ConstructorInterceptor) new NonServiceConstructorInterceptorZero(recorder));
+        infinC = BuilderHelper.createConstantServiceHandle((ConstructorInterceptor) new NonServiceConstructorInterceptorInfinity(recorder));
     }
     
 
@@ -82,11 +84,11 @@ public class AddToBeginningAndEndOrderer implements InterceptorOrderingService {
      * @see org.glassfish.hk2.extras.interception.InterceptorOrderingService#modifyMethodInterceptors(java.lang.reflect.Method, java.util.List)
      */
     @Override
-    public List<MethodInterceptor> modifyMethodInterceptors(Method method,
-            List<MethodInterceptor> currentList) {
+    public List<ServiceHandle<MethodInterceptor>> modifyMethodInterceptors(Method method,
+            List<ServiceHandle<MethodInterceptor>> currentList) {
         if (currentList.isEmpty()) return null;
         
-        LinkedList<MethodInterceptor> retVal = new LinkedList<MethodInterceptor>(currentList);
+        LinkedList<ServiceHandle<MethodInterceptor>> retVal = new LinkedList<ServiceHandle<MethodInterceptor>>(currentList);
         retVal.addFirst(zeroM);
         retVal.add(infinM);
         
@@ -97,11 +99,11 @@ public class AddToBeginningAndEndOrderer implements InterceptorOrderingService {
      * @see org.glassfish.hk2.extras.interception.InterceptorOrderingService#modifyConstructorInterceptors(java.lang.reflect.Constructor, java.util.List)
      */
     @Override
-    public List<ConstructorInterceptor> modifyConstructorInterceptors(
-            Constructor<?> constructor, List<ConstructorInterceptor> currentList) {
+    public List<ServiceHandle<ConstructorInterceptor>> modifyConstructorInterceptors(
+            Constructor<?> constructor, List<ServiceHandle<ConstructorInterceptor>> currentList) {
         if (currentList.isEmpty()) return null;
         
-        LinkedList<ConstructorInterceptor> retVal = new LinkedList<ConstructorInterceptor>(currentList);
+        LinkedList<ServiceHandle<ConstructorInterceptor>> retVal = new LinkedList<ServiceHandle<ConstructorInterceptor>>(currentList);
         retVal.addFirst(zeroC);
         retVal.add(infinC);
         

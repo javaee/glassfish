@@ -63,6 +63,7 @@ import org.glassfish.hk2.api.Metadata;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ProxyForSameScope;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.UseProxy;
 import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.internal.ActiveDescriptorBuilderImpl;
@@ -597,5 +598,53 @@ public class BuilderHelper {
 	        
 	        ReflectionHelper.addMetadata(metadata, key, addMeString);
 	    }
+	}
+	
+	/**
+	 * Creates a ServiceHandle that will always return the given object from
+	 * the {@link ServiceHandle#getService()} method.  The {@link ServiceHandle#getActiveDescriptor()}
+	 * will return null and the {@link ServiceHandle#destroy()} method will
+	 * do nothing
+	 * 
+	 * @param obj The object to be associated with this ServiceHandle.  May be null
+	 * @return A {@link ServiceHandle} that will always return the given value
+	 */
+	public static <T> ServiceHandle<T> createConstantServiceHandle(final T obj) {
+	    return new ServiceHandle<T>() {
+	        private Object serviceData;
+
+            @Override
+            public T getService() {
+                return obj;
+            }
+
+            @Override
+            public ActiveDescriptor<T> getActiveDescriptor() {
+                return null;
+            }
+
+            @Override
+            public boolean isActive() {
+                return true;
+            }
+
+            @Override
+            public void destroy() {
+                // Do nothing
+            }
+
+            @Override
+            public synchronized void setServiceData(Object serviceData) {
+                this.serviceData = serviceData;
+                
+            }
+
+            @Override
+            public synchronized Object getServiceData() {
+                return serviceData;
+            }
+	        
+	    };
+	    
 	}
 }
