@@ -49,6 +49,7 @@ import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.utilities.FactoryDescriptorsImpl;
 import org.glassfish.hk2.utilities.reflection.Pretty;
 
 /**
@@ -150,19 +151,7 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         allDescriptors.add(boundAsFactory);
         allDescriptors.add(boundAsService);
 
-        return new FactoryDescriptors() {
-
-            @Override
-            public Descriptor getFactoryAsAService() {
-                return boundAsService;
-            }
-
-            @Override
-            public Descriptor getFactoryAsAFactory() {
-                return boundAsFactory;
-            }
-            
-        };
+        return new FactoryDescriptorsImpl(boundAsService, boundAsFactory);
     }
     
     /* (non-Javadoc)
@@ -228,19 +217,7 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         ActiveDescriptor<?> userMethodDescriptor = Utilities.createAutoFactoryDescriptor(rawFactoryClass, factoryDescriptor, locator);
         final ActiveDescriptor<?> methodDescriptor = addActiveDescriptor(userMethodDescriptor);
         
-        return new FactoryDescriptors() {
-
-            @Override
-            public Descriptor getFactoryAsAService() {
-                return factoryDescriptor;
-            }
-
-            @Override
-            public Descriptor getFactoryAsAFactory() {
-                return methodDescriptor;
-            }
-            
-        };
+        return new FactoryDescriptorsImpl(factoryDescriptor, methodDescriptor);
     }
     
     /* (non-Javadoc)

@@ -47,15 +47,14 @@ import java.util.Set;
 
 import javax.inject.Named;
 
-import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.Factory;
-import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.ActiveDescriptorBuilder;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.FactoryDescriptorsImpl;
 import org.glassfish.hk2.utilities.reflection.ParameterizedTypeImpl;
 import org.jvnet.hk2.component.MultiMap;
 
@@ -438,31 +437,6 @@ abstract class AbstractBindingBuilder<T> implements
         }
     }
 
-    private static class FactoryDescriptorsImpl implements FactoryDescriptors {
-        private final Descriptor serviceDescriptor;
-        private final Descriptor factoryDescriptor;
-
-        public FactoryDescriptorsImpl(Descriptor serviceDescriptor, Descriptor factoryDescriptor) {
-            this.serviceDescriptor = serviceDescriptor;
-            this.factoryDescriptor = factoryDescriptor;
-        }
-
-        @Override
-        public Descriptor getFactoryAsAService() {
-            return serviceDescriptor;
-        }
-
-        @Override
-        public Descriptor getFactoryAsAFactory() {
-            return factoryDescriptor;
-        }
-
-        @Override
-        public String toString() {
-            return "FactoryDescriptorsImpl(\n" +
-                    serviceDescriptor + ",\n" + factoryDescriptor + ",\n\t" + System.identityHashCode(this) + ")";
-        }
-    }
 
     /**
      * Create a new service binding builder.

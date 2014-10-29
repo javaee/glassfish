@@ -137,7 +137,7 @@ public interface Descriptor {
      * implClass should point to the implementation
      * class of the factory
      * 
-     * @return Either CLASS or FACTORY
+     * @return Either CLASS or PROVIDE_METHOD
      */
     public DescriptorType getDescriptorType();
     

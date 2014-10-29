@@ -58,6 +58,7 @@ import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.utilities.DescriptorBuilder;
 import org.glassfish.hk2.utilities.DescriptorImpl;
+import org.glassfish.hk2.utilities.FactoryDescriptorsImpl;
 
 /**
  * This is a simple implementation of the {@link DescriptorBuilder}
