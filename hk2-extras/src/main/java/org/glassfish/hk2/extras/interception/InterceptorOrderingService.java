@@ -74,10 +74,10 @@ public interface InterceptorOrderingService {
      * include changes of order, additions and/or removals of the interceptors
      * passed into the method.  If this method throws an exception the exception
      * will be ignored and the interceptor list passed in will be used.
-     * 
+     * <p>
      * If the implementation would like to return MethodInterceptors that are not hk2
      * services it is recommended that they use {@link BuilderHelper#createConstantServiceHandle(Object)}
-     * to create ServiceHandles representing their MethodInterceptors
+     * to create ServiceHandles representing their MethodInterceptors.
      *  
      * @param method The method that is to be intercepted
      * @param currentList The list that will be used to intercept the method if this
@@ -97,11 +97,11 @@ public interface InterceptorOrderingService {
      * can be removed (if an empty list is returned) or modified.  Modifications can
      * include changes of order, additions and/or removals of the interceptors
      * passed into the method.  If this method throws an exception the exception
-     * will be ignored and the interceptor list passed in will be used
-     *
+     * will be ignored and the interceptor list passed in will be used.
+     * <p>
      * If the implementation would like to return ConstructorInterceptors that are not hk2
      * services it is recommended that they use {@link BuilderHelper#createConstantServiceHandle(Object)}
-     * to create ServiceHandles representing their ConstructorInterceptors
+     * to create ServiceHandles representing their ConstructorInterceptors.
      *  
      * @param constructor The constructor that is to be intercepted
      * @param currentList The list that will be used to intercept the constructor if this
