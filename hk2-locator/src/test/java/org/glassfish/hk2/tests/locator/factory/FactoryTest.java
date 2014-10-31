@@ -40,14 +40,19 @@
 package org.glassfish.hk2.tests.locator.factory;
 
 import java.util.Date;
+import java.util.List;
 
 import junit.framework.Assert;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Factory;
+import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Test;
 
 /**
@@ -193,5 +198,26 @@ public class FactoryTest {
         BurrVP burrVP = handle.getService();
         Assert.assertNotNull(burrVP);
         Assert.assertEquals(BURR_VP_NUMBER, burrVP.getNumber());
+    }
+    
+    /**
+     * Tests that we can add a
+     */
+    @Test @org.junit.Ignore
+    public void testAddConstantFactory() {
+        ServiceLocator locator = LocatorHelper.create();
+        
+        BurrVPFactory burrFactoryConstant = new BurrVPFactory();
+        
+        List<FactoryDescriptors> added = ServiceLocatorUtilities.addFactoryConstants(locator, burrFactoryConstant);
+        Assert.assertNotNull(added);
+        Assert.assertEquals(1, added.size());
+        
+        BurrVP burr = locator.getService(BurrVP.class);
+        Assert.assertNotNull(burr);
+        Assert.assertEquals(BURR_VP_NUMBER, burr.getNumber());
+        
+        Factory<BurrVP> factory = locator.getService((new TypeLiteral<Factory<BurrVP>>() {}).getType());
+        Assert.assertTrue(factory == burrFactoryConstant);
     }
 }

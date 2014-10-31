@@ -109,6 +109,27 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
         isReified = false;
         scope = null;
     }
+    
+    /**
+     * This constructor copies the given descriptor if it is reified.
+     * If it is not reified only the fields that can be accessed prior
+     * to reification are copied.  In either case the factoryServiceId and
+     * factoryLocatorId are not copied.  The cache fields are also
+     * not copied
+     *
+     * @param copyMe The non-null descriptor to copy
+     */
+    protected AbstractActiveDescriptor(ActiveDescriptor<?> copyMe) {
+        super(copyMe);
+        
+        isReified = copyMe.isReified();
+        if (!isReified) return;
+        
+        advertisedContracts.addAll(copyMe.getContractTypes());
+        scopeAnnotation = copyMe.getScopeAsAnnotation();
+        scope = copyMe.getScopeAnnotation();
+        qualifiers = new LinkedHashSet<Annotation>(copyMe.getQualifierAnnotations());
+    }
 
     /**
      * This constructor must be called with the information about

@@ -44,6 +44,7 @@ import java.io.PrintStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -216,6 +217,29 @@ public abstract class ServiceLocatorUtilities {
         if (locator == null || constant == null) throw new IllegalArgumentException();
         
         return addOneDescriptor(locator, BuilderHelper.createConstantDescriptor(constant), false);
+    }
+    
+    /**
+     * This method adds factory constants to the given locator.  None of the constants
+     * may be null.  The returned list will contain the FactoryDescriptors added to
+     * the locator.  So while the factories are constant valued, the provide method return
+     * values are NOT, and will be invoked according to their normal hk2 lifecycle
+     * 
+     * @param locator The non-null locator to add these factory constants to
+     * @param constants The constant factories to add to the locator.  None of the constants
+     * in this array may be null
+     * @return The descriptors that were added to the service locator.  Will not return null, but
+     * may return an empty list (if the constants array was zero length)
+     */
+    public static List<FactoryDescriptors> addFactoryConstants(ServiceLocator locator, Factory<?>... constants) {
+        if (locator == null) throw new IllegalArgumentException();
+        for (Factory<?> f : constants) {
+            if (f == null) {
+                throw new IllegalArgumentException("One of the factories in " + Arrays.toString(constants) + " is null");
+            }
+        }
+        
+        throw new AssertionError("not implemented");
     }
     
     /**
