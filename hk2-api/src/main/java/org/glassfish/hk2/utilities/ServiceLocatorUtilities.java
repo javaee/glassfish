@@ -258,7 +258,7 @@ public abstract class ServiceLocatorUtilities {
         int lcv = 0;
         for (FactoryDescriptors fds : intermediateState) {
             final ActiveDescriptor<?> provideMethod = (ActiveDescriptor<?>) fds.getFactoryAsAFactory();
-            final Factory<?> constant = constants[lcv];
+            final Factory<?> constant = constants[lcv++];
             
             Descriptor constantDescriptor = BuilderHelper.createConstantDescriptor(constant);
             Descriptor addProvideMethod = new DescriptorImpl(provideMethod);
