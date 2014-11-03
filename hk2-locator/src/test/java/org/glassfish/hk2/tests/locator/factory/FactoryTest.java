@@ -49,7 +49,6 @@ import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
@@ -203,9 +202,10 @@ public class FactoryTest {
     /**
      * Tests that we can add a
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testAddConstantFactory() {
         ServiceLocator locator = LocatorHelper.create();
+        ServiceLocatorUtilities.addClasses(locator, ProxiableSingletonContext.class);
         
         BurrVPFactory burrFactoryConstant = new BurrVPFactory();
         
@@ -217,7 +217,7 @@ public class FactoryTest {
         Assert.assertNotNull(burr);
         Assert.assertEquals(BURR_VP_NUMBER, burr.getNumber());
         
-        Factory<BurrVP> factory = locator.getService((new TypeLiteral<Factory<BurrVP>>() {}).getType());
-        Assert.assertTrue(factory == burrFactoryConstant);
+        Factory<?> factory = locator.getService(Factory.class);
+        Assert.assertTrue(factory.equals(burrFactoryConstant));
     }
 }

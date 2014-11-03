@@ -78,6 +78,7 @@ import org.glassfish.hk2.api.messaging.TopicDistributionService;
 import org.glassfish.hk2.internal.DefaultTopicDistributionService;
 import org.glassfish.hk2.internal.ImmediateHelper;
 import org.glassfish.hk2.internal.PerThreadContext;
+import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
 /**
  * This is a set of useful utilities for working with {@link ServiceLocator}.
@@ -231,15 +232,44 @@ public abstract class ServiceLocatorUtilities {
      * @return The descriptors that were added to the service locator.  Will not return null, but
      * may return an empty list (if the constants array was zero length)
      */
+    @SuppressWarnings("unchecked")
     public static List<FactoryDescriptors> addFactoryConstants(ServiceLocator locator, Factory<?>... constants) {
         if (locator == null) throw new IllegalArgumentException();
-        for (Factory<?> f : constants) {
-            if (f == null) {
+        
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration cd = dcs.createDynamicConfiguration();
+        
+        LinkedList<FactoryDescriptors> intermediateState = new LinkedList<FactoryDescriptors>();
+        for (Factory<?> factoryConstant : constants) {
+            if (factoryConstant == null) {
                 throw new IllegalArgumentException("One of the factories in " + Arrays.toString(constants) + " is null");
             }
+            
+            // This is a trick.  We get the information from the DynamicConfiguration, but then abandon it
+            // so that we can replace the factories with constant descriptors instead
+            FactoryDescriptors fds = cd.addActiveFactoryDescriptor((Class<Factory<Object>>) factoryConstant.getClass());
+            intermediateState.add(fds);
         }
         
-        throw new AssertionError("not implemented");
+        // Abandon previous dynamic configuration (never commit it)
+        cd = dcs.createDynamicConfiguration();
+        
+        LinkedList<FactoryDescriptors> retVal = new LinkedList<FactoryDescriptors>();
+        int lcv = 0;
+        for (FactoryDescriptors fds : intermediateState) {
+            final ActiveDescriptor<?> provideMethod = (ActiveDescriptor<?>) fds.getFactoryAsAFactory();
+            final Factory<?> constant = constants[lcv];
+            
+            Descriptor constantDescriptor = BuilderHelper.createConstantDescriptor(constant);
+            Descriptor addProvideMethod = new DescriptorImpl(provideMethod);
+            
+            FactoryDescriptorsImpl fdi = new FactoryDescriptorsImpl(constantDescriptor, addProvideMethod);
+            retVal.add(cd.bind(fdi));
+        }
+        
+        cd.commit();
+        
+        return retVal;
     }
     
     /**
