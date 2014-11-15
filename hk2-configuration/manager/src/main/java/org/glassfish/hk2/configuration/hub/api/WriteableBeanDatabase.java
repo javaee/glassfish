@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.configuration.hub.api;
 
+import org.glassfish.hk2.api.MultiException;
+
 /**
  * A writeable version of a {@link BeanDatabase}. Types and instances can be
  * added to this in-memory database
@@ -92,8 +94,10 @@ public interface WriteableBeanDatabase extends BeanDatabase {
      * was created then this method will throw an IllegalStateException
      * @throws IllegalStateException if the current database has been modified
      * since this writeable database copy was created
+     * @throws MultiException if there were user implementations of {@link BeanDatabaseUpdateListener}
+     * that failed by throwing exceptions this exception will be thrown wrapping those exceptions
      */
-    public void commit() throws IllegalStateException;
+    public void commit() throws IllegalStateException, MultiException;
     
     /**
      * This method should be called when the writeable database should become
@@ -104,7 +108,9 @@ public interface WriteableBeanDatabase extends BeanDatabase {
      * that is registered
      * @throws IllegalStateException if the current database has been modified
      * since this writeable database copy was created
+     * @throws MultiException if there were user implementations of {@link BeanDatabaseUpdateListener}
+     * that failed by throwing exceptions this exception will be thrown wrapping those exceptions
      */
-    public void commit(Object commitMessage) throws IllegalStateException;
+    public void commit(Object commitMessage) throws IllegalStateException, MultiException;
 
 }

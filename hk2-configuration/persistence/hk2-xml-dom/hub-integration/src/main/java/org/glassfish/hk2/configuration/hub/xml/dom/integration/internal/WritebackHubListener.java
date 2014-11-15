@@ -47,7 +47,6 @@ import java.lang.reflect.ParameterizedType;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -181,15 +180,6 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
     private Hub hub;
     
     private WritebackHubListener() {
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener#initialize(org.glassfish.hk2.configuration.hub.api.BeanDatabase)
-     */
-    @Override
-    public void initialize(BeanDatabase database) {
-        // This guy only does something on known modifications, so do nothing
-        Logger.getLogger().debug("WRITEBACK: The writeback system has been enabled");
     }
     
     private static Method getMethod(Class<?> clazz, String methodName, Class<?>[] setterType) {
@@ -826,7 +816,7 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
      */
     @SuppressWarnings("unchecked")
     private void internalDatabaseHasChanged(BeanDatabase newDatabase,
-            Object commitMessage, List<Change> changes) throws Throwable {
+            Object commitMessage, List<Change> changes) throws RuntimeException {
         Logger.getLogger().debug("WRITEBACK: Change in Hub detected");
         if ((commitMessage != null) &&
                 (commitMessage instanceof XmlDomIntegrationCommitMessage)) {
@@ -893,15 +883,11 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
     }
     
     @Override
-    public void databaseHasChanged(BeanDatabase newDatabase,
+    public void commitDatabaseChange(
+            BeanDatabase referenceDatabase,
+            BeanDatabase newDatabase,
             Object commitMessage, List<Change> changes) {
-        try {
-            internalDatabaseHasChanged(newDatabase, commitMessage, changes);
-        }
-        catch (Throwable th) {
-            Logger.getLogger().debug(getClass().getName(), "databaseHasChanged", th);
-        }
-        
+        internalDatabaseHasChanged(newDatabase, commitMessage, changes);
     }
     
     private final static class MethodAndElementName {
@@ -921,6 +907,28 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
         public String toString() {
             return "MethodAndElementName(" + method + "," + elementName + "," + single + "," + hasStar + ")";
         }
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener#commitDatabaseChange(org.glassfish.hk2.configuration.hub.api.BeanDatabase, org.glassfish.hk2.configuration.hub.api.BeanDatabase, java.lang.Object, java.util.List)
+     */
+    @Override
+    public void prepareDatabaseChange(BeanDatabase oldDatabase,
+            BeanDatabase currentDatabase, Object commitMessage,
+            List<Change> changes) {
+        // Do nothing
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener#rollbackDatabaseChange(org.glassfish.hk2.configuration.hub.api.BeanDatabase, org.glassfish.hk2.configuration.hub.api.BeanDatabase, java.lang.Object, java.util.List)
+     */
+    @Override
+    public void rollbackDatabaseChange(BeanDatabase currentDatabase,
+            BeanDatabase proposedDatabase, Object commitMessage,
+            List<Change> changes) {
+        // Do nothing
+        
     }
 
 }

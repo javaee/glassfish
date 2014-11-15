@@ -39,15 +39,21 @@
  */
 package org.glassfish.hk2.configuration.hub.internal;
 
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.inject.Inject;
+
+import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener;
 import org.glassfish.hk2.configuration.hub.api.Change;
+import org.glassfish.hk2.configuration.hub.api.CommitFailedException;
 import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.configuration.hub.api.PrepareFailedException;
+import org.glassfish.hk2.configuration.hub.api.RollbackFailedException;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.jvnet.hk2.annotations.ContractsProvided;
 import org.jvnet.hk2.annotations.Service;
@@ -62,7 +68,9 @@ public class HubImpl implements Hub {
     
     private final Object lock = new Object();
     private BeanDatabaseImpl currentDatabase = new BeanDatabaseImpl(revisionCounter.getAndIncrement());
-    private final HashSet<BeanDatabaseUpdateListener> listeners = new HashSet<BeanDatabaseUpdateListener>();
+    
+    @Inject
+    private IterableProvider<BeanDatabaseUpdateListener> listeners;
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.configuration.hub.api.Hub#getCurrentDatabase()
@@ -72,32 +80,6 @@ public class HubImpl implements Hub {
         synchronized (lock) {
             return currentDatabase;
         }
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.configuration.hub.api.Hub#addListener(org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener)
-     */
-    @Override
-    public synchronized void addListener(BeanDatabaseUpdateListener listener) {
-        try {
-            listener.initialize(currentDatabase);
-        }
-        catch (RuntimeException re) {
-            throw re;
-        }
-        catch (Throwable th) {
-            throw new MultiException(th);
-        }
-        
-        listeners.add(listener);
-    }
-    
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.configuration.hub.api.Hub#removeListener(org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener)
-     */
-    @Override
-    public synchronized void removeListener(BeanDatabaseUpdateListener listener) {
-        listeners.remove(listener);
     }
 
     /* (non-Javadoc)
@@ -119,17 +101,49 @@ public class HubImpl implements Hub {
                 throw new IllegalStateException("commit was called on a WriteableDatabase but the current database has changed after that copy was made");
             }
             
-            currentDatabase = new BeanDatabaseImpl(revisionCounter.getAndIncrement(), writeableDatabase);
-            
+            LinkedList<BeanDatabaseUpdateListener> completedListeners = new LinkedList<BeanDatabaseUpdateListener>();
             for (BeanDatabaseUpdateListener listener : listeners) {
                 try {
-                    listener.databaseHasChanged(currentDatabase, commitMessage, changes);
+                    listener.prepareDatabaseChange(currentDatabase, writeableDatabase, commitMessage, changes);
+                    completedListeners.add(listener);
                 }
                 catch (Throwable th) {
-                    // silly user code, I don't care about your troubles
+                    // Rollback time
+                    MultiException throwMe = new MultiException(new PrepareFailedException(th));
+                    
+                    for (BeanDatabaseUpdateListener completedListener : completedListeners) {
+                        try {
+                            completedListener.rollbackDatabaseChange(currentDatabase, writeableDatabase, commitMessage, changes);
+                        }
+                        catch (Throwable rollTh) {
+                            throwMe.addError(new RollbackFailedException(rollTh));
+                        }
+                    }
+                    
+                    throw throwMe;
                 }
-                
             }
+            
+            // success!
+            BeanDatabaseImpl oldDatabase = currentDatabase;
+            currentDatabase = new BeanDatabaseImpl(revisionCounter.getAndIncrement(), writeableDatabase);
+            
+            MultiException commitError = null;
+            for (BeanDatabaseUpdateListener completedListener : completedListeners) {
+                try {
+                    completedListener.commitDatabaseChange(oldDatabase, currentDatabase, commitMessage, changes);
+                }
+                catch (Throwable th) {
+                    if (commitError == null) {
+                        commitError = new MultiException(new CommitFailedException(th));
+                    }
+                    else {
+                        commitError.addError(new CommitFailedException(th));
+                    }
+                }
+            }
+            
+            if (commitError != null) throw commitError;
         }
         
         

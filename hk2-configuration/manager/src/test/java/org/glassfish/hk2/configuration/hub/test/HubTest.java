@@ -45,6 +45,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.configuration.hub.api.Change;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
@@ -52,6 +53,7 @@ import org.glassfish.hk2.configuration.hub.api.ManagerUtilities;
 import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -135,7 +137,7 @@ public class HubTest extends HK2Runner {
         Assert.assertNull(hub.getCurrentDatabase().getType(EMPTY_TYPE));
         
         GenericBeanDatabaseUpdateListener listener = new GenericBeanDatabaseUpdateListener();
-        hub.addListener(listener);
+        ActiveDescriptor<?> listenerDescriptor = ServiceLocatorUtilities.addOneConstant(testLocator, listener);
         
         WriteableBeanDatabase wbd = null;
         
@@ -172,7 +174,7 @@ public class HubTest extends HK2Runner {
                 wbd.commit();
             }
             
-            hub.removeListener(listener);
+            ServiceLocatorUtilities.removeOneDescriptor(testLocator, listenerDescriptor);
         }
         
     }
@@ -185,7 +187,7 @@ public class HubTest extends HK2Runner {
         Assert.assertNull(hub.getCurrentDatabase().getType(ONE_INSTANCE_TYPE));
         
         GenericBeanDatabaseUpdateListener listener = new GenericBeanDatabaseUpdateListener();
-        hub.addListener(listener);
+        ActiveDescriptor<?> listenerDescriptor = ServiceLocatorUtilities.addOneConstant(testLocator, listener);
         
         WriteableBeanDatabase wbd = null;
         
@@ -238,7 +240,7 @@ public class HubTest extends HK2Runner {
                 wbd.commit();
             }
             
-            hub.removeListener(listener);
+            ServiceLocatorUtilities.removeOneDescriptor(testLocator, listenerDescriptor);
         }
         
     }
@@ -288,10 +290,11 @@ public class HubTest extends HK2Runner {
         
         GenericBeanDatabaseUpdateListener listener = null;
         WriteableBeanDatabase wbd = null;
+        ActiveDescriptor<?> listenerDescriptor = null;
         
         try {
             listener = new GenericBeanDatabaseUpdateListener();
-            hub.addListener(listener);
+            listenerDescriptor = ServiceLocatorUtilities.addOneConstant(testLocator, listener);
         
             wbd = hub.getWriteableDatabaseCopy();
             WriteableType wt = wbd.getWriteableType(ONE_INSTANCE_TYPE);
@@ -321,8 +324,8 @@ public class HubTest extends HK2Runner {
         }
         finally {
             // Cleanup
-            if (listener != null) {
-                hub.removeListener(listener);
+            if (listenerDescriptor != null) {
+                ServiceLocatorUtilities.removeOneDescriptor(testLocator, listenerDescriptor);
             }
             
             if (wbd != null) {
@@ -342,10 +345,11 @@ public class HubTest extends HK2Runner {
         
         GenericBeanDatabaseUpdateListener listener = null;
         WriteableBeanDatabase wbd = null;
+        ActiveDescriptor<?> listenerDescriptor = null;
         
         try {
             listener = new GenericBeanDatabaseUpdateListener();
-            hub.addListener(listener);
+            listenerDescriptor = ServiceLocatorUtilities.addOneConstant(testLocator, listener);
         
             wbd = hub.getWriteableDatabaseCopy();
             WriteableType wt = wbd.getWriteableType(TYPE_TWO);
@@ -371,7 +375,7 @@ public class HubTest extends HK2Runner {
             
             {
                 Change instanceChange = changes.get(0);
-            
+                ServiceLocatorUtilities.removeOneDescriptor(testLocator, listenerDescriptor);
                 Assert.assertEquals(Change.ChangeCategory.MODIFY_INSTANCE, instanceChange.getChangeCategory());
                 Assert.assertEquals(TYPE_TWO, instanceChange.getChangeType().getName());
                 Assert.assertEquals(1, instanceChange.getChangeType().getInstances().size());
@@ -400,8 +404,8 @@ public class HubTest extends HK2Runner {
         }
         finally {
             // Cleanup
-            if (listener != null) {
-                hub.removeListener(listener);
+            if (listenerDescriptor != null) {
+                ServiceLocatorUtilities.removeOneDescriptor(testLocator, listenerDescriptor);
             }
             
             if (wbd != null) {
@@ -421,10 +425,11 @@ public class HubTest extends HK2Runner {
         
         GenericBeanDatabaseUpdateListener listener = null;
         WriteableBeanDatabase wbd = null;
+        ActiveDescriptor<?> listenerDescriptor = null;
         
         try {
             listener = new GenericBeanDatabaseUpdateListener();
-            hub.addListener(listener);
+            listenerDescriptor = ServiceLocatorUtilities.addOneConstant(testLocator, listener);
         
             wbd = hub.getWriteableDatabaseCopy();
             WriteableType wt = wbd.getWriteableType(TYPE_TWO);
@@ -478,8 +483,8 @@ public class HubTest extends HK2Runner {
         }
         finally {
             // Cleanup
-            if (listener != null) {
-                hub.removeListener(listener);
+            if (listenerDescriptor != null) {
+                ServiceLocatorUtilities.removeOneDescriptor(testLocator, listenerDescriptor);
             }
             
             if (wbd != null) {
@@ -539,10 +544,11 @@ public class HubTest extends HK2Runner {
         
         GenericBeanDatabaseUpdateListener listener = null;
         WriteableBeanDatabase wbd = null;
+        ActiveDescriptor<?> listenerDescriptor = null;
         
         try {
             listener = new GenericBeanDatabaseUpdateListener();
-            hub.addListener(listener);
+            listenerDescriptor = ServiceLocatorUtilities.addOneConstant(testLocator, listener);
         
             wbd = hub.getWriteableDatabaseCopy();
             WriteableType wt = wbd.getWriteableType(TYPE_TWO);
@@ -584,8 +590,8 @@ public class HubTest extends HK2Runner {
         }
         finally {
             // Cleanup
-            if (listener != null) {
-                hub.removeListener(listener);
+            if (listenerDescriptor != null) {
+                ServiceLocatorUtilities.removeOneDescriptor(testLocator, listenerDescriptor);
             }
             
             if (wbd != null) {
@@ -605,10 +611,11 @@ public class HubTest extends HK2Runner {
         
         GenericBeanDatabaseUpdateListener listener = null;
         WriteableBeanDatabase wbd = null;
+        ActiveDescriptor<?> listenerDescriptor = null;
         
         try {
             listener = new GenericBeanDatabaseUpdateListener();
-            hub.addListener(listener);
+            listenerDescriptor = ServiceLocatorUtilities.addOneConstant(testLocator, listener);
         
             wbd = hub.getWriteableDatabaseCopy();
             
@@ -677,8 +684,8 @@ public class HubTest extends HK2Runner {
         }
         finally {
             // Cleanup
-            if (listener != null) {
-                hub.removeListener(listener);
+            if (listenerDescriptor != null) {
+                ServiceLocatorUtilities.removeOneDescriptor(testLocator, listenerDescriptor);
             }
         }
     }
@@ -704,6 +711,7 @@ public class HubTest extends HK2Runner {
         
         GenericBeanDatabaseUpdateListener listener = null;
         WriteableBeanDatabase wbd = null;
+        ActiveDescriptor<?> listenerDescriptor = null;
         
         try {
             listener = new GenericBeanDatabaseUpdateListener();
@@ -720,7 +728,7 @@ public class HubTest extends HK2Runner {
             
             wbd.commit();
             
-            hub.addListener(listener);
+            listenerDescriptor = ServiceLocatorUtilities.addOneConstant(testLocator, listener);
             
             wbd = hub.getWriteableDatabaseCopy();
             
@@ -891,8 +899,8 @@ public class HubTest extends HK2Runner {
         }
         finally {
             // Cleanup
-            if (listener != null) {
-                hub.removeListener(listener);
+            if (listenerDescriptor != null) {
+                ServiceLocatorUtilities.removeOneDescriptor(testLocator, listenerDescriptor);
             }
             
             removeType(TYPE_ELEVEN);
@@ -936,10 +944,11 @@ public class HubTest extends HK2Runner {
     public void testMetadataOnInstance() {
         GenericBeanDatabaseUpdateListener listener = null;
         WriteableBeanDatabase wbd = null;
+        ActiveDescriptor<?> listenerDescriptor = null;
         
         try {
             listener = new GenericBeanDatabaseUpdateListener();
-            hub.addListener(listener);
+            listenerDescriptor = ServiceLocatorUtilities.addOneConstant(testLocator, listener);
             
             wbd = hub.getWriteableDatabaseCopy();
             
@@ -976,8 +985,8 @@ public class HubTest extends HK2Runner {
             Assert.assertNull(directInstance.getMetadata());
         }
         finally {
-            if (listener != null) {
-                hub.removeListener(listener);
+            if (listenerDescriptor != null) {
+                ServiceLocatorUtilities.removeOneDescriptor(testLocator, listenerDescriptor);
             }
             
             removeType(TYPE_SIX);
@@ -996,10 +1005,11 @@ public class HubTest extends HK2Runner {
         
         GenericBeanDatabaseUpdateListener listener = null;
         WriteableBeanDatabase wbd = null;
+        ActiveDescriptor<?> listenerDescriptor = null;
         
         try {
             listener = new GenericBeanDatabaseUpdateListener();
-            hub.addListener(listener);
+            listenerDescriptor = ServiceLocatorUtilities.addOneConstant(testLocator, listener);
             
             GenericJavaBean newBean = new GenericJavaBean(ALICE, OTHER_PROPERTY_VALUE2);
             
@@ -1028,8 +1038,8 @@ public class HubTest extends HK2Runner {
             Assert.assertEquals(originalMetadata, originalInstance.getMetadata());
         }
         finally {
-            if (listener != null) {
-                hub.removeListener(listener);
+            if (listenerDescriptor != null) {
+                ServiceLocatorUtilities.removeOneDescriptor(testLocator, listenerDescriptor);
             }
             
             removeType(TYPE_SEVEN);

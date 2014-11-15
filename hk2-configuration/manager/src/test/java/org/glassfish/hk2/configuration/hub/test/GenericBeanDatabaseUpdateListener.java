@@ -57,21 +57,15 @@ public class GenericBeanDatabaseUpdateListener implements
     private Object lastCommitMessage;
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener#initialize(org.glassfish.hk2.configuration.hub.api.BeanDatabase)
-     */
-    @Override
-    public void initialize(BeanDatabase database) {
-        originalDatabase = database;
-
-    }
-
-    /* (non-Javadoc)
      * @see org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener#databaseHasChanged(org.glassfish.hk2.configuration.hub.api.BeanDatabase, java.util.List)
      */
     @Override
-    public void databaseHasChanged(BeanDatabase newDatabase,
+    public void prepareDatabaseChange(
+            BeanDatabase originalDatabase,
+            BeanDatabase newDatabase,
             Object commitMessage,
             List<Change> changes) {
+        this.originalDatabase = originalDatabase;
         lastNewDatabase = newDatabase;
         lastSetOfChanges = changes;
         lastCommitMessage = commitMessage;
@@ -96,6 +90,28 @@ public class GenericBeanDatabaseUpdateListener implements
     public void clear() {
         lastNewDatabase = null;
         lastSetOfChanges = null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener#commitDatabaseChange(org.glassfish.hk2.configuration.hub.api.BeanDatabase, org.glassfish.hk2.configuration.hub.api.BeanDatabase, java.lang.Object, java.util.List)
+     */
+    @Override
+    public void commitDatabaseChange(BeanDatabase oldDatabase,
+            BeanDatabase currentDatabase, Object commitMessage,
+            List<Change> changes) {
+        // Do nothing
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener#rollbackDatabaseChange(org.glassfish.hk2.configuration.hub.api.BeanDatabase, org.glassfish.hk2.configuration.hub.api.BeanDatabase, java.lang.Object, java.util.List)
+     */
+    @Override
+    public void rollbackDatabaseChange(BeanDatabase currentDatabase,
+            BeanDatabase proposedDatabase, Object commitMessage,
+            List<Change> changes) {
+        // Do nothing
+        
     }
 
 }

@@ -77,7 +77,6 @@ import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.MethodWrapper;
-import org.glassfish.hk2.utilities.reflection.Pretty;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
 
@@ -111,7 +110,7 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
     
     @PostConstruct
     private void postConstruct() {
-        hub.addListener(this);
+        initialize(hub.getCurrentDatabase());
     }
     
     private ActiveDescriptor<?> addInstanceDescriptor(DynamicConfiguration config, ActiveDescriptor<?> parent, String name, String type, Object bean) {
@@ -323,11 +322,7 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
         return;
     }
 
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener#initialize(org.glassfish.hk2.configuration.hub.api.BeanDatabase)
-     */
-    @Override
-    public void initialize(BeanDatabase database) {
+    private void initialize(BeanDatabase database) {
         Set<Type> allTypes = database.getAllTypes();
         
         LinkedList<ActiveDescriptor<?>> added = new LinkedList<ActiveDescriptor<?>>();
@@ -399,7 +394,9 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
      * @see org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener#databaseHasChanged(org.glassfish.hk2.configuration.hub.api.BeanDatabase, java.util.List)
      */
     @Override
-    public void databaseHasChanged(BeanDatabase newDatabase,
+    public void commitDatabaseChange(
+            BeanDatabase reference,
+            BeanDatabase newDatabase,
             Object commitMessage,
             List<Change> changes) {
         LinkedList<ActiveDescriptor<?>> added = new LinkedList<ActiveDescriptor<?>>();
@@ -613,6 +610,28 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
         public void configurationChanged() {
             parent.calculateProgenitorAddsAndRemoves();
         }
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener#prepareDatabaseChange(org.glassfish.hk2.configuration.hub.api.BeanDatabase, org.glassfish.hk2.configuration.hub.api.BeanDatabase, java.lang.Object, java.util.List)
+     */
+    @Override
+    public void prepareDatabaseChange(BeanDatabase currentDatabase,
+            BeanDatabase proposedDatabase, Object commitMessage,
+            List<Change> changes) {
+        // Do nothing
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener#rollbackDatabaseChange(org.glassfish.hk2.configuration.hub.api.BeanDatabase, org.glassfish.hk2.configuration.hub.api.BeanDatabase, java.lang.Object, java.util.List)
+     */
+    @Override
+    public void rollbackDatabaseChange(BeanDatabase currentDatabase,
+            BeanDatabase proposedDatabase, Object commitMessage,
+            List<Change> changes) {
+        // Do nothing
         
     }
 }

@@ -99,15 +99,6 @@ public class XmlDomIntegrationUtilities {
         ServiceLocatorUtilities.addClasses(locator,
                 WritebackHubListener.class,
                 MapTranslator.class);
-        
-        Hub hub = locator.getService(Hub.class);
-        if (hub != null) {
-            WritebackHubListener rp = locator.getService(WritebackHubListener.class);
-            
-            if (rp != null) {
-                hub.addListener(rp);
-            }
-        }
     }
 
 }

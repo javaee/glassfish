@@ -39,41 +39,29 @@
  */
 package org.glassfish.hk2.configuration.hub.api;
 
-import org.jvnet.hk2.annotations.Contract;
+import org.glassfish.hk2.api.HK2RuntimeException;
 
 /**
- * The central repository of configuration objects in the system.
- * Configuration objects are organized by type, and within
- * that type keyed instances of the configuration object.
- * <p>
- * A configuration object can be a java bean following
- * the java bean standard.  A configuration object
- * can also be a bean-like Map, which is a Map&lt;String,Object&gt;
- * that has as keys the names of the properties and as
- * values value that property should take
- * 
+ * All exceptions from {@link BeanDatabaseUpdateListener#commitDatabaseChange(BeanDatabase, BeanDatabase, Object, java.util.List)}
+ * are wrapped in this exception
  * @author jwells
  *
  */
-@Contract
-public interface Hub {
+public class CommitFailedException extends HK2RuntimeException {
+
     /**
-     * Gets the current database running in the system
      * 
-     * @return The current database known to the Hub
      */
-    public BeanDatabase getCurrentDatabase();
-    
+    private static final long serialVersionUID = -7714473563491187847L;
+
+    public CommitFailedException() {
+        super();
+    }
+
     /**
-     * Creates a writeable copy of the currently running
-     * database.  If the {@link WriteableBeanDatabase#commit()}
-     * method is called (and no other {@link WriteableBeanDatabase#commit()}
-     * method has been called) then a read-only copye of the
-     * {@link WriteableBeanDatabase} will become the current database.
-     * There is no requirement to eventually call the
-     * {@link WriteableBeanDatabase#commit()} method
-     * 
-     * @return A writeable copy of the current database
+     * @param cause
      */
-    public WriteableBeanDatabase getWriteableDatabaseCopy();
+    public CommitFailedException(Throwable cause) {
+        super(cause);
+    }
 }
