@@ -42,14 +42,19 @@ package org.glassfish.hk2.configuration.hub.test;
 import java.beans.PropertyChangeEvent;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.configuration.hub.api.Change;
+import org.glassfish.hk2.configuration.hub.api.CommitFailedException;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.ManagerUtilities;
+import org.glassfish.hk2.configuration.hub.api.PrepareFailedException;
+import org.glassfish.hk2.configuration.hub.api.RollbackFailedException;
 import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
@@ -76,6 +81,7 @@ public class HubTest extends HK2Runner {
     private final static String TYPE_NINE = "TypeNine";
     private final static String TYPE_TEN = "TypeTen";
     private final static String TYPE_ELEVEN = "TypeEleven";
+    private final static String TYPE_TWELVE = "TypeTwelve";
     
     private final static String NAME_PROPERTY = "name";
     private final static String OTHER_PROPERTY = "other";
@@ -83,9 +89,13 @@ public class HubTest extends HK2Runner {
     private final static String ALICE = "Alice";
     private final static String BOB = "Bob";
     private final static String CAROL = "Carol";
+    private final static String DAVE = "Dave";
     
     private final static String OTHER_PROPERTY_VALUE1 = "value1";
     private final static String OTHER_PROPERTY_VALUE2 = "value2";
+    
+    public final static String PREPARE_FAIL_MESSAGE = "Expected prepare exception";
+    public final static String COMMIT_FAIL_MESSAGE = "Expected commit exception";
     
     private Hub hub;
     private Map<String, Object> oneFieldBeanLikeMap = new HashMap<String, Object>();
@@ -1045,6 +1055,278 @@ public class HubTest extends HK2Runner {
             removeType(TYPE_SEVEN);
         }
         
+    }
+    
+    /**
+     * Tests that all listeners are called, sunny day scenario
+     */
+    @Test
+    public void testAllListenersPrepareAndCommitInvoked() {
+        AbstractCountingListener listener1 = new AbstractCountingListener();
+        AbstractCountingListener listener2 = new AbstractCountingListener();
+        AbstractCountingListener listener3 = new AbstractCountingListener();
+        
+        LinkedList<ActiveDescriptor<?>> added = new LinkedList<ActiveDescriptor<?>>();
+        added.add(ServiceLocatorUtilities.addOneConstant(testLocator, listener1));
+        added.add(ServiceLocatorUtilities.addOneConstant(testLocator, listener2));
+        added.add(ServiceLocatorUtilities.addOneConstant(testLocator, listener3));
+        
+        try {
+            GenericJavaBean newBean = new GenericJavaBean();
+            
+            addTypeAndInstance(TYPE_TWELVE, DAVE, newBean);
+            
+            Assert.assertEquals(1, listener1.getNumPreparesCalled());
+            Assert.assertEquals(1, listener1.getNumCommitsCalled());
+            Assert.assertEquals(0, listener1.getNumRollbackCalled());
+            
+            Assert.assertEquals(1, listener2.getNumPreparesCalled());
+            Assert.assertEquals(1, listener2.getNumCommitsCalled());
+            Assert.assertEquals(0, listener2.getNumRollbackCalled());
+            
+            Assert.assertEquals(1, listener3.getNumPreparesCalled());
+            Assert.assertEquals(1, listener3.getNumCommitsCalled());
+            Assert.assertEquals(0, listener3.getNumRollbackCalled());
+        }
+        finally {
+            for (ActiveDescriptor<?> removeMe : added) {
+                ServiceLocatorUtilities.removeOneDescriptor(testLocator, removeMe);
+            }
+            
+            removeType(TYPE_TWELVE);
+        }
+        
+    }
+    
+    /**
+     * Tests that all listeners are called, sunny day scenario
+     */
+    @Test
+    public void testMiddleListenerThrowsExceptionInPrepare() {
+        AbstractCountingListener listener1 = new AbstractCountingListener();
+        PrepareFailListener listener2 = new PrepareFailListener();
+        AbstractCountingListener listener3 = new AbstractCountingListener();
+        
+        LinkedList<ActiveDescriptor<?>> added = new LinkedList<ActiveDescriptor<?>>();
+        added.add(ServiceLocatorUtilities.addOneConstant(testLocator, listener1));
+        added.add(ServiceLocatorUtilities.addOneConstant(testLocator, listener2));
+        added.add(ServiceLocatorUtilities.addOneConstant(testLocator, listener3));
+        
+        try {
+            GenericJavaBean newBean = new GenericJavaBean();
+            
+            try {
+                addTypeAndInstance(TYPE_TWELVE, DAVE, newBean);
+                Assert.fail("Prepare threw exception, but commit succeeded");
+            }
+            catch (MultiException me) {
+                Assert.assertTrue(me.toString().contains(PREPARE_FAIL_MESSAGE));
+                
+                boolean found = false;
+                for (Throwable inner : me.getErrors()) {
+                    if (inner instanceof PrepareFailedException) {
+                        Assert.assertFalse("Should only be ONE instance of PrepareFailedException, but there is at least two in " + me, found);
+                        found = true;
+                    }
+                }
+                
+                Assert.assertTrue(found);
+            }
+            
+            Assert.assertEquals(1, listener1.getNumPreparesCalled());
+            Assert.assertEquals(0, listener1.getNumCommitsCalled());
+            Assert.assertEquals(1, listener1.getNumRollbackCalled());
+            
+            Assert.assertEquals(1, listener2.getNumPreparesCalled());
+            Assert.assertEquals(0, listener2.getNumCommitsCalled());
+            Assert.assertEquals(0, listener2.getNumRollbackCalled());
+            
+            Assert.assertEquals(0, listener3.getNumPreparesCalled());
+            Assert.assertEquals(0, listener3.getNumCommitsCalled());
+            Assert.assertEquals(0, listener3.getNumRollbackCalled());
+        }
+        finally {
+            for (ActiveDescriptor<?> removeMe : added) {
+                ServiceLocatorUtilities.removeOneDescriptor(testLocator, removeMe);
+            }
+            
+            removeType(TYPE_TWELVE);
+        }
+    }
+    
+    /**
+     * Tests that all listeners are called when one fails in commit
+     */
+    @Test
+    public void testMiddleListenerThrowsExceptionInCommit() {
+        AbstractCountingListener listener1 = new AbstractCountingListener();
+        CommitFailListener listener2 = new CommitFailListener();
+        AbstractCountingListener listener3 = new AbstractCountingListener();
+        
+        LinkedList<ActiveDescriptor<?>> added = new LinkedList<ActiveDescriptor<?>>();
+        added.add(ServiceLocatorUtilities.addOneConstant(testLocator, listener1));
+        added.add(ServiceLocatorUtilities.addOneConstant(testLocator, listener2));
+        added.add(ServiceLocatorUtilities.addOneConstant(testLocator, listener3));
+        
+        try {
+            GenericJavaBean newBean = new GenericJavaBean();
+            
+            try {
+                addTypeAndInstance(TYPE_TWELVE, DAVE, newBean);
+                Assert.fail("Commit threw exception, but commit succeeded");
+            }
+            catch (MultiException me) {
+                Assert.assertTrue(me.toString().contains(COMMIT_FAIL_MESSAGE));
+                
+                boolean found = false;
+                for (Throwable inner : me.getErrors()) {
+                    if (inner instanceof CommitFailedException) {
+                        Assert.assertFalse("Should only be ONE instance of CommitFailedException, but there is at least two in " + me, found);
+                        found = true;
+                    }
+                }
+                
+                Assert.assertTrue(found);
+            }
+            
+            Assert.assertEquals(1, listener1.getNumPreparesCalled());
+            Assert.assertEquals(1, listener1.getNumCommitsCalled());
+            Assert.assertEquals(0, listener1.getNumRollbackCalled());
+            
+            Assert.assertEquals(1, listener2.getNumPreparesCalled());
+            Assert.assertEquals(1, listener2.getNumCommitsCalled());
+            Assert.assertEquals(0, listener2.getNumRollbackCalled());
+            
+            Assert.assertEquals(1, listener3.getNumPreparesCalled());
+            Assert.assertEquals(1, listener3.getNumCommitsCalled());
+            Assert.assertEquals(0, listener3.getNumRollbackCalled());
+        }
+        finally {
+            for (ActiveDescriptor<?> removeMe : added) {
+                ServiceLocatorUtilities.removeOneDescriptor(testLocator, removeMe);
+            }
+            
+            
+            
+            removeType(TYPE_TWELVE);
+        }
+    }
+    
+    /**
+     * Tests that all listeners are called when one fails in prepare and
+     * several others fail in rollback
+     */
+    @Test
+    public void testAnExceptionInPrepareAndSeveralRollbacksAllGetReported() {
+        RollbackFailListener listener1 = new RollbackFailListener();
+        AbstractCountingListener listener2 = new AbstractCountingListener();
+        RollbackFailListener listener3 = new RollbackFailListener();
+        PrepareFailListener listener4 = new PrepareFailListener();
+        
+        LinkedList<ActiveDescriptor<?>> added = new LinkedList<ActiveDescriptor<?>>();
+        added.add(ServiceLocatorUtilities.addOneConstant(testLocator, listener1));
+        added.add(ServiceLocatorUtilities.addOneConstant(testLocator, listener2));
+        added.add(ServiceLocatorUtilities.addOneConstant(testLocator, listener3));
+        added.add(ServiceLocatorUtilities.addOneConstant(testLocator, listener4));
+        
+        try {
+            GenericJavaBean newBean = new GenericJavaBean();
+            
+            try {
+                addTypeAndInstance(TYPE_TWELVE, DAVE, newBean);
+                Assert.fail("Prepare threw exception, but commit succeeded");
+            }
+            catch (MultiException me) {
+                Assert.assertTrue(me.toString().contains(PREPARE_FAIL_MESSAGE));
+                
+                boolean found = false;
+                int rollbackErrorsReported = 0;
+                for (Throwable inner : me.getErrors()) {
+                    if (inner instanceof PrepareFailedException) {
+                        Assert.assertFalse("Should only be ONE instance of PrepareFailedException, but there is at least two in " + me, found);
+                        found = true;
+                    }
+                    else if (inner instanceof RollbackFailedException) {
+                        rollbackErrorsReported++;
+                    }
+                }
+                
+                Assert.assertTrue(found);
+                Assert.assertEquals(2, rollbackErrorsReported);
+            }
+            
+            Assert.assertEquals(1, listener1.getNumPreparesCalled());
+            Assert.assertEquals(0, listener1.getNumCommitsCalled());
+            Assert.assertEquals(1, listener1.getNumRollbackCalled());
+            
+            Assert.assertEquals(1, listener2.getNumPreparesCalled());
+            Assert.assertEquals(0, listener2.getNumCommitsCalled());
+            Assert.assertEquals(1, listener2.getNumRollbackCalled());
+            
+            Assert.assertEquals(1, listener3.getNumPreparesCalled());
+            Assert.assertEquals(0, listener3.getNumCommitsCalled());
+            Assert.assertEquals(1, listener3.getNumRollbackCalled());
+            
+            Assert.assertEquals(1, listener4.getNumPreparesCalled());
+            Assert.assertEquals(0, listener4.getNumCommitsCalled());
+            Assert.assertEquals(0, listener4.getNumRollbackCalled());
+        }
+        finally {
+            for (ActiveDescriptor<?> removeMe : added) {
+                ServiceLocatorUtilities.removeOneDescriptor(testLocator, removeMe);
+            }
+            
+            removeType(TYPE_TWELVE);
+        }
+    }
+    
+    /**
+     * Tests that all commit errors are reported
+     */
+    @Test
+    public void testMultipleCommitErrorsAllGetReported() {
+        CommitFailListener listener1 = new CommitFailListener();
+        CommitFailListener listener2 = new CommitFailListener();
+        
+        LinkedList<ActiveDescriptor<?>> added = new LinkedList<ActiveDescriptor<?>>();
+        added.add(ServiceLocatorUtilities.addOneConstant(testLocator, listener1));
+        added.add(ServiceLocatorUtilities.addOneConstant(testLocator, listener2));
+        
+        try {
+            GenericJavaBean newBean = new GenericJavaBean();
+            
+            try {
+                addTypeAndInstance(TYPE_TWELVE, DAVE, newBean);
+                Assert.fail("Prepare threw exception, but commit succeeded");
+            }
+            catch (MultiException me) {
+                Assert.assertTrue(me.toString().contains(COMMIT_FAIL_MESSAGE));
+                
+                int commitErrorsReported = 0;
+                for (Throwable inner : me.getErrors()) {
+                    if (inner instanceof CommitFailedException) {
+                        commitErrorsReported++;
+                    }
+                }
+                
+                Assert.assertEquals(2, commitErrorsReported);
+            }
+            
+            Assert.assertEquals(1, listener1.getNumPreparesCalled());
+            Assert.assertEquals(1, listener1.getNumCommitsCalled());
+            Assert.assertEquals(0, listener1.getNumRollbackCalled());
+            
+            Assert.assertEquals(1, listener2.getNumPreparesCalled());
+            Assert.assertEquals(1, listener2.getNumCommitsCalled());
+            Assert.assertEquals(0, listener2.getNumRollbackCalled());
+        }
+        finally {
+            for (ActiveDescriptor<?> removeMe : added) {
+                ServiceLocatorUtilities.removeOneDescriptor(testLocator, removeMe);
+            }
+            
+            removeType(TYPE_TWELVE);
+        }
     }
 
 }
