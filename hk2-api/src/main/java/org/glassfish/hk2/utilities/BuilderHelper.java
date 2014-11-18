@@ -63,6 +63,7 @@ import org.glassfish.hk2.api.Metadata;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ProxyForSameScope;
+import org.glassfish.hk2.api.Rank;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.UseProxy;
 import org.glassfish.hk2.api.Visibility;
@@ -467,6 +468,12 @@ public class BuilderHelper {
             classAnalysisName = service.analyzer();
         }
         
+        int rank = 0;
+        Rank rankAnno = constant.getClass().getAnnotation(Rank.class);
+        if (rankAnno != null) {
+            rank = rankAnno.value();
+        }
+        
         return new ConstantActiveDescriptor<T>(
                 constant,
                 contractsAsSet,
@@ -477,7 +484,8 @@ public class BuilderHelper {
                 proxy,
                 proxyForSameScope,
                 classAnalysisName,
-                metadata);
+                metadata,
+                rank);
     }
     
     /**
@@ -518,6 +526,12 @@ public class BuilderHelper {
             visibility = vi.value();
         }
         
+        int rank = 0;
+        Rank rankAnno = clazz.getAnnotation(Rank.class);
+        if (rankAnno != null) {
+            rank = rankAnno.value();
+        }
+        
         // TODO:  Can we get metadata from @Service?
         return new DescriptorImpl(
                 contracts,
@@ -529,7 +543,7 @@ public class BuilderHelper {
                 type,
                 visibility,
                 null,
-                0,
+                rank,
                 proxy,
                 proxyForSameScope,
                 null,

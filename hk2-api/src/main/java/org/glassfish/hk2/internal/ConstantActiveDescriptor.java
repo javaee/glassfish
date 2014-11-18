@@ -84,6 +84,7 @@ public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
      * @param proxyForSameScope 
      * @param classAnalysisName 
      * @param metadata 
+     * @param rank
      */
     public ConstantActiveDescriptor(T theOne,
             Set<Type> advertisedContracts,
@@ -94,14 +95,15 @@ public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
             Boolean proxy,
             Boolean proxyForSameScope,
             String classAnalysisName,
-            Map<String, List<String>> metadata) {
+            Map<String, List<String>> metadata,
+            int rank) {
         super(advertisedContracts,
                 scope,
                 name,
                 qualifiers,
                 DescriptorType.CLASS,
                 descriptorVisibility,
-                0,
+                rank,
                 proxy,
                 proxyForSameScope,
                 classAnalysisName,

@@ -621,11 +621,11 @@ public class BuilderHelperTest {
     /**
      * Tests rank is honored in from class
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testServicesWithRanksFromClass() {
         Descriptor ss = BuilderHelper.createDescriptorFromClass(SimpleService.class);
         Descriptor r10 = BuilderHelper.createDescriptorFromClass(ServiceWithRank10.class);
-        Descriptor r20 = BuilderHelper.createDescriptorFromClass(ServiceWithRank10.class);
+        Descriptor r20 = BuilderHelper.createDescriptorFromClass(ServiceWithRank20.class);
         
         Assert.assertEquals(0, ss.getRanking());
         Assert.assertEquals(10, r10.getRanking());
@@ -635,7 +635,7 @@ public class BuilderHelperTest {
     /**
      * Tests rank is honored on constants
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testServicesWithRanksFromConstants() {
         Descriptor ss = BuilderHelper.createConstantDescriptor(new SimpleService());
         Descriptor r10 = BuilderHelper.createConstantDescriptor(new ServiceWithRank10());
