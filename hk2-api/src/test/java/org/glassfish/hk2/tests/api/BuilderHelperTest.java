@@ -618,6 +618,34 @@ public class BuilderHelperTest {
         Assert.assertEquals(DescriptorVisibility.NORMAL, di.getDescriptorVisibility());
     }
     
+    /**
+     * Tests rank is honored in from class
+     */
+    @Test @org.junit.Ignore
+    public void testServicesWithRanksFromClass() {
+        Descriptor ss = BuilderHelper.createDescriptorFromClass(SimpleService.class);
+        Descriptor r10 = BuilderHelper.createDescriptorFromClass(ServiceWithRank10.class);
+        Descriptor r20 = BuilderHelper.createDescriptorFromClass(ServiceWithRank10.class);
+        
+        Assert.assertEquals(0, ss.getRanking());
+        Assert.assertEquals(10, r10.getRanking());
+        Assert.assertEquals(20, r20.getRanking());
+    }
+    
+    /**
+     * Tests rank is honored on constants
+     */
+    @Test @org.junit.Ignore
+    public void testServicesWithRanksFromConstants() {
+        Descriptor ss = BuilderHelper.createConstantDescriptor(new SimpleService());
+        Descriptor r10 = BuilderHelper.createConstantDescriptor(new ServiceWithRank10());
+        Descriptor r20 = BuilderHelper.createConstantDescriptor(new ServiceWithRank20());
+        
+        Assert.assertEquals(0, ss.getRanking());
+        Assert.assertEquals(10, r10.getRanking());
+        Assert.assertEquals(20, r20.getRanking());
+    }
+    
     private final static String ACME_IMPL = "com.acme.FooImpl";
     private final static String ACME_INTF = "com.acme.Foo";
     private final static String NAME1 = "name1";
