@@ -37,64 +37,66 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.negative.immediate.cycle;
+package org.glassfish.hk2.tests.locator.immediate;
 
-import java.util.List;
+import javax.annotation.PostConstruct;
 
-import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
-import org.junit.Assert;
-import org.junit.Test;
+import org.glassfish.hk2.api.Immediate;
 
 /**
  * @author jwells
  *
  */
-public class ImmediateCycleTest {
-
-    /**
-     * Tests that an ImmediateService with a cycle will get detected and reported
-     * to the error handler
-     * 
-     * @throws InterruptedException
-     */
-    @Test // @org.junit.Ignore
-    public void testImmediateWithCycleFails() throws InterruptedException {
-        ServiceLocator locator = LocatorHelper.create();
-        
-        ServiceLocatorUtilities.enableImmediateScope(locator);
-        
-        ServiceLocatorUtilities.addClasses(locator,
-                ImmedateErrorHandlerImpl.class,
-                SingletonOneImpl.class);
-        
-        // Now truly start the cycle off
-        List<ActiveDescriptor<?>> immediates = ServiceLocatorUtilities.addClasses(locator,
-                ImmediateOneImpl.class,
-                ImmediateTwoImpl.class);
-        
-        ImmedateErrorHandlerImpl handler = locator.getService(ImmedateErrorHandlerImpl.class);
-        Assert.assertNotNull(handler);
-        
-        ActiveDescriptor<?> errorDesc = handler.waitForPostFailure(5 * 1000);
-        Assert.assertNotNull(errorDesc);
-        
-        boolean found = false;
-        for (ActiveDescriptor<?> compareMe : immediates) {
-            if (compareMe.equals(errorDesc)) {
-                found = true;
-                break;
+@Immediate
+public class SleepInPostConstructService {
+    private final static Object sLock = new Object();
+    private static boolean inPostConstruct = false;
+    private static int numCreations;
+    
+    public static boolean waitForPostConstruct(long waitTime) throws InterruptedException {
+        synchronized (sLock) {
+            while (waitTime > 0 && !inPostConstruct) {
+                long elapsedTime = System.currentTimeMillis();
+                sLock.wait(waitTime);
+                elapsedTime = System.currentTimeMillis() - elapsedTime;
+                waitTime -= elapsedTime;
             }
+            
+            return inPostConstruct;
         }
         
-        Assert.assertTrue(found);
-        
-        Throwable th = handler.getPostException();
-        Assert.assertNotNull(th);
-        
-        Assert.assertTrue(th.toString().contains("A circular dependency involving Immediate service "));
     }
+
+    private SleepInPostConstructService() {
+        synchronized (sLock) {
+            numCreations++;
+        }
+    }
+    
+    public int getNumCreations() {
+        synchronized (sLock) {
+            return numCreations;
+        }
+    }
+    
+    @PostConstruct
+    private void postConstruct() {
+        synchronized (sLock) {
+            inPostConstruct = true;
+            sLock.notify();
+        }
+        
+        // Now sleep in here, to have a good chance of
+        // the test thread to get into the proper place
+        // when looking for this service
+        try {
+            Thread.sleep(1 * 1000);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        
+    }
+    
 
 }

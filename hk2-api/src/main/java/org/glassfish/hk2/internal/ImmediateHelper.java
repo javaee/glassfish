@@ -110,7 +110,7 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
     private final ServiceLocator locator;
     
     private final HashMap<ActiveDescriptor<?>, HandleAndService> currentImmediateServices = new HashMap<ActiveDescriptor<?>, HandleAndService>();
-    private final HashSet<ActiveDescriptor<?>> creating = new HashSet<ActiveDescriptor<?>>();
+    private final HashMap<ActiveDescriptor<?>, Long> creating = new HashMap<ActiveDescriptor<?>, Long>();
     private final HashSet<Long> tidsWithWork = new HashSet<Long>();
     
     private final Object queueLock = new Object();
@@ -142,7 +142,14 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
                 return (U) has.getService();
             }
             
-            while (creating.contains(activeDescriptor)) {
+            while (creating.containsKey(activeDescriptor)) {
+                long alreadyCreatingThread = creating.get(activeDescriptor);
+                if (alreadyCreatingThread == Thread.currentThread().getId()) {
+                    throw new MultiException(new IllegalStateException(
+                            "A circular dependency involving Immediate service " + activeDescriptor.getImplementation() +
+                            " was found.  Full descriptor is " + activeDescriptor));
+                }
+                
                 try {
                     this.wait();
                 }
@@ -157,7 +164,7 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
                 return (U) has.getService();
             }
             
-            creating.add(activeDescriptor);
+            creating.put(activeDescriptor, Thread.currentThread().getId());
         }
         
         try {

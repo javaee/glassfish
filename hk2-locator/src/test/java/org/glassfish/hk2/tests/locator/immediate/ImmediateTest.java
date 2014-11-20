@@ -328,6 +328,29 @@ public class ImmediateTest {
         Assert.assertEquals(1, WaitableImmediateService.getNumCreations());
     }
     
+    /**
+     * Tests that an immediate service that is already in its post construct and which
+     * will take a long time to complete that post construct can have that service
+     * be asked for by another thread (in other words, the service is already being
+     * created at the time when another thread asks for the same service)
+     * @throws InterruptedException 
+     */
+    @Test
+    public void testImmediateServiceWithLongPostConstructAndAskedForByThisThread() throws InterruptedException {
+        ServiceLocator locator = LocatorHelper.getServiceLocator();
+        ServiceLocatorUtilities.enableImmediateScope(locator);
+        
+        // Start off the service creation
+        ServiceLocatorUtilities.addClasses(locator, SleepInPostConstructService.class);
+        
+        Assert.assertTrue(SleepInPostConstructService.waitForPostConstruct(20 * 1000));
+        
+        // Quickly now, ask for the service
+        SleepInPostConstructService service = locator.getService(SleepInPostConstructService.class);
+        Assert.assertNotNull(service);
+        Assert.assertEquals(1, service.getNumCreations());
+    }
+    
     private final static Object sLock = new Object();
     private static long immediateTid = -1;
     
