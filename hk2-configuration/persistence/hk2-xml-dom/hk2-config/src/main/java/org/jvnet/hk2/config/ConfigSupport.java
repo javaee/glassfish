@@ -43,6 +43,8 @@ import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ProxyCtl;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.jvnet.hk2.annotations.Service;
+import org.jvnet.hk2.config.api.ConfigurationUtilities;
+
 import javax.inject.Inject;
 
 import java.beans.PropertyVetoException;
@@ -52,6 +54,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.util.*;
+
 import org.jvnet.tiger_types.Types;
 
 /**
@@ -92,7 +95,7 @@ import org.jvnet.tiger_types.Types;
   * @author Jerome Dochez
   */
 @Service
-public class ConfigSupport {
+public class ConfigSupport implements ConfigurationUtilities {
 
     @Inject
     ServiceLocator habitat;
@@ -482,7 +485,7 @@ public class ConfigSupport {
         throws TransactionFailure {
 
 
-        return createAndSet(parent, childType, AttributeChanges.from(attributes), runnable);
+        return createAndSet(parent, childType, from(attributes), runnable);
         
     }
     /**
@@ -541,127 +544,13 @@ public class ConfigSupport {
              *          to the configuration
              */
             public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure {
-
-                // create the child
-                ConfigBeanProxy child = param.createChild(childType);
-                Dom dom = Dom.unwrap(child);
-
-                // add the child to the parent.
-                WriteableView writeableParent = (WriteableView) Proxy.getInvocationHandler(param);
-                Class parentProxyType = parent.getProxyType();
-
-                Class<?> targetClass = null;
-                // first we need to find the element associated with this type
-                ConfigModel.Property element = null;
-                for (ConfigModel.Property e : parent.model.elements.values()) {
-                    if (e.isLeaf()) {
-                        continue;
-                    }
-                    ConfigModel elementModel =  ((ConfigModel.Node) e).model;
-
-                    if (Logger.getAnonymousLogger().isLoggable(Level.FINE)) {
-                        Logger.getAnonymousLogger().fine( "elementModel.targetTypeName = " + elementModel.targetTypeName +
-                            ", collection: " + e.isCollection() + ", childType.getName() = " + childType.getName() );
-                    }
-                            
-                    if (elementModel.targetTypeName.equals(childType.getName())) {
-                        element = e;
-                        break;
-                    }
-                    else if ( e.isCollection() ) {
-                        try {
-                            final Class<?> tempClass = elementModel.classLoaderHolder.loadClass(elementModel.targetTypeName);
-                            if ( tempClass.isAssignableFrom( childType ) ) {
-                                element = e;
-                                targetClass = tempClass;
-                                break;
-                            }
-                        } catch (Exception ex ) { 
-                            throw new TransactionFailure("EXCEPTION getting class for " + elementModel.targetTypeName, ex);
-                        }
-                    }
-                }
-                
-                // now depending whether this is a collection or a single leaf,
-                // we need to process this setting differently
-                if (element != null) {
-                    if (element.isCollection()) {
-                        // this is kind of nasty, I have to find the method that returns the collection
-                        // object because trying to do a element.get without having the parametized List
-                        // type will not work.
-                        for (Method m : parentProxyType.getMethods()) {
-                            final Class returnType = m.getReturnType();
-                            if (Collection.class.isAssignableFrom(returnType) && (m.getParameterTypes().length == 0)) {
-                                // this could be it...
-                                if (!(m.getGenericReturnType() instanceof ParameterizedType))
-                                    throw new IllegalArgumentException("List needs to be parameterized");
-                                final Class itemType = Types.erasure(Types.getTypeArgument(m.getGenericReturnType(), 0));
-                                if (itemType.isAssignableFrom(childType)) {
-                                    List list = null;
-                                    try {
-                                        list = (List) m.invoke(param, null);
-                                    } catch (IllegalAccessException e) {
-                                        throw new TransactionFailure("Exception while adding to the parent", e);
-                                    } catch (InvocationTargetException e) {
-                                        throw new TransactionFailure("Exception while adding to the parent", e);
-                                    }
-                                    if (list != null) {
-                                        list.add(child);
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        // much simpler, I can use the setter directly.
-                        writeableParent.setter(element, dom.<ConfigBeanProxy>createProxy(), childType);
-                    }
-                } else {
-                    throw new TransactionFailure("Parent " + parent.getProxyType() + " does not have a child of type " + childType);
-                }
-
-                WriteableView writeableChild = (WriteableView) Proxy.getInvocationHandler(child);
-                applyProperties(writeableChild, attributes);
-
-                dom.addDefaultChildren();
-                dom.register();
-
-                if (runnable!=null) {
-                    runnable.performOn(writeableChild);
-                }
-                return child;
+                return addChildWithAttributes(param, parent, childType, attributes, runnable);
             }
         }, readableView);
         return (ConfigBean) Dom.unwrap(readableChild);
     }
 
-    private void applyProperties(WriteableView target, List<? extends AttributeChanges> changes)
-            throws TransactionFailure {
-
-        if (changes != null) {
-            for (AttributeChanges change : changes) {
-
-                ConfigModel.Property prop = target.getProperty(change.name);
-                if (prop == null) {
-                    throw new TransactionFailure("Unknown property name " + change.name + " on " + target.getProxyType());
-                }
-                if (prop.isCollection()) {
-                    // we need access to the List
-                    try {
-                        List list = (List) target.getter(prop, ConfigSupport.class.getDeclaredMethod("defaultPropertyValue", null).getGenericReturnType());
-                        for (String value : change.values()) {
-                            list.add(value);
-                        }
-                    } catch (NoSuchMethodException e) {
-                        throw new TransactionFailure(e.getMessage(), e);
-                    }
-                } else {
-                    target.setter(prop, change.values()[0], String.class);
-                }
-            }
-        }
-
-    }
+    
 
 
     /**
@@ -821,31 +710,17 @@ public class ConfigSupport {
                 }
     }
     
-    public interface TransactionCallBack<T> {
-        public void performOn(T param) throws TransactionFailure;
-    }
-
-    public static abstract class AttributeChanges {
-        final String name;
-
-        AttributeChanges(String name) {
-            this.name = name;
+    public static List<AttributeChanges> from(Map<String, String> values) {
+        if (values==null) {
+            return null;
         }
-        abstract String[] values();
-
-        static List<AttributeChanges> from(Map<String, String> values) {
-            if (values==null) {
-                return null;
-            }
-            List<AttributeChanges> changes = new ArrayList<AttributeChanges>();
-            for(Map.Entry<String, String> entry : values.entrySet()) {
-                changes.add(new SingleAttributeChange(entry.getKey(), entry.getValue()));
-            }
-            return changes;
+        List<AttributeChanges> changes = new ArrayList<AttributeChanges>();
+        for(Map.Entry<String, String> entry : values.entrySet()) {
+            changes.add(new SingleAttributeChange(entry.getKey(), entry.getValue()));
         }
-        
+        return changes;
     }
-
+    
     public static class SingleAttributeChange extends AttributeChanges {
         final String[] values = new String[1];
         
@@ -911,5 +786,131 @@ public class ConfigSupport {
             proxy = (T) proxyCtl.__make();
         }
         return proxy;
+    }
+    
+    @Override
+    public Object addChildWithAttributes(ConfigBeanProxy param,
+            ConfigBean parent,
+            Class<? extends ConfigBeanProxy> childType,
+            List<AttributeChanges> attributes,
+            TransactionCallBack<WriteableView> runnable) throws TransactionFailure {
+
+        // create the child
+        ConfigBeanProxy child = param.createChild(childType);
+        Dom dom = Dom.unwrap(child);
+
+        // add the child to the parent.
+        WriteableView writeableParent = (WriteableView) Proxy.getInvocationHandler(param);
+        Class parentProxyType = parent.getProxyType();
+
+        Class<?> targetClass = null;
+        // first we need to find the element associated with this type
+        ConfigModel.Property element = null;
+        for (ConfigModel.Property e : parent.model.elements.values()) {
+            if (e.isLeaf()) {
+                continue;
+            }
+            ConfigModel elementModel =  ((ConfigModel.Node) e).model;
+
+            if (Logger.getAnonymousLogger().isLoggable(Level.FINE)) {
+                Logger.getAnonymousLogger().fine( "elementModel.targetTypeName = " + elementModel.targetTypeName +
+                    ", collection: " + e.isCollection() + ", childType.getName() = " + childType.getName() );
+            }
+                    
+            if (elementModel.targetTypeName.equals(childType.getName())) {
+                element = e;
+                break;
+            }
+            else if ( e.isCollection() ) {
+                try {
+                    final Class<?> tempClass = elementModel.classLoaderHolder.loadClass(elementModel.targetTypeName);
+                    if ( tempClass.isAssignableFrom( childType ) ) {
+                        element = e;
+                        targetClass = tempClass;
+                        break;
+                    }
+                } catch (Exception ex ) { 
+                    throw new TransactionFailure("EXCEPTION getting class for " + elementModel.targetTypeName, ex);
+                }
+            }
+        }
+        
+        // now depending whether this is a collection or a single leaf,
+        // we need to process this setting differently
+        if (element != null) {
+            if (element.isCollection()) {
+                // this is kind of nasty, I have to find the method that returns the collection
+                // object because trying to do a element.get without having the parametized List
+                // type will not work.
+                for (Method m : parentProxyType.getMethods()) {
+                    final Class returnType = m.getReturnType();
+                    if (Collection.class.isAssignableFrom(returnType) && (m.getParameterTypes().length == 0)) {
+                        // this could be it...
+                        if (!(m.getGenericReturnType() instanceof ParameterizedType))
+                            throw new IllegalArgumentException("List needs to be parameterized");
+                        final Class itemType = Types.erasure(Types.getTypeArgument(m.getGenericReturnType(), 0));
+                        if (itemType.isAssignableFrom(childType)) {
+                            List list = null;
+                            try {
+                                list = (List) m.invoke(param, null);
+                            } catch (IllegalAccessException e) {
+                                throw new TransactionFailure("Exception while adding to the parent", e);
+                            } catch (InvocationTargetException e) {
+                                throw new TransactionFailure("Exception while adding to the parent", e);
+                            }
+                            if (list != null) {
+                                list.add(child);
+                                break;
+                            }
+                        }
+                    }
+                }
+            } else {
+                // much simpler, I can use the setter directly.
+                writeableParent.setter(element, dom.<ConfigBeanProxy>createProxy(), childType);
+            }
+        } else {
+            throw new TransactionFailure("Parent " + parent.getProxyType() + " does not have a child of type " + childType);
+        }
+
+        WriteableView writeableChild = (WriteableView) Proxy.getInvocationHandler(child);
+        applyProperties(writeableChild, attributes);
+
+        dom.addDefaultChildren();
+        dom.register();
+        
+        if (runnable!=null) {
+            runnable.performOn(writeableChild);
+        }
+
+        return child;
+    }
+    
+    private static void applyProperties(WriteableView target, List<? extends AttributeChanges> changes)
+            throws TransactionFailure {
+
+        if (changes != null) {
+            for (AttributeChanges change : changes) {
+
+                ConfigModel.Property prop = target.getProperty(change.getName());
+                if (prop == null) {
+                    throw new TransactionFailure("Unknown property name " + change.getName() + " on " + target.getProxyType());
+                }
+                if (prop.isCollection()) {
+                    // we need access to the List
+                    try {
+                        List list = (List) target.getter(prop, ConfigSupport.class.getDeclaredMethod("defaultPropertyValue", null).getGenericReturnType());
+                        for (String value : change.values()) {
+                            list.add(value);
+                        }
+                    } catch (NoSuchMethodException e) {
+                        throw new TransactionFailure(e.getMessage(), e);
+                    }
+                } else {
+                    target.setter(prop, change.values()[0], String.class);
+                }
+            }
+        }
+
     }
  }
