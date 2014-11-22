@@ -484,8 +484,7 @@ public class ConfigSupport implements ConfigurationUtilities {
                 final TransactionCallBack<WriteableView> runnable)
         throws TransactionFailure {
 
-
-        return createAndSet(parent, childType, from(attributes), runnable);
+        return createAndSet(parent, childType, convertMapToAttributeChanges(attributes), runnable);
         
     }
     /**
@@ -522,7 +521,7 @@ public class ConfigSupport implements ConfigurationUtilities {
                 _createAndSet(parent, childType, attributes, runnable);
     }
 
-    ConfigBean _createAndSet(
+    private ConfigBean _createAndSet(
                     final ConfigBean parent,
                     final Class<? extends ConfigBeanProxy> childType,
                     final List<AttributeChanges> attributes,
@@ -532,26 +531,12 @@ public class ConfigSupport implements ConfigurationUtilities {
         ConfigBeanProxy readableView = parent.getProxy(parent.getProxyType());
         ConfigBeanProxy readableChild = (ConfigBeanProxy)
                 apply(new SingleConfigCode<ConfigBeanProxy>() {
-            /**
-             * Runs the following command passing the configration object. The code will be run
-             * within a transaction, returning true will commit the transaction, false will abort
-             * it.
-             *
-             * @param param is the configuration object protected by the transaction
-             * @return any object that should be returned from within the transaction code
-             * @throws java.beans.PropertyVetoException
-             *          if the changes cannot be applied
-             *          to the configuration
-             */
             public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure {
                 return addChildWithAttributes(param, parent, childType, attributes, runnable);
             }
         }, readableView);
         return (ConfigBean) Dom.unwrap(readableChild);
     }
-
-    
-
 
     /**
      * Creates a new child of the passed child and add it to the parent's live
@@ -601,17 +586,6 @@ public class ConfigSupport implements ConfigurationUtilities {
         ConfigBeanProxy readableView = parent.getProxy(parent.getProxyType());
         apply(new SingleConfigCode<ConfigBeanProxy>() {
 
-            /**
-             * Runs the following command passing the configration object. The code will be run
-             * within a transaction, returning true will commit the transaction, false will abort
-             * it.
-             *
-             * @param param is the configuration object protected by the transaction
-             * @return any object that should be returned from within the transaction code
-             * @throws java.beans.PropertyVetoException
-             *          if the changes cannot be applied
-             *          to the configuration
-             */
             public Object run(ConfigBeanProxy param) throws PropertyVetoException, TransactionFailure {
 
 
@@ -710,7 +684,7 @@ public class ConfigSupport implements ConfigurationUtilities {
                 }
     }
     
-    public static List<AttributeChanges> from(Map<String, String> values) {
+    public static List<AttributeChanges> convertMapToAttributeChanges(Map<String, String> values) {
         if (values==null) {
             return null;
         }
