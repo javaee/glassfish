@@ -64,7 +64,7 @@ import org.glassfish.hk2.utilities.reflection.Pretty;
 public class InjecteeImpl implements Injectee {
     private Type requiredType;
     private Set<Annotation> qualifiers;
-    private int position;
+    private int position = -1;
     private Class<?> pClass;
     private AnnotatedElement parent;
     private boolean isOptional = false;
@@ -101,7 +101,10 @@ public class InjecteeImpl implements Injectee {
         injecteeDescriptor = copyMe.getInjecteeDescriptor();
         // unqualified = copyMe.getUnqualified();
         
-        if (parent instanceof Field) {
+        if (parent == null) {
+            pClass = null;
+        }
+        else if (parent instanceof Field) {
             pClass = ((Field) parent).getDeclaringClass();
         }
         else if (parent instanceof Constructor) {
@@ -109,9 +112,6 @@ public class InjecteeImpl implements Injectee {
         }
         else if (parent instanceof Method) {
             pClass = ((Method) parent).getDeclaringClass();
-        }
-        else {
-            throw new IllegalArgumentException("parent " + parent + " has an unknown type");
         }
     }
 

@@ -186,7 +186,7 @@ public class ProviderTest {
     /**
      * Tests that a Provider can be looked up from the normal getService API
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testServiceLookupOfProvider() {
         Provider<PerLookupService> provider = locator.getService((new TypeLiteral<Provider<PerLookupService>>() {}).getType());
         Assert.assertNotNull(provider);
@@ -197,13 +197,26 @@ public class ProviderTest {
     /**
      * Tests that a IterableProvider can be looked up from the normal getService API
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testServiceLookupOfIterableProvider() {
         IterableProvider<FootballCharacter> provider = locator.getService((new TypeLiteral<IterableProvider<FootballCharacter>>() {}).getType());
         Assert.assertNotNull(provider);
         Assert.assertEquals(2, provider.getSize());
+        
+        boolean foundEli = false;
+        boolean foundShady = false;
         for (FootballCharacter fc : provider) {
             Assert.assertTrue(fc instanceof FootballCharacter);
+            
+            if (fc instanceof EliManning) {
+                foundEli = true;
+            }
+            if (fc instanceof ShadyMcCoy) {
+                foundShady = true;
+            }
         }
+        
+        Assert.assertTrue(foundEli);
+        Assert.assertTrue(foundShady);
     }
 }

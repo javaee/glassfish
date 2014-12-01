@@ -678,13 +678,36 @@ public class ServiceLocatorImpl implements ServiceLocator {
         return internalGetService(contractOrImpl, name, null, qualifiers);
     }
 
+    @SuppressWarnings("unchecked")
     private <T> T internalGetService(Type contractOrImpl, String name, Unqualified unqualified, Annotation... qualifiers) {
         checkState();
+        
+        Class<?> rawType = ReflectionHelper.getRawClass(contractOrImpl);
+        if (rawType != null &&
+                (Provider.class.equals(rawType) || IterableProvider.class.equals(rawType)) ) {
+            Type requiredType = Utilities.getFirstTypeArgument(contractOrImpl);
+            HashSet<Annotation> requiredQualifiers = new HashSet<Annotation>();
+            for (Annotation qualifier : qualifiers) {
+                requiredQualifiers.add(qualifier);
+            }
+            
+            InjecteeImpl injectee = new InjecteeImpl(requiredType);
+            injectee.setRequiredQualifiers(requiredQualifiers);
+            injectee.setUnqualified(unqualified);
+            
+            IterableProviderImpl<?> retVal = new IterableProviderImpl<Object>(this,
+                    requiredType,
+                    requiredQualifiers,
+                    unqualified,
+                    injectee);
+            
+            return (T) retVal;
+        }
 
         ActiveDescriptor<T> ad = internalGetDescriptor(null, contractOrImpl, name, unqualified, qualifiers);
         if (ad == null) return null;
 
-        T retVal = Utilities.createService(ad, null, this, null, ReflectionHelper.getRawClass(contractOrImpl));
+        T retVal = Utilities.createService(ad, null, this, null, rawType);
 
         return retVal;
 
