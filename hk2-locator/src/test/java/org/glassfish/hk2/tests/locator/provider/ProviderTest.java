@@ -45,8 +45,10 @@ import junit.framework.Assert;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.Test;
@@ -179,5 +181,29 @@ public class ProviderTest {
         Assert.assertNotNull(provider);
         
         Assert.assertNotNull(provider.get());
+    }
+    
+    /**
+     * Tests that a Provider can be looked up from the normal getService API
+     */
+    @Test @org.junit.Ignore
+    public void testServiceLookupOfProvider() {
+        Provider<PerLookupService> provider = locator.getService((new TypeLiteral<Provider<PerLookupService>>() {}).getType());
+        Assert.assertNotNull(provider);
+        Assert.assertNotNull(provider.get());
+        Assert.assertTrue(provider.get() instanceof PerLookupService);
+    }
+    
+    /**
+     * Tests that a IterableProvider can be looked up from the normal getService API
+     */
+    @Test @org.junit.Ignore
+    public void testServiceLookupOfIterableProvider() {
+        IterableProvider<FootballCharacter> provider = locator.getService((new TypeLiteral<IterableProvider<FootballCharacter>>() {}).getType());
+        Assert.assertNotNull(provider);
+        Assert.assertEquals(2, provider.getSize());
+        for (FootballCharacter fc : provider) {
+            Assert.assertTrue(fc instanceof FootballCharacter);
+        }
     }
 }
