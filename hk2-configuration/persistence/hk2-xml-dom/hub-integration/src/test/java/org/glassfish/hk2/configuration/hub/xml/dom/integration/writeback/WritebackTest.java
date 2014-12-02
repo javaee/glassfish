@@ -54,6 +54,7 @@ import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegration
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.tests.BBean;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.tests.CBean;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.tests.common.ConfigHubIntegrationUtilities;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Test;
 import org.jvnet.hk2.config.ConfigParser;
@@ -689,5 +690,48 @@ public class WritebackTest {
         Assert.assertNull(nbean.getPropertyValue(PROP_B_KEY));
         Assert.assertEquals(PROP_C_VALUE, nbean.getPropertyValue(PROP_C_KEY));
     }
-
+    
+    /**
+     * Ensures we get one set of callbacks for bean and children
+     */
+    @Test @org.junit.Ignore
+    public void testAddPropertyBagWithTransactionEnsureNotTooManyCallbacks() {
+        ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit(NBeanListener.class);
+        XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
+        
+        Hub hub = testLocator.getService(Hub.class);
+        Assert.assertNotNull(hub);
+        
+        ConfigParser parser = new ConfigParser(testLocator);
+        URL url = getClass().getClassLoader().getResource("complex3.xml");
+        Assert.assertNotNull(url);
+        
+        parser.parse(url);
+        
+        JBean jbean = testLocator.getService(JBean.class);
+        Assert.assertNotNull(jbean);
+        
+        // Ensure that listener is registered
+        NBeanListener listener = testLocator.getService(NBeanListener.class);
+        
+        {
+            Map<String, Object> nbeanMap = new HashMap<String, Object>();
+        
+            Properties newProps = new Properties();
+            newProps.put(PROP_A_KEY, PROP_A_VALUE1);
+            newProps.put(PROP_B_KEY, PROP_B_VALUE);
+        
+            nbeanMap.put(NAME_PARAMETER_NAME, IAGO);
+            nbeanMap.put(XmlDomIntegrationUtilities.PROPERTIES, newProps);
+        
+            WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+        
+            WriteableType nbeanWriteableType = wbd.findOrAddWriteableType(NBEAN_TAG);
+            nbeanWriteableType.addInstance(IAGO_INSTANCE_NAME, nbeanMap);
+        
+            wbd.commit();
+        }
+        
+        Assert.assertEquals(1, listener.getNumTimesChangedInvoked());
+    }
 }

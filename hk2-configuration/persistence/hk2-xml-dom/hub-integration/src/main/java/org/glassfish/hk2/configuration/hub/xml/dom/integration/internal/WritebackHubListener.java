@@ -61,7 +61,6 @@ import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener;
 import org.glassfish.hk2.configuration.hub.api.Change;
 import org.glassfish.hk2.configuration.hub.api.Change.ChangeCategory;
-import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationCommitMessage;
@@ -175,9 +174,6 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
     
     @Inject
     private ConfigListener configListener;
-    
-    @Inject
-    private Hub hub;
     
     private WritebackHubListener() {
     }

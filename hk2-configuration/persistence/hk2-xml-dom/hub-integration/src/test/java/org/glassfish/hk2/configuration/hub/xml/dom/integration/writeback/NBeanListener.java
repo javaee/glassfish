@@ -37,35 +37,40 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.configuration.hub.xml.dom.integration.tests.common;
+package org.glassfish.hk2.configuration.hub.xml.dom.integration.writeback;
 
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegrationUtilities;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyVetoException;
+import java.util.Arrays;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import org.jvnet.hk2.config.ConfigListener;
+import org.jvnet.hk2.config.UnprocessedChangeEvents;
 
 /**
  * @author jwells
  *
  */
-public class ConfigHubIntegrationUtilities {
-    private final static ServiceLocatorFactory factory = ServiceLocatorFactory.getInstance();
+@Singleton
+public class NBeanListener implements ConfigListener {
+    @Inject
+    private JBean jbean;
     
-    /**
-     * Creates an unnamed, untracked service locator
-     * @return An unnamed, untracked service locator
+    private int numTimesChangedInvoked = 0;
+
+    /* (non-Javadoc)
+     * @see org.jvnet.hk2.config.ConfigListener#changed(java.beans.PropertyChangeEvent[])
      */
-    public static ServiceLocator create() {
-        return factory.create(null);
+    @Override
+    public synchronized UnprocessedChangeEvents changed(PropertyChangeEvent[] events) {
+        numTimesChangedInvoked++;
+        return null;
     }
     
-    public static ServiceLocator createPopulateAndConfigInit(Class<?>... classes) {
-        ServiceLocator testLocator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
-        if (classes.length > 0) {
-            ServiceLocatorUtilities.addClasses(testLocator, classes);
-        }
-        XmlDomIntegrationUtilities.enableHk2ConfigDomIntegration(testLocator);
-        return testLocator;
+    public synchronized int getNumTimesChangedInvoked() {
+        return numTimesChangedInvoked;
     }
 
 }
