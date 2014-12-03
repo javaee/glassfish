@@ -905,8 +905,7 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
     public void prepareDatabaseChange(BeanDatabase oldDatabase,
             BeanDatabase proposedDatabase, Object commitMessage,
             List<Change> changes) {
-        // Do nothing
-        // internalDatabaseHasChanged(proposedDatabase, commitMessage, changes);
+        internalDatabaseHasChanged(proposedDatabase, commitMessage, changes);
     }
     
     @Override
@@ -914,7 +913,8 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
             BeanDatabase referenceDatabase,
             BeanDatabase newDatabase,
             Object commitMessage, List<Change> changes) {
-        internalDatabaseHasChanged(newDatabase, commitMessage, changes);
+        // Do nothing
+        // internalDatabaseHasChanged(newDatabase, commitMessage, changes);
     }
     
     /* (non-Javadoc)
