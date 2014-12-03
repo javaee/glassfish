@@ -54,7 +54,6 @@ import org.glassfish.hk2.configuration.hub.xml.dom.integration.XmlDomIntegration
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.tests.BBean;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.tests.CBean;
 import org.glassfish.hk2.configuration.hub.xml.dom.integration.tests.common.ConfigHubIntegrationUtilities;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Test;
 import org.jvnet.hk2.config.ConfigParser;
@@ -694,7 +693,7 @@ public class WritebackTest {
     /**
      * Ensures we get one set of callbacks for bean and children
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testAddPropertyBagWithTransactionEnsureNotTooManyCallbacks() {
         ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit(NBeanListener.class);
         XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
@@ -733,5 +732,12 @@ public class WritebackTest {
         }
         
         Assert.assertEquals(1, listener.getNumTimesChangedInvoked());
+        
+        // The rest just ensures that the properties did indeed get set
+        NBean nbean = testLocator.getService(NBean.class, IAGO);
+        
+        Assert.assertEquals(PROP_A_VALUE1, nbean.getPropertyValue(PROP_A_KEY));
+        Assert.assertEquals(PROP_B_VALUE, nbean.getPropertyValue(PROP_B_KEY));
+        Assert.assertNull(nbean.getPropertyValue(PROP_C_KEY));
     }
 }

@@ -77,6 +77,7 @@ import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.api.ConfigurationUtilities;
 import org.jvnet.hk2.config.types.PropertyBag;
 
 /**
@@ -174,6 +175,9 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
     
     @Inject
     private ConfigListener configListener;
+    
+    @Inject
+    private ConfigurationUtilities hk2ConfigUtilities;
     
     private WritebackHubListener() {
     }
@@ -538,7 +542,7 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
             }
             catch (TransactionFailure e) {
                 Logger.getLogger().debug("WRITEBACK: Could not add property with key " +
-                    key + " and value=" + value);
+                        key + " and value=" + value);
             }
         }
         finally {
@@ -558,27 +562,23 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
         
         Instance parent = findParent(proposedDb, typeName, instanceName);
         if (parent == null) {
-            Logger.getLogger().debug("WRITEBACK: could not find parent of type " + typeName + " and instance " + instanceName);
-            return;
+            throw new RuntimeException("WRITEBACK: could not find parent of type " + typeName + " and instance " + instanceName);
         }
         
         Object rawParentMetadata = parent.getMetadata();
         if (rawParentMetadata == null || !(rawParentMetadata instanceof HK2ConfigBeanMetaData)) {
-            Logger.getLogger().debug("WRITEBACK: No metadata for type " + typeName + " and instance " + instanceName);
-            return;
+            throw new RuntimeException("WRITEBACK: No metadata for type " + typeName + " and instance " + instanceName);
         }
         HK2ConfigBeanMetaData parentMetadata = (HK2ConfigBeanMetaData) rawParentMetadata;
         
-        ConfigBeanProxy parentConfigBean = parentMetadata.getConfigBean();
-        if (parentConfigBean == null) {
-            Logger.getLogger().debug("WRITEBACK: No configuration bean for type " + typeName + " and instance " + instanceName);
-            return;
+        ConfigBeanProxy parentConfigBeanProxy = parentMetadata.getConfigBean();
+        if (parentConfigBeanProxy == null) {
+            throw new RuntimeException("WRITEBACK: No configuration bean for type " + typeName + " and instance " + instanceName);
         }
         
-        Dom parentDom = Dom.unwrap(parentConfigBean);
+        final Dom parentDom = Dom.unwrap(parentConfigBeanProxy);
         if (parentDom == null) {
-            Logger.getLogger().debug("WRITEBACK: No parent Dom for type " + typeName + " and instance " + instanceName);
-            return;
+            throw new RuntimeException("WRITEBACK: No parent Dom for type " + typeName + " and instance " + instanceName);
         }
         
         ConfigModel childModel;
@@ -595,17 +595,14 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
                     property = starProp;
                 }
                 else {
-                    Logger.getLogger().debug("WRITEBACK: No available child Dom for type " + typeName + " and instance " + instanceName +
+                    throw new RuntimeException("WRITEBACK: No available child Dom for type " + typeName + " and instance " + instanceName +
                         " with element name " + childElementName + ".  Available names=" + parentDom.model.getElementNames());
-                    return;
                 }
             }
             
             if (!(property instanceof Node)) {
-                Logger.getLogger().debug("WRITEBACK: No child Dom for type " + typeName + " and instance " + instanceName +
+                throw new RuntimeException("WRITEBACK: No child Dom for type " + typeName + " and instance " + instanceName +
                         " with element name " + childElementName + " is not a Node type");
-                return;
-                
             }
             
             Node node = (Node) property;
@@ -620,15 +617,14 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
         
         final Class<? extends ConfigBeanProxy> fChildClass = childClass;
         
-        Map<String, String> beanXmlMapping = getBeanToXmlMapping(fChildClass, childModel);
+        final Map<String, String> beanXmlMapping = getBeanToXmlMapping(fChildClass, childModel);
         
         MethodAndElementName maen = findChildGetterMethod(parentDom, childElementName, fChildClass);
         
         if (maen.method == null) {
-            Logger.getLogger().debug("WRITEBACK: Could not find getter for " + typeName + " and instance " + instanceName +
+            throw new RuntimeException("WRITEBACK: Could not find getter for " + typeName + " and instance " + instanceName +
                     " with element name " + childElementName + " and child class " + fChildClass.getName() +
                     ".  This can sometimes happen if a bean has two fields marked @Element(\"*\")");
-            return;
         }
         
         configListener.addKnownChange(maen.elementName);
@@ -639,28 +635,52 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
         configListener.skip();
         try {
             if (parentDom instanceof ConfigBean) {
-                ConfigBean bean = null;
                 try {
-                    bean = ConfigSupport.createAndSet((ConfigBean) parentDom, fChildClass, stringify(newGuy, beanXmlMapping));
-                    child = bean.getProxy(fChildClass);
+                    final Object propsRaw = newGuy.get(XmlDomIntegrationUtilities.PROPERTIES);
+                    
+                    child = (ConfigBeanProxy) ConfigSupport.apply(new SingleConfigCode<ConfigBeanProxy>() {
+
+                        @Override
+                        public Object run(ConfigBeanProxy param)
+                                throws PropertyVetoException,
+                                TransactionFailure {
+                            ConfigBeanProxy childRetVal = (ConfigBeanProxy) hk2ConfigUtilities.addChildWithAttributes(param,
+                                    (ConfigBean) parentDom,
+                                    fChildClass,
+                                    ConfigSupport.convertMapToAttributeChanges(stringify(newGuy, beanXmlMapping)),
+                                    null);
+                            
+                            ConfigBean childMasterView = (ConfigBean) Dom.unwrap(childRetVal);
+                            
+                            if ((propsRaw != null) &&
+                                (propsRaw instanceof Properties)) {
+                            
+                                Properties props = (Properties) propsRaw;
+                                for (Map.Entry<Object, Object> entry : props.entrySet()) {
+                                    String key = (String) entry.getKey();
+                                    String value = (String) entry.getValue();
+                                
+                                    Map<String, String> propertyValues = new HashMap<String, String>();
+                                    propertyValues.put(PROPERTY_NAME_FIELD, key);
+                                    propertyValues.put(PROPERTY_VALUE_FIELD, value);
+                                
+                                    hk2ConfigUtilities.addChildWithAttributes(childRetVal,
+                                        childMasterView,
+                                        org.jvnet.hk2.config.types.Property.class,
+                                        ConfigSupport.convertMapToAttributeChanges(propertyValues),
+                                        null);
+                                }
+                            }
+                            
+                            return childRetVal;
+                        }
+                        
+                    }, parentConfigBeanProxy);
+                    
+                    
                 }
                 catch (TransactionFailure e) {
-                    Logger.getLogger().debug(getClass().getName(), "addChild", e);
-                }
-                
-                
-                Object propsRaw = newGuy.get(XmlDomIntegrationUtilities.PROPERTIES);
-                if (propsRaw != null && (propsRaw instanceof Properties) &&
-                        child != null && (child instanceof PropertyBag) &&
-                        bean != null) {
-                    Properties props = (Properties) propsRaw;
-                    
-                    for (Map.Entry<Object, Object> entry : props.entrySet()) {
-                        String key = (String) entry.getKey();
-                        String value = (String) entry.getValue();
-                            
-                        addProperty(bean, key, value);   
-                    }
+                    throw new RuntimeException(e);
                 }
             }
             else {
@@ -680,7 +700,7 @@ public class WritebackHubListener implements BeanDatabaseUpdateListener {
             instance.setMetadata(new HK2ConfigBeanMetaData(child));
         }
         else {
-            Logger.getLogger().debug("WRITEBACK: failed to add child of type " + typeName + " and instance " + instanceName);
+            throw new RuntimeException("WRITEBACK: failed to add child of type " + typeName + " and instance " + instanceName);
         }
     }
     
