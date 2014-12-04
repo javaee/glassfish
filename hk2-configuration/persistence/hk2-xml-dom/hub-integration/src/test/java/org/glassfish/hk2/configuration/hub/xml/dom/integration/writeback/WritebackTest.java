@@ -72,6 +72,7 @@ public class WritebackTest {
     private final static String BOB_INSTANCE_NAME = "b-bean.bob";
     
     private final static String JBEAN_TAG = "/j-bean";
+    private final static String JBEAN_INSTANCE_NAME = "jbean";
     
     private final static String KBEAN_TAG = "/j-bean/k-bean";
     private final static String KBEAN_INSTANCE_NAME = "j-bean.k-bean";
@@ -739,5 +740,32 @@ public class WritebackTest {
         Assert.assertEquals(PROP_A_VALUE1, nbean.getPropertyValue(PROP_A_KEY));
         Assert.assertEquals(PROP_B_VALUE, nbean.getPropertyValue(PROP_B_KEY));
         Assert.assertNull(nbean.getPropertyValue(PROP_C_KEY));
+    }
+    
+    /**
+     * Adds a root bean via writeback
+     */
+    @Test @org.junit.Ignore
+    public void testAddRootBean() {
+        ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
+        XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
+        
+        Hub hub = testLocator.getService(Hub.class);
+        Assert.assertNotNull(hub);
+        
+        {
+            Map<String, Object> jbeanMap = new HashMap<String, Object>();
+        
+            WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+        
+            WriteableType jbeanWriteableType = wbd.findOrAddWriteableType(JBEAN_TAG);
+            jbeanWriteableType.addInstance(JBEAN_INSTANCE_NAME, jbeanMap);
+        
+            wbd.commit();
+        }
+        
+        // The rest just ensures that the properties did indeed get set
+        JBean jbean = testLocator.getService(JBean.class);
+        Assert.assertNotNull(jbean);
     }
 }
