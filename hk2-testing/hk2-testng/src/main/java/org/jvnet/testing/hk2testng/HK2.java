@@ -79,35 +79,43 @@ public @interface HK2 {
      * @return a list of binders classes
      */
     Class<? extends Binder>[] binders() default {};
-    
+
     /**
      * If true then the PerThread scope will be enabled
      * in the associated service locator
-     * 
+     *
      * @return true if PerThread scope should be enabled
      */
     boolean enablePerThread() default true;
-    
+
+    /**
+     * If true then the InheritableThread scope will be enabled in the
+     * associated service locator
+     *
+     * @return true if InheritableThread scope should be enabled
+     */
+    boolean enableInheritableThread() default true;
+
     /**
      * If true then the Immediate scope will be enabled
      * in the associated service locator
-     * 
+     *
      * @return true if Immediate scope should be enabled
      */
     boolean enableImmediate() default true;
-    
+
     /**
      * If true then the lookup exceptions will be thrown
      * back to the caller
-     * 
+     *
      * @return true if lookup exceptions should be thrown
      * back to the caller
      */
     boolean enableLookupExceptions() default true;
-    
+
     /**
      * If true then events will be enabled
-     * 
+     *
      * @return true if events should be enabled
      */
     boolean enableEvents() default true;

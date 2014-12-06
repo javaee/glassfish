@@ -40,7 +40,7 @@
 package org.jvnet.testing.hk2testng;
 
 import javax.inject.Inject;
-
+import static org.assertj.core.api.Assertions.assertThat;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.MultiException;
@@ -48,32 +48,31 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.jvnet.testing.hk2testng.service.GenericInterface;
+import org.jvnet.testing.hk2testng.service.InheritableThreadService;
 import org.jvnet.testing.hk2testng.service.PerThreadService;
 import org.jvnet.testing.hk2testng.service.impl.ImmediateServiceImpl;
 import org.jvnet.testing.hk2testng.service.impl.SimpleService;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 /**
  * @author jwells
  *
  */
-@HK2(enablePerThread = false, enableImmediate = false, enableLookupExceptions = false)
+@HK2(enablePerThread = false, enableImmediate = false, enableLookupExceptions = false, enableInheritableThread = false)
 public class NonDefaultEnabledScopesTest {
     @Inject
     private ServiceLocator locator;
-    
+
     /**
      * Tests that immediate scope is working by default
-     * 
+     *
      * @throws InterruptedException
      */
     @Test
     public void assertImmediateScopeWorks() throws InterruptedException {
         ServiceLocatorUtilities.addClasses(locator, ImmediateServiceImpl.class);
-        
+
         try {
             locator.getService(ImmediateServiceImpl.class);
             Assert.fail("No context available for ImmediateServiceImpl");
@@ -82,10 +81,10 @@ public class NonDefaultEnabledScopesTest {
             // success
         }
     }
-    
+
     /**
      * Tests that per thread scope is working by default
-     * 
+     *
      * @throws InterruptedException
      */
     @Test
@@ -98,7 +97,22 @@ public class NonDefaultEnabledScopesTest {
             // success
         }
     }
-    
+
+    /**
+     * Tests that inheritable thread scope is working by default
+     *
+     * @throws InterruptedException
+     */
+    @Test
+    public void assertInheritableThreadScopeWorks() throws InterruptedException {
+        try {
+            locator.getService(InheritableThreadService.class);
+            Assert.fail("No context available for InheritableThreadService");
+        } catch (MultiException me) {
+            // success
+        }
+    }
+
     /**
      * Tests that reification errors are not rethrown
      */
@@ -113,11 +127,11 @@ public class NonDefaultEnabledScopesTest {
                             throws MultiException {
                         throw new MultiException(new ClassNotFoundException("Could not find " + className));
                     }
-                    
+
                 }).build();
-        
+
         ServiceLocatorUtilities.addOneDescriptor(locator, addMe);
-        
+
         GenericInterface gi = locator.getService(GenericInterface.class);
         assertThat(gi).isNull();
     }

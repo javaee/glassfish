@@ -40,9 +40,7 @@
 package org.glassfish.hk2.tests.locator.servicelocatorutilities;
 
 import java.util.List;
-
 import javax.inject.Singleton;
-
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.AnnotationLiteral;
 import org.glassfish.hk2.api.Descriptor;
@@ -50,6 +48,7 @@ import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ErrorService;
 import org.glassfish.hk2.api.Immediate;
+import org.glassfish.hk2.api.InheritableThread;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.PerThread;
@@ -465,7 +464,7 @@ public class ServiceLocatorUtilitiesTest {
 
     /**
      * A non-standard non-reified ActiveDescriptor for use in testing
-     * 
+     *
      * @author jwells
      *
      * @param <T> The type of this class
@@ -612,7 +611,7 @@ public class ServiceLocatorUtilitiesTest {
         }
 
     }
-    
+
     /**
      * Tests enableLookupExceptions
      */
@@ -642,7 +641,7 @@ public class ServiceLocatorUtilitiesTest {
         }
 
     }
-    
+
     /**
      * AlphabetService.class has a complex set of interfaces.
      * This test ensures addClasses gets all of them, and
@@ -652,130 +651,130 @@ public class ServiceLocatorUtilitiesTest {
     @Test
     public void testComplexContractHeirarchyAdds() {
         ServiceLocator locator = uniqueCreate();
-        
+
         ServiceLocatorUtilities.addClasses(locator, AlphabetService.class);
-        
+
         AlphabetService alphabet = locator.getService(AlphabetService.class);
-        
+
         InterfaceA a = locator.getService(InterfaceA.class);
         InterfaceB b = locator.getService(InterfaceB.class);
         InterfaceC c = locator.getService(InterfaceC.class);
         InterfaceD d = locator.getService(InterfaceD.class);
         InterfaceE e = locator.getService(InterfaceE.class);
         InterfaceF f = locator.getService(InterfaceF.class);
-        
+
         Assert.assertNull(a);
         Assert.assertNull(c);
         Assert.assertNull(e);
-        
+
         Assert.assertEquals(alphabet, b);
         Assert.assertEquals(alphabet, d);
         Assert.assertEquals(alphabet, f);
-        
+
     }
-    
+
     /**
      * Tests that a service can be named with the @Service annotation
      */
     @Test
     public void testServiceNamedWithService() {
         ServiceLocator locator = uniqueCreate();
-        
+
         ServiceLocatorUtilities.addClasses(locator, ServiceNamedService.class);
-        
+
         Assert.assertNotNull(locator.getService(ServiceNamedService.class, ALICE_NAME));
     }
-    
+
     /**
      * Tests that a service with conflicting @Service and @Named names is rejected
      */
     @Test(expected=java.lang.IllegalArgumentException.class)
     public void testServiceWithConflictingNames() {
         ServiceLocator locator = uniqueCreate();
-        
+
         ServiceLocatorUtilities.addClasses(locator, ServiceWithConflictingNames.class);
     }
-    
+
     /**
      * Tests that a service with matching @Service and @Named names is ok
      */
     @Test
     public void testServiceWithMatchingNames() {
         ServiceLocator locator = uniqueCreate();
-        
+
         ServiceLocatorUtilities.addClasses(locator, ServiceWithMatchingNames.class);
-        
+
         Assert.assertNotNull(locator.getService(ServiceWithMatchingNames.class, ALICE_NAME));
     }
-    
+
     /**
      * Tests that a service with matching @Service and default @Named is ok
      */
     @Test
     public void testServiceWithMatchingDefaultNames() {
         ServiceLocator locator = uniqueCreate();
-        
+
         ServiceLocatorUtilities.addClasses(locator, ServiceWithMatchingDefaultName.class);
-        
+
         Assert.assertNotNull(locator.getService(ServiceWithMatchingDefaultName.class, "ServiceWithMatchingDefaultName"));
     }
-    
+
     /**
      * Tests that a service with non matching default @Named and @Service name
      */
     @Test(expected=java.lang.IllegalArgumentException.class)
     public void testServiceWithConflictingDefaultName() {
         ServiceLocator locator = uniqueCreate();
-        
+
         ServiceLocatorUtilities.addClasses(locator, ServiceWithConflictingDefaultName.class);
     }
-    
+
     /**
      * Makes sure we can dump all services
      */
     @Test
     public void testDumpAllServices() {
         ServiceLocator locator = uniqueCreate();
-        
+
         ServiceLocatorUtilities.dumpAllDescriptors(locator);
         ServiceLocatorUtilities.dumpAllDescriptors(locator, System.out);
     }
-    
+
     /**
      * Uses addClasses with factories
      */
     @Test
     public void testAddClassesWithFactories() {
         ServiceLocator locator = uniqueCreate();
-        
+
         List<ActiveDescriptor<?>> added = ServiceLocatorUtilities.addClasses(locator, RedFactory.class, BlueFactory.class);
         Assert.assertEquals(4, added.size());
-        
+
         String blue = locator.getService(String.class, new BlueImpl());
         Assert.assertEquals(BLUE, blue);
-        
+
         String red = locator.getService(String.class, new RedImpl());
         Assert.assertEquals(RED, red);
     }
-    
+
     @Test
     public void addClassWithMetadata() {
         ServiceLocator locator = uniqueCreate();
-        
+
         List<ActiveDescriptor<?>> added = ServiceLocatorUtilities.addClasses(locator, ServiceWithMetadata.class);
         Assert.assertEquals(1, added.size());
-        
+
         ActiveDescriptor<?> descriptor = added.get(0);
-        
+
         Assert.assertEquals("value", ServiceLocatorUtilities.getOneMetadataField(descriptor, "key"));
-        
+
         List<String> multiValues = descriptor.getMetadata().get("multiKey");
         Assert.assertEquals(2, multiValues.size());
-        
+
         Assert.assertEquals("value1", multiValues.get(0));
         Assert.assertEquals("value2", multiValues.get(1));
     }
-    
+
     /**
      * Ensures that hk2 never tries to create a service it should
      * not try to create
@@ -783,23 +782,23 @@ public class ServiceLocatorUtilitiesTest {
     @Test
     public void testAddOneConstantWithUncreateableService() {
         ServiceLocator locator = uniqueCreate();
-        
+
         ServiceLocatorUtilities.addClasses(locator, CreateableContractOne.class);
-        
+
         ContractOne contractOneOriginal = locator.getService(ContractOne.class);
         Assert.assertNotNull(contractOneOriginal);
-        
+
         UncreateableContractOneImpl uncreateable = new UncreateableContractOneImpl(13);
         ActiveDescriptor<?> desc = ServiceLocatorUtilities.addOneConstant(locator, uncreateable);
         desc.setRanking(100);
-        
+
         ContractOne contractOne = locator.getService(ContractOne.class);
-        
+
         Assert.assertEquals(uncreateable, contractOne);
         Assert.assertNotSame(contractOneOriginal, contractOne);
-        
+
     }
-    
+
     /**
      * Tests getSingleton
      */
@@ -807,14 +806,14 @@ public class ServiceLocatorUtilitiesTest {
     public void testGetSingleton() {
         Singleton fromClass = HasScopes.class.getAnnotation(Singleton.class);
         Assert.assertNotNull(fromClass);
-        
+
         Singleton fromUtility = ServiceLocatorUtilities.getSingletonAnnotation();
         Assert.assertNotNull(fromUtility);
-        
+
         Assert.assertTrue(fromClass.equals(fromUtility));
         Assert.assertTrue(fromUtility.equals(fromClass));
     }
-    
+
     /**
      * Tests getPerLookup
      */
@@ -822,14 +821,14 @@ public class ServiceLocatorUtilitiesTest {
     public void testGetPerLookup() {
         PerLookup fromClass = HasScopes.class.getAnnotation(PerLookup.class);
         Assert.assertNotNull(fromClass);
-        
+
         PerLookup fromUtility = ServiceLocatorUtilities.getPerLookupAnnotation();
         Assert.assertNotNull(fromUtility);
-        
+
         Assert.assertTrue(fromClass.equals(fromUtility));
         Assert.assertTrue(fromUtility.equals(fromClass));
     }
-    
+
     /**
      * Tests getPerThread
      */
@@ -837,14 +836,29 @@ public class ServiceLocatorUtilitiesTest {
     public void testGetPerThread() {
         PerThread fromClass = HasScopes.class.getAnnotation(PerThread.class);
         Assert.assertNotNull(fromClass);
-        
+
         PerThread fromUtility = ServiceLocatorUtilities.getPerThreadAnnotation();
         Assert.assertNotNull(fromUtility);
-        
+
         Assert.assertTrue(fromClass.equals(fromUtility));
         Assert.assertTrue(fromUtility.equals(fromClass));
     }
-    
+
+    /**
+     * Tests getInheritableThread
+     */
+    @Test
+    public void testGetInheritableThread() {
+        InheritableThread fromClass = HasScopes.class.getAnnotation(InheritableThread.class);
+        Assert.assertNotNull(fromClass);
+
+        InheritableThread fromUtility = ServiceLocatorUtilities.getInheritableThreadAnnotation();
+        Assert.assertNotNull(fromUtility);
+
+        Assert.assertTrue(fromClass.equals(fromUtility));
+        Assert.assertTrue(fromUtility.equals(fromClass));
+    }
+
     /**
      * Tests getImmediate
      */
@@ -852,38 +866,42 @@ public class ServiceLocatorUtilitiesTest {
     public void testGetImmediate() {
         Immediate fromClass = HasScopes.class.getAnnotation(Immediate.class);
         Assert.assertNotNull(fromClass);
-        
+
         Immediate fromUtility = ServiceLocatorUtilities.getImmediateAnnotation();
         Assert.assertNotNull(fromUtility);
-        
+
         Assert.assertTrue(fromClass.equals(fromUtility));
         Assert.assertTrue(fromUtility.equals(fromClass));
     }
-    
+
     private static class BlueImpl extends AnnotationLiteral<Blue> implements Blue {
 
         /**
-         * 
+         *
          */
         private static final long serialVersionUID = -7725354246185428959L;
 
-        
+
     }
-    
+
     private static class RedImpl extends AnnotationLiteral<Red> implements Red {
 
         /**
-         * 
+         *
          */
         private static final long serialVersionUID = 3107298539617537764L;
 
 
-        
+
     }
-    
-    @Singleton @PerThread @PerLookup @Immediate
+
+    @Singleton
+    @PerThread
+    @PerLookup
+    @Immediate
+    @InheritableThread
     private static class HasScopes {
-        
+
     }
 }
 
