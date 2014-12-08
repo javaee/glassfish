@@ -6,7 +6,7 @@
 This page describes the features of the HK2 2.0 API.  The Habitat API
 from version 1.x of HK2 has been replaced with a new interface called
 [ServiceLocator][servicelocator]. More information can be found [here][apioverview].
-    
+
 ### Features of HK2
 
 HK2 has many features for customizing the system.  This page is intended to give an
@@ -15,6 +15,7 @@ overview of each feature.  Among the set of HK2 features are:
 + [Events](extensibility.html#Events)
 + [Adding a Scope and Context to the system](extensibility.html#Adding_a_Scope_and_Context_to_the_system)
 + [PerThread Scope](extensibility.html#PerThread_Scope)
++ [InheritableThread Scope](extensibility.html#InheritableThread_Scope)
 + [Proxies](extensibility.html#Proxies)
 + [Dealing with ClassLoading issues](extensibility.html#)
 + [Custom Injection Resolvers](extensibility.html#aCustom_Injection_Resolvers)
@@ -61,16 +62,27 @@ To make this more clear, we have two examples of user scope/context pairs:
 
 ### PerThread Scope
 
-There is a per-thread scope/context pair optionally supported in HK2.  
+There is a per-thread scope/context pair optionally supported in HK2.
 Services marked with [PerThread][perthread] have their life cycle defined by the thread they are on.
 Two different threads injecting a service from the [PerThread][perthread] scope will get different objects.
 Two objects on the same thread injecting a [PerThread][perthread] scope service will get the same object.
- 
+
 The [PerThread][perthread] scope can be added to any [ServiceLocator][servicelocator] by using the method [enablePerThreadScope][enableperthreadscope]
+
+### InheritableThread Scope
+
+There is a inheritable thread scope/context pair optionally supported in HK2.
+Services marked with [InheritableThread][inheritablethread] are similar to PerThread scoped services with one caveat,
+their life cycle defined by the thread they are on and are inherited by its child threads.
+Two different threads injecting a service from the [InheritableThread][inheritablethread] scope will get different objects.
+Two objects on the same thread injecting a [InheritableThread][inheritablethread] scope service will get the same object.
+Two objects on a parent and child thread injecting a [InheritableThread][inheritablethread] scope service will get the same object.
+
+The [InheritableThread][inheritablethread] scope can be added to any [ServiceLocator][servicelocator] by using the method [enableInheritableThreadScope][enableInheritableThreadScope]
 
 ### Immediate Scope
 
-There is an Immediate scope/context pair optionally supported in HK2.  
+There is an Immediate scope/context pair optionally supported in HK2.
 Services marked with [Immediate][immediate] will be started as soon as their
 [ActiveDescriptors][activedescriptor] are added to the [ServiceLocator][servicelocator].  They are destroyed when
 their [ActiveDescriptors][activedescriptor] are removed from the [ServiceLocator][servicelocator].
@@ -84,7 +96,7 @@ are created using an independent thread there is no guarantee that [Immediate][i
 will be started before or after any other service.  The only guarantee is that [Immediate][immediate]
 services will eventually get started.  Normally they get started very quickly after being added to
 the [ServiceLocator][servicelocator].
- 
+
 The [Immediate][immediate] scope can be added to any [ServiceLocator][servicelocator] by using
 the method [enableImmediateScope][enableimmediatescope].  It is important to notice that
 [enableImmediateScope][enableimmediatescope] must be called on all [ServiceLocators][servicelocator]
@@ -93,7 +105,7 @@ call [enableImmediateScope][enableimmediatescope] on the parent of a [ServiceLoc
 since this implementation will only automatically detect [Immediate][immediate] services directly added
 to the [ServiceLocators][servicelocator] given to the [enableImmediateScope][enableimmediatescope]
 method.
- 
+
 ### Proxies
 
 Rather than injecting an instance of a service itself, HK2 can also inject a proxy to that service.  There are a few
@@ -120,7 +132,7 @@ In order to have HK2 create a proxy for your service rather than the service its
 A proxiable scope is just like a normal scope, except that the scope annotation is also annotated with [Proxiable][proxiable].
 All services injected or looked up from this scope will be given a proxy rather than the real service.
 
-This is an example of a proxiable scope: 
+This is an example of a proxiable scope:
 
 ```java
 @Scope
@@ -133,7 +145,7 @@ public @interface ProxiableSingleton {
 
 While normally every service in a proxiable scope is proxiable, you can override the default proxying behavior
 on a per-service basis.  This is also true for services in non-proxiable scopes.  For example you can make
-a service that is in Singleton scope (which is not proxiable) be proxied.  
+a service that is in Singleton scope (which is not proxiable) be proxied.
 You do this by setting the field [isProxiable][isproxiable].
 If that method returns null then that service will use the scopes mode when it comes to proxying.
 If that method returns non-null then the system will either proxy or not proxy based on the returned value.
@@ -198,7 +210,7 @@ The system algorithm used when the getLoader method of [Descriptor][descriptor] 
 If not available, HK2 will use the classloader that loaded HK2 itself.
 Failing this, the class will fail to be loaded and an exception will be thrown.
 
-Note that since the user is providing an implementation of [HK2Loader][hk2loader] 
+Note that since the user is providing an implementation of [HK2Loader][hk2loader]
 rather than a java.lang.ClassLoader that it is possible to delay the instantiation of the underlying ClassLoader until
 the [Descriptor][descriptor] is being reified.  It might also be possible to have the implementation of [HK2Loader][hk2loader] consult several underlying ClassLoaders,
 or construct the class dynamically using weaving or some other class building technology.
@@ -208,7 +220,7 @@ The mind boggles at all the ways [HK2Loader][hk2loader] can be implemented.
 
 By default the system provides JSR-330 standard injection.
 That means honoring [@Inject][javaxinject] and all other parts of the JSR-330 specification.
-However, it is sometimes the case that a user would like to customize the JSR-330 resolution in some manner, 
+However, it is sometimes the case that a user would like to customize the JSR-330 resolution in some manner,
 or provide their own injection points based on a different annotation.
 
 In order to do so, the user implements [InjectionResolver][injectionresolver].
@@ -233,7 +245,7 @@ with the [ServiceLocator][servicelocator] whose operations are to be validated.
 
 There is an example example of how the [ValidationService][validationservice] can be used to do a complete
 security lockdown of the system.  This example runs with the J2SE security manager turned on and
-grants some privileges to some projects and other privileges to other projects to ensure that 
+grants some privileges to some projects and other privileges to other projects to ensure that
 the [ValidationService][ValidationService] can be used to define the security of the system.
 
 The example can be seen [here][security-lockdown-example-runner].
@@ -241,7 +253,7 @@ The example can be seen [here][security-lockdown-example-runner].
 ### Instance Lifecycle
 
 A user may register an implementation of [InstanceLifecycleListener][instancelifecyclelistener] to be notified whenever an instance of a service is created.
-Unlike the [ValidationService][validationservice], which deals only with the metadata of a service, 
+Unlike the [ValidationService][validationservice], which deals only with the metadata of a service,
 the [InstanceLifecycleListener][instancelifecyclelistener] is notified whenever an instance
 of a service is created or destroyed.  This is a useful facility for tracing or for scenarios where a service wishes to become
 an automatic listener for anything that it is injected into.
@@ -276,7 +288,7 @@ or else fail.
 
 The HK2 system allows the user to register named implementation of the [ClassAnalyzer][classanalyzer]
 in order to modify or completely replace the constructors, fields and methods HK2 would choose.
-Individual HK2 [Descriptors][descriptor] can set the name of the [ClassAnalyzer][classanalyzer] 
+Individual HK2 [Descriptors][descriptor] can set the name of the [ClassAnalyzer][classanalyzer]
 that should be used to analyze the implementation class.
 
 HK2 always adds an implementation of [ClassAnalyzer][classanalyzer] with the name "default" that implements
@@ -326,6 +338,8 @@ Using the [ErrorService][errorservice] can be a convenient place to standardize 
 [perlookup]: apidocs/org/glassfish/hk2/api/PerLookup.html
 [perthread]: apidocs/org/glassfish/hk2/api/PerThread.html
 [enableperthreadscope]: apidocs/org/glassfish/hk2/utilities/ServiceLocatorUtilities.html#enablePerThreadScope(org.glassfish.hk2.api.ServiceLocator)
+[inheritablethread]: apidocs/org/glassfish/hk2/api/InheritableThread.html
+[enableinheritablethreadscope]: apidocs/org/glassfish/hk2/utilities/ServiceLocatorUtilities.html#enableInheritableThreadScope(org.glassfish.hk2.api.ServiceLocator)
 [enableimmediatescope]: apidocs/org/glassfish/hk2/utilities/ServiceLocatorUtilities.html#enableImmediateScope(org.glassfish.hk2.api.ServiceLocator)
 [immediateerrorhandler]: apidocs/org/glassfish/hk2/utilities/ImmediateErrorHandler.html
 [service]: apidocs/org/jvnet/hk2/annotations/Service.html

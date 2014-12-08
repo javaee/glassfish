@@ -50,9 +50,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.inject.Singleton;
-
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.AnnotationLiteral;
 import org.glassfish.hk2.api.Context;
@@ -66,6 +64,7 @@ import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.Immediate;
 import org.glassfish.hk2.api.IndexedFilter;
+import org.glassfish.hk2.api.InheritableThread;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.PerThread;
@@ -77,8 +76,8 @@ import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.api.messaging.TopicDistributionService;
 import org.glassfish.hk2.internal.DefaultTopicDistributionService;
 import org.glassfish.hk2.internal.ImmediateHelper;
+import org.glassfish.hk2.internal.InheritableThreadContext;
 import org.glassfish.hk2.internal.PerThreadContext;
-import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
 /**
  * This is a set of useful utilities for working with {@link ServiceLocator}.
@@ -87,10 +86,11 @@ import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
  */
 public abstract class ServiceLocatorUtilities {
     private final static String DEFAULT_LOCATOR_NAME = "default";
-    
+
     private final static Singleton SINGLETON = new SingletonImpl();
     private final static PerLookup PER_LOOKUP = new PerLookupImpl();
     private final static PerThread PER_THREAD = new PerThreadImpl();
+    private final static InheritableThread INHERITABLE_THREAD = new InheritableThreadImpl();
     private final static Immediate IMMEDIATE = new ImmediateImpl();
 
     /**
@@ -130,7 +130,50 @@ public abstract class ServiceLocatorUtilities {
         config.bind(descriptor, false);
         config.commit();
     }
-    
+
+    /**
+     * This method will add the ability to use the {@link InheritableThread}
+     * scope to the given locator. If the locator already has a {@link Context}
+     * implementation that handles the {@link InheritableThread} scope this
+     * method does nothing.
+     *
+     * @param locator The non-null locator to enable the PerThread scope on
+     * @throws MultiException if there were errors when committing the service
+     */
+    public static void enableInheritableThreadScope(ServiceLocator locator) {
+        Context<InheritableThread> inheritableThreadContext = locator.getService((new TypeLiteral<Context<InheritableThread>>() {
+        }).getType());
+        if (inheritableThreadContext != null) {
+            return;
+        }
+
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        final DescriptorImpl descriptor = BuilderHelper.link(InheritableThreadContext.class).
+                to(Context.class).
+                in(Singleton.class.getName()).
+                visibility(DescriptorVisibility.LOCAL).
+                build();
+
+        ClassLoader loader = ServiceLocatorUtilities.class.getClassLoader();
+        final ClassLoader binderClassLoader = loader == null ? ClassLoader.getSystemClassLoader() : loader;
+        descriptor.setLoader(new HK2Loader() {
+            @Override
+            public Class<?> loadClass(String className) throws MultiException {
+                try {
+                    return binderClassLoader.loadClass(className);
+                } catch (ClassNotFoundException e) {
+                    throw new MultiException(e);
+                }
+
+            }
+        });
+
+        config.bind(descriptor, false);
+        config.commit();
+    }
+
+
     /**
      * This method will add the ability to use the {@link Immediate} scope to
      * the given locator.  If the locator already has a {@link Context} implementation
@@ -149,7 +192,7 @@ public abstract class ServiceLocatorUtilities {
             ActiveDescriptor<?> contextDescriptor = immediateContext.getActiveDescriptor();
             if (contextDescriptor.getLocatorId() == locator.getLocatorId()) return;
         }
-        
+
         addClasses(locator, ImmediateContext.class, ImmediateHelper.class);
     }
 
@@ -201,7 +244,7 @@ public abstract class ServiceLocatorUtilities {
     public static ServiceLocator bind(Binder... binders) {
         return bind(DEFAULT_LOCATOR_NAME, binders);
     }
-    
+
     /**
      * This method adds one existing object to the given service locator.  The caller
      * of this will not get a chance to customize the descriptor that goes into the
@@ -209,23 +252,23 @@ public abstract class ServiceLocatorUtilities {
      * the set of contracts and metadata associated with the descriptor.  The same algorithm
      * is used in this method as in the {@link BuilderHelper#createConstantDescriptor(Object)}
      * method.
-     * 
+     *
      * @param locator The non-null locator to add this descriptor to
      * @param constant The non-null constant to add to the service locator
      * @return The descriptor that was added to the service locator
      */
     public static <T> ActiveDescriptor<T> addOneConstant(ServiceLocator locator, Object constant) {
         if (locator == null || constant == null) throw new IllegalArgumentException();
-        
+
         return addOneDescriptor(locator, BuilderHelper.createConstantDescriptor(constant), false);
     }
-    
+
     /**
      * This method adds factory constants to the given locator.  None of the constants
      * may be null.  The returned list will contain the FactoryDescriptors added to
      * the locator.  So while the factories are constant valued, the provide method return
      * values are NOT, and will be invoked according to their normal hk2 lifecycle
-     * 
+     *
      * @param locator The non-null locator to add these factory constants to
      * @param constants The constant factories to add to the locator.  None of the constants
      * in this array may be null
@@ -235,43 +278,43 @@ public abstract class ServiceLocatorUtilities {
     @SuppressWarnings("unchecked")
     public static List<FactoryDescriptors> addFactoryConstants(ServiceLocator locator, Factory<?>... constants) {
         if (locator == null) throw new IllegalArgumentException();
-        
+
         DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
         DynamicConfiguration cd = dcs.createDynamicConfiguration();
-        
+
         LinkedList<FactoryDescriptors> intermediateState = new LinkedList<FactoryDescriptors>();
         for (Factory<?> factoryConstant : constants) {
             if (factoryConstant == null) {
                 throw new IllegalArgumentException("One of the factories in " + Arrays.toString(constants) + " is null");
             }
-            
+
             // This is a trick.  We get the information from the DynamicConfiguration, but then abandon it
             // so that we can replace the factories with constant descriptors instead
             FactoryDescriptors fds = cd.addActiveFactoryDescriptor((Class<Factory<Object>>) factoryConstant.getClass());
             intermediateState.add(fds);
         }
-        
+
         // Abandon previous dynamic configuration (never commit it)
         cd = dcs.createDynamicConfiguration();
-        
+
         LinkedList<FactoryDescriptors> retVal = new LinkedList<FactoryDescriptors>();
         int lcv = 0;
         for (FactoryDescriptors fds : intermediateState) {
             final ActiveDescriptor<?> provideMethod = (ActiveDescriptor<?>) fds.getFactoryAsAFactory();
             final Factory<?> constant = constants[lcv++];
-            
+
             Descriptor constantDescriptor = BuilderHelper.createConstantDescriptor(constant);
             Descriptor addProvideMethod = new DescriptorImpl(provideMethod);
-            
+
             FactoryDescriptorsImpl fdi = new FactoryDescriptorsImpl(constantDescriptor, addProvideMethod);
             retVal.add(cd.bind(fdi));
         }
-        
+
         cd.commit();
-        
+
         return retVal;
     }
-    
+
     /**
      * This method adds one existing object to the given service locator.  The caller
      * of this will not get a chance to customize the descriptor that goes into the
@@ -279,7 +322,7 @@ public abstract class ServiceLocatorUtilities {
      * the set of contracts and metadata associated with the descriptor.  The same algorithm
      * is used in this method as in the {@link BuilderHelper#createConstantDescriptor(Object)}
      * method.
-     * 
+     *
      * @param locator The non-null locator to add this descriptor to
      * @param constant The non-null constant to add to the service locator
      * @param name The name this descriptor should take (may be null)
@@ -289,10 +332,10 @@ public abstract class ServiceLocatorUtilities {
      */
     public static <T> ActiveDescriptor<T> addOneConstant(ServiceLocator locator, Object constant, String name, Type... contracts) {
         if (locator == null || constant == null) throw new IllegalArgumentException();
-        
+
         return addOneDescriptor(locator, BuilderHelper.createConstantDescriptor(constant, name, contracts), false);
     }
-    
+
     /**
      * It is very often the case that one wishes to add a single descriptor to
      * a service locator.  This method adds that one descriptor.  If the descriptor
@@ -351,10 +394,10 @@ public abstract class ServiceLocatorUtilities {
 
         return retVal;
     }
-    
+
     /**
      * Adds the given factory descriptors to the service locator
-     * 
+     *
      * @param locator The locator to add the factories to.  May not be null
      * @param factories The list of factory descriptors to add to the system.  May not be null
      * @return a list of the FactoryDescriptor descriptors that were added to the service locator
@@ -363,10 +406,10 @@ public abstract class ServiceLocatorUtilities {
     public static List<FactoryDescriptors> addFactoryDescriptors(ServiceLocator locator, FactoryDescriptors...factories) {
         return addFactoryDescriptors(locator, true, factories);
     }
-    
+
     /**
      * Adds the given factory descriptors to the service locator
-     * 
+     *
      * @param locator The locator to add the factories to.  May not be null
      * @param requiresDeepCopy This is false ONLY if every one of the factories given to this method can be used without a copy
      * @param factories The list of factory descriptors to add to the system.  May not be null
@@ -375,23 +418,23 @@ public abstract class ServiceLocatorUtilities {
      */
     public static List<FactoryDescriptors> addFactoryDescriptors(ServiceLocator locator, boolean requiresDeepCopy, FactoryDescriptors... factories) {
         if (factories == null || locator == null) throw new IllegalArgumentException();
-        
+
         List<FactoryDescriptors> retVal = new ArrayList<FactoryDescriptors>(factories.length);
-        
+
         DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
         DynamicConfiguration config = dcs.createDynamicConfiguration();
-        
+
         for (FactoryDescriptors factory : factories) {
             FactoryDescriptors addMe = config.bind(factory, requiresDeepCopy);
-            
+
             retVal.add(addMe);
         }
-        
+
         config.commit();
-        
+
         return retVal;
     }
-    
+
     /**
      * It is very often the case that one wishes to add classes that hk2
      * will automatically analyze for contracts and qualifiers to
@@ -414,7 +457,7 @@ public abstract class ServiceLocatorUtilities {
     public static List<ActiveDescriptor<?>> addClasses(ServiceLocator locator, Class<?>... toAdd) {
         DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
         DynamicConfiguration config = dcs.createDynamicConfiguration();
-        
+
         LinkedList<ActiveDescriptor<?>> retVal = new LinkedList<ActiveDescriptor<?>>();
         for (Class<?> addMe : toAdd) {
             if (Factory.class.isAssignableFrom(addMe)) {
@@ -432,26 +475,26 @@ public abstract class ServiceLocatorUtilities {
 
         return retVal;
     }
-    
+
     /* package */ static String getBestContract(Descriptor d) {
         String impl = d.getImplementation();
         Set<String> contracts = d.getAdvertisedContracts();
         if (contracts.contains(impl)) return impl;
-        
+
         for (String candidate : contracts) {
             return candidate;
         }
-        
+
         return impl;
     }
-    
+
     /**
      * Finds a descriptor in the given service locator.  If the descriptor has the serviceId and
      * locatorId set then it will first attempt to use those values to get the exact descriptor
      * described by the input descriptor.  Failing that (or if the input descriptor does not have
      * those values set) then it will use the equals algorithm of {@DescriptorImpl} to determine
      * the equality of the descriptor.
-     * 
+     *
      * @param locator The non-null locator in which to find the descriptor
      * @param descriptor The non-null descriptor to search for
      * @return The descriptor as found in the locator, or null if no such descriptor could be found
@@ -459,16 +502,16 @@ public abstract class ServiceLocatorUtilities {
     @SuppressWarnings("unchecked")
     public static <T> ActiveDescriptor<T> findOneDescriptor(ServiceLocator locator, Descriptor descriptor) {
         if (locator == null || descriptor == null) throw new IllegalArgumentException();
-        
+
         if (descriptor.getServiceId() != null && descriptor.getLocatorId() != null) {
             ActiveDescriptor<T> retVal = (ActiveDescriptor<T>) locator.getBestDescriptor(
                     BuilderHelper.createSpecificDescriptorFilter(descriptor));
-            
+
             if (retVal != null) return retVal;
-            
+
             // Fall back to DescriptorImpl.equals
         }
-        
+
         final DescriptorImpl di;
         if (descriptor instanceof DescriptorImpl) {
             di = (DescriptorImpl) descriptor;
@@ -476,10 +519,10 @@ public abstract class ServiceLocatorUtilities {
         else {
             di = new DescriptorImpl(descriptor);
         }
-        
+
         final String contract = getBestContract(descriptor);
         final String name = descriptor.getName();
-        
+
         ActiveDescriptor<T> retVal = (ActiveDescriptor<T>) locator.getBestDescriptor(new IndexedFilter() {
 
             @Override
@@ -496,12 +539,12 @@ public abstract class ServiceLocatorUtilities {
             public String getName() {
                 return name;
             }
-            
+
         });
-        
+
         return retVal;
     }
-    
+
     /**
      * This method will attempt to remove descriptors matching the passed in descriptor from
      * the given locator.  If the descriptor has its locatorId and serviceId values set then
@@ -509,14 +552,14 @@ public abstract class ServiceLocatorUtilities {
      * any descriptor that returns true from the {@link DescriptorImpl#equals(Object)} method
      * will be removed from the locator.  Note that if more than one descriptor matches they
      * will all be removed.  Hence more than one descriptor may be removed by this method.
-     * 
+     *
      * @param locator The non-null locator to remove the descriptor from
      * @param descriptor The non-null descriptor to remove from the locator
      */
     public static void removeOneDescriptor(ServiceLocator locator, Descriptor descriptor) {
         removeOneDescriptor(locator, descriptor, false);
     }
-    
+
     /**
      * This method will attempt to remove descriptors matching the passed in descriptor from
      * the given locator.  If the descriptor has its locatorId and serviceId values set then
@@ -524,7 +567,7 @@ public abstract class ServiceLocatorUtilities {
      * any descriptor that returns true from the {@link DescriptorImpl#equals(Object)} method
      * will be removed from the locator.  Note that if more than one descriptor matches they
      * will all be removed.  Hence more than one descriptor may be removed by this method.
-     * 
+     *
      * @param locator The non-null locator to remove the descriptor from
      * @param descriptor The non-null descriptor to remove from the locator
      * @param includeAliasDescriptors If set to true all {@link AliasDescriptor}s that point
@@ -532,29 +575,29 @@ public abstract class ServiceLocatorUtilities {
      */
     public static void removeOneDescriptor(ServiceLocator locator, Descriptor descriptor, boolean includeAliasDescriptors) {
         if (locator == null || descriptor == null) throw new IllegalArgumentException();
-        
+
         DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
         DynamicConfiguration config = dcs.createDynamicConfiguration();
-        
+
         if (descriptor.getLocatorId() != null && descriptor.getServiceId() != null) {
             Filter destructionFilter = BuilderHelper.createSpecificDescriptorFilter(descriptor);
-            
+
             config.addUnbindFilter(destructionFilter);
-            
+
             if (includeAliasDescriptors == true) {
                 List<ActiveDescriptor<?>> goingToDie = locator.getDescriptors(destructionFilter);
                 if (!goingToDie.isEmpty()) {
                     AliasFilter af = new AliasFilter(goingToDie);
-                    
+
                     config.addUnbindFilter(af);
                 }
             }
-            
+
             config.commit();
-            
+
             return;
         }
-        
+
         // Must use second algorithm, which is not as precise, but which still mainly works
         final DescriptorImpl di;
         if (descriptor instanceof DescriptorImpl) {
@@ -563,45 +606,45 @@ public abstract class ServiceLocatorUtilities {
         else {
             di = new DescriptorImpl(descriptor);
         }
-        
+
         Filter destructionFilter = new Filter() {
 
             @Override
             public boolean matches(Descriptor d) {
                 return di.equals(d);
             }
-            
+
         };
-        
+
         config.addUnbindFilter(destructionFilter);
-        
+
         if (includeAliasDescriptors == true) {
             List<ActiveDescriptor<?>> goingToDie = locator.getDescriptors(destructionFilter);
             if (!goingToDie.isEmpty()) {
                 AliasFilter af = new AliasFilter(goingToDie);
-                
+
                 config.addUnbindFilter(af);
             }
         }
-        
+
         config.commit();
     }
-    
+
     /**
      * Removes all the descriptors from the given locator that match the
      * given filter
-     * 
+     *
      * @param locator The non-null locator to remove the descriptors from
      * @param filter The non-null filter which will determine what descriptors to remove
      */
     public static void removeFilter(ServiceLocator locator, Filter filter) {
         removeFilter(locator, filter, false);
     }
-    
+
     /**
      * Removes all the descriptors from the given locator that match the
      * given filter
-     * 
+     *
      * @param locator The non-null locator to remove the descriptors from
      * @param filter The non-null filter which will determine what descriptors to remove
      * @param includeAliasDescriptors If set to true all {@link AliasDescriptor}s that point
@@ -609,28 +652,28 @@ public abstract class ServiceLocatorUtilities {
      */
     public static void removeFilter(ServiceLocator locator, Filter filter, boolean includeAliasDescriptors) {
         if (locator == null || filter == null) throw new IllegalArgumentException();
-        
+
         DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
         DynamicConfiguration config = dcs.createDynamicConfiguration();
-        
+
         config.addUnbindFilter(filter);
-        
+
         if (includeAliasDescriptors == true) {
             List<ActiveDescriptor<?>> goingToDie = locator.getDescriptors(filter);
             if (!goingToDie.isEmpty()) {
                 AliasFilter af = new AliasFilter(goingToDie);
-                
+
                 config.addUnbindFilter(af);
             }
         }
-        
+
         config.commit();
     }
-    
+
     /**
      * Returns the best service matching the passed in fully qualified
      * class name of the service
-     * 
+     *
      * @param locator The locator to find the service in
      * @param className The fully qualified class name of the service
      * @return The found service, or null if there is no service with this class name
@@ -638,16 +681,16 @@ public abstract class ServiceLocatorUtilities {
     @SuppressWarnings("unchecked")
     public static <T> T getService(ServiceLocator locator, String className) {
         if (locator == null || className == null) throw new IllegalArgumentException();
-        
+
         ActiveDescriptor<T> ad = (ActiveDescriptor<T>) locator.getBestDescriptor(BuilderHelper.createContractFilter(className));
         if (ad == null) return null;
-        
+
         return locator.getServiceHandle(ad).getService();
     }
-    
+
     /**
      * Returns the service in this service locator given the current descriptor.
-     * 
+     *
      * @param locator The non-null locator in which to get the service associated with
      * this descriptor
      * @param descriptor The non-null descriptor to find the corresponding service for
@@ -656,25 +699,25 @@ public abstract class ServiceLocatorUtilities {
     @SuppressWarnings("unchecked")
     public static <T> T getService(ServiceLocator locator, Descriptor descriptor) {
         if (locator == null || descriptor == null) throw new IllegalArgumentException();
-        
+
         Long locatorId = descriptor.getLocatorId();
         if (locatorId != null &&
                 (locatorId.longValue() == locator.getLocatorId()) &&
                 (descriptor instanceof ActiveDescriptor)) {
             return locator.getServiceHandle((ActiveDescriptor<T>) descriptor).getService();
-            
+
         }
-        
+
         ActiveDescriptor<T> found = findOneDescriptor(locator, descriptor);
         if (found == null) return null;
-        
+
         return locator.getServiceHandle(found).getService();
     }
-    
+
     /**
      * This method returns a {@link DynamicConfiguration} for use with adding
      * and removing services to the given {@link ServiceLocator}.
-     * 
+     *
      * @param locator A non-null locator to get a DynamicConfiguration for
      * @return A non-null DynamicConfiguration object that can be used to add
      * or remove services to the passed in locator
@@ -684,19 +727,19 @@ public abstract class ServiceLocatorUtilities {
     public static DynamicConfiguration createDynamicConfiguration(ServiceLocator locator)
         throws IllegalStateException {
         if (locator == null) throw new IllegalArgumentException();
-        
+
         DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
         if (dcs == null) throw new IllegalStateException();
-        
+
         return dcs.createDynamicConfiguration();
     }
-    
+
     /**
      * This method will first attempt to find a service corresponding to the type and qualifiers
      * passed in to the method, and if one is found simply returns it.  If no service is found
      * in the locator this method will call {@link ServiceLocator#createAndInitialize(Class)} on
      * the class (ignoring the qualifiers) in order to create an instance of the service.
-     * 
+     *
      * @param locator The service locator to search for the service with
      * @param type The non-null type of object to either find or create
      * @param qualifiers The set of qualifiers that should be associated with the service
@@ -708,18 +751,18 @@ public abstract class ServiceLocatorUtilities {
      */
     public static <T> T findOrCreateService(ServiceLocator locator, Class<T> type, Annotation... qualifiers) throws MultiException {
         if (locator == null || type == null) throw new IllegalArgumentException();
-        
+
         ServiceHandle<T> retVal = locator.getServiceHandle(type, qualifiers);
         if (retVal == null) {
             return locator.createAndInitialize(type);
         }
-        
+
         return retVal.getService();
     }
-    
+
     /**
      * Gets one value from a metadata field from the given descriptor
-     * 
+     *
      * @param d The non-null descriptor from which to get the first value in the given field
      * @param field The non-null field to get the first value of
      * @return The first value in the given field, or null if no such field exists in the descriptor
@@ -728,13 +771,13 @@ public abstract class ServiceLocatorUtilities {
         Map<String, List<String>> metadata = d.getMetadata();
         List<String> values = metadata.get(field);
         if (values == null || values.isEmpty()) return null;
-        
+
         return values.get(0);
     }
-    
+
     /**
      * Gets one value from a metadata field from the given service handle
-     * 
+     *
      * @param h The non-null service handle from which to get the first value in the given field
      * @param field The non-null field to get the first value of
      * @return The first value in the given field, or null if no such field exists in the descriptor
@@ -742,14 +785,14 @@ public abstract class ServiceLocatorUtilities {
     public static String getOneMetadataField(ServiceHandle<?> h, String field) {
         return getOneMetadataField(h.getActiveDescriptor(), field);
     }
-    
+
     /**
      * This method is often the first line of a stand-alone client that wishes to use HK2.
      * It creates a ServiceLocator with the given name (or a randomly generated name if
      * null is passed in) and then populates that service locator with services found in
      * the META-INF/hk2-locator/default files that can be found with the classloader that
      * loaded HK2 (usually the system classloader).
-     * 
+     *
      * @param name The name of the service locator to create.  If there is already a service
      * locator of this name this method will use that one to populate.  If this is null
      * a randomly assigned name will be given to the service locator, and it will not be
@@ -760,36 +803,36 @@ public abstract class ServiceLocatorUtilities {
      */
     public static ServiceLocator createAndPopulateServiceLocator(String name) throws MultiException {
         ServiceLocator retVal = ServiceLocatorFactory.getInstance().create(name);
-        
+
         DynamicConfigurationService dcs = retVal.getService(DynamicConfigurationService.class);
         Populator populator = dcs.getPopulator();
-        
+
         try {
             populator.populate();
         }
         catch (IOException e) {
             throw new MultiException(e);
         }
-        
+
         return retVal;
     }
-    
+
     /**
      * This method is often the first line of a stand-alone client that wishes to use HK2.
      * It creates a ServiceLocator with a randomly generated name and then populates that
      * service locator with services found in the META-INF/hk2-locator/default files that
      * can be found with the classloader that loaded HK2 (usually the system classloader).
-     * 
+     *
      * @return A service locator that has been populated with services
      * @throws MultiException If there was a failure when populating or creating the ServiceLocator
      */
     public static ServiceLocator createAndPopulateServiceLocator() {
         return createAndPopulateServiceLocator(null);
     }
-    
+
     private static class AliasFilter implements Filter {
         private final Set<String> values = new HashSet<String>();
-        
+
         private AliasFilter(List<ActiveDescriptor<?>> bases) {
             for (ActiveDescriptor<?> base : bases) {
                 String val = base.getLocatorId() + "." + base.getServiceId();
@@ -801,14 +844,14 @@ public abstract class ServiceLocatorUtilities {
         public boolean matches(Descriptor d) {
             List<String> mAliasVals = d.getMetadata().get(AliasDescriptor.ALIAS_METADATA_MARKER);
             if (mAliasVals == null || mAliasVals.isEmpty()) return false;
-            
+
             String aliasVal = mAliasVals.get(0);
-            
+
             return values.contains(aliasVal);
         }
-        
+
     }
-    
+
     /**
      * This method will cause lookup operations to throw exceptions when
      * exceptions are encountered in underlying operations such as
@@ -818,17 +861,17 @@ public abstract class ServiceLocatorUtilities {
      * Do not use this methods in secure applications where callers to lookup
      * should not be given the information that they do NOT have access
      * to a service
-     * 
+     *
      * @param locator The service locator to enable lookup exceptions on.  May not be null
      */
     public static void enableLookupExceptions(ServiceLocator locator) {
         if (locator == null) throw new IllegalArgumentException();
-        
+
         if (locator.getService(RethrowErrorService.class) != null) return;
-        
+
         addClasses(locator, RethrowErrorService.class);
     }
-    
+
     /**
      * This method will enable the default topic distribution service.
      * <p>
@@ -842,85 +885,100 @@ public abstract class ServiceLocatorUtilities {
      * This method is idempotent, so that if there is already a
      * TopicDistributionService with the default name is available this method
      * will do nothing
-     * 
+     *
      * @param locator The service locator to enable topic distribution on.  May not be null
      */
     public static void enableTopicDistribution(ServiceLocator locator) {
         if (locator == null) throw new IllegalArgumentException();
-        
+
         if (locator.getService(TopicDistributionService.class, TopicDistributionService.HK2_DEFAULT_TOPIC_DISTRIBUTOR) != null) {
             // Will not add it a second time
             return;
         }
-        
+
         addClasses(locator, DefaultTopicDistributionService.class);
     }
-    
+
     /**
      * Dumps all descriptors in this ServiceLocator to stderr
-     * 
+     *
      * @param locator The non-null locator to dump to stderr
      */
     public static void dumpAllDescriptors(ServiceLocator locator) {
         dumpAllDescriptors(locator, System.err);
     }
-    
+
     /**
      * Dumps all descriptors in this ServiceLocator to the given PrintStream
-     * 
+     *
      * @param locator The non-null locator to dump
      * @param output The non-null PrintStream to print the descriptors to
      */
     public static void dumpAllDescriptors(ServiceLocator locator, PrintStream output) {
         if (locator == null || output == null) throw new IllegalArgumentException();
-        
+
         List<ActiveDescriptor<?>> all = locator.getDescriptors(BuilderHelper.allFilter());
-        
+
         for (ActiveDescriptor<?> d : all) {
             output.println(d.toString());
         }
     }
-    
+
     /**
      * Returns a {@link Singleton} {@link Annotation} implementation
-     * 
+     *
      * @return a {@link Singleton} {@link Annotation} implementation
      */
     public static Singleton getSingletonAnnotation() { return SINGLETON; }
-    
+
     /**
      * Returns a {@link PerLookup} {@link Annotation} implementation
-     * 
+     *
      * @return a {@link PerLookup} {@link Annotation} implementation
      */
     public static PerLookup getPerLookupAnnotation() { return PER_LOOKUP; }
-    
+
     /**
      * Returns a {@link PerThread} {@link Annotation} implementation
-     * 
+     *
      * @return a {@link PerThread} {@link Annotation} implementation
      */
-    public static PerThread getPerThreadAnnotation() { return PER_THREAD; }
-    
+    public static PerThread getPerThreadAnnotation() {
+        return PER_THREAD;
+    }
+
+    /**
+     * Returns a {@link InheritableThread} {@link Annotation} implementation
+     *
+     * @return a {@link InheritableThread} {@link Annotation} implementation
+     */
+    public static InheritableThread getInheritableThreadAnnotation() {
+        return INHERITABLE_THREAD;
+    }
+
     /**
      * Returns a {@link Immediate} {@link Annotation} implementation
-     * 
+     *
      * @return a {@link Immediate} {@link Annotation} implementation
      */
     public static Immediate getImmediateAnnotation() { return IMMEDIATE; }
-    
+
     private static class ImmediateImpl extends AnnotationLiteral<Immediate> implements Immediate {
         private static final long serialVersionUID = -4189466670823669605L;
     }
-    
+
     private static class PerLookupImpl extends AnnotationLiteral<PerLookup> implements PerLookup {
         private static final long serialVersionUID = 6554011929159736762L;
     }
-    
+
     private static class PerThreadImpl extends AnnotationLiteral<PerThread> implements PerThread {
         private static final long serialVersionUID = 521793185589873261L;
     }
-    
+
+    private static class InheritableThreadImpl extends AnnotationLiteral<InheritableThread> implements InheritableThread {
+        private static final long serialVersionUID = -3955786566272090916L;
+    }
+
     private static class SingletonImpl extends AnnotationLiteral<Singleton> implements Singleton {
         private static final long serialVersionUID = -2425625604832777314L;
     }

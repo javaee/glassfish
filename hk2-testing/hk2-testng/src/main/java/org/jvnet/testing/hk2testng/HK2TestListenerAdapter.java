@@ -41,7 +41,6 @@ package org.jvnet.testing.hk2testng;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.utilities.Binder;
@@ -72,7 +71,7 @@ public class HK2TestListenerAdapter implements IExecutionListener, IHookable, IC
         for (Map.Entry<String, ServiceLocator> entry : serviceLocators.entrySet()) {
             ServiceLocatorFactory.getInstance().destroy(entry.getValue());
         }
-        
+
         serviceLocators.clear();
         testClasses.clear();
         binderClasses.clear();
@@ -101,24 +100,28 @@ public class HK2TestListenerAdapter implements IExecutionListener, IHookable, IC
             testResult.setThrowable(e);
         }
     }
-    
+
     private static void initializeServiceLocator(ServiceLocator locator, HK2 hk2) {
       if (hk2.enableImmediate()) {
         ServiceLocatorUtilities.enableImmediateScope(locator);
       }
-      
+
       if (hk2.enablePerThread()) {
         ServiceLocatorUtilities.enablePerThreadScope(locator);
       }
-      
+
+        if (hk2.enableInheritableThread()) {
+        ServiceLocatorUtilities.enableInheritableThreadScope(locator);
+        }
+
       if (hk2.enableLookupExceptions()) {
         ServiceLocatorUtilities.enableLookupExceptions(locator);
       }
-      
+
       if (hk2.enableEvents()) {
           ServiceLocatorUtilities.enableTopicDistribution(locator);
         }
-      
+
     }
 
     private void injectTestInstance(ITestResult testResult) throws InstantiationException, IllegalAccessException {
@@ -133,9 +136,9 @@ public class HK2TestListenerAdapter implements IExecutionListener, IHookable, IC
                 if ("hk2-testng-locator".equals(locatorName)) {
                     locatorName = locatorName + "." + testInstance.getClass().getSimpleName();
                 }
-                
+
                 ServiceLocator existingLocator = serviceLocators.get(locatorName);
-                
+
                 if (!testClasses.containsKey(testInstance.getClass())) {
                     Class<? extends Binder>[] hk2BinderClasses = hk2.binders();
 
@@ -143,7 +146,7 @@ public class HK2TestListenerAdapter implements IExecutionListener, IHookable, IC
                         if (existingLocator == null) {
                             locator = ServiceLocatorUtilities.createAndPopulateServiceLocator(locatorName);
                             initializeServiceLocator(locator, hk2);
-                            
+
                             serviceLocators.put(locator.getName(), locator);
                         }
                         else {
@@ -169,7 +172,7 @@ public class HK2TestListenerAdapter implements IExecutionListener, IHookable, IC
                             if (existingLocator == null) {
                                 locator = ServiceLocatorUtilities.bind(locatorName, binders);
                                 initializeServiceLocator(locator, hk2);
-                                
+
                                 serviceLocators.put(locator.getName(), locator);
                             }
                             else {
