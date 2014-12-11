@@ -37,56 +37,71 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.internal;
+package org.glassfish.hk2.xml.test;
 
-import java.net.URI;
-
-import javax.inject.Singleton;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
-
-import org.glassfish.hk2.api.MultiException;
-import org.glassfish.hk2.xml.api.XmlRootHandle;
-import org.glassfish.hk2.xml.api.XmlService;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author jwells
  *
  */
-@Singleton
-public class XmlServiceImpl implements XmlService {
+@XmlRootElement(name="museum")
+public class MuseumBean implements Museum {
+    private String name;
+    private int id;
+    private int age;
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.xml.api.XmlService#unmarshall(java.net.URI, java.lang.Class)
+     * @see org.glassfish.hk2.xml.test.Museum#getName()
      */
     @Override
-    public <T> XmlRootHandle<T> unmarshall(URI uri,
-            Class<T> jaxbAnnotatedClassOrInterface) {
-        if (uri == null || jaxbAnnotatedClassOrInterface == null) throw new IllegalArgumentException();
-        
-        if (jaxbAnnotatedClassOrInterface.isInterface()) {
-            throw new AssertionError("not yet implemented");
-        }
-        
-        try {
-            return unmarshallClass(uri, jaxbAnnotatedClassOrInterface);
-        }
-        catch (RuntimeException re) {
-            throw re;
-        }
-        catch (Exception e) {
-            throw new MultiException(e);
-        }
+    public String getName() {
+        return name;
     }
-    
-    @SuppressWarnings("unchecked")
-    private <T> XmlRootHandle<T> unmarshallClass(URI uri, Class<T> jaxbAnnotatedClass) throws Exception {
-        JAXBContext context = JAXBContext.newInstance(jaxbAnnotatedClass);
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.test.Museum#setName(java.lang.String)
+     */
+    @Override @XmlElement
+    public void setName(String name) {
+        this.name = name;
         
-        Unmarshaller unmarshaller = context.createUnmarshaller();
-        T root = (T) unmarshaller.unmarshal(uri.toURL());
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.test.Museum#getAge()
+     */
+    @Override
+    public int getAge() {
+        return age;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.test.Museum#setAge(int)
+     */
+    @Override @XmlElement
+    public void setAge(int age) {
+        this.age = age;
         
-        return new XmlRootHandleImpl<T>(root);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.test.Museum#getId()
+     */
+    @Override
+    public int getId() {
+        return id;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.test.Museum#setId(int)
+     */
+    @Override @XmlAttribute
+    public void setId(int id) {
+        this.id = id;
+        
     }
 
 }

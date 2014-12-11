@@ -74,4 +74,25 @@ public class UnmarshallTest {
         Assert.assertEquals("Ben Franklin", museum.getName());
         Assert.assertEquals(110, museum.getAge());
     }
+    
+    /**
+     * Tests the most basic of xml files can be unmarshalled with an interface
+     * annotated with jaxb annotations
+     * 
+     * @throws Exception
+     */
+    @Test // @org.junit.Ignore
+    public void testClassJaxbUnmarshalling() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource("museum1.xml");
+        
+        XmlRootHandle<MuseumBean> rootHandle = xmlService.unmarshall(url.toURI(), MuseumBean.class);
+        Museum museum = rootHandle.getRoot();
+        
+        Assert.assertEquals(100, museum.getId());
+        Assert.assertEquals("Ben Franklin", museum.getName());
+        Assert.assertEquals(110, museum.getAge());
+    }
 }
