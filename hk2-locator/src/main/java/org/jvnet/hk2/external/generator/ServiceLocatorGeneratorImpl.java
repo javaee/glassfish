@@ -41,7 +41,6 @@ package org.jvnet.hk2.external.generator;
 
 import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.ClassAnalyzer;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.extension.ServiceLocatorGenerator;
