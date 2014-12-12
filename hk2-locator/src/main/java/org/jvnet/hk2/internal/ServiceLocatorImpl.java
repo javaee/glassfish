@@ -505,7 +505,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
 
         if (Provider.class.equals(rawType) || IterableProvider.class.equals(rawType) ) {
             IterableProviderImpl<?> value = new IterableProviderImpl<Object>(this,
-                    (Utilities.getFirstTypeArgument(requiredType)),
+                    (ReflectionHelper.getFirstTypeArgument(requiredType)),
                     injectee.getRequiredQualifiers(),
                     injectee.getUnqualified(),
                     injectee);
@@ -515,7 +515,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
         if (Topic.class.equals(rawType)) {
             TopicImpl<?> value = new TopicImpl<Object>(this,
-                    Utilities.getFirstTypeArgument(requiredType),
+                    ReflectionHelper.getFirstTypeArgument(requiredType),
                     injectee.getRequiredQualifiers());
             
             return new ConstantActiveDescriptor<Object>(value, id);
@@ -685,7 +685,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         Class<?> rawType = ReflectionHelper.getRawClass(contractOrImpl);
         if (rawType != null &&
                 (Provider.class.equals(rawType) || IterableProvider.class.equals(rawType)) ) {
-            Type requiredType = Utilities.getFirstTypeArgument(contractOrImpl);
+            Type requiredType = ReflectionHelper.getFirstTypeArgument(contractOrImpl);
             HashSet<Annotation> requiredQualifiers = new HashSet<Annotation>();
             for (Annotation qualifier : qualifiers) {
                 requiredQualifiers.add(qualifier);

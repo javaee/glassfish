@@ -139,6 +139,28 @@ public final class ReflectionHelper {
 
         return null;
     }
+    
+    /**
+     * Gets the first type argument if this is a parameterized
+     * type, otherwise it returns Object.class
+     *
+     * @param type The type to find the first type argument on
+     * @return If this is a class, Object.class. If this is a parameterized
+     * type, the type of the first actual argument
+     */
+    public static Type getFirstTypeArgument(Type type) {
+        if (type instanceof Class) {
+            return Object.class;
+        }
+
+        if (!(type instanceof ParameterizedType)) return Object.class;
+
+        ParameterizedType pt = (ParameterizedType) type;
+        Type arguments[] = pt.getActualTypeArguments();
+        if (arguments.length <= 0) return Object.class;
+
+        return arguments[0];
+    }
 
     private static String getNamedName(Named named, Class<?> implClass) {
         String name = named.value();

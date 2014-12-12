@@ -55,20 +55,22 @@ import org.glassfish.hk2.xml.api.XmlService;
  */
 @Singleton
 public class XmlServiceImpl implements XmlService {
+    private final JAUtilities jaUtilities = new JAUtilities();
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.api.XmlService#unmarshall(java.net.URI, java.lang.Class)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public <T> XmlRootHandle<T> unmarshall(URI uri,
             Class<T> jaxbAnnotatedClassOrInterface) {
         if (uri == null || jaxbAnnotatedClassOrInterface == null) throw new IllegalArgumentException();
         
-        if (jaxbAnnotatedClassOrInterface.isInterface()) {
-            throw new AssertionError("not yet implemented");
-        }
-        
         try {
+            if (jaxbAnnotatedClassOrInterface.isInterface()) {
+                jaxbAnnotatedClassOrInterface = (Class<T>) jaUtilities.convertRootAndLeaves(jaxbAnnotatedClassOrInterface);
+            }
+        
             return unmarshallClass(uri, jaxbAnnotatedClassOrInterface);
         }
         catch (RuntimeException re) {

@@ -513,7 +513,7 @@ public class Utilities {
                 return null;
             }
 
-            Type firstType = getFirstTypeArgument(advertisedType);
+            Type firstType = ReflectionHelper.getFirstTypeArgument(advertisedType);
             if (!(firstType instanceof Class)) {
                 return null;
             }
@@ -580,7 +580,7 @@ public class Utilities {
 
             if (!Factory.class.equals(rawClass)) continue;
 
-            Type firstType = getFirstTypeArgument(type);
+            Type firstType = ReflectionHelper.getFirstTypeArgument(type);
 
             if (firstType instanceof WildcardType) {
                 // This should not be possible
@@ -659,7 +659,6 @@ public class Utilities {
         ClazzCreator<T> creator;
         Set<Annotation> qualifiers;
         Set<Type> contracts;
-        Annotation scopeAnnotation;
         Class<? extends Annotation> scope;
         String name;
         Boolean proxy = null;
@@ -1312,28 +1311,6 @@ public class Utilities {
         }
 
         return true;
-    }
-
-    /**
-     * Gets the first type argument if this is a parameterized
-     * type, otherwise it returns Object.class
-     *
-     * @param type The type to find the first type argument on
-     * @return If this is a class, Object.class. If this is a parameterized
-     * type, the type of the first actual argument
-     */
-    public static Type getFirstTypeArgument(Type type) {
-        if (type instanceof Class) {
-            return Object.class;
-        }
-
-        if (!(type instanceof ParameterizedType)) return Object.class;
-
-        ParameterizedType pt = (ParameterizedType) type;
-        Type arguments[] = pt.getActualTypeArguments();
-        if (arguments.length <= 0) return Object.class;
-
-        return arguments[0];
     }
 
     /**

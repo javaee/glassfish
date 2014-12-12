@@ -54,8 +54,82 @@ public class BaseHK2JAXBBean {
         beanLikeMap.put(propName, propValue);
     }
     
+    public void _setProperty(String propName, byte propValue) {
+        if (propName == null) throw new IllegalArgumentException("properyName may not be null");
+        
+        beanLikeMap.put(propName, propValue);
+    }
+    
+    public void _setProperty(String propName, char propValue) {
+        if (propName == null) throw new IllegalArgumentException("properyName may not be null");
+        
+        beanLikeMap.put(propName, propValue);
+    }
+    
+    public void _setProperty(String propName, short propValue) {
+        if (propName == null) throw new IllegalArgumentException("properyName may not be null");
+        
+        beanLikeMap.put(propName, propValue);
+    }
+    
+    public void _setProperty(String propName, int propValue) {
+        if (propName == null) throw new IllegalArgumentException("properyName may not be null");
+        
+        beanLikeMap.put(propName, propValue);
+    }
+    
+    public void _setProperty(String propName, float propValue) {
+        if (propName == null) throw new IllegalArgumentException("properyName may not be null");
+        
+        beanLikeMap.put(propName, propValue);
+    }
+    
+    public void _setProperty(String propName, long propValue) {
+        if (propName == null) throw new IllegalArgumentException("properyName may not be null");
+        
+        beanLikeMap.put(propName, propValue);
+    }
+    
+    public void _setProperty(String propName, double propValue) {
+        if (propName == null) throw new IllegalArgumentException("properyName may not be null");
+        
+        beanLikeMap.put(propName, propValue);
+    }
+    
     public Object _getProperty(String propName) {
         return beanLikeMap.get(propName);
+    }
+    
+    public boolean _getPropertyZ(String propName) {
+        return (Boolean) beanLikeMap.get(propName);
+    }
+    
+    public byte _getPropertyB(String propName) {
+        return (Byte) beanLikeMap.get(propName);
+    }
+    
+    public char _getPropertyC(String propName) {
+        return (Character) beanLikeMap.get(propName);
+    }
+    
+    public short _getPropertyS(String propName) {
+        return (Short) beanLikeMap.get(propName);
+    }
+    
+    public int _getPropertyI(String propName) {
+        return (Integer) beanLikeMap.get(propName);
+    }
+    
+    public float _getPropertyF(String propName) {
+        return (Float) beanLikeMap.get(propName);
+    }
+    
+    public long _getPropertyJ(String propName) {
+        return (Integer) beanLikeMap.get(propName);
+    }
+    
+    public double _getPropertyD(String propName) {
+        return (Double) beanLikeMap.get(propName);
     }
 
     public boolean _hasProperty(String propName) {
