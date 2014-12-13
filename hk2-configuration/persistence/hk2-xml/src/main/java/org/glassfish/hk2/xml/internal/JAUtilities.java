@@ -40,7 +40,6 @@
 package org.glassfish.hk2.xml.internal;
 
 import java.beans.Introspector;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -48,7 +47,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
+
+import javax.xml.bind.annotation.XmlRootElement;
 
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -57,6 +57,12 @@ import javassist.CtNewMethod;
 import javassist.NotFoundException;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
+import javassist.bytecode.ConstPool;
+import javassist.bytecode.MethodInfo;
+import javassist.bytecode.annotation.Annotation;
+import javassist.bytecode.annotation.BooleanMemberValue;
+import javassist.bytecode.annotation.ClassMemberValue;
+import javassist.bytecode.annotation.StringMemberValue;
 
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
@@ -73,10 +79,18 @@ public class JAUtilities {
     private final static String IS = "is";
     
     private final static String CLASS_ADD_ON_NAME = "_$$_Hk2_Jaxb";
+    private final static HashSet<String> DO_NOT_HANDLE_METHODS = new HashSet<String>();
     
     private final HashMap<Class<?>, Class<?>> convertedCache = new HashMap<Class<?>, Class<?>>();
     private final ClassPool defaultClassPool = ClassPool.getDefault(); // TODO:  We probably need to be more sophisticated about this
     private final CtClass superClazz;
+    
+    static {
+        DO_NOT_HANDLE_METHODS.add("hashCode");
+        DO_NOT_HANDLE_METHODS.add("equals");
+        DO_NOT_HANDLE_METHODS.add("toString");
+        DO_NOT_HANDLE_METHODS.add("annotationType");
+    }
     
     /* package */ JAUtilities() {
         try {
@@ -86,85 +100,6 @@ public class JAUtilities {
             throw new MultiException(e);
         }
         
-    }
-
-    private static void brainDump() throws Exception {
-        /*
-        ProxyFactory pf = new ProxyFactory();
-        pf.setSuperclass(BaseHK2JAXBBean.class);
-        pf.setInterfaces(new Class[] { Museum.class });
-        
-        Class<?> mfclass = pf.createClass();
-        byte[] mfClassAsBytes = serialize(mfclass);
-        
-        
-        ByteArrayClassPath ccp = new ByteArrayClassPath(mfclass.getName(), mfClassAsBytes);
-        System.out.println("JRW(-01) dcp=" + defaultClassPool);
-        defaultClassPool.insertClassPath(ccp);
-        System.out.println("JRW(01) dcp=" + defaultClassPool);
-        
-        ClassPool defaultClassPool = ClassPool.getDefault();
-        
-        CtClass superClazz = defaultClassPool.get(BaseHK2JAXBBean.class.getName());
-        // CtClass museumClazz = defaultClassPool.get(Museum.class.getName());
-        
-        
-        // String museumClassName = Museum.class.getName() + "_$$_hk2_jaxb";
-        
-        // CtClass museumCtClass = defaultClassPool.makeClass(museumClassName);
-        // ClassFile mcf = museumCtClass.getClassFile();
-        
-        // museumCtClass.setSuperclass(superClazz);
-        // museumCtClass.addInterface(museumClazz);
-        
-        Annotation xmlRootElement = new XmlRootElementImpl("##default", "museum");
-        // AnnotationsAttribute aa = (AnnotationsAttribute) mcf.getAttribute(AnnotationsAttribute.visibleTag);
-        // aa.addAnnotation(xmlRootElement);
-        
-        // System.out.println("JRW(05) museumCtClass=" + museumCtClass);
-        
-        {
-            CtMethod nameGetMethod =
-                CtNewMethod.make("public java.lang.String getName() { return (java.lang.String) super._getProperty(\"name\"); }", museumCtClass);
-            
-            // nameGetMethod.setAttribute(name, data);
-        
-            // museumCtClass.addMethod(nameGetMethod);
-        
-            CtMethod nameSetMethod =
-                CtNewMethod.make("public void setName(java.lang.String arg0) { super._setProperty(\"name\", arg0); }", museumCtClass);
-        
-            // museumCtClass.addMethod(nameSetMethod);
-        }
-        
-        {
-            CtMethod nameGetMethod =
-                    CtNewMethod.make("public int getId() { java.lang.Integer i = (java.lang.Integer) super._getProperty(\"id\"); return i.intValue(); }", museumCtClass);
-            
-            // museumCtClass.addMethod(nameGetMethod);
-            
-            CtMethod nameSetMethod =
-                    CtNewMethod.make("public void setId(int arg0) { super._setProperty(\"id\", new java.lang.Integer(arg0)); }", museumCtClass);
-            
-            // museumCtClass.addMethod(nameSetMethod);
-        }
-        
-        {
-            CtMethod nameGetMethod =
-                    CtNewMethod.make("public int getAge() { java.lang.Integer i = (java.lang.Integer) super._getProperty(\"age\"); return i.intValue(); }", museumCtClass);
-            
-            museumCtClass.addMethod(nameGetMethod);
-            
-            CtMethod nameSetMethod =
-                    CtNewMethod.make("public void setAge(int arg0) { super._setProperty(\"age\", new java.lang.Integer(arg0)); }", museumCtClass);
-            
-            museumCtClass.addMethod(nameSetMethod);
-        }
-        
-        Class<?> proxy = museumCtClass.toClass(Museum.class.getClassLoader(), Museum.class.getProtectionDomain());
-        
-        System.out.println("JRW(10) who knows? proxy=" + proxy.getName());
-        */
     }
     
     public synchronized Class<?> convertRootAndLeaves(Class<?> root) {
@@ -181,7 +116,7 @@ public class JAUtilities {
             catch (RuntimeException re) {
                 throw re;
             }
-            catch (Exception e) {
+            catch (Throwable e) {
                 throw new MultiException(e);
             }
             
@@ -191,12 +126,30 @@ public class JAUtilities {
         return convertedCache.get(root);
     }
     
-    private Class<?> convert(Class<?> convertMe) throws Exception {
+    private Class<?> convert(Class<?> convertMe) throws Throwable {
         CtClass originalCtClass = defaultClassPool.get(convertMe.getName());
         String targetClassName = convertMe.getName() + CLASS_ADD_ON_NAME;
         
         CtClass targetCtClass = defaultClassPool.makeClass(targetClassName);
+        
         ClassFile targetClassFile = targetCtClass.getClassFile();
+        targetClassFile.setVersionToJava5();
+        ConstPool targetConstPool = targetClassFile.getConstPool();
+        
+        for (java.lang.annotation.Annotation convertMeAnnotation : convertMe.getAnnotations()) {
+            AnnotationsAttribute annotationCopy;
+            if (XmlRootElement.class.equals(convertMeAnnotation.annotationType())) {
+                XmlRootElement xre = (XmlRootElement) convertMeAnnotation;
+                
+                XmlRootElement replacement = new XmlRootElementImpl(xre.namespace(), convertXmlRootElementName(xre, convertMe));
+                
+                annotationCopy = createAnnotationCopy(targetConstPool, replacement);
+            }
+            else {
+                annotationCopy = createAnnotationCopy(targetConstPool, convertMeAnnotation);
+            }
+            targetClassFile.addAttribute(annotationCopy);
+        }
         
         // TODO:  Add in any class level JAXB annotations here
         
@@ -227,8 +180,6 @@ public class JAUtilities {
             
             if (setterVariable != null) {
                 Class<?> setterType = originalMethod.getParameterTypes()[0];
-                
-                // TODO:  Add in any JAXB annotations here
                 
                 sb.append(setterType.getName() + " arg0) { super._setProperty(\"" + setterVariable + "\", arg0); }");
             }
@@ -268,9 +219,19 @@ public class JAUtilities {
                 sb.append(") { return " + cast + "super." + superMethodName + "(\"" + getterVariable + "\"); }");
             }
             
-            System.out.println("JRW(10) JA sb=" + sb.toString());
-            
             CtMethod addMeCtMethod = CtNewMethod.make(sb.toString(), targetCtClass);
+            
+            if (setterVariable != null) {
+                MethodInfo methodInfo = addMeCtMethod.getMethodInfo();
+                
+                ConstPool methodConstPool = methodInfo.getConstPool();
+                
+                for (java.lang.annotation.Annotation convertMeAnnotation : originalMethod.getAnnotations()) {
+                    AnnotationsAttribute annotationCopy = createAnnotationCopy(methodConstPool, convertMeAnnotation);
+                    methodInfo.addAttribute(annotationCopy);
+                }
+            }
+            
             targetCtClass.addMethod(addMeCtMethod);
         }
         
@@ -279,7 +240,48 @@ public class JAUtilities {
         return proxy;
     }
     
-    
+    private static AnnotationsAttribute createAnnotationCopy(ConstPool parent, java.lang.annotation.Annotation javaAnnotation) throws Throwable {
+        AnnotationsAttribute retVal = new AnnotationsAttribute(parent, AnnotationsAttribute.visibleTag);
+        
+        Annotation annotation = new Annotation(javaAnnotation.annotationType().getName(), parent);
+        
+        for (Method javaAnnotationMethod : javaAnnotation.annotationType().getMethods()) {
+            if (javaAnnotationMethod.getParameterTypes().length != 0) continue;
+            if (DO_NOT_HANDLE_METHODS.contains(javaAnnotationMethod.getName())) continue;
+            
+            Class<?> javaAnnotationType = javaAnnotationMethod.getReturnType();
+            if (String.class.equals(javaAnnotationType)) {
+                String value = (String) ReflectionHelper.invoke(javaAnnotation, javaAnnotationMethod, new Object[0], false);
+                
+                annotation.addMemberValue(javaAnnotationMethod.getName(), new StringMemberValue(value, parent));
+            }
+            else if (boolean.class.equals(javaAnnotationType)) {
+                boolean value = (Boolean) ReflectionHelper.invoke(javaAnnotation, javaAnnotationMethod, new Object[0], false);
+                
+                annotation.addMemberValue(javaAnnotationMethod.getName(), new BooleanMemberValue(value, parent));
+            }
+            else if (Class.class.equals(javaAnnotationType)) {
+                Class<?> value = (Class<?>) ReflectionHelper.invoke(javaAnnotation, javaAnnotationMethod, new Object[0], false);
+                String sValue;
+                if (value == null) {
+                    sValue = null;
+                }
+                else {
+                    sValue = value.getName();
+                }
+                
+                annotation.addMemberValue(javaAnnotationMethod.getName(), new ClassMemberValue(sValue, parent));
+            }
+            else {
+                throw new AssertionError("Annotation type " + javaAnnotationType.getName() + " is not yet implemented");
+            }
+            
+        }
+        
+        retVal.addAnnotation(annotation);
+        
+        return retVal;
+    }
     
     private static void getAllToConvert(Class<?> toBeConverted, LinkedHashSet<Class<?>> needsToBeConverted) {
         if (needsToBeConverted.contains(toBeConverted)) return;
@@ -352,6 +354,49 @@ public class JAUtilities {
         }
         
         return null;
+    }
+    
+    private static String convertXmlRootElementName(XmlRootElement root, Class<?> clazz) {
+        if (!"##default".equals(root.name())) return root.name();
+        
+        String simpleName = clazz.getSimpleName();
+        
+        char asChars[] = simpleName.toCharArray();
+        StringBuffer sb = new StringBuffer();
+        
+        boolean firstChar = true;
+        boolean lastCharWasCapital = false;
+        for (char asChar : asChars) {
+            if (firstChar) {
+                firstChar = false;
+                if (Character.isUpperCase(asChar)) {
+                    lastCharWasCapital = true;
+                    sb.append(Character.toLowerCase(asChar));
+                }
+                else {
+                    lastCharWasCapital = false;
+                    sb.append(asChar);
+                }
+            }
+            else {
+                if (Character.isUpperCase(asChar)) {
+                    if (!lastCharWasCapital) {
+                        sb.append('-');
+                    }
+                    
+                    sb.append(Character.toLowerCase(asChar));
+                    
+                    lastCharWasCapital = true;
+                }
+                else {
+                    sb.append(asChar);
+                    
+                    lastCharWasCapital = false;
+                }
+            }
+        }
+        
+        return sb.toString();
     }
 
 }
