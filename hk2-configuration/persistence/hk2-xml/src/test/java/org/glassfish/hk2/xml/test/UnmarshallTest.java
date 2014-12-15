@@ -76,7 +76,7 @@ public class UnmarshallTest {
     }
     
     /**
-     * Tests the most basic of xml files can be unmarshalled with an interface
+     * Tests the most basic of xml files can be unmarshalled with an class
      * annotated with jaxb annotations
      * 
      * @throws Exception
@@ -94,5 +94,75 @@ public class UnmarshallTest {
         Assert.assertEquals(100, museum.getId());
         Assert.assertEquals("Ben Franklin", museum.getName());
         Assert.assertEquals(110, museum.getAge());
+    }
+    
+    /**
+     * Tests the most basic of xml files can be unmarshalled with an class
+     * annotated with jaxb annotations
+     * 
+     * @throws Exception
+     */
+    @Test // @org.junit.Ignore
+    public void testClassJaxbUnmarshallingWithChildren() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource("Acme1.xml");
+        
+        XmlRootHandle<EmployeesBean> rootHandle = xmlService.unmarshall(url.toURI(), EmployeesBean.class);
+        Employees employees = rootHandle.getRoot();
+        
+        Assert.assertEquals("Acme", employees.getCompanyName());
+        
+        Assert.assertEquals(2, employees.getEmployees().size());
+        
+        boolean first = true;
+        for (Employee employee : employees.getEmployees()) {
+            if (first) {
+                first = false;
+                Assert.assertEquals(100L, employee.getId());
+                Assert.assertEquals("Bob", employee.getName());
+            }
+            else {
+                Assert.assertEquals(101L, employee.getId());
+                Assert.assertEquals("Carol", employee.getName());
+                
+            }
+        }
+    }
+    
+    /**
+     * Tests the most basic of xml files can be unmarshalled with an interface
+     * annotated with jaxb annotations
+     * 
+     * @throws Exception
+     */
+    @Test @org.junit.Ignore
+    public void testInterfaceJaxbUnmarshallingWithChildren() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource("Acme1.xml");
+        
+        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
+        Employees employees = rootHandle.getRoot();
+        
+        Assert.assertEquals("Acme", employees.getCompanyName());
+        
+        Assert.assertEquals(2, employees.getEmployees().size());
+        
+        boolean first = true;
+        for (Employee employee : employees.getEmployees()) {
+            if (first) {
+                first = false;
+                Assert.assertEquals(100L, employee.getId());
+                Assert.assertEquals("Bob", employee.getName());
+            }
+            else {
+                Assert.assertEquals(101L, employee.getId());
+                Assert.assertEquals("Carol", employee.getName());
+                
+            }
+        }
     }
 }
