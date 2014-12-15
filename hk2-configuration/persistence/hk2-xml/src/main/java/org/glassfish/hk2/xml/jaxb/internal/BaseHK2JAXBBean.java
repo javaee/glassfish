@@ -39,17 +39,33 @@
  */
 package org.glassfish.hk2.xml.jaxb.internal;
 
+import java.util.List;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.glassfish.hk2.utilities.general.GeneralUtilities;
+import org.glassfish.hk2.utilities.reflection.Logger;
+import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 
 /**
  * @author jwells
  *
  */
-public class BaseHK2JAXBBean {
+public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
+    private final static boolean DEBUG_GETS_AND_SETS = Boolean.parseBoolean(GeneralUtilities.getSystemProperty(
+            "org.jvnet.hk2.properties.xmlservice.jaxb.getsandsets", "false"));
+    
     private final ConcurrentHashMap<String, Object> beanLikeMap = new ConcurrentHashMap<String, Object>();
     
     public void _setProperty(String propName, Object propValue) {
         if (propName == null) throw new IllegalArgumentException("properyName may not be null");
+        
+        if (DEBUG_GETS_AND_SETS) {
+            // Hidden behind static because of potential expensive toString costs
+            Logger.getLogger().debug("XmlService setting property " + propName + " to " + propValue + " in " + this);
+        }
         
         beanLikeMap.put(propName, propValue);
     }
@@ -57,82 +73,114 @@ public class BaseHK2JAXBBean {
     public void _setProperty(String propName, byte propValue) {
         if (propName == null) throw new IllegalArgumentException("properyName may not be null");
         
-        beanLikeMap.put(propName, propValue);
+        _setProperty(propName, (Byte) propValue);
     }
     
     public void _setProperty(String propName, char propValue) {
         if (propName == null) throw new IllegalArgumentException("properyName may not be null");
         
-        beanLikeMap.put(propName, propValue);
+        _setProperty(propName, (Character) propValue);
     }
     
     public void _setProperty(String propName, short propValue) {
         if (propName == null) throw new IllegalArgumentException("properyName may not be null");
         
-        beanLikeMap.put(propName, propValue);
+        _setProperty(propName, (Short) propValue);
     }
     
     public void _setProperty(String propName, int propValue) {
         if (propName == null) throw new IllegalArgumentException("properyName may not be null");
         
-        beanLikeMap.put(propName, propValue);
+        _setProperty(propName, (Integer) propValue);
     }
     
     public void _setProperty(String propName, float propValue) {
         if (propName == null) throw new IllegalArgumentException("properyName may not be null");
         
-        beanLikeMap.put(propName, propValue);
+        _setProperty(propName, (Float) propValue);
     }
     
     public void _setProperty(String propName, long propValue) {
         if (propName == null) throw new IllegalArgumentException("properyName may not be null");
         
-        beanLikeMap.put(propName, propValue);
+        _setProperty(propName, (Long) propValue);
     }
     
     public void _setProperty(String propName, double propValue) {
         if (propName == null) throw new IllegalArgumentException("properyName may not be null");
         
-        beanLikeMap.put(propName, propValue);
+        _setProperty(propName, (Double) propValue);
     }
     
     public Object _getProperty(String propName) {
-        return beanLikeMap.get(propName);
+        Object retVal = beanLikeMap.get(propName);
+        
+        if (DEBUG_GETS_AND_SETS) {
+            // Hidden behind static because of potential expensive toString costs
+            Logger.getLogger().debug("XmlService getting property " + propName + "=" + retVal + " in " + this);
+        }
+        
+        return retVal;
     }
     
     public boolean _getPropertyZ(String propName) {
-        return (Boolean) beanLikeMap.get(propName);
+        return (Boolean) _getProperty(propName);
     }
     
     public byte _getPropertyB(String propName) {
-        return (Byte) beanLikeMap.get(propName);
+        return (Byte) _getProperty(propName);
     }
     
     public char _getPropertyC(String propName) {
-        return (Character) beanLikeMap.get(propName);
+        return (Character) _getProperty(propName);
     }
     
     public short _getPropertyS(String propName) {
-        return (Short) beanLikeMap.get(propName);
+        return (Short) _getProperty(propName);
     }
     
     public int _getPropertyI(String propName) {
-        return (Integer) beanLikeMap.get(propName);
+        return (Integer) _getProperty(propName);
     }
     
     public float _getPropertyF(String propName) {
-        return (Float) beanLikeMap.get(propName);
+        return (Float) _getProperty(propName);
     }
     
     public long _getPropertyJ(String propName) {
-        return (Long) beanLikeMap.get(propName);
+        return (Long) _getProperty(propName);
     }
     
     public double _getPropertyD(String propName) {
-        return (Double) beanLikeMap.get(propName);
+        return (Double) _getProperty(propName);
     }
 
     public boolean _hasProperty(String propName) {
         return beanLikeMap.containsKey(propName);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean#getBeanLikeMap()
+     */
+    @Override
+    public Map<String, Object> getBeanLikeMap() {
+        HashMap<String, Object> intermediateCopy = new HashMap<String, Object>();
+        
+        for (Map.Entry<String, Object> entrySet : beanLikeMap.entrySet()) {
+            if (entrySet.getValue() != null && List.class.isAssignableFrom(entrySet.getValue().getClass())) {
+                // Is a child
+                intermediateCopy.put(entrySet.getKey(), Collections.unmodifiableList((List<?>) entrySet.getValue()));
+            }
+            else {
+                intermediateCopy.put(entrySet.getKey(), entrySet.getValue());
+            }
+        }
+        
+        return Collections.unmodifiableMap(intermediateCopy);
+    }
+    
+    @Override
+    public String toString() {
+        return "BaseHK2JAXBBean(" + System.identityHashCode(this) + ")";
     }
 }

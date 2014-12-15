@@ -40,8 +40,11 @@
 package org.glassfish.hk2.xml.test;
 
 import java.net.URL;
+import java.util.List;
+import java.util.Map;
 
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
@@ -137,6 +140,54 @@ public class UnmarshallTest {
      * 
      * @throws Exception
      */
+    @SuppressWarnings("unchecked")
+    @Test // @org.junit.Ignore
+    public void testBeanLikeMapOfInterface() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource("Acme1.xml");
+        
+        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
+        Employees employees = rootHandle.getRoot();
+        
+        Assert.assertTrue(employees instanceof XmlHk2ConfigurationBean);
+        XmlHk2ConfigurationBean hk2Configuration = (XmlHk2ConfigurationBean) employees;
+        
+        Map<String, Object> beanLikeMap = hk2Configuration.getBeanLikeMap();
+        Assert.assertEquals("Acme", beanLikeMap.get("company-name"));
+        
+        List<Employee> employeeChildList = (List<Employee>) beanLikeMap.get("employee");
+        Assert.assertNotNull(employeeChildList);
+        Assert.assertEquals(2, employeeChildList.size());
+        
+        boolean first = true;
+        for (Employee employee : employeeChildList) {
+            Assert.assertTrue(employee instanceof XmlHk2ConfigurationBean);
+            XmlHk2ConfigurationBean employeeConfiguration = (XmlHk2ConfigurationBean) employee;
+            
+            Map<String, Object> employeeBeanLikeMap = employeeConfiguration.getBeanLikeMap();
+            
+            if (first) {
+                first = false;
+                
+                Assert.assertEquals(100L, employeeBeanLikeMap.get("id"));
+                Assert.assertEquals("Bob", employeeBeanLikeMap.get("name"));
+            }
+            else {
+                Assert.assertEquals(101L, employeeBeanLikeMap.get("id"));
+                Assert.assertEquals("Carol", employeeBeanLikeMap.get("name"));
+            }
+        }
+        
+    }
+    
+    /**
+     * Tests the most basic of xml files can be unmarshalled with an interface
+     * annotated with jaxb annotations
+     * 
+     * @throws Exception
+     */
     @Test // @org.junit.Ignore
     public void testInterfaceJaxbUnmarshallingWithChildren() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
@@ -161,7 +212,6 @@ public class UnmarshallTest {
             else {
                 Assert.assertEquals(101L, employee.getId());
                 Assert.assertEquals("Carol", employee.getName());
-                
             }
         }
     }

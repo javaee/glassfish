@@ -47,7 +47,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -80,6 +82,7 @@ public class JAUtilities {
     private final static String GET = "get";
     private final static String SET = "set";
     private final static String IS = "is";
+    private final static String JAXB_DEFAULT_STRING = "##default";
     
     private final static String CLASS_ADD_ON_NAME = "_$$_Hk2_Jaxb";
     private final static HashSet<String> DO_NOT_HANDLE_METHODS = new HashSet<String>();
@@ -135,6 +138,13 @@ public class JAUtilities {
         CtClass originalCtClass = defaultClassPool.get(convertMe.getName());
         String targetClassName = convertMe.getName() + CLASS_ADD_ON_NAME;
         
+        CtClass foundClass = defaultClassPool.getOrNull(targetClassName);
+        if (foundClass != null) {
+            Class<?> proxy = convertMe.getClassLoader().loadClass(targetClassName);
+           
+            return proxy;
+        }
+        
         CtClass targetCtClass = defaultClassPool.makeClass(targetClassName);
         
         ClassFile targetClassFile = targetCtClass.getClassFile();
@@ -161,6 +171,34 @@ public class JAUtilities {
         targetCtClass.setSuperclass(superClazz);
         targetCtClass.addInterface(originalCtClass);
         
+        Map<String, String> xmlNameMap = new HashMap<String, String>();
+        for (Method originalMethod : convertMe.getMethods()) {
+            String setterVariable = isSetter(originalMethod);
+            if (setterVariable == null) continue;
+            
+            XmlElement xmlElement = originalMethod.getAnnotation(XmlElement.class);
+            if (xmlElement != null) {
+                if (JAXB_DEFAULT_STRING.equals(xmlElement.name())) {
+                    xmlNameMap.put(setterVariable, setterVariable);
+                }
+                else {
+                    xmlNameMap.put(setterVariable, xmlElement.name());
+                }
+            }
+            else {
+                XmlAttribute xmlAttribute = originalMethod.getAnnotation(XmlAttribute.class);
+                if (xmlAttribute != null) {
+                    if (JAXB_DEFAULT_STRING.equals(xmlAttribute.name())) {
+                        xmlNameMap.put(setterVariable, setterVariable);
+                    }
+                    else {
+                        xmlNameMap.put(setterVariable, xmlAttribute.name());
+                    }
+                }
+            }
+            
+        }
+        
         for (Method originalMethod : convertMe.getMethods()) {
             String setterVariable = isSetter(originalMethod);
             String getterVariable = isGetter(originalMethod);
@@ -185,6 +223,8 @@ public class JAUtilities {
             
             Class<?> childType = null;
             if (setterVariable != null) {
+                setterVariable = xmlNameMap.get(setterVariable);
+                
                 Class<?> setterType = originalMethod.getParameterTypes()[0];
                 
                 if (List.class.equals(setterType)) {
@@ -203,6 +243,10 @@ public class JAUtilities {
                 sb.append(setterType.getName() + " arg0) { super._setProperty(\"" + setterVariable + "\", arg0); }");
             }
             else if (getterVariable != null) {
+                if (xmlNameMap.containsKey(getterVariable)) {
+                    getterVariable = xmlNameMap.get(getterVariable);
+                }
+                
                 Class<?> returnType = originalMethod.getReturnType();
                 
                 String cast = "";
