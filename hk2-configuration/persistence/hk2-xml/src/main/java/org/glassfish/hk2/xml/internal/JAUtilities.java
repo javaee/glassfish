@@ -48,6 +48,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import javassist.ClassPool;
@@ -65,8 +66,10 @@ import javassist.bytecode.annotation.ClassMemberValue;
 import javassist.bytecode.annotation.StringMemberValue;
 
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
+import org.glassfish.hk2.xml.jaxb.internal.XmlElementImpl;
 import org.glassfish.hk2.xml.jaxb.internal.XmlRootElementImpl;
 
 /**
@@ -127,6 +130,8 @@ public class JAUtilities {
     }
     
     private Class<?> convert(Class<?> convertMe) throws Throwable {
+        Logger.getLogger().debug("XmlService converting " + convertMe.getName());
+        
         CtClass originalCtClass = defaultClassPool.get(convertMe.getName());
         String targetClassName = convertMe.getName() + CLASS_ADD_ON_NAME;
         
@@ -178,8 +183,22 @@ public class JAUtilities {
             
             sb.append(name + "(");
             
+            Class<?> childType = null;
             if (setterVariable != null) {
                 Class<?> setterType = originalMethod.getParameterTypes()[0];
+                
+                if (List.class.equals(setterType)) {
+                    Type typeChildType = ReflectionHelper.getFirstTypeArgument(originalMethod.getGenericParameterTypes()[0]);
+                    
+                    Class<?> baseChildType = ReflectionHelper.getRawClass(typeChildType);
+                    if (baseChildType == null || !convertedCache.containsKey(baseChildType)) {
+                        throw new RuntimeException("Unknown child type: " + childType + " of class " +
+                            ((baseChildType == null) ? "null" : baseChildType.getName()));
+                        
+                    }
+                    
+                    childType = convertedCache.get(baseChildType);
+                }
                 
                 sb.append(setterType.getName() + " arg0) { super._setProperty(\"" + setterVariable + "\", arg0); }");
             }
@@ -227,6 +246,19 @@ public class JAUtilities {
                 ConstPool methodConstPool = methodInfo.getConstPool();
                 
                 for (java.lang.annotation.Annotation convertMeAnnotation : originalMethod.getAnnotations()) {
+                    if ((childType != null) && XmlElement.class.equals(convertMeAnnotation.annotationType())) {
+                        XmlElement original = (XmlElement) convertMeAnnotation;
+                        
+                        // Use generated child class
+                        convertMeAnnotation = new XmlElementImpl(
+                                original.name(),
+                                original.nillable(),
+                                original.required(),
+                                original.namespace(),
+                                original.defaultValue(),
+                                (Class<?>) childType);
+                    }
+                    
                     AnnotationsAttribute annotationCopy = createAnnotationCopy(methodConstPool, convertMeAnnotation);
                     methodInfo.addAttribute(annotationCopy);
                 }
@@ -285,7 +317,6 @@ public class JAUtilities {
     
     private static void getAllToConvert(Class<?> toBeConverted, LinkedHashSet<Class<?>> needsToBeConverted) {
         if (needsToBeConverted.contains(toBeConverted)) return;
-        needsToBeConverted.add(toBeConverted);
         
         // Find all the children
         for (Method method : toBeConverted.getMethods()) {
@@ -307,7 +338,7 @@ public class JAUtilities {
             getAllToConvert(childClass, needsToBeConverted);
         }
         
-        
+        needsToBeConverted.add(toBeConverted);
     }
     
     private static String isGetter(Method method) {

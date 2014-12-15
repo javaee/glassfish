@@ -125,7 +125,7 @@ public class BaseHK2JAXBBean {
     }
     
     public long _getPropertyJ(String propName) {
-        return (Integer) beanLikeMap.get(propName);
+        return (Long) beanLikeMap.get(propName);
     }
     
     public double _getPropertyD(String propName) {
