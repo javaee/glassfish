@@ -214,5 +214,8 @@ public class UnmarshallTest {
                 Assert.assertEquals("Carol", employee.getName());
             }
         }
+        
+        Assert.assertEquals(Employees.class, rootHandle.getRootClass());
+        Assert.assertEquals(url, rootHandle.getURI().toURL());
     }
 }

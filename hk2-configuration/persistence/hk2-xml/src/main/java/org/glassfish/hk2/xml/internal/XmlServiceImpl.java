@@ -64,6 +64,8 @@ public class XmlServiceImpl implements XmlService {
     @Override
     public <T> XmlRootHandle<T> unmarshall(URI uri,
             Class<T> jaxbAnnotatedClassOrInterface) {
+        Class<T> originalClass = jaxbAnnotatedClassOrInterface;
+        
         if (uri == null || jaxbAnnotatedClassOrInterface == null) throw new IllegalArgumentException();
         
         try {
@@ -71,7 +73,7 @@ public class XmlServiceImpl implements XmlService {
                 jaxbAnnotatedClassOrInterface = (Class<T>) jaUtilities.convertRootAndLeaves(jaxbAnnotatedClassOrInterface);
             }
         
-            return unmarshallClass(uri, jaxbAnnotatedClassOrInterface);
+            return unmarshallClass(uri, jaxbAnnotatedClassOrInterface, originalClass);
         }
         catch (RuntimeException re) {
             throw re;
@@ -82,13 +84,13 @@ public class XmlServiceImpl implements XmlService {
     }
     
     @SuppressWarnings("unchecked")
-    private <T> XmlRootHandle<T> unmarshallClass(URI uri, Class<T> jaxbAnnotatedClass) throws Exception {
+    private <T> XmlRootHandle<T> unmarshallClass(URI uri, Class<T> jaxbAnnotatedClass, Class<T> originalClass) throws Exception {
         JAXBContext context = JAXBContext.newInstance(jaxbAnnotatedClass);
         
         Unmarshaller unmarshaller = context.createUnmarshaller();
         T root = (T) unmarshaller.unmarshal(uri.toURL());
         
-        return new XmlRootHandleImpl<T>(root);
+        return new XmlRootHandleImpl<T>(root, originalClass, uri);
     }
 
 }

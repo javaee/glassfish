@@ -39,11 +39,44 @@
  */
 package org.glassfish.hk2.xml.api;
 
+import java.net.URI;
+
 /**
+ * This represents XML data and a JavaBean tree
+ * 
  * @author jwells
  *
  */
 public interface XmlRootHandle<T> {
+    /**
+     * Gets the root of the JavaBean tree
+     * 
+     * @return The root of the JavaBean tree.  Will
+     * only return null if the tree has not yet
+     * been created
+     */
     public T getRoot();
+    
+    /**
+     * Returns the root class or interface of this
+     * handle
+     * 
+     * @return The root class or interface of this
+     * handle.  Will not return  null
+     */
+    public Class<T> getRootClass();
+    
+    /**
+     * Represents the original URI from which this
+     * tree was parsed (or null if this tree did not
+     * come from a URI)
+     * 
+     * @return The original URI from which this tree
+     * was parsed, or null if this tree did not come
+     * from a URI
+     */
+    public URI getURI();
+    
+    
 
 }

@@ -50,12 +50,12 @@ import org.jvnet.hk2.annotations.Contract;
 @Contract
 public interface XmlService {
     /**
-     * Unmarshalls the given URI using the jaxb annotated class
-     * or interface
+     * Unmarshalls the given URI using the jaxb annotated class or interface
      * 
      * @param uri The non-null URI whereby to find the xml corresponding to the class
      * @param jaxbAnnotatedClassOrInterface The non-null class corresonding to the Xml to be parsed
-     * @return
+     * @return A non-null handle that can be used to get the unmarshalled data or perform
+     * other tasks
      */
     public <T> XmlRootHandle<T> unmarshall(URI uri, Class<T> jaxbAnnotatedClassOrInterface);
 

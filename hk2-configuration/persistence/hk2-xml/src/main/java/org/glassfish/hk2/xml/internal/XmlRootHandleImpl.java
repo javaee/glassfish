@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.xml.internal;
 
+import java.net.URI;
+
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 
 /**
@@ -47,9 +49,13 @@ import org.glassfish.hk2.xml.api.XmlRootHandle;
  */
 public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
     private final T root;
+    private final Class<T> rootClass;
+    private URI rootURI;
     
-    /* package */ XmlRootHandleImpl(T root) {
+    /* package */ XmlRootHandleImpl(T root, Class<T> rootClass, URI rootURI) {
         this.root = root;
+        this.rootClass = rootClass;
+        this.rootURI = rootURI;
     }
 
     /* (non-Javadoc)
@@ -58,6 +64,27 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
     @Override
     public T getRoot() {
         return root;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlRootHandle#getRootClass()
+     */
+    @Override
+    public Class<T> getRootClass() {
+        return rootClass;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlRootHandle#getURI()
+     */
+    @Override
+    public URI getURI() {
+        return rootURI;
+    }
+    
+    @Override
+    public String toString() {
+        return "XmlRootHandleImpl(" + root + "," + rootClass.getName() + "," + rootURI + "," + System.identityHashCode(this) + ")";
     }
 
 }
