@@ -37,53 +37,12 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.api;
-
-import java.net.URI;
-
-import org.jvnet.hk2.annotations.Contract;
+package org.glassfish.hk2.xml.lifecycle.config;
 
 /**
  * @author jwells
  *
  */
-@Contract
-public interface XmlService {
-    /**
-     * Unmarshalls the given URI using the jaxb annotated interface.  The resulting
-     * JavaBean tree will be advertised in the ServiceLocator and in the Hub
-     * 
-     * @param uri The non-null URI whereby to find the xml corresponding to the class
-     * @param jaxbAnnotatedClassOrInterface The non-null class corresonding to the Xml to be parsed
-     * @return A non-null handle that can be used to get the unmarshalled data or perform
-     * other tasks
-     */
-    public <T> XmlRootHandle<T> unmarshall(URI uri, Class<T> jaxbAnnotatedInterface);
-    
-    /**
-     * Unmarshalls the given URI using the jaxb annotated interface
-     * 
-     * @param uri The non-null URI whereby to find the xml corresponding to the class
-     * @param jaxbAnnotatedClassOrInterface The non-null interface corresponding to the Xml to be parsed
-     * @param advertiseInRegistry if true the entire tree of parsed xml will be added to the
-     * ServiceLocator
-     * @param advertiseInHub if true the entire tree of parsed xml will be added to the
-     * HK2 configuration Hub (as bean-like maps)
-     * @return A non-null handle that can be used to get the unmarshalled data or perform
-     * other tasks
-     */
-    public <T> XmlRootHandle<T> unmarshall(URI uri, Class<T> jaxbAnnotatedInterface,
-            boolean advertiseInRegistry, boolean advertiseInHub);
-    
-    /**
-     * This creates an empty handle (root will initially be null) corresponding to
-     * the given interface class
-     * 
-     * @param jaxbAnnotationInterface The non-null interface class corresponding to
-     * the XML to be parsed
-     * @return A non-null handle that can be used to create a new root bean, but which
-     * is not initially tied to any backing file or other input stream
-     */
-    public <T> XmlRootHandle<T> createEmptyHandle(Class<T> jaxbAnnotationInterface);
+public interface Payload {
 
 }

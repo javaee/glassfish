@@ -37,53 +37,69 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.api;
+package org.glassfish.hk2.xml.lifecycle.config;
 
-import java.net.URI;
+import java.beans.PropertyVetoException;
 
-import org.jvnet.hk2.annotations.Contract;
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
  * @author jwells
  *
  */
-@Contract
-public interface XmlService {
+public interface Property {
     /**
-     * Unmarshalls the given URI using the jaxb annotated interface.  The resulting
-     * JavaBean tree will be advertised in the ServiceLocator and in the Hub
-     * 
-     * @param uri The non-null URI whereby to find the xml corresponding to the class
-     * @param jaxbAnnotatedClassOrInterface The non-null class corresonding to the Xml to be parsed
-     * @return A non-null handle that can be used to get the unmarshalled data or perform
-     * other tasks
+     * Gets the value of the name property.
+     *
+     * @return possible object is
+     *         {@link String }
      */
-    public <T> XmlRootHandle<T> unmarshall(URI uri, Class<T> jaxbAnnotatedInterface);
-    
+    @XmlAttribute(required = true /*, key=true */)
+    public String getName();
+
     /**
-     * Unmarshalls the given URI using the jaxb annotated interface
-     * 
-     * @param uri The non-null URI whereby to find the xml corresponding to the class
-     * @param jaxbAnnotatedClassOrInterface The non-null interface corresponding to the Xml to be parsed
-     * @param advertiseInRegistry if true the entire tree of parsed xml will be added to the
-     * ServiceLocator
-     * @param advertiseInHub if true the entire tree of parsed xml will be added to the
-     * HK2 configuration Hub (as bean-like maps)
-     * @return A non-null handle that can be used to get the unmarshalled data or perform
-     * other tasks
+     * Sets the value of the name property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     * @throws PropertyVetoException if a listener vetoes the change
      */
-    public <T> XmlRootHandle<T> unmarshall(URI uri, Class<T> jaxbAnnotatedInterface,
-            boolean advertiseInRegistry, boolean advertiseInHub);
-    
+    public void setName(String value) throws PropertyVetoException;
+
     /**
-     * This creates an empty handle (root will initially be null) corresponding to
-     * the given interface class
-     * 
-     * @param jaxbAnnotationInterface The non-null interface class corresponding to
-     * the XML to be parsed
-     * @return A non-null handle that can be used to create a new root bean, but which
-     * is not initially tied to any backing file or other input stream
+     * Gets the value of the value property.
+     *
+     * @return possible object is
+     *         {@link String }
      */
-    public <T> XmlRootHandle<T> createEmptyHandle(Class<T> jaxbAnnotationInterface);
+    @XmlAttribute(required = true)
+    public String getValue();
+
+    /**
+     * Sets the value of the value property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     * @throws PropertyVetoException if a listener vetoes the change
+     */
+    public void setValue(String value) throws PropertyVetoException;
+
+    /**
+     * Gets the value of the description property.
+     *
+     * @return possible object is
+     *         {@link String }
+     */
+    @XmlAttribute
+    public String getDescription();
+
+    /**
+     * Sets the value of the description property.
+     *
+     * @param value allowed object is
+     *              {@link String }
+     * @throws PropertyVetoException if a listener vetoes the change
+     */
+    public void setDescription(String value) throws PropertyVetoException;
 
 }

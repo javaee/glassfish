@@ -56,6 +56,15 @@ import org.glassfish.hk2.xml.api.XmlService;
 @Singleton
 public class XmlServiceImpl implements XmlService {
     private final JAUtilities jaUtilities = new JAUtilities();
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlService#unmarshall(java.net.URI, java.lang.Class, boolean, boolean)
+     */
+    @Override
+    public <T> XmlRootHandle<T> unmarshall(URI uri,
+            Class<T> jaxbAnnotatedClassOrInterface) {
+        return unmarshall(uri, jaxbAnnotatedClassOrInterface, true, true);
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.api.XmlService#unmarshall(java.net.URI, java.lang.Class)
@@ -63,7 +72,8 @@ public class XmlServiceImpl implements XmlService {
     @SuppressWarnings("unchecked")
     @Override
     public <T> XmlRootHandle<T> unmarshall(URI uri,
-            Class<T> jaxbAnnotatedClassOrInterface) {
+            Class<T> jaxbAnnotatedClassOrInterface,
+            boolean advertiseInRegistry, boolean advertiseInHub) {
         Class<T> originalClass = jaxbAnnotatedClassOrInterface;
         
         if (uri == null || jaxbAnnotatedClassOrInterface == null) throw new IllegalArgumentException();
@@ -92,5 +102,30 @@ public class XmlServiceImpl implements XmlService {
         
         return new XmlRootHandleImpl<T>(root, originalClass, uri);
     }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlService#createEmptyHandle(java.lang.Class)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> XmlRootHandle<T> createEmptyHandle(
+            Class<T> jaxbAnnotationInterface) {
+        Class<T> originalInterface = jaxbAnnotationInterface;
+        try {
+            if (jaxbAnnotationInterface.isInterface()) {
+                jaxbAnnotationInterface = (Class<T>) jaUtilities.convertRootAndLeaves(jaxbAnnotationInterface);
+            }
+        
+            return new XmlRootHandleImpl<T>(null, originalInterface, null);
+        }
+        catch (RuntimeException re) {
+            throw re;
+        }
+        catch (Exception e) {
+            throw new MultiException(e);
+        }
+    }
+
+    
 
 }

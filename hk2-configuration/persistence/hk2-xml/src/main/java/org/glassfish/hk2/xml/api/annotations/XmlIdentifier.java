@@ -37,53 +37,45 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.api;
+package org.glassfish.hk2.xml.api.annotations;
 
-import java.net.URI;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import org.jvnet.hk2.annotations.Contract;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
+ * This annotation denotes the single Xml attribute
+ * or element that should be used as the unique (within
+ * the xpath) identifier.  The type of this Xml attribute
+ * or element must be String.  There may only be one
+ * attribute or element in the Java bean that uses this
+ * annotation
+ * <p>
+ * This annotation is very much like the standard
+ * JAXB annotation {@link javax.xml.bind.annotation.XmlID} except
+ * that the uniqueness of this field need only be per xpath from
+ * the root, and not over the entire tree.  For example, consider
+ * a Java Bean such as a PropertyBean that is used all over the tree
+ * for those Beans that have a set of properties.  The PropertyBean
+ * might have identical keys in two different xpaths from the root, and
+ * therefore could not use {@link javax.xml.bind.annotation.XmlID},
+ * since the {@link javax.xml.bind.annotation.XmlID} requires uniqueness
+ * over the entire tree, and not over just one xpath
+ * <p>
+ * Furthermore, whereas {@link javax.xml.bind.annotation.XmlID} can be referred
+ * to with {@link javax.xml.bind.annotation.XmlIDREF} there is no corresponding
+ * automatic reference with this annotation.  If both
+ * {@link javax.xml.bind.annotation.XmlID} and this annotation are found
+ * on different properties of this bean then this annotation will be used
+ * in preference over {@link javax.xml.bind.annotation.XmlID}
+ * 
  * @author jwells
  *
  */
-@Contract
-public interface XmlService {
-    /**
-     * Unmarshalls the given URI using the jaxb annotated interface.  The resulting
-     * JavaBean tree will be advertised in the ServiceLocator and in the Hub
-     * 
-     * @param uri The non-null URI whereby to find the xml corresponding to the class
-     * @param jaxbAnnotatedClassOrInterface The non-null class corresonding to the Xml to be parsed
-     * @return A non-null handle that can be used to get the unmarshalled data or perform
-     * other tasks
-     */
-    public <T> XmlRootHandle<T> unmarshall(URI uri, Class<T> jaxbAnnotatedInterface);
-    
-    /**
-     * Unmarshalls the given URI using the jaxb annotated interface
-     * 
-     * @param uri The non-null URI whereby to find the xml corresponding to the class
-     * @param jaxbAnnotatedClassOrInterface The non-null interface corresponding to the Xml to be parsed
-     * @param advertiseInRegistry if true the entire tree of parsed xml will be added to the
-     * ServiceLocator
-     * @param advertiseInHub if true the entire tree of parsed xml will be added to the
-     * HK2 configuration Hub (as bean-like maps)
-     * @return A non-null handle that can be used to get the unmarshalled data or perform
-     * other tasks
-     */
-    public <T> XmlRootHandle<T> unmarshall(URI uri, Class<T> jaxbAnnotatedInterface,
-            boolean advertiseInRegistry, boolean advertiseInHub);
-    
-    /**
-     * This creates an empty handle (root will initially be null) corresponding to
-     * the given interface class
-     * 
-     * @param jaxbAnnotationInterface The non-null interface class corresponding to
-     * the XML to be parsed
-     * @return A non-null handle that can be used to create a new root bean, but which
-     * is not initially tied to any backing file or other input stream
-     */
-    public <T> XmlRootHandle<T> createEmptyHandle(Class<T> jaxbAnnotationInterface);
+@Retention(RUNTIME)
+@Target(METHOD)
+public @interface XmlIdentifier {
 
 }

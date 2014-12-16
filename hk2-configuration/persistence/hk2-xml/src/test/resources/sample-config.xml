@@ -1,0 +1,42 @@
+<lifecycle-config>
+  <runtimes>
+    <runtime port="7001" name="wlsRuntime" hostname="localhost" type="wls">
+      <partition id="222" name="cokeCRMWLSProdPartition"/>
+      <partition id="333" name="pepsiCRMWLSProdPartition"/>
+      <partition id="555" name="dietcokeCRMWLSProdPartition"/>
+      <partition id="777" name="cokeHRWLSProdPartition"/>
+    </runtime>
+    <runtime port="1521" name="DatabaseTestRuntime" hostname="slc03rmr.us.oracle.com" type="database">
+      <partition id="444" name="SpritePDB"/>
+    </runtime>
+  </runtimes>
+  <tenants>
+    <tenant id="123" name="coke" top-level-dir="coke/top/level/dir">
+      <service service-type="CRMService" name="CRMProd" environment-ref="cokeenv"/>
+      <service service-type="HRService" name="HRProd" environment-ref="cokeenv2"/>
+    </tenant>
+    <tenant name="pepsi" id="456" top-level-dir="pepsi/top/level/dir">
+      <service service-type="HCMService" name="HCMProd" environment-ref="pepsi-hcmenv-prod"/>
+    </tenant>
+    <tenant name="sprite" id="789" top-level-dir="sprite/top/level/dir">
+      <service service-type="HCMService" name="HCMProd" environment-ref="spriteenv"/>
+    </tenant>
+  </tenants>
+  <environments>
+    <environment name="cokeenv">
+        <partition-ref id="222" runtime-ref="wlsRuntime"/>
+    </environment>
+    <environment name="pepsi-hcmenv-prod">
+       <partition-ref id="333" runtime-ref="wlsRuntime"/>
+    </environment>
+    <environment name="dietcokeenv">
+        <partition-ref id="555" runtime-ref="wlsRuntime"/>
+    </environment>
+    <environment name="cokeenv2">
+        <partition-ref id="777" runtime-ref="wlsRuntime"/>
+    </environment>
+    <environment name="spriteenv">
+        <partition-ref id="444" runtime-ref="DatabaseTestRuntime"/>
+    </environment>
+  </environments>
+</lifecycle-config>

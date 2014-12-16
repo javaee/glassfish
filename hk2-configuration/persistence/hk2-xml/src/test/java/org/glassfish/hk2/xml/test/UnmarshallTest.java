@@ -47,6 +47,7 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
+import org.glassfish.hk2.xml.lifecycle.config.LifecycleConfig;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
 import org.junit.Assert;
 import org.junit.Test;
@@ -217,5 +218,22 @@ public class UnmarshallTest {
         
         Assert.assertEquals(Employees.class, rootHandle.getRootClass());
         Assert.assertEquals(url, rootHandle.getURI().toURL());
+    }
+    
+    /**
+     * Tests a more complex XML format
+     * 
+     * @throws Exception
+     */
+    @Test @org.junit.Ignore
+    public void testComplexUnmarshalling() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource("sample-config.xml");
+        
+        XmlRootHandle<LifecycleConfig> rootHandle = xmlService.unmarshall(url.toURI(), LifecycleConfig.class);
+        LifecycleConfig lifecycleConfig = rootHandle.getRoot();
+        Assert.assertNotNull(lifecycleConfig);
     }
 }
