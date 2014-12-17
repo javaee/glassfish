@@ -19,8 +19,9 @@ public interface Named {
      */
     @XmlAttribute(required=true /*, key=true */)
     /*@NotNull*/
+    public void setName(String value);
     public String getName();
 
-    public void setName(String value);
+    
     
 }

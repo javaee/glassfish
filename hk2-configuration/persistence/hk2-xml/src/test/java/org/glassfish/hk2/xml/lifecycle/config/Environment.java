@@ -15,12 +15,14 @@ import javax.xml.bind.annotation.XmlElement;
 public interface Environment extends Named, Auditable {
   @XmlElement
   // @NotNull
-  Associations getAssociations();
   void setAssociations(Associations associations);
+  Associations getAssociations();
+  
 
   @XmlElement(name="*")
-  List<PartitionRef> getPartitionRefs();
   void setPartitionRefs(List<PartitionRef> partitionRefs);
+  List<PartitionRef> getPartitionRefs();
+  
 
   /*
   @DuckTyped

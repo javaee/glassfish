@@ -6,12 +6,13 @@ package org.glassfish.hk2.xml.lifecycle.config;
 import javax.xml.bind.annotation.XmlAttribute;
 
 public interface Association extends Auditable {
+  
   @XmlAttribute(required=true /*, reference=true */)
-  Partition getPartition1();
   void setPartition1(Partition partition);
+  Partition getPartition1();
   
   @XmlAttribute(required=true /* reference=true */)
-  Partition getPartition2();
   void setPartition2(Partition partition);
+  Partition getPartition2();
 
 }

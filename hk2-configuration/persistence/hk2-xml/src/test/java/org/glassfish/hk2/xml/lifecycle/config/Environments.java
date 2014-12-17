@@ -10,8 +10,8 @@ import javax.xml.bind.annotation.XmlElement;
 
 public interface Environments {
   @XmlElement(name="*")
-  List<Environment> getEnvironments();
   void setEnvironments(List<Environment> environments);
+  List<Environment> getEnvironments();
 
   /*
   @DuckTyped

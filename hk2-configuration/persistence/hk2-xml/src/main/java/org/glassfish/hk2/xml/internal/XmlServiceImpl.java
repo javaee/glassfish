@@ -110,13 +110,12 @@ public class XmlServiceImpl implements XmlService {
     @Override
     public <T> XmlRootHandle<T> createEmptyHandle(
             Class<T> jaxbAnnotationInterface) {
-        Class<T> originalInterface = jaxbAnnotationInterface;
         try {
             if (jaxbAnnotationInterface.isInterface()) {
-                jaxbAnnotationInterface = (Class<T>) jaUtilities.convertRootAndLeaves(jaxbAnnotationInterface);
+                jaUtilities.convertRootAndLeaves(jaxbAnnotationInterface);
             }
         
-            return new XmlRootHandleImpl<T>(null, originalInterface, null);
+            return new XmlRootHandleImpl<T>(null, jaxbAnnotationInterface, null);
         }
         catch (RuntimeException re) {
             throw re;

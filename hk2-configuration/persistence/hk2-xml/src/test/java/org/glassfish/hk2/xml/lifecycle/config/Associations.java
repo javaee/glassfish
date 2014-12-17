@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlElement;
 public interface Associations {
 
   @XmlElement(name="*")
-  List<Association> getAssociations();
   void setAssociations(List<Association> associations);
+  List<Association> getAssociations();
 
 }

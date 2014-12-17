@@ -10,18 +10,18 @@ import javax.xml.bind.annotation.XmlRootElement;
 public interface LifecycleConfig {
 
     @XmlElement
-    Runtimes getRuntimes();
     void setRuntimes(Runtimes runtimes);
+    Runtimes getRuntimes();
 
     @XmlElement
-    Environments getEnvironments();
     void setEnvironments(Environments environments);
+    Environments getEnvironments();
     
     @XmlElement
-    Tenants getTenants();
     void setTenants(Tenants tenants);
+    Tenants getTenants();
 
     @XmlElement
-    Plugins getPlugins();
     void setPlugins(Tenants plugins);
+    Plugins getPlugins();
 }

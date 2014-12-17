@@ -13,13 +13,14 @@ public interface Partition extends PropertyBag, Auditable {
 
   @XmlAttribute(required=true /*, key=true */)
   // @NotNull
-  String getId();
   void setId(String id);
+  String getId();
+  
   
   @XmlAttribute(required=true /*, key=false */)
   // @NotNull
-  String getName();
   void setName(String value) throws PropertyVetoException;
+  String getName();
 
   /*
   @DuckTyped

@@ -174,7 +174,10 @@ public class JAUtilities {
         Map<String, String> xmlNameMap = new HashMap<String, String>();
         for (Method originalMethod : convertMe.getMethods()) {
             String setterVariable = isSetter(originalMethod);
-            if (setterVariable == null) continue;
+            if (setterVariable == null) {
+                setterVariable = isGetter(originalMethod);
+                if (setterVariable == null) continue;
+            }
             
             XmlElement xmlElement = originalMethod.getAnnotation(XmlElement.class);
             if (xmlElement != null) {
@@ -283,29 +286,25 @@ public class JAUtilities {
             }
             
             CtMethod addMeCtMethod = CtNewMethod.make(sb.toString(), targetCtClass);
-            
-            if (setterVariable != null) {
-                MethodInfo methodInfo = addMeCtMethod.getMethodInfo();
+            MethodInfo methodInfo = addMeCtMethod.getMethodInfo();    
+            ConstPool methodConstPool = methodInfo.getConstPool();
                 
-                ConstPool methodConstPool = methodInfo.getConstPool();
-                
-                for (java.lang.annotation.Annotation convertMeAnnotation : originalMethod.getAnnotations()) {
-                    if ((childType != null) && XmlElement.class.equals(convertMeAnnotation.annotationType())) {
-                        XmlElement original = (XmlElement) convertMeAnnotation;
+            for (java.lang.annotation.Annotation convertMeAnnotation : originalMethod.getAnnotations()) {
+                if ((childType != null) && XmlElement.class.equals(convertMeAnnotation.annotationType())) {
+                    XmlElement original = (XmlElement) convertMeAnnotation;
                         
-                        // Use generated child class
-                        convertMeAnnotation = new XmlElementImpl(
-                                original.name(),
-                                original.nillable(),
-                                original.required(),
-                                original.namespace(),
-                                original.defaultValue(),
-                                (Class<?>) childType);
-                    }
-                    
-                    AnnotationsAttribute annotationCopy = createAnnotationCopy(methodConstPool, convertMeAnnotation);
-                    methodInfo.addAttribute(annotationCopy);
+                    // Use generated child class
+                    convertMeAnnotation = new XmlElementImpl(
+                            original.name(),
+                            original.nillable(),
+                            original.required(),
+                            original.namespace(),
+                            original.defaultValue(),
+                            (Class<?>) childType);
                 }
+                    
+                AnnotationsAttribute annotationCopy = createAnnotationCopy(methodConstPool, convertMeAnnotation);
+                methodInfo.addAttribute(annotationCopy);
             }
             
             targetCtClass.addMethod(addMeCtMethod);

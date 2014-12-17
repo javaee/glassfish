@@ -18,12 +18,13 @@ import javax.xml.bind.annotation.XmlAttribute;
  */
 public interface Auditable {
   @XmlAttribute
-  String getCreatedOn();
   void setCreatedOn(String date);
+  String getCreatedOn();
+  
 
   @XmlAttribute
-  String getUpdatedOn();
   void setUpdatedOn(String date);
+  String getUpdatedOn();
   
   /*
   @DuckTyped
