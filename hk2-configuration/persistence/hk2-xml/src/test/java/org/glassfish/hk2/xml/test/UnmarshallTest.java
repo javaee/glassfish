@@ -216,6 +216,12 @@ public class UnmarshallTest {
             }
         }
         
+        Financials financials = employees.getFinancials();
+        Assert.assertNotNull(financials);
+        
+        Assert.assertEquals("acme", financials.getSymbol());
+        Assert.assertEquals("NYSE", financials.getExchange());
+        
         Assert.assertEquals(Employees.class, rootHandle.getRootClass());
         Assert.assertEquals(url, rootHandle.getURI().toURL());
     }

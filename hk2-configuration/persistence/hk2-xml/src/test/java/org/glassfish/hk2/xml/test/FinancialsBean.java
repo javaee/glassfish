@@ -39,28 +39,46 @@
  */
 package org.glassfish.hk2.xml.test;
 
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
 /**
  * @author jwells
  *
  */
-@XmlRootElement
-public interface Employees {
-    public String getCompanyName();
-    
-    @XmlElement(name="company-name")
-    public void setCompanyName(String name);
-    
-    @XmlElement
-    public void setFinancials(Financials finances);
-    public Financials getFinancials();
-    
-    public List<Employee> getEmployees();
-    
-    @XmlElement(name="employee")
-    public void setEmployees(List<Employee> employees);
+public class FinancialsBean implements Financials {
+    private String symbol;
+    private String exchange;
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.test.Financials#getSymbol()
+     */
+    @Override
+    public String getSymbol() {
+        return symbol;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.test.Financials#setSymbol(java.lang.String)
+     */
+    @Override
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
+
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.test.Financials#getExchange()
+     */
+    @Override
+    public String getExchange() {
+        return exchange;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.test.Financials#setExchange(java.lang.String)
+     */
+    @Override
+    public void setExchange(String exchange) {
+        this.exchange = exchange;
+
+    }
+
 }

@@ -39,7 +39,6 @@
  */
 package org.glassfish.hk2.xml.test;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -53,6 +52,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class EmployeesBean implements Employees {
     private String companyName;
     private List<Employee> children;
+    private FinancialsBean financials;
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.test.Employees#getCompanyName()
@@ -82,5 +82,26 @@ public class EmployeesBean implements Employees {
     @Override @XmlElement(name="employee", type=EmployeeBean.class)
     public void setEmployees(List<Employee> children) {
         this.children = children;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.test.Employees#setFinancials(org.glassfish.hk2.xml.test.Financials)
+     */
+    @Override 
+    public void setFinancials(Financials finances) {
+        if (finances instanceof FinancialsBean) {
+            this.financials = (FinancialsBean) finances;
+        }
+        else {
+            throw new AssertionError("Not allowed");
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.test.Employees#getFinancials()
+     */
+    @Override @XmlElement(type=FinancialsBean.class)
+    public Financials getFinancials() {
+        return financials;
     }
 }

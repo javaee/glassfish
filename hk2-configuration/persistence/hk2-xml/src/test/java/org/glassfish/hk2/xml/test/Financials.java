@@ -39,28 +39,20 @@
  */
 package org.glassfish.hk2.xml.test;
 
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author jwells
  *
  */
-@XmlRootElement
-public interface Employees {
-    public String getCompanyName();
-    
-    @XmlElement(name="company-name")
-    public void setCompanyName(String name);
+public interface Financials {
+    @XmlElement
+    public String getSymbol();
+    public void setSymbol(String symbol);
     
     @XmlElement
-    public void setFinancials(Financials finances);
-    public Financials getFinancials();
+    public String getExchange();
+    public void setExchange(String exchange);
     
-    public List<Employee> getEmployees();
-    
-    @XmlElement(name="employee")
-    public void setEmployees(List<Employee> employees);
+
 }

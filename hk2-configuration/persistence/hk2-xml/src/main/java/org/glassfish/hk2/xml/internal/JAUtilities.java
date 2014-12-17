@@ -202,7 +202,7 @@ public class JAUtilities {
             
         }
         
-        for (Method originalMethod : convertMe.getMethods()) {
+        for (Method originalMethod : convertMe.getMethods()) {            
             String setterVariable = isSetter(originalMethod);
             String getterVariable = isGetter(originalMethod);
             
@@ -242,6 +242,9 @@ public class JAUtilities {
                     
                     childType = convertedCache.get(baseChildType);
                 }
+                else if (setterType.isInterface()) {
+                    childType = convertedCache.get(setterType);
+                }
                 
                 sb.append(setterType.getName() + " arg0) { super._setProperty(\"" + setterVariable + "\", arg0); }");
             }
@@ -251,6 +254,22 @@ public class JAUtilities {
                 }
                 
                 Class<?> returnType = originalMethod.getReturnType();
+                
+                if (List.class.equals(returnType)) {
+                    Type typeChildType = ReflectionHelper.getFirstTypeArgument(originalMethod.getGenericReturnType());
+                    
+                    Class<?> baseChildType = ReflectionHelper.getRawClass(typeChildType);
+                    if (baseChildType == null || !convertedCache.containsKey(baseChildType)) {
+                        throw new RuntimeException("Unknown child type: " + childType + " of class " +
+                            ((baseChildType == null) ? "null" : baseChildType.getName()));
+                        
+                    }
+                    
+                    childType = convertedCache.get(baseChildType);
+                }
+                else if (returnType.isInterface()) {
+                    childType = convertedCache.get(returnType);
+                }
                 
                 String cast = "";
                 String superMethodName = "_getProperty";
@@ -365,6 +384,14 @@ public class JAUtilities {
         for (Method method : toBeConverted.getMethods()) {
             String methodName = method.getName();
             if (!methodName.startsWith(GET)) continue;
+            
+            Class<?> returnClass = method.getReturnType();
+            if (returnClass.isInterface() && !(List.class.equals(returnClass))) {
+                // The assumption is that this is a non-instanced child
+                getAllToConvert(returnClass, needsToBeConverted);
+                
+                continue;
+            }
             
             Type retType = method.getGenericReturnType();
             if (retType == null || !(retType instanceof ParameterizedType)) continue;

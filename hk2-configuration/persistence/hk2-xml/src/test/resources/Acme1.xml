@@ -1,5 +1,11 @@
 <employees>
   <company-name>Acme</company-name>
+  
+  <financials>
+    <symbol>acme</symbol>
+    <exchange>NYSE</exchange>
+  </financials>
+  
   <employee>
     <id>100</id>
     <name>Bob</name>

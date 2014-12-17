@@ -69,8 +69,10 @@ public interface PropertyBag {
      * @return the property list
      */
     @XmlElement(name="property")
-    List<Property> getProperty();
+    List<Property> getProperties();
+    void setProperties(List<Property> property);
 
+    /*
     // @DuckTyped
     Property getProperty(String name);
 
@@ -80,7 +82,7 @@ public interface PropertyBag {
      *
      * @param name the property name requested
      * @return the property value or null if not found
-     */
+     *
     // @DuckTyped
     String getPropertyValue(String name);
 
@@ -93,7 +95,7 @@ public interface PropertyBag {
      * @param defaultValue is the default value to return in case the property
      * of that name does not exist in this bag
      * @return the property value
-     */
+     *
     // @DuckTyped
     String getPropertyValue(String name, String defaultValue);
 
