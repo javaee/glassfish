@@ -58,6 +58,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
             "org.jvnet.hk2.properties.xmlservice.jaxb.getsandsets", "false"));
     
     private final ConcurrentHashMap<String, Object> beanLikeMap = new ConcurrentHashMap<String, Object>();
+    private Object parent;
     
     public void _setProperty(String propName, Object propValue) {
         if (propName == null) throw new IllegalArgumentException("properyName may not be null");
@@ -182,5 +183,17 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
     @Override
     public String toString() {
         return "BaseHK2JAXBBean(" + System.identityHashCode(this) + ")";
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean#getParent()
+     */
+    @Override
+    public Object getParent() {
+        return parent;
+    }
+    
+    public void setParent(Object parent) {
+        this.parent = parent;
     }
 }

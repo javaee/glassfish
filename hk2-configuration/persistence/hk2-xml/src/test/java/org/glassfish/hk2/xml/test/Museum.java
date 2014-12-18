@@ -39,17 +39,17 @@
  */
 package org.glassfish.hk2.xml.test;
 
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.jvnet.hk2.annotations.Contract;
 
 /**
  * @author jwells
  *
  */
-@XmlRootElement
+@XmlRootElement // @Contract
 public interface Museum {
     public String getName();
     

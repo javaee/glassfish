@@ -40,14 +40,21 @@
 package org.glassfish.hk2.xml.internal;
 
 import java.net.URI;
+import java.util.LinkedList;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
+import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 
 /**
  * @author jwells
@@ -56,6 +63,9 @@ import org.glassfish.hk2.xml.api.XmlService;
 @Singleton
 public class XmlServiceImpl implements XmlService {
     private final JAUtilities jaUtilities = new JAUtilities();
+    
+    @Inject
+    private DynamicConfigurationService dcs;
     
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.api.XmlService#unmarshall(java.net.URI, java.lang.Class, boolean, boolean)
@@ -72,18 +82,18 @@ public class XmlServiceImpl implements XmlService {
     @SuppressWarnings("unchecked")
     @Override
     public <T> XmlRootHandle<T> unmarshall(URI uri,
-            Class<T> jaxbAnnotatedClassOrInterface,
+            Class<T> jaxbAnnotatedInterface,
             boolean advertiseInRegistry, boolean advertiseInHub) {
-        Class<T> originalClass = jaxbAnnotatedClassOrInterface;
+        Class<T> originalClass = jaxbAnnotatedInterface;
         
-        if (uri == null || jaxbAnnotatedClassOrInterface == null) throw new IllegalArgumentException();
+        if (uri == null || jaxbAnnotatedInterface == null) throw new IllegalArgumentException();
         
         try {
-            if (jaxbAnnotatedClassOrInterface.isInterface()) {
-                jaxbAnnotatedClassOrInterface = (Class<T>) jaUtilities.convertRootAndLeaves(jaxbAnnotatedClassOrInterface);
+            if (jaxbAnnotatedInterface.isInterface()) {
+                jaxbAnnotatedInterface = (Class<T>) jaUtilities.convertRootAndLeaves(jaxbAnnotatedInterface);
             }
         
-            return unmarshallClass(uri, jaxbAnnotatedClassOrInterface, originalClass);
+            return unmarshallClass(uri, jaxbAnnotatedInterface, originalClass, advertiseInRegistry, advertiseInHub);
         }
         catch (RuntimeException re) {
             throw re;
@@ -94,11 +104,26 @@ public class XmlServiceImpl implements XmlService {
     }
     
     @SuppressWarnings("unchecked")
-    private <T> XmlRootHandle<T> unmarshallClass(URI uri, Class<T> jaxbAnnotatedClass, Class<T> originalClass) throws Exception {
+    private <T> XmlRootHandle<T> unmarshallClass(URI uri, Class<T> jaxbAnnotatedClass, Class<T> originalClass,
+            boolean advertise, boolean hub) throws Exception {
         JAXBContext context = JAXBContext.newInstance(jaxbAnnotatedClass);
         
+        Listener listener = new Listener();
         Unmarshaller unmarshaller = context.createUnmarshaller();
+        unmarshaller.setListener(listener);
+        
         T root = (T) unmarshaller.unmarshal(uri.toURL());
+        
+        if (advertise) {
+            DynamicConfiguration config = dcs.createDynamicConfiguration();
+            
+            for (BaseHK2JAXBBean bean : listener.getAllBeans()) {
+                ActiveDescriptor<?> cDesc = BuilderHelper.createConstantDescriptor(bean);
+                config.addActiveDescriptor(cDesc);
+            }
+            
+            config.commit();
+        }
         
         return new XmlRootHandleImpl<T>(root, originalClass, uri);
     }
@@ -106,7 +131,6 @@ public class XmlServiceImpl implements XmlService {
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.api.XmlService#createEmptyHandle(java.lang.Class)
      */
-    @SuppressWarnings("unchecked")
     @Override
     public <T> XmlRootHandle<T> createEmptyHandle(
             Class<T> jaxbAnnotationInterface) {
@@ -124,7 +148,24 @@ public class XmlServiceImpl implements XmlService {
             throw new MultiException(e);
         }
     }
-
     
-
+    private static class Listener extends Unmarshaller.Listener {
+        private final LinkedList<BaseHK2JAXBBean> allBeans = new LinkedList<BaseHK2JAXBBean>();
+        
+        @Override
+        public void afterUnmarshal(Object target, Object parent) {
+            if (!(target instanceof BaseHK2JAXBBean)) return;
+            
+            BaseHK2JAXBBean base = (BaseHK2JAXBBean) target;
+            
+            base.setParent(parent);
+            
+            allBeans.add(base);
+        }
+        
+        private LinkedList<BaseHK2JAXBBean> getAllBeans() {
+            return allBeans;
+        }
+        
+    }
 }

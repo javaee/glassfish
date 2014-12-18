@@ -58,6 +58,27 @@ import org.junit.Test;
  * @author jwells
  */
 public class UnmarshallTest {
+    private final static String MUSEUM1_FILE = "museum1.xml";
+    private final static String ACME1_FILE = "Acme1.xml";
+    
+    private final static String BEN_FRANKLIN = "Ben Franklin";
+    private final static String ACME = "Acme";
+    private final static String BOB = "Bob";
+    private final static String CAROL = "Carol";
+    private final static String ACME_SYMBOL = "acme";
+    private final static String NYSE = "NYSE";
+    
+    private final static int HUNDRED_INT = 100;
+    private final static int HUNDRED_TEN_INT = 110;
+    
+    private final static long HUNDRED_LONG = 100L;
+    private final static long HUNDRED_ONE_LONG = 101L;
+    
+    private final static String COMPANY_NAME_TAG = "company-name";
+    private final static String EMPLOYEE_TAG = "employee";
+    private final static String NAME_TAG = "name";
+    private final static String ID_TAG = "id";
+    
     /**
      * Tests the most basic of xml files can be unmarshalled with an interface
      * annotated with jaxb annotations
@@ -69,14 +90,19 @@ public class UnmarshallTest {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
         
-        URL url = getClass().getClassLoader().getResource("museum1.xml");
+        URL url = getClass().getClassLoader().getResource(MUSEUM1_FILE);
         
         XmlRootHandle<Museum> rootHandle = xmlService.unmarshall(url.toURI(), Museum.class);
         Museum museum = rootHandle.getRoot();
         
-        Assert.assertEquals(100, museum.getId());
-        Assert.assertEquals("Ben Franklin", museum.getName());
-        Assert.assertEquals(110, museum.getAge());
+        Assert.assertEquals(HUNDRED_INT, museum.getId());
+        Assert.assertEquals(BEN_FRANKLIN, museum.getName());
+        Assert.assertEquals(HUNDRED_TEN_INT, museum.getAge());
+        
+        Museum asService = locator.getService(Museum.class);
+        // Assert.assertNotNull(asService);
+        
+        // Assert.assertEquals(museum, asService);
     }
     
     /**
@@ -90,14 +116,14 @@ public class UnmarshallTest {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
         
-        URL url = getClass().getClassLoader().getResource("museum1.xml");
+        URL url = getClass().getClassLoader().getResource(MUSEUM1_FILE);
         
         XmlRootHandle<MuseumBean> rootHandle = xmlService.unmarshall(url.toURI(), MuseumBean.class);
         Museum museum = rootHandle.getRoot();
         
-        Assert.assertEquals(100, museum.getId());
-        Assert.assertEquals("Ben Franklin", museum.getName());
-        Assert.assertEquals(110, museum.getAge());
+        Assert.assertEquals(HUNDRED_INT, museum.getId());
+        Assert.assertEquals(BEN_FRANKLIN, museum.getName());
+        Assert.assertEquals(HUNDRED_TEN_INT, museum.getAge());
     }
     
     /**
@@ -111,12 +137,12 @@ public class UnmarshallTest {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
         
-        URL url = getClass().getClassLoader().getResource("Acme1.xml");
+        URL url = getClass().getClassLoader().getResource(ACME1_FILE);
         
         XmlRootHandle<EmployeesBean> rootHandle = xmlService.unmarshall(url.toURI(), EmployeesBean.class);
         Employees employees = rootHandle.getRoot();
         
-        Assert.assertEquals("Acme", employees.getCompanyName());
+        Assert.assertEquals(ACME, employees.getCompanyName());
         
         Assert.assertEquals(2, employees.getEmployees().size());
         
@@ -124,12 +150,12 @@ public class UnmarshallTest {
         for (Employee employee : employees.getEmployees()) {
             if (first) {
                 first = false;
-                Assert.assertEquals(100L, employee.getId());
-                Assert.assertEquals("Bob", employee.getName());
+                Assert.assertEquals(HUNDRED_LONG, employee.getId());
+                Assert.assertEquals(BOB, employee.getName());
             }
             else {
-                Assert.assertEquals(101L, employee.getId());
-                Assert.assertEquals("Carol", employee.getName());
+                Assert.assertEquals(HUNDRED_ONE_LONG, employee.getId());
+                Assert.assertEquals(CAROL, employee.getName());
                 
             }
         }
@@ -147,7 +173,7 @@ public class UnmarshallTest {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
         
-        URL url = getClass().getClassLoader().getResource("Acme1.xml");
+        URL url = getClass().getClassLoader().getResource(ACME1_FILE);
         
         XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
         Employees employees = rootHandle.getRoot();
@@ -156,9 +182,9 @@ public class UnmarshallTest {
         XmlHk2ConfigurationBean hk2Configuration = (XmlHk2ConfigurationBean) employees;
         
         Map<String, Object> beanLikeMap = hk2Configuration.getBeanLikeMap();
-        Assert.assertEquals("Acme", beanLikeMap.get("company-name"));
+        Assert.assertEquals(ACME, beanLikeMap.get(COMPANY_NAME_TAG));
         
-        List<Employee> employeeChildList = (List<Employee>) beanLikeMap.get("employee");
+        List<Employee> employeeChildList = (List<Employee>) beanLikeMap.get(EMPLOYEE_TAG);
         Assert.assertNotNull(employeeChildList);
         Assert.assertEquals(2, employeeChildList.size());
         
@@ -172,14 +198,19 @@ public class UnmarshallTest {
             if (first) {
                 first = false;
                 
-                Assert.assertEquals(100L, employeeBeanLikeMap.get("id"));
-                Assert.assertEquals("Bob", employeeBeanLikeMap.get("name"));
+                Assert.assertEquals(HUNDRED_LONG, employeeBeanLikeMap.get(ID_TAG));
+                Assert.assertEquals(BOB, employeeBeanLikeMap.get(NAME_TAG));
             }
             else {
-                Assert.assertEquals(101L, employeeBeanLikeMap.get("id"));
-                Assert.assertEquals("Carol", employeeBeanLikeMap.get("name"));
+                Assert.assertEquals(HUNDRED_ONE_LONG, employeeBeanLikeMap.get(ID_TAG));
+                Assert.assertEquals(CAROL, employeeBeanLikeMap.get(NAME_TAG));
             }
         }
+        
+        // Assert.assertNotNull(locator.getService(Employees.class));
+        
+        // Assert.assertNotNull(locator.getService(Employee.class, BOB));
+        // Assert.assertNotNull(locator.getService(Employee.class, CAROL));
         
     }
     
@@ -194,12 +225,12 @@ public class UnmarshallTest {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
         
-        URL url = getClass().getClassLoader().getResource("Acme1.xml");
+        URL url = getClass().getClassLoader().getResource(ACME1_FILE);
         
         XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
         Employees employees = rootHandle.getRoot();
         
-        Assert.assertEquals("Acme", employees.getCompanyName());
+        Assert.assertEquals(ACME, employees.getCompanyName());
         
         Assert.assertEquals(2, employees.getEmployees().size());
         
@@ -207,20 +238,20 @@ public class UnmarshallTest {
         for (Employee employee : employees.getEmployees()) {
             if (first) {
                 first = false;
-                Assert.assertEquals(100L, employee.getId());
-                Assert.assertEquals("Bob", employee.getName());
+                Assert.assertEquals(HUNDRED_LONG, employee.getId());
+                Assert.assertEquals(BOB, employee.getName());
             }
             else {
-                Assert.assertEquals(101L, employee.getId());
-                Assert.assertEquals("Carol", employee.getName());
+                Assert.assertEquals(HUNDRED_ONE_LONG, employee.getId());
+                Assert.assertEquals(CAROL, employee.getName());
             }
         }
         
         Financials financials = employees.getFinancials();
         Assert.assertNotNull(financials);
         
-        Assert.assertEquals("acme", financials.getSymbol());
-        Assert.assertEquals("NYSE", financials.getExchange());
+        Assert.assertEquals(ACME_SYMBOL, financials.getSymbol());
+        Assert.assertEquals(NYSE, financials.getExchange());
         
         Assert.assertEquals(Employees.class, rootHandle.getRootClass());
         Assert.assertEquals(url, rootHandle.getURI().toURL());

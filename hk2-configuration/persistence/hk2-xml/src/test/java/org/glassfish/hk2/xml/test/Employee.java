@@ -41,14 +41,18 @@ package org.glassfish.hk2.xml.test;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
+import org.jvnet.hk2.annotations.Contract;
+
 /**
  * @author jwells
  *
  */
+@Contract
 public interface Employee {
     public String getName();
     
-    @XmlElement
+    @XmlElement @XmlIdentifier
     public void setName(String name);
     
     public long getId();

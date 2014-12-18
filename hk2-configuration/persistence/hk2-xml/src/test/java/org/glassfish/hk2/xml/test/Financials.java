@@ -41,10 +41,13 @@ package org.glassfish.hk2.xml.test;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.jvnet.hk2.annotations.Contract;
+
 /**
  * @author jwells
  *
  */
+@Contract
 public interface Financials {
     @XmlElement
     public String getSymbol();

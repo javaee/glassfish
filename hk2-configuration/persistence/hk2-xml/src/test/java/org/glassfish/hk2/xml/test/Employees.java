@@ -44,11 +44,13 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.jvnet.hk2.annotations.Contract;
+
 /**
  * @author jwells
  *
  */
-@XmlRootElement
+@XmlRootElement // @Contract
 public interface Employees {
     public String getCompanyName();
     

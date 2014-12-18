@@ -58,5 +58,14 @@ public interface XmlHk2ConfigurationBean {
      * with this bean
      */
     public Map<String, Object> getBeanLikeMap();
+    
+    /**
+     * Returns the parent of this bean, or null if this
+     * object is the root of the true
+     * 
+     * @return The parent of this object, or null if this
+     * is the root of the tree
+     */
+    public Object getParent();
 
 }
