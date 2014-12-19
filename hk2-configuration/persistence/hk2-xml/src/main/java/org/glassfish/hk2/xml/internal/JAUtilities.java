@@ -73,6 +73,7 @@ import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 import org.glassfish.hk2.xml.jaxb.internal.XmlElementImpl;
 import org.glassfish.hk2.xml.jaxb.internal.XmlRootElementImpl;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
  * @author jwells
@@ -151,19 +152,31 @@ public class JAUtilities {
         targetClassFile.setVersionToJava5();
         ConstPool targetConstPool = targetClassFile.getConstPool();
         
+        AnnotationsAttribute ctAnnotations = null;
         for (java.lang.annotation.Annotation convertMeAnnotation : convertMe.getAnnotations()) {
-            AnnotationsAttribute annotationCopy;
+            if (Contract.class.equals(convertMeAnnotation.annotationType())) {
+                // We do NOT want the generated class to be in the set of contracts, so
+                // skip this one if it is there
+                continue;
+            }
+            
+            if (ctAnnotations == null) {
+                ctAnnotations = new AnnotationsAttribute(targetConstPool, AnnotationsAttribute.visibleTag);
+            }
+            
             if (XmlRootElement.class.equals(convertMeAnnotation.annotationType())) {
                 XmlRootElement xre = (XmlRootElement) convertMeAnnotation;
                 
                 XmlRootElement replacement = new XmlRootElementImpl(xre.namespace(), convertXmlRootElementName(xre, convertMe));
                 
-                annotationCopy = createAnnotationCopy(targetConstPool, replacement);
+                createAnnotationCopy(targetConstPool, replacement, ctAnnotations);
             }
             else {
-                annotationCopy = createAnnotationCopy(targetConstPool, convertMeAnnotation);
+                createAnnotationCopy(targetConstPool, convertMeAnnotation, ctAnnotations);
             }
-            targetClassFile.addAttribute(annotationCopy);
+        }
+        if (ctAnnotations != null) {
+            targetClassFile.addAttribute(ctAnnotations);
         }
         
         // TODO:  Add in any class level JAXB annotations here
@@ -307,8 +320,13 @@ public class JAUtilities {
             CtMethod addMeCtMethod = CtNewMethod.make(sb.toString(), targetCtClass);
             MethodInfo methodInfo = addMeCtMethod.getMethodInfo();    
             ConstPool methodConstPool = methodInfo.getConstPool();
-                
+           
+            ctAnnotations = null;
             for (java.lang.annotation.Annotation convertMeAnnotation : originalMethod.getAnnotations()) {
+                if (ctAnnotations == null) {
+                    ctAnnotations = new AnnotationsAttribute(methodConstPool, AnnotationsAttribute.visibleTag);
+                }
+                
                 if ((childType != null) && XmlElement.class.equals(convertMeAnnotation.annotationType())) {
                     XmlElement original = (XmlElement) convertMeAnnotation;
                         
@@ -322,8 +340,12 @@ public class JAUtilities {
                             (Class<?>) childType);
                 }
                     
-                AnnotationsAttribute annotationCopy = createAnnotationCopy(methodConstPool, convertMeAnnotation);
-                methodInfo.addAttribute(annotationCopy);
+                createAnnotationCopy(methodConstPool, convertMeAnnotation, ctAnnotations);
+                
+            }
+            
+            if (ctAnnotations != null) {
+                methodInfo.addAttribute(ctAnnotations);
             }
             
             targetCtClass.addMethod(addMeCtMethod);
@@ -334,9 +356,8 @@ public class JAUtilities {
         return proxy;
     }
     
-    private static AnnotationsAttribute createAnnotationCopy(ConstPool parent, java.lang.annotation.Annotation javaAnnotation) throws Throwable {
-        AnnotationsAttribute retVal = new AnnotationsAttribute(parent, AnnotationsAttribute.visibleTag);
-        
+    private static void createAnnotationCopy(ConstPool parent, java.lang.annotation.Annotation javaAnnotation,
+            AnnotationsAttribute retVal) throws Throwable {
         Annotation annotation = new Annotation(javaAnnotation.annotationType().getName(), parent);
         
         for (Method javaAnnotationMethod : javaAnnotation.annotationType().getMethods()) {
@@ -373,8 +394,6 @@ public class JAUtilities {
         }
         
         retVal.addAnnotation(annotation);
-        
-        return retVal;
     }
     
     private static void getAllToConvert(Class<?> toBeConverted, LinkedHashSet<Class<?>> needsToBeConverted) {

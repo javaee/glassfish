@@ -100,9 +100,9 @@ public class UnmarshallTest {
         Assert.assertEquals(HUNDRED_TEN_INT, museum.getAge());
         
         Museum asService = locator.getService(Museum.class);
-        // Assert.assertNotNull(asService);
+        Assert.assertNotNull(asService);
         
-        // Assert.assertEquals(museum, asService);
+        Assert.assertEquals(museum, asService);
     }
     
     /**
@@ -207,7 +207,7 @@ public class UnmarshallTest {
             }
         }
         
-        // Assert.assertNotNull(locator.getService(Employees.class));
+        Assert.assertNotNull(locator.getService(Employees.class));
         
         // Assert.assertNotNull(locator.getService(Employee.class, BOB));
         // Assert.assertNotNull(locator.getService(Employee.class, CAROL));

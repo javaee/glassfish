@@ -49,7 +49,7 @@ import org.jvnet.hk2.annotations.Contract;
  * @author jwells
  *
  */
-@XmlRootElement // @Contract
+@XmlRootElement @Contract
 public interface Museum {
     public String getName();
     
