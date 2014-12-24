@@ -215,6 +215,7 @@ public class JAUtilities {
             
         }
         
+        HashMap<Class<?>, String> childTypes = new HashMap<Class<?>, String>();
         for (Method originalMethod : convertMe.getMethods()) {            
             String setterVariable = isSetter(originalMethod);
             String getterVariable = isGetter(originalMethod);
@@ -222,6 +223,8 @@ public class JAUtilities {
             if (setterVariable == null && getterVariable == null) {
                 throw new RuntimeException("Unknown method type, neither setter nor getter: " + originalMethod);
             }
+            
+            String variable = (setterVariable != null) ? setterVariable : getterVariable;
             
             String name = originalMethod.getName();
             
@@ -315,6 +318,23 @@ public class JAUtilities {
                 }
                 
                 sb.append(") { return " + cast + "super." + superMethodName + "(\"" + getterVariable + "\"); }");
+            }
+            
+            if (childType != null) {
+                if (childTypes.containsKey(childType)) {
+                    System.out.println("JRW(10) does contain: " + childType.getSimpleName() + " with value " + childTypes.get(childType) +
+                            " in " + convertMe.getName());
+                    String variableName = childTypes.get(childType);
+                    if (!variableName.equals(variable)) {
+                        throw new RuntimeException(
+                            "Multiple children of " + convertMe.getName() +
+                            " cannot have the same type.  Consider extending one or more of these to disambiguate the child: " +
+                            childType.getName());
+                    }
+                }
+                
+                System.out.println("JRW(20) adding in " + childType.getSimpleName() + " with name " + variable + " in " + convertMe.getName());
+                childTypes.put(childType, variable);
             }
             
             CtMethod addMeCtMethod = CtNewMethod.make(sb.toString(), targetCtClass);

@@ -41,10 +41,10 @@ package org.glassfish.hk2.xml.test.negative.childrensametype;
 
 import java.net.URL;
 
-import org.glassfish.hk2.api.MultiException;
+import org.junit.Assert;
+
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.xml.api.XmlService;
-import org.glassfish.hk2.xml.test.FooBarBean;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
 import org.junit.Test;
 
@@ -54,14 +54,27 @@ import org.junit.Test;
  */
 public class ChildrenSameTypeTest {
 
-    @Test(expected=MultiException.class) @org.junit.Ignore
+    /**
+     * FooBar has two children of the same type.  Since we can not easily
+     * disambiguate, at least we want to fail fast.  If the decision is
+     * made to change this implementation, this test will need to be
+     * removed
+     * 
+     * @throws Exception
+     */
+    @Test // @org.junit.Ignore
     public void testNegativeTwoChildrenWithSameType() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
         
         URL url = getClass().getClassLoader().getResource("foobar.xml");
         
-        xmlService.unmarshall(url.toURI(), FooBarBean.class);
+        try {
+            xmlService.unmarshall(url.toURI(), FooBarBean.class);
+        }
+        catch (RuntimeException re) {
+            Assert.assertTrue(re.getMessage().contains("Multiple children of "));
+        }
     }
 
 }
