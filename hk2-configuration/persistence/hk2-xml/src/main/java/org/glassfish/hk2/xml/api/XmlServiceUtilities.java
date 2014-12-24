@@ -40,6 +40,7 @@
 package org.glassfish.hk2.xml.api;
 
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.configuration.hub.api.ManagerUtilities;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.hk2.xml.internal.XmlServiceImpl;
 
@@ -51,6 +52,8 @@ public class XmlServiceUtilities {
 
     public static void enableXmlService(ServiceLocator locator) {
         if (locator.getService(XmlService.class) != null) return;
+        
+        ManagerUtilities.enableConfigurationHub(locator);
         
         ServiceLocatorUtilities.addClasses(locator, XmlServiceImpl.class);
     }

@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
@@ -168,7 +169,7 @@ public class UnmarshallTest {
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    @Test // @org.junit.Ignore
+    @Test @org.junit.Ignore
     public void testBeanLikeMapOfInterface() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -209,9 +210,8 @@ public class UnmarshallTest {
         
         Assert.assertNotNull(locator.getService(Employees.class));
         
-        // Assert.assertNotNull(locator.getService(Employee.class, BOB));
-        // Assert.assertNotNull(locator.getService(Employee.class, CAROL));
-        
+        Assert.assertNotNull(locator.getService(Employee.class, BOB));
+        Assert.assertNotNull(locator.getService(Employee.class, CAROL));
     }
     
     /**
@@ -257,20 +257,44 @@ public class UnmarshallTest {
         Assert.assertEquals(url, rootHandle.getURI().toURL());
     }
     
+    private final static String LIFECYCLE_ROOT_TYPE = "/lifecycle-config";
+    private final static String LIFECYCLE_ROOT_INSTANCE = "lifecycle-config";
+    private final static String LIFECYCLE_RUNTIMES_TYPE = "/lifecycle-config/runtimes";
+    private final static String LIFECYCLE_RUNTIMES_INSTANCE = "lifecycle-config.runtimes";
+    private final static String LIFECYCLE_TENANTS_TYPE = "/lifecycle-config/tenants";
+    private final static String LIFECYCLE_TENANTS_INSTANCE = "lifecycle-config.tenants";
+    private final static String LIFECYCLE_ENVIRONMENTS_TYPE = "/lifecycle-config/environments";
+    private final static String LIFECYCLE_ENVIRONMENTS_INSTANCE = "lifecycle-config.environments";
+    
+    private final static String LIFECYCLE_RUNTIME_TYPE = "/lifecycle-config/runtimes/runtime";
+    private final static String LIFECYCLE_RUNTIME_wlsRuntime_INSTANCE = "lifecycle-config.runtimes.wlsRuntime";
+    private final static String LIFECYCLE_RUNTIME_DatabaseTestRuntime_INSTANCE = "lifecycle-config.runtimes.DatabaseTestRuntime";
+    
     /**
-     * Tests a more complex XML format
+     * Tests a more complex XML format.  This test will ensure
+     * all elements are in the Hub with expected names
      * 
      * @throws Exception
      */
-    @Test // @org.junit.Ignore
+    @Test @org.junit.Ignore
     public void testComplexUnmarshalling() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
         
         URL url = getClass().getClassLoader().getResource("sample-config.xml");
         
         XmlRootHandle<LifecycleConfig> rootHandle = xmlService.unmarshall(url.toURI(), LifecycleConfig.class);
         LifecycleConfig lifecycleConfig = rootHandle.getRoot();
         Assert.assertNotNull(lifecycleConfig);
+        
+        Assert.assertNotNull(hub.getCurrentDatabase().getInstance(LIFECYCLE_ROOT_TYPE, LIFECYCLE_ROOT_INSTANCE));
+        Assert.assertNotNull(hub.getCurrentDatabase().getInstance(LIFECYCLE_RUNTIMES_TYPE, LIFECYCLE_RUNTIMES_INSTANCE));
+        Assert.assertNotNull(hub.getCurrentDatabase().getInstance(LIFECYCLE_TENANTS_TYPE, LIFECYCLE_TENANTS_INSTANCE));
+        Assert.assertNotNull(hub.getCurrentDatabase().getInstance(LIFECYCLE_ENVIRONMENTS_TYPE, LIFECYCLE_ENVIRONMENTS_INSTANCE));
+        
+        // Runtime
+        Assert.assertNotNull(hub.getCurrentDatabase().getInstance(LIFECYCLE_RUNTIME_TYPE, LIFECYCLE_RUNTIME_wlsRuntime_INSTANCE));
+        Assert.assertNotNull(hub.getCurrentDatabase().getInstance(LIFECYCLE_RUNTIME_TYPE, LIFECYCLE_RUNTIME_DatabaseTestRuntime_INSTANCE));
     }
 }
