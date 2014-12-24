@@ -297,4 +297,40 @@ public class UnmarshallTest {
         Assert.assertNotNull(hub.getCurrentDatabase().getInstance(LIFECYCLE_RUNTIME_TYPE, LIFECYCLE_RUNTIME_wlsRuntime_INSTANCE));
         Assert.assertNotNull(hub.getCurrentDatabase().getInstance(LIFECYCLE_RUNTIME_TYPE, LIFECYCLE_RUNTIME_DatabaseTestRuntime_INSTANCE));
     }
+    
+    private final static String FOOBAR_ROOT_TYPE = "/foobar";
+    private final static String FOOBAR_ROOT_INSTANCE = "foobar";
+    
+    private final static String FOOBAR_FOO_TYPE = "/foobar/foo";
+    private final static String FOOBAR_FOO1_INSTANCE = "foobar.foo1";
+    private final static String FOOBAR_FOO2_INSTANCE = "foobar.foo2";
+    
+    private final static String FOOBAR_BAR_TYPE = "/foobar/bar";
+    private final static String FOOBAR_BAR1_INSTANCE = "foobar.bar1";
+    private final static String FOOBAR_BAR2_INSTANCE = "foobar.bar2";
+    
+    
+    /**
+     * Foobar has two children, foo and bar, both of which are of type DataBean
+     * 
+     * @throws Exception
+     */
+    @Test @org.junit.Ignore
+    public void testSameClassTwoChildren() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource("foobar.xml");
+        
+        XmlRootHandle<FooBarBean> rootHandle = xmlService.unmarshall(url.toURI(), FooBarBean.class);
+        FooBarBean foobar = rootHandle.getRoot();
+        Assert.assertNotNull(foobar);
+        
+        Assert.assertNotNull(hub.getCurrentDatabase().getInstance(FOOBAR_ROOT_TYPE, FOOBAR_ROOT_INSTANCE));
+        Assert.assertNotNull(hub.getCurrentDatabase().getInstance(FOOBAR_FOO_TYPE, FOOBAR_FOO1_INSTANCE));
+        Assert.assertNotNull(hub.getCurrentDatabase().getInstance(FOOBAR_FOO_TYPE, FOOBAR_FOO2_INSTANCE));
+        Assert.assertNotNull(hub.getCurrentDatabase().getInstance(FOOBAR_BAR_TYPE, FOOBAR_BAR1_INSTANCE));
+        Assert.assertNotNull(hub.getCurrentDatabase().getInstance(FOOBAR_BAR_TYPE, FOOBAR_BAR2_INSTANCE));
+    }
 }

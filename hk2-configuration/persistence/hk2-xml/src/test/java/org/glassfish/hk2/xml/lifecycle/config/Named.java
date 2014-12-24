@@ -5,6 +5,8 @@ package org.glassfish.hk2.xml.lifecycle.config;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
+import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
+
 /**
  * An configured element which is named.
  * 
@@ -17,7 +19,8 @@ public interface Named {
      *
      * @return name of the configured object
      */
-    @XmlAttribute(required=true /*, key=true */)
+    @XmlAttribute(required=true)
+    @XmlIdentifier
     /*@NotNull*/
     public void setName(String value);
     public String getName();

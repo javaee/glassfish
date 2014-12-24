@@ -1,0 +1,6 @@
+<foobar>
+  <foo data="foo1"/>
+  <foo data="foo2"/>
+  <bar data="bar1"/>
+  <bar data="bar2"/>
+</foobar>
