@@ -37,49 +37,47 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.api;
-
-import java.util.Map;
-
-import org.jvnet.hk2.annotations.Contract;
+package org.glassfish.hk2.xml.internal;
 
 /**
  * @author jwells
  *
  */
-@Contract
-public interface XmlHk2ConfigurationBean {
-    /**
-     * Returns a read-only copy of the
-     * bean-like map corresponding to the current
-     * state of this bean
-     * 
-     * @return A copy of the bean-like map associated
-     * with this bean
-     */
-    public Map<String, Object> _getBeanLikeMap();
+public class UnparentedNode {
+    private final Class<?> originalInterface;
+    private Class<?> translatedClass;
+    private String rootName;
+    
+    public UnparentedNode(Class<?> originalInterface) {
+        this.originalInterface = originalInterface;
+    }
     
     /**
-     * Returns the parent of this bean, or null if this
-     * object is the root of the true
-     * 
-     * @return The parent of this object, or null if this
-     * is the root of the tree
+     * @return the translatedClass
      */
-    public Object _getParent();
-    
+    public Class<?> getTranslatedClass() {
+        return translatedClass;
+    }
+
     /**
-     * Returns the XmlPath for this object
-     * 
-     * @return The XmlPath for this object
+     * @param translatedClass the translatedClass to set
      */
-    public String _getXmlPath();
-    
+    public void setTranslatedClass(Class<?> translatedClass) {
+        this.translatedClass = translatedClass;
+    }
+
     /**
-     * Returns the instance path/name for this object
-     * 
-     * @return The instance path/name for this object
+     * @return the rootName
      */
-    public String _getInstanceName();
+    public String getRootName() {
+        return rootName;
+    }
+
+    /**
+     * @param rootName the rootName to set
+     */
+    public void setRootName(String rootName) {
+        this.rootName = rootName;
+    }
 
 }

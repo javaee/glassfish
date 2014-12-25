@@ -182,7 +182,7 @@ public class UnmarshallTest {
         Assert.assertTrue(employees instanceof XmlHk2ConfigurationBean);
         XmlHk2ConfigurationBean hk2Configuration = (XmlHk2ConfigurationBean) employees;
         
-        Map<String, Object> beanLikeMap = hk2Configuration.getBeanLikeMap();
+        Map<String, Object> beanLikeMap = hk2Configuration._getBeanLikeMap();
         Assert.assertEquals(ACME, beanLikeMap.get(COMPANY_NAME_TAG));
         
         List<Employee> employeeChildList = (List<Employee>) beanLikeMap.get(EMPLOYEE_TAG);
@@ -194,7 +194,7 @@ public class UnmarshallTest {
             Assert.assertTrue(employee instanceof XmlHk2ConfigurationBean);
             XmlHk2ConfigurationBean employeeConfiguration = (XmlHk2ConfigurationBean) employee;
             
-            Map<String, Object> employeeBeanLikeMap = employeeConfiguration.getBeanLikeMap();
+            Map<String, Object> employeeBeanLikeMap = employeeConfiguration._getBeanLikeMap();
             
             if (first) {
                 first = false;

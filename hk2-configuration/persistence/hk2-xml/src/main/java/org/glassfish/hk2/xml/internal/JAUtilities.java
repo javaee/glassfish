@@ -39,7 +39,6 @@
  */
 package org.glassfish.hk2.xml.internal;
 
-import java.beans.Introspector;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -80,15 +79,15 @@ import org.jvnet.hk2.annotations.Contract;
  *
  */
 public class JAUtilities {
-    private final static String GET = "get";
-    private final static String SET = "set";
-    private final static String IS = "is";
-    private final static String JAXB_DEFAULT_STRING = "##default";
+    /* package */ final static String GET = "get";
+    /* package */ final static String SET = "set";
+    /* package */ final static String IS = "is";
+    /* package */ final static String JAXB_DEFAULT_STRING = "##default";
     
     private final static String CLASS_ADD_ON_NAME = "_$$_Hk2_Jaxb";
     private final static HashSet<String> DO_NOT_HANDLE_METHODS = new HashSet<String>();
     
-    private final HashMap<Class<?>, Class<?>> convertedCache = new HashMap<Class<?>, Class<?>>();
+    private final HashMap<Class<?>, UnparentedNode> convertedCache = new HashMap<Class<?>, UnparentedNode>();
     private final ClassPool defaultClassPool = ClassPool.getDefault(); // TODO:  We probably need to be more sophisticated about this
     private final CtClass superClazz;
     
@@ -116,7 +115,7 @@ public class JAUtilities {
         needsToBeConverted.removeAll(convertedCache.keySet());
         
         for (Class<?> convertMe : needsToBeConverted) {
-            Class<?> converted;
+            UnparentedNode converted;
             try {
                 converted = convert(convertMe);
             }
@@ -130,20 +129,19 @@ public class JAUtilities {
             convertedCache.put(convertMe, converted);
         }
         
-        return convertedCache.get(root);
+        return convertedCache.get(root).getTranslatedClass();
     }
     
-    private Class<?> convert(Class<?> convertMe) throws Throwable {
+    private UnparentedNode convert(Class<?> convertMe) throws Throwable {
         Logger.getLogger().debug("XmlService converting " + convertMe.getName());
+        UnparentedNode retVal = new UnparentedNode(convertMe);
         
         CtClass originalCtClass = defaultClassPool.get(convertMe.getName());
         String targetClassName = convertMe.getName() + CLASS_ADD_ON_NAME;
         
         CtClass foundClass = defaultClassPool.getOrNull(targetClassName);
         if (foundClass != null) {
-            Class<?> proxy = convertMe.getClassLoader().loadClass(targetClassName);
-           
-            return proxy;
+            throw new AssertionError("Should have gotten node from cache, why have we not? " + convertMe.getName());
         }
         
         CtClass targetCtClass = defaultClassPool.makeClass(targetClassName);
@@ -167,7 +165,10 @@ public class JAUtilities {
             if (XmlRootElement.class.equals(convertMeAnnotation.annotationType())) {
                 XmlRootElement xre = (XmlRootElement) convertMeAnnotation;
                 
-                XmlRootElement replacement = new XmlRootElementImpl(xre.namespace(), convertXmlRootElementName(xre, convertMe));
+                String rootName = Utilities.convertXmlRootElementName(xre, convertMe);
+                retVal.setRootName(rootName);
+                
+                XmlRootElement replacement = new XmlRootElementImpl(xre.namespace(), rootName);
                 
                 createAnnotationCopy(targetConstPool, replacement, ctAnnotations);
             }
@@ -186,9 +187,9 @@ public class JAUtilities {
         
         Map<String, String> xmlNameMap = new HashMap<String, String>();
         for (Method originalMethod : convertMe.getMethods()) {
-            String setterVariable = isSetter(originalMethod);
+            String setterVariable = Utilities.isSetter(originalMethod);
             if (setterVariable == null) {
-                setterVariable = isGetter(originalMethod);
+                setterVariable = Utilities.isGetter(originalMethod);
                 if (setterVariable == null) continue;
             }
             
@@ -217,8 +218,8 @@ public class JAUtilities {
         
         HashMap<Class<?>, String> childTypes = new HashMap<Class<?>, String>();
         for (Method originalMethod : convertMe.getMethods()) {            
-            String setterVariable = isSetter(originalMethod);
-            String getterVariable = isGetter(originalMethod);
+            String setterVariable = Utilities.isSetter(originalMethod);
+            String getterVariable = Utilities.isGetter(originalMethod);
             
             if (setterVariable == null && getterVariable == null) {
                 throw new RuntimeException("Unknown method type, neither setter nor getter: " + originalMethod);
@@ -256,10 +257,10 @@ public class JAUtilities {
                         
                     }
                     
-                    childType = convertedCache.get(baseChildType);
+                    childType = convertedCache.get(baseChildType).getTranslatedClass();
                 }
                 else if (setterType.isInterface()) {
-                    childType = convertedCache.get(setterType);
+                    childType = convertedCache.get(setterType).getTranslatedClass();
                 }
                 
                 sb.append(setterType.getName() + " arg0) { super._setProperty(\"" + setterVariable + "\", arg0); }");
@@ -281,10 +282,10 @@ public class JAUtilities {
                         
                     }
                     
-                    childType = convertedCache.get(baseChildType);
+                    childType = convertedCache.get(baseChildType).getTranslatedClass();
                 }
                 else if (returnType.isInterface()) {
-                    childType = convertedCache.get(returnType);
+                    childType = convertedCache.get(returnType).getTranslatedClass();
                 }
                 
                 String cast = "";
@@ -372,8 +373,9 @@ public class JAUtilities {
         }
         
         Class<?> proxy = targetCtClass.toClass(convertMe.getClassLoader(), convertMe.getProtectionDomain());
+        retVal.setTranslatedClass(proxy);
         
-        return proxy;
+        return retVal;
     }
     
     private static void createAnnotationCopy(ConstPool parent, java.lang.annotation.Annotation javaAnnotation,
@@ -449,94 +451,4 @@ public class JAUtilities {
         
         needsToBeConverted.add(toBeConverted);
     }
-    
-    private static String isGetter(Method method) {
-        String name = method.getName();
-        
-        if (name.startsWith(GET)) {
-            if (name.length() <= GET.length()) return null;
-            if (method.getParameterTypes().length != 0) return null;
-            if (void.class.equals(method.getReturnType())) return null;
-            
-            String variableName = name.substring(GET.length());
-            
-            return Introspector.decapitalize(variableName);
-        }
-        
-        if (name.startsWith(IS)) {
-            if (name.length() <= IS.length()) return null;
-            if (method.getParameterTypes().length != 0) return null;
-            if (boolean.class.equals(method.getReturnType()) || Boolean.class.equals(method.getReturnType())) {
-                String variableName = name.substring(IS.length());
-                
-                return Introspector.decapitalize(variableName);
-            }
-            
-            return null;
-        }
-        
-        return null;
-    }
-    
-    private static String isSetter(Method method) {
-        String name = method.getName();
-        
-        if (name.startsWith(SET)) {
-            if (name.length() <= SET.length()) return null;
-            if (method.getParameterTypes().length != 1) return null;
-            if (void.class.equals(method.getReturnType())) {
-                String variableName = name.substring(SET.length());
-                
-                return Introspector.decapitalize(variableName);
-            }
-            
-            return null;
-        }
-        
-        return null;
-    }
-    
-    private static String convertXmlRootElementName(XmlRootElement root, Class<?> clazz) {
-        if (!"##default".equals(root.name())) return root.name();
-        
-        String simpleName = clazz.getSimpleName();
-        
-        char asChars[] = simpleName.toCharArray();
-        StringBuffer sb = new StringBuffer();
-        
-        boolean firstChar = true;
-        boolean lastCharWasCapital = false;
-        for (char asChar : asChars) {
-            if (firstChar) {
-                firstChar = false;
-                if (Character.isUpperCase(asChar)) {
-                    lastCharWasCapital = true;
-                    sb.append(Character.toLowerCase(asChar));
-                }
-                else {
-                    lastCharWasCapital = false;
-                    sb.append(asChar);
-                }
-            }
-            else {
-                if (Character.isUpperCase(asChar)) {
-                    if (!lastCharWasCapital) {
-                        sb.append('-');
-                    }
-                    
-                    sb.append(Character.toLowerCase(asChar));
-                    
-                    lastCharWasCapital = true;
-                }
-                else {
-                    sb.append(asChar);
-                    
-                    lastCharWasCapital = false;
-                }
-            }
-        }
-        
-        return sb.toString();
-    }
-
 }

@@ -158,9 +158,27 @@ public class XmlServiceImpl implements XmlService {
             
             BaseHK2JAXBBean base = (BaseHK2JAXBBean) target;
             
-            base.setParent(parent);
+            base._setParent(parent);
             
             allBeans.add(base);
+        }
+        
+        @Override
+        public void beforeUnmarshal(Object target, Object parent) {
+            if (!(target instanceof BaseHK2JAXBBean)) return;
+            
+            BaseHK2JAXBBean baseBean = (BaseHK2JAXBBean) target;
+            BaseHK2JAXBBean parentBean = (BaseHK2JAXBBean) parent;
+            
+            if (parentBean == null) {
+                Class<?> baseBeanClass = baseBean.getClass();
+                String rootElementName = Utilities.getRootElementName(baseBeanClass);
+                
+                baseBean._setSelfXmlTag(rootElementName);
+            }
+            else {
+                baseBean._setParentXmlPath(parentBean._getXmlPath());
+            }
         }
         
         private LinkedList<BaseHK2JAXBBean> getAllBeans() {

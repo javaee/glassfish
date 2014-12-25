@@ -57,8 +57,22 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
     private final static boolean DEBUG_GETS_AND_SETS = Boolean.parseBoolean(GeneralUtilities.getSystemProperty(
             "org.jvnet.hk2.properties.xmlservice.jaxb.getsandsets", "false"));
     
+    private final static String EMPTY = "";
+    private final static char XML_PATH_SEPARATOR = '/';
+    private final static char INSTANCE_PATH_SEPARATOR = '.';
+    
     private final ConcurrentHashMap<String, Object> beanLikeMap = new ConcurrentHashMap<String, Object>();
+    
     private Object parent;
+    private String parentXmlPath;
+    private String parentInstancePath;
+    
+    private String selfXmlTag;
+    private boolean hasIdentifier;
+    private String identifierProperty;
+    
+    // Calculated values
+    private String xmlPath = EMPTY;
     
     public void _setProperty(String propName, Object propValue) {
         if (propName == null) throw new IllegalArgumentException("properyName may not be null");
@@ -164,7 +178,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
      * @see org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean#getBeanLikeMap()
      */
     @Override
-    public Map<String, Object> getBeanLikeMap() {
+    public Map<String, Object> _getBeanLikeMap() {
         HashMap<String, Object> intermediateCopy = new HashMap<String, Object>();
         
         for (Map.Entry<String, Object> entrySet : beanLikeMap.entrySet()) {
@@ -180,20 +194,54 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
         return Collections.unmodifiableMap(intermediateCopy);
     }
     
-    @Override
-    public String toString() {
-        return "BaseHK2JAXBBean(" + System.identityHashCode(this) + ")";
-    }
-
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean#getParent()
      */
     @Override
-    public Object getParent() {
+    public Object _getParent() {
         return parent;
     }
     
-    public void setParent(Object parent) {
+    public void _setParent(Object parent) {
         this.parent = parent;
+    }
+    
+    public void _setParentXmlPath(String parentXmlPath) {
+        this.parentXmlPath = parentXmlPath;
+    }
+    
+    public void _setSelfXmlTag(String selfXmlTag) {
+        this.selfXmlTag = selfXmlTag;
+        
+        if (parentXmlPath == null) {
+            xmlPath = XML_PATH_SEPARATOR + selfXmlTag;
+        }
+        else {
+            xmlPath = parentXmlPath + XML_PATH_SEPARATOR + selfXmlTag;
+        }
+    }
+    
+    
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean#_getXmlPath()
+     */
+    @Override
+    public String _getXmlPath() {
+        return xmlPath;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean#_getInstanceName()
+     */
+    @Override
+    public String _getInstanceName() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+    @Override
+    public String toString() {
+        return "BaseHK2JAXBBean(XmlPath=" + xmlPath + "," + System.identityHashCode(this) + ")";
     }
 }
