@@ -195,67 +195,33 @@ public class JAUtilities {
             Map<String, String> xmlNameMap = getXmlNameMap(convertMe);
             
             HashMap<UnparentedNode, String> childTypes = new HashMap<UnparentedNode, String>();
-            for (Method originalMethod : convertMe.getMethods()) {            
-                String setterVariable = Utilities.isSetter(originalMethod);
-                String getterVariable = Utilities.isGetter(originalMethod);
-                
-                if (setterVariable == null && getterVariable == null) {
-                    throw new RuntimeException("Unknown method type, neither setter nor getter: " + originalMethod);
-                }
-                
-                String variable = (setterVariable != null) ? setterVariable : getterVariable;
-                variable = xmlNameMap.get(variable);
+            for (Method originalMethod : convertMe.getMethods()) {
+                MethodInformation mi = getMethodInformation(originalMethod, xmlNameMap);
                 
                 UnparentedNode childType = null;
-                if (setterVariable != null) {
-                    setterVariable = xmlNameMap.get(setterVariable);
-                    
-                    Class<?> setterType = originalMethod.getParameterTypes()[0];
-                    
-                    if (List.class.equals(setterType)) {
-                        Type typeChildType = ReflectionHelper.getFirstTypeArgument(originalMethod.getGenericParameterTypes()[0]);
-                        
-                        Class<?> baseChildType = ReflectionHelper.getRawClass(typeChildType);
-                        if (baseChildType == null || !interface2NodeCache.containsKey(baseChildType)) {
-                            throw new RuntimeException("Unknown child type: " + childType + " of class " +
-                                ((baseChildType == null) ? "null" : baseChildType.getName()));
-                            
+                if (MethodType.SETTER.equals(mi.baseChildType)) {
+                    if (mi.baseChildType != null) {
+                        if (!interface2NodeCache.containsKey(mi.baseChildType)) {
+                            throw new RuntimeException("The child of type " + mi.baseChildType.getName() + " is unknown for method " + mi.originalMethod);
                         }
                         
-                        childType = interface2NodeCache.get(baseChildType);
-                    }
-                    else if (setterType.isInterface()) {
-                        childType = interface2NodeCache.get(setterType);
+                        childType = interface2NodeCache.get(mi.baseChildType);
                     }
                 }
-                else if (getterVariable != null) {
-                    if (xmlNameMap.containsKey(getterVariable)) {
-                        getterVariable = xmlNameMap.get(getterVariable);
-                    }
-                    
-                    Class<?> returnType = originalMethod.getReturnType();
-                    
-                    if (List.class.equals(returnType)) {
-                        Type typeChildType = ReflectionHelper.getFirstTypeArgument(originalMethod.getGenericReturnType());
-                        
-                        Class<?> baseChildType = ReflectionHelper.getRawClass(typeChildType);
-                        if (baseChildType == null || !interface2NodeCache.containsKey(baseChildType)) {
-                            throw new RuntimeException("Unknown child type: " + childType + " of class " +
-                                ((baseChildType == null) ? "null" : baseChildType.getName()));
-                            
+                else if (MethodType.GETTER.equals(mi.baseChildType)) {
+                    if (mi.baseChildType != null) {
+                        if (!interface2NodeCache.containsKey(mi.baseChildType)) {
+                            throw new RuntimeException("The child of type " + mi.baseChildType.getName() + " is unknown for method " + mi.originalMethod);
                         }
                         
-                        childType = interface2NodeCache.get(baseChildType);
-                    }
-                    else if (returnType.isInterface()) {
-                        childType = interface2NodeCache.get(returnType);
+                        childType = interface2NodeCache.get(mi.baseChildType);
                     }
                 }
                 
                 if (childType != null) {
                     if (childTypes.containsKey(childType)) {
                         String variableName = childTypes.get(childType);
-                        if (!variableName.equals(variable)) {
+                        if (!variableName.equals(mi.representedProperty)) {
                             throw new RuntimeException(
                                 "Multiple children of " + convertMe.getName() +
                                 " cannot have the same type.  Consider extending one or more of these to disambiguate the child: " +
@@ -263,9 +229,9 @@ public class JAUtilities {
                         }
                     }
                     else {
-                        childTypes.put(childType, variable);
+                        childTypes.put(childType, mi.representedProperty);
                         
-                        retVal.addChild(variable, childType);
+                        retVal.addChild(mi.representedProperty, childType);
                     }
                 }
             }
@@ -317,16 +283,8 @@ public class JAUtilities {
         Map<String, String> xmlNameMap = getXmlNameMap(convertMe);
         
         HashMap<UnparentedNode, String> childTypes = new HashMap<UnparentedNode, String>();
-        for (Method originalMethod : convertMe.getMethods()) {            
-            String setterVariable = Utilities.isSetter(originalMethod);
-            String getterVariable = Utilities.isGetter(originalMethod);
-            
-            if (setterVariable == null && getterVariable == null) {
-                throw new RuntimeException("Unknown method type, neither setter nor getter: " + originalMethod);
-            }
-            
-            String variable = (setterVariable != null) ? setterVariable : getterVariable;
-            variable = xmlNameMap.get(variable);
+        for (Method originalMethod : convertMe.getMethods()) {
+            MethodInformation mi = getMethodInformation(originalMethod, xmlNameMap);
             
             String name = originalMethod.getName();
             
@@ -343,89 +301,63 @@ public class JAUtilities {
             sb.append(name + "(");
             
             UnparentedNode childType = null;
-            if (setterVariable != null) {
-                setterVariable = xmlNameMap.get(setterVariable);
-                
-                Class<?> setterType = originalMethod.getParameterTypes()[0];
-                
-                if (List.class.equals(setterType)) {
-                    Type typeChildType = ReflectionHelper.getFirstTypeArgument(originalMethod.getGenericParameterTypes()[0]);
-                    
-                    Class<?> baseChildType = ReflectionHelper.getRawClass(typeChildType);
-                    if (baseChildType == null || !interface2NodeCache.containsKey(baseChildType)) {
-                        throw new RuntimeException("Unknown child type: " + childType + " of class " +
-                            ((baseChildType == null) ? "null" : baseChildType.getName()));
-                        
+            if (MethodType.SETTER.equals(mi.methodType)) {
+                if (mi.baseChildType != null) {
+                    if (!interface2NodeCache.containsKey(mi.baseChildType)) {
+                        throw new RuntimeException("The child of type " + mi.baseChildType.getName() + " is unknown for method " + mi.originalMethod);
                     }
                     
-                    childType = interface2NodeCache.get(baseChildType);
-                }
-                else if (setterType.isInterface()) {
-                    childType = interface2NodeCache.get(setterType);
+                    childType = interface2NodeCache.get(mi.baseChildType);
                 }
                 
-                sb.append(setterType.getName() + " arg0) { super._setProperty(\"" + setterVariable + "\", arg0); }");
+                sb.append(mi.gsType.getName() + " arg0) { super._setProperty(\"" + mi.representedProperty + "\", arg0); }");
             }
-            else if (getterVariable != null) {
-                if (xmlNameMap.containsKey(getterVariable)) {
-                    getterVariable = xmlNameMap.get(getterVariable);
-                }
-                
-                Class<?> returnType = originalMethod.getReturnType();
-                
-                if (List.class.equals(returnType)) {
-                    Type typeChildType = ReflectionHelper.getFirstTypeArgument(originalMethod.getGenericReturnType());
-                    
-                    Class<?> baseChildType = ReflectionHelper.getRawClass(typeChildType);
-                    if (baseChildType == null || !interface2NodeCache.containsKey(baseChildType)) {
-                        throw new RuntimeException("Unknown child type: " + childType + " of class " +
-                            ((baseChildType == null) ? "null" : baseChildType.getName()));
-                        
+            else if (MethodType.GETTER.equals(mi.methodType)) {
+                if (mi.baseChildType != null) {
+                    if (!interface2NodeCache.containsKey(mi.baseChildType)) {
+                        throw new RuntimeException("The child of type " + mi.baseChildType.getName() + " is unknown for method " + mi.originalMethod);
                     }
                     
-                    childType = interface2NodeCache.get(baseChildType);
-                }
-                else if (returnType.isInterface()) {
-                    childType = interface2NodeCache.get(returnType);
+                    childType = interface2NodeCache.get(mi.baseChildType);
                 }
                 
                 String cast = "";
                 String superMethodName = "_getProperty";
-                if (int.class.equals(returnType)) {
+                if (int.class.equals(mi.gsType)) {
                     superMethodName += "I"; 
                 }
-                else if (long.class.equals(returnType)) {
+                else if (long.class.equals(mi.gsType)) {
                     superMethodName += "J";
                 }
-                else if (boolean.class.equals(returnType)) {
+                else if (boolean.class.equals(mi.gsType)) {
                     superMethodName += "Z";
                 }
-                else if (byte.class.equals(returnType)) {
+                else if (byte.class.equals(mi.gsType)) {
                     superMethodName += "B";
                 }
-                else if (char.class.equals(returnType)) {
+                else if (char.class.equals(mi.gsType)) {
                     superMethodName += "C";
                 }
-                else if (short.class.equals(returnType)) {
+                else if (short.class.equals(mi.gsType)) {
                     superMethodName += "S";
                 }
-                else if (float.class.equals(returnType)) {
+                else if (float.class.equals(mi.gsType)) {
                     superMethodName += "F";
                 }
-                else if (double.class.equals(returnType)) {
+                else if (double.class.equals(mi.gsType)) {
                     superMethodName += "D";
                 }
                 else {
-                    cast = "(" + returnType.getName() + ") ";
+                    cast = "(" + mi.gsType.getName() + ") ";
                 }
                 
-                sb.append(") { return " + cast + "super." + superMethodName + "(\"" + getterVariable + "\"); }");
+                sb.append(") { return " + cast + "super." + superMethodName + "(\"" + mi.representedProperty + "\"); }");
             }
             
             if (childType != null) {
                 if (childTypes.containsKey(childType)) {
                     String variableName = childTypes.get(childType);
-                    if (!variableName.equals(variable)) {
+                    if (!variableName.equals(mi.representedProperty)) {
                         throw new RuntimeException(
                             "Multiple children of " + convertMe.getName() +
                             " cannot have the same type.  Consider extending one or more of these to disambiguate the child: " +
@@ -433,9 +365,9 @@ public class JAUtilities {
                     }
                 }
                 else {
-                    childTypes.put(childType, variable);
+                    childTypes.put(childType, mi.representedProperty);
                     
-                    retVal.addChild(variable, childType);
+                    retVal.addChild(mi.representedProperty, childType);
                 }
             }
             
@@ -553,5 +485,87 @@ public class JAUtilities {
         }
         
         needsToBeConverted.add(toBeConverted);
+    }
+    
+    private static MethodInformation getMethodInformation(Method m, Map<String, String> xmlNameMap) {
+        String setterVariable = Utilities.isSetter(m);
+        String getterVariable = Utilities.isGetter(m);
+        
+        if (setterVariable == null && getterVariable == null) {
+            throw new RuntimeException("Unknown method type, neither setter nor getter: " + m);
+        }
+        
+        MethodType methodType;
+        Class<?> baseChildType = null;
+        Class<?> gsType;
+        if (setterVariable == null) {
+            // This is a getter
+            methodType = MethodType.GETTER;
+            
+            Class<?> returnType = m.getReturnType();
+            gsType = returnType;
+            
+            if (List.class.equals(returnType)) {
+                Type typeChildType = ReflectionHelper.getFirstTypeArgument(m.getGenericReturnType());
+                
+                baseChildType = ReflectionHelper.getRawClass(typeChildType);
+                if (baseChildType == null) {
+                    throw new RuntimeException("Cannot find child type of method " + m);
+                }
+            }
+            else if (returnType.isInterface()) {
+                baseChildType = returnType;
+            }
+        }
+        else {
+            // This is a setter
+            methodType = MethodType.SETTER;
+            
+            Class<?> setterType = m.getParameterTypes()[0];
+            gsType = setterType;
+            
+            if (List.class.equals(setterType)) {
+                Type typeChildType = ReflectionHelper.getFirstTypeArgument(m.getGenericParameterTypes()[0]);
+                
+                baseChildType = ReflectionHelper.getRawClass(typeChildType);
+                if (baseChildType == null) {
+                    throw new RuntimeException("Cannot find child type of method " + m);
+                }
+            }
+            else if (setterType.isInterface()) {
+                baseChildType = setterType;
+            }
+        }
+        
+        String variable = (setterVariable != null) ? setterVariable : getterVariable;
+        String representedProperty = xmlNameMap.get(variable);
+        if (representedProperty == null) representedProperty = variable;
+        
+        return new MethodInformation(m, methodType, representedProperty, baseChildType, gsType);
+    }
+    
+    private static class MethodInformation {
+        private final Method originalMethod;
+        private final MethodType methodType;
+        private final Class<?> gsType;
+        private final String representedProperty;
+        private final Class<?> baseChildType;
+        
+        private MethodInformation(Method originalMethod,
+                MethodType methodType,
+                String representedProperty,
+                Class<?> baseChildType,
+                Class<?> gsType) {
+            this.originalMethod = originalMethod;
+            this.methodType = methodType;
+            this.representedProperty = representedProperty;
+            this.baseChildType = baseChildType;
+            this.gsType = gsType;
+        }
+    }
+    
+    private static enum MethodType {
+        GETTER,
+        SETTER
     }
 }
