@@ -8,11 +8,11 @@ import javax.xml.bind.annotation.XmlElement;
 public interface Association extends Auditable {
   
   @XmlElement(required=true /*, reference=true */)
-  Partition getPartition1();
-  void setPartition1(Partition partition);
+  Partition1 getPartition1();
+  void setPartition1(Partition1 partition);
   
   @XmlElement(required=true /* reference=true */)
-  Partition getPartition2();
-  void setPartition2(Partition partition);
+  Partition2 getPartition2();
+  void setPartition2(Partition2 partition);
 
 }

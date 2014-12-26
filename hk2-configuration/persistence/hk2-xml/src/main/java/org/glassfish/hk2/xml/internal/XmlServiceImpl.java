@@ -51,6 +51,7 @@ import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
@@ -66,6 +67,9 @@ public class XmlServiceImpl implements XmlService {
     
     @Inject
     private DynamicConfigurationService dcs;
+    
+    @Inject
+    private Hub hub;
     
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.api.XmlService#unmarshall(java.net.URI, java.lang.Class, boolean, boolean)
@@ -84,16 +88,15 @@ public class XmlServiceImpl implements XmlService {
     public <T> XmlRootHandle<T> unmarshall(URI uri,
             Class<T> jaxbAnnotatedInterface,
             boolean advertiseInRegistry, boolean advertiseInHub) {
-        Class<T> originalClass = jaxbAnnotatedInterface;
-        
         if (uri == null || jaxbAnnotatedInterface == null) throw new IllegalArgumentException();
+        if (!jaxbAnnotatedInterface.isInterface()) {
+            throw new IllegalArgumentException("Only an interface can be given to unmarshall: " + jaxbAnnotatedInterface.getName());
+        }
         
         try {
-            if (jaxbAnnotatedInterface.isInterface()) {
-                jaxbAnnotatedInterface = (Class<T>) jaUtilities.convertRootAndLeaves(jaxbAnnotatedInterface);
-            }
-        
-            return unmarshallClass(uri, jaxbAnnotatedInterface, originalClass, advertiseInRegistry, advertiseInHub);
+            UnparentedNode parent = jaUtilities.convertRootAndLeaves(jaxbAnnotatedInterface);
+                
+            return unmarshallClass(uri, (Class<T>) parent.getTranslatedClass(), jaxbAnnotatedInterface, advertiseInRegistry, advertiseInHub);
         }
         catch (RuntimeException re) {
             throw re;
@@ -108,7 +111,7 @@ public class XmlServiceImpl implements XmlService {
             boolean advertise, boolean hub) throws Exception {
         JAXBContext context = JAXBContext.newInstance(jaxbAnnotatedClass);
         
-        Listener listener = new Listener();
+        Listener listener = new Listener(jaUtilities);
         Unmarshaller unmarshaller = context.createUnmarshaller();
         unmarshaller.setListener(listener);
         
@@ -151,6 +154,11 @@ public class XmlServiceImpl implements XmlService {
     
     private static class Listener extends Unmarshaller.Listener {
         private final LinkedList<BaseHK2JAXBBean> allBeans = new LinkedList<BaseHK2JAXBBean>();
+        private final JAUtilities jaUtilities;
+        
+        private Listener(JAUtilities jaUtilities) {
+            this.jaUtilities = jaUtilities;
+        }
         
         @Override
         public void afterUnmarshal(Object target, Object parent) {
@@ -170,14 +178,18 @@ public class XmlServiceImpl implements XmlService {
             BaseHK2JAXBBean baseBean = (BaseHK2JAXBBean) target;
             BaseHK2JAXBBean parentBean = (BaseHK2JAXBBean) parent;
             
+            UnparentedNode baseNode = jaUtilities.getNode(target.getClass());
+            
             if (parentBean == null) {
-                Class<?> baseBeanClass = baseBean.getClass();
-                String rootElementName = Utilities.getRootElementName(baseBeanClass);
-                
-                baseBean._setSelfXmlTag(rootElementName);
+                baseBean._setSelfXmlTag(baseNode.getRootName());
             }
             else {
                 baseBean._setParentXmlPath(parentBean._getXmlPath());
+                
+                UnparentedNode parentNode = jaUtilities.getNode(parent.getClass());
+                ParentedNode childNode = parentNode.getChild(baseNode.getOriginalInterface());
+                
+                baseBean._setSelfXmlTag(childNode.getChildName());
             }
         }
         

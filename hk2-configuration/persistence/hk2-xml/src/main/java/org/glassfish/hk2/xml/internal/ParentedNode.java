@@ -39,75 +39,33 @@
  */
 package org.glassfish.hk2.xml.internal;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * This tells things about a node in an XML tree, without any
- * reference to the parent of the node.  That is because
- * the node can be parented by anyone, and hence information
- * about the parent would make it specific to a certain tree
- * or location in a tree
+ * A node with information about the parent, which is therefor
+ * specific to a place in a tree
  * 
  * @author jwells
  *
  */
-public class UnparentedNode {
-    private final Class<?> originalInterface;
-    private Class<?> translatedClass;
-    private String rootName;
-    private final Map<Class<?>, ParentedNode> children = new HashMap<Class<?>, ParentedNode>();
+public class ParentedNode {
+    private final String childName;
+    private final UnparentedNode child;
     
-    public UnparentedNode(Class<?> originalInterface) {
-        this.originalInterface = originalInterface;
-    }
-    
-    public Class<?> getOriginalInterface() {
-        return originalInterface;
+    public ParentedNode(String childName, UnparentedNode child) {
+        this.childName = childName;
+        this.child = child;
     }
     
-    /**
-     * @return the translatedClass
-     */
-    public Class<?> getTranslatedClass() {
-        return translatedClass;
-    }
-
-    /**
-     * @param translatedClass the translatedClass to set
-     */
-    public void setTranslatedClass(Class<?> translatedClass) {
-        this.translatedClass = translatedClass;
-    }
-
-    /**
-     * @return the rootName
-     */
-    public String getRootName() {
-        return rootName;
-    }
-
-    /**
-     * @param rootName the rootName to set
-     */
-    public void setRootName(String rootName) {
-        this.rootName = rootName;
+    public String getChildName() {
+        return childName;
     }
     
-    public void addChild(String xmlTag, UnparentedNode child) {
-        synchronized (children) {
-            children.put(child.getOriginalInterface(), new ParentedNode(xmlTag, child));
-        }
+    public UnparentedNode getChild() {
+        return child;
     }
     
-    public ParentedNode getChild(Class<?> childType) {
-        synchronized (children) {
-            return children.get(childType);
-        }
-    }
-
     @Override
     public String toString() {
-        return "UnparentedNode(" + originalInterface + "," + System.identityHashCode(this) + ")";
+        return "ParentedNode(" + childName + "," + child + "," + System.identityHashCode(this) + ")";
     }
+
 }

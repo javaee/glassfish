@@ -22,6 +22,6 @@ public interface LifecycleConfig {
     Tenants getTenants();
 
     @XmlElement
-    void setPlugins(Tenants plugins);
+    void setPlugins(Plugins plugins);
     Plugins getPlugins();
 }

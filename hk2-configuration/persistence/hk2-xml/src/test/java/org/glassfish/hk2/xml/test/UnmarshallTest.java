@@ -112,7 +112,7 @@ public class UnmarshallTest {
      * 
      * @throws Exception
      */
-    @Test // @org.junit.Ignore
+    @Test @org.junit.Ignore
     public void testClassJaxbUnmarshalling() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -133,7 +133,7 @@ public class UnmarshallTest {
      * 
      * @throws Exception
      */
-    @Test // @org.junit.Ignore
+    @Test @org.junit.Ignore
     public void testClassJaxbUnmarshallingWithChildren() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
