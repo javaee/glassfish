@@ -169,7 +169,7 @@ public class UnmarshallTest {
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testBeanLikeMapOfInterface() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -276,7 +276,7 @@ public class UnmarshallTest {
      * 
      * @throws Exception
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testComplexUnmarshalling() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -315,7 +315,7 @@ public class UnmarshallTest {
      * 
      * @throws Exception
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testSameClassTwoChildren() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);

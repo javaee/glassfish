@@ -9,7 +9,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 
 public interface Runtimes {
-    @XmlElement(name="*")
+    @XmlElement(name="runtime")
     List<Runtime> getRuntimes();
     void setRuntimes(List<Runtime> runtimes);
 

@@ -21,7 +21,7 @@ public interface Runtime extends Named, PropertyBag, Auditable {
     String getType();
     void setType(String type);
 
-    @XmlElement(name="*")
+    @XmlElement(name="partition")
     List<Partition> getPartitions();
     void setPartitions(List<Partition> Partitions);
 

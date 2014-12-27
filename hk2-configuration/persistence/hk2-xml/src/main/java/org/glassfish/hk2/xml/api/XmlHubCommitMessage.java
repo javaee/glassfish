@@ -37,19 +37,15 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test;
-
-import javax.xml.bind.annotation.XmlAttribute;
-
-import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
+package org.glassfish.hk2.xml.api;
 
 /**
+ * This object will be given along with
+ * any Hub commits
+ * 
  * @author jwells
  *
  */
-public interface DataBean {
-    @XmlAttribute @XmlIdentifier
-    public String getData();
-    public void setData(String data);
+public interface XmlHubCommitMessage {
 
 }

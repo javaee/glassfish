@@ -65,11 +65,10 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
     
     private Object parent;
     private String parentXmlPath;
-    private String parentInstancePath;
     
     private String selfXmlTag;
-    private boolean hasIdentifier;
-    private String identifierProperty;
+    private String instanceName;
+    private String keyValue;
     
     // Calculated values
     private String xmlPath = EMPTY;
@@ -221,7 +220,9 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
         }
     }
     
-    
+    public String _getSelfXmlTag() {
+        return selfXmlTag;
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean#_getXmlPath()
@@ -230,18 +231,30 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
     public String _getXmlPath() {
         return xmlPath;
     }
+    
+    public void _setInstanceName(String name) {
+        instanceName = name;
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean#_getInstanceName()
      */
     @Override
     public String _getInstanceName() {
-        // TODO Auto-generated method stub
-        return null;
+        return instanceName;
+    }
+    
+    public void _setKeyValue(String key) {
+        keyValue = key;
+    }
+    
+    @Override
+    public String _getKeyValue() {
+        return keyValue;
     }
     
     @Override
     public String toString() {
-        return "BaseHK2JAXBBean(XmlPath=" + xmlPath + "," + System.identityHashCode(this) + ")";
+        return "BaseHK2JAXBBean(XmlPath=" + xmlPath + ",instanceName=" + instanceName + ",keyValue=" + keyValue + "," + System.identityHashCode(this) + ")";
     }
 }

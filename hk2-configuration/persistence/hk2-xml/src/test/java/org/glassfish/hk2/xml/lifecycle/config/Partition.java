@@ -7,6 +7,8 @@ import java.beans.PropertyVetoException;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
+import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
+
 //import javax.validation.constraints.NotNull;
 
 public interface Partition extends PropertyBag, Auditable {
@@ -18,6 +20,7 @@ public interface Partition extends PropertyBag, Auditable {
   
   
   @XmlAttribute(required=true /*, key=false */)
+  @XmlIdentifier
   // @NotNull
   void setName(String value) throws PropertyVetoException;
   String getName();

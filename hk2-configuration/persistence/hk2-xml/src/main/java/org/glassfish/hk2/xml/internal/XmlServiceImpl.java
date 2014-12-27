@@ -52,7 +52,11 @@ import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
+import org.glassfish.hk2.configuration.hub.api.WriteableType;
+import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.xml.api.XmlHubCommitMessage;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
@@ -108,7 +112,7 @@ public class XmlServiceImpl implements XmlService {
     
     @SuppressWarnings("unchecked")
     private <T> XmlRootHandle<T> unmarshallClass(URI uri, Class<T> jaxbAnnotatedClass, Class<T> originalClass,
-            boolean advertise, boolean hub) throws Exception {
+            boolean advertise, boolean advertiseInHub) throws Exception {
         JAXBContext context = JAXBContext.newInstance(jaxbAnnotatedClass);
         
         Listener listener = new Listener(jaUtilities);
@@ -117,19 +121,40 @@ public class XmlServiceImpl implements XmlService {
         
         T root = (T) unmarshaller.unmarshal(uri.toURL());
         
+        for (BaseHK2JAXBBean base : listener.getAllBeans()) {
+            String instanceName = createInstanceName(base);
+            base._setInstanceName(instanceName);
+        }
+        
         if (advertise) {
             DynamicConfiguration config = dcs.createDynamicConfiguration();
             
             for (BaseHK2JAXBBean bean : listener.getAllBeans()) {
-                ActiveDescriptor<?> cDesc = BuilderHelper.createConstantDescriptor(bean);
+                AbstractActiveDescriptor<?> cDesc = BuilderHelper.createConstantDescriptor(bean);
+                if (bean._getKeyValue() != null) {
+                    cDesc.setName(bean._getKeyValue());
+                }
                 config.addActiveDescriptor(cDesc);
             }
             
             config.commit();
         }
         
+        if (advertiseInHub) {
+            WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+            
+            for (BaseHK2JAXBBean bean : listener.getAllBeans()) {
+                WriteableType wt = wbd.findOrAddWriteableType(bean._getXmlPath());
+                wt.addInstance(bean._getInstanceName(), bean._getBeanLikeMap());
+            }
+            
+            wbd.commit(new XmlHubCommitMessage() {});
+        }
+        
         return new XmlRootHandleImpl<T>(root, originalClass, uri);
     }
+    
+    
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.api.XmlService#createEmptyHandle(java.lang.Class)
@@ -152,6 +177,29 @@ public class XmlServiceImpl implements XmlService {
         }
     }
     
+    private String getKeySegment(BaseHK2JAXBBean bean) {
+        UnparentedNode baseNode = jaUtilities.getNode(bean.getClass());
+        
+        String baseKeySegment;
+        if (baseNode.getKeyProperty() != null) {
+            baseKeySegment = (String) bean._getProperty(baseNode.getKeyProperty());
+            bean._setKeyValue(baseKeySegment);
+        }
+        else {
+            baseKeySegment = bean._getSelfXmlTag();
+        }
+        
+        return baseKeySegment;
+    }
+    
+    private String createInstanceName(BaseHK2JAXBBean bean) {
+        if (bean._getParent() == null) {
+            return getKeySegment(bean);
+        }
+        
+        return createInstanceName((BaseHK2JAXBBean) bean._getParent()) + "." + getKeySegment(bean);
+    }
+    
     private static class Listener extends Unmarshaller.Listener {
         private final LinkedList<BaseHK2JAXBBean> allBeans = new LinkedList<BaseHK2JAXBBean>();
         private final JAUtilities jaUtilities;
@@ -167,6 +215,8 @@ public class XmlServiceImpl implements XmlService {
             BaseHK2JAXBBean base = (BaseHK2JAXBBean) target;
             
             base._setParent(parent);
+            
+            
             
             allBeans.add(base);
         }
@@ -192,6 +242,8 @@ public class XmlServiceImpl implements XmlService {
                 baseBean._setSelfXmlTag(childNode.getChildName());
             }
         }
+        
+        
         
         private LinkedList<BaseHK2JAXBBean> getAllBeans() {
             return allBeans;

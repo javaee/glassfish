@@ -57,6 +57,7 @@ public class UnparentedNode {
     private Class<?> translatedClass;
     private String rootName;
     private final Map<Class<?>, ParentedNode> children = new HashMap<Class<?>, ParentedNode>();
+    private String keyProperty;
     
     public UnparentedNode(Class<?> originalInterface) {
         this.originalInterface = originalInterface;
@@ -104,6 +105,20 @@ public class UnparentedNode {
         synchronized (children) {
             return children.get(childType);
         }
+    }
+
+    /**
+     * @return the keyProperty
+     */
+    public String getKeyProperty() {
+        return keyProperty;
+    }
+
+    /**
+     * @param keyProperty the keyProperty to set
+     */
+    public void setKeyProperty(String keyProperty) {
+        this.keyProperty = keyProperty;
     }
 
     @Override

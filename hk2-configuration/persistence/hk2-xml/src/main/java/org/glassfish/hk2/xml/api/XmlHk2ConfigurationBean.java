@@ -81,5 +81,12 @@ public interface XmlHk2ConfigurationBean {
      * @return The instance path/name for this object
      */
     public String _getInstanceName();
+    
+    /**
+     * Returns the key value for this object
+     * 
+     * @return The instance path/name for this object
+     */
+    public String _getKeyValue();
 
 }

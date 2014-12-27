@@ -50,6 +50,7 @@ import java.util.Map;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import javassist.ClassPool;
@@ -69,6 +70,7 @@ import javassist.bytecode.annotation.StringMemberValue;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
+import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 import org.glassfish.hk2.xml.jaxb.internal.XmlElementImpl;
 import org.glassfish.hk2.xml.jaxb.internal.XmlRootElementImpl;
@@ -195,11 +197,22 @@ public class JAUtilities {
             Map<String, String> xmlNameMap = getXmlNameMap(convertMe);
             
             HashMap<UnparentedNode, String> childTypes = new HashMap<UnparentedNode, String>();
+            MethodInformation foundKey = null;
             for (Method originalMethod : convertMe.getMethods()) {
                 MethodInformation mi = getMethodInformation(originalMethod, xmlNameMap);
                 
+                if (mi.key) {
+                    if (foundKey != null) {
+                        throw new RuntimeException("Class " + convertMe.getName() + " has multiple key properties (" + originalMethod.getName() +
+                                " and " + foundKey.originalMethod.getName());
+                    }
+                    foundKey = mi;
+                    
+                    retVal.setKeyProperty(mi.representedProperty);
+                }
+                
                 UnparentedNode childType = null;
-                if (MethodType.SETTER.equals(mi.baseChildType)) {
+                if (MethodType.SETTER.equals(mi.methodType)) {
                     if (mi.baseChildType != null) {
                         if (!interface2NodeCache.containsKey(mi.baseChildType)) {
                             throw new RuntimeException("The child of type " + mi.baseChildType.getName() + " is unknown for method " + mi.originalMethod);
@@ -208,7 +221,7 @@ public class JAUtilities {
                         childType = interface2NodeCache.get(mi.baseChildType);
                     }
                 }
-                else if (MethodType.GETTER.equals(mi.baseChildType)) {
+                else if (MethodType.GETTER.equals(mi.methodType)) {
                     if (mi.baseChildType != null) {
                         if (!interface2NodeCache.containsKey(mi.baseChildType)) {
                             throw new RuntimeException("The child of type " + mi.baseChildType.getName() + " is unknown for method " + mi.originalMethod);
@@ -283,8 +296,19 @@ public class JAUtilities {
         Map<String, String> xmlNameMap = getXmlNameMap(convertMe);
         
         HashMap<UnparentedNode, String> childTypes = new HashMap<UnparentedNode, String>();
+        MethodInformation foundKey = null;
         for (Method originalMethod : convertMe.getMethods()) {
             MethodInformation mi = getMethodInformation(originalMethod, xmlNameMap);
+            
+            if (mi.key) {
+                if (foundKey != null) {
+                    throw new RuntimeException("Class " + convertMe.getName() + " has multiple key properties (" + originalMethod.getName() +
+                            " and " + foundKey.originalMethod.getName());
+                }
+                foundKey = mi;
+                
+                retVal.setKeyProperty(mi.representedProperty);
+            }
             
             String name = originalMethod.getName();
             
@@ -541,7 +565,12 @@ public class JAUtilities {
         String representedProperty = xmlNameMap.get(variable);
         if (representedProperty == null) representedProperty = variable;
         
-        return new MethodInformation(m, methodType, representedProperty, baseChildType, gsType);
+        boolean key = false;
+        if ((m.getAnnotation(XmlID.class) != null) || (m.getAnnotation(XmlIdentifier.class) != null)) {
+            key = true;
+        }
+        
+        return new MethodInformation(m, methodType, representedProperty, baseChildType, gsType, key);
     }
     
     private static class MethodInformation {
@@ -550,17 +579,32 @@ public class JAUtilities {
         private final Class<?> gsType;
         private final String representedProperty;
         private final Class<?> baseChildType;
+        private final boolean key;
         
         private MethodInformation(Method originalMethod,
                 MethodType methodType,
                 String representedProperty,
                 Class<?> baseChildType,
-                Class<?> gsType) {
+                Class<?> gsType,
+                boolean key) {
             this.originalMethod = originalMethod;
             this.methodType = methodType;
             this.representedProperty = representedProperty;
             this.baseChildType = baseChildType;
             this.gsType = gsType;
+            this.key = key;
+        }
+        
+        @Override
+        public String toString() {
+            return "MethodInformation(" + originalMethod.getName() + "," +
+              methodType + "," +
+              gsType + "," +
+              representedProperty + "," +
+              baseChildType + "," +
+              key + "," +
+              System.identityHashCode(this) + ")";
+              
         }
     }
     
