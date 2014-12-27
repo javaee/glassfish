@@ -48,6 +48,8 @@ import org.glassfish.hk2.api.AnnotationLiteral;
  *
  */
 public class XmlElementImpl extends AnnotationLiteral<XmlElement> implements XmlElement {
+    private static final long serialVersionUID = -5015658933035011114L;
+    
     private final String name;
     private final boolean nillable;
     private final boolean required;

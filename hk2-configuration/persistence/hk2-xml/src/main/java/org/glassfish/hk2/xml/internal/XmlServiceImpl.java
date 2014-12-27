@@ -47,7 +47,6 @@ import javax.inject.Singleton;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 
-import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.MultiException;
@@ -67,6 +66,8 @@ import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
  */
 @Singleton
 public class XmlServiceImpl implements XmlService {
+    private final static char INSTANCE_PATH_SEPARATOR = '.';
+    
     private final JAUtilities jaUtilities = new JAUtilities();
     
     @Inject
@@ -161,13 +162,14 @@ public class XmlServiceImpl implements XmlService {
      */
     @Override
     public <T> XmlRootHandle<T> createEmptyHandle(
-            Class<T> jaxbAnnotationInterface) {
+            Class<T> jaxbAnnotatedInterface) {
+        if (!jaxbAnnotatedInterface.isInterface()) {
+            throw new IllegalArgumentException("Only an interface can be given to unmarshall: " + jaxbAnnotatedInterface.getName());
+        }
         try {
-            if (jaxbAnnotationInterface.isInterface()) {
-                jaUtilities.convertRootAndLeaves(jaxbAnnotationInterface);
-            }
+            jaUtilities.convertRootAndLeaves(jaxbAnnotatedInterface);
         
-            return new XmlRootHandleImpl<T>(null, jaxbAnnotationInterface, null);
+            return new XmlRootHandleImpl<T>(null, jaxbAnnotatedInterface, null);
         }
         catch (RuntimeException re) {
             throw re;
@@ -197,7 +199,7 @@ public class XmlServiceImpl implements XmlService {
             return getKeySegment(bean);
         }
         
-        return createInstanceName((BaseHK2JAXBBean) bean._getParent()) + "." + getKeySegment(bean);
+        return createInstanceName((BaseHK2JAXBBean) bean._getParent()) + INSTANCE_PATH_SEPARATOR + getKeySegment(bean);
     }
     
     private static class Listener extends Unmarshaller.Listener {
@@ -215,8 +217,6 @@ public class XmlServiceImpl implements XmlService {
             BaseHK2JAXBBean base = (BaseHK2JAXBBean) target;
             
             base._setParent(parent);
-            
-            
             
             allBeans.add(base);
         }
@@ -242,8 +242,6 @@ public class XmlServiceImpl implements XmlService {
                 baseBean._setSelfXmlTag(childNode.getChildName());
             }
         }
-        
-        
         
         private LinkedList<BaseHK2JAXBBean> getAllBeans() {
             return allBeans;

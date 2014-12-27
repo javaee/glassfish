@@ -59,7 +59,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
     
     private final static String EMPTY = "";
     private final static char XML_PATH_SEPARATOR = '/';
-    private final static char INSTANCE_PATH_SEPARATOR = '.';
+    
     
     private final ConcurrentHashMap<String, Object> beanLikeMap = new ConcurrentHashMap<String, Object>();
     
