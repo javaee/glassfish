@@ -152,7 +152,7 @@ public class XmlServiceImpl implements XmlService {
             wbd.commit(new XmlHubCommitMessage() {});
         }
         
-        return new XmlRootHandleImpl<T>(root, originalClass, uri);
+        return new XmlRootHandleImpl<T>(root, originalClass, uri, advertise, advertiseInHub);
     }
     
     
@@ -162,14 +162,15 @@ public class XmlServiceImpl implements XmlService {
      */
     @Override
     public <T> XmlRootHandle<T> createEmptyHandle(
-            Class<T> jaxbAnnotatedInterface) {
+            Class<T> jaxbAnnotatedInterface, boolean advertiseInRegistry,
+            boolean advertiseInHub) {
         if (!jaxbAnnotatedInterface.isInterface()) {
             throw new IllegalArgumentException("Only an interface can be given to unmarshall: " + jaxbAnnotatedInterface.getName());
         }
         try {
             jaUtilities.convertRootAndLeaves(jaxbAnnotatedInterface);
         
-            return new XmlRootHandleImpl<T>(null, jaxbAnnotatedInterface, null);
+            return new XmlRootHandleImpl<T>(null, jaxbAnnotatedInterface, null, advertiseInRegistry, advertiseInHub);
         }
         catch (RuntimeException re) {
             throw re;
@@ -177,6 +178,15 @@ public class XmlServiceImpl implements XmlService {
         catch (Exception e) {
             throw new MultiException(e);
         }
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlService#createEmptyHandle(java.lang.Class, boolean, boolean)
+     */
+    @Override
+    public <T> XmlRootHandle<T> createEmptyHandle(
+            Class<T> jaxbAnnotationInterface) {
+        return createEmptyHandle(jaxbAnnotationInterface, true, true);
     }
     
     private String getKeySegment(BaseHK2JAXBBean bean) {
@@ -248,4 +258,6 @@ public class XmlServiceImpl implements XmlService {
         }
         
     }
+
+   
 }

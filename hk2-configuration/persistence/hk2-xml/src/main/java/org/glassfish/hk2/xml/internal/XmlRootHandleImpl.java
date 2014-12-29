@@ -41,6 +41,7 @@ package org.glassfish.hk2.xml.internal;
 
 import java.net.URI;
 
+import org.glassfish.hk2.xml.api.XmlRootCopy;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 
 /**
@@ -51,11 +52,15 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
     private final T root;
     private final Class<T> rootClass;
     private URI rootURI;
+    private final boolean advertised;
+    private final boolean advertisedInHub;
     
-    /* package */ XmlRootHandleImpl(T root, Class<T> rootClass, URI rootURI) {
+    /* package */ XmlRootHandleImpl(T root, Class<T> rootClass, URI rootURI, boolean advertised, boolean hub) {
         this.root = root;
         this.rootClass = rootClass;
         this.rootURI = rootURI;
+        this.advertised = advertised;
+        this.advertisedInHub = hub;
     }
 
     /* (non-Javadoc)
@@ -82,9 +87,46 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
         return rootURI;
     }
     
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlRootHandle#isAdvertisedInLocator()
+     */
+    @Override
+    public boolean isAdvertisedInLocator() {
+        return advertised;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlRootHandle#isAdvertisedInHub()
+     */
+    @Override
+    public boolean isAdvertisedInHub() {
+        return advertisedInHub;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlRootHandle#overlay(org.glassfish.hk2.xml.api.XmlRootHandle)
+     */
+    @Override
+    public void overlay(XmlRootHandle<T> newRoot) {
+        throw new AssertionError("overlay not yet implemented");
+        
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlRootHandle#getXmlRootCopy()
+     */
+    @Override
+    public XmlRootCopy<T> getXmlRootCopy() {
+        throw new AssertionError("getXmlRootCopy not yet implemented");
+    }
+    
     @Override
     public String toString() {
         return "XmlRootHandleImpl(" + root + "," + rootClass.getName() + "," + rootURI + "," + System.identityHashCode(this) + ")";
     }
+
+    
+
+    
 
 }

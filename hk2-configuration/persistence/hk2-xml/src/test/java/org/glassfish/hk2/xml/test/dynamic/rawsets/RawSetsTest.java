@@ -52,6 +52,7 @@ import org.glassfish.hk2.configuration.hub.api.Change;
 import org.glassfish.hk2.configuration.hub.api.Change.ChangeCategory;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
+import org.glassfish.hk2.xml.api.XmlRootCopy;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.Museum;
@@ -65,6 +66,8 @@ import org.junit.Test;
  *
  */
 public class RawSetsTest {
+    public final static String MUSEUM2_FILE = "museum2.xml";
+    
     private final static String MUSEUM_TYPE = "/museum";
     private final static String MUSEUM_INSTANCE = "museum";
     
@@ -73,20 +76,11 @@ public class RawSetsTest {
     private final static int ONE_OH_ONE_INT = 101;
     
     /**
-     * Tests that single fields can be modified
-     * 
-     * @throws Exception
+     * Just verifies that the original state of the Museum
+     * object from the file is as expected
      */
-    @Test @org.junit.Ignore
-    public void testModifySingleProperty() throws Exception {
-        ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
-        XmlService xmlService = locator.getService(XmlService.class);
-        Hub hub = locator.getService(Hub.class);
-        UpdateListener listener = locator.getService(UpdateListener.class);
-        
-        URL url = getClass().getClassLoader().getResource(UnmarshallTest.MUSEUM1_FILE);
-        
-        XmlRootHandle<Museum> rootHandle = xmlService.unmarshall(url.toURI(), Museum.class);
+    @SuppressWarnings("unchecked")
+    private void verifyPreState(XmlRootHandle<Museum> rootHandle, Hub hub) {
         Museum museum = rootHandle.getRoot();
         
         Assert.assertEquals(UnmarshallTest.HUNDRED_INT, museum.getId());
@@ -100,6 +94,29 @@ public class RawSetsTest {
         Assert.assertEquals(UnmarshallTest.HUNDRED_INT, beanLikeMap.get(UnmarshallTest.ID_TAG));
         Assert.assertEquals(UnmarshallTest.HUNDRED_TEN_INT, beanLikeMap.get(AGE_TAG));
         
+    }
+    
+    /**
+     * Tests that single fields can be modified
+     * 
+     * @throws Exception
+     */
+    @SuppressWarnings("unchecked")
+    @Test @org.junit.Ignore
+    public void testModifySingleProperty() throws Exception {
+        ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        UpdateListener listener = locator.getService(UpdateListener.class);
+        
+        URL url = getClass().getClassLoader().getResource(UnmarshallTest.MUSEUM1_FILE);
+        
+        XmlRootHandle<Museum> rootHandle = xmlService.unmarshall(url.toURI(), Museum.class);
+        
+        verifyPreState(rootHandle, hub);
+        
+        Museum museum = rootHandle.getRoot();
+        
         // All above just verifying the pre-state
         museum.setAge(ONE_OH_ONE_INT);  // getting younger?
         
@@ -107,8 +124,8 @@ public class RawSetsTest {
         Assert.assertEquals(UnmarshallTest.BEN_FRANKLIN, museum.getName());
         Assert.assertEquals(ONE_OH_ONE_INT, museum.getAge());
         
-        instance = hub.getCurrentDatabase().getInstance(MUSEUM_TYPE, MUSEUM_INSTANCE);
-        beanLikeMap = (Map<String, Object>) instance.getBean();
+        Instance instance = hub.getCurrentDatabase().getInstance(MUSEUM_TYPE, MUSEUM_INSTANCE);
+        Map<String, Object> beanLikeMap = (Map<String, Object>) instance.getBean();
         
         Assert.assertEquals(UnmarshallTest.BEN_FRANKLIN, beanLikeMap.get(UnmarshallTest.NAME_TAG));
         Assert.assertEquals(UnmarshallTest.HUNDRED_INT, beanLikeMap.get(UnmarshallTest.ID_TAG));
@@ -118,6 +135,113 @@ public class RawSetsTest {
         Assert.assertNotNull(changes);
         
         Assert.assertEquals(1, changes.size());
+        
+        for (Change change : changes) {
+            Assert.assertEquals(ChangeCategory.MODIFY_INSTANCE, change.getChangeCategory());
+        }
+    }
+    
+    /**
+     * Modifies two properties with one transaction
+     * 
+     * @throws Exception
+     */
+    @SuppressWarnings("unchecked")
+    @Test @org.junit.Ignore
+    public void testModifyTwoPropertiesOneTransaction() throws Exception {
+        ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        UpdateListener listener = locator.getService(UpdateListener.class);
+        
+        URL url = getClass().getClassLoader().getResource(UnmarshallTest.MUSEUM1_FILE);
+        
+        XmlRootHandle<Museum> rootHandle = xmlService.unmarshall(url.toURI(), Museum.class);
+        
+        verifyPreState(rootHandle, hub);
+        
+        // All above just verifying the pre-state
+        XmlRootCopy<Museum> copy = rootHandle.getXmlRootCopy();
+        Museum museumCopy = copy.getChildRoot();
+        Museum museumOld = rootHandle.getRoot();
+        
+        museumCopy.setAge(ONE_OH_ONE_INT);  // getting younger?
+        museumCopy.setId(ONE_OH_ONE_INT);  // different from original!
+        
+        // Ensure that the modification of the copy did NOT affect the parent!
+        verifyPreState(rootHandle, hub);
+        
+        // Now do the merge
+        copy.merge();
+        
+        // Now make sure new values show up
+        Assert.assertEquals(ONE_OH_ONE_INT, museumOld.getId());
+        Assert.assertEquals(UnmarshallTest.BEN_FRANKLIN, museumOld.getName());
+        Assert.assertEquals(ONE_OH_ONE_INT, museumOld.getAge());
+        
+        Instance instance = hub.getCurrentDatabase().getInstance(MUSEUM_TYPE, MUSEUM_INSTANCE);
+        Map<String, Object> beanLikeMap = (Map<String, Object>) instance.getBean();
+        
+        Assert.assertEquals(UnmarshallTest.BEN_FRANKLIN, beanLikeMap.get(UnmarshallTest.NAME_TAG));
+        Assert.assertEquals(ONE_OH_ONE_INT, beanLikeMap.get(UnmarshallTest.ID_TAG));
+        Assert.assertEquals(ONE_OH_ONE_INT, beanLikeMap.get(AGE_TAG));  // The test
+        
+        List<Change> changes = listener.changes;
+        Assert.assertNotNull(changes);
+        
+        Assert.assertEquals(2, changes.size());
+        
+        for (Change change : changes) {
+            Assert.assertEquals(ChangeCategory.MODIFY_INSTANCE, change.getChangeCategory());
+        }
+    }
+    
+    /**
+     * Overlays original file with new file
+     * 
+     * @throws Exception
+     */
+    @SuppressWarnings("unchecked")
+    @Test @org.junit.Ignore
+    public void testOverlay() throws Exception {
+        ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        UpdateListener listener = locator.getService(UpdateListener.class);
+        
+        URL url = getClass().getClassLoader().getResource(UnmarshallTest.MUSEUM1_FILE);
+        
+        XmlRootHandle<Museum> rootHandle = xmlService.unmarshall(url.toURI(), Museum.class);
+        
+        verifyPreState(rootHandle, hub);
+        
+        URL url2 = getClass().getClassLoader().getResource(MUSEUM2_FILE);
+        
+        XmlRootHandle<Museum> rootHandle2 = xmlService.unmarshall(url2.toURI(), Museum.class, false, false);
+        
+        // This just checks to make sure the original tree was not modified when creating the second handle
+        verifyPreState(rootHandle, hub);
+        
+        rootHandle.overlay(rootHandle2);
+        
+        Museum museum = rootHandle.getRoot();
+        
+        // Now make sure new values show up
+        Assert.assertEquals(ONE_OH_ONE_INT, museum.getId());
+        Assert.assertEquals(UnmarshallTest.BEN_FRANKLIN, museum.getName());
+        Assert.assertEquals(ONE_OH_ONE_INT, museum.getAge());
+        
+        Instance instance = hub.getCurrentDatabase().getInstance(MUSEUM_TYPE, MUSEUM_INSTANCE);
+        Map<String, Object> beanLikeMap = (Map<String, Object>) instance.getBean();
+        
+        Assert.assertEquals(UnmarshallTest.BEN_FRANKLIN, beanLikeMap.get(UnmarshallTest.NAME_TAG));
+        Assert.assertEquals(ONE_OH_ONE_INT, beanLikeMap.get(UnmarshallTest.ID_TAG));
+        Assert.assertEquals(ONE_OH_ONE_INT, beanLikeMap.get(AGE_TAG));  // The test
+        
+        List<Change> changes = listener.changes;
+        Assert.assertNotNull(changes);
+        
+        Assert.assertEquals(2, changes.size());
         
         for (Change change : changes) {
             Assert.assertEquals(ChangeCategory.MODIFY_INSTANCE, change.getChangeCategory());

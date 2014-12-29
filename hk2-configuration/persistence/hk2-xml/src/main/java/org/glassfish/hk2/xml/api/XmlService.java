@@ -81,6 +81,22 @@ public interface XmlService {
      * 
      * @param jaxbAnnotationInterface The non-null interface class corresponding to
      * the XML to be parsed
+     * @param advertiseInRegistry if true the entire tree of parsed xml will be added to the
+     * ServiceLocator
+     * @param advertiseInHub if true the entire tree of parsed xml will be added to the
+     * HK2 configuration Hub (as bean-like maps)
+     * @return A non-null handle that can be used to create a new root bean, but which
+     * is not initially tied to any backing file or other input stream
+     */
+    public <T> XmlRootHandle<T> createEmptyHandle(Class<T> jaxbAnnotationInterface,
+            boolean advertiseInRegistry, boolean advertiseInHub);
+    
+    /**
+     * This creates an empty handle (root will initially be null) corresponding to
+     * the given interface class
+     * 
+     * @param jaxbAnnotationInterface The non-null interface class corresponding to
+     * the XML to be parsed
      * @return A non-null handle that can be used to create a new root bean, but which
      * is not initially tied to any backing file or other input stream
      */

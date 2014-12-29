@@ -58,8 +58,7 @@ public interface XmlRootHandle<T> {
     public T getRoot();
     
     /**
-     * Returns the root class or interface of this
-     * handle
+     * Returns the root interface of this handle
      * 
      * @return The root class or interface of this
      * handle.  Will not return  null
@@ -77,6 +76,60 @@ public interface XmlRootHandle<T> {
      */
     public URI getURI();
     
+    /**
+     * Returns true if this handles root and children
+     * are advertised in it service locator
+     * 
+     * @return true if the root and children are
+     * advertised in the associated service locator
+     */
+    public boolean isAdvertisedInLocator();
     
-
+    /**
+     * Returns true if this handles root and children
+     * are advertised in the {@link org.glassfish.hk2.configuration.hub.api.Hub}
+     * 
+     * @return true if the root and children are
+     * advertised in the associated
+     * {@link org.glassfish.hk2.configuration.hub.api.Hub}
+     */
+    public boolean isAdvertisedInHub();
+    
+    /**
+     * Creates a copy of this tree that is not advertised.
+     * Modifications can be made to this copy and then
+     * merged back into the parent in a single transaction
+     * <p>
+     * There is no requirement to call {@link XmlRootCopy#merge()}
+     * since the parent keeps no track of children.  However,
+     * the {@link XmlRootCopy#merge()} method will fail if
+     * a modification has been made to the parent since the
+     * time the copy was created 
+     * 
+     * @return A non-null copy of this root that can be modified
+     * and then merged back in a single transaction
+     */
+    public XmlRootCopy<T> getXmlRootCopy();
+    
+    /**
+     * This method overlays the current root and children with
+     * the root and children from newRoot.  newRoot must
+     * have the same rootClass and must NOT be advertised
+     * in either the locator or the hub.  The system will
+     * calculate the set of changes needed to convert this
+     * root into the root from newRoot.
+     * <p>
+     * All nodes that are at the same spot in the tree (have the same
+     * xpath and same instance name) will not be modified, but will
+     * instead have attributes changed.  All nodes present in newRoot
+     * but not in this root will be considered adds.  All nodes
+     * not present in newRoot but in this root will be considered deletes
+     * <p>
+     * The URI will not be modified by this call, nor will the
+     * state of advertisement
+     * 
+     * @param newRoot The non-null root that will be overlayed
+     * onto this handle
+     */
+    public void overlay(XmlRootHandle<T> newRoot);
 }
