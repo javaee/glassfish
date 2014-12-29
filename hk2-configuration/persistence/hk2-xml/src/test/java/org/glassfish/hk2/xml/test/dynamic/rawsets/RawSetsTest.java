@@ -93,7 +93,6 @@ public class RawSetsTest {
         Assert.assertEquals(UnmarshallTest.BEN_FRANKLIN, beanLikeMap.get(UnmarshallTest.NAME_TAG));
         Assert.assertEquals(UnmarshallTest.HUNDRED_INT, beanLikeMap.get(UnmarshallTest.ID_TAG));
         Assert.assertEquals(UnmarshallTest.HUNDRED_TEN_INT, beanLikeMap.get(AGE_TAG));
-        
     }
     
     /**
@@ -102,7 +101,7 @@ public class RawSetsTest {
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testModifySingleProperty() throws Exception {
         ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
         XmlService xmlService = locator.getService(XmlService.class);

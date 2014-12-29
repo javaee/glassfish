@@ -54,13 +54,15 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
     private URI rootURI;
     private final boolean advertised;
     private final boolean advertisedInHub;
+    private final DynamicChangeInfo changeControl;
     
-    /* package */ XmlRootHandleImpl(T root, Class<T> rootClass, URI rootURI, boolean advertised, boolean hub) {
+    /* package */ XmlRootHandleImpl(T root, Class<T> rootClass, URI rootURI, boolean advertised, boolean hub, DynamicChangeInfo changes) {
         this.root = root;
         this.rootClass = rootClass;
         this.rootURI = rootURI;
         this.advertised = advertised;
         this.advertisedInHub = hub;
+        this.changeControl = changes;
     }
 
     /* (non-Javadoc)

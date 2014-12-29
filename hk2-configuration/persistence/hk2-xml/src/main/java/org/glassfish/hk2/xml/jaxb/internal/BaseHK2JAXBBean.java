@@ -39,15 +39,19 @@
  */
 package org.glassfish.hk2.xml.jaxb.internal;
 
-import java.util.List;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
+import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
+import org.glassfish.hk2.configuration.hub.api.WriteableType;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
+import org.glassfish.hk2.xml.api.XmlHubCommitMessage;
+import org.glassfish.hk2.xml.internal.DynamicChangeInfo;
 
 /**
  * @author jwells
@@ -60,8 +64,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
     private final static String EMPTY = "";
     private final static char XML_PATH_SEPARATOR = '/';
     
-    
-    private final ConcurrentHashMap<String, Object> beanLikeMap = new ConcurrentHashMap<String, Object>();
+    private final HashMap<String, Object> beanLikeMap = new HashMap<String, Object>();
     
     private Object parent;
     private String parentXmlPath;
@@ -73,6 +76,34 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
     // Calculated values
     private String xmlPath = EMPTY;
     
+    private volatile DynamicChangeInfo changeControl;
+    
+    /**
+     * Called under write lock
+     * 
+     * @param propName The name of the property to change
+     * @param propValue The new value of the property
+     */
+    private void changeInHub(String propName, Object propValue) {
+        Hub hub = (changeControl != null) ? changeControl.getHub() : null;
+        if (hub == null) return;
+        
+        if (GeneralUtilities.safeEquals(beanLikeMap.get(propName), propValue)) {
+            // Calling set, but the value was not in fact changed
+            return;
+        }
+        
+        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+        WriteableType wt = wbd.getWriteableType(xmlPath);
+        
+        HashMap<String, Object> modified = new HashMap<String, Object>(beanLikeMap);
+        modified.put(propName, propValue);
+        
+        wt.modifyInstance(instanceName, modified);
+        
+        wbd.commit(new XmlHubCommitMessage() {});
+    }
+    
     public void _setProperty(String propName, Object propValue) {
         if (propName == null) throw new IllegalArgumentException("properyName may not be null");
         
@@ -81,7 +112,19 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
             Logger.getLogger().debug("XmlService setting property " + propName + " to " + propValue + " in " + this);
         }
         
-        beanLikeMap.put(propName, propValue);
+        if (changeControl != null) {
+            changeControl.getWriteLock().lock();
+        }
+        try {
+            changeInHub(propName, propValue);
+            
+            beanLikeMap.put(propName, propValue);
+        }
+        finally {
+            if (changeControl != null) {
+                changeControl.getWriteLock().unlock();
+            }
+        }
     }
     
     public void _setProperty(String propName, byte propValue) {
@@ -127,7 +170,19 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
     }
     
     public Object _getProperty(String propName) {
-        Object retVal = beanLikeMap.get(propName);
+        if (changeControl != null) {
+            changeControl.getReadLock().lock();
+        }
+        Object retVal;
+        
+        try {
+          retVal = beanLikeMap.get(propName);
+        }
+        finally {
+            if (changeControl != null) {
+                changeControl.getReadLock().unlock();
+            }
+        }
         
         if (DEBUG_GETS_AND_SETS) {
             // Hidden behind static because of potential expensive toString costs
@@ -178,19 +233,29 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
      */
     @Override
     public Map<String, Object> _getBeanLikeMap() {
-        HashMap<String, Object> intermediateCopy = new HashMap<String, Object>();
+        if (changeControl != null) {
+            changeControl.getReadLock().lock();
+        }
+        try {
+            HashMap<String, Object> intermediateCopy = new HashMap<String, Object>();
         
-        for (Map.Entry<String, Object> entrySet : beanLikeMap.entrySet()) {
-            if (entrySet.getValue() != null && List.class.isAssignableFrom(entrySet.getValue().getClass())) {
-                // Is a child
-                intermediateCopy.put(entrySet.getKey(), Collections.unmodifiableList((List<?>) entrySet.getValue()));
+            for (Map.Entry<String, Object> entrySet : beanLikeMap.entrySet()) {
+                if (entrySet.getValue() != null && List.class.isAssignableFrom(entrySet.getValue().getClass())) {
+                    // Is a child
+                    intermediateCopy.put(entrySet.getKey(), Collections.unmodifiableList((List<?>) entrySet.getValue()));
+                }
+                else {
+                    intermediateCopy.put(entrySet.getKey(), entrySet.getValue());
+                }
             }
-            else {
-                intermediateCopy.put(entrySet.getKey(), entrySet.getValue());
+        
+            return Collections.unmodifiableMap(intermediateCopy);
+        }
+        finally {
+            if (changeControl != null) {
+                changeControl.getReadLock().unlock();
             }
         }
-        
-        return Collections.unmodifiableMap(intermediateCopy);
     }
     
     /* (non-Javadoc)
@@ -251,6 +316,15 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
     @Override
     public String _getKeyValue() {
         return keyValue;
+    }
+    
+    /**
+     * Once this is set the dynamic change protocol is in effect
+     * 
+     * @param change The change control object
+     */
+    public void _setDynamicChangeInfo(DynamicChangeInfo change) {
+        changeControl = change;
     }
     
     @Override
