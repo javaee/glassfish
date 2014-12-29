@@ -59,26 +59,26 @@ import org.junit.Test;
  * @author jwells
  */
 public class UnmarshallTest {
-    private final static String MUSEUM1_FILE = "museum1.xml";
+    public final static String MUSEUM1_FILE = "museum1.xml";
     private final static String ACME1_FILE = "Acme1.xml";
     
-    private final static String BEN_FRANKLIN = "Ben Franklin";
+    public final static String BEN_FRANKLIN = "Ben Franklin";
     private final static String ACME = "Acme";
     private final static String BOB = "Bob";
     private final static String CAROL = "Carol";
     private final static String ACME_SYMBOL = "acme";
     private final static String NYSE = "NYSE";
     
-    private final static int HUNDRED_INT = 100;
-    private final static int HUNDRED_TEN_INT = 110;
+    public final static int HUNDRED_INT = 100;
+    public final static int HUNDRED_TEN_INT = 110;
     
     private final static long HUNDRED_LONG = 100L;
     private final static long HUNDRED_ONE_LONG = 101L;
     
     private final static String COMPANY_NAME_TAG = "company-name";
     private final static String EMPLOYEE_TAG = "employee";
-    private final static String NAME_TAG = "name";
-    private final static String ID_TAG = "id";
+    public final static String NAME_TAG = "name";
+    public final static String ID_TAG = "id";
     
     /**
      * Tests the most basic of xml files can be unmarshalled with an interface
@@ -104,62 +104,6 @@ public class UnmarshallTest {
         Assert.assertNotNull(asService);
         
         Assert.assertEquals(museum, asService);
-    }
-    
-    /**
-     * Tests the most basic of xml files can be unmarshalled with an class
-     * annotated with jaxb annotations
-     * 
-     * @throws Exception
-     */
-    @Test @org.junit.Ignore
-    public void testClassJaxbUnmarshalling() throws Exception {
-        ServiceLocator locator = Utilities.createLocator();
-        XmlService xmlService = locator.getService(XmlService.class);
-        
-        URL url = getClass().getClassLoader().getResource(MUSEUM1_FILE);
-        
-        XmlRootHandle<MuseumBean> rootHandle = xmlService.unmarshall(url.toURI(), MuseumBean.class);
-        Museum museum = rootHandle.getRoot();
-        
-        Assert.assertEquals(HUNDRED_INT, museum.getId());
-        Assert.assertEquals(BEN_FRANKLIN, museum.getName());
-        Assert.assertEquals(HUNDRED_TEN_INT, museum.getAge());
-    }
-    
-    /**
-     * Tests the most basic of xml files can be unmarshalled with an class
-     * annotated with jaxb annotations
-     * 
-     * @throws Exception
-     */
-    @Test @org.junit.Ignore
-    public void testClassJaxbUnmarshallingWithChildren() throws Exception {
-        ServiceLocator locator = Utilities.createLocator();
-        XmlService xmlService = locator.getService(XmlService.class);
-        
-        URL url = getClass().getClassLoader().getResource(ACME1_FILE);
-        
-        XmlRootHandle<EmployeesBean> rootHandle = xmlService.unmarshall(url.toURI(), EmployeesBean.class);
-        Employees employees = rootHandle.getRoot();
-        
-        Assert.assertEquals(ACME, employees.getCompanyName());
-        
-        Assert.assertEquals(2, employees.getEmployees().size());
-        
-        boolean first = true;
-        for (Employee employee : employees.getEmployees()) {
-            if (first) {
-                first = false;
-                Assert.assertEquals(HUNDRED_LONG, employee.getId());
-                Assert.assertEquals(BOB, employee.getName());
-            }
-            else {
-                Assert.assertEquals(HUNDRED_ONE_LONG, employee.getId());
-                Assert.assertEquals(CAROL, employee.getName());
-                
-            }
-        }
     }
     
     /**

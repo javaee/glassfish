@@ -42,6 +42,7 @@ package org.glassfish.hk2.xml.test.utilities;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.extension.ServiceLocatorGenerator;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.hk2.xml.api.XmlServiceUtilities;
 import org.jvnet.hk2.external.generator.ServiceLocatorGeneratorImpl;
 
@@ -57,8 +58,10 @@ public class Utilities {
      * 
      * @return A service locator with the XmlService added
      */
-    public static ServiceLocator createLocator() {
+    public static ServiceLocator createLocator(Class<?>... classes) {
         ServiceLocator retVal = ServiceLocatorFactory.getInstance().create(null, null, GENERATOR);
+        
+        ServiceLocatorUtilities.addClasses(retVal, classes);
         
         XmlServiceUtilities.enableXmlService(retVal);
         
