@@ -193,22 +193,16 @@ public class XmlServiceImpl implements XmlService {
         return createEmptyHandle(jaxbAnnotationInterface, true, true);
     }
     
-    private String getKeySegment(BaseHK2JAXBBean bean) {
-        UnparentedNode baseNode = jaUtilities.getNode(bean.getClass());
-        
-        String baseKeySegment;
-        if (baseNode.getKeyProperty() != null) {
-            baseKeySegment = (String) bean._getProperty(baseNode.getKeyProperty());
-            bean._setKeyValue(baseKeySegment);
-        }
-        else {
+    private static String getKeySegment(BaseHK2JAXBBean bean) {
+        String baseKeySegment = bean._getKeyValue();
+        if (baseKeySegment == null) {
             baseKeySegment = bean._getSelfXmlTag();
         }
         
         return baseKeySegment;
     }
     
-    private String createInstanceName(BaseHK2JAXBBean bean) {
+    private static String createInstanceName(BaseHK2JAXBBean bean) {
         if (bean._getParent() == null) {
             return getKeySegment(bean);
         }
@@ -228,11 +222,28 @@ public class XmlServiceImpl implements XmlService {
         public void afterUnmarshal(Object target, Object parent) {
             if (!(target instanceof BaseHK2JAXBBean)) return;
             
-            BaseHK2JAXBBean base = (BaseHK2JAXBBean) target;
+            BaseHK2JAXBBean targetBean = (BaseHK2JAXBBean) target;
+            UnparentedNode targetNode = jaUtilities.getNode(target.getClass());
             
-            base._setParent(parent);
+            String keyPropertyName = targetNode.getKeyProperty();
+            String keyProperty = null;
+            if (keyPropertyName != null) {
+                keyProperty = (String) targetBean._getProperty(keyPropertyName);
+                targetBean._setKeyValue(keyProperty);
+            }
             
-            allBeans.add(base);
+            targetBean._setParent(parent);
+            
+            allBeans.add(targetBean);
+            
+            if (parent == null || keyProperty == null) return;
+            
+            BaseHK2JAXBBean parentBean = (BaseHK2JAXBBean) parent;
+            UnparentedNode parentNode = jaUtilities.getNode(parent.getClass());
+            
+            ParentedNode childNode = parentNode.getChild(targetNode.getOriginalInterface());
+            
+            parentBean._addChild(childNode.getChildName(), keyProperty, targetBean);
         }
         
         @Override

@@ -10,12 +10,15 @@ import java.util.Date;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
+import org.jvnet.hk2.annotations.Contract;
+
 /**
  * Mix-in interface that provides fields to track created and updated information.
  * There is no need to write these fields, or if written, they will be overwritten
  * upon transaction commit
  * See {@link AuditInterceptor} for hooking it up into HK2 config system, i.e.
  */
+@Contract
 public interface Auditable {
   @XmlAttribute
   void setCreatedOn(String date);

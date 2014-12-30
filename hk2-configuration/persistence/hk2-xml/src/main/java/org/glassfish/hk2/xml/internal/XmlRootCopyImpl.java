@@ -37,60 +37,56 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.api;
+package org.glassfish.hk2.xml.internal;
+
+import org.glassfish.hk2.xml.api.XmlRootCopy;
+import org.glassfish.hk2.xml.api.XmlRootHandle;
 
 /**
- * This represents a copy of the parent
- * {@link XmlRootHandle}.  This tree can
- * be traversed and modified without those
- * modifications being reflected in the parent.
- * When the {@link #merge()} method is called
- * the parent tree will get all the changes
- * made to this tree in one commit.  The XmlRootCopy
- * allows for multiple changes to be made to the
- * root and its children in one atomic unit (either
- * all changes are made to the parent or none of them)
- * <p>
- * If the parent was changed after this copy
- * was created then the merge will fail.  The
- * method {@link #isMergeable()} can be used
- * to determine if this copy can still be merged
- * back into the parent
- * 
  * @author jwells
  *
  */
-public interface XmlRootCopy<T> {
-    /**
-     * Gets the XmlRootHandle from which
-     * @return
-     */
-    public XmlRootHandle<T> getParent();
+public class XmlRootCopyImpl<T> implements XmlRootCopy<T> {
+    private final XmlRootHandleImpl<T> parent;
+    private final long basis;
     
-    /**
-     * Gets the root of the JavaBean tree
-     * 
-     * @return The root of the JavaBean tree.  Will
-     * only return null if the tree has not yet
-     * been created
+    /* package */ XmlRootCopyImpl(XmlRootHandleImpl<T> parent, long basis) {
+        this.parent = parent;
+        this.basis = basis;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlRootCopy#getParent()
      */
-    public T getChildRoot();
-    
-    /**
-     * Returns true if this child copy can still
-     * have merge called on it succesfully
-     * 
-     * @return true if it is still possible to
-     * call merge (i.e., there has not been
-     * a change to the parent tree since this
-     * copy was made)
+    @Override
+    public XmlRootHandle<T> getParent() {
+        return parent;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlRootCopy#getChildRoot()
      */
-    public boolean isMergeable();
-    
-    /**
-     * Merges the changes made to this tree into
-     * the parent tree
+    @Override
+    public T getChildRoot() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlRootCopy#isMergeable()
      */
-    public void merge();
+    @Override
+    public boolean isMergeable() {
+        return (parent.getRevision() == basis);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlRootCopy#merge()
+     */
+    @Override
+    public void merge() {
+        throw new AssertionError("merge not yet implemented");
+        
+    }
 
 }

@@ -65,6 +65,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
     private final static char XML_PATH_SEPARATOR = '/';
     
     private final HashMap<String, Object> beanLikeMap = new HashMap<String, Object>();
+    private final HashMap<String, HashMap<String, BaseHK2JAXBBean>> children = new HashMap<String, HashMap<String, BaseHK2JAXBBean>>();
     
     private Object parent;
     private String parentXmlPath;
@@ -102,6 +103,8 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
         wt.modifyInstance(instanceName, modified);
         
         wbd.commit(new XmlHubCommitMessage() {});
+        
+        changeControl.incrementChangeNumber();
     }
     
     public void _setProperty(String propName, Object propValue) {
@@ -223,9 +226,37 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
     public double _getPropertyD(String propName) {
         return (Double) _getProperty(propName);
     }
+    
+    public Object _lookupChild(String propName, String keyValue) {
+        if (changeControl != null) {
+            changeControl.getReadLock().lock();
+        }
+        try {
+            HashMap<String, BaseHK2JAXBBean> byName = children.get(propName);
+            if (byName == null) return null;
+            
+            return byName.get(keyValue);
+        }
+        finally {
+            if (changeControl != null) {
+                changeControl.getReadLock().unlock();
+            }
+        }
+        
+    }
 
     public boolean _hasProperty(String propName) {
-        return beanLikeMap.containsKey(propName);
+        if (changeControl != null) {
+            changeControl.getReadLock().lock();
+        }
+        try {
+            return beanLikeMap.containsKey(propName);
+        }
+        finally {
+            if (changeControl != null) {
+                changeControl.getReadLock().unlock();
+            }
+        }
     }
 
     /* (non-Javadoc)
@@ -325,6 +356,16 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
      */
     public void _setDynamicChangeInfo(DynamicChangeInfo change) {
         changeControl = change;
+    }
+    
+    public void _addChild(String childXmlTag, String childKeyValue, BaseHK2JAXBBean child) {
+        HashMap<String, BaseHK2JAXBBean> byKey = children.get(childXmlTag);
+        if (byKey == null) {
+            byKey = new HashMap<String, BaseHK2JAXBBean>();
+            children.put(childXmlTag, byKey);
+        }
+        
+        byKey.put(childKeyValue, child);
     }
     
     @Override

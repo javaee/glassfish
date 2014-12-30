@@ -11,6 +11,8 @@ package org.glassfish.hk2.xml.lifecycle.config;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
+import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
+
 import java.beans.PropertyVetoException;
 
 // @ReferenceConstraint(skipDuringCreation=false, payload=Service.class)
@@ -22,6 +24,7 @@ public interface Service extends Payload, Auditable {
   void setId(String id) throws PropertyVetoException;
 
   @XmlAttribute(required=true /*, key=false */)
+  @XmlIdentifier
   // @NotNull
   String getName();
   void setName(String value) throws PropertyVetoException;

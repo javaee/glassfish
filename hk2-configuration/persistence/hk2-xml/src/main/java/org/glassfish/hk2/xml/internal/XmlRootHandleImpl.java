@@ -43,6 +43,7 @@ import java.net.URI;
 
 import org.glassfish.hk2.xml.api.XmlRootCopy;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
+import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 
 /**
  * @author jwells
@@ -119,16 +120,17 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
      */
     @Override
     public XmlRootCopy<T> getXmlRootCopy() {
+        BaseHK2JAXBBean bean = (BaseHK2JAXBBean) root;
+        
         throw new AssertionError("getXmlRootCopy not yet implemented");
+    }
+    
+    /* package */ long getRevision() {
+        return changeControl.getChangeNumber();
     }
     
     @Override
     public String toString() {
         return "XmlRootHandleImpl(" + root + "," + rootClass.getName() + "," + rootURI + "," + System.identityHashCode(this) + ")";
     }
-
-    
-
-    
-
 }

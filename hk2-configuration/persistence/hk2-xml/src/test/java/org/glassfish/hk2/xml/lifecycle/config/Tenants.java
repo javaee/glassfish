@@ -8,8 +8,11 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.jvnet.hk2.annotations.Contract;
+
+@Contract
 public interface Tenants {
-  @XmlElement(name="*")
+  @XmlElement(name="tenant")
   List<Tenant> getTenants();
   void setTenants(List<Tenant> tenants);
   

@@ -10,6 +10,9 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
+import org.jvnet.hk2.annotations.Contract;
+
+@Contract
 public interface Tenant extends Named, Payload, Auditable {
 
   @XmlAttribute
@@ -20,9 +23,10 @@ public interface Tenant extends Named, Payload, Auditable {
   String getTopLevelDir();
   void setTopLevelDir(String topLevelDir);
   
-  @XmlElement(name="*")
+  @XmlElement(name="service")
   List<Service> getServices();
   void setServices(List<Service> services);
+  Service lookupServices(String name);
 
   /*
   @DuckTyped

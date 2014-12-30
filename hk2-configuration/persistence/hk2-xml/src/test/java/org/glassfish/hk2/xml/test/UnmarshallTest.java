@@ -49,6 +49,8 @@ import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.lifecycle.config.LifecycleConfig;
+import org.glassfish.hk2.xml.lifecycle.config.Service;
+import org.glassfish.hk2.xml.lifecycle.config.Tenant;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
 import org.junit.Assert;
 import org.junit.Test;
@@ -68,6 +70,8 @@ public class UnmarshallTest {
     private final static String CAROL = "Carol";
     private final static String ACME_SYMBOL = "acme";
     private final static String NYSE = "NYSE";
+    private final static String COKE_TENANT = "coke";
+    private final static String HRPROD_SERVICE = "HRProd";
     
     public final static int HUNDRED_INT = 100;
     public final static int HUNDRED_TEN_INT = 110;
@@ -240,6 +244,13 @@ public class UnmarshallTest {
         // Runtime
         Assert.assertNotNull(hub.getCurrentDatabase().getInstance(LIFECYCLE_RUNTIME_TYPE, LIFECYCLE_RUNTIME_wlsRuntime_INSTANCE));
         Assert.assertNotNull(hub.getCurrentDatabase().getInstance(LIFECYCLE_RUNTIME_TYPE, LIFECYCLE_RUNTIME_DatabaseTestRuntime_INSTANCE));
+        
+        Tenant tenant = locator.getService(Tenant.class, COKE_TENANT);
+        Assert.assertNotNull(tenant);
+        
+        Service hrProdService = tenant.lookupServices(HRPROD_SERVICE);
+        Assert.assertNotNull(hrProdService);
+        Assert.assertEquals(HRPROD_SERVICE, hrProdService.getName());
     }
     
     private final static String FOOBAR_ROOT_TYPE = "/foobar";

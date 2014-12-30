@@ -96,6 +96,23 @@ public class Utilities {
         return null;
     }
     
+    /* package */ static String isLookup(Method method) {
+        String name = method.getName();
+        
+        if (!name.startsWith(JAUtilities.LOOKUP)) return null;
+        
+        if (name.length() <= JAUtilities.LOOKUP.length()) return null;
+        Class<?> parameterTypes[] = method.getParameterTypes();
+        if (parameterTypes.length != 1) return null;
+        if (!String.class.equals(parameterTypes[0])) return null;
+            
+        if (method.getReturnType() == null || void.class.equals(method.getReturnType())) return null;
+            
+        String variableName = name.substring(JAUtilities.LOOKUP.length());
+                
+        return Introspector.decapitalize(variableName);
+    }
+    
     /* package */ static String getRootElementName(Class<?> clazz) {
         XmlRootElement root = clazz.getAnnotation(XmlRootElement.class);
         if (root == null) throw new AssertionError("XmlRootElement not available on " + clazz.getName());

@@ -84,6 +84,7 @@ public class JAUtilities {
     /* package */ final static String GET = "get";
     /* package */ final static String SET = "set";
     /* package */ final static String IS = "is";
+    /* package */ final static String LOOKUP = "lookup";
     /* package */ final static String JAXB_DEFAULT_STRING = "##default";
     
     private final static String CLASS_ADD_ON_NAME = "_$$_Hk2_Jaxb";
@@ -377,6 +378,11 @@ public class JAUtilities {
                 
                 sb.append(") { return " + cast + "super." + superMethodName + "(\"" + mi.representedProperty + "\"); }");
             }
+            else if (MethodType.LOOKUP.equals(mi.methodType)) {
+                sb.append("java.lang.String arg0) { return (" + originalRetType.getName() +
+                        ") super._lookupChild(\"" + mi.representedProperty + "\", arg0); }");
+                
+            }
             
             if (childType != null) {
                 if (childTypes.containsKey(childType)) {
@@ -513,18 +519,28 @@ public class JAUtilities {
     
     private static MethodInformation getMethodInformation(Method m, Map<String, String> xmlNameMap) {
         String setterVariable = Utilities.isSetter(m);
-        String getterVariable = Utilities.isGetter(m);
+        String getterVariable = null;
+        String lookupVariable = null;
         
-        if (setterVariable == null && getterVariable == null) {
-            throw new RuntimeException("Unknown method type, neither setter nor getter: " + m);
+        if (setterVariable == null) {
+            getterVariable = Utilities.isGetter(m);
+            if (getterVariable == null) {
+                lookupVariable = Utilities.isLookup(m);
+            }
+        }
+        
+        if (setterVariable == null && getterVariable == null && lookupVariable == null) {
+            throw new RuntimeException("Unknown method type, neither setter nor getter nor lookup: " + m);
         }
         
         MethodType methodType;
         Class<?> baseChildType = null;
         Class<?> gsType;
-        if (setterVariable == null) {
+        String variable;
+        if (getterVariable != null) {
             // This is a getter
             methodType = MethodType.GETTER;
+            variable = getterVariable;
             
             Class<?> returnType = m.getReturnType();
             gsType = returnType;
@@ -541,9 +557,10 @@ public class JAUtilities {
                 baseChildType = returnType;
             }
         }
-        else {
+        else if (setterVariable != null) {
             // This is a setter
             methodType = MethodType.SETTER;
+            variable = setterVariable;
             
             Class<?> setterType = m.getParameterTypes()[0];
             gsType = setterType;
@@ -560,8 +577,18 @@ public class JAUtilities {
                 baseChildType = setterType;
             }
         }
+        else if (lookupVariable != null) {
+            // This is a lookup
+            methodType = MethodType.LOOKUP;
+            variable = lookupVariable;
+            
+            Class<?> lookupType = m.getReturnType();
+            gsType = lookupType;
+        }
+        else {
+            throw new RuntimeException("Unknown method type, neither setter nor getter nor lookup: " + m);
+        }
         
-        String variable = (setterVariable != null) ? setterVariable : getterVariable;
         String representedProperty = xmlNameMap.get(variable);
         if (representedProperty == null) representedProperty = variable;
         
@@ -610,6 +637,7 @@ public class JAUtilities {
     
     private static enum MethodType {
         GETTER,
-        SETTER
+        SETTER,
+        LOOKUP
     }
 }

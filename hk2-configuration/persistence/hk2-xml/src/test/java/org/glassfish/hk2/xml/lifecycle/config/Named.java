@@ -6,12 +6,14 @@ package org.glassfish.hk2.xml.lifecycle.config;
 import javax.xml.bind.annotation.XmlAttribute;
 
 import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
  * An configured element which is named.
  * 
  * @author Jerome Dochez
  */
+@Contract
 public interface Named {
 
     /**
