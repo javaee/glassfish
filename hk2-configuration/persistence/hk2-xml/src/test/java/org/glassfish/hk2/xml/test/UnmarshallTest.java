@@ -162,6 +162,9 @@ public class UnmarshallTest {
         Assert.assertNotNull(locator.getService(Employee.class, CAROL));
     }
     
+    private final static String FINANCIALS_TYPE = "/employees/financials";
+    private final static String FINANCIALS_INSTANCE = "employees.financials";
+    
     /**
      * Tests the most basic of xml files can be unmarshalled with an interface
      * annotated with jaxb annotations
@@ -172,6 +175,7 @@ public class UnmarshallTest {
     public void testInterfaceJaxbUnmarshallingWithChildren() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
         
         URL url = getClass().getClassLoader().getResource(ACME1_FILE);
         
@@ -203,6 +207,8 @@ public class UnmarshallTest {
         
         Assert.assertEquals(Employees.class, rootHandle.getRootClass());
         Assert.assertEquals(url, rootHandle.getURI().toURL());
+        
+        Assert.assertNotNull(hub.getCurrentDatabase().getInstance(FINANCIALS_TYPE, FINANCIALS_INSTANCE));
     }
     
     private final static String LIFECYCLE_ROOT_TYPE = "/lifecycle-config";

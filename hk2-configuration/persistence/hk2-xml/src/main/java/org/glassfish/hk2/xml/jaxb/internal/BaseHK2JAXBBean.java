@@ -41,6 +41,7 @@ package org.glassfish.hk2.xml.jaxb.internal;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -64,8 +65,22 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
     private final static String EMPTY = "";
     private final static char XML_PATH_SEPARATOR = '/';
     
+    /**
+     * All fields, including child lists and direct children
+     */
     private final HashMap<String, Object> beanLikeMap = new HashMap<String, Object>();
+    
+    /**
+     * All children whose type has an identifier.  First key is the xml parameter name, second
+     * key is the identifier of the specific child.  Used in lookup operations
+     */
     private final HashMap<String, HashMap<String, BaseHK2JAXBBean>> children = new HashMap<String, HashMap<String, BaseHK2JAXBBean>>();
+    
+    /**
+     * The xml parameter name of all children who either do not have a key but are in a list anyway, or
+     * who are direct children of this bean (no List).  Used for creating a copy of this bean
+     */
+    private final HashSet<String> unKeyedChildren = new HashSet<String>();
     
     private Object parent;
     private String parentXmlPath;
@@ -366,6 +381,10 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
         }
         
         byKey.put(childKeyValue, child);
+    }
+    
+    public void _addUnkeyedChild(String childXmlTag) {
+        unKeyedChildren.add(childXmlTag);
     }
     
     @Override

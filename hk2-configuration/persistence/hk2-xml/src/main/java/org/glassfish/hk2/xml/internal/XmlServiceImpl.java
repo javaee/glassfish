@@ -236,14 +236,19 @@ public class XmlServiceImpl implements XmlService {
             
             allBeans.add(targetBean);
             
-            if (parent == null || keyProperty == null) return;
+            if (parent == null) return;
             
             BaseHK2JAXBBean parentBean = (BaseHK2JAXBBean) parent;
             UnparentedNode parentNode = jaUtilities.getNode(parent.getClass());
-            
             ParentedNode childNode = parentNode.getChild(targetNode.getOriginalInterface());
             
-            parentBean._addChild(childNode.getChildName(), keyProperty, targetBean);
+            if (keyProperty == null) {
+                // One of two possibilities:  A multi-child with no key or a single child
+                parentBean._addUnkeyedChild(childNode.getChildName());
+            }
+            else {
+                parentBean._addChild(childNode.getChildName(), keyProperty, targetBean);
+            }
         }
         
         @Override
