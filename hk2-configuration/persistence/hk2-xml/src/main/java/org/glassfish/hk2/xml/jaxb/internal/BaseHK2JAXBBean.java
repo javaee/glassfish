@@ -39,11 +39,14 @@
  */
 package org.glassfish.hk2.xml.jaxb.internal;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
@@ -58,7 +61,9 @@ import org.glassfish.hk2.xml.internal.DynamicChangeInfo;
  * @author jwells
  *
  */
-public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
+public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
+    private static final long serialVersionUID = 8149986319033910297L;
+
     private final static boolean DEBUG_GETS_AND_SETS = Boolean.parseBoolean(GeneralUtilities.getSystemProperty(
             "org.jvnet.hk2.properties.xmlservice.jaxb.getsandsets", "false"));
     
@@ -68,13 +73,13 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
     /**
      * All fields, including child lists and direct children
      */
-    private final HashMap<String, Object> beanLikeMap = new HashMap<String, Object>();
+    private final ConcurrentHashMap<String, Object> beanLikeMap = new ConcurrentHashMap<String, Object>();
     
     /**
      * All children whose type has an identifier.  First key is the xml parameter name, second
      * key is the identifier of the specific child.  Used in lookup operations
      */
-    private final HashMap<String, HashMap<String, BaseHK2JAXBBean>> children = new HashMap<String, HashMap<String, BaseHK2JAXBBean>>();
+    private final Map<String, Map<String, BaseHK2JAXBBean>> children = new HashMap<String, Map<String, BaseHK2JAXBBean>>();
     
     /**
      * The xml parameter name of all children who either do not have a key but are in a list anyway, or
@@ -92,7 +97,13 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
     // Calculated values
     private String xmlPath = EMPTY;
     
-    private volatile DynamicChangeInfo changeControl;
+    private volatile transient DynamicChangeInfo changeControl;
+    
+    /**
+     * For JAXB and Serialization
+     */
+    public BaseHK2JAXBBean() {
+    }
     
     /**
      * Called under write lock
@@ -130,16 +141,17 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
             Logger.getLogger().debug("XmlService setting property " + propName + " to " + propValue + " in " + this);
         }
         
-        if (changeControl != null) {
-            changeControl.getWriteLock().lock();
-        }
-        try {
-            changeInHub(propName, propValue);
-            
+        if (changeControl == null) {
             beanLikeMap.put(propName, propValue);
         }
-        finally {
-            if (changeControl != null) {
+        else {
+            changeControl.getWriteLock().lock();
+            try {
+                changeInHub(propName, propValue);
+                
+                beanLikeMap.put(propName, propValue);
+            }
+            finally {
                 changeControl.getWriteLock().unlock();
             }
         }
@@ -188,16 +200,16 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
     }
     
     public Object _getProperty(String propName) {
-        if (changeControl != null) {
-            changeControl.getReadLock().lock();
-        }
         Object retVal;
-        
-        try {
-          retVal = beanLikeMap.get(propName);
+        if (changeControl == null) {
+            retVal = beanLikeMap.get(propName);
         }
-        finally {
-            if (changeControl != null) {
+        else {
+            changeControl.getReadLock().lock();
+            try {
+                retVal = beanLikeMap.get(propName);
+            }
+            finally {
                 changeControl.getReadLock().unlock();
             }
         }
@@ -243,34 +255,25 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
     }
     
     public Object _lookupChild(String propName, String keyValue) {
-        if (changeControl != null) {
-            changeControl.getReadLock().lock();
-        }
+        changeControl.getReadLock().lock();
         try {
-            HashMap<String, BaseHK2JAXBBean> byName = children.get(propName);
+            Map<String, BaseHK2JAXBBean> byName = children.get(propName);
             if (byName == null) return null;
             
             return byName.get(keyValue);
         }
         finally {
-            if (changeControl != null) {
-                changeControl.getReadLock().unlock();
-            }
+            changeControl.getReadLock().unlock();
         }
-        
     }
 
     public boolean _hasProperty(String propName) {
-        if (changeControl != null) {
-            changeControl.getReadLock().lock();
-        }
+        changeControl.getReadLock().lock();
         try {
             return beanLikeMap.containsKey(propName);
         }
         finally {
-            if (changeControl != null) {
-                changeControl.getReadLock().unlock();
-            }
+            changeControl.getReadLock().unlock();
         }
     }
 
@@ -279,9 +282,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
      */
     @Override
     public Map<String, Object> _getBeanLikeMap() {
-        if (changeControl != null) {
-            changeControl.getReadLock().lock();
-        }
+        changeControl.getReadLock().lock();
         try {
             HashMap<String, Object> intermediateCopy = new HashMap<String, Object>();
         
@@ -298,9 +299,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
             return Collections.unmodifiableMap(intermediateCopy);
         }
         finally {
-            if (changeControl != null) {
-                changeControl.getReadLock().unlock();
-            }
+            changeControl.getReadLock().unlock();
         }
     }
     
@@ -374,7 +373,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
     }
     
     public void _addChild(String childXmlTag, String childKeyValue, BaseHK2JAXBBean child) {
-        HashMap<String, BaseHK2JAXBBean> byKey = children.get(childXmlTag);
+        Map<String, BaseHK2JAXBBean> byKey = children.get(childXmlTag);
         if (byKey == null) {
             byKey = new HashMap<String, BaseHK2JAXBBean>();
             children.put(childXmlTag, byKey);
@@ -385,6 +384,44 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean {
     
     public void _addUnkeyedChild(String childXmlTag) {
         unKeyedChildren.add(childXmlTag);
+    }
+    
+    /**
+     * Read lock must be held
+     * 
+     * @return The set of all children tags
+     */
+    public Set<String> _getChildrenXmlTags() {
+        HashSet<String> retVal = new HashSet<String>(children.keySet());
+        retVal.addAll(unKeyedChildren);
+        
+        return retVal;
+    }
+    
+    /**
+     * This copy method ONLY copies NON child and
+     * non parent fields, and so is not a full copy.  The
+     * children and parent and lock information need to
+     * be filled in later so as not to have links from
+     * one tree into another.  The read lock of copyMe
+     * should be held
+     * 
+     * @param copyMe The non-null bean to copy FROM
+     */
+    public void _shallowCopyFrom(BaseHK2JAXBBean copyMe) {
+        parentXmlPath = copyMe.parentXmlPath;
+        selfXmlTag = copyMe.selfXmlTag;
+        instanceName = copyMe.instanceName;
+        keyValue = copyMe.keyValue;
+        xmlPath = copyMe.xmlPath;
+        
+        for (Map.Entry<String, Object> entrySet : copyMe.beanLikeMap.entrySet()) {
+            String xmlTag = entrySet.getKey();
+            
+            if (copyMe.children.containsKey(xmlTag) || copyMe.unKeyedChildren.contains(xmlTag)) continue;
+            
+            beanLikeMap.put(entrySet.getKey(), entrySet.getValue());
+        }
     }
     
     @Override

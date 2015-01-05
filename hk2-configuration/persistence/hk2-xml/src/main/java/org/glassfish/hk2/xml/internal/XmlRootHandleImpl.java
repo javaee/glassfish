@@ -39,8 +39,13 @@
  */
 package org.glassfish.hk2.xml.internal;
 
+import java.lang.reflect.Constructor;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
+import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.xml.api.XmlRootCopy;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
@@ -118,11 +123,84 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.api.XmlRootHandle#getXmlRootCopy()
      */
+    @SuppressWarnings("unchecked")
     @Override
     public XmlRootCopy<T> getXmlRootCopy() {
-        BaseHK2JAXBBean bean = (BaseHK2JAXBBean) root;
+        changeControl.getReadLock().lock();
+        try {
+            BaseHK2JAXBBean bean = (BaseHK2JAXBBean) root;
+            if (bean == null) {
+                return new XmlRootCopyImpl<T>(this, changeControl.getChangeNumber(), null);
+            }
         
-        throw new AssertionError("getXmlRootCopy not yet implemented");
+            BaseHK2JAXBBean copy;
+            try {
+                copy = doCopy(bean);
+            }
+            catch (RuntimeException re) {
+                throw re;
+            }
+            catch (Throwable th) {
+                throw new RuntimeException(th);
+            }
+        
+            return new XmlRootCopyImpl<T>(this, changeControl.getChangeNumber(), (T) copy);
+        }
+        finally {
+            changeControl.getReadLock().unlock();
+        }
+    }
+    
+    private static BaseHK2JAXBBean doCopy(BaseHK2JAXBBean copyMe) throws Throwable {
+        if (copyMe == null) return null;
+        
+        Class<?> copyMeClass = copyMe.getClass();
+        Constructor<?> noArgsConstructor = copyMeClass.getConstructor();
+        
+        BaseHK2JAXBBean retVal = (BaseHK2JAXBBean) ReflectionHelper.makeMe(noArgsConstructor, new Object[0], false);
+        retVal._shallowCopyFrom(copyMe);
+        
+        Set<String> childrenProps = copyMe._getChildrenXmlTags();
+        for (String childProp : childrenProps) {
+            Object child = copyMe._getProperty(childProp);
+            if (child == null) continue;
+            
+            if (child instanceof List) {
+                List<?> childList = (List<?>) child;
+                
+                ArrayList<Object> toSetChildList = new ArrayList<Object>(childList.size());
+                
+                for (Object subChild : childList) {
+                    BaseHK2JAXBBean copiedChild = doCopy((BaseHK2JAXBBean) subChild);
+                    copiedChild._setParent(retVal);
+                    
+                    toSetChildList.add(copiedChild);
+                    
+                    String keyValue = copiedChild._getKeyValue();
+                    if (keyValue != null) {
+                        retVal._addChild(childProp, keyValue, copiedChild);
+                    }
+                    else {
+                        // May be many of them with same name, no key...
+                        retVal._addUnkeyedChild(childProp);
+                    }
+                }
+                
+                // Sets the list property into the parent
+                retVal._setProperty(childProp, toSetChildList);
+            }
+            else {
+                // A direct child
+                BaseHK2JAXBBean copiedChild = doCopy((BaseHK2JAXBBean) child);
+                copiedChild._setParent(retVal);
+                
+                retVal._setProperty(childProp, copiedChild);
+                
+                retVal._addUnkeyedChild(childProp);
+            }
+        }
+        
+        return retVal;
     }
     
     /* package */ long getRevision() {

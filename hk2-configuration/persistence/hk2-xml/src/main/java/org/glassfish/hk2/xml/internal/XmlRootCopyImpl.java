@@ -49,10 +49,12 @@ import org.glassfish.hk2.xml.api.XmlRootHandle;
 public class XmlRootCopyImpl<T> implements XmlRootCopy<T> {
     private final XmlRootHandleImpl<T> parent;
     private final long basis;
+    private final T copy;
     
-    /* package */ XmlRootCopyImpl(XmlRootHandleImpl<T> parent, long basis) {
+    /* package */ XmlRootCopyImpl(XmlRootHandleImpl<T> parent, long basis, T copy) {
         this.parent = parent;
         this.basis = basis;
+        this.copy = copy;
     }
 
     /* (non-Javadoc)
@@ -68,8 +70,7 @@ public class XmlRootCopyImpl<T> implements XmlRootCopy<T> {
      */
     @Override
     public T getChildRoot() {
-        // TODO Auto-generated method stub
-        return null;
+        return copy;
     }
 
     /* (non-Javadoc)
@@ -85,8 +86,11 @@ public class XmlRootCopyImpl<T> implements XmlRootCopy<T> {
      */
     @Override
     public void merge() {
-        throw new AssertionError("merge not yet implemented");
+        if (!isMergeable()) {
+            throw new AssertionError("Parent has changed since copy was made, no merge possible");
+        }
         
+        throw new AssertionError("Not yet implemented");
     }
 
 }
