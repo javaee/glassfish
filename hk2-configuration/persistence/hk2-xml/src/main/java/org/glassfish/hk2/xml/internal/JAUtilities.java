@@ -113,7 +113,9 @@ public class JAUtilities {
     }
     
     public synchronized UnparentedNode getNode(Class<?> type) {
-        return proxy2NodeCache.get(type);
+        UnparentedNode retVal = proxy2NodeCache.get(type);
+        if (retVal == null) return interface2NodeCache.get(type);
+        return retVal;
     }
     
     public synchronized UnparentedNode convertRootAndLeaves(Class<?> root) {

@@ -424,8 +424,18 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         }
     }
     
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean#_createChild(java.lang.Class)
+     */
+    @Override
+    public Object _createChild(Class<?> childType, String keyValue) {
+        throw new AssertionError("not yet implemented");
+    }
+    
     @Override
     public String toString() {
         return "BaseHK2JAXBBean(XmlPath=" + xmlPath + ",instanceName=" + instanceName + ",keyValue=" + keyValue + "," + System.identityHashCode(this) + ")";
     }
+
+    
 }

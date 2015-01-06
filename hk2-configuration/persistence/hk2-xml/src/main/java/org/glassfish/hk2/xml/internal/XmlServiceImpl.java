@@ -122,7 +122,7 @@ public class XmlServiceImpl implements XmlService {
         
         T root = (T) unmarshaller.unmarshal(uri.toURL());
         
-        DynamicChangeInfo changeControl = new DynamicChangeInfo(hub);
+        DynamicChangeInfo changeControl = new DynamicChangeInfo(jaUtilities, hub);
         
         for (BaseHK2JAXBBean base : listener.getAllBeans()) {
             String instanceName = createInstanceName(base);
@@ -174,7 +174,7 @@ public class XmlServiceImpl implements XmlService {
         try {
             jaUtilities.convertRootAndLeaves(jaxbAnnotatedInterface);
         
-            return new XmlRootHandleImpl<T>(null, jaxbAnnotatedInterface, null, advertiseInRegistry, advertiseInHub, new DynamicChangeInfo(hub));
+            return new XmlRootHandleImpl<T>(null, jaxbAnnotatedInterface, null, advertiseInRegistry, advertiseInHub, new DynamicChangeInfo(jaUtilities, hub));
         }
         catch (RuntimeException re) {
             throw re;

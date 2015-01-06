@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,65 +37,41 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.internal;
+package org.glassfish.hk2.xml.test.dynamic.adds;
 
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
-
-import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.xml.api.XmlRootHandle;
+import org.glassfish.hk2.xml.api.XmlService;
+import org.glassfish.hk2.xml.test.Employees;
+import org.glassfish.hk2.xml.test.utilities.Utilities;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
+ * Tests adding the root and children
+ * 
  * @author jwells
  *
  */
-public class DynamicChangeInfo {
-    private final JAUtilities jaUtilities;
-    private final ReentrantReadWriteLock treeLock = new ReentrantReadWriteLock();
-    private final WriteLock writeTreeLock = treeLock.writeLock();
-    private final ReadLock readTreeLock = treeLock.readLock();
-    private long changeNumber = 0;
-    private final Hub hub;
-    
-    /* package */ DynamicChangeInfo(JAUtilities jaUtilities, Hub hub) {
-        this.jaUtilities = jaUtilities;
-        this.hub = hub;
-    }
-    
-    public Hub getHub() {
-        return hub;
-    }
-    
-    public ReadLock getReadLock() {
-        return readTreeLock;
-    }
-    
-    public WriteLock getWriteLock() {
-        return writeTreeLock;
-    }
-    
-    public long getChangeNumber() {
-        readTreeLock.lock();
-        try {
-            return changeNumber;
-        }
-        finally {
-            readTreeLock.unlock();
-        }
-    }
-    
-    public void incrementChangeNumber() {
-        writeTreeLock.lock();
-        try {
-            changeNumber++;
-        }
-        finally {
-            writeTreeLock.unlock();
-        }
-    }
-    
-    public UnparentedNode getNode(Class<?> iface) {
-        return jaUtilities.getNode(iface);
+public class AddsTest {
+    /**
+     * Tests that we can call createAndAdd successfully on a root with no required elements
+     */
+    @Test @org.junit.Ignore
+    public void testCreateAndAdd() {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        XmlRootHandle<Employees> rootHandle = xmlService.createEmptyHandle(Employees.class);
+        Assert.assertNull(rootHandle.getRoot());
+        
+        rootHandle.createAndAddRoot();
+        Employees root = rootHandle.getRoot();
+        
+        Assert.assertNotNull(root);
+        Assert.assertNull(root.getFinancials());
+        Assert.assertNull(root.getEmployees());
+        Assert.assertNull(root.getCompanyName());
     }
 
 }

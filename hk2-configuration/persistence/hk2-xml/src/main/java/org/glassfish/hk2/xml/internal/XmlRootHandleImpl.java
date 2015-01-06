@@ -207,6 +207,41 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
         return changeControl.getChangeNumber();
     }
     
+    
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlRootHandle#createRoot()
+     */
+    @Override
+    public T createRoot() {
+        throw new AssertionError("createRoot not implemented");
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlRootHandle#addRoot(java.lang.Object)
+     */
+    @Override
+    public void addRoot(T root) {
+        throw new AssertionError("addRoot not implemented");
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlRootHandle#createAndAddRoot()
+     */
+    @Override
+    public void createAndAddRoot() {
+        addRoot(createRoot());
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlRootHandle#deleteRoot()
+     */
+    @Override
+    public T deleteRoot() {
+        throw new AssertionError("deleteRoot not implemented");
+    }
+    
     @Override
     public String toString() {
         return "XmlRootHandleImpl(" + root + "," + rootClass.getName() + "," + rootURI + "," + System.identityHashCode(this) + ")";

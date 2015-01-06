@@ -88,5 +88,28 @@ public interface XmlHk2ConfigurationBean {
      * @return The instance path/name for this object
      */
     public String _getKeyValue();
+    
+    /**
+     * Creates a child with NO attributes set except the key
+     * value.  It is the responsibility of the caller to fill
+     * in any required values themselves.  The childType must be
+     * the interface that represents the child.
+     * <p>
+     * This child is NOT placed in the parent.  Children
+     * are only placed in the parent with a call to
+     * addWhatever where Whatever is the child property
+     * being added to.  This allows the required fields
+     * to be set
+     * 
+     * @param childType The non-null interface that
+     * represents the child to be created.
+     * @param keyValue if the child type has a key field,
+     * this keyValue must be set as its key field.  If the
+     * childType has a key field then this keyValue must
+     * not be null
+     * @return A child with no other attributes filled in
+     * except the keyValue
+     */
+    public Object _createChild(Class<?> childType, String keyValue);
 
 }
