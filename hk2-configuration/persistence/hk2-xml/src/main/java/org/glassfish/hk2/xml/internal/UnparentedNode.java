@@ -95,9 +95,9 @@ public class UnparentedNode {
         this.rootName = rootName;
     }
     
-    public void addChild(String xmlTag, UnparentedNode child) {
+    public void addChild(String xmlTag, boolean multiChild, UnparentedNode child) {
         synchronized (children) {
-            children.put(child.getOriginalInterface(), new ParentedNode(xmlTag, child));
+            children.put(child.getOriginalInterface(), new ParentedNode(xmlTag, multiChild, child));
         }
     }
     

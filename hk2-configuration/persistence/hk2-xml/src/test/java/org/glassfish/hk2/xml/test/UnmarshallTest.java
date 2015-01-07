@@ -45,6 +45,7 @@ import java.util.Map;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
@@ -272,6 +273,11 @@ public class UnmarshallTest {
     private final static String ASSOCIATION_PARTITION1_1_INSTANCE_APPENDIX = ".part1-1";
     private final static String ASSOCIATION_PARTITION2_1_INSTANCE_APPENDIX = ".part2-1";
     
+    private final static String PART1_0_NAME = "part1-0";
+    private final static String PART2_0_NAME = "part2-0";
+    private final static String PART1_1_NAME = "part1-1";
+    private final static String PART2_1_NAME = "part2-1";
+    
     /**
      * Associations has unkeyed children of type Association.  We
      * get them and make sure they have unique keys generated
@@ -279,7 +285,8 @@ public class UnmarshallTest {
      * 
      * @throws Exception
      */
-    @Test @org.junit.Ignore
+    @SuppressWarnings("unchecked")
+    @Test // @org.junit.Ignore
     public void testUnkeyedChildren() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -327,10 +334,25 @@ public class UnmarshallTest {
         String part1_1_instance_name = ASSOCIATION_PARTITION_INSTANCE_PREFIX + generatedKey2 + ASSOCIATION_PARTITION1_1_INSTANCE_APPENDIX;
         String part2_1_instance_name = ASSOCIATION_PARTITION_INSTANCE_PREFIX + generatedKey2 + ASSOCIATION_PARTITION2_1_INSTANCE_APPENDIX;
         
-        Assert.assertNotNull(hub.getCurrentDatabase().getInstance(ASSOCIATION_PARTITION1_TYPE, part1_0_instance_name));
-        Assert.assertNotNull(hub.getCurrentDatabase().getInstance(ASSOCIATION_PARTITION2_TYPE, part2_0_instance_name));
-        Assert.assertNotNull(hub.getCurrentDatabase().getInstance(ASSOCIATION_PARTITION1_TYPE, part1_1_instance_name));
-        Assert.assertNotNull(hub.getCurrentDatabase().getInstance(ASSOCIATION_PARTITION2_TYPE, part2_1_instance_name));
+        Instance p1_0 = hub.getCurrentDatabase().getInstance(ASSOCIATION_PARTITION1_TYPE, part1_0_instance_name);
+        Instance p2_0 = hub.getCurrentDatabase().getInstance(ASSOCIATION_PARTITION2_TYPE, part2_0_instance_name);
+        Instance p1_1 = hub.getCurrentDatabase().getInstance(ASSOCIATION_PARTITION1_TYPE, part1_1_instance_name);
+        Instance p2_1 = hub.getCurrentDatabase().getInstance(ASSOCIATION_PARTITION2_TYPE, part2_1_instance_name);
+        
+        Assert.assertNotNull(p1_0);
+        Assert.assertNotNull(p2_0);
+        Assert.assertNotNull(p1_1);
+        Assert.assertNotNull(p2_1);
+        
+        String p1_0_name = ((Map<String, String>) p1_0.getBean()).get(NAME_TAG);
+        String p2_0_name = ((Map<String, String>) p2_0.getBean()).get(NAME_TAG);
+        String p1_1_name = ((Map<String, String>) p1_1.getBean()).get(NAME_TAG);
+        String p2_1_name = ((Map<String, String>) p2_1.getBean()).get(NAME_TAG);
+        
+        Assert.assertEquals(PART1_0_NAME, p1_0_name);
+        Assert.assertEquals(PART2_0_NAME, p2_0_name);
+        Assert.assertEquals(PART1_1_NAME, p1_1_name);
+        Assert.assertEquals(PART2_1_NAME, p2_1_name);
         
     }
     

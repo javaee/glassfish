@@ -41,6 +41,7 @@ package org.glassfish.hk2.xml.internal;
 
 import java.net.URI;
 import java.util.LinkedList;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -67,6 +68,7 @@ import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 @Singleton
 public class XmlServiceImpl implements XmlService {
     private final static char INSTANCE_PATH_SEPARATOR = '.';
+    private final static String ID_PREFIX = "XmlServiceUID-";
     
     private final JAUtilities jaUtilities = new JAUtilities();
     
@@ -75,6 +77,12 @@ public class XmlServiceImpl implements XmlService {
     
     @Inject
     private Hub hub;
+    
+    private final AtomicLong idGenerator = new AtomicLong();
+    
+    private String getUniqueId() {
+        return ID_PREFIX + idGenerator.getAndAdd(1L);
+    }
     
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.api.XmlService#unmarshall(java.net.URI, java.lang.Class, boolean, boolean)
@@ -116,7 +124,7 @@ public class XmlServiceImpl implements XmlService {
             boolean advertise, boolean advertiseInHub) throws Exception {
         JAXBContext context = JAXBContext.newInstance(jaxbAnnotatedClass);
         
-        Listener listener = new Listener(jaUtilities);
+        Listener listener = new Listener();
         Unmarshaller unmarshaller = context.createUnmarshaller();
         unmarshaller.setListener(listener);
         
@@ -210,13 +218,8 @@ public class XmlServiceImpl implements XmlService {
         return createInstanceName((BaseHK2JAXBBean) bean._getParent()) + INSTANCE_PATH_SEPARATOR + getKeySegment(bean);
     }
     
-    private static class Listener extends Unmarshaller.Listener {
+    private class Listener extends Unmarshaller.Listener {
         private final LinkedList<BaseHK2JAXBBean> allBeans = new LinkedList<BaseHK2JAXBBean>();
-        private final JAUtilities jaUtilities;
-        
-        private Listener(JAUtilities jaUtilities) {
-            this.jaUtilities = jaUtilities;
-        }
         
         @Override
         public void afterUnmarshal(Object target, Object parent) {
@@ -246,6 +249,11 @@ public class XmlServiceImpl implements XmlService {
             if (keyProperty == null) {
                 // One of two possibilities:  A multi-child with no key or a single child
                 parentBean._addUnkeyedChild(childNode.getChildName());
+                
+                if (childNode.isMultiChild()) {
+                    // Give it a unique identifier
+                    targetBean._setKeyValue(getUniqueId());
+                }
             }
             else {
                 parentBean._addChild(childNode.getChildName(), keyProperty, targetBean);

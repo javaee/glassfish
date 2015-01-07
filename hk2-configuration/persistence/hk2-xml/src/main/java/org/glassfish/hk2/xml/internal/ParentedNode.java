@@ -48,10 +48,12 @@ package org.glassfish.hk2.xml.internal;
  */
 public class ParentedNode {
     private final String childName;
+    private final boolean multiChild;  // If true there is a list of children, otherwise there is just a single child
     private final UnparentedNode child;
     
-    public ParentedNode(String childName, UnparentedNode child) {
+    public ParentedNode(String childName, boolean multiChild, UnparentedNode child) {
         this.childName = childName;
+        this.multiChild = multiChild;
         this.child = child;
     }
     
@@ -61,6 +63,10 @@ public class ParentedNode {
     
     public UnparentedNode getChild() {
         return child;
+    }
+    
+    public boolean isMultiChild() {
+        return multiChild;
     }
     
     @Override

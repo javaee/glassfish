@@ -247,7 +247,7 @@ public class JAUtilities {
                     else {
                         childTypes.put(childType, mi.representedProperty);
                         
-                        retVal.addChild(mi.representedProperty, childType);
+                        retVal.addChild(mi.representedProperty, mi.isList, childType);
                     }
                 }
             }
@@ -337,7 +337,7 @@ public class JAUtilities {
                     childType = interface2NodeCache.get(mi.baseChildType);
                 }
                 
-                sb.append(mi.gsType.getName() + " arg0) { super._setProperty(\"" + mi.representedProperty + "\", arg0); }");
+                sb.append(mi.getterSetterType.getName() + " arg0) { super._setProperty(\"" + mi.representedProperty + "\", arg0); }");
             }
             else if (MethodType.GETTER.equals(mi.methodType)) {
                 if (mi.baseChildType != null) {
@@ -350,32 +350,32 @@ public class JAUtilities {
                 
                 String cast = "";
                 String superMethodName = "_getProperty";
-                if (int.class.equals(mi.gsType)) {
+                if (int.class.equals(mi.getterSetterType)) {
                     superMethodName += "I"; 
                 }
-                else if (long.class.equals(mi.gsType)) {
+                else if (long.class.equals(mi.getterSetterType)) {
                     superMethodName += "J";
                 }
-                else if (boolean.class.equals(mi.gsType)) {
+                else if (boolean.class.equals(mi.getterSetterType)) {
                     superMethodName += "Z";
                 }
-                else if (byte.class.equals(mi.gsType)) {
+                else if (byte.class.equals(mi.getterSetterType)) {
                     superMethodName += "B";
                 }
-                else if (char.class.equals(mi.gsType)) {
+                else if (char.class.equals(mi.getterSetterType)) {
                     superMethodName += "C";
                 }
-                else if (short.class.equals(mi.gsType)) {
+                else if (short.class.equals(mi.getterSetterType)) {
                     superMethodName += "S";
                 }
-                else if (float.class.equals(mi.gsType)) {
+                else if (float.class.equals(mi.getterSetterType)) {
                     superMethodName += "F";
                 }
-                else if (double.class.equals(mi.gsType)) {
+                else if (double.class.equals(mi.getterSetterType)) {
                     superMethodName += "D";
                 }
                 else {
-                    cast = "(" + mi.gsType.getName() + ") ";
+                    cast = "(" + mi.getterSetterType.getName() + ") ";
                 }
                 
                 sb.append(") { return " + cast + "super." + superMethodName + "(\"" + mi.representedProperty + "\"); }");
@@ -399,7 +399,7 @@ public class JAUtilities {
                 else {
                     childTypes.put(childType, mi.representedProperty);
                     
-                    retVal.addChild(mi.representedProperty, childType);
+                    retVal.addChild(mi.representedProperty, mi.isList, childType);
                 }
             }
             
@@ -539,6 +539,7 @@ public class JAUtilities {
         Class<?> baseChildType = null;
         Class<?> gsType;
         String variable;
+        boolean isList = false;
         if (getterVariable != null) {
             // This is a getter
             methodType = MethodType.GETTER;
@@ -548,6 +549,7 @@ public class JAUtilities {
             gsType = returnType;
             
             if (List.class.equals(returnType)) {
+                isList = true;
                 Type typeChildType = ReflectionHelper.getFirstTypeArgument(m.getGenericReturnType());
                 
                 baseChildType = ReflectionHelper.getRawClass(typeChildType);
@@ -568,6 +570,7 @@ public class JAUtilities {
             gsType = setterType;
             
             if (List.class.equals(setterType)) {
+                isList = true;
                 Type typeChildType = ReflectionHelper.getFirstTypeArgument(m.getGenericParameterTypes()[0]);
                 
                 baseChildType = ReflectionHelper.getRawClass(typeChildType);
@@ -599,36 +602,39 @@ public class JAUtilities {
             key = true;
         }
         
-        return new MethodInformation(m, methodType, representedProperty, baseChildType, gsType, key);
+        return new MethodInformation(m, methodType, representedProperty, baseChildType, gsType, key, isList);
     }
     
     private static class MethodInformation {
         private final Method originalMethod;
         private final MethodType methodType;
-        private final Class<?> gsType;
+        private final Class<?> getterSetterType;
         private final String representedProperty;
         private final Class<?> baseChildType;
         private final boolean key;
+        private final boolean isList;
         
         private MethodInformation(Method originalMethod,
                 MethodType methodType,
                 String representedProperty,
                 Class<?> baseChildType,
                 Class<?> gsType,
-                boolean key) {
+                boolean key,
+                boolean isList) {
             this.originalMethod = originalMethod;
             this.methodType = methodType;
             this.representedProperty = representedProperty;
             this.baseChildType = baseChildType;
-            this.gsType = gsType;
+            this.getterSetterType = gsType;
             this.key = key;
+            this.isList = isList;
         }
         
         @Override
         public String toString() {
             return "MethodInformation(" + originalMethod.getName() + "," +
               methodType + "," +
-              gsType + "," +
+              getterSetterType + "," +
               representedProperty + "," +
               baseChildType + "," +
               key + "," +
