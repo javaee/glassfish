@@ -3,13 +3,15 @@
  */
 package org.glassfish.hk2.xml.lifecycle.config;
 
-import java.beans.PropertyVetoException;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.jvnet.hk2.annotations.Contract;
+
+@Contract
 public interface Environments {
-  @XmlElement(name="*")
+  @XmlElement(name="environment")
   void setEnvironments(List<Environment> environments);
   List<Environment> getEnvironments();
 

@@ -48,6 +48,9 @@ import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
+import org.glassfish.hk2.xml.lifecycle.config.Association;
+import org.glassfish.hk2.xml.lifecycle.config.Associations;
+import org.glassfish.hk2.xml.lifecycle.config.Environment;
 import org.glassfish.hk2.xml.lifecycle.config.LifecycleConfig;
 import org.glassfish.hk2.xml.lifecycle.config.Service;
 import org.glassfish.hk2.xml.lifecycle.config.Tenant;
@@ -63,6 +66,7 @@ import org.junit.Test;
 public class UnmarshallTest {
     public final static String MUSEUM1_FILE = "museum1.xml";
     private final static String ACME1_FILE = "Acme1.xml";
+    private final static String SAMPLE_CONFIG_FILE = "sample-config.xml";
     
     public final static String BEN_FRANKLIN = "Ben Franklin";
     private final static String ACME = "Acme";
@@ -83,6 +87,7 @@ public class UnmarshallTest {
     private final static String EMPLOYEE_TAG = "employee";
     public final static String NAME_TAG = "name";
     public final static String ID_TAG = "id";
+    private final static String COKE_ENV = "cokeenv";
     
     /**
      * Tests the most basic of xml files can be unmarshalled with an interface
@@ -236,7 +241,7 @@ public class UnmarshallTest {
         XmlService xmlService = locator.getService(XmlService.class);
         Hub hub = locator.getService(Hub.class);
         
-        URL url = getClass().getClassLoader().getResource("sample-config.xml");
+        URL url = getClass().getClassLoader().getResource(SAMPLE_CONFIG_FILE);
         
         XmlRootHandle<LifecycleConfig> rootHandle = xmlService.unmarshall(url.toURI(), LifecycleConfig.class);
         LifecycleConfig lifecycleConfig = rootHandle.getRoot();
@@ -257,6 +262,76 @@ public class UnmarshallTest {
         Service hrProdService = tenant.lookupServices(HRPROD_SERVICE);
         Assert.assertNotNull(hrProdService);
         Assert.assertEquals(HRPROD_SERVICE, hrProdService.getName());
+    }
+    
+    private final static String ASSOCIATION_PARTITION1_TYPE = "/lifecycle-config/environments/environment/associations/association/partition1";
+    private final static String ASSOCIATION_PARTITION2_TYPE = "/lifecycle-config/environments/environment/associations/association/partition2";
+    private final static String ASSOCIATION_PARTITION_INSTANCE_PREFIX = "lifecycle-config.environments.cokeenv.associations.";
+    private final static String ASSOCIATION_PARTITION1_0_INSTANCE_APPENDIX = ".part1-0";
+    private final static String ASSOCIATION_PARTITION2_0_INSTANCE_APPENDIX = ".part2-0";
+    private final static String ASSOCIATION_PARTITION1_1_INSTANCE_APPENDIX = ".part1-1";
+    private final static String ASSOCIATION_PARTITION2_1_INSTANCE_APPENDIX = ".part2-1";
+    
+    /**
+     * Associations has unkeyed children of type Association.  We
+     * get them and make sure they have unique keys generated
+     * by the system
+     * 
+     * @throws Exception
+     */
+    @Test @org.junit.Ignore
+    public void testUnkeyedChildren() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource(SAMPLE_CONFIG_FILE);
+        
+        XmlRootHandle<LifecycleConfig> rootHandle = xmlService.unmarshall(url.toURI(), LifecycleConfig.class);
+        LifecycleConfig lifecycleConfig = rootHandle.getRoot();
+        Assert.assertNotNull(lifecycleConfig);
+        
+        // Lets look at an unkeyed child
+        Environment cokeEnv = locator.getService(Environment.class, COKE_ENV);
+        Assert.assertNotNull(cokeEnv);
+        
+        // Lets get the generated unique IDs for the unkeyed children
+        Associations associations = cokeEnv.getAssociations();
+        Assert.assertNotNull(associations);
+        
+        String generatedKey1 = null;
+        String generatedKey2 = null;
+        for (Association association : associations.getAssociations()) {
+            XmlHk2ConfigurationBean bean = (XmlHk2ConfigurationBean) association;
+            Assert.assertNull(bean._getKeyPropertyName());
+            
+            if (generatedKey1 == null) {
+                generatedKey1 = bean._getKeyValue();
+            }
+            else if (generatedKey2 == null) {
+                generatedKey2 = bean._getKeyValue();
+            }
+            else {
+                Assert.fail("Should only have been two associations, but we found at least three");
+            }
+        }
+        
+        Assert.assertNotNull(generatedKey1);
+        Assert.assertNotNull(generatedKey2);
+        Assert.assertNotEquals(generatedKey1, generatedKey2);
+        
+        // Given the generated key we can now construct the paths to the children
+        // Lets get them from the hub
+        String part1_0_instance_name = ASSOCIATION_PARTITION_INSTANCE_PREFIX + generatedKey1 + ASSOCIATION_PARTITION1_0_INSTANCE_APPENDIX;
+        String part2_0_instance_name = ASSOCIATION_PARTITION_INSTANCE_PREFIX + generatedKey1 + ASSOCIATION_PARTITION2_0_INSTANCE_APPENDIX;
+        String part1_1_instance_name = ASSOCIATION_PARTITION_INSTANCE_PREFIX + generatedKey2 + ASSOCIATION_PARTITION1_1_INSTANCE_APPENDIX;
+        String part2_1_instance_name = ASSOCIATION_PARTITION_INSTANCE_PREFIX + generatedKey2 + ASSOCIATION_PARTITION2_1_INSTANCE_APPENDIX;
+        
+        Assert.assertNotNull(hub.getCurrentDatabase().getInstance(ASSOCIATION_PARTITION1_TYPE, part1_0_instance_name));
+        Assert.assertNotNull(hub.getCurrentDatabase().getInstance(ASSOCIATION_PARTITION2_TYPE, part2_0_instance_name));
+        Assert.assertNotNull(hub.getCurrentDatabase().getInstance(ASSOCIATION_PARTITION1_TYPE, part1_1_instance_name));
+        Assert.assertNotNull(hub.getCurrentDatabase().getInstance(ASSOCIATION_PARTITION2_TYPE, part2_1_instance_name));
+        
     }
     
     private final static String FOOBAR_ROOT_TYPE = "/foobar";

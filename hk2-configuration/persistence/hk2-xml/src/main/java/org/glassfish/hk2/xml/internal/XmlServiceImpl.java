@@ -229,6 +229,7 @@ public class XmlServiceImpl implements XmlService {
             String keyProperty = null;
             if (keyPropertyName != null) {
                 keyProperty = (String) targetBean._getProperty(keyPropertyName);
+                targetBean._setKeyPropertyName(keyPropertyName);
                 targetBean._setKeyValue(keyProperty);
             }
             

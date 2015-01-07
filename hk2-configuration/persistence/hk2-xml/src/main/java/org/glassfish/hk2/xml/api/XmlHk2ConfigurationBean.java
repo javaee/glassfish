@@ -83,6 +83,18 @@ public interface XmlHk2ConfigurationBean {
     public String _getInstanceName();
     
     /**
+     * Returns the name of the property that
+     * returns the key for this bean, or
+     * null if this bean does not have a key
+     * property
+     * 
+     * @return The name of the key property for
+     * this bean or null if this bean doesn
+     * not have a key property
+     */
+    public String _getKeyPropertyName();
+    
+    /**
      * Returns the key value for this object
      * 
      * @return The instance path/name for this object

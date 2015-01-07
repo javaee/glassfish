@@ -24,6 +24,16 @@
   </tenants>
   <environments>
     <environment name="cokeenv">
+        <associations>
+          <association>
+            <partition1 name="part1-0" />
+            <partition2 name="part2-0" />
+          </association>
+          <association>
+            <partition1 name="part1-1" />
+            <partition2 name="part2-1" />
+          </association>
+        </associations>
         <partition-ref id="222" runtime-ref="wlsRuntime"/>
     </environment>
     <environment name="pepsi-hcmenv-prod">

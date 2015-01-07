@@ -7,9 +7,12 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.jvnet.hk2.annotations.Contract;
+
+@Contract
 public interface Associations {
 
-  @XmlElement(name="*")
+  @XmlElement(name="association")
   void setAssociations(List<Association> associations);
   List<Association> getAssociations();
 

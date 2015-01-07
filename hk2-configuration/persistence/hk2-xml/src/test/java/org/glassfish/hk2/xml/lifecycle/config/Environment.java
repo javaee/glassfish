@@ -3,15 +3,15 @@
  */
 package org.glassfish.hk2.xml.lifecycle.config;
 
-import java.beans.PropertyVetoException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
+
 
 // import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlElement;
 
+import org.jvnet.hk2.annotations.Contract;
+
+@Contract
 public interface Environment extends Named, Auditable {
   @XmlElement
   // @NotNull
@@ -19,7 +19,7 @@ public interface Environment extends Named, Auditable {
   Associations getAssociations();
   
 
-  @XmlElement(name="*")
+  @XmlElement(name="partition-ref")
   void setPartitionRefs(List<PartitionRef> partitionRefs);
   List<PartitionRef> getPartitionRefs();
   

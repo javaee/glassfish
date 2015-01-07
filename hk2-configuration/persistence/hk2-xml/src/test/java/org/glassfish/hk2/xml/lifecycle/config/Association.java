@@ -5,6 +5,9 @@ package org.glassfish.hk2.xml.lifecycle.config;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.jvnet.hk2.annotations.Contract;
+
+@Contract
 public interface Association extends Auditable {
   
   @XmlElement(required=true /*, reference=true */)

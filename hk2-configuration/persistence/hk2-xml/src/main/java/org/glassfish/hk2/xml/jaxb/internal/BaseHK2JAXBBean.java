@@ -92,6 +92,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
     
     private String selfXmlTag;
     private String instanceName;
+    private String keyPropertyName;
     private String keyValue;
     
     // Calculated values
@@ -358,10 +359,24 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         keyValue = key;
     }
     
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean#_getKeyPropertyName()
+     */
+    @Override
+    public String _getKeyPropertyName() {
+        return keyPropertyName;
+    }
+    
+    public void _setKeyPropertyName(String keyPropertyName) {
+        this.keyPropertyName = keyPropertyName;
+    }
+    
     @Override
     public String _getKeyValue() {
         return keyValue;
     }
+    
+    
     
     /**
      * Once this is set the dynamic change protocol is in effect
@@ -412,6 +427,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         parentXmlPath = copyMe.parentXmlPath;
         selfXmlTag = copyMe.selfXmlTag;
         instanceName = copyMe.instanceName;
+        keyPropertyName = copyMe.keyPropertyName;
         keyValue = copyMe.keyValue;
         xmlPath = copyMe.xmlPath;
         
@@ -436,6 +452,8 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
     public String toString() {
         return "BaseHK2JAXBBean(XmlPath=" + xmlPath + ",instanceName=" + instanceName + ",keyValue=" + keyValue + "," + System.identityHashCode(this) + ")";
     }
+
+    
 
     
 }

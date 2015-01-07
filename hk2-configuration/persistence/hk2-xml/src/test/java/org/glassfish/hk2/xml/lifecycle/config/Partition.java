@@ -8,9 +8,11 @@ import java.beans.PropertyVetoException;
 import javax.xml.bind.annotation.XmlAttribute;
 
 import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
+import org.jvnet.hk2.annotations.Contract;
 
 //import javax.validation.constraints.NotNull;
 
+@Contract
 public interface Partition extends PropertyBag, Auditable {
 
   @XmlAttribute(required=true /*, key=true */)
