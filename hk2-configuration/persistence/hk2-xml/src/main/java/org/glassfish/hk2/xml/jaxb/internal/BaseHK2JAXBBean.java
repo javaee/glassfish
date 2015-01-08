@@ -39,7 +39,9 @@
  */
 package org.glassfish.hk2.xml.jaxb.internal;
 
+import java.beans.PropertyChangeEvent;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -49,13 +51,17 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
+import org.glassfish.hk2.utilities.reflection.BeanReflectionHelper;
+import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlHubCommitMessage;
 import org.glassfish.hk2.xml.internal.DynamicChangeInfo;
+import org.glassfish.hk2.xml.internal.UnparentedNode;
 
 /**
  * @author jwells
@@ -92,8 +98,9 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
     
     private String selfXmlTag;
     private String instanceName;
-    private String keyPropertyName;
     private String keyValue;
+    private UnparentedNode model;
+    private ClassReflectionHelper classReflectionHelper;
     
     // Calculated values
     private String xmlPath = EMPTY;
@@ -364,11 +371,12 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
      */
     @Override
     public String _getKeyPropertyName() {
-        return keyPropertyName;
+        return model.getKeyProperty();
     }
     
-    public void _setKeyPropertyName(String keyPropertyName) {
-        this.keyPropertyName = keyPropertyName;
+    public void _setModel(UnparentedNode model, ClassReflectionHelper helper) {
+        this.model = model;
+        this.classReflectionHelper = helper;
     }
     
     @Override
@@ -427,7 +435,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         parentXmlPath = copyMe.parentXmlPath;
         selfXmlTag = copyMe.selfXmlTag;
         instanceName = copyMe.instanceName;
-        keyPropertyName = copyMe.keyPropertyName;
+        model = copyMe.model;
         keyValue = copyMe.keyValue;
         xmlPath = copyMe.xmlPath;
         
@@ -446,6 +454,47 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
     @Override
     public Object _createChild(Class<?> childType, String keyValue) {
         throw new AssertionError("not yet implemented");
+    }
+    
+    private PropertyChangeEvent changes[] = null;
+    
+    public void _merge(BaseHK2JAXBBean other, WriteableBeanDatabase writeableDatabase) {
+        if (changes != null) throw new IllegalStateException("Bean " + this + " has a merge on-going");
+        
+        Map<String, Object> otherMap = other._getBeanLikeMap();
+        
+        WriteableType wt = writeableDatabase.getWriteableType(xmlPath);
+        
+        changes = BeanReflectionHelper.getChangeEvents(classReflectionHelper,
+                beanLikeMap, otherMap);
+        
+        // TODO:  Children
+        
+        wt.modifyInstance(instanceName, otherMap, changes);
+    }
+    
+    /**
+     * Write lock for tree must be held
+     * 
+     * @param success If the transaction committed succesfully
+     */
+    public void _endMerge(boolean success) {
+        if (changes == null) throw new IllegalStateException("Bean " + this + " does not have a known merge");
+        if (!success) {
+            changes = null;
+            return;
+        }
+        
+        for (PropertyChangeEvent pce : changes) {
+            String propName = pce.getPropertyName();
+            Object newValue = pce.getNewValue();
+            
+            beanLikeMap.put(propName, newValue);
+            
+            // TODO: Children
+        }
+        
+        changes = null;
     }
     
     @Override

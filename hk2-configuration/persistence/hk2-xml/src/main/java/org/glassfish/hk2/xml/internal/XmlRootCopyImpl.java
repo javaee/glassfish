@@ -39,22 +39,33 @@
  */
 package org.glassfish.hk2.xml.internal;
 
+import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.configuration.hub.api.PrepareFailedException;
+import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
+import org.glassfish.hk2.xml.api.XmlHubCommitMessage;
 import org.glassfish.hk2.xml.api.XmlRootCopy;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
+import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 
 /**
  * @author jwells
  *
  */
 public class XmlRootCopyImpl<T> implements XmlRootCopy<T> {
+    private final Hub hub;
     private final XmlRootHandleImpl<T> parent;
     private final long basis;
     private final T copy;
     
-    /* package */ XmlRootCopyImpl(XmlRootHandleImpl<T> parent, long basis, T copy) {
+    /* package */ XmlRootCopyImpl(Hub hub, XmlRootHandleImpl<T> parent, long basis, T copy) {
+        if (copy == null) throw new IllegalStateException("Only a non-empty Handle can be copied");
+        
+        this.hub = hub;
         this.parent = parent;
         this.basis = basis;
         this.copy = copy;
+        
     }
 
     /* (non-Javadoc)
@@ -86,11 +97,61 @@ public class XmlRootCopyImpl<T> implements XmlRootCopy<T> {
      */
     @Override
     public void merge() {
-        if (!isMergeable()) {
-            throw new AssertionError("Parent has changed since copy was made, no merge possible");
-        }
+        parent.getChangeInfo().getWriteLock().lock();
+        try {
+            if (!isMergeable()) {
+                throw new AssertionError("Parent has changed since copy was made, no merge possible");
+            }
+            
+            WriteableBeanDatabase writeableDatabase = null;
+            if (hub != null) {
+                writeableDatabase = hub.getWriteableDatabaseCopy();
+            }
         
-        throw new AssertionError("Not yet implemented");
+            BaseHK2JAXBBean copyBean = (BaseHK2JAXBBean) copy;
+            BaseHK2JAXBBean original = (BaseHK2JAXBBean) parent.getRoot();
+            
+            original._merge(copyBean, writeableDatabase);
+            
+            boolean success = false;
+            try {
+                writeableDatabase.commit(new XmlHubCommitMessage(){});
+                success = true;
+            }
+            catch (MultiException me) {
+                boolean foundPrepareException = false;
+                for (Throwable th : me.getErrors()) {
+                    if (th instanceof PrepareFailedException) {
+                        foundPrepareException = true;
+                        break;
+                    }
+                }
+                
+                if (foundPrepareException) {
+                    success = false;
+                }
+                else {
+                    // If there was no prepare exception then the
+                    // transaction went through but some joker
+                    // failed in the commit phase.  But it still
+                    // means that the values have to be accounted
+                    // for in the beans, so it appears like success
+                    success = true;
+                }
+            }
+            finally {
+                if (success) {
+                    parent.getChangeInfo().incrementChangeNumber();
+                }
+                
+                original._endMerge(success);
+            }
+        }
+        finally {
+            parent.getChangeInfo().getWriteLock().unlock();
+        }
     }
+    
+    
 
 }

@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.xml.api.XmlRootCopy;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
@@ -55,6 +56,7 @@ import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
  *
  */
 public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
+    private final Hub hub;
     private final T root;
     private final Class<T> rootClass;
     private URI rootURI;
@@ -62,12 +64,20 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
     private final boolean advertisedInHub;
     private final DynamicChangeInfo changeControl;
     
-    /* package */ XmlRootHandleImpl(T root, Class<T> rootClass, URI rootURI, boolean advertised, boolean hub, DynamicChangeInfo changes) {
+    /* package */ XmlRootHandleImpl(
+            Hub hub,
+            T root,
+            Class<T> rootClass,
+            URI rootURI,
+            boolean advertised,
+            boolean inHub,
+            DynamicChangeInfo changes) {
+        this.hub = hub;
         this.root = root;
         this.rootClass = rootClass;
         this.rootURI = rootURI;
         this.advertised = advertised;
-        this.advertisedInHub = hub;
+        this.advertisedInHub = inHub;
         this.changeControl = changes;
     }
 
@@ -126,16 +136,22 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
     @SuppressWarnings("unchecked")
     @Override
     public XmlRootCopy<T> getXmlRootCopy() {
+        Hub useHub = (advertisedInHub) ? hub : null;
+        
+        // In any case, the child should not be directly given the hub, as
+        // it is not reflected in the hub
+        DynamicChangeInfo copyController = new DynamicChangeInfo(changeControl.getJAUtilities(), null);
+        
         changeControl.getReadLock().lock();
         try {
             BaseHK2JAXBBean bean = (BaseHK2JAXBBean) root;
             if (bean == null) {
-                return new XmlRootCopyImpl<T>(this, changeControl.getChangeNumber(), null);
+                return new XmlRootCopyImpl<T>(useHub, this, changeControl.getChangeNumber(), null);
             }
         
             BaseHK2JAXBBean copy;
             try {
-                copy = doCopy(bean);
+                copy = doCopy(bean, copyController);
             }
             catch (RuntimeException re) {
                 throw re;
@@ -144,14 +160,14 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
                 throw new RuntimeException(th);
             }
         
-            return new XmlRootCopyImpl<T>(this, changeControl.getChangeNumber(), (T) copy);
+            return new XmlRootCopyImpl<T>(useHub, this, changeControl.getChangeNumber(), (T) copy);
         }
         finally {
             changeControl.getReadLock().unlock();
         }
     }
     
-    private static BaseHK2JAXBBean doCopy(BaseHK2JAXBBean copyMe) throws Throwable {
+    private static BaseHK2JAXBBean doCopy(BaseHK2JAXBBean copyMe, DynamicChangeInfo copyController) throws Throwable {
         if (copyMe == null) return null;
         
         Class<?> copyMeClass = copyMe.getClass();
@@ -171,7 +187,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
                 ArrayList<Object> toSetChildList = new ArrayList<Object>(childList.size());
                 
                 for (Object subChild : childList) {
-                    BaseHK2JAXBBean copiedChild = doCopy((BaseHK2JAXBBean) subChild);
+                    BaseHK2JAXBBean copiedChild = doCopy((BaseHK2JAXBBean) subChild, copyController);
                     copiedChild._setParent(retVal);
                     
                     toSetChildList.add(copiedChild);
@@ -191,7 +207,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
             }
             else {
                 // A direct child
-                BaseHK2JAXBBean copiedChild = doCopy((BaseHK2JAXBBean) child);
+                BaseHK2JAXBBean copiedChild = doCopy((BaseHK2JAXBBean) child, copyController);
                 copiedChild._setParent(retVal);
                 
                 retVal._setProperty(childProp, copiedChild);
@@ -200,6 +216,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
             }
         }
         
+        retVal._setDynamicChangeInfo(copyController);
         return retVal;
     }
     
@@ -240,6 +257,10 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
     @Override
     public T deleteRoot() {
         throw new AssertionError("deleteRoot not implemented");
+    }
+    
+    /* package */ DynamicChangeInfo getChangeInfo() {
+        return changeControl;
     }
     
     @Override

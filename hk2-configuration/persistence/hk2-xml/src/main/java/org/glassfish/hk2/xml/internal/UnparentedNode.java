@@ -40,7 +40,9 @@
 package org.glassfish.hk2.xml.internal;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This tells things about a node in an XML tree, without any
@@ -53,10 +55,28 @@ import java.util.Map;
  *
  */
 public class UnparentedNode {
+    /** A lock for concurrency */
+    private final Object lock = new Object();
+    
+    /** The interface from which the JAXB proxy was created */
     private final Class<?> originalInterface;
+    
+    /** The JAXB proxy of the originalInterface */
     private Class<?> translatedClass;
+    
+    /** If this node can be a root, the xml tag of the root of the document */
     private String rootName;
+    
+    /** A map from an interface to a parented child node */
     private final Map<Class<?>, ParentedNode> children = new HashMap<Class<?>, ParentedNode>();
+    
+    /** A map from the property name (not the xml tag) to the parented child node */
+    private final Map<String, ParentedNode> childrenByName = new HashMap<String, ParentedNode>();
+    
+    /** A set of all non-child properties of this node */
+    private final Set<String> nonChildProperty = new HashSet<String>();
+    
+    /** If this node has a key, this is the property name of the key */
     private String keyProperty;
     
     public UnparentedNode(Class<?> originalInterface) {
@@ -96,14 +116,34 @@ public class UnparentedNode {
     }
     
     public void addChild(String xmlTag, boolean multiChild, UnparentedNode child) {
-        synchronized (children) {
-            children.put(child.getOriginalInterface(), new ParentedNode(xmlTag, multiChild, child));
+        synchronized (lock) {
+            ParentedNode pn = new ParentedNode(xmlTag, multiChild, child);
+            children.put(child.getOriginalInterface(), pn);
+            childrenByName.put(xmlTag, pn);
+        }
+    }
+    
+    public void addNonChildProperty(String xmlTag) {
+        synchronized (lock) {
+            nonChildProperty.add(xmlTag);
         }
     }
     
     public ParentedNode getChild(Class<?> childType) {
-        synchronized (children) {
+        synchronized (lock) {
             return children.get(childType);
+        }
+    }
+    
+    public Set<String> getNonChildProperties() {
+        synchronized (lock) {
+            return new HashSet<String>(nonChildProperty);
+        }
+    }
+    
+    public Map<String, ParentedNode> getChildProperties() {
+        synchronized (lock) {
+            return new HashMap<String, ParentedNode>(childrenByName);
         }
     }
 

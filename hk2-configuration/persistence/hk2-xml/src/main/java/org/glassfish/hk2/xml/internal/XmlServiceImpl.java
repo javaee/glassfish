@@ -56,6 +56,8 @@ import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
+import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
 import org.glassfish.hk2.xml.api.XmlHubCommitMessage;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
@@ -77,6 +79,8 @@ public class XmlServiceImpl implements XmlService {
     
     @Inject
     private Hub hub;
+    
+    private final ClassReflectionHelper classReflectionHelper = new ClassReflectionHelperImpl();
     
     private final AtomicLong idGenerator = new AtomicLong();
     
@@ -164,7 +168,7 @@ public class XmlServiceImpl implements XmlService {
             wbd.commit(new XmlHubCommitMessage() {});
         }
         
-        return new XmlRootHandleImpl<T>(root, originalClass, uri, advertise, advertiseInHub, changeControl);
+        return new XmlRootHandleImpl<T>(hub, root, originalClass, uri, advertise, advertiseInHub, changeControl);
     }
     
     
@@ -182,7 +186,7 @@ public class XmlServiceImpl implements XmlService {
         try {
             jaUtilities.convertRootAndLeaves(jaxbAnnotatedInterface);
         
-            return new XmlRootHandleImpl<T>(null, jaxbAnnotatedInterface, null, advertiseInRegistry, advertiseInHub, new DynamicChangeInfo(jaUtilities, hub));
+            return new XmlRootHandleImpl<T>(hub, null, jaxbAnnotatedInterface, null, advertiseInRegistry, advertiseInHub, new DynamicChangeInfo(jaUtilities, hub));
         }
         catch (RuntimeException re) {
             throw re;
@@ -232,7 +236,6 @@ public class XmlServiceImpl implements XmlService {
             String keyProperty = null;
             if (keyPropertyName != null) {
                 keyProperty = (String) targetBean._getProperty(keyPropertyName);
-                targetBean._setKeyPropertyName(keyPropertyName);
                 targetBean._setKeyValue(keyProperty);
             }
             
@@ -268,6 +271,7 @@ public class XmlServiceImpl implements XmlService {
             BaseHK2JAXBBean parentBean = (BaseHK2JAXBBean) parent;
             
             UnparentedNode baseNode = jaUtilities.getNode(target.getClass());
+            baseBean._setModel(baseNode, classReflectionHelper);
             
             if (parentBean == null) {
                 baseBean._setSelfXmlTag(baseNode.getRootName());

@@ -250,6 +250,9 @@ public class JAUtilities {
                         retVal.addChild(mi.representedProperty, mi.isList, childType);
                     }
                 }
+                else {
+                    retVal.addNonChildProperty(mi.representedProperty);
+                }
             }
             
             retVal.setTranslatedClass(proxy);
@@ -401,6 +404,9 @@ public class JAUtilities {
                     
                     retVal.addChild(mi.representedProperty, mi.isList, childType);
                 }
+            }
+            else {
+                retVal.addNonChildProperty(mi.representedProperty);
             }
             
             CtMethod addMeCtMethod = CtNewMethod.make(sb.toString(), targetCtClass);

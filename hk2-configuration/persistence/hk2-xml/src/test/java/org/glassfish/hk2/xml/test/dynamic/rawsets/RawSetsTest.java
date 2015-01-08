@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.xml.test.dynamic.rawsets;
 
+import java.beans.PropertyChangeEvent;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -146,7 +147,7 @@ public class RawSetsTest {
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testModifyTwoPropertiesOneTransaction() throws Exception {
         ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
         XmlService xmlService = locator.getService(XmlService.class);
@@ -188,10 +189,27 @@ public class RawSetsTest {
         List<Change> changes = listener.changes;
         Assert.assertNotNull(changes);
         
-        Assert.assertEquals(2, changes.size());
+        Assert.assertEquals(1, changes.size());
         
         for (Change change : changes) {
             Assert.assertEquals(ChangeCategory.MODIFY_INSTANCE, change.getChangeCategory());
+            
+            List<PropertyChangeEvent> events = change.getModifiedProperties();
+            
+            Assert.assertEquals(2, events.size());
+            boolean gotId = false;
+            boolean gotAge = false;
+            for (PropertyChangeEvent event : events) {
+                if ("age".equals(event.getPropertyName())) {
+                    gotAge = true;
+                }
+                else if ("id".equals(event.getPropertyName())) {
+                    gotId = true;
+                }
+            }
+            
+            Assert.assertTrue(gotId);
+            Assert.assertTrue(gotAge);
         }
     }
     
