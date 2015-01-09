@@ -61,8 +61,13 @@ public interface Employees {
     public void setFinancials(Financials finances);
     public Financials getFinancials();
     
-    public List<Employee> getEmployees();
-    
     @XmlElement(name="employee")
     public void setEmployees(List<Employee> employees);
+    public List<Employee> getEmployees();
+    public Employee lookupEmployees(String employeeName);
+    public void addEmployees(String employeeName);
+    public void addEmployees(String employeeName, int index);
+    public void addEmployees(Employee employee);
+    public void addEmployees(Employee employee, int index);
+    public Employee removeEmployees(String employeeName);
 }

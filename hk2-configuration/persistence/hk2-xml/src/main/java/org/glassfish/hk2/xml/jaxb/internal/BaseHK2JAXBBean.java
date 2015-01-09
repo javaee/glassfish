@@ -274,6 +274,14 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
             changeControl.getReadLock().unlock();
         }
     }
+    
+    public void _doAdd(String childProperty, Object rawChild, String childKey, int index) {
+        throw new AssertionError("Add not yet implemented: rawChild=" + rawChild + " childKey=" + childKey + " index=" + index + " childProperty=" + childProperty);
+    }
+    
+    public Object _doRemove(String childProperty, String childKey, int index) {
+        throw new AssertionError("Add not yet implemented: childProperty=" + childProperty + " childKey=" + childKey + " index=" + index);
+    }
 
     public boolean _hasProperty(String propName) {
         changeControl.getReadLock().lock();
@@ -476,7 +484,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
     /**
      * Write lock for tree must be held
      * 
-     * @param success If the transaction committed succesfully
+     * @param success If the transaction committed successfully
      */
     public void _endMerge(boolean success) {
         if (changes == null) throw new IllegalStateException("Bean " + this + " does not have a known merge");

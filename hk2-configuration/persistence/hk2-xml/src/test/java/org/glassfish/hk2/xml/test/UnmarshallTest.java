@@ -66,7 +66,7 @@ import org.junit.Test;
  */
 public class UnmarshallTest {
     public final static String MUSEUM1_FILE = "museum1.xml";
-    private final static String ACME1_FILE = "Acme1.xml";
+    public final static String ACME1_FILE = "Acme1.xml";
     private final static String SAMPLE_CONFIG_FILE = "sample-config.xml";
     
     public final static String BEN_FRANKLIN = "Ben Franklin";

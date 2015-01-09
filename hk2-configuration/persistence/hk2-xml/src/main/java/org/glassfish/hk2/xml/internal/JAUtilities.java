@@ -85,6 +85,8 @@ public class JAUtilities {
     /* package */ final static String SET = "set";
     /* package */ final static String IS = "is";
     /* package */ final static String LOOKUP = "lookup";
+    /* package */ final static String ADD = "add";
+    /* package */ final static String REMOVE = "remove";
     /* package */ final static String JAXB_DEFAULT_STRING = "##default";
     
     private final static String CLASS_ADD_ON_NAME = "_$$_Hk2_Jaxb";
@@ -214,8 +216,10 @@ public class JAUtilities {
                     retVal.setKeyProperty(mi.representedProperty);
                 }
                 
+                boolean getterOrSetter = false;
                 UnparentedNode childType = null;
                 if (MethodType.SETTER.equals(mi.methodType)) {
+                    getterOrSetter = true;
                     if (mi.baseChildType != null) {
                         if (!interface2NodeCache.containsKey(mi.baseChildType)) {
                             throw new RuntimeException("The child of type " + mi.baseChildType.getName() + " is unknown for method " + mi.originalMethod);
@@ -225,6 +229,7 @@ public class JAUtilities {
                     }
                 }
                 else if (MethodType.GETTER.equals(mi.methodType)) {
+                    getterOrSetter = true;
                     if (mi.baseChildType != null) {
                         if (!interface2NodeCache.containsKey(mi.baseChildType)) {
                             throw new RuntimeException("The child of type " + mi.baseChildType.getName() + " is unknown for method " + mi.originalMethod);
@@ -234,24 +239,26 @@ public class JAUtilities {
                     }
                 }
                 
-                if (childType != null) {
-                    if (childTypes.containsKey(childType)) {
-                        String variableName = childTypes.get(childType);
-                        if (!variableName.equals(mi.representedProperty)) {
-                            throw new RuntimeException(
-                                "Multiple children of " + convertMe.getName() +
-                                " cannot have the same type.  Consider extending one or more of these to disambiguate the child: " +
-                                childType.getOriginalInterface().getName());
+                if (getterOrSetter) {
+                    if (childType != null) {
+                        if (childTypes.containsKey(childType)) {
+                            String variableName = childTypes.get(childType);
+                            if (!variableName.equals(mi.representedProperty)) {
+                                throw new RuntimeException(
+                                    "Multiple children of " + convertMe.getName() +
+                                    " cannot have the same type.  Consider extending one or more of these to disambiguate the child: " +
+                                    childType.getOriginalInterface().getName());
+                            }
+                        }
+                        else {
+                            childTypes.put(childType, mi.representedProperty);
+                        
+                            retVal.addChild(mi.representedProperty, mi.isList, childType);
                         }
                     }
                     else {
-                        childTypes.put(childType, mi.representedProperty);
-                        
-                        retVal.addChild(mi.representedProperty, mi.isList, childType);
+                        retVal.addNonChildProperty(mi.representedProperty);
                     }
-                }
-                else {
-                    retVal.addNonChildProperty(mi.representedProperty);
                 }
             }
             
@@ -331,7 +338,9 @@ public class JAUtilities {
             sb.append(name + "(");
             
             UnparentedNode childType = null;
+            boolean getterOrSetter = false;
             if (MethodType.SETTER.equals(mi.methodType)) {
+                getterOrSetter = true;
                 if (mi.baseChildType != null) {
                     if (!interface2NodeCache.containsKey(mi.baseChildType)) {
                         throw new RuntimeException("The child of type " + mi.baseChildType.getName() + " is unknown for method " + mi.originalMethod);
@@ -343,6 +352,7 @@ public class JAUtilities {
                 sb.append(mi.getterSetterType.getName() + " arg0) { super._setProperty(\"" + mi.representedProperty + "\", arg0); }");
             }
             else if (MethodType.GETTER.equals(mi.methodType)) {
+                getterOrSetter = true;
                 if (mi.baseChildType != null) {
                     if (!interface2NodeCache.containsKey(mi.baseChildType)) {
                         throw new RuntimeException("The child of type " + mi.baseChildType.getName() + " is unknown for method " + mi.originalMethod);
@@ -388,25 +398,64 @@ public class JAUtilities {
                         ") super._lookupChild(\"" + mi.representedProperty + "\", arg0); }");
                 
             }
-            
-            if (childType != null) {
-                if (childTypes.containsKey(childType)) {
-                    String variableName = childTypes.get(childType);
-                    if (!variableName.equals(mi.representedProperty)) {
-                        throw new RuntimeException(
-                            "Multiple children of " + convertMe.getName() +
-                            " cannot have the same type.  Consider extending one or more of these to disambiguate the child: " +
-                            childType.getOriginalInterface().getName());
+            else if (MethodType.ADD.equals(mi.methodType)) {
+                Class<?>[] paramTypes = originalMethod.getParameterTypes();
+                if (paramTypes.length == 1) {
+                    sb.append(paramTypes[0].getName() + " arg0) { super._doAdd(\"" + mi.representedProperty + "\",");
+                    
+                    if (paramTypes[0].isInterface()) {
+                        sb.append("arg0, null, -1); }");
+                    }
+                    else if (String.class.equals(paramTypes[0])) {
+                        sb.append("null, arg0, -1); }");
+                    }
+                    else {
+                        sb.append("null, null, arg0); }");
                     }
                 }
                 else {
-                    childTypes.put(childType, mi.representedProperty);
+                    sb.append(paramTypes[0].getName() + " arg0, int arg1) { super._doAdd(\"" + mi.representedProperty + "\",");
                     
-                    retVal.addChild(mi.representedProperty, mi.isList, childType);
+                    if (paramTypes[0].isInterface()) {
+                        sb.append("arg0, null, arg1); }");
+                    }
+                    else {
+                        sb.append("null, arg0, arg1); }");
+                    }
                 }
             }
-            else {
-                retVal.addNonChildProperty(mi.representedProperty);
+            else if (MethodType.REMOVE.equals(mi.methodType)) {
+                Class<?>[] paramTypes = originalMethod.getParameterTypes();
+                if (String.class.equals(paramTypes[0])) {
+                    sb.append("java.lang.String arg0) { return (" + originalRetType.getName()  +
+                            ") super._doRemove(\"" + mi.representedProperty + "\", arg0, -1); }");
+                }
+                else {
+                    sb.append("int arg0) { return (" + originalRetType.getName()  +
+                            ") super._doRemove(\"" + mi.representedProperty + "\", null, arg0); }");
+                }
+            }
+            
+            if (getterOrSetter) {
+                if (childType != null) {
+                    if (childTypes.containsKey(childType)) {
+                        String variableName = childTypes.get(childType);
+                        if (!variableName.equals(mi.representedProperty)) {
+                            throw new RuntimeException(
+                                "Multiple children of " + convertMe.getName() +
+                                " cannot have the same type.  Consider extending one or more of these to disambiguate the child: " +
+                                childType.getOriginalInterface().getName());
+                        }
+                    }
+                    else {
+                        childTypes.put(childType, mi.representedProperty);
+                    
+                        retVal.addChild(mi.representedProperty, mi.isList, childType);
+                    }
+                }
+                else {
+                    retVal.addNonChildProperty(mi.representedProperty);
+                }
             }
             
             CtMethod addMeCtMethod = CtNewMethod.make(sb.toString(), targetCtClass);
@@ -529,21 +578,29 @@ public class JAUtilities {
         String setterVariable = Utilities.isSetter(m);
         String getterVariable = null;
         String lookupVariable = null;
+        String addVariable = null;
+        String removeVariable = null;
         
         if (setterVariable == null) {
             getterVariable = Utilities.isGetter(m);
             if (getterVariable == null) {
                 lookupVariable = Utilities.isLookup(m);
+                if (lookupVariable == null) {
+                    addVariable = Utilities.isAdd(m);
+                    if (addVariable == null) {
+                        removeVariable = Utilities.isRemove(m);
+                    }
+                }
             }
         }
         
-        if (setterVariable == null && getterVariable == null && lookupVariable == null) {
+        if (setterVariable == null && getterVariable == null && lookupVariable == null && addVariable == null && removeVariable == null) {
             throw new RuntimeException("Unknown method type, neither setter nor getter nor lookup: " + m);
         }
         
         MethodType methodType;
         Class<?> baseChildType = null;
-        Class<?> gsType;
+        Class<?> gsType = null;
         String variable;
         boolean isList = false;
         if (getterVariable != null) {
@@ -596,8 +653,18 @@ public class JAUtilities {
             Class<?> lookupType = m.getReturnType();
             gsType = lookupType;
         }
+        else if (addVariable != null) {
+            // This is an add
+            methodType = MethodType.ADD;
+            variable = addVariable;
+        }
+        else if (removeVariable != null) {
+            // This is an remove
+            methodType = MethodType.REMOVE;
+            variable = addVariable;
+        }
         else {
-            throw new RuntimeException("Unknown method type, neither setter nor getter nor lookup: " + m);
+            throw new RuntimeException("Unknown method type: " + m);
         }
         
         String representedProperty = xmlNameMap.get(variable);
@@ -652,6 +719,8 @@ public class JAUtilities {
     private static enum MethodType {
         GETTER,
         SETTER,
-        LOOKUP
+        LOOKUP,
+        ADD,
+        REMOVE
     }
 }

@@ -39,10 +39,15 @@
  */
 package org.glassfish.hk2.xml.test.dynamic.adds;
 
+import java.net.URL;
+
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
+import org.glassfish.hk2.xml.test.Employee;
 import org.glassfish.hk2.xml.test.Employees;
+import org.glassfish.hk2.xml.test.UnmarshallTest;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
 import org.junit.Assert;
 import org.junit.Test;
@@ -54,6 +59,10 @@ import org.junit.Test;
  *
  */
 public class AddsTest {
+    private final static String DAVE = "Dave";
+    private final static String EMPLOYEE_TYPE = "/employees/employee";
+    private final static String DAVE_INSTANCE = "employees.Dave";
+    
     /**
      * Tests that we can call createAndAdd successfully on a root with no required elements
      */
@@ -72,6 +81,31 @@ public class AddsTest {
         Assert.assertNull(root.getFinancials());
         Assert.assertNull(root.getEmployees());
         Assert.assertNull(root.getCompanyName());
+    }
+    
+    /**
+     * Tests that we can add to an existing tree with just a basic add (no copy or overlay)
+     */
+    @Test @org.junit.Ignore
+    public void testAddToExistingTree() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource(UnmarshallTest.ACME1_FILE);
+        
+        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
+        Employees employees = rootHandle.getRoot();
+        
+        employees.addEmployees(DAVE);
+        
+        Employee daveDirect = employees.lookupEmployees(DAVE);
+        Assert.assertNotNull(daveDirect);
+        
+        Employee daveService = locator.getService(Employee.class, DAVE);
+        Assert.assertNotNull(daveService);
+        
+        Assert.assertNotNull(hub.getCurrentDatabase().getInstance(EMPLOYEE_TYPE, DAVE_INSTANCE));
     }
 
 }

@@ -113,6 +113,72 @@ public class Utilities {
         return Introspector.decapitalize(variableName);
     }
     
+    /* package */ static String isAdd(Method method) {
+        String name = method.getName();
+        
+        if (!name.startsWith(JAUtilities.ADD)) return null;
+        
+        if (name.length() <= JAUtilities.ADD.length()) return null;
+        if (!void.class.equals(method.getReturnType())) return null;
+        
+        String variableName = name.substring(JAUtilities.ADD.length());
+        String retVal = Introspector.decapitalize(variableName);
+        
+        Class<?> parameterTypes[] = method.getParameterTypes();
+        if (parameterTypes.length != 1 && parameterTypes.length != 2) return null;
+        
+        Class<?> param0 = parameterTypes[0];
+        Class<?> param1 = null;
+        if (parameterTypes.length == 2) {
+            param1 = parameterTypes[1];
+        }
+        
+        if (String.class.equals(param0) ||
+                int.class.equals(param0) ||
+                param0.isInterface()) {
+            // Yes, this is possibly an add
+            if (parameterTypes.length == 1) {
+                // add(int), add(String), add(interface) are legal adds
+                return retVal;
+            }
+            
+            if (int.class.equals(param0)) {
+                // If int is first there must not be any other parameter
+                return null;
+            }
+            else if (String.class.equals(param0)) {
+                // add(String, int) is a legal add
+                if (int.class.equals(param1)) return retVal;
+            }
+            else {
+                // add(interface, int) is a legal add
+                if (int.class.equals(param1)) return retVal;
+            }
+        }
+        return null;
+    }
+    
+    /* package */ static String isRemove(Method method) {
+        String name = method.getName();
+        
+        if (!name.startsWith(JAUtilities.REMOVE)) return null;
+        
+        if (name.length() <= JAUtilities.REMOVE.length()) return null;
+        if (method.getReturnType() == null || void.class.equals(method.getReturnType())) return null;
+        
+        String variableName = name.substring(JAUtilities.REMOVE.length());
+        String retVal = Introspector.decapitalize(variableName);
+        
+        Class<?> parameterTypes[] = method.getParameterTypes();
+        if (parameterTypes.length != 1) return null;
+        
+        Class<?> param0 = parameterTypes[0];
+        
+        if (String.class.equals(param0) ||
+                int.class.equals(param0)) return retVal;
+        return null;
+    }
+    
     /* package */ static String getRootElementName(Class<?> clazz) {
         XmlRootElement root = clazz.getAnnotation(XmlRootElement.class);
         if (root == null) throw new AssertionError("XmlRootElement not available on " + clazz.getName());
