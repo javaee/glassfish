@@ -76,6 +76,8 @@ public class UnparentedNode {
     /** A set of all non-child properties of this node */
     private final Set<String> nonChildProperty = new HashSet<String>();
     
+    private Set<String> unKeyedChildren = null;
+    
     /** If this node has a key, this is the property name of the key */
     private String keyProperty;
     
@@ -135,15 +137,9 @@ public class UnparentedNode {
         }
     }
     
-    public Set<String> getNonChildProperties() {
+    public ParentedNode getChild(String propName) {
         synchronized (lock) {
-            return new HashSet<String>(nonChildProperty);
-        }
-    }
-    
-    public Map<String, ParentedNode> getChildProperties() {
-        synchronized (lock) {
-            return new HashMap<String, ParentedNode>(childrenByName);
+            return childrenByName.get(propName);
         }
     }
 
@@ -159,6 +155,21 @@ public class UnparentedNode {
      */
     public void setKeyProperty(String keyProperty) {
         this.keyProperty = keyProperty;
+    }
+    
+    public Set<String> getUnKeyedChildren() {
+        synchronized (lock) {
+            if (unKeyedChildren != null) return unKeyedChildren;
+            
+            unKeyedChildren = new HashSet<String>();
+            
+            for (Map.Entry<String, ParentedNode> entry : childrenByName.entrySet()) {
+                if (entry.getValue().getChild().getKeyProperty() != null) continue;
+                unKeyedChildren.add(entry.getKey());
+            }
+            
+            return unKeyedChildren;
+        }
     }
 
     @Override

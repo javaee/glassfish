@@ -43,6 +43,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
+import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 
 /**
@@ -56,10 +58,14 @@ public class DynamicChangeInfo {
     private final ReadLock readTreeLock = treeLock.readLock();
     private long changeNumber = 0;
     private final Hub hub;
+    private final XmlServiceImpl idGenerator;
+    private final DynamicConfigurationService dynamicService;
     
-    /* package */ DynamicChangeInfo(JAUtilities jaUtilities, Hub hub) {
+    /* package */ DynamicChangeInfo(JAUtilities jaUtilities, Hub hub, XmlServiceImpl idGenerator, DynamicConfigurationService dynamicService) {
         this.jaUtilities = jaUtilities;
         this.hub = hub;
+        this.idGenerator = idGenerator;
+        this.dynamicService = dynamicService;
     }
     
     public Hub getHub() {
@@ -101,5 +107,16 @@ public class DynamicChangeInfo {
     public JAUtilities getJAUtilities() {
         return jaUtilities;
     }
-
+    
+    public String getGeneratedId() {
+        return idGenerator.getUniqueId();
+    }
+    
+    public XmlServiceImpl getIdGenerator() {
+        return idGenerator;
+    }
+    
+    public DynamicConfigurationService getDynamicConfigurationService() {
+        return dynamicService;
+    }
 }

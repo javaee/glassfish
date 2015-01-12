@@ -40,15 +40,26 @@
 package org.glassfish.hk2.xml.internal;
 
 import java.beans.Introspector;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 import javax.xml.bind.annotation.XmlRootElement;
+
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
+import org.glassfish.hk2.configuration.hub.api.WriteableType;
+import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
+import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
+import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 
 /**
  * @author jwells
  *
  */
 public class Utilities {
+    /** Separator for instance names */
+    public final static char INSTANCE_PATH_SEPARATOR = '.';
 
     /* package */ static String isGetter(Method method) {
         String name = method.getName();
@@ -228,5 +239,59 @@ public class Utilities {
         
         return sb.toString();
     }
-
+    
+    public static BaseHK2JAXBBean createBean(Class<?> implClass) {
+        try {
+            Constructor<?> noArgsConstructor = implClass.getConstructor();
+    
+            return (BaseHK2JAXBBean) ReflectionHelper.makeMe(noArgsConstructor, new Object[0], false);
+        }
+        catch (RuntimeException re) {
+            throw re;
+        }
+        catch (Throwable th) {
+            throw new RuntimeException(th);
+        }
+    }
+    
+    private static String getKeySegment(BaseHK2JAXBBean bean) {
+        String baseKeySegment = bean._getKeyValue();
+        if (baseKeySegment == null) {
+            baseKeySegment = bean._getSelfXmlTag();
+        }
+        
+        return baseKeySegment;
+    }
+    
+    /**
+     * Creates an instance name by traveling up the parent chain.  The
+     * parent chain must therefor already be correctly setup
+     * 
+     * @param bean The non-null bean from where to get the instancename
+     * @return A unique instance name.  The combination of the xml path
+     * and the instance name should uniquely identify the location of
+     * any node in a single tree
+     */
+    public static String createInstanceName(BaseHK2JAXBBean bean) {
+        if (bean._getParent() == null) {
+            return getKeySegment(bean);
+        }
+        
+        return createInstanceName((BaseHK2JAXBBean) bean._getParent()) + INSTANCE_PATH_SEPARATOR + getKeySegment(bean);
+    }
+    
+    public static void advertise(WriteableBeanDatabase wbd, DynamicConfiguration config, BaseHK2JAXBBean bean) {
+        if (config != null) {
+            AbstractActiveDescriptor<?> cDesc = BuilderHelper.createConstantDescriptor(bean);
+            if (bean._getKeyValue() != null) {
+                cDesc.setName(bean._getKeyValue());
+            }
+            config.addActiveDescriptor(cDesc);
+        }
+        
+        if (wbd != null) {
+            WriteableType wt = wbd.findOrAddWriteableType(bean._getXmlPath());
+            wt.addInstance(bean._getInstanceName(), bean._getBeanLikeMap());
+        }
+    }
 }

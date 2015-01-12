@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,43 +39,20 @@
  */
 package org.glassfish.hk2.xml.test;
 
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlAttribute;
 
 import org.jvnet.hk2.annotations.Contract;
 
 /**
+ * This is a data bean that has no key
+ * 
  * @author jwells
  *
  */
-@XmlRootElement @Contract
-public interface Employees {
-    public String getCompanyName();
-    
-    @XmlElement(name="company-name")
-    public void setCompanyName(String name);
-    
-    @XmlElement
-    public void setFinancials(Financials finances);
-    public Financials getFinancials();
-    
-    @XmlElement(name="employee")
-    public void setEmployees(List<Employee> employees);
-    public List<Employee> getEmployees();
-    public Employee lookupEmployees(String employeeName);
-    public void addEmployees(String employeeName);
-    public void addEmployees(String employeeName, int index);
-    public void addEmployees(Employee employee);
-    public void addEmployees(Employee employee, int index);
-    public Employee removeEmployees(String employeeName);
-    
-    @XmlElement(name="other-data")
-    public void setOtherData(List<OtherData> otherData);
-    public List<OtherData> getOtherData();
-    public void addOtherData(int position);
-    public void addOtherData(OtherData otherData);
-    public void addOtherData(OtherData otherData, int position);
-    public OtherData removeOtherData(int position);
+@Contract
+public interface OtherData {
+    @XmlAttribute
+    public String getData();
+    public void setData(String data);
+
 }

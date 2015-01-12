@@ -86,7 +86,7 @@ public class AddsTest {
     /**
      * Tests that we can add to an existing tree with just a basic add (no copy or overlay)
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testAddToExistingTree() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);

@@ -39,14 +39,12 @@
  */
 package org.glassfish.hk2.xml.internal;
 
-import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import org.glassfish.hk2.configuration.hub.api.Hub;
-import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.xml.api.XmlRootCopy;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
@@ -140,7 +138,11 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
         
         // In any case, the child should not be directly given the hub, as
         // it is not reflected in the hub
-        DynamicChangeInfo copyController = new DynamicChangeInfo(changeControl.getJAUtilities(), null);
+        DynamicChangeInfo copyController =
+                new DynamicChangeInfo(changeControl.getJAUtilities(),
+                        null,
+                        changeControl.getIdGenerator(),
+                        null);
         
         changeControl.getReadLock().lock();
         try {
@@ -170,10 +172,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
     private static BaseHK2JAXBBean doCopy(BaseHK2JAXBBean copyMe, DynamicChangeInfo copyController) throws Throwable {
         if (copyMe == null) return null;
         
-        Class<?> copyMeClass = copyMe.getClass();
-        Constructor<?> noArgsConstructor = copyMeClass.getConstructor();
-        
-        BaseHK2JAXBBean retVal = (BaseHK2JAXBBean) ReflectionHelper.makeMe(noArgsConstructor, new Object[0], false);
+        BaseHK2JAXBBean retVal = Utilities.createBean(copyMe.getClass());
         retVal._shallowCopyFrom(copyMe);
         
         Set<String> childrenProps = copyMe._getChildrenXmlTags();
@@ -196,10 +195,6 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
                     if (keyValue != null) {
                         retVal._addChild(childProp, keyValue, copiedChild);
                     }
-                    else {
-                        // May be many of them with same name, no key...
-                        retVal._addUnkeyedChild(childProp);
-                    }
                 }
                 
                 // Sets the list property into the parent
@@ -211,8 +206,6 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
                 copiedChild._setParent(retVal);
                 
                 retVal._setProperty(childProp, copiedChild);
-                
-                retVal._addUnkeyedChild(childProp);
             }
         }
         
