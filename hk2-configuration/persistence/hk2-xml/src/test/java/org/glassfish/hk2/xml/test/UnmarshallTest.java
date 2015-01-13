@@ -67,6 +67,7 @@ import org.junit.Test;
 public class UnmarshallTest {
     public final static String MUSEUM1_FILE = "museum1.xml";
     public final static String ACME1_FILE = "Acme1.xml";
+    public final static String ACME2_FILE = "Acme2.xml";
     private final static String SAMPLE_CONFIG_FILE = "sample-config.xml";
     
     public final static String BEN_FRANKLIN = "Ben Franklin";
@@ -77,6 +78,9 @@ public class UnmarshallTest {
     private final static String NYSE = "NYSE";
     private final static String COKE_TENANT = "coke";
     private final static String HRPROD_SERVICE = "HRProd";
+    
+    public final static String FINANCIALS_TYPE = "/employees/financials";
+    public final static String FINANCIALS_INSTANCE = "employees.financials";
     
     public final static int HUNDRED_INT = 100;
     public final static int HUNDRED_TEN_INT = 110;
@@ -168,8 +172,7 @@ public class UnmarshallTest {
         Assert.assertNotNull(locator.getService(Employee.class, CAROL));
     }
     
-    private final static String FINANCIALS_TYPE = "/employees/financials";
-    private final static String FINANCIALS_INSTANCE = "employees.financials";
+    
     
     /**
      * Tests the most basic of xml files can be unmarshalled with an interface

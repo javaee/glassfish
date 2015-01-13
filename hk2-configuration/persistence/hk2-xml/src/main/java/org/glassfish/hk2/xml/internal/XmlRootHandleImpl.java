@@ -47,6 +47,7 @@ import java.util.Set;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.xml.api.XmlRootCopy;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
+import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 
 /**
@@ -54,6 +55,7 @@ import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
  *
  */
 public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
+    private final XmlService parent;
     private final Hub hub;
     private final T root;
     private final Class<T> rootClass;
@@ -63,6 +65,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
     private final DynamicChangeInfo changeControl;
     
     /* package */ XmlRootHandleImpl(
+            XmlService parent,
             Hub hub,
             T root,
             Class<T> rootClass,
@@ -70,6 +73,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
             boolean advertised,
             boolean inHub,
             DynamicChangeInfo changes) {
+        this.parent = parent;
         this.hub = hub;
         this.root = root;
         this.rootClass = rootClass;
@@ -216,16 +220,6 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
     /* package */ long getRevision() {
         return changeControl.getChangeNumber();
     }
-    
-    
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.xml.api.XmlRootHandle#createRoot()
-     */
-    @Override
-    public T createRoot() {
-        throw new AssertionError("createRoot not implemented");
-    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.api.XmlRootHandle#addRoot(java.lang.Object)
@@ -240,16 +234,16 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
      * @see org.glassfish.hk2.xml.api.XmlRootHandle#createAndAddRoot()
      */
     @Override
-    public void createAndAddRoot() {
-        addRoot(createRoot());
+    public void addRoot() {
+        addRoot(parent.createBean(rootClass));
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.api.XmlRootHandle#deleteRoot()
      */
     @Override
-    public T deleteRoot() {
-        throw new AssertionError("deleteRoot not implemented");
+    public T removeRoot() {
+        throw new AssertionError("removeRoot not implemented");
     }
     
     /* package */ DynamicChangeInfo getChangeInfo() {

@@ -400,7 +400,10 @@ public class JAUtilities {
             }
             else if (MethodType.ADD.equals(mi.methodType)) {
                 Class<?>[] paramTypes = originalMethod.getParameterTypes();
-                if (paramTypes.length == 1) {
+                if (paramTypes.length == 0) {
+                    sb.append(") { super._doAdd(\"" + mi.representedProperty + "\", null, null, -1); }");
+                }
+                else if (paramTypes.length == 1) {
                     sb.append(paramTypes[0].getName() + " arg0) { super._doAdd(\"" + mi.representedProperty + "\",");
                     
                     if (paramTypes[0].isInterface()) {
@@ -426,7 +429,11 @@ public class JAUtilities {
             }
             else if (MethodType.REMOVE.equals(mi.methodType)) {
                 Class<?>[] paramTypes = originalMethod.getParameterTypes();
-                if (String.class.equals(paramTypes[0])) {
+                if (paramTypes.length == 0) {
+                    sb.append(") { return (" + originalRetType.getName()  +
+                            ") super._doRemove(\"" + mi.representedProperty + "\", null, -1); }");
+                }
+                else if (String.class.equals(paramTypes[0])) {
                     sb.append("java.lang.String arg0) { return (" + originalRetType.getName()  +
                             ") super._doRemove(\"" + mi.representedProperty + "\", arg0, -1); }");
                 }

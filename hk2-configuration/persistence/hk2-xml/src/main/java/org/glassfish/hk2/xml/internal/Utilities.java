@@ -136,7 +136,9 @@ public class Utilities {
         String retVal = Introspector.decapitalize(variableName);
         
         Class<?> parameterTypes[] = method.getParameterTypes();
-        if (parameterTypes.length != 1 && parameterTypes.length != 2) return null;
+        if (parameterTypes.length > 2) return null;
+        
+        if (parameterTypes.length == 0) return retVal;
         
         Class<?> param0 = parameterTypes[0];
         Class<?> param1 = null;
@@ -181,7 +183,9 @@ public class Utilities {
         String retVal = Introspector.decapitalize(variableName);
         
         Class<?> parameterTypes[] = method.getParameterTypes();
-        if (parameterTypes.length != 1) return null;
+        if (parameterTypes.length > 1) return null;
+        
+        if (parameterTypes.length == 0) return retVal;
         
         Class<?> param0 = parameterTypes[0];
         

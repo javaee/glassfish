@@ -157,7 +157,7 @@ public class XmlServiceImpl implements XmlService {
             wdb.commit(new XmlHubCommitMessage() {});
         }
         
-        return new XmlRootHandleImpl<T>(hub, root, originalClass, uri, advertise, advertiseInHub, changeControl);
+        return new XmlRootHandleImpl<T>(this, hub, root, originalClass, uri, advertise, advertiseInHub, changeControl);
     }
     
     
@@ -175,7 +175,7 @@ public class XmlServiceImpl implements XmlService {
         try {
             jaUtilities.convertRootAndLeaves(jaxbAnnotatedInterface);
         
-            return new XmlRootHandleImpl<T>(hub, null, jaxbAnnotatedInterface, null, advertiseInRegistry, advertiseInHub,
+            return new XmlRootHandleImpl<T>(this, hub, null, jaxbAnnotatedInterface, null, advertiseInRegistry, advertiseInHub,
                     new DynamicChangeInfo(jaUtilities, hub, this, ((advertiseInRegistry) ? dcs : null)));
         }
         catch (RuntimeException re) {
@@ -261,6 +261,14 @@ public class XmlServiceImpl implements XmlService {
             return allBeans;
         }
         
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlService#createBean(java.lang.Class)
+     */
+    @Override
+    public <T> T createBean(Class<T> beanInterface) {
+        throw new AssertionError("not yet implemented");
     }
 
    

@@ -101,5 +101,18 @@ public interface XmlService {
      * is not initially tied to any backing file or other input stream
      */
     public <T> XmlRootHandle<T> createEmptyHandle(Class<T> jaxbAnnotationInterface);
+    
+    /**
+     * This creates an instance of the given bean type
+     * of with no fields of the bean filled
+     * in.  Objects created with this API can be
+     * used in the adder methods of the beans, and
+     * will not be validated (but all setters and
+     * getters and lookups will work properly)
+     * 
+     * @return An instance of the bean with
+     * no properties set
+     */
+    public <T> T createBean(Class<T> beanInterface);
 
 }

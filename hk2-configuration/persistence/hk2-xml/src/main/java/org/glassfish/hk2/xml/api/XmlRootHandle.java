@@ -134,23 +134,6 @@ public interface XmlRootHandle<T> {
     public void overlay(XmlRootHandle<T> newRoot);
     
     /**
-     * This creates an instance of the root bean
-     * of the tree with no fields of the root filled
-     * in.  Use this API if the root has required
-     * fields that must be filled in prior to being
-     * validated.  The instance created by this
-     * API will NOT become the root of the tree
-     * until it is added with {@link #addRoot(Object)}.
-     * There is no requirement that the object
-     * created with this API is ever set as the
-     * root of this handle
-     * 
-     * @return An instance of the root bean with
-     * no properties set
-     */
-    public T createRoot();
-    
-    /**
      * If this handle does not already have a
      * root bean this method will add the one
      * given
@@ -165,13 +148,13 @@ public interface XmlRootHandle<T> {
     /**
      * This method can be used if the root of the
      * tree has no required fields, and is the
-     * combination of {@link #createRoot()}
+     * combination of {@link XmlService#createBean(Class)}
      * and {@link #addRoot(Object)}.  This method
      * will throw an exception from the validator
      * (if validation is enabled) if the root type
      * has required fields or fails other validation
      */
-    public void createAndAddRoot();
+    public void addRoot();
     
     /**
      * If this handle has a root this method
@@ -181,5 +164,5 @@ public interface XmlRootHandle<T> {
      * @return The root that was deleted, or null
      * if the root was already null
      */
-    public T deleteRoot();
+    public T removeRoot();
 }

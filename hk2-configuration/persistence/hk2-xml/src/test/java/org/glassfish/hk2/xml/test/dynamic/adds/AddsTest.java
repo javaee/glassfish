@@ -49,6 +49,7 @@ import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.Employee;
 import org.glassfish.hk2.xml.test.Employees;
+import org.glassfish.hk2.xml.test.Financials;
 import org.glassfish.hk2.xml.test.OtherData;
 import org.glassfish.hk2.xml.test.UnmarshallTest;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
@@ -78,7 +79,7 @@ public class AddsTest {
         XmlRootHandle<Employees> rootHandle = xmlService.createEmptyHandle(Employees.class);
         Assert.assertNull(rootHandle.getRoot());
         
-        rootHandle.createAndAddRoot();
+        rootHandle.addRoot();
         Employees root = rootHandle.getRoot();
         
         Assert.assertNotNull(root);
@@ -151,6 +152,34 @@ public class AddsTest {
         }
         
         Assert.assertNotNull(foundInstance);
+    }
+    
+    /**
+     * Tests that we can add to an existing tree with just a basic add
+     * with an direct stanza
+     */
+    @Test // @org.junit.Ignore
+    public void testAddToExistingTreeDirect() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource(UnmarshallTest.ACME2_FILE);
+        
+        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
+        Employees employees = rootHandle.getRoot();
+        
+        Assert.assertNull(employees.getFinancials());
+        
+        employees.addFinancials();
+        
+        Financials financials = employees.getFinancials();
+        
+        Assert.assertNotNull(financials);
+        Assert.assertNull(financials.getExchange());
+        Assert.assertNull(financials.getSymbol());
+        
+        Assert.assertNotNull(hub.getCurrentDatabase().getInstance(UnmarshallTest.FINANCIALS_TYPE, UnmarshallTest.FINANCIALS_INSTANCE));
     }
 
 }

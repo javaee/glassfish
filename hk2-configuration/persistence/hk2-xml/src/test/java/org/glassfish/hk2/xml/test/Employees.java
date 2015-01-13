@@ -60,6 +60,8 @@ public interface Employees {
     @XmlElement
     public void setFinancials(Financials finances);
     public Financials getFinancials();
+    public void addFinancials();
+    public Financials removeFinancials();
     
     @XmlElement(name="employee")
     public void setEmployees(List<Employee> employees);
