@@ -43,10 +43,13 @@ import java.net.URL;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.configuration.hub.api.Instance;
+import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.Employee;
 import org.glassfish.hk2.xml.test.Employees;
+import org.glassfish.hk2.xml.test.OtherData;
 import org.glassfish.hk2.xml.test.UnmarshallTest;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
 import org.junit.Assert;
@@ -61,6 +64,7 @@ import org.junit.Test;
 public class AddsTest {
     private final static String DAVE = "Dave";
     private final static String EMPLOYEE_TYPE = "/employees/employee";
+    private final static String OTHER_DATA_TYPE = "/employees/other-data";
     private final static String DAVE_INSTANCE = "employees.Dave";
     
     /**
@@ -106,6 +110,47 @@ public class AddsTest {
         Assert.assertNotNull(daveService);
         
         Assert.assertNotNull(hub.getCurrentDatabase().getInstance(EMPLOYEE_TYPE, DAVE_INSTANCE));
+    }
+    
+    /**
+     * Tests that we can add to an existing tree with just a basic add
+     * with an unkeyed field
+     */
+    @Test // @org.junit.Ignore
+    public void testAddToExistingTreeUnKeyed() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource(UnmarshallTest.ACME1_FILE);
+        
+        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
+        Employees employees = rootHandle.getRoot();
+        
+        employees.addOtherData(0);
+        
+        OtherData found = null;
+        for (OtherData other : employees.getOtherData()) {
+            Assert.assertNull(found);
+            found = other;
+        }
+        
+        Assert.assertNotNull(found);
+        
+        OtherData otherService = locator.getService(OtherData.class);
+        Assert.assertNotNull(otherService);
+        
+        Assert.assertEquals(found, otherService);
+        
+        Type type = hub.getCurrentDatabase().getType(OTHER_DATA_TYPE);
+        
+        Instance foundInstance = null;
+        for (Instance i : type.getInstances().values()) {
+            Assert.assertNull(foundInstance);
+            foundInstance = i;
+        }
+        
+        Assert.assertNotNull(foundInstance);
     }
 
 }
