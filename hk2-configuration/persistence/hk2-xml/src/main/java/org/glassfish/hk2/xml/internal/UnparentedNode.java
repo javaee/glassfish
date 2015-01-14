@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.xml.internal;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -55,12 +56,14 @@ import java.util.Set;
  * @author jwells
  *
  */
-public class UnparentedNode {
+public class UnparentedNode implements Serializable {
+    private static final long serialVersionUID = -1875168445525432246L;
+
     /** A lock for concurrency */
     private final Object lock = new Object();
     
     /** The interface from which the JAXB proxy was created */
-    private final Class<?> originalInterface;
+    private Class<?> originalInterface;
     
     /** The JAXB proxy of the originalInterface */
     private Class<?> translatedClass;
@@ -81,6 +84,9 @@ public class UnparentedNode {
     
     /** If this node has a key, this is the property name of the key */
     private String keyProperty;
+    
+    public UnparentedNode() {
+    }
     
     public UnparentedNode(Class<?> originalInterface) {
         this.originalInterface = originalInterface;

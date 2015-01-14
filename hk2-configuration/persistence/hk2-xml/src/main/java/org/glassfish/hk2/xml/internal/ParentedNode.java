@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.xml.internal;
 
+import java.io.Serializable;
+
 /**
  * A node with information about the parent, which is therefor
  * specific to a place in a tree
@@ -46,10 +48,15 @@ package org.glassfish.hk2.xml.internal;
  * @author jwells
  *
  */
-public class ParentedNode {
-    private final String childName;
-    private final boolean multiChild;  // If true there is a list of children, otherwise there is just a single child
-    private final UnparentedNode child;
+public class ParentedNode implements Serializable {
+    private static final long serialVersionUID = 7004413497291650707L;
+    
+    private String childName;
+    private boolean multiChild;  // If true there is a list of children, otherwise there is just a single child
+    private UnparentedNode child;
+    
+    public ParentedNode() {
+    }
     
     public ParentedNode(String childName, boolean multiChild, UnparentedNode child) {
         this.childName = childName;
