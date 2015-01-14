@@ -438,7 +438,10 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
             // Handling of children will be handled once the real child is better setup
             BaseHK2JAXBBean childToCopy = (BaseHK2JAXBBean) rawChild;
             for (String nonChildProperty : childToCopy.model.getNonChildProperties()) {
-                child._setProperty(nonChildProperty, childToCopy._getProperty(nonChildProperty));
+                Object value = childToCopy._getProperty(nonChildProperty);
+                if (value == null) continue;
+                
+                child._setProperty(nonChildProperty, value);
             }
         }
         

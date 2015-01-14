@@ -37,25 +37,19 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test;
+package org.glassfish.hk2.xml.test.basic;
 
-import java.util.List;
+import javax.xml.bind.annotation.XmlAttribute;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
 
 /**
  * @author jwells
  *
  */
-@XmlRootElement(name="foobar")
-public interface FooBarBean {
-    @XmlElement(name="foo")
-    public void setFoo(List<FooDataBean> foos);
-    public List<FooDataBean> getFoo();
-    
-    @XmlElement(name="bar")
-    public void setBar(List<BarDataBean> bars);
-    public List<BarDataBean> getBar();
+public interface DataBean {
+    @XmlAttribute @XmlIdentifier
+    public String getData();
+    public void setData(String data);
 
 }

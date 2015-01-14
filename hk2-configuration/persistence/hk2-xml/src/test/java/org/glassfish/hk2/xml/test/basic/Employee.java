@@ -37,32 +37,27 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test;
+package org.glassfish.hk2.xml.test.basic;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
+import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
  * @author jwells
  *
  */
-@XmlRootElement @Contract
-public interface Museum {
+@Contract
+public interface Employee {
     public String getName();
     
-    @XmlElement
+    @XmlElement @XmlIdentifier
     public void setName(String name);
     
-    public int getAge();
+    public long getId();
     
     @XmlElement
-    public void setAge(int age);
-    
-    public int getId();
-    
-    @XmlAttribute
-    public void setId(int id);
+    public void setId(long id);
+
 }

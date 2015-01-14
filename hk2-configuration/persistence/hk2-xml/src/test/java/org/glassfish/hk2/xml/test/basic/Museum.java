@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,22 +37,32 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test;
+package org.glassfish.hk2.xml.test.basic;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.jvnet.hk2.annotations.Contract;
 
 /**
- * This is a data bean that has no key
- * 
  * @author jwells
  *
  */
-@Contract
-public interface OtherData {
+@XmlRootElement @Contract
+public interface Museum {
+    public String getName();
+    
+    @XmlElement
+    public void setName(String name);
+    
+    public int getAge();
+    
+    @XmlElement
+    public void setAge(int age);
+    
+    public int getId();
+    
     @XmlAttribute
-    public String getData();
-    public void setData(String data);
-
+    public void setId(int id);
 }

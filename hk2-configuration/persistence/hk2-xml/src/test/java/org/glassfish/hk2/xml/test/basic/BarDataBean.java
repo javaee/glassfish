@@ -37,27 +37,12 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test;
-
-import javax.xml.bind.annotation.XmlElement;
-
-import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
-import org.jvnet.hk2.annotations.Contract;
+package org.glassfish.hk2.xml.test.basic;
 
 /**
  * @author jwells
  *
  */
-@Contract
-public interface Employee {
-    public String getName();
-    
-    @XmlElement @XmlIdentifier
-    public void setName(String name);
-    
-    public long getId();
-    
-    @XmlElement
-    public void setId(long id);
+public interface BarDataBean extends DataBean {
 
 }

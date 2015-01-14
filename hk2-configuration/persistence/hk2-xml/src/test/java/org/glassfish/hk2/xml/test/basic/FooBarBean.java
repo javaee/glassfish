@@ -37,12 +37,25 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test;
+package org.glassfish.hk2.xml.test.basic;
+
+import java.util.List;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author jwells
  *
  */
-public interface FooDataBean extends DataBean {
+@XmlRootElement(name="foobar")
+public interface FooBarBean {
+    @XmlElement(name="foo")
+    public void setFoo(List<FooDataBean> foos);
+    public List<FooDataBean> getFoo();
+    
+    @XmlElement(name="bar")
+    public void setBar(List<BarDataBean> bars);
+    public List<BarDataBean> getBar();
 
 }

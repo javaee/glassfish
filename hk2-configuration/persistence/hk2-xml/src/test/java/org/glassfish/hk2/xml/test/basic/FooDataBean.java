@@ -37,25 +37,12 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test.negative.childrensametype;
-
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlElement;
-
-import org.glassfish.hk2.xml.test.basic.DataBean;
+package org.glassfish.hk2.xml.test.basic;
 
 /**
  * @author jwells
  *
  */
-public interface FooBarBean {
-    @XmlElement(name="foo")
-    public void setFoo(List<DataBean> foos);
-    public List<DataBean> getFoo();
-    
-    @XmlElement(name="bar")
-    public void setBar(List<DataBean> bars);
-    public List<DataBean> getBar();
+public interface FooDataBean extends DataBean {
 
 }

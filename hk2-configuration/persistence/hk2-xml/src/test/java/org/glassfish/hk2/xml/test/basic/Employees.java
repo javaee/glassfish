@@ -37,19 +37,47 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test;
+package org.glassfish.hk2.xml.test.basic;
 
-import javax.xml.bind.annotation.XmlAttribute;
+import java.util.List;
 
-import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.jvnet.hk2.annotations.Contract;
 
 /**
  * @author jwells
  *
  */
-public interface DataBean {
-    @XmlAttribute @XmlIdentifier
-    public String getData();
-    public void setData(String data);
-
+@XmlRootElement @Contract
+public interface Employees {
+    public String getCompanyName();
+    
+    @XmlElement(name="company-name")
+    public void setCompanyName(String name);
+    
+    @XmlElement
+    public void setFinancials(Financials finances);
+    public Financials getFinancials();
+    public void addFinancials();
+    public Financials removeFinancials();
+    
+    @XmlElement(name="employee")
+    public void setEmployees(List<Employee> employees);
+    public List<Employee> getEmployees();
+    public Employee lookupEmployees(String employeeName);
+    public void addEmployees(String employeeName);
+    public void addEmployees(String employeeName, int index);
+    public void addEmployees(Employee employee);
+    public void addEmployees(Employee employee, int index);
+    public Employee removeEmployees(String employeeName);
+    
+    @XmlElement(name="other-data")
+    public void setOtherData(List<OtherData> otherData);
+    public List<OtherData> getOtherData();
+    public void addOtherData(int position);
+    public void addOtherData(OtherData otherData);
+    public void addOtherData(OtherData otherData, int position);
+    public OtherData removeOtherData(int position);
 }

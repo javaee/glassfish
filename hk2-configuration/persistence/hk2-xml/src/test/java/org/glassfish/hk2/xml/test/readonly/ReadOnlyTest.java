@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,47 +37,18 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test;
+package org.glassfish.hk2.xml.test.readonly;
 
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.jvnet.hk2.annotations.Contract;
+import org.junit.Test;
 
 /**
  * @author jwells
  *
  */
-@XmlRootElement @Contract
-public interface Employees {
-    public String getCompanyName();
-    
-    @XmlElement(name="company-name")
-    public void setCompanyName(String name);
-    
-    @XmlElement
-    public void setFinancials(Financials finances);
-    public Financials getFinancials();
-    public void addFinancials();
-    public Financials removeFinancials();
-    
-    @XmlElement(name="employee")
-    public void setEmployees(List<Employee> employees);
-    public List<Employee> getEmployees();
-    public Employee lookupEmployees(String employeeName);
-    public void addEmployees(String employeeName);
-    public void addEmployees(String employeeName, int index);
-    public void addEmployees(Employee employee);
-    public void addEmployees(Employee employee, int index);
-    public Employee removeEmployees(String employeeName);
-    
-    @XmlElement(name="other-data")
-    public void setOtherData(List<OtherData> otherData);
-    public List<OtherData> getOtherData();
-    public void addOtherData(int position);
-    public void addOtherData(OtherData otherData);
-    public void addOtherData(OtherData otherData, int position);
-    public OtherData removeOtherData(int position);
+public class ReadOnlyTest {
+    @Test
+    public void testReadOnlyBeans() {
+        
+    }
+
 }
