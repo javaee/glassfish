@@ -153,12 +153,13 @@ public class ServiceLocatorImpl implements ServiceLocator {
     private final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
     private final WriteLock wLock = readWriteLock.writeLock();
     private final ReadLock rLock = readWriteLock.readLock();
-    private AtomicLong nextServiceId = new AtomicLong();
+    private final AtomicLong nextServiceId = new AtomicLong();
     private final String locatorName;
     private final long id;
     private final ServiceLocatorImpl parent;
     private volatile boolean neutralContextClassLoader = true;
     private final ClassReflectionHelper classReflectionHelper = new ClassReflectionHelperImpl();
+    private final PerLocatorUtilities perLocatorUtilities = new PerLocatorUtilities();
 
     private final IndexedListData allDescriptors = new IndexedListData();
     private final HashMap<String, IndexedListData> descriptorsByAdvertisedContract =
@@ -200,7 +201,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
 
         @Override
         public InjectionResolver<?> compute(SystemInjecteeImpl key) {
-            return Utilities.getInjectionResolver(getMe(), key);
+            return perLocatorUtilities.getInjectionResolver(getMe(), key);
         }
         
     });
@@ -510,7 +511,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
                     injectee.getUnqualified(),
                     injectee);
 
-            return new ConstantActiveDescriptor<Object>(value, id);
+            return new ConstantActiveDescriptor<Object>(value, this);
         }
         
         if (Topic.class.equals(rawType)) {
@@ -518,7 +519,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
                     ReflectionHelper.getFirstTypeArgument(requiredType),
                     injectee.getRequiredQualifiers());
             
-            return new ConstantActiveDescriptor<Object>(value, id);
+            return new ConstantActiveDescriptor<Object>(value, this);
         }
 
         Set<Annotation> qualifiersAsSet = injectee.getRequiredQualifiers();
@@ -2431,6 +2432,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
         finally {
             rLock.unlock();
         }
+    }
+    
+    /* package */ PerLocatorUtilities getPerLocatorUtilities() {
+        return perLocatorUtilities;
     }
 
     public String toString() {

@@ -45,7 +45,6 @@ import org.aopalliance.intercept.MethodInterceptor;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Inherited;
-import java.lang.ref.SoftReference;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -67,7 +66,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.WeakHashMap;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -135,7 +133,7 @@ import org.jvnet.hk2.annotations.Service;
  */
 public class Utilities {
     private final static String USE_SOFT_REFERENCE_PROPERTY = "org.jvnet.hk2.properties.useSoftReference";
-    private final static boolean USE_SOFT_REFERENCE;
+    final static boolean USE_SOFT_REFERENCE;
     static {
         USE_SOFT_REFERENCE = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
 
@@ -146,23 +144,6 @@ public class Utilities {
 
         });
     }
-
-    private final static ThreadLocal<WeakHashMap<Class<?>, String>> threadLocalAutoAnalyzerNameCache =
-            new ThreadLocal<WeakHashMap<Class<?>, String>>() {
-                @Override
-                protected WeakHashMap<Class<?>, String> initialValue() {
-                    return new WeakHashMap<Class<?>, String>();
-                }
-            };
-
-    private final static ThreadLocal<WeakHashMap<AnnotatedElement, SoftAnnotatedElementAnnotationInfo>>
-    threadLocalAnnotationCache =
-            new ThreadLocal<WeakHashMap<AnnotatedElement, SoftAnnotatedElementAnnotationInfo>>() {
-                @Override
-                protected WeakHashMap<AnnotatedElement, SoftAnnotatedElementAnnotationInfo> initialValue() {
-                    return new WeakHashMap<AnnotatedElement, SoftAnnotatedElementAnnotationInfo>();
-                }
-            };
     
     private final static AnnotationInformation DEFAULT_ANNOTATION_INFORMATION = new AnnotationInformation(
             Collections.<Annotation>emptySet(),
@@ -697,7 +678,7 @@ public class Utilities {
         contracts = getAutoAdvertisedTypes(clazz);
         ScopeInfo scopeInfo = getScopeInfo(clazz, null, collector);
         scope = scopeInfo.getAnnoType();
-        analyzerName = getAutoAnalyzerName(clazz);
+        analyzerName = locator.getPerLocatorUtilities().getAutoAnalyzerName(clazz);
 
         creator = new ClazzCreator<T>(locator, clazz);
 
@@ -952,7 +933,7 @@ public class Utilities {
         collector.throwIfErrors();
 
         for (Field field : fields) {
-            InjectionResolver<?> resolver = getInjectionResolver(locator, field);
+            InjectionResolver<?> resolver = locator.getPerLocatorUtilities().getInjectionResolver(locator, field);
 
             List<SystemInjecteeImpl> injecteeFields = Utilities.getFieldInjectees(field, null);
 
@@ -980,7 +961,7 @@ public class Utilities {
             Object args[] = new Object[injectees.size()];
 
             for (SystemInjecteeImpl injectee : injectees) {
-                InjectionResolver<?> resolver = getInjectionResolver(locator, injectee);
+                InjectionResolver<?> resolver = locator.getPerLocatorUtilities().getInjectionResolver(locator, injectee);
                 args[injectee.getPosition()] = resolver.resolve(injectee, null);
             }
 
@@ -1020,7 +1001,7 @@ public class Utilities {
         Object args[] = new Object[injectees.size()];
 
         for (SystemInjecteeImpl injectee : injectees) {
-            InjectionResolver<?> resolver = getInjectionResolver(locator, injectee);
+            InjectionResolver<?> resolver = locator.getPerLocatorUtilities().getInjectionResolver(locator, injectee);
             args[injectee.getPosition()] = resolver.resolve(injectee, null);
         }
 
@@ -1499,49 +1480,6 @@ public class Utilities {
         return false;
     }
 
-    private static class AnnotatedElementAnnotationInfo {
-        private final Annotation[] elementAnnotations;
-        private final Annotation[][] paramAnnotations;
-        private final boolean hasParams;
-        private final boolean isConstructor;
-
-        private AnnotatedElementAnnotationInfo(Annotation[] elementAnnotation, boolean hasParams, Annotation[][] paramAnnotation, boolean isConstructor) {
-            this.elementAnnotations = elementAnnotation;
-            this.hasParams = hasParams;
-            this.paramAnnotations = paramAnnotation;
-            this.isConstructor = isConstructor;
-        }
-        
-        private SoftAnnotatedElementAnnotationInfo soften() {
-            return new SoftAnnotatedElementAnnotationInfo(elementAnnotations, hasParams, paramAnnotations, isConstructor);
-        }
-    }
-    
-    private static class SoftAnnotatedElementAnnotationInfo {
-        private final SoftReference<Annotation[]> elementAnnotationsReference;
-        private final SoftReference<Annotation[][]> paramAnnotationsReference;
-        private final boolean hasParams;
-        private final boolean isConstructor;
-
-        private SoftAnnotatedElementAnnotationInfo(Annotation[] elementAnnotation, boolean hasParams, Annotation[][] paramAnnotation, boolean isConstructor) {
-            this.elementAnnotationsReference = new SoftReference<Annotation[]>(elementAnnotation);
-            this.hasParams = hasParams;
-            this.paramAnnotationsReference = new SoftReference<Annotation[][]>(paramAnnotation);
-            this.isConstructor = isConstructor;
-        }
-        
-        private AnnotatedElementAnnotationInfo harden(AnnotatedElement ae) {
-            Annotation[] hardenedElementAnnotations = elementAnnotationsReference.get();
-            Annotation[][] hardenedParamAnnotations = paramAnnotationsReference.get();
-            
-            if (!USE_SOFT_REFERENCE || (hardenedElementAnnotations == null) || (hardenedParamAnnotations == null)) {
-                return computeAEAI(ae);
-            }
-            
-            return new AnnotatedElementAnnotationInfo(hardenedElementAnnotations, hasParams, hardenedParamAnnotations, isConstructor);
-        }
-    }
-    
     /**
      * Represents a cache miss, and will fetch all of the information needed about the
      * AnnotatedElement in order to quickly determine what its resolver would be
@@ -1550,7 +1488,7 @@ public class Utilities {
      * calculate the information needed to determine the resolver
      * @return An annotated element constructed from the information in the annotatedElement
      */
-    private static AnnotatedElementAnnotationInfo computeAEAI(AnnotatedElement annotatedElement) {
+    static AnnotatedElementAnnotationInfo computeAEAI(AnnotatedElement annotatedElement) {
 
         if (annotatedElement instanceof Method) {
 
@@ -1565,58 +1503,6 @@ public class Utilities {
         } else {
             return new AnnotatedElementAnnotationInfo(annotatedElement.getAnnotations(), false, new Annotation[0][], false);
         }
-    }
-    
-    private static AnnotatedElementAnnotationInfo computeElementAnnotationInfo(AnnotatedElement ae) {
-            AnnotatedElementAnnotationInfo hard;
-            SoftAnnotatedElementAnnotationInfo soft = threadLocalAnnotationCache.get().get(ae);
-            if (soft != null) {
-                hard = soft.harden(ae);
-            }
-            else {
-                hard = computeAEAI(ae);
-                soft = hard.soften();
-                threadLocalAnnotationCache.get().put(ae, soft);
-            }
-            return hard;
-    }
-
-    /**
-     * Gets the annotation that was used for the injection
-     *
-     * @param locator The service locator to use (as it will get all
-     * the annotations that were added on as well as the normal Inject)
-     * @param annotated the annotated annotated
-     * @param checkParams  check the params if true
-     * @param position index of constructor or method parameter which which will be checked
-     *                 for inject annotations. The {@code position} parameter is only used when
-     *                 {@code annotated} is method or constructor otherwise the value will be ignored.
-     * @return The annotation that is the inject annotation, or null
-     * if no inject annotation was found
-     */
-    private static Annotation getInjectAnnotation(final ServiceLocatorImpl locator, final AnnotatedElement annotated,
-            final boolean checkParams, final int position) {
-        
-        final AnnotatedElementAnnotationInfo annotationInfo = computeElementAnnotationInfo(annotated);
-
-        if (checkParams) {
-
-            if (annotationInfo.hasParams) {
-                for (Annotation paramAnno : annotationInfo.paramAnnotations[position]) {
-                    if (locator.isInjectAnnotation(paramAnno, annotationInfo.isConstructor)) {
-                        return paramAnno;
-                    }
-                }
-            }
-        }
-
-        for (Annotation annotation : annotationInfo.elementAnnotations) {
-            if (locator.isInjectAnnotation(annotation)) {
-                return annotation;
-            }
-        }
-
-        return null;
     }
 
   private static boolean isProperMethod(Method member) {
@@ -1670,24 +1556,7 @@ public class Utilities {
         return ((modifiers & Modifier.FINAL) != 0);
     }
 
-    /**
-     * Gets the analyzer name from the Service annotation
-     *
-     * @param c The class to get the analyzer name from
-     * @return The name of the analyzer (null for default)
-     */
-    public static String getAutoAnalyzerName(Class<?> c) {
-            String retVal = threadLocalAutoAnalyzerNameCache.get().get(c);
-            if (retVal != null) return retVal;
-            
-            Service s = c.getAnnotation(Service.class);
-            if (s == null) return null;
-            
-            retVal = s.analyzer();
-            threadLocalAutoAnalyzerNameCache.get().put(c, retVal);
-
-            return retVal;
-    }
+    
 
     @SuppressWarnings("unchecked")
     private static ScopeInfo getScopeInfo(
@@ -1821,58 +1690,6 @@ public class Utilities {
         if (epicFail) return null;
 
         return retVal;
-    }
-
-    /**
-     * Returns an injection resolver for the injectee
-     *
-     * @param locator The locator to use when finding the resolver
-     * @param injectee Injectee from which the annotation should be extracted
-     * @return Injection resolver used to resolve the injection for the injectee
-     * @throws IllegalStateException If we could not find a valid resolver
-     */
-    public static InjectionResolver<?> getInjectionResolver(
-            ServiceLocatorImpl locator, SystemInjecteeImpl injectee) throws IllegalStateException {
-        return getInjectionResolver(locator, injectee.getParent(), injectee.getPosition());
-
-    }
-
-    private static InjectionResolver<?> getInjectionResolver(
-            ServiceLocatorImpl locator, AnnotatedElement annotatedGuy, int position) throws IllegalStateException {
-        boolean methodOrConstructor = annotatedGuy instanceof Method || annotatedGuy instanceof Constructor<?>;
-        Annotation injectAnnotation = getInjectAnnotation(locator, annotatedGuy, methodOrConstructor, position);
-
-        //Annotation injectAnnotation = getInjectAnnotation(locator, annotatedGuy, position);
-
-        Class<? extends Annotation> injectType = (injectAnnotation == null) ?
-                Inject.class : injectAnnotation.annotationType();
-
-        InjectionResolver<?> retVal = locator.getInjectionResolver(injectType);
-        if (retVal == null) {
-            // Not possible to get here, we only are here if we already found a resolver
-            throw new IllegalStateException("There is no installed injection resolver for " +
-                    Pretty.clazz(injectType) + " for type " + annotatedGuy);
-        }
-
-        return retVal;
-    }
-
-    /**
-     * Returns an injection resolver for this AnnotatedElement. The method cannot be used for constructors
-     * or methods.
-     *
-     * @param locator The locator to use when finding the resolver
-     * @param annotatedGuy The annotated class or producer method
-     * @return The scope of this class or producer method.  If no scope is
-     * found will return the dependent scope
-     * @throws IllegalStateException If we could not find a valid resolver
-     */
-    private static InjectionResolver<?> getInjectionResolver(
-            ServiceLocatorImpl locator, AnnotatedElement annotatedGuy) throws IllegalStateException {
-        if (annotatedGuy instanceof Method || annotatedGuy instanceof Constructor<?>) {
-            throw new IllegalArgumentException("Annotated element '" + annotatedGuy + "' can be neither a Method nor a Constructor.");
-        }
-        return getInjectionResolver(locator, annotatedGuy, -1);
     }
 
     private final static String PROVIDE_METHOD = "provide";

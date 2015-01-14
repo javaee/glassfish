@@ -79,7 +79,7 @@ public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
      * @param theOne the object to create it from
      * @param locatorId The id of the locator this is being created for
      */
-    public ConstantActiveDescriptor(T theOne, long locatorId) {
+    public ConstantActiveDescriptor(T theOne, ServiceLocatorImpl locator) {
         super(new HashSet<Type>(),
                 PerLookup.class,
                 null,
@@ -89,11 +89,11 @@ public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
                 0,
                 null,
                 null,
-                Utilities.getAutoAnalyzerName(theOne.getClass()),
+                locator.getPerLocatorUtilities().getAutoAnalyzerName(theOne.getClass()),
                 null);
         
         this.theOne = theOne;
-        this.locatorId = locatorId;
+        this.locatorId = locator.getLocatorId();
     }
     
     /**
