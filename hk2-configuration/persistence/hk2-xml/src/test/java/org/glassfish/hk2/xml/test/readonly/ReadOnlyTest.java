@@ -67,7 +67,7 @@ public class ReadOnlyTest {
     private final static String HANNA_NAME = "Hannah and her Sisters";
     private final static String WOODS_NAME = "Into the Woods";
     
-    private final static String ADDRESS_LINE_1 = "555 Sesame Street";
+    private final static String ADDRESS_LINE_1 = "123 Sesame Street";
     private final static String ADDRESS_LINE_2 = "CO Grover";
     private final static String TOWN = "New York";
     private final static String STATE = "NY";
