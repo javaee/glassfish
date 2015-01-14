@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.xml.internal;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -169,6 +170,18 @@ public class UnparentedNode {
             }
             
             return unKeyedChildren;
+        }
+    }
+    
+    public Set<String> getNonChildProperties() {
+        synchronized (lock) {
+            return Collections.unmodifiableSet(nonChildProperty);
+        }
+    }
+    
+    public Map<String, ParentedNode> getChildrenProperties() {
+        synchronized (lock) {
+            return Collections.unmodifiableMap(childrenByName);
         }
     }
 

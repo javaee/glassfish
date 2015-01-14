@@ -44,10 +44,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
+import org.glassfish.hk2.xml.api.XmlHubCommitMessage;
 import org.glassfish.hk2.xml.api.XmlRootCopy;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
-import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 
 /**
@@ -55,20 +57,20 @@ import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
  *
  */
 public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
-    private final XmlService parent;
+    private final XmlServiceImpl parent;
     private final Hub hub;
-    private final T root;
-    private final Class<T> rootClass;
+    private T root;
+    private final UnparentedNode rootNode;
     private URI rootURI;
     private final boolean advertised;
     private final boolean advertisedInHub;
     private final DynamicChangeInfo changeControl;
     
     /* package */ XmlRootHandleImpl(
-            XmlService parent,
+            XmlServiceImpl parent,
             Hub hub,
             T root,
-            Class<T> rootClass,
+            UnparentedNode rootNode,
             URI rootURI,
             boolean advertised,
             boolean inHub,
@@ -76,7 +78,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
         this.parent = parent;
         this.hub = hub;
         this.root = root;
-        this.rootClass = rootClass;
+        this.rootNode = rootNode;
         this.rootURI = rootURI;
         this.advertised = advertised;
         this.advertisedInHub = inHub;
@@ -94,9 +96,10 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.api.XmlRootHandle#getRootClass()
      */
+    @SuppressWarnings("unchecked")
     @Override
     public Class<T> getRootClass() {
-        return rootClass;
+        return (Class<T>) rootNode.getOriginalInterface();
     }
 
     /* (non-Javadoc)
@@ -224,18 +227,57 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.api.XmlRootHandle#addRoot(java.lang.Object)
      */
+    @SuppressWarnings("unchecked")
     @Override
-    public void addRoot(T root) {
-        throw new AssertionError("addRoot not implemented");
-        
+    public void addRoot(T newRoot) {
+        changeControl.getWriteLock().lock();
+        try {
+            if (root != null) {
+                throw new IllegalStateException("An attempt was made to add a root to a handle that already has a root " + this);
+            }
+            if (!(newRoot instanceof BaseHK2JAXBBean)) {
+                throw new IllegalArgumentException("The added bean must be from XmlService.createBean");
+            }
+            
+            WriteableBeanDatabase wbd = null;
+            if (advertisedInHub) {
+                wbd = hub.getWriteableDatabaseCopy();
+            }
+            
+            DynamicConfiguration config = null;
+            if (advertised) {
+                config = parent.getDynamicConfigurationService().createDynamicConfiguration();
+            }
+            
+            BaseHK2JAXBBean copiedRoot = BaseHK2JAXBBean._addRoot(rootNode,
+                    newRoot,
+                    changeControl,
+                    parent.getClassReflectionHelper(),
+                    wbd,
+                    config);
+            
+            if (config != null) {
+                config.commit();
+            }
+            
+            if (wbd != null) {
+                wbd.commit(new XmlHubCommitMessage() {});
+            }
+            
+            root = (T) copiedRoot;
+        }
+        finally {
+            changeControl.getWriteLock().unlock();
+        }
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.api.XmlRootHandle#createAndAddRoot()
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void addRoot() {
-        addRoot(parent.createBean(rootClass));
+        addRoot(parent.createBean((Class<T>) rootNode.getOriginalInterface()));
     }
 
     /* (non-Javadoc)
@@ -252,6 +294,6 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
     
     @Override
     public String toString() {
-        return "XmlRootHandleImpl(" + root + "," + rootClass.getName() + "," + rootURI + "," + System.identityHashCode(this) + ")";
+        return "XmlRootHandleImpl(" + root + "," + rootNode + "," + rootURI + "," + System.identityHashCode(this) + ")";
     }
 }

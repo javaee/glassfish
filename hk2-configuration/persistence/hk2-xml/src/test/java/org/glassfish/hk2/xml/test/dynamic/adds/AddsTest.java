@@ -71,7 +71,7 @@ public class AddsTest {
     /**
      * Tests that we can call createAndAdd successfully on a root with no required elements
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testCreateAndAdd() {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);

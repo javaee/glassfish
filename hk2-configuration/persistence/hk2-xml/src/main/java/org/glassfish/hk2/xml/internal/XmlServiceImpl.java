@@ -71,7 +71,7 @@ public class XmlServiceImpl implements XmlService {
     private final JAUtilities jaUtilities = new JAUtilities();
     
     @Inject
-    private DynamicConfigurationService dcs;
+    private DynamicConfigurationService dynamicConfigurationService;
     
     @Inject
     private Hub hub;
@@ -100,7 +100,6 @@ public class XmlServiceImpl implements XmlService {
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.api.XmlService#unmarshall(java.net.URI, java.lang.Class)
      */
-    @SuppressWarnings("unchecked")
     @Override
     public <T> XmlRootHandle<T> unmarshall(URI uri,
             Class<T> jaxbAnnotatedInterface,
@@ -113,7 +112,7 @@ public class XmlServiceImpl implements XmlService {
         try {
             UnparentedNode parent = jaUtilities.convertRootAndLeaves(jaxbAnnotatedInterface);
                 
-            return unmarshallClass(uri, (Class<T>) parent.getTranslatedClass(), jaxbAnnotatedInterface, advertiseInRegistry, advertiseInHub);
+            return unmarshallClass(uri, parent, advertiseInRegistry, advertiseInHub);
         }
         catch (RuntimeException re) {
             throw re;
@@ -124,9 +123,9 @@ public class XmlServiceImpl implements XmlService {
     }
     
     @SuppressWarnings("unchecked")
-    private <T> XmlRootHandle<T> unmarshallClass(URI uri, Class<T> jaxbAnnotatedClass, Class<T> originalClass,
+    private <T> XmlRootHandle<T> unmarshallClass(URI uri, UnparentedNode node,
             boolean advertise, boolean advertiseInHub) throws Exception {
-        JAXBContext context = JAXBContext.newInstance(jaxbAnnotatedClass);
+        JAXBContext context = JAXBContext.newInstance(node.getTranslatedClass());
         
         Listener listener = new Listener();
         Unmarshaller unmarshaller = context.createUnmarshaller();
@@ -134,7 +133,7 @@ public class XmlServiceImpl implements XmlService {
         
         T root = (T) unmarshaller.unmarshal(uri.toURL());
         
-        DynamicChangeInfo changeControl = new DynamicChangeInfo(jaUtilities, hub, this, ((advertise) ? dcs : null));
+        DynamicChangeInfo changeControl = new DynamicChangeInfo(jaUtilities, hub, this, ((advertise) ? dynamicConfigurationService : null));
         
         for (BaseHK2JAXBBean base : listener.getAllBeans()) {
             String instanceName = Utilities.createInstanceName(base);
@@ -143,7 +142,7 @@ public class XmlServiceImpl implements XmlService {
             base._setDynamicChangeInfo(changeControl);
         }
         
-        DynamicConfiguration config = (advertise) ? dcs.createDynamicConfiguration() : null ;
+        DynamicConfiguration config = (advertise) ? dynamicConfigurationService.createDynamicConfiguration() : null ;
         WriteableBeanDatabase wdb = (advertiseInHub) ? hub.getWriteableDatabaseCopy() : null ;
         
         for (BaseHK2JAXBBean bean : listener.getAllBeans()) {
@@ -157,7 +156,7 @@ public class XmlServiceImpl implements XmlService {
             wdb.commit(new XmlHubCommitMessage() {});
         }
         
-        return new XmlRootHandleImpl<T>(this, hub, root, originalClass, uri, advertise, advertiseInHub, changeControl);
+        return new XmlRootHandleImpl<T>(this, hub, root, node, uri, advertise, advertiseInHub, changeControl);
     }
     
     
@@ -173,10 +172,10 @@ public class XmlServiceImpl implements XmlService {
             throw new IllegalArgumentException("Only an interface can be given to unmarshall: " + jaxbAnnotatedInterface.getName());
         }
         try {
-            jaUtilities.convertRootAndLeaves(jaxbAnnotatedInterface);
+            UnparentedNode node = jaUtilities.convertRootAndLeaves(jaxbAnnotatedInterface);
         
-            return new XmlRootHandleImpl<T>(this, hub, null, jaxbAnnotatedInterface, null, advertiseInRegistry, advertiseInHub,
-                    new DynamicChangeInfo(jaUtilities, hub, this, ((advertiseInRegistry) ? dcs : null)));
+            return new XmlRootHandleImpl<T>(this, hub, null, node, null, advertiseInRegistry, advertiseInHub,
+                    new DynamicChangeInfo(jaUtilities, hub, this, ((advertiseInRegistry) ? dynamicConfigurationService : null)));
         }
         catch (RuntimeException re) {
             throw re;
@@ -266,10 +265,28 @@ public class XmlServiceImpl implements XmlService {
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.api.XmlService#createBean(java.lang.Class)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T createBean(Class<T> beanInterface) {
-        throw new AssertionError("not yet implemented");
+        if (!beanInterface.isInterface()) {
+            throw new IllegalArgumentException("Only an interface can be given to unmarshall: " + beanInterface.getName());
+        }
+        
+        UnparentedNode node = jaUtilities.convertRootAndLeaves(beanInterface);
+        
+        T retVal = (T) Utilities.createBean(node.getTranslatedClass());
+        
+        ((BaseHK2JAXBBean) retVal)._setModel(node, classReflectionHelper);
+        
+        return retVal;
     }
 
+    /* package */ ClassReflectionHelper getClassReflectionHelper() {
+        return classReflectionHelper;
+    }
+    
+    /* package */ DynamicConfigurationService getDynamicConfigurationService() {
+        return dynamicConfigurationService;
+    }
    
 }

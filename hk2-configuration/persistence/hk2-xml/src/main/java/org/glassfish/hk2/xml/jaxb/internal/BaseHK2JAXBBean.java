@@ -296,6 +296,13 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
     }
     
     public Object _lookupChild(String propName, String keyValue) {
+        if (changeControl == null) {
+            Map<String, BaseHK2JAXBBean> byName = children.get(propName);
+            if (byName == null) return null;
+        
+            return byName.get(keyValue);
+        }
+        
         changeControl.getReadLock().lock();
         try {
             Map<String, BaseHK2JAXBBean> byName = children.get(propName);
@@ -309,6 +316,11 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
     }
     
     public void _doAdd(String childProperty, Object rawChild, String childKey, int index) {
+        if (changeControl == null) {
+            internalAdd(this, childProperty, rawChild, childKey, index, null, null, null);
+            return;
+        }
+        
         changeControl.getWriteLock().lock();
         try {
             Hub hub = changeControl.getHub();
@@ -316,7 +328,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
             DynamicConfiguration config = (changeControl.getDynamicConfigurationService() == null) ? null :
                 changeControl.getDynamicConfigurationService().createDynamicConfiguration();
             
-            internalAdd(childProperty, rawChild, childKey, index, wbd, config);
+            internalAdd(this, childProperty, rawChild, childKey, index, changeControl, wbd, config);
             
             if (config != null) {
                 config.commit();
@@ -333,27 +345,73 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         }
     }
     
+    public static BaseHK2JAXBBean _addRoot(UnparentedNode rootNode,
+            Object rawRoot,
+            DynamicChangeInfo changeInfo,
+            ClassReflectionHelper helper,
+            WriteableBeanDatabase writeableDatabase,
+            DynamicConfiguration dynamicService) {
+        if (!(rawRoot instanceof BaseHK2JAXBBean)) {
+            throw new IllegalArgumentException("The root added must be from XmlService.createBean");
+        }
+        
+        BaseHK2JAXBBean child = Utilities.createBean(rootNode.getTranslatedClass());
+        // Handling of children will be handled once the real child is better setup
+        BaseHK2JAXBBean childToCopy = (BaseHK2JAXBBean) rawRoot;
+        for (String nonChildProperty : childToCopy.model.getNonChildProperties()) {
+            Object value = childToCopy._getProperty(nonChildProperty);
+            if (value == null) continue;
+            
+            child._setProperty(nonChildProperty, value);
+        }
+        
+        if (rootNode.getKeyProperty() != null) {
+            child._setKeyValue((String) child._getProperty(rootNode.getKeyProperty())); 
+        }
+            
+        child._setModel(rootNode, helper);
+        child._setSelfXmlTag(rootNode.getRootName());
+        child._setInstanceName(rootNode.getRootName());
+        
+        handleChildren(child, childToCopy, changeInfo);
+            
+        // Now freeze it
+        child._setDynamicChangeInfo(changeInfo);
+        
+        externalAdd(child, dynamicService, writeableDatabase);
+        
+        return child;
+        
+    }
+    
     @SuppressWarnings("unchecked")
-    private void internalAdd(String childProperty,
+    private static BaseHK2JAXBBean internalAdd(
+            BaseHK2JAXBBean myParent,
+            String childProperty,
             Object rawChild,
             String childKey,
             int index,
+            DynamicChangeInfo changeInformation,
             WriteableBeanDatabase writeableDatabase,
             DynamicConfiguration dynamicService) {
         if (index < -1) {
             throw new IllegalArgumentException("Unknown index " + index);
         }
         
-        if (childKey != null && _lookupChild(childProperty, childKey) != null) {
+        if (childKey != null && myParent._lookupChild(childProperty, childKey) != null) {
             throw new IllegalStateException("There is already a child with name " + childKey + " for child " + childProperty);
         }
         
-        ParentedNode childNode = model.getChild(childProperty);
-        if (childNode == null) {
-            throw new IllegalArgumentException("There is no child with xmlTag " + childProperty + " of " + this);
+        if (rawChild != null && !(rawChild instanceof BaseHK2JAXBBean)) {
+            throw new IllegalArgumentException("The child added must be from XmlService.createBean");
         }
         
-        Object allMyChildren = beanLikeMap.get(childProperty);
+        ParentedNode childNode = myParent.model.getChild(childProperty);
+        if (childNode == null) {
+            throw new IllegalArgumentException("There is no child with xmlTag " + childProperty + " of " + myParent);
+        }
+        
+        Object allMyChildren = myParent.beanLikeMap.get(childProperty);
         List<Object> multiChildren = null;
         if (childNode.isMultiChild()) {
             if (allMyChildren == null) {
@@ -364,7 +422,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
             }
             
             if (index > multiChildren.size()) {
-                throw new IllegalArgumentException("The index given to add child " + childProperty + " to " + this + " is not in range");
+                throw new IllegalArgumentException("The index given to add child " + childProperty + " to " + myParent + " is not in range");
             }
             
             if (index == -1) {
@@ -372,49 +430,58 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
             }
         }
         else if (allMyChildren != null) {
-            throw new IllegalStateException("Attempting to add direct child of " + this + " of name " + childProperty + " but there is already one there");
+            throw new IllegalStateException("Attempting to add direct child of " + myParent + " of name " + childProperty + " but there is already one there");
         }
         
         BaseHK2JAXBBean child = Utilities.createBean(childNode.getChild().getTranslatedClass());
         if (rawChild != null) {
-            throw new AssertionError("Add with externally created bean not yet implemented");
+            // Handling of children will be handled once the real child is better setup
+            BaseHK2JAXBBean childToCopy = (BaseHK2JAXBBean) rawChild;
+            for (String nonChildProperty : childToCopy.model.getNonChildProperties()) {
+                child._setProperty(nonChildProperty, childToCopy._getProperty(nonChildProperty));
+            }
         }
         
         if (childKey == null) {
             if (childNode.isMultiChild()) {
                 if (childNode.getChild().getKeyProperty() != null) {
                     throw new IllegalArgumentException("Attempted to create child with xmlTag " + childProperty +
-                        " with no key field in " + this);
+                        " with no key field in " + myParent);
                 }
                 else {
                     // This is a multi-child with no key and no key property, must generate a key
-                    child._setKeyValue(changeControl.getGeneratedId());
+                    child._setKeyValue(myParent.changeControl.getGeneratedId());
                 }
             }
         }
         else { /* childKey != null */
             if (childNode.getChild().getKeyProperty() == null) {
-                throw new IllegalArgumentException("Attempted to add an unkeyed child with key " + childKey + " in " + this);
+                throw new IllegalArgumentException("Attempted to add an unkeyed child with key " + childKey + " in " + myParent);
             }
                 
             child._setProperty(childNode.getChild().getKeyProperty(), childKey);
             child._setKeyValue(childKey);
         }
             
-        child._setModel(childNode.getChild(), classReflectionHelper);
-        child._setParent(this);
-        child._setParentXmlPath(xmlPath);
+        child._setModel(childNode.getChild(), myParent.classReflectionHelper);
+        child._setParent(myParent);
+        child._setParentXmlPath(myParent.xmlPath);
         child._setSelfXmlTag(childNode.getChildName());
         child._setKeyValue(childKey);
         if (childNode.isMultiChild()) {
-            child._setInstanceName(instanceName + Utilities.INSTANCE_PATH_SEPARATOR + child._getKeyValue());
+            child._setInstanceName(myParent.instanceName + Utilities.INSTANCE_PATH_SEPARATOR + child._getKeyValue());
         }
         else {
-            child._setInstanceName(instanceName + Utilities.INSTANCE_PATH_SEPARATOR + childNode.getChildName());
+            child._setInstanceName(myParent.instanceName + Utilities.INSTANCE_PATH_SEPARATOR + childNode.getChildName());
+        }
+        
+        if (rawChild != null) {
+            // Now we handle the children
+            handleChildren(child, (BaseHK2JAXBBean) rawChild, changeInformation);
         }
             
         // Now freeze it
-        child._setDynamicChangeInfo(changeControl);
+        child._setDynamicChangeInfo(changeInformation);
         
         externalAdd(child, dynamicService, writeableDatabase);
         
@@ -424,16 +491,16 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
             List<Object> finalChildList = Collections.unmodifiableList(multiChildren);
             
             if (writeableDatabase != null) {
-                changeInHub(childProperty, finalChildList, writeableDatabase);
+                myParent.changeInHub(childProperty, finalChildList, writeableDatabase);
             }
             
-            beanLikeMap.put(childProperty, finalChildList);
+            myParent.beanLikeMap.put(childProperty, finalChildList);
             
-            if (!model.getUnKeyedChildren().contains(childProperty)) {
-                Map<String, BaseHK2JAXBBean> byKeyMap = children.get(childProperty);
+            if (!myParent.model.getUnKeyedChildren().contains(childProperty)) {
+                Map<String, BaseHK2JAXBBean> byKeyMap = myParent.children.get(childProperty);
                 if (byKeyMap == null) {
                     byKeyMap = new HashMap<String, BaseHK2JAXBBean>();
-                    children.put(childProperty, byKeyMap);
+                    myParent.children.put(childProperty, byKeyMap);
                 }
                 
                 byKeyMap.put(child._getKeyValue(), child);
@@ -441,15 +508,52 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         }
         else {
             if (writeableDatabase != null){
-                changeInHub(childProperty, child, writeableDatabase);
+                myParent.changeInHub(childProperty, child, writeableDatabase);
             }
             
-            beanLikeMap.put(childProperty, child);
+            myParent.beanLikeMap.put(childProperty, child);
+        }
+        
+        return child;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static void handleChildren(BaseHK2JAXBBean child, BaseHK2JAXBBean childToCopy, DynamicChangeInfo changeInformation) {
+        Map<String, ParentedNode> childrenMap = childToCopy.model.getChildrenProperties();
+        
+        for (Map.Entry<String, ParentedNode> childsChildrenEntry : childrenMap.entrySet()) {
+            String childsChildProperty = childsChildrenEntry.getKey();
+            ParentedNode childsChildParentNode = childsChildrenEntry.getValue();
+            
+            if (childsChildParentNode.isMultiChild()) {
+                List<BaseHK2JAXBBean> childsChildren = (List<BaseHK2JAXBBean>) childToCopy._getProperty(childsChildProperty);
+                if (childsChildren == null) continue;
+                if (childsChildren.size() <= 0) continue;
+                
+                ArrayList<BaseHK2JAXBBean> copiedChildArray = new ArrayList<BaseHK2JAXBBean>(childsChildren.size());
+                for (BaseHK2JAXBBean childsChild : childsChildren) {
+                    BaseHK2JAXBBean grandchild = internalAdd(child, childsChildProperty,
+                            childsChild, null, -1, changeInformation, null, null);
+                    
+                    copiedChildArray.add(grandchild);
+                }
+                
+                child._setProperty(childsChildProperty, copiedChildArray);
+            }
+            else {
+                BaseHK2JAXBBean childsChild = (BaseHK2JAXBBean) childToCopy._getProperty(childsChildProperty);
+                if (childsChild == null) continue;
+                
+                BaseHK2JAXBBean grandchild = internalAdd(child, childsChildProperty,
+                        childsChild, null, -1, changeInformation, null, null);
+                
+                child._setProperty(childsChildProperty, grandchild);
+            }
         }
     }
     
     @SuppressWarnings("unchecked")
-    private void externalAdd(BaseHK2JAXBBean root, DynamicConfiguration config, WriteableBeanDatabase writeableDatabase) {
+    private static void externalAdd(BaseHK2JAXBBean root, DynamicConfiguration config, WriteableBeanDatabase writeableDatabase) {
         if (config == null && writeableDatabase == null) return;
         
         Utilities.advertise(writeableDatabase, config, root);
@@ -461,7 +565,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         }
         
         for (String unkeyedChildProperty : root.model.getUnKeyedChildren()) {
-            Object unkeyedRawChild = beanLikeMap.get(unkeyedChildProperty);
+            Object unkeyedRawChild = root.beanLikeMap.get(unkeyedChildProperty);
             if (unkeyedRawChild == null) continue;
             
             if (unkeyedRawChild instanceof List) {
@@ -482,6 +586,10 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
     }
 
     public boolean _hasProperty(String propName) {
+        if (changeControl == null) {
+            return beanLikeMap.containsKey(propName);
+        }
+        
         changeControl.getReadLock().lock();
         try {
             return beanLikeMap.containsKey(propName);
@@ -496,6 +604,10 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
      */
     @Override
     public Map<String, Object> _getBeanLikeMap() {
+        if (changeControl == null) {
+            return Collections.unmodifiableMap(beanLikeMap);
+        }
+        
         changeControl.getReadLock().lock();
         try {
             return Collections.unmodifiableMap(beanLikeMap);
@@ -643,14 +755,6 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
             
             beanLikeMap.put(entrySet.getKey(), entrySet.getValue());
         }
-    }
-    
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean#_createChild(java.lang.Class)
-     */
-    @Override
-    public Object _createChild(Class<?> childType, String keyValue) {
-        throw new AssertionError("not yet implemented");
     }
     
     private PropertyChangeEvent changes[] = null;
