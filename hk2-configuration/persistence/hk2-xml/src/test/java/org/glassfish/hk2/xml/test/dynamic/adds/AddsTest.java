@@ -68,6 +68,16 @@ public class AddsTest {
     private final static String OTHER_DATA_TYPE = "/employees/other-data";
     private final static String DAVE_INSTANCE = "employees.Dave";
     
+    private final static String ATT_SYMBOL = "ATT";
+    private final static String NASDAQ = "Nasdaq";
+    
+    private final static long ALICE_ID = 12L;
+    private final static long BOB_ID = 14L;
+    private final static long CAROL_ID = 16L;
+    
+    private final static String DATA1 = "Spiner";
+    private final static String DATA2 = "10100101";  // A5
+    
     /**
      * Tests that we can call createAndAdd successfully on a root with no required elements
      */
@@ -181,5 +191,108 @@ public class AddsTest {
         
         Assert.assertNotNull(hub.getCurrentDatabase().getInstance(UnmarshallTest.FINANCIALS_TYPE, UnmarshallTest.FINANCIALS_INSTANCE));
     }
+    
+    private static Employee createEmployee(XmlService xmlService, String name, long id) {
+        Employee employee = xmlService.createBean(Employee.class);
+        
+        employee.setName(name);
+        employee.setId(id);
+        
+        return employee;
+    }
+    
+    private static OtherData createOtherData(XmlService xmlService, String data) {
+        OtherData other = xmlService.createBean(OtherData.class);
+        
+        other.setData(data);
+        
+        return other;
+    }
+    
+    private static void checkEmployee(Employee employee, String name, long id) {
+        Assert.assertNotNull(employee);
+        Assert.assertEquals(name, employee.getName());
+        Assert.assertEquals(id, employee.getId());
+    }
+    
+    private static void checkOtherData(OtherData other, String data) {
+        Assert.assertNotNull(other);
+        Assert.assertEquals(data, other.getData());
+    }
+    
+    private static void checkFinancials(Financials fin, String exchange, String symbol) {
+        Assert.assertNotNull(fin);
+        Assert.assertEquals(exchange, fin.getExchange());
+        Assert.assertEquals(exchange, fin.getSymbol());
+    }
 
+    /**
+     * Creates an entire tree unassociated with a root then sets it as
+     * the root
+     */
+    @Test @org.junit.Ignore
+    public void testAddOneLevelComplexRoot() {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        XmlRootHandle<Employees> rootHandle = xmlService.createEmptyHandle(Employees.class);
+        Assert.assertNull(rootHandle.getRoot());
+        
+        Employees employees = xmlService.createBean(Employees.class);
+        Financials financials = xmlService.createBean(Financials.class);
+        
+        financials.setExchange(NASDAQ);
+        financials.setSymbol(ATT_SYMBOL);
+        
+        employees.setFinancials(financials);
+        
+        Employee alice = createEmployee(xmlService, UnmarshallTest.ALICE, ALICE_ID);
+        Employee bob = createEmployee(xmlService, UnmarshallTest.BOB, BOB_ID);
+        Employee carol = createEmployee(xmlService, UnmarshallTest.CAROL, CAROL_ID);
+        
+        employees.addEmployees(alice);
+        employees.addEmployees(carol);
+        employees.addEmployees(bob, 1);
+        
+        OtherData data1 = createOtherData(xmlService, DATA1);
+        OtherData data2 = createOtherData(xmlService, DATA2);
+        
+        employees.addOtherData(data2);
+        employees.addOtherData(data1, 0);
+        
+        rootHandle.addRoot(employees);
+        
+        Employees root = rootHandle.getRoot();
+        
+        Assert.assertNotNull(root);
+        
+        checkFinancials(root.getFinancials(), NASDAQ, ATT_SYMBOL);
+        
+        checkEmployee(root.getEmployees().get(0), UnmarshallTest.ALICE, ALICE_ID);
+        checkEmployee(root.getEmployees().get(1), UnmarshallTest.BOB, BOB_ID);
+        checkEmployee(root.getEmployees().get(2), UnmarshallTest.CAROL, CAROL_ID);
+        
+        checkOtherData(root.getOtherData().get(0), DATA1);
+        checkOtherData(root.getOtherData().get(1), DATA1);
+        
+        checkEmployee(locator.getService(Employee.class, UnmarshallTest.ALICE), UnmarshallTest.ALICE, ALICE_ID);
+        checkEmployee(locator.getService(Employee.class, UnmarshallTest.BOB), UnmarshallTest.BOB, BOB_ID);
+        checkEmployee(locator.getService(Employee.class, UnmarshallTest.CAROL), UnmarshallTest.CAROL, CAROL_ID);
+        
+        int lcv = 0;
+        for (OtherData other : locator.getAllServices(OtherData.class)) {
+            if (lcv == 0) {
+                checkOtherData(other, DATA1);
+            }
+            else if (lcv == 1){
+                checkOtherData(other, DATA2);
+            }
+            else {
+                Assert.fail("Too many OtherData");
+            }
+            lcv++;
+        }
+        
+        checkFinancials(locator.getService(Financials.class), NASDAQ, ATT_SYMBOL);
+    }
 }
