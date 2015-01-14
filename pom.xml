@@ -667,6 +667,7 @@
                         ${basedir}/hk2-configuration/manager/src/main/java;
                         ${basedir}/hk2-configuration/hk2-integration/src/main/java;
                         ${basedir}/hk2-configuration/persistence/property-file/src/main/java;
+                        ${basedir}/hk2-configuration/persistence/hk2-xml/src/main/java;
                         ${basedir}/hk2-extras/src/main/java
                     </sourcepath>
                     <doctitle>HK2 API Documentation</doctitle>
@@ -708,6 +709,7 @@
                         ${basedir}/spring-bridge/src/main/java;
                         ${basedir}/hk2-testing/hk2-junitrunner/src/main/java;
                         ${basedir}/hk2-inhabitant-generator/src/main/java;
+                        ${basedir}/hk2-configuration/persistence/hk2-xml/src/main/java;
                         ${basedir}/hk2-extras/src/main/java
                     </sourcePath>
                 </configuration>
