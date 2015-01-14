@@ -42,6 +42,7 @@ package org.jvnet.hk2.internal;
 import java.util.Collections;
 import java.util.List;
 import java.util.HashSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Factory;
@@ -50,6 +51,7 @@ import org.glassfish.hk2.api.InstanceLifecycleEventType;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.general.ThreadSpecificObject;
 import org.glassfish.hk2.utilities.reflection.Pretty;
 
 /**
@@ -57,13 +59,9 @@ import org.glassfish.hk2.utilities.reflection.Pretty;
  * @param <T> The thing this factory is producing
  */
 public class FactoryCreator<T> implements Creator<T> {
-    private final static ThreadLocal<HashSet<ActiveDescriptor<?>>> recursionFinder = new ThreadLocal<HashSet<ActiveDescriptor<?>>>() {
-        @Override
-        public HashSet<ActiveDescriptor<?>> initialValue() {
-            return new HashSet<ActiveDescriptor<?>>();
-        }
-         
-    };
+    private final static Object MAP_VALUE = new Object();
+    private final ConcurrentHashMap<ThreadSpecificObject<ActiveDescriptor<?>>, Object> cycleFinder =
+            new ConcurrentHashMap<ThreadSpecificObject<ActiveDescriptor<?>>, Object>();
     
     private final ServiceLocator locator;
     private final ActiveDescriptor<?> factoryDescriptor;
@@ -101,24 +99,25 @@ public class FactoryCreator<T> implements Creator<T> {
         eventThrower.invokeInstanceListeners(new InstanceLifecycleEventImpl(
                 InstanceLifecycleEventType.PRE_PRODUCTION, null, eventThrower));
         
-        HashSet<ActiveDescriptor<?>> dups = recursionFinder.get();
-        if (dups.contains(handle.getActiveDescriptor())) {
+        ThreadSpecificObject<ActiveDescriptor<?>> tso = new ThreadSpecificObject<ActiveDescriptor<?>>(handle.getActiveDescriptor());
+        
+        if (cycleFinder.containsKey(tso)) {
             HashSet<String> impls = new HashSet<String>();
-            for (ActiveDescriptor<?> impl : dups) {
-                impls.add(impl.getImplementation());
+            for (ThreadSpecificObject<ActiveDescriptor<?>> candidate : cycleFinder.keySet()) {
+                if (candidate.getThreadIdentifier() != tso.getThreadIdentifier()) continue;
+                impls.add(candidate.getIncomingObject().getImplementation());
             }
-            dups.clear();
             
             throw new AssertionError("A cycle was detected involving these Factory implementations: " + Pretty.collection(impls));
         }
         
-        dups.add(handle.getActiveDescriptor());
+        cycleFinder.put(tso, MAP_VALUE);
         Factory<T> retValFactory;
         try {
             retValFactory = handle.getService();
         }
         finally {
-            dups.remove(handle.getActiveDescriptor());
+            cycleFinder.remove(tso);
         }
         
         T retVal = retValFactory.provide();
