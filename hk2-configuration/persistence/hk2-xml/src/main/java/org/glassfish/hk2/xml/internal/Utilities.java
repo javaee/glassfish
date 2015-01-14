@@ -298,4 +298,23 @@ public class Utilities {
             wt.addInstance(bean._getInstanceName(), bean._getBeanLikeMap());
         }
     }
+    
+    /**
+     * Converts a getter name to a setter name (works with
+     * both IS getters and GET getters)
+     * 
+     * @param getterName Non-null getter name starting with is or get
+     * @return The corresponding setter name
+     */
+    public static String convertToSetter(String getterName) {
+        if (getterName.startsWith(JAUtilities.IS)) {
+            return JAUtilities.SET + getterName.substring(JAUtilities.IS.length());
+        }
+        
+        if (!getterName.startsWith(JAUtilities.GET)) {
+            throw new IllegalArgumentException("Unknown getter format: " + getterName);
+        }
+        
+        return JAUtilities.SET + getterName.substring(JAUtilities.GET.length());
+    }
 }

@@ -310,6 +310,9 @@ public class JAUtilities {
         
         HashMap<UnparentedNode, String> childTypes = new HashMap<UnparentedNode, String>();
         MethodInformation foundKey = null;
+        
+        HashSet<String> setters = new HashSet<String>();
+        HashMap<String, MethodInformation> getters = new HashMap<String, MethodInformation>();
         for (Method originalMethod : convertMe.getMethods()) {
             MethodInformation mi = getMethodInformation(originalMethod, xmlNameMap);
             
@@ -341,6 +344,8 @@ public class JAUtilities {
             boolean getterOrSetter = false;
             if (MethodType.SETTER.equals(mi.methodType)) {
                 getterOrSetter = true;
+                setters.add(mi.representedProperty);
+                
                 if (mi.baseChildType != null) {
                     if (!interface2NodeCache.containsKey(mi.baseChildType)) {
                         throw new RuntimeException("The child of type " + mi.baseChildType.getName() + " is unknown for method " + mi.originalMethod);
@@ -353,6 +358,8 @@ public class JAUtilities {
             }
             else if (MethodType.GETTER.equals(mi.methodType)) {
                 getterOrSetter = true;
+                getters.put(mi.representedProperty, mi);
+                
                 if (mi.baseChildType != null) {
                     if (!interface2NodeCache.containsKey(mi.baseChildType)) {
                         throw new RuntimeException("The child of type " + mi.baseChildType.getName() + " is unknown for method " + mi.originalMethod);
@@ -496,6 +503,23 @@ public class JAUtilities {
                 methodInfo.addAttribute(ctAnnotations);
             }
             
+            targetCtClass.addMethod(addMeCtMethod);
+        }
+        
+        // Now generate the invisible setters for JAXB
+        for (Map.Entry<String, MethodInformation> getterEntry : getters.entrySet()) {
+            String getterProperty = getterEntry.getKey();
+            MethodInformation mi = getterEntry.getValue();
+            
+            if (setters.contains(getterProperty)) continue;
+            
+            String getterName = mi.originalMethod.getName();
+            String setterName = Utilities.convertToSetter(getterName);
+            
+            StringBuffer sb = new StringBuffer("private void " + setterName + "(");
+            sb.append(mi.getterSetterType.getName() + " arg0) { super._setProperty(\"" + mi.representedProperty + "\", arg0); }");
+            
+            CtMethod addMeCtMethod = CtNewMethod.make(sb.toString(), targetCtClass);
             targetCtClass.addMethod(addMeCtMethod);
         }
         

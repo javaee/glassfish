@@ -57,7 +57,7 @@ public interface AddressBean {
     public String getTown();
     @XmlElement
     public String getState();
-    @XmlElement
+    @XmlElement(name="zip-code")
     public int getZipCode();
 
 }

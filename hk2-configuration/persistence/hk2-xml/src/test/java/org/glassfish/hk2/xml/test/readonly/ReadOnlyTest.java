@@ -73,7 +73,12 @@ public class ReadOnlyTest {
     private final static String STATE = "NY";
     private final static int ZIP = 10128;
     
-    @Test @org.junit.Ignore
+    /**
+     * Tests that we can add a read-only bean
+     * 
+     * @throws Exception
+     */
+    @Test // @org.junit.Ignore
     public void testReadOnlyBeans() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -99,7 +104,7 @@ public class ReadOnlyTest {
         
         Assert.assertEquals(ALIEN_NAME, library.getMovies().get(0).getName());
         Assert.assertEquals(HANNA_NAME, library.getMovies().get(1).getName());
-        Assert.assertEquals(WOODS_NAME, library.getMovies().get(1).getName());
+        Assert.assertEquals(WOODS_NAME, library.getMovies().get(2).getName());
         
         AddressBean address = library.getAddress();
         Assert.assertNotNull(address);
