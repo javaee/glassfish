@@ -223,14 +223,14 @@ public class AddsTest {
     private static void checkFinancials(Financials fin, String exchange, String symbol) {
         Assert.assertNotNull(fin);
         Assert.assertEquals(exchange, fin.getExchange());
-        Assert.assertEquals(exchange, fin.getSymbol());
+        Assert.assertEquals(symbol, fin.getSymbol());
     }
 
     /**
      * Creates an entire tree unassociated with a root then sets it as
      * the root
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testAddOneLevelComplexRoot() {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -273,7 +273,7 @@ public class AddsTest {
         checkEmployee(root.getEmployees().get(2), UnmarshallTest.CAROL, CAROL_ID);
         
         checkOtherData(root.getOtherData().get(0), DATA1);
-        checkOtherData(root.getOtherData().get(1), DATA1);
+        checkOtherData(root.getOtherData().get(1), DATA2);
         
         checkEmployee(locator.getService(Employee.class, UnmarshallTest.ALICE), UnmarshallTest.ALICE, ALICE_ID);
         checkEmployee(locator.getService(Employee.class, UnmarshallTest.BOB), UnmarshallTest.BOB, BOB_ID);
@@ -292,6 +292,8 @@ public class AddsTest {
             }
             lcv++;
         }
+        
+        Assert.assertEquals(2, lcv);
         
         checkFinancials(locator.getService(Financials.class), NASDAQ, ATT_SYMBOL);
     }

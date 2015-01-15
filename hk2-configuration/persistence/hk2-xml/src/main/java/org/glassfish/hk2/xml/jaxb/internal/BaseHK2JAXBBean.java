@@ -77,6 +77,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
     
     private final static String EMPTY = "";
     private final static char XML_PATH_SEPARATOR = '/';
+    private final static String NOT_UNIQUE_UNIQUE_ID = "not-unique";
     
     /**
      * All fields, including child lists and direct children
@@ -356,6 +357,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         }
         
         BaseHK2JAXBBean child = Utilities.createBean(rootNode.getTranslatedClass());
+        
         // Handling of children will be handled once the real child is better setup
         BaseHK2JAXBBean childToCopy = (BaseHK2JAXBBean) rawRoot;
         for (String nonChildProperty : childToCopy.model.getNonChildProperties()) {
@@ -448,12 +450,27 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         if (childKey == null) {
             if (childNode.isMultiChild()) {
                 if (childNode.getChild().getKeyProperty() != null) {
-                    throw new IllegalArgumentException("Attempted to create child with xmlTag " + childProperty +
-                        " with no key field in " + myParent);
+                    if (rawChild != null) {
+                        childKey = (String) child._getProperty(childNode.getChild().getKeyProperty());
+                    }
+                    
+                    if (childKey == null) {
+                        throw new IllegalArgumentException("Attempted to create child with xmlTag " + childProperty +
+                            " with no key field in " + myParent);
+                    }
+                    
+                    child._setKeyValue(childKey);
                 }
                 else {
                     // This is a multi-child with no key and no key property, must generate a key
-                    child._setKeyValue(myParent.changeControl.getGeneratedId());
+                    if (myParent.changeControl == null) {
+                        childKey = NOT_UNIQUE_UNIQUE_ID;
+                        child._setKeyValue(NOT_UNIQUE_UNIQUE_ID);
+                    }
+                    else {
+                        childKey = myParent.changeControl.getGeneratedId();
+                        child._setKeyValue(childKey);
+                    }
                 }
             }
         }
@@ -693,8 +710,6 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         return keyValue;
     }
     
-    
-    
     /**
      * Once this is set the dynamic change protocol is in effect
      * 
@@ -805,8 +820,4 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
     public String toString() {
         return "BaseHK2JAXBBean(XmlPath=" + xmlPath + ",instanceName=" + instanceName + ",keyValue=" + keyValue + "," + System.identityHashCode(this) + ")";
     }
-
-    
-
-    
 }
