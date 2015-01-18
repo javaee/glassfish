@@ -41,6 +41,7 @@ package org.glassfish.hk2.xml.jaxb.internal;
 
 import java.beans.PropertyChangeEvent;
 import java.io.Serializable;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -58,8 +59,10 @@ import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.BeanReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.Logger;
+import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlHubCommitMessage;
+import org.glassfish.hk2.xml.api.annotations.Customizer;
 import org.glassfish.hk2.xml.internal.DynamicChangeInfo;
 import org.glassfish.hk2.xml.internal.ParentedNode;
 import org.glassfish.hk2.xml.internal.UnparentedNode;
@@ -126,42 +129,6 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
      * For JAXB and Serialization
      */
     public BaseHK2JAXBBean() {
-    }
-    
-    /**
-     * Called under write lock
-     * 
-     * @param propName The name of the property to change
-     * @param propValue The new value of the property
-     */
-    private boolean changeInHub(String propName, Object propValue, WriteableBeanDatabase wbd) {
-        if (GeneralUtilities.safeEquals(beanLikeMap.get(propName), propValue)) {
-            // Calling set, but the value was not in fact changed
-            return false;
-        }
-        
-        WriteableType wt = wbd.getWriteableType(xmlPath);
-        
-        HashMap<String, Object> modified = new HashMap<String, Object>(beanLikeMap);
-        modified.put(propName, propValue);
-        
-        wt.modifyInstance(instanceName, modified);
-        
-        return true;
-    }
-    
-    private void changeInHub(String propName, Object propValue) {
-        Hub hub = (changeControl != null) ? changeControl.getHub() : null;
-        if (hub == null) return;
-        
-        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
-        boolean changed = changeInHub(propName, propValue, wbd);
-        
-        if (changed) {
-            wbd.commit(new XmlHubCommitMessage() {});
-        
-            changeControl.incrementChangeNumber();
-        }
     }
     
     @SuppressWarnings("unchecked")
@@ -343,6 +310,57 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         }
         finally {
             changeControl.getWriteLock().unlock();
+        }
+    }
+    
+    public Object _invokeCustomizedMethod(String methodName, Class<?>[] params, Object[] values) {
+        Class<?> tClass = getClass();
+        Customizer customizer = tClass.getAnnotation(Customizer.class);
+        if (customizer == null) {
+            throw new RuntimeException("Method " + methodName + " was called on class " + tClass.getName() +
+                    " with no customizer, failing");
+        }
+        
+        Class<?> cClass = customizer.value();
+        String cName = (customizer.name().equals("")) ? null : customizer.name() ;
+        
+        Object cService = null;
+        if (cName == null) {
+            cService = changeControl.getServiceLocator().getService(cClass);
+        }
+        else {
+            cService = changeControl.getServiceLocator().getService(cClass, cName);
+        }
+        
+        if (cService == null) {
+            if (customizer.failWhenMethodNotFound()) {
+                throw new RuntimeException("Method " + methodName + " was called on class " + tClass.getName() +
+                        " but service " + cClass.getName() + " with name " + cName + " was not found");
+            }
+            
+            return null;
+        }
+        
+        Method cMethod;
+        try {
+            cMethod = cClass.getMethod(methodName, params);
+        }
+        catch (NoSuchMethodException nsme) {
+            if (customizer.failWhenMethodNotFound()) {
+                throw new RuntimeException(nsme);
+            }
+            
+            return null;
+        }
+        
+        try {
+            return ReflectionHelper.invoke(cService, cMethod, values, false);
+        }
+        catch (RuntimeException re) {
+            throw re;
+        }
+        catch (Throwable e) {
+            throw new RuntimeException(e);
         }
     }
     
@@ -814,6 +832,42 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         }
         
         changes = null;
+    }
+    
+    /**
+     * Called under write lock
+     * 
+     * @param propName The name of the property to change
+     * @param propValue The new value of the property
+     */
+    private boolean changeInHub(String propName, Object propValue, WriteableBeanDatabase wbd) {
+        if (GeneralUtilities.safeEquals(beanLikeMap.get(propName), propValue)) {
+            // Calling set, but the value was not in fact changed
+            return false;
+        }
+        
+        WriteableType wt = wbd.getWriteableType(xmlPath);
+        
+        HashMap<String, Object> modified = new HashMap<String, Object>(beanLikeMap);
+        modified.put(propName, propValue);
+        
+        wt.modifyInstance(instanceName, modified);
+        
+        return true;
+    }
+    
+    private void changeInHub(String propName, Object propValue) {
+        Hub hub = (changeControl != null) ? changeControl.getHub() : null;
+        if (hub == null) return;
+        
+        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
+        boolean changed = changeInHub(propName, propValue, wbd);
+        
+        if (changed) {
+            wbd.commit(new XmlHubCommitMessage() {});
+        
+            changeControl.incrementChangeNumber();
+        }
     }
     
     @Override

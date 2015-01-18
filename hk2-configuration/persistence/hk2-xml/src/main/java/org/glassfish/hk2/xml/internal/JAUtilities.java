@@ -331,11 +331,14 @@ public class JAUtilities {
             StringBuffer sb = new StringBuffer("public ");
             
             Class<?> originalRetType = originalMethod.getReturnType();
+            boolean isVoid;
             if (originalRetType == null || void.class.equals(originalRetType)) {
                 sb.append("void ");
+                isVoid = true;
             }
             else {
                 sb.append(originalRetType.getName() + " ");
+                isVoid = false;
             }
             
             sb.append(name + "(");
@@ -448,6 +451,37 @@ public class JAUtilities {
                     sb.append("int arg0) { return (" + originalRetType.getName()  +
                             ") super._doRemove(\"" + mi.representedProperty + "\", null, arg0); }");
                 }
+            }
+            else if (MethodType.CUSTOM.equals(mi.methodType)) {
+                Class<?>[] paramTypes = originalMethod.getParameterTypes();
+                
+                StringBuffer classSets = new StringBuffer();
+                StringBuffer valSets = new StringBuffer();
+                
+                int lcv = 0;
+                for (Class<?> paramType : paramTypes) {
+                    if (lcv == 0) {
+                        sb.append(paramType.getName() + " arg" + lcv);
+                    }
+                    else {
+                        sb.append(", " + paramType.getName() + " arg" + lcv);
+                    }
+                    
+                    classSets.append("mParams[" + lcv + "]=" + paramType.getName() + ".class;\n");
+                    valSets.append("mVars[" + lcv + "]=arg" + lcv + ";\n");
+                    
+                    lcv++;
+                }
+                
+                sb.append(") { Class[] mParams = new Class[" + paramTypes.length + "];\n");
+                sb.append("Object[] mVars = new Object[" + paramTypes.length + "];\n");
+                sb.append(classSets.toString());
+                sb.append(valSets.toString());
+                
+                if (!isVoid) {
+                    sb.append("return (" + originalRetType.getName() + ") ");
+                }
+                sb.append("super._invokeCustomizedMethod(\"" + name + "\", mParams, mVars); }");
             }
             
             if (getterOrSetter) {
@@ -625,14 +659,10 @@ public class JAUtilities {
             }
         }
         
-        if (setterVariable == null && getterVariable == null && lookupVariable == null && addVariable == null && removeVariable == null) {
-            throw new RuntimeException("Unknown method type, neither setter nor getter nor lookup: " + m);
-        }
-        
         MethodType methodType;
         Class<?> baseChildType = null;
         Class<?> gsType = null;
-        String variable;
+        String variable = null;
         boolean isList = false;
         if (getterVariable != null) {
             // This is a getter
@@ -695,10 +725,10 @@ public class JAUtilities {
             variable = addVariable;
         }
         else {
-            throw new RuntimeException("Unknown method type: " + m);
+            methodType = MethodType.CUSTOM;
         }
         
-        String representedProperty = xmlNameMap.get(variable);
+        String representedProperty = (variable == null) ? null : xmlNameMap.get(variable);
         if (representedProperty == null) representedProperty = variable;
         
         boolean key = false;
@@ -752,6 +782,7 @@ public class JAUtilities {
         SETTER,
         LOOKUP,
         ADD,
-        REMOVE
+        REMOVE,
+        CUSTOM
     }
 }

@@ -50,7 +50,7 @@ import org.jvnet.hk2.annotations.Contract;
  * @author jwells
  *
  */
-@XmlRootElement @Contract
+@XmlRootElement(name="museum") @Contract
 @Customizer(CustomizerOne.class)
 public interface MuseumBean {
     @XmlElement

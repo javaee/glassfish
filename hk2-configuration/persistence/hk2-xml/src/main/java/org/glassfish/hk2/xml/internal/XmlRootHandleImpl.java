@@ -149,7 +149,8 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
                 new DynamicChangeInfo(changeControl.getJAUtilities(),
                         null,
                         changeControl.getIdGenerator(),
-                        null);
+                        null,
+                        changeControl.getServiceLocator());
         
         changeControl.getReadLock().lock();
         try {

@@ -60,7 +60,7 @@ public class CustomizerTest {
     /**
      * Tests that a basic customizer works properly
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testBasicCustomizerOnRoot() throws Exception {
         ServiceLocator locator = Utilities.createLocator(CustomizerOne.class);
         XmlService xmlService = locator.getService(XmlService.class);

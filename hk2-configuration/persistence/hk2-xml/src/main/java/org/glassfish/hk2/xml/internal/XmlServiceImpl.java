@@ -51,6 +51,7 @@ import javax.xml.bind.Unmarshaller;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
@@ -69,6 +70,9 @@ public class XmlServiceImpl implements XmlService {
     private final static String ID_PREFIX = "XmlServiceUID-";
     
     private final JAUtilities jaUtilities = new JAUtilities();
+    
+    @Inject
+    private ServiceLocator serviceLocator;
     
     @Inject
     private DynamicConfigurationService dynamicConfigurationService;
@@ -133,7 +137,11 @@ public class XmlServiceImpl implements XmlService {
         
         T root = (T) unmarshaller.unmarshal(uri.toURL());
         
-        DynamicChangeInfo changeControl = new DynamicChangeInfo(jaUtilities, hub, this, ((advertise) ? dynamicConfigurationService : null));
+        DynamicChangeInfo changeControl = new DynamicChangeInfo(jaUtilities,
+                hub,
+                this,
+                ((advertise) ? dynamicConfigurationService : null),
+                serviceLocator);
         
         for (BaseHK2JAXBBean base : listener.getAllBeans()) {
             String instanceName = Utilities.createInstanceName(base);
@@ -175,7 +183,11 @@ public class XmlServiceImpl implements XmlService {
             UnparentedNode node = jaUtilities.convertRootAndLeaves(jaxbAnnotatedInterface);
         
             return new XmlRootHandleImpl<T>(this, hub, null, node, null, advertiseInRegistry, advertiseInHub,
-                    new DynamicChangeInfo(jaUtilities, hub, this, ((advertiseInRegistry) ? dynamicConfigurationService : null)));
+                    new DynamicChangeInfo(jaUtilities,
+                            hub,
+                            this,
+                            ((advertiseInRegistry) ? dynamicConfigurationService : null),
+                            serviceLocator));
         }
         catch (RuntimeException re) {
             throw re;

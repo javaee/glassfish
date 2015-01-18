@@ -60,12 +60,18 @@ public class DynamicChangeInfo {
     private final Hub hub;
     private final XmlServiceImpl idGenerator;
     private final DynamicConfigurationService dynamicService;
+    private final ServiceLocator locator;
     
-    /* package */ DynamicChangeInfo(JAUtilities jaUtilities, Hub hub, XmlServiceImpl idGenerator, DynamicConfigurationService dynamicService) {
+    /* package */ DynamicChangeInfo(JAUtilities jaUtilities,
+            Hub hub,
+            XmlServiceImpl idGenerator,
+            DynamicConfigurationService dynamicService,
+            ServiceLocator locator) {
         this.jaUtilities = jaUtilities;
         this.hub = hub;
         this.idGenerator = idGenerator;
         this.dynamicService = dynamicService;
+        this.locator = locator;
     }
     
     public Hub getHub() {
@@ -118,5 +124,9 @@ public class DynamicChangeInfo {
     
     public DynamicConfigurationService getDynamicConfigurationService() {
         return dynamicService;
+    }
+    
+    public ServiceLocator getServiceLocator() {
+        return locator;
     }
 }
