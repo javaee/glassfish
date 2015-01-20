@@ -71,7 +71,7 @@ public class UnmarshallTest {
     private final static String SAMPLE_CONFIG_FILE = "sample-config.xml";
     
     public final static String BEN_FRANKLIN = "Ben Franklin";
-    private final static String ACME = "Acme";
+    public final static String ACME = "Acme";
     public final static String ALICE = "Alice";
     public final static String BOB = "Bob";
     public final static String CAROL = "Carol";
@@ -86,11 +86,11 @@ public class UnmarshallTest {
     public final static int HUNDRED_INT = 100;
     public final static int HUNDRED_TEN_INT = 110;
     
-    private final static long HUNDRED_LONG = 100L;
-    private final static long HUNDRED_ONE_LONG = 101L;
+    public final static long HUNDRED_LONG = 100L;
+    public final static long HUNDRED_ONE_LONG = 101L;
     
-    private final static String COMPANY_NAME_TAG = "company-name";
-    private final static String EMPLOYEE_TAG = "employee";
+    public final static String COMPANY_NAME_TAG = "company-name";
+    public final static String EMPLOYEE_TAG = "employee";
     public final static String NAME_TAG = "name";
     public final static String ID_TAG = "id";
     private final static String COKE_ENV = "cokeenv";
