@@ -124,9 +124,9 @@ public class UnparentedNode implements Serializable {
         this.rootName = rootName;
     }
     
-    public void addChild(String xmlTag, boolean multiChild, UnparentedNode child) {
+    public void addChild(String xmlTag, boolean multiChildList, boolean multiChildArray, UnparentedNode child) {
         synchronized (lock) {
-            ParentedNode pn = new ParentedNode(xmlTag, multiChild, child);
+            ParentedNode pn = new ParentedNode(xmlTag, multiChildList, multiChildArray, child);
             children.put(child.getOriginalInterface(), pn);
             childrenByName.put(xmlTag, pn);
         }

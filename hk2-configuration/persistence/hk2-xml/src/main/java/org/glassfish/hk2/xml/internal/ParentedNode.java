@@ -52,15 +52,17 @@ public class ParentedNode implements Serializable {
     private static final long serialVersionUID = 7004413497291650707L;
     
     private String childName;
-    private boolean multiChild;  // If true there is a list of children, otherwise there is just a single child
+    private boolean multiChildList;  // If true there is a list of children, otherwise there is just a single child
+    private boolean multiChildArray;  // If true there is a list of children, otherwise there is just a single child
     private UnparentedNode child;
     
     public ParentedNode() {
     }
     
-    public ParentedNode(String childName, boolean multiChild, UnparentedNode child) {
+    public ParentedNode(String childName, boolean multiChildList, boolean multiChildArray, UnparentedNode child) {
         this.childName = childName;
-        this.multiChild = multiChild;
+        this.multiChildList = multiChildList;
+        this.multiChildArray = multiChildArray;
         this.child = child;
     }
     
@@ -72,8 +74,12 @@ public class ParentedNode implements Serializable {
         return child;
     }
     
-    public boolean isMultiChild() {
-        return multiChild;
+    public boolean isMultiChildList() {
+        return multiChildList;
+    }
+    
+    public boolean isMultiChildArray() {
+        return multiChildArray;
     }
     
     @Override

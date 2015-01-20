@@ -43,6 +43,7 @@ import java.beans.PropertyChangeEvent;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -433,12 +434,17 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         
         Object allMyChildren = myParent.beanLikeMap.get(childProperty);
         List<Object> multiChildren = null;
-        if (childNode.isMultiChild()) {
+        if (childNode.isMultiChildList() || childNode.isMultiChildArray()) {
             if (allMyChildren == null) {
                 multiChildren = new ArrayList<Object>(10);
             }
             else {
-                multiChildren = new ArrayList<Object>((List<Object>) allMyChildren);
+                if (childNode.isMultiChildList()) {
+                    multiChildren = new ArrayList<Object>((List<Object>) allMyChildren);
+                }
+                else {
+                    multiChildren = new ArrayList<Object>(Arrays.asList((Object[]) allMyChildren));
+                }
             }
             
             if (index > multiChildren.size()) {
@@ -466,7 +472,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         }
         
         if (childKey == null) {
-            if (childNode.isMultiChild()) {
+            if (childNode.isMultiChildList() || childNode.isMultiChildArray()) {
                 if (childNode.getChild().getKeyProperty() != null) {
                     if (rawChild != null) {
                         childKey = (String) child._getProperty(childNode.getChild().getKeyProperty());
@@ -506,7 +512,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         child._setParentXmlPath(myParent.xmlPath);
         child._setSelfXmlTag(childNode.getChildName());
         child._setKeyValue(childKey);
-        if (childNode.isMultiChild()) {
+        if (childNode.isMultiChildList() || childNode.isMultiChildArray()) {
             child._setInstanceName(myParent.instanceName + Utilities.INSTANCE_PATH_SEPARATOR + child._getKeyValue());
         }
         else {
@@ -563,8 +569,15 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
             String childsChildProperty = childsChildrenEntry.getKey();
             ParentedNode childsChildParentNode = childsChildrenEntry.getValue();
             
-            if (childsChildParentNode.isMultiChild()) {
-                List<BaseHK2JAXBBean> childsChildren = (List<BaseHK2JAXBBean>) childToCopy._getProperty(childsChildProperty);
+            if (childsChildParentNode.isMultiChildList() || childsChildParentNode.isMultiChildArray()) {
+                List<BaseHK2JAXBBean> childsChildren;
+                if (childsChildParentNode.isMultiChildList()) {
+                    childsChildren = (List<BaseHK2JAXBBean>) childToCopy._getProperty(childsChildProperty);
+                }
+                else {
+                    childsChildren = Arrays.asList((BaseHK2JAXBBean[]) childToCopy._getProperty(childsChildProperty));
+                }
+                
                 if (childsChildren == null) continue;
                 if (childsChildren.size() <= 0) continue;
                 

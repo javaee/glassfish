@@ -253,7 +253,7 @@ public class JAUtilities {
                         else {
                             childTypes.put(childType, mi.representedProperty);
                         
-                            retVal.addChild(mi.representedProperty, mi.isList, childType);
+                            retVal.addChild(mi.representedProperty, mi.isList, mi.isArray, childType);
                         }
                     }
                     else {
@@ -337,7 +337,7 @@ public class JAUtilities {
                 isVoid = true;
             }
             else {
-                sb.append(originalRetType.getName() + " ");
+                sb.append(Utilities.getCompilableClass(originalRetType) + " ");
                 isVoid = false;
             }
             
@@ -357,7 +357,7 @@ public class JAUtilities {
                     childType = interface2NodeCache.get(mi.baseChildType);
                 }
                 
-                sb.append(mi.getterSetterType.getName() + " arg0) { super._setProperty(\"" + mi.representedProperty + "\", arg0); }");
+                sb.append(Utilities.getCompilableClass(mi.getterSetterType) + " arg0) { super._setProperty(\"" + mi.representedProperty + "\", arg0); }");
             }
             else if (MethodType.GETTER.equals(mi.methodType)) {
                 getterOrSetter = true;
@@ -398,13 +398,13 @@ public class JAUtilities {
                     superMethodName += "D";
                 }
                 else {
-                    cast = "(" + mi.getterSetterType.getName() + ") ";
+                    cast = "(" + Utilities.getCompilableClass(mi.getterSetterType) + ") ";
                 }
                 
                 sb.append(") { return " + cast + "super." + superMethodName + "(\"" + mi.representedProperty + "\"); }");
             }
             else if (MethodType.LOOKUP.equals(mi.methodType)) {
-                sb.append("java.lang.String arg0) { return (" + originalRetType.getName() +
+                sb.append("java.lang.String arg0) { return (" + Utilities.getCompilableClass(originalRetType) +
                         ") super._lookupChild(\"" + mi.representedProperty + "\", arg0); }");
                 
             }
@@ -440,15 +440,15 @@ public class JAUtilities {
             else if (MethodType.REMOVE.equals(mi.methodType)) {
                 Class<?>[] paramTypes = originalMethod.getParameterTypes();
                 if (paramTypes.length == 0) {
-                    sb.append(") { return (" + originalRetType.getName()  +
+                    sb.append(") { return (" + Utilities.getCompilableClass(originalRetType)  +
                             ") super._doRemove(\"" + mi.representedProperty + "\", null, -1); }");
                 }
                 else if (String.class.equals(paramTypes[0])) {
-                    sb.append("java.lang.String arg0) { return (" + originalRetType.getName()  +
+                    sb.append("java.lang.String arg0) { return (" + Utilities.getCompilableClass(originalRetType)  +
                             ") super._doRemove(\"" + mi.representedProperty + "\", arg0, -1); }");
                 }
                 else {
-                    sb.append("int arg0) { return (" + originalRetType.getName()  +
+                    sb.append("int arg0) { return (" + Utilities.getCompilableClass(originalRetType)  +
                             ") super._doRemove(\"" + mi.representedProperty + "\", null, arg0); }");
                 }
             }
@@ -461,10 +461,10 @@ public class JAUtilities {
                 int lcv = 0;
                 for (Class<?> paramType : paramTypes) {
                     if (lcv == 0) {
-                        sb.append(paramType.getName() + " arg" + lcv);
+                        sb.append(Utilities.getCompilableClass(paramType) + " arg" + lcv);
                     }
                     else {
-                        sb.append(", " + paramType.getName() + " arg" + lcv);
+                        sb.append(", " + Utilities.getCompilableClass(paramType) + " arg" + lcv);
                     }
                     
                     classSets.append("mParams[" + lcv + "]=" + paramType.getName() + ".class;\n");
@@ -498,7 +498,7 @@ public class JAUtilities {
                     else {
                         childTypes.put(childType, mi.representedProperty);
                     
-                        retVal.addChild(mi.representedProperty, mi.isList, childType);
+                        retVal.addChild(mi.representedProperty, mi.isList, mi.isArray, childType);
                     }
                 }
                 else {
@@ -610,8 +610,7 @@ public class JAUtilities {
         
         // Find all the children
         for (Method method : toBeConverted.getMethods()) {
-            String methodName = method.getName();
-            if (!methodName.startsWith(GET)) continue;
+            if (Utilities.isGetter(method) == null) continue;
             
             Class<?> returnClass = method.getReturnType();
             if (returnClass.isInterface() && !(List.class.equals(returnClass))) {
@@ -619,6 +618,16 @@ public class JAUtilities {
                 getAllToConvert(returnClass, needsToBeConverted);
                 
                 continue;
+            }
+            
+            if (returnClass.isArray()) {
+                Class<?> aType = returnClass.getComponentType();
+                
+                if (aType.isInterface()) {
+                    getAllToConvert(aType, needsToBeConverted);
+                    
+                    continue;
+                }
             }
             
             Type retType = method.getGenericReturnType();
@@ -664,6 +673,7 @@ public class JAUtilities {
         Class<?> gsType = null;
         String variable = null;
         boolean isList = false;
+        boolean isArray = false;
         if (getterVariable != null) {
             // This is a getter
             methodType = MethodType.GETTER;
@@ -679,6 +689,13 @@ public class JAUtilities {
                 baseChildType = ReflectionHelper.getRawClass(typeChildType);
                 if (baseChildType == null) {
                     throw new RuntimeException("Cannot find child type of method " + m);
+                }
+            }
+            else if (returnType.isArray()) {
+                Class<?> arrayType = returnType.getComponentType();
+                if (arrayType.isInterface()) {
+                    isArray = true;
+                    baseChildType = arrayType;
                 }
             }
             else if (returnType.isInterface()) {
@@ -700,6 +717,13 @@ public class JAUtilities {
                 baseChildType = ReflectionHelper.getRawClass(typeChildType);
                 if (baseChildType == null) {
                     throw new RuntimeException("Cannot find child type of method " + m);
+                }
+            }
+            else if (setterType.isArray()) {
+                Class<?> arrayType = setterType.getComponentType();
+                if (arrayType.isInterface()) {
+                    isArray = true;
+                    baseChildType = arrayType;
                 }
             }
             else if (setterType.isInterface()) {
@@ -736,7 +760,14 @@ public class JAUtilities {
             key = true;
         }
         
-        return new MethodInformation(m, methodType, representedProperty, baseChildType, gsType, key, isList);
+        return new MethodInformation(m,
+                methodType,
+                representedProperty,
+                baseChildType,
+                gsType,
+                key,
+                isList,
+                isArray);
     }
     
     private static class MethodInformation {
@@ -747,6 +778,7 @@ public class JAUtilities {
         private final Class<?> baseChildType;
         private final boolean key;
         private final boolean isList;
+        private final boolean isArray;
         
         private MethodInformation(Method originalMethod,
                 MethodType methodType,
@@ -754,7 +786,8 @@ public class JAUtilities {
                 Class<?> baseChildType,
                 Class<?> gsType,
                 boolean key,
-                boolean isList) {
+                boolean isList,
+                boolean isArray) {
             this.originalMethod = originalMethod;
             this.methodType = methodType;
             this.representedProperty = representedProperty;
@@ -762,6 +795,7 @@ public class JAUtilities {
             this.getterSetterType = gsType;
             this.key = key;
             this.isList = isList;
+            this.isArray = isArray;
         }
         
         @Override
@@ -772,6 +806,8 @@ public class JAUtilities {
               representedProperty + "," +
               baseChildType + "," +
               key + "," +
+              isList + "," +
+              isArray + "," +
               System.identityHashCode(this) + ")";
               
         }

@@ -235,7 +235,7 @@ public class XmlServiceImpl implements XmlService {
             
             if (keyProperty == null) {
                 // One of two possibilities:  A multi-child with no key or a single child
-                if (childNode.isMultiChild()) {
+                if (childNode.isMultiChildList() || childNode.isMultiChildArray()) {
                     // Give it a unique identifier
                     targetBean._setKeyValue(getUniqueId());
                 }

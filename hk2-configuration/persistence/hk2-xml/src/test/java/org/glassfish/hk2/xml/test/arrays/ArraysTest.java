@@ -47,7 +47,6 @@ import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.basic.Employee;
-import org.glassfish.hk2.xml.test.basic.Employees;
 import org.glassfish.hk2.xml.test.basic.UnmarshallTest;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
 import org.junit.Assert;
@@ -65,7 +64,7 @@ public class ArraysTest {
      * 
      * @throws Exception
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testBasicReadWithArray() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);

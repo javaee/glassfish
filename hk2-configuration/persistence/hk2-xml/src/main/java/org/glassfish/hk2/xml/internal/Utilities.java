@@ -317,4 +317,19 @@ public class Utilities {
         
         return JAUtilities.SET + getterName.substring(JAUtilities.GET.length());
     }
+    
+    /* package */ static String getCompilableClass(Class<?> clazz) {
+        int depth = 0;
+        while (clazz.isArray()) {
+            depth++;
+            clazz = clazz.getComponentType();
+        }
+        
+        StringBuffer sb = new StringBuffer(clazz.getName());
+        for (int lcv = 0; lcv < depth; lcv++) {
+            sb.append("[]");
+        }
+        
+        return sb.toString();
+    }
 }
