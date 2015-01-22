@@ -21,6 +21,9 @@
     <name>Into the Woods</name>
   </movie>
   
+  <magazine name="Scientific American" />
+  <magazine name="Game Informer" />
+  
   <address>
     <street-address>123 Sesame Street</street-address>
     <street-address-additional>CO Grover</street-address-additional>

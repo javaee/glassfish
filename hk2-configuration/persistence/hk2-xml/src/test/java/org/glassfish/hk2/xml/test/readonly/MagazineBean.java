@@ -39,33 +39,16 @@
  */
 package org.glassfish.hk2.xml.test.readonly;
 
-import java.util.List;
+import javax.xml.bind.annotation.XmlAttribute;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.jvnet.hk2.annotations.Contract;
+import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
 
 /**
- * This is a read-only bean
- * 
  * @author jwells
  *
  */
-@XmlRootElement(name="library") @Contract
-public interface LibraryBean {
-    @XmlElement
+public interface MagazineBean {
+    @XmlAttribute @XmlIdentifier
     public String getName();
-    
-    @XmlElement(name="book")
-    public List<BookBean> getBooks();
-    
-    @XmlElement(name="movie")
-    public List<MovieBean> getMovies();
-    
-    @XmlElement(name="magazine")
-    public MagazineBean[] getMagazines();
-    
-    @XmlElement
-    public AddressBean getAddress();
+
 }
