@@ -81,7 +81,7 @@ public class ReadOnlyTest {
      * 
      * @throws Exception
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testReadOnlyBeans() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);

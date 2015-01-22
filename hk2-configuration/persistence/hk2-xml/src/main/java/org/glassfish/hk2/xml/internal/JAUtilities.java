@@ -588,7 +588,7 @@ public class JAUtilities {
             String setterName = Utilities.convertToSetter(getterName);
             
             StringBuffer sb = new StringBuffer("private void " + setterName + "(");
-            sb.append(mi.getterSetterType.getName() + " arg0) { super._setProperty(\"" + mi.representedProperty + "\", arg0); }");
+            sb.append(Utilities.getCompilableClass(mi.getterSetterType) + " arg0) { super._setProperty(\"" + mi.representedProperty + "\", arg0); }");
             
             CtMethod addMeCtMethod = CtNewMethod.make(sb.toString(), targetCtClass);
             targetCtClass.addMethod(addMeCtMethod);
