@@ -93,6 +93,7 @@ public class JAUtilities {
     
     private final static String CLASS_ADD_ON_NAME = "_$$_Hk2_Jaxb";
     private final static HashSet<String> DO_NOT_HANDLE_METHODS = new HashSet<String>();
+    private final static String NO_CHILD_PACKAGE = "java.";
     
     private final HashMap<Class<?>, UnparentedNode> interface2NodeCache = new HashMap<Class<?>, UnparentedNode>();
     private final HashMap<Class<?>, UnparentedNode> proxy2NodeCache = new HashMap<Class<?>, UnparentedNode>();
@@ -664,6 +665,8 @@ public class JAUtilities {
                 Class<?> returnClass = method.getReturnType();
                 if (returnClass.isInterface() && !(List.class.equals(returnClass))) {
                     // The assumption is that this is a non-instanced child
+                    if (returnClass.getName().startsWith(NO_CHILD_PACKAGE)) continue;
+                    
                     getAllToConvert(returnClass, needsToBeConverted, cycleDetector);
                     
                     continue;
@@ -752,7 +755,7 @@ public class JAUtilities {
                     baseChildType = arrayType;
                 }
             }
-            else if (returnType.isInterface()) {
+            else if (returnType.isInterface() && !returnType.getName().startsWith(NO_CHILD_PACKAGE)) {
                 baseChildType = returnType;
             }
         }
@@ -780,7 +783,7 @@ public class JAUtilities {
                     baseChildType = arrayType;
                 }
             }
-            else if (setterType.isInterface()) {
+            else if (setterType.isInterface() && !setterType.getName().startsWith(NO_CHILD_PACKAGE)) {
                 baseChildType = setterType;
             }
         }

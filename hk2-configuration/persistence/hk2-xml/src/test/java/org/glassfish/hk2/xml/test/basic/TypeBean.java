@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.xml.test.basic;
 
+import java.util.Set;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -81,5 +83,9 @@ public interface TypeBean {
     @XmlElement(name="double")
     public double getDType();
     public void setDType(double i);
+    
+    @XmlElement(name="set")
+    public Set<String> getSetType();
+    public void setSetType(Set<String> set);
 
 }
