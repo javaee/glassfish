@@ -493,7 +493,7 @@ public class JAUtilities {
                         sb.append(", " + Utilities.getCompilableClass(paramType) + " arg" + lcv);
                     }
                     
-                    classSets.append("mParams[" + lcv + "]=" + paramType.getName() + ".class;\n");
+                    classSets.append("mParams[" + lcv + "]=" + Utilities.getCompilableClass(paramType) + ".class;\n");
                     valSets.append("mVars[" + lcv + "]=arg" + lcv + ";\n");
                     
                     lcv++;
@@ -505,7 +505,7 @@ public class JAUtilities {
                 sb.append(valSets.toString());
                 
                 if (!isVoid) {
-                    sb.append("return (" + originalRetType.getName() + ") ");
+                    sb.append("return (" + Utilities.getCompilableClass(originalRetType) + ") ");
                 }
                 sb.append("super._invokeCustomizedMethod(\"" + name + "\", mParams, mVars); }");
             }

@@ -79,6 +79,10 @@ public class CustomizerTest {
         museum.customizer2();
         
         Assert.assertTrue(customizer.getCustomizer2Called());
+        
+        long[] c3 = museum.customizer3(null);
+        Assert.assertNotNull(c3);
+        Assert.assertEquals(0, c3.length);
     }
 
 }

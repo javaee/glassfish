@@ -66,5 +66,9 @@ public class CustomizerOne {
     public boolean getCustomizer2Called() {
         return customizer2Called;
     }
+    
+    public long[] customizer3(String[][] anArray) {
+        return new long[0];
+    }
 
 }

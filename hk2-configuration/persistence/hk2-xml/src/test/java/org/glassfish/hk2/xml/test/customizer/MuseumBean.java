@@ -67,5 +67,7 @@ public interface MuseumBean {
     
     public String customizer1(String prefix, String postfix);
     public void customizer2();
+    
+    public long[] customizer3(String[][] anArray);
 
 }
