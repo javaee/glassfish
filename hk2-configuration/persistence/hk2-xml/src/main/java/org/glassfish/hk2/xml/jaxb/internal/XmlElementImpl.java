@@ -56,6 +56,7 @@ public class XmlElementImpl extends AnnotationLiteral<XmlElement> implements Xml
     private final String namespace;
     private final String defaultValue;
     private final Class<?> type;
+    private final String typeByName;
 
     /**
      * 
@@ -67,6 +68,17 @@ public class XmlElementImpl extends AnnotationLiteral<XmlElement> implements Xml
         this.namespace = namespace;
         this.defaultValue = defaultValue;
         this.type = type;
+        typeByName = (type == null) ? "null" : type.getName();
+    }
+    
+    public XmlElementImpl(String name, boolean nillable, boolean required, String namespace, String defaultValue, String typeByName) {
+        this.name = name;
+        this.nillable = nillable;
+        this.required = required;
+        this.namespace = namespace;
+        this.defaultValue = defaultValue;
+        this.type = null;
+        this.typeByName = typeByName;
     }
 
     /* (non-Javadoc)
@@ -114,7 +126,12 @@ public class XmlElementImpl extends AnnotationLiteral<XmlElement> implements Xml
      */
     @Override
     public Class type() {
+        if (type == null) return Object.class;
         return type;
+    }
+    
+    public String getTypeByName() {
+        return typeByName;
     }
 
 }

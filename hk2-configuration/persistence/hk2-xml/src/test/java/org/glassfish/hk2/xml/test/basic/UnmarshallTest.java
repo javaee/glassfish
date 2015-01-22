@@ -69,6 +69,7 @@ public class UnmarshallTest {
     public final static String ACME1_FILE = "Acme1.xml";
     public final static String ACME2_FILE = "Acme2.xml";
     private final static String SAMPLE_CONFIG_FILE = "sample-config.xml";
+    private final static String CYCLE = "cycle.xml";
     
     public final static String BEN_FRANKLIN = "Ben Franklin";
     public final static String ACME = "Acme";
@@ -394,5 +395,26 @@ public class UnmarshallTest {
         Assert.assertNotNull(hub.getCurrentDatabase().getInstance(FOOBAR_FOO_TYPE, FOOBAR_FOO2_INSTANCE));
         Assert.assertNotNull(hub.getCurrentDatabase().getInstance(FOOBAR_BAR_TYPE, FOOBAR_BAR1_INSTANCE));
         Assert.assertNotNull(hub.getCurrentDatabase().getInstance(FOOBAR_BAR_TYPE, FOOBAR_BAR2_INSTANCE));
+    }
+    
+    /**
+     * Tests that an xml hierarchy with a cycle can be unmarshalled
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testBeanCycle() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(CYCLE);
+        
+        XmlRootHandle<RootWithCycle> rootHandle = xmlService.unmarshall(url.toURI(), RootWithCycle.class);
+        RootWithCycle cycle = rootHandle.getRoot();
+        
+        Assert.assertNotNull(cycle);
+        Assert.assertNotNull(cycle.getLeafWithCycle());
+        Assert.assertNotNull(cycle.getLeafWithCycle().getRootWithCycle());
+        Assert.assertNull(cycle.getLeafWithCycle().getRootWithCycle().getLeafWithCycle());
     }
 }

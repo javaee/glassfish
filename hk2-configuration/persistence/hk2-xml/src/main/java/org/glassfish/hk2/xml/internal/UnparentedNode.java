@@ -40,6 +40,7 @@
 package org.glassfish.hk2.xml.internal;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -85,11 +86,18 @@ public class UnparentedNode implements Serializable {
     /** If this node has a key, this is the property name of the key */
     private String keyProperty;
     
+    private boolean isPlaceholder = false;
+    
     public UnparentedNode() {
     }
     
     public UnparentedNode(Class<?> originalInterface) {
         this.originalInterface = originalInterface;
+    }
+    
+    public UnparentedNode(Class<?> originalInterface, boolean isPlaceholder) {
+        this.originalInterface = originalInterface;
+        this.isPlaceholder = isPlaceholder;
     }
     
     public Class<?> getOriginalInterface() {
@@ -149,6 +157,12 @@ public class UnparentedNode implements Serializable {
             return childrenByName.get(propName);
         }
     }
+    
+    public Collection<ParentedNode> getAllChildren() {
+        synchronized (lock) {
+            return Collections.unmodifiableCollection(children.values());
+        }
+    }
 
     /**
      * @return the keyProperty
@@ -189,6 +203,17 @@ public class UnparentedNode implements Serializable {
         synchronized (lock) {
             return Collections.unmodifiableMap(childrenByName);
         }
+    }
+    
+    /**
+     * For cycles we sometimes use a not-fully-filled in node
+     * as a temporary placeholder
+     * 
+     * @return true if this is a placeholder node that must
+     * be replaced at a future time
+     */
+    public boolean isPlaceholder() {
+        return isPlaceholder;
     }
 
     @Override

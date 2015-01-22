@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,66 +37,21 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.internal;
+package org.glassfish.hk2.xml.test.basic;
 
-import java.io.Serializable;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.jvnet.hk2.annotations.Contract;
 
 /**
- * A node with information about the parent, which is therefor
- * specific to a place in a tree
- * 
  * @author jwells
- *
  */
-public class ParentedNode implements Serializable {
-    private static final long serialVersionUID = 7004413497291650707L;
+@XmlRootElement(name="root") @Contract
+public interface RootWithCycle {
+    @XmlElement(name="leaf-with-cycle")
+    public LeafWithCycle getLeafWithCycle();
+    public void setLeafWithCycle(LeafWithCycle leaf);
     
-    private String childName;
-    private boolean multiChildList;  // If true there is a list of children, otherwise there is just a single child
-    private boolean multiChildArray;  // If true there is a list of children, otherwise there is just a single child
-    private UnparentedNode child;
-    
-    public ParentedNode() {
-    }
-    
-    public ParentedNode(String childName, boolean multiChildList, boolean multiChildArray, UnparentedNode child) {
-        this.childName = childName;
-        this.multiChildList = multiChildList;
-        this.multiChildArray = multiChildArray;
-        this.child = child;
-    }
-    
-    public String getChildName() {
-        return childName;
-    }
-    
-    public UnparentedNode getChild() {
-        return child;
-    }
-    
-    public boolean isMultiChildList() {
-        return multiChildList;
-    }
-    
-    public boolean isMultiChildArray() {
-        return multiChildArray;
-    }
-    
-    /**
-     * This is used when there are bean cycles.  If
-     * the original child had not yet been processed
-     * a placeholder was used, this method is used
-     * to replace the placeholder with the real thing
-     * 
-     * @param child A non-placeholder child
-     */
-    public void setChild(UnparentedNode child) {
-        this.child = child;
-    }
-    
-    @Override
-    public String toString() {
-        return "ParentedNode(" + childName + "," + child + "," + System.identityHashCode(this) + ")";
-    }
 
 }

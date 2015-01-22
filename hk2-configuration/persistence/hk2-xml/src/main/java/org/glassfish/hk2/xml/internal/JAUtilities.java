@@ -45,8 +45,10 @@ import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -123,9 +125,10 @@ public class JAUtilities {
     public synchronized UnparentedNode convertRootAndLeaves(Class<?> root) {
         LinkedHashSet<Class<?>> needsToBeConverted = new LinkedHashSet<Class<?>>();
         
-        getAllToConvert(root, needsToBeConverted);
+        getAllToConvert(root, needsToBeConverted, new HashSet<Class<?>>());
         needsToBeConverted.removeAll(interface2NodeCache.keySet());
         
+        LinkedList<UnparentedNode> contributions = new LinkedList<UnparentedNode>();
         for (Class<?> convertMe : needsToBeConverted) {
             UnparentedNode converted;
             try {
@@ -139,6 +142,21 @@ public class JAUtilities {
             }
             
             interface2NodeCache.put(convertMe, converted);
+            contributions.add(converted);
+        }
+        
+        for (UnparentedNode node : contributions) {
+            for (ParentedNode child : node.getAllChildren()) {
+                if (child.getChild().isPlaceholder()) {
+                    UnparentedNode nonPlaceholder = interface2NodeCache.get(child.getChild().getOriginalInterface());
+                    if (nonPlaceholder == null) {
+                        throw new RuntimeException("The child of type " + child.getChild().getOriginalInterface().getName() +
+                                " is unknown for " + node);  
+                    }
+                    
+                    child.setChild(nonPlaceholder);
+                }
+            }
         }
         
         return interface2NodeCache.get(root);
@@ -201,7 +219,7 @@ public class JAUtilities {
             
             Map<String, String> xmlNameMap = getXmlNameMap(convertMe);
             
-            HashMap<UnparentedNode, String> childTypes = new HashMap<UnparentedNode, String>();
+            HashMap<Class<?>, String> childTypes = new HashMap<Class<?>, String>();
             MethodInformation foundKey = null;
             for (Method originalMethod : convertMe.getMethods()) {
                 MethodInformation mi = getMethodInformation(originalMethod, xmlNameMap);
@@ -222,27 +240,31 @@ public class JAUtilities {
                     getterOrSetter = true;
                     if (mi.baseChildType != null) {
                         if (!interface2NodeCache.containsKey(mi.baseChildType)) {
-                            throw new RuntimeException("The child of type " + mi.baseChildType.getName() + " is unknown for method " + mi.originalMethod);
+                            // Must use a placeholder
+                            childType = new UnparentedNode(mi.baseChildType, true);
                         }
-                        
-                        childType = interface2NodeCache.get(mi.baseChildType);
+                        else {
+                            childType = interface2NodeCache.get(mi.baseChildType);
+                        }
                     }
                 }
                 else if (MethodType.GETTER.equals(mi.methodType)) {
                     getterOrSetter = true;
                     if (mi.baseChildType != null) {
                         if (!interface2NodeCache.containsKey(mi.baseChildType)) {
-                            throw new RuntimeException("The child of type " + mi.baseChildType.getName() + " is unknown for method " + mi.originalMethod);
+                            // Must use a placeholder
+                            childType = new UnparentedNode(mi.baseChildType, true);
                         }
-                        
-                        childType = interface2NodeCache.get(mi.baseChildType);
+                        else {
+                            childType = interface2NodeCache.get(mi.baseChildType);
+                        }
                     }
                 }
                 
                 if (getterOrSetter) {
                     if (childType != null) {
-                        if (childTypes.containsKey(childType)) {
-                            String variableName = childTypes.get(childType);
+                        if (childTypes.containsKey(childType.getOriginalInterface())) {
+                            String variableName = childTypes.get(childType.getOriginalInterface());
                             if (!variableName.equals(mi.representedProperty)) {
                                 throw new RuntimeException(
                                     "Multiple children of " + convertMe.getName() +
@@ -251,7 +273,7 @@ public class JAUtilities {
                             }
                         }
                         else {
-                            childTypes.put(childType, mi.representedProperty);
+                            childTypes.put(childType.getOriginalInterface(), mi.representedProperty);
                         
                             retVal.addChild(mi.representedProperty, mi.isList, mi.isArray, childType);
                         }
@@ -308,7 +330,7 @@ public class JAUtilities {
         
         Map<String, String> xmlNameMap = getXmlNameMap(convertMe);
         
-        HashMap<UnparentedNode, String> childTypes = new HashMap<UnparentedNode, String>();
+        HashMap<Class<?>, String> childTypes = new HashMap<Class<?>, String>();
         MethodInformation foundKey = null;
         
         HashSet<String> setters = new HashSet<String>();
@@ -351,10 +373,12 @@ public class JAUtilities {
                 
                 if (mi.baseChildType != null) {
                     if (!interface2NodeCache.containsKey(mi.baseChildType)) {
-                        throw new RuntimeException("The child of type " + mi.baseChildType.getName() + " is unknown for method " + mi.originalMethod);
+                        // Must use placeholder
+                        childType = new UnparentedNode(mi.baseChildType, true);
                     }
-                    
-                    childType = interface2NodeCache.get(mi.baseChildType);
+                    else {
+                        childType = interface2NodeCache.get(mi.baseChildType);
+                    }
                 }
                 
                 sb.append(Utilities.getCompilableClass(mi.getterSetterType) + " arg0) { super._setProperty(\"" + mi.representedProperty + "\", arg0); }");
@@ -365,10 +389,12 @@ public class JAUtilities {
                 
                 if (mi.baseChildType != null) {
                     if (!interface2NodeCache.containsKey(mi.baseChildType)) {
-                        throw new RuntimeException("The child of type " + mi.baseChildType.getName() + " is unknown for method " + mi.originalMethod);
+                        // Must use placeholder
+                        childType = new UnparentedNode(mi.baseChildType, true);
                     }
-                    
-                    childType = interface2NodeCache.get(mi.baseChildType);
+                    else {
+                        childType = interface2NodeCache.get(mi.baseChildType);
+                    }
                 }
                 
                 String cast = "";
@@ -486,8 +512,8 @@ public class JAUtilities {
             
             if (getterOrSetter) {
                 if (childType != null) {
-                    if (childTypes.containsKey(childType)) {
-                        String variableName = childTypes.get(childType);
+                    if (childTypes.containsKey(childType.getOriginalInterface())) {
+                        String variableName = childTypes.get(childType.getOriginalInterface());
                         if (!variableName.equals(mi.representedProperty)) {
                             throw new RuntimeException(
                                 "Multiple children of " + convertMe.getName() +
@@ -496,7 +522,7 @@ public class JAUtilities {
                         }
                     }
                     else {
-                        childTypes.put(childType, mi.representedProperty);
+                        childTypes.put(childType.getOriginalInterface(), mi.representedProperty);
                     
                         retVal.addChild(mi.representedProperty, mi.isList, mi.isArray, childType);
                     }
@@ -520,17 +546,28 @@ public class JAUtilities {
                     XmlElement original = (XmlElement) convertMeAnnotation;
                         
                     // Use generated child class
-                    convertMeAnnotation = new XmlElementImpl(
+                    if (!childType.isPlaceholder()) {
+                        convertMeAnnotation = new XmlElementImpl(
                             original.name(),
                             original.nillable(),
                             original.required(),
                             original.namespace(),
                             original.defaultValue(),
                             childType.getTranslatedClass());
+                    }
+                    else {
+                        String translatedClassName = childType.getOriginalInterface().getName() + CLASS_ADD_ON_NAME;
+                        convertMeAnnotation = new XmlElementImpl(
+                                original.name(),
+                                original.nillable(),
+                                original.required(),
+                                original.namespace(),
+                                original.defaultValue(),
+                                translatedClassName);
+                    }
                 }
                     
                 createAnnotationCopy(methodConstPool, convertMeAnnotation, ctAnnotations);
-                
             }
             
             if (ctAnnotations != null) {
@@ -585,13 +622,19 @@ public class JAUtilities {
                 annotation.addMemberValue(javaAnnotationMethod.getName(), new BooleanMemberValue(value, parent));
             }
             else if (Class.class.equals(javaAnnotationType)) {
-                Class<?> value = (Class<?>) ReflectionHelper.invoke(javaAnnotation, javaAnnotationMethod, new Object[0], false);
                 String sValue;
-                if (value == null) {
-                    sValue = null;
+                if (javaAnnotation instanceof XmlElementImpl) {
+                    sValue = ((XmlElementImpl) javaAnnotation).getTypeByName();
                 }
                 else {
-                    sValue = value.getName();
+                    Class<?> value = (Class<?>) ReflectionHelper.invoke(javaAnnotation, javaAnnotationMethod, new Object[0], false);
+                
+                    if (value == null) {
+                        sValue = null;
+                    }
+                    else {
+                        sValue = value.getName();
+                    }
                 }
                 
                 annotation.addMemberValue(javaAnnotationMethod.getName(), new ClassMemberValue(sValue, parent));
@@ -605,47 +648,58 @@ public class JAUtilities {
         retVal.addAnnotation(annotation);
     }
     
-    private static void getAllToConvert(Class<?> toBeConverted, LinkedHashSet<Class<?>> needsToBeConverted) {
+    private static void getAllToConvert(Class<?> toBeConverted,
+            LinkedHashSet<Class<?>> needsToBeConverted,
+            Set<Class<?>> cycleDetector) {
         if (needsToBeConverted.contains(toBeConverted)) return;
         
-        // Find all the children
-        for (Method method : toBeConverted.getMethods()) {
-            if (Utilities.isGetter(method) == null) continue;
-            
-            Class<?> returnClass = method.getReturnType();
-            if (returnClass.isInterface() && !(List.class.equals(returnClass))) {
-                // The assumption is that this is a non-instanced child
-                getAllToConvert(returnClass, needsToBeConverted);
+        if (cycleDetector.contains(toBeConverted)) return;
+        cycleDetector.add(toBeConverted);
+        
+        try {
+            // Find all the children
+            for (Method method : toBeConverted.getMethods()) {
+                if (Utilities.isGetter(method) == null) continue;
                 
-                continue;
-            }
-            
-            if (returnClass.isArray()) {
-                Class<?> aType = returnClass.getComponentType();
-                
-                if (aType.isInterface()) {
-                    getAllToConvert(aType, needsToBeConverted);
+                Class<?> returnClass = method.getReturnType();
+                if (returnClass.isInterface() && !(List.class.equals(returnClass))) {
+                    // The assumption is that this is a non-instanced child
+                    getAllToConvert(returnClass, needsToBeConverted, cycleDetector);
                     
                     continue;
                 }
+                
+                if (returnClass.isArray()) {
+                    Class<?> aType = returnClass.getComponentType();
+                    
+                    if (aType.isInterface()) {
+                        getAllToConvert(aType, needsToBeConverted, cycleDetector);
+                        
+                        continue;
+                    }
+                }
+                
+                Type retType = method.getGenericReturnType();
+                if (retType == null || !(retType instanceof ParameterizedType)) continue;
+                
+                Class<?> returnRawClass = ReflectionHelper.getRawClass(retType);
+                if (returnRawClass == null || !List.class.equals(returnRawClass)) continue;
+                
+                Type listReturnType = ReflectionHelper.getFirstTypeArgument(retType);
+                if (Object.class.equals(listReturnType)) continue;
+                
+                Class<?> childClass = ReflectionHelper.getRawClass(listReturnType);
+                if (childClass == null || Object.class.equals(childClass)) continue;
+                
+                getAllToConvert(childClass, needsToBeConverted, cycleDetector);
             }
             
-            Type retType = method.getGenericReturnType();
-            if (retType == null || !(retType instanceof ParameterizedType)) continue;
-            
-            Class<?> returnRawClass = ReflectionHelper.getRawClass(retType);
-            if (returnRawClass == null || !List.class.equals(returnRawClass)) continue;
-            
-            Type listReturnType = ReflectionHelper.getFirstTypeArgument(retType);
-            if (Object.class.equals(listReturnType)) continue;
-            
-            Class<?> childClass = ReflectionHelper.getRawClass(listReturnType);
-            if (childClass == null || Object.class.equals(childClass)) continue;
-            
-            getAllToConvert(childClass, needsToBeConverted);
+            needsToBeConverted.add(toBeConverted);
         }
-        
-        needsToBeConverted.add(toBeConverted);
+        finally {
+            // TODO Auto-generated catch block
+            cycleDetector.remove(toBeConverted);
+        }
     }
     
     private static MethodInformation getMethodInformation(Method m, Map<String, String> xmlNameMap) {

@@ -1,0 +1,5 @@
+<root>
+  <leaf-with-cycle>
+    <root-with-cycle/>
+  </leaf-with-cycle>
+</root>
