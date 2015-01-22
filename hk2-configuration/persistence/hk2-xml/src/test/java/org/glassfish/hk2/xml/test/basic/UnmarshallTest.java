@@ -70,6 +70,7 @@ public class UnmarshallTest {
     public final static String ACME2_FILE = "Acme2.xml";
     private final static String SAMPLE_CONFIG_FILE = "sample-config.xml";
     private final static String CYCLE = "cycle.xml";
+    private final static String TYPE1_FILE = "type1.xml";
     
     public final static String BEN_FRANKLIN = "Ben Franklin";
     public final static String ACME = "Acme";
@@ -416,5 +417,30 @@ public class UnmarshallTest {
         Assert.assertNotNull(cycle.getLeafWithCycle());
         Assert.assertNotNull(cycle.getLeafWithCycle().getRootWithCycle());
         Assert.assertNull(cycle.getLeafWithCycle().getRootWithCycle().getLeafWithCycle());
+    }
+    
+    /**
+     * Tests every scalar type that can be read
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testEveryType() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(TYPE1_FILE);
+        
+        XmlRootHandle<TypeBean> rootHandle = xmlService.unmarshall(url.toURI(), TypeBean.class);
+        TypeBean types = rootHandle.getRoot();
+        
+        Assert.assertNotNull(types);
+        Assert.assertEquals(13, types.getIType());
+        Assert.assertEquals(-13L, types.getJType());
+        Assert.assertEquals(true, types.getZType());
+        Assert.assertEquals((byte) 165, types.getBType());
+        Assert.assertEquals((short) 161, types.getSType());
+        Assert.assertEquals(0, Float.compare((float) 3.14, types.getFType()));
+        Assert.assertEquals(0, Double.compare(2.71828, types.getDType()));
     }
 }

@@ -1,0 +1,10 @@
+<type-bean>
+  <int>13</int>
+  <long>-13</long>
+  <boolean>true</boolean>
+  <byte>165</byte>
+  <char>E</char>
+  <short>161</short>
+  <float>3.14</float>
+  <double>2.71828</double>
+</type-bean>

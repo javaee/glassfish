@@ -173,6 +173,12 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         _setProperty(propName, (Byte) propValue);
     }
     
+    public void _setProperty(String propName, boolean propValue) {
+        if (propName == null) throw new IllegalArgumentException("properyName may not be null");
+        
+        _setProperty(propName, (Boolean) propValue);
+    }
+    
     public void _setProperty(String propName, char propValue) {
         if (propName == null) throw new IllegalArgumentException("properyName may not be null");
         
