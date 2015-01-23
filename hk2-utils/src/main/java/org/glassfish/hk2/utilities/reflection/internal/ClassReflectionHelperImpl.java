@@ -184,6 +184,7 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
     public Set<Field> getAllFieldWrappers(Class<?> clazz) {
         if (clazz == null) return Collections.emptySet();
         if (Object.class.equals(clazz)) return OBJECT_FIELDS;
+        if (clazz.isInterface()) return Collections.emptySet();
         
         Set<Field> retVal = fieldCache.get(clazz);
         if (retVal != null) {
@@ -211,8 +212,17 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
         
         retVal = new HashSet<MethodWrapper>();
         
-        retVal.addAll(getDeclaredMethodWrappers(clazz));
-        retVal.addAll(getAllMethodWrappers(clazz.getSuperclass()));
+        if (clazz.isInterface()) {
+            for (Method m : clazz.getMethods()) {
+                MethodWrapper wrapper = new MethodWrapperImpl(m);
+                
+                retVal.add(wrapper);
+            }
+        }
+        else {
+            retVal.addAll(getDeclaredMethodWrappers(clazz));
+            retVal.addAll(getAllMethodWrappers(clazz.getSuperclass()));
+        }
         
         methodCache.put(clazz, retVal);
         
