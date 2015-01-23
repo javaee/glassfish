@@ -47,6 +47,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -99,9 +100,6 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
     
     /** The parent of this instance, or null if this is a root (or has not been fully initialized yet) */
     private Object parent;
-    
-    /** The xmlPath of the parent, helps determine location in the tree */
-    private String parentXmlPath;
     
     /** My own XmlTag, which is determined either by my parent or by my root value */
     private String selfXmlTag;
@@ -270,20 +268,75 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         return (Double) _getProperty(propName);
     }
     
+    @SuppressWarnings("unchecked")
+    private Object internalLookup(String propName, String keyValue) {
+        // First look in the cache
+        Object retVal = null;
+        
+        Map<String, BaseHK2JAXBBean> byName = children.get(propName);
+        if (byName != null) {
+            retVal = byName.get(keyValue);
+        }
+        
+        
+        if (retVal != null) {
+            // Found it in cache!
+            return retVal;
+        }
+        
+        // Now do it the hard way
+        Object prop = _getProperty(propName);
+        if (prop == null) return null;  // Just not found
+        
+        if (prop instanceof List) {
+            for (BaseHK2JAXBBean child : (List<BaseHK2JAXBBean>) prop) {
+                if (GeneralUtilities.safeEquals(keyValue, child._getKeyValue())) {
+                    // Add it to the cache
+                    if (byName == null) {
+                        byName = new HashMap<String, BaseHK2JAXBBean>();
+                        
+                        children.put(propName, byName);
+                    }
+                    
+                    byName.put(keyValue, child);
+                    
+                    // and return
+                    return child;
+                }
+            }
+        }
+        else if (prop.getClass().isArray()) {
+            for (Object childRaw : (Object[]) prop) {
+                BaseHK2JAXBBean child = (BaseHK2JAXBBean) childRaw;
+                
+                if (GeneralUtilities.safeEquals(keyValue, child._getKeyValue())) {
+                    // Add it to the cache
+                    if (byName == null) {
+                        byName = new HashMap<String, BaseHK2JAXBBean>();
+                        
+                        children.put(propName, byName);
+                    }
+                    
+                    byName.put(keyValue, child);
+                    
+                    // and return
+                    return child;
+                }
+            }
+        }
+        
+        // Just not found
+        return null;
+    }
+    
     public Object _lookupChild(String propName, String keyValue) {
         if (changeControl == null) {
-            Map<String, BaseHK2JAXBBean> byName = children.get(propName);
-            if (byName == null) return null;
-        
-            return byName.get(keyValue);
+            return internalLookup(propName, keyValue);
         }
         
         changeControl.getReadLock().lock();
         try {
-            Map<String, BaseHK2JAXBBean> byName = children.get(propName);
-            if (byName == null) return null;
-            
-            return byName.get(keyValue);
+            return internalLookup(propName, keyValue);
         }
         finally {
             changeControl.getReadLock().unlock();
@@ -408,7 +461,6 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         externalAdd(child, dynamicService, writeableDatabase);
         
         return child;
-        
     }
     
     @SuppressWarnings("unchecked")
@@ -515,7 +567,6 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
             
         child._setModel(childNode.getChild(), myParent.classReflectionHelper);
         child._setParent(myParent);
-        child._setParentXmlPath(myParent.xmlPath);
         child._setSelfXmlTag(childNode.getChildName());
         child._setKeyValue(childKey);
         if (childNode.isMultiChildList() || childNode.isMultiChildArray()) {
@@ -686,19 +737,8 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         this.parent = parent;
     }
     
-    public void _setParentXmlPath(String parentXmlPath) {
-        this.parentXmlPath = parentXmlPath;
-    }
-    
     public void _setSelfXmlTag(String selfXmlTag) {
         this.selfXmlTag = selfXmlTag;
-        
-        if (parentXmlPath == null) {
-            xmlPath = XML_PATH_SEPARATOR + selfXmlTag;
-        }
-        else {
-            xmlPath = parentXmlPath + XML_PATH_SEPARATOR + selfXmlTag;
-        }
     }
     
     public String _getSelfXmlTag() {
@@ -742,35 +782,41 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         this.classReflectionHelper = helper;
     }
     
+    public UnparentedNode _getModel() {
+        return model;
+    }
+    
     @Override
     public String _getKeyValue() {
         return keyValue;
     }
     
+    private static String calculateXmlPath(BaseHK2JAXBBean leaf) {
+        LinkedList<String> stack = new LinkedList<String>();
+        while (leaf != null) {
+            stack.addFirst(leaf._getSelfXmlTag());
+            
+            leaf = (BaseHK2JAXBBean) leaf._getParent();
+        }
+        
+        StringBuffer sb = new StringBuffer();
+        for (String component : stack) {
+            sb.append(XML_PATH_SEPARATOR + component);
+        }
+        
+        return sb.toString();
+    }
+    
     /**
-     * Once this is set the dynamic change protocol is in effect
+     * Once this is set the dynamic change protocol is in effect,
+     * and all paths can be calculated
      * 
      * @param change The change control object
      */
     public void _setDynamicChangeInfo(DynamicChangeInfo change) {
-        changeControl = change;
-    }
-    
-    /**
-     * Used in copy operations and when constructing the initial tree
-     * 
-     * @param childXmlTag
-     * @param childKeyValue
-     * @param child
-     */
-    public void _addChild(String childXmlTag, String childKeyValue, BaseHK2JAXBBean child) {
-        Map<String, BaseHK2JAXBBean> byKey = children.get(childXmlTag);
-        if (byKey == null) {
-            byKey = new HashMap<String, BaseHK2JAXBBean>();
-            children.put(childXmlTag, byKey);
-        }
+        xmlPath = calculateXmlPath(this);
         
-        byKey.put(childKeyValue, child);
+        changeControl = change;
     }
     
     /**
@@ -796,7 +842,6 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
      * @param copyMe The non-null bean to copy FROM
      */
     public void _shallowCopyFrom(BaseHK2JAXBBean copyMe) {
-        parentXmlPath = copyMe.parentXmlPath;
         selfXmlTag = copyMe.selfXmlTag;
         instanceName = copyMe.instanceName;
         model = copyMe.model;

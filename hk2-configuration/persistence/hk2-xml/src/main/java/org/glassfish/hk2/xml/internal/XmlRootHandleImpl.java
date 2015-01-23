@@ -198,11 +198,6 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
                     copiedChild._setParent(retVal);
                     
                     toSetChildList.add(copiedChild);
-                    
-                    String keyValue = copiedChild._getKeyValue();
-                    if (keyValue != null) {
-                        retVal._addChild(childProp, keyValue, copiedChild);
-                    }
                 }
                 
                 // Sets the list property into the parent

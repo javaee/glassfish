@@ -72,9 +72,6 @@ public class UnparentedNode implements Serializable {
     /** If this node can be a root, the xml tag of the root of the document */
     private String rootName;
     
-    /** A map from an interface to a parented child node */
-    private final Map<Class<?>, ParentedNode> children = new HashMap<Class<?>, ParentedNode>();
-    
     /** A map from the property name (not the xml tag) to the parented child node */
     private final Map<String, ParentedNode> childrenByName = new HashMap<String, ParentedNode>();
     
@@ -135,7 +132,6 @@ public class UnparentedNode implements Serializable {
     public void addChild(String xmlTag, boolean multiChildList, boolean multiChildArray, UnparentedNode child) {
         synchronized (lock) {
             ParentedNode pn = new ParentedNode(xmlTag, multiChildList, multiChildArray, child);
-            children.put(child.getOriginalInterface(), pn);
             childrenByName.put(xmlTag, pn);
         }
     }
@@ -143,12 +139,6 @@ public class UnparentedNode implements Serializable {
     public void addNonChildProperty(String xmlTag) {
         synchronized (lock) {
             nonChildProperty.add(xmlTag);
-        }
-    }
-    
-    public ParentedNode getChild(Class<?> childType) {
-        synchronized (lock) {
-            return children.get(childType);
         }
     }
     
@@ -160,7 +150,7 @@ public class UnparentedNode implements Serializable {
     
     public Collection<ParentedNode> getAllChildren() {
         synchronized (lock) {
-            return Collections.unmodifiableCollection(children.values());
+            return Collections.unmodifiableCollection(childrenByName.values());
         }
     }
 

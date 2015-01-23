@@ -41,6 +41,7 @@ package org.glassfish.hk2.xml.internal;
 
 import java.net.URI;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.inject.Inject;
@@ -209,63 +210,86 @@ public class XmlServiceImpl implements XmlService {
     private class Listener extends Unmarshaller.Listener {
         private final LinkedList<BaseHK2JAXBBean> allBeans = new LinkedList<BaseHK2JAXBBean>();
         
+        private void setUserKey(BaseHK2JAXBBean bean, boolean listOrArray) {
+            UnparentedNode model = bean._getModel();
+            
+            String keyProperty = model.getKeyProperty();
+            if (keyProperty == null && listOrArray) {
+                bean._setKeyValue(getUniqueId());
+                
+                return;
+            }
+            
+            if (keyProperty == null) return;
+            
+            String key = (String) bean._getProperty(keyProperty);
+            if (key == null) return;
+            
+            bean._setKeyValue(key);
+        }
+        
+        @SuppressWarnings("unchecked")
+        private void setSelfXmlTagInAllChildren(BaseHK2JAXBBean targetBean) {
+            UnparentedNode model = targetBean._getModel();
+            
+            for (ParentedNode parentedNode : model.getAllChildren()) {
+                Object children = targetBean._getProperty(parentedNode.getChildName());
+                if (children == null) continue;
+                
+                if (children instanceof List) {
+                    for (Object child : (List<Object>) children) {
+                        BaseHK2JAXBBean childBean = (BaseHK2JAXBBean) child;
+                        
+                        childBean._setSelfXmlTag(parentedNode.getChildName());
+                        
+                        setUserKey(childBean, true);
+                    }
+                    
+                }
+                else if (children.getClass().isArray()) {
+                    for (Object child : (Object[]) children) {
+                        BaseHK2JAXBBean childBean = (BaseHK2JAXBBean) child;
+                        
+                        childBean._setSelfXmlTag(parentedNode.getChildName());
+                        
+                        setUserKey(childBean, true);
+                    }
+                }
+                else {
+                    BaseHK2JAXBBean childBean = (BaseHK2JAXBBean) children;
+                    
+                    childBean._setSelfXmlTag(parentedNode.getChildName());
+                    
+                    setUserKey(childBean, false);
+                }
+            }
+        }
+        
         @Override
         public void afterUnmarshal(Object target, Object parent) {
             if (!(target instanceof BaseHK2JAXBBean)) return;
             
             BaseHK2JAXBBean targetBean = (BaseHK2JAXBBean) target;
-            UnparentedNode targetNode = jaUtilities.getNode(target.getClass());
-            
-            String keyPropertyName = targetNode.getKeyProperty();
-            String keyProperty = null;
-            if (keyPropertyName != null) {
-                keyProperty = (String) targetBean._getProperty(keyPropertyName);
-                targetBean._setKeyValue(keyProperty);
-            }
-            
-            targetBean._setParent(parent);
+            BaseHK2JAXBBean parentBean = (BaseHK2JAXBBean) parent;
+            UnparentedNode targetNode = targetBean._getModel();
             
             allBeans.add(targetBean);
             
-            if (parent == null) return;
-            
-            BaseHK2JAXBBean parentBean = (BaseHK2JAXBBean) parent;
-            UnparentedNode parentNode = jaUtilities.getNode(parent.getClass());
-            ParentedNode childNode = parentNode.getChild(targetNode.getOriginalInterface());
-            
-            if (keyProperty == null) {
-                // One of two possibilities:  A multi-child with no key or a single child
-                if (childNode.isMultiChildList() || childNode.isMultiChildArray()) {
-                    // Give it a unique identifier
-                    targetBean._setKeyValue(getUniqueId());
-                }
+            if (parentBean == null) {
+                targetBean._setSelfXmlTag(targetNode.getRootName());
             }
-            else {
-                parentBean._addChild(childNode.getChildName(), keyProperty, targetBean);
-            }
+            setSelfXmlTagInAllChildren(targetBean);
         }
         
         @Override
         public void beforeUnmarshal(Object target, Object parent) {
             if (!(target instanceof BaseHK2JAXBBean)) return;
             
-            BaseHK2JAXBBean baseBean = (BaseHK2JAXBBean) target;
-            BaseHK2JAXBBean parentBean = (BaseHK2JAXBBean) parent;
+            BaseHK2JAXBBean targetBean = (BaseHK2JAXBBean) target;
+            UnparentedNode targetNode = jaUtilities.getNode(target.getClass());
             
-            UnparentedNode baseNode = jaUtilities.getNode(target.getClass());
-            baseBean._setModel(baseNode, classReflectionHelper);
-            
-            if (parentBean == null) {
-                baseBean._setSelfXmlTag(baseNode.getRootName());
-            }
-            else {
-                baseBean._setParentXmlPath(parentBean._getXmlPath());
-                
-                UnparentedNode parentNode = jaUtilities.getNode(parent.getClass());
-                ParentedNode childNode = parentNode.getChild(baseNode.getOriginalInterface());
-                
-                baseBean._setSelfXmlTag(childNode.getChildName());
-            }
+            targetBean._setModel(targetNode, classReflectionHelper);
+            targetBean._setParent(parent);
         }
         
         private LinkedList<BaseHK2JAXBBean> getAllBeans() {
