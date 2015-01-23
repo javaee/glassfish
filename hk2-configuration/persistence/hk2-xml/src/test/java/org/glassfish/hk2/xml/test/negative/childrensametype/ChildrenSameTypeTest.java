@@ -42,8 +42,8 @@ package org.glassfish.hk2.xml.test.negative.childrensametype;
 import java.net.URL;
 
 import org.junit.Assert;
-
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
 import org.junit.Test;
@@ -62,14 +62,25 @@ public class ChildrenSameTypeTest {
      * 
      * @throws Exception
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testNegativeTwoChildrenWithSameType() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
         
         URL url = getClass().getClassLoader().getResource("foobar.xml");
         
-        FooBarBean fooBarBean = (FooBarBean) xmlService.unmarshall(url.toURI(), FooBarBean.class);
+        XmlRootHandle<FooBarBean> handle = xmlService.unmarshall(url.toURI(), FooBarBean.class);
+        
+        FooBarBean fooBar = handle.getRoot();
+        Assert.assertNotNull(fooBar);
+        
+        Assert.assertEquals(2, fooBar.getFoo().size());
+        Assert.assertEquals("foo1", fooBar.getFoo().get(0).getData());
+        Assert.assertEquals("foo2", fooBar.getFoo().get(1).getData());
+        
+        Assert.assertEquals(2, fooBar.getBar().size());
+        Assert.assertEquals("bar1", fooBar.getBar().get(0).getData());
+        Assert.assertEquals("bar2", fooBar.getBar().get(1).getData());
     }
 
 }

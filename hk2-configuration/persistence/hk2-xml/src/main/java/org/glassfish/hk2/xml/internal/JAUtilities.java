@@ -513,19 +513,10 @@ public class JAUtilities {
             
             if (getterOrSetter) {
                 if (childType != null) {
-                    if (childTypes.containsKey(childType.getOriginalInterface())) {
-                        String variableName = childTypes.get(childType.getOriginalInterface());
-                        if (!variableName.equals(mi.representedProperty)) {
-                            throw new RuntimeException(
-                                "Multiple children of " + convertMe.getName() +
-                                " cannot have the same type.  Consider extending one or more of these to disambiguate the child: " +
-                                childType.getOriginalInterface().getName());
-                        }
-                    }
-                    else {
+                    if (!childTypes.containsKey(childType.getOriginalInterface())) {
                         childTypes.put(childType.getOriginalInterface(), mi.representedProperty);
-                    
-                        retVal.addChild(mi.representedProperty, mi.isList, mi.isArray, childType);
+                        
+                        retVal.addChild(mi.representedProperty, mi.isList, mi.isArray, childType);   
                     }
                 }
                 else {
