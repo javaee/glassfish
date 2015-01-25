@@ -70,5 +70,31 @@ public class CustomizerOne {
     public long[] customizer3(String[][] anArray) {
         return new long[0];
     }
+    
+    public boolean customizer4() {
+        return CustomizerTest.C4;
+    }
+    public int customizer5(){
+        return CustomizerTest.C5;
+    }
+    public long customizer6(){
+        return CustomizerTest.C6;
+    }
+    public float customizer7(){
+        return CustomizerTest.C7;
+    }
+    public double customizer8(){
+        return CustomizerTest.C8;
+    }
+    
+    public byte customizer9(){
+        return CustomizerTest.C9;
+    }
+    public short customizer10(){
+        return CustomizerTest.C10;
+    }
+    public char customizer11(){
+        return CustomizerTest.C11;
+    }
 
 }

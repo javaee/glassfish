@@ -69,5 +69,15 @@ public interface MuseumBean {
     public void customizer2();
     
     public long[] customizer3(String[][] anArray);
+    
+    public boolean customizer4();
+    public int customizer5();
+    public long customizer6();
+    public float customizer7();
+    public double customizer8();
+    
+    public byte customizer9();
+    public short customizer10();
+    public char customizer11();
 
 }

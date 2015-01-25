@@ -424,6 +424,38 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         }
     }
     
+    public int _invokeCustomizedMethodI(String methodName, Class<?>[] params, Object[] values) {
+        return ((Integer) _invokeCustomizedMethod(methodName, params, values)).intValue();
+    }
+    
+    public long _invokeCustomizedMethodJ(String methodName, Class<?>[] params, Object[] values) {
+        return ((Long) _invokeCustomizedMethod(methodName, params, values)).longValue();
+    }
+    
+    public boolean _invokeCustomizedMethodZ(String methodName, Class<?>[] params, Object[] values) {
+        return ((Boolean) _invokeCustomizedMethod(methodName, params, values)).booleanValue();
+    }
+    
+    public byte _invokeCustomizedMethodB(String methodName, Class<?>[] params, Object[] values) {
+        return ((Byte) _invokeCustomizedMethod(methodName, params, values)).byteValue();
+    }
+    
+    public char _invokeCustomizedMethodC(String methodName, Class<?>[] params, Object[] values) {
+        return ((Character) _invokeCustomizedMethod(methodName, params, values)).charValue();
+    }
+    
+    public short _invokeCustomizedMethodS(String methodName, Class<?>[] params, Object[] values) {
+        return ((Short) _invokeCustomizedMethod(methodName, params, values)).shortValue();
+    }
+    
+    public float _invokeCustomizedMethodF(String methodName, Class<?>[] params, Object[] values) {
+        return ((Float) _invokeCustomizedMethod(methodName, params, values)).floatValue();
+    }
+    
+    public double _invokeCustomizedMethodD(String methodName, Class<?>[] params, Object[] values) {
+        return ((Double) _invokeCustomizedMethod(methodName, params, values)).doubleValue();
+    }
+    
     public static BaseHK2JAXBBean _addRoot(UnparentedNode rootNode,
             Object rawRoot,
             DynamicChangeInfo changeInfo,

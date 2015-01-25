@@ -57,6 +57,15 @@ public class CustomizerTest {
     private final static String PREFIX = "Go ";
     private final static String POSTFIX = " Eagles";
     
+    public final static boolean C4 = false;
+    public final static int C5 = 5;
+    public final static long C6 = 6L;
+    public final static float C7 = (float) 7.0;
+    public final static double C8 = 8.0;
+    public final static byte C9 = 9;
+    public final static short C10 = 10;
+    public final static char C11 = 'E';
+    
     /**
      * Tests that a basic customizer works properly
      */
@@ -83,6 +92,15 @@ public class CustomizerTest {
         long[] c3 = museum.customizer3(null);
         Assert.assertNotNull(c3);
         Assert.assertEquals(0, c3.length);
+        
+        Assert.assertEquals(C4, museum.customizer4());
+        Assert.assertEquals(C5, museum.customizer5());
+        Assert.assertEquals(C6, museum.customizer6());
+        Assert.assertEquals(0, Float.compare(C7, museum.customizer7()));
+        Assert.assertEquals(0, Double.compare(C8, museum.customizer8()));
+        Assert.assertEquals(C9, museum.customizer9());
+        Assert.assertEquals(C10, museum.customizer10());
+        Assert.assertEquals(C11, museum.customizer11());
     }
 
 }

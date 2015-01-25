@@ -512,10 +512,40 @@ public class JAUtilities {
                 sb.append(classSets.toString());
                 sb.append(valSets.toString());
                 
-                if (!isVoid) {
-                    sb.append("return (" + Utilities.getCompilableClass(originalRetType) + ") ");
+                String cast = "";
+                String superMethodName = "_invokeCustomizedMethod";
+                if (int.class.equals(originalRetType)) {
+                    superMethodName += "I"; 
                 }
-                sb.append("super._invokeCustomizedMethod(\"" + name + "\", mParams, mVars); }");
+                else if (long.class.equals(originalRetType)) {
+                    superMethodName += "J";
+                }
+                else if (boolean.class.equals(originalRetType)) {
+                    superMethodName += "Z";
+                }
+                else if (byte.class.equals(originalRetType)) {
+                    superMethodName += "B";
+                }
+                else if (char.class.equals(originalRetType)) {
+                    superMethodName += "C";
+                }
+                else if (short.class.equals(originalRetType)) {
+                    superMethodName += "S";
+                }
+                else if (float.class.equals(originalRetType)) {
+                    superMethodName += "F";
+                }
+                else if (double.class.equals(originalRetType)) {
+                    superMethodName += "D";
+                }
+                else if (!isVoid) {
+                    cast = "(" + Utilities.getCompilableClass(originalRetType) + ") ";
+                }
+                
+                if (!isVoid) {
+                    sb.append("return " + cast);
+                }
+                sb.append(" super." + superMethodName + "(\"" + name + "\", mParams, mVars); }");
             }
             
             if (getterOrSetter) {
