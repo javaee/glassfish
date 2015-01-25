@@ -70,8 +70,11 @@ import javassist.bytecode.annotation.ClassMemberValue;
 import javassist.bytecode.annotation.StringMemberValue;
 
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.Logger;
+import org.glassfish.hk2.utilities.reflection.MethodWrapper;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
+import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
 import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 import org.glassfish.hk2.xml.jaxb.internal.XmlElementImpl;
@@ -124,6 +127,7 @@ public class JAUtilities {
     }
     
     public synchronized UnparentedNode convertRootAndLeaves(Class<?> root) {
+        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
         LinkedHashSet<Class<?>> needsToBeConverted = new LinkedHashSet<Class<?>>();
         
         getAllToConvert(root, needsToBeConverted, new HashSet<Class<?>>());
@@ -133,7 +137,7 @@ public class JAUtilities {
         for (Class<?> convertMe : needsToBeConverted) {
             UnparentedNode converted;
             try {
-                converted = convert(convertMe);
+                converted = convert(convertMe, helper);
             }
             catch (RuntimeException re) {
                 throw re;
@@ -160,6 +164,7 @@ public class JAUtilities {
             }
         }
         
+        helper.dispose();
         return interface2NodeCache.get(root);
     }
     
@@ -198,7 +203,7 @@ public class JAUtilities {
         return xmlNameMap;
     }
     
-    private UnparentedNode convert(Class<?> convertMe) throws Throwable {
+    private UnparentedNode convert(Class<?> convertMe, ClassReflectionHelper helper) throws Throwable {
         Logger.getLogger().debug("XmlService converting " + convertMe.getName());
         UnparentedNode retVal = new UnparentedNode(convertMe);
         
@@ -222,7 +227,8 @@ public class JAUtilities {
             
             HashMap<Class<?>, String> childTypes = new HashMap<Class<?>, String>();
             MethodInformation foundKey = null;
-            for (Method originalMethod : convertMe.getMethods()) {
+            for (MethodWrapper wrapper : helper.getAllMethods(convertMe)) {
+                Method originalMethod = wrapper.getMethod();
                 MethodInformation mi = getMethodInformation(originalMethod, xmlNameMap);
                 
                 if (mi.key) {
@@ -336,7 +342,8 @@ public class JAUtilities {
         
         HashSet<String> setters = new HashSet<String>();
         HashMap<String, MethodInformation> getters = new HashMap<String, MethodInformation>();
-        for (Method originalMethod : convertMe.getMethods()) {
+        for (MethodWrapper wrapper : helper.getAllMethods(convertMe)) {
+            Method originalMethod = wrapper.getMethod();
             MethodInformation mi = getMethodInformation(originalMethod, xmlNameMap);
             
             if (mi.key) {
