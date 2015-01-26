@@ -54,6 +54,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -305,9 +306,14 @@ public class JAUtilities {
         
         AnnotationsAttribute ctAnnotations = null;
         for (java.lang.annotation.Annotation convertMeAnnotation : convertMe.getAnnotations()) {
-            if (Contract.class.equals(convertMeAnnotation.annotationType())) {
+            if (Contract.class.equals(convertMeAnnotation.annotationType()) ||
+                    XmlTransient.class.equals(convertMeAnnotation.annotationType())) {
                 // We do NOT want the generated class to be in the set of contracts, so
-                // skip this one if it is there
+                // skip this one if it is there.
+                // We also DO want our own class to be processed by JAXB even
+                // if the interface is not.  This is needed for the Eclipselink
+                // Moxy version of JAXB, which does some processing of interfaces
+                // we do not want them to do
                 continue;
             }
             
