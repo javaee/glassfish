@@ -2438,9 +2438,48 @@ public class ServiceLocatorImpl implements ServiceLocator {
         return perLocatorUtilities;
     }
 
+    /* package */ int getNumberOfDescriptors() {
+        rLock.lock();
+        try {
+            return allDescriptors.size();
+        }
+        finally {
+            rLock.unlock();
+        }
+    }
+
+    /* package */ int getNumberOfChildren() {
+        return children.size();
+    }
+
+    /* package */ int getServiceCacheSize() {
+        return igdCache.size();
+    }
+
+    /* package */ int getServiceCacheMaximumSize() {
+        return igdCache.getMaximumCacheSize();
+    }
+
+    /* package */ void clearServiceCache() {
+        igdCache.clear();
+        
+    }
+
+    /* package */ int getReflectionCacheSize() {
+        return classReflectionHelper.size();
+    }
+
+    /* package */ void clearReflectionCache() {
+        wLock.lock();
+        try {
+            classReflectionHelper.dispose();
+        }
+        finally {
+            wLock.unlock();
+        }
+    }
+
     public String toString() {
         return "ServiceLocatorImpl(" + locatorName + "," + id + "," + System.identityHashCode(this) + ")";
     }
-
-
 }

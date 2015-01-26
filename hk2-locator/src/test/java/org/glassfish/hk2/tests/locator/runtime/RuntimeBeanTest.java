@@ -58,7 +58,7 @@ public class RuntimeBeanTest {
      * Tests that the number of descriptors
      * is correct
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testNumberOfDescriptors() {
         ServiceLocator locator = LocatorHelper.create();
         ServiceLocatorRuntimeBean bean = locator.getService(ServiceLocatorRuntimeBean.class);
@@ -81,7 +81,7 @@ public class RuntimeBeanTest {
     /**
      * Tests the number of children statistic
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testNumberOfChildren() {
         ServiceLocator locator = LocatorHelper.create();
         ServiceLocatorRuntimeBean bean = locator.getService(ServiceLocatorRuntimeBean.class);
@@ -119,7 +119,7 @@ public class RuntimeBeanTest {
     /**
      * Tests that the service cache can be zeroed
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testServiceCacheClear() {
         ServiceLocator locator = LocatorHelper.create();
         ServiceLocatorRuntimeBean bean = locator.getService(ServiceLocatorRuntimeBean.class);
@@ -156,7 +156,7 @@ public class RuntimeBeanTest {
     /**
      * Tests that the service cache can be zeroed
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testReflectionCacheClear() {
         ServiceLocator locator = LocatorHelper.create();
         ServiceLocatorRuntimeBean bean = locator.getService(ServiceLocatorRuntimeBean.class);

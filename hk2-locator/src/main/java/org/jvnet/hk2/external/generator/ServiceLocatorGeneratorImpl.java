@@ -49,6 +49,7 @@ import org.jvnet.hk2.internal.DefaultClassAnalyzer;
 import org.jvnet.hk2.internal.DynamicConfigurationImpl;
 import org.jvnet.hk2.internal.DynamicConfigurationServiceImpl;
 import org.jvnet.hk2.internal.ServiceLocatorImpl;
+import org.jvnet.hk2.internal.ServiceLocatorRuntimeImpl;
 import org.jvnet.hk2.internal.Utilities;
 
 /**
@@ -81,6 +82,8 @@ public class ServiceLocatorGeneratorImpl implements ServiceLocatorGenerator {
         
         dci.bind(BuilderHelper.createConstantDescriptor(
                 new DefaultClassAnalyzer(sli)));
+        
+        dci.bind(BuilderHelper.createDescriptorFromClass(ServiceLocatorRuntimeImpl.class));
         
         dci.commit();
         
