@@ -101,6 +101,15 @@ public class CustomizerTest {
         Assert.assertEquals(C9, museum.customizer9());
         Assert.assertEquals(C10, museum.customizer10());
         Assert.assertEquals(C11, museum.customizer11());
+        
+        int varSize = museum.customizer12(C4, C5, C6, C7, C8, C9, C10, C11);
+        Assert.assertEquals(0, varSize);
+        
+        int i1[] = new int[] { 1, 2, 3 };
+        int i2[] = new int[] { 4, 5, 6, 7 };
+        varSize = museum.customizer12(C4, C5, C6, C7, C8, C9, C10, C11, i1, i2);
+        
+        Assert.assertEquals(2, varSize);
     }
 
 }

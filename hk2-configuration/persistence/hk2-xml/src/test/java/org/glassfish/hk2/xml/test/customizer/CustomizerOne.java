@@ -96,5 +96,9 @@ public class CustomizerOne {
     public char customizer11(){
         return CustomizerTest.C11;
     }
+    
+    public int customizer12(boolean z, int i, long j, float f, double d, byte b, short s, char c, int[]... var) {
+        return var.length;
+    }
 
 }

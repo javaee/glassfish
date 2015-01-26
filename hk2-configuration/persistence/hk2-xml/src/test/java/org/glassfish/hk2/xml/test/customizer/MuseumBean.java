@@ -79,5 +79,7 @@ public interface MuseumBean {
     public byte customizer9();
     public short customizer10();
     public char customizer11();
+    
+    public int customizer12(boolean z, int i, long j, float f, double d, byte b, short s, char c, int[]... var);
 
 }

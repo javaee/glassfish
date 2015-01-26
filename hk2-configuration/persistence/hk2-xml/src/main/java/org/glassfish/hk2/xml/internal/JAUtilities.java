@@ -59,6 +59,7 @@ import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
+import javassist.Modifier;
 import javassist.NotFoundException;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
@@ -501,8 +502,35 @@ public class JAUtilities {
                         sb.append(", " + Utilities.getCompilableClass(paramType) + " arg" + lcv);
                     }
                     
-                    classSets.append("mParams[" + lcv + "]=" + Utilities.getCompilableClass(paramType) + ".class;\n");
-                    valSets.append("mVars[" + lcv + "]=arg" + lcv + ";\n");
+                    classSets.append("mParams[" + lcv + "] = " + Utilities.getCompilableClass(paramType) + ".class;\n");
+                    valSets.append("mVars[" + lcv + "] = ");
+                    if (int.class.equals(paramType)) {
+                        valSets.append("new java.lang.Integer(arg" + lcv + ");\n");
+                    }
+                    else if (long.class.equals(paramType)) {
+                        valSets.append("new java.lang.Long(arg" + lcv + ");\n");
+                    }
+                    else if (boolean.class.equals(paramType)) {
+                        valSets.append("new java.lang.Boolean(arg" + lcv + ");\n");
+                    }
+                    else if (byte.class.equals(paramType)) {
+                        valSets.append("new java.lang.Byte(arg" + lcv + ");\n");
+                    }
+                    else if (char.class.equals(paramType)) {
+                        valSets.append("new java.lang.Character(arg" + lcv + ");\n");
+                    }
+                    else if (short.class.equals(paramType)) {
+                        valSets.append("new java.lang.Short(arg" + lcv + ");\n");
+                    }
+                    else if (float.class.equals(paramType)) {
+                        valSets.append("new java.lang.Float(arg" + lcv + ");\n");
+                    }
+                    else if (double.class.equals(paramType)) {
+                        valSets.append("new java.lang.Double(arg" + lcv + ");\n");
+                    }
+                    else {
+                        valSets.append("arg" + lcv + ";\n");
+                    }
                     
                     lcv++;
                 }
@@ -545,7 +573,7 @@ public class JAUtilities {
                 if (!isVoid) {
                     sb.append("return " + cast);
                 }
-                sb.append(" super." + superMethodName + "(\"" + name + "\", mParams, mVars); }");
+                sb.append("super." + superMethodName + "(\"" + name + "\", mParams, mVars);}");
             }
             
             if (getterOrSetter) {
@@ -562,7 +590,10 @@ public class JAUtilities {
             }
             
             CtMethod addMeCtMethod = CtNewMethod.make(sb.toString(), targetCtClass);
-            MethodInfo methodInfo = addMeCtMethod.getMethodInfo();    
+            if (originalMethod.isVarArgs()) {
+                addMeCtMethod.setModifiers(addMeCtMethod.getModifiers() | Modifier.VARARGS);
+            }
+            MethodInfo methodInfo = addMeCtMethod.getMethodInfo();
             ConstPool methodConstPool = methodInfo.getConstPool();
            
             ctAnnotations = null;
