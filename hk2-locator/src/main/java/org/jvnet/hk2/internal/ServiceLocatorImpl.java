@@ -1075,7 +1075,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
     }
 
-    final LRUHybridCache<IgdCacheKey, IgdValue> igdCache =
+    private final LRUHybridCache<IgdCacheKey, IgdValue> igdCache =
             new LRUHybridCache<IgdCacheKey, IgdValue>(CACHE_SIZE, new Computable<IgdCacheKey, HybridCacheEntry<IgdValue>>() {
         @Override
         public HybridCacheEntry<IgdValue> compute(final IgdCacheKey key) {
