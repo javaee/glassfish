@@ -102,8 +102,15 @@ public interface ClassReflectionHelper {
     public void clean(Class<?> clazz);
     
     /**
-     * Releases the entire cache
+     * Releases the entire cache, though the ClassReflectionHelper is
+     * still usable after calling dispose
      */
     public void dispose();
+    
+    /**
+     * Returns an approximation of the current size of the cache
+     * @return An approximation of the current size of the cache
+     */
+    public int size();
 
 }

@@ -40,5 +40,6 @@
 
 -exportcontents: \
                org.jvnet.hk2.external.generator; \
+               org.jvnet.hk2.external.runtime; \
                version=${project.osgi.version}
 

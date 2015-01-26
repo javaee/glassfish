@@ -324,6 +324,18 @@ public class LRUHybridCache<K,V> implements Computable<K, HybridCacheEntry<V>> {
     public void clear() {
         cache.clear();
     }
+    
+    /**
+     * Return the size of the cache
+     * @return The current size of the cache
+     */
+    public int size() {
+        return cache.size();
+    }
+    
+    public int getMaximumCacheSize() {
+        return maxCacheSize;
+    }
 
     /**
      * Returns true if the key has already been cached.

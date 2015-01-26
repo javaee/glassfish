@@ -440,15 +440,19 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
         fieldCache.clear();
     }
     
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.utilities.reflection.ClassReflectionHelper#size()
+     */
+    @Override
+    public int size() {
+        return postConstructCache.size() +
+                preDestroyCache.size() +
+                methodCache.size() +
+                fieldCache.size();
+    }
+    
     @Override
     public String toString() {
         return "ClassReflectionHelperImpl(" + System.identityHashCode(this) + ")";
     }
-
-    
-
-    
-
-    
-
 }

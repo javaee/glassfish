@@ -144,4 +144,9 @@ public class IndexedListData {
             unsortedList.clear();
         }
     }
+    
+    public int size() {
+        if (sortedList != null) return sortedList.size();
+        return unsortedList.size();
+    }
 }
