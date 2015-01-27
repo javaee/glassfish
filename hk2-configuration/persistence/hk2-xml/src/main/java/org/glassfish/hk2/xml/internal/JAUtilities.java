@@ -480,17 +480,24 @@ public class JAUtilities {
             }
             else if (MethodType.REMOVE.equals(mi.methodType)) {
                 Class<?>[] paramTypes = originalMethod.getParameterTypes();
+                String cast = "";
+                String function = "super._doRemoveZ(\"";
+                if (!boolean.class.equals(originalRetType)) {
+                    cast = "(" + Utilities.getCompilableClass(originalRetType) + ") ";
+                    function = "super._doRemove(\"";
+                }
+                
                 if (paramTypes.length == 0) {
-                    sb.append(") { return (" + Utilities.getCompilableClass(originalRetType)  +
-                            ") super._doRemove(\"" + mi.representedProperty + "\", null, -1); }");
+                    sb.append(") { return " + cast + function +
+                            mi.representedProperty + "\", null, -1); }");
                 }
                 else if (String.class.equals(paramTypes[0])) {
-                    sb.append("java.lang.String arg0) { return (" + Utilities.getCompilableClass(originalRetType)  +
-                            ") super._doRemove(\"" + mi.representedProperty + "\", arg0, -1); }");
+                    sb.append("java.lang.String arg0) { return " + cast  + function +
+                            mi.representedProperty + "\", arg0, -1); }");
                 }
                 else {
-                    sb.append("int arg0) { return (" + Utilities.getCompilableClass(originalRetType)  +
-                            ") super._doRemove(\"" + mi.representedProperty + "\", null, arg0); }");
+                    sb.append("int arg0) { return " + cast + function +
+                            mi.representedProperty + "\", null, arg0); }");
                 }
             }
             else if (MethodType.CUSTOM.equals(mi.methodType)) {

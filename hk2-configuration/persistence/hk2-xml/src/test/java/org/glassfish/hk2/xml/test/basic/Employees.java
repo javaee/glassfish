@@ -79,5 +79,5 @@ public interface Employees {
     public void addOtherData(int position);
     public void addOtherData(OtherData otherData);
     public void addOtherData(OtherData otherData, int position);
-    public OtherData removeOtherData(int position);
+    public boolean removeOtherData(int position);
 }

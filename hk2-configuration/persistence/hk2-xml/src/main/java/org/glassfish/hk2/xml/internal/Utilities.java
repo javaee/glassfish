@@ -179,6 +179,9 @@ public class Utilities {
         if (name.length() <= JAUtilities.REMOVE.length()) return null;
         if (method.getReturnType() == null || void.class.equals(method.getReturnType())) return null;
         
+        Class<?> returnType = method.getReturnType();
+        if (!boolean.class.equals(returnType) && !returnType.isInterface()) return null;
+        
         String variableName = name.substring(JAUtilities.REMOVE.length());
         String retVal = Introspector.decapitalize(variableName);
         
