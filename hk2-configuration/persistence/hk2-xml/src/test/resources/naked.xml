@@ -1,0 +1,21 @@
+<parent>
+  <one>
+    <data>d1</data>
+  </one>
+  <one>
+    <data>d2</data>
+  </one>
+  <two name="Alice"/>
+  <two name="Bob"/>
+  <two name="Carol"/>
+  <three>
+    <data>d3</data>
+  </three>
+  <four name="Dave" />
+  <five name="Englebert">
+    <data>d4</data>
+  </five>
+  <six name="frank">
+    <data>d5</data>
+  </six>
+</parent>

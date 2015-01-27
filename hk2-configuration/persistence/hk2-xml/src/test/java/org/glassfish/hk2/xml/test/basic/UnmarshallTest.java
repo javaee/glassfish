@@ -77,6 +77,9 @@ public class UnmarshallTest {
     public final static String ALICE = "Alice";
     public final static String BOB = "Bob";
     public final static String CAROL = "Carol";
+    public final static String DAVE = "Dave";
+    public final static String ENGLEBERT = "Englebert";
+    public final static String FRANK = "Frank";
     private final static String ACME_SYMBOL = "acme";
     private final static String NYSE = "NYSE";
     private final static String COKE_TENANT = "coke";
