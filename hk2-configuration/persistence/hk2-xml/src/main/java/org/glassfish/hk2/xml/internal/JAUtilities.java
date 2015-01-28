@@ -72,6 +72,7 @@ import javassist.bytecode.annotation.ClassMemberValue;
 import javassist.bytecode.annotation.StringMemberValue;
 
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.MethodWrapper;
@@ -88,6 +89,9 @@ import org.jvnet.hk2.annotations.Contract;
  *
  */
 public class JAUtilities {
+    private final static boolean DEBUG_METHODS = Boolean.parseBoolean(GeneralUtilities.getSystemProperty(
+            "org.jvnet.hk2.properties.xmlservice.jaxb.methods", "false"));
+    
     /* package */ final static String GET = "get";
     /* package */ final static String SET = "set";
     /* package */ final static String IS = "is";
@@ -613,6 +617,11 @@ public class JAUtilities {
                 else {
                     retVal.addNonChildProperty(mi.representedProperty);
                 }
+            }
+            
+            if (DEBUG_METHODS) {
+                // Hidden behind static because of potential expensive toString costs
+                Logger.getLogger().debug("Adding method for " + convertMe.getSimpleName() + " with implementation " + sb);
             }
             
             CtMethod addMeCtMethod = CtNewMethod.make(sb.toString(), targetCtClass);
