@@ -213,10 +213,14 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
         retVal = new HashSet<MethodWrapper>();
         
         if (clazz.isInterface()) {
-            for (Method m : clazz.getMethods()) {
+            for (Method m : clazz.getDeclaredMethods()) {
                 MethodWrapper wrapper = new MethodWrapperImpl(m);
                 
                 retVal.add(wrapper);
+            }
+            
+            for (Class<?> extendee : clazz.getInterfaces()) {
+                retVal.addAll(getAllMethodWrappers(extendee));
             }
         }
         else {

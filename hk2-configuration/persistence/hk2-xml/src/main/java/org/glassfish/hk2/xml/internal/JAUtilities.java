@@ -249,6 +249,10 @@ public class JAUtilities {
                 Method originalMethod = wrapper.getMethod();
                 MethodInformation mi = getMethodInformation(originalMethod, xmlNameMap);
                 
+                if (DEBUG_METHODS) {
+                    Logger.getLogger().debug("Analyzing method " + mi + " of " + convertMe.getSimpleName());
+                }
+                
                 if (mi.key) {
                     if (foundKey != null) {
                         throw new RuntimeException("Class " + convertMe.getName() + " has multiple key properties (" + originalMethod.getName() +
@@ -364,11 +368,21 @@ public class JAUtilities {
         HashMap<Class<?>, String> childTypes = new HashMap<Class<?>, String>();
         MethodInformation foundKey = null;
         
+        
+        Set<MethodWrapper> allMethods = helper.getAllMethods(convertMe);
+        if (DEBUG_METHODS) {
+            Logger.getLogger().debug("Analyzing " + allMethods.size() + " methods of " + convertMe.getName());
+        }
+        
         HashSet<String> setters = new HashSet<String>();
         HashMap<String, MethodInformation> getters = new HashMap<String, MethodInformation>();
-        for (MethodWrapper wrapper : helper.getAllMethods(convertMe)) {
+        for (MethodWrapper wrapper : allMethods) {
             Method originalMethod = wrapper.getMethod();
             MethodInformation mi = getMethodInformation(originalMethod, xmlNameMap);
+            
+            if (DEBUG_METHODS) {
+                Logger.getLogger().debug("Analyzing method " + mi + " of " + convertMe.getSimpleName());
+            }
             
             if (mi.key) {
                 if (foundKey != null) {
@@ -983,14 +997,14 @@ public class JAUtilities {
         
         @Override
         public String toString() {
-            return "MethodInformation(" + originalMethod.getName() + "," +
-              methodType + "," +
-              getterSetterType + "," +
-              representedProperty + "," +
-              baseChildType + "," +
-              key + "," +
-              isList + "," +
-              isArray + "," +
+            return "MethodInformation(name=" + originalMethod.getName() + "," +
+              "type=" + methodType + "," +
+              "getterType=" + getterSetterType + "," +
+              "representedProperty=" + representedProperty + "," +
+              "baseChildType=" + baseChildType + "," +
+              "key=" + key + "," +
+              "isList=" + isList + "," +
+              "isArray=" + isArray + "," +
               System.identityHashCode(this) + ")";
               
         }

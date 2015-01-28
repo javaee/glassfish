@@ -39,10 +39,12 @@
  */
 package org.glassfish.hk2.utilities.reflection;
 
-import java.lang.reflect.Method;
 import java.util.Set;
 
 import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
+import org.glassfish.hk2.utilities.reflection.types2.BaseInterface;
+import org.glassfish.hk2.utilities.reflection.types2.ServiceInterface;
+import org.glassfish.hk2.utilities.reflection.types2.ServiceInterface2;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -81,6 +83,34 @@ public class ClassReflectionHelperTest {
         Assert.assertTrue(foundTwo);
         Assert.assertTrue(foundThree);
         
+    }
+    
+    /**
+     * Tests that an interface extending another works
+     */
+    @Test
+    public void testInterfaceExtendsAnotherInterface() {
+        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
+        
+        Set<MethodWrapper> wrappers = helper.getAllMethods(ServiceInterface2.class);
+        Assert.assertEquals(3, wrappers.size());
+        
+        boolean foundBase = false;
+        boolean foundService = false;
+        boolean foundService2 = false;
+        for (MethodWrapper wrapper : wrappers) {
+            String name = wrapper.getMethod().getName();
+            if ("fromServiceInterface".equals(name)) foundService = true;
+            else if ("fromBaseInterface".equals(name)) foundBase = true;
+            else if ("fromServiceInterface2".equals(name)) foundService2 = true;
+            else {
+                Assert.fail("Uknown method name=" + name);
+            }
+        }
+        
+        Assert.assertTrue(foundBase);
+        Assert.assertTrue(foundService);
+        Assert.assertTrue(foundService2);
     }
 
 }
