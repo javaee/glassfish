@@ -95,6 +95,7 @@ public class JAUtilities {
     /* package */ final static String ADD = "add";
     /* package */ final static String REMOVE = "remove";
     /* package */ final static String JAXB_DEFAULT_STRING = "##default";
+    /* package */ final static String JAXB_DEFAULT_DEFAULT = "\u0000";
     
     private final static String CLASS_ADD_ON_NAME = "_$$_Hk2_Jaxb";
     private final static HashSet<String> DO_NOT_HANDLE_METHODS = new HashSet<String>();
@@ -170,8 +171,10 @@ public class JAUtilities {
         return interface2NodeCache.get(root);
     }
     
-    private static Map<String, String> getXmlNameMap(Class<?> convertMe) {
+    private static NameInformation getXmlNameMap(Class<?> convertMe) {
         Map<String, String> xmlNameMap = new HashMap<String, String>();
+        HashSet<String> unmappedNames = new HashSet<String>();
+        
         for (Method originalMethod : convertMe.getMethods()) {
             String setterVariable = Utilities.isSetter(originalMethod);
             if (setterVariable == null) {
@@ -198,11 +201,20 @@ public class JAUtilities {
                         xmlNameMap.put(setterVariable, xmlAttribute.name());
                     }
                 }
+                else {
+                    unmappedNames.add(setterVariable);
+                }
             }
-            
         }
         
-        return xmlNameMap;
+        Set<String> noXmlElementNames = new HashSet<String>();
+        for (String unmappedName : unmappedNames) {
+            if (!xmlNameMap.containsKey(unmappedName)) {
+                noXmlElementNames.add(unmappedName);
+            }
+        }
+        
+        return new NameInformation(xmlNameMap, noXmlElementNames);
     }
     
     private UnparentedNode convert(Class<?> convertMe, ClassReflectionHelper helper) throws Throwable {
@@ -225,7 +237,7 @@ public class JAUtilities {
                 retVal.setRootName(rootName);
             }
             
-            Map<String, String> xmlNameMap = getXmlNameMap(convertMe);
+            NameInformation xmlNameMap = getXmlNameMap(convertMe);
             
             HashMap<Class<?>, String> childTypes = new HashMap<Class<?>, String>();
             MethodInformation foundKey = null;
@@ -342,7 +354,8 @@ public class JAUtilities {
         targetCtClass.setSuperclass(superClazz);
         targetCtClass.addInterface(originalCtClass);
         
-        Map<String, String> xmlNameMap = getXmlNameMap(convertMe);
+        NameInformation xmlNameMap = getXmlNameMap(convertMe);
+        HashSet<String> alreadyAddedNaked = new HashSet<String>();
         
         HashMap<Class<?>, String> childTypes = new HashMap<Class<?>, String>();
         MethodInformation foundKey = null;
@@ -643,6 +656,38 @@ public class JAUtilities {
                 createAnnotationCopy(methodConstPool, convertMeAnnotation, ctAnnotations);
             }
             
+            if (getterOrSetter && childType != null &&
+                    xmlNameMap.hasNoXmlElement(mi.representedProperty) &&
+                    !alreadyAddedNaked.contains(mi.representedProperty)) {
+                alreadyAddedNaked.add(mi.representedProperty);
+                if (ctAnnotations == null) {
+                    ctAnnotations = new AnnotationsAttribute(methodConstPool, AnnotationsAttribute.visibleTag);
+                }
+                
+                java.lang.annotation.Annotation convertMeAnnotation;
+                if (!childType.isPlaceholder()) {
+                    convertMeAnnotation = new XmlElementImpl(
+                        JAXB_DEFAULT_STRING,
+                        false,
+                        false,
+                        JAXB_DEFAULT_STRING,
+                        JAXB_DEFAULT_DEFAULT,
+                        childType.getTranslatedClass());
+                }
+                else {
+                    String translatedClassName = childType.getOriginalInterface().getName() + CLASS_ADD_ON_NAME;
+                    convertMeAnnotation = new XmlElementImpl(
+                            JAXB_DEFAULT_STRING,
+                            false,
+                            false,
+                            JAXB_DEFAULT_STRING,
+                            JAXB_DEFAULT_DEFAULT,
+                            translatedClassName);
+                }
+                
+                createAnnotationCopy(methodConstPool, convertMeAnnotation, ctAnnotations);
+            }
+            
             if (ctAnnotations != null) {
                 methodInfo.addAttribute(ctAnnotations);
             }
@@ -777,7 +822,7 @@ public class JAUtilities {
         }
     }
     
-    private static MethodInformation getMethodInformation(Method m, Map<String, String> xmlNameMap) {
+    private static MethodInformation getMethodInformation(Method m, NameInformation xmlNameMap) {
         String setterVariable = Utilities.isSetter(m);
         String getterVariable = null;
         String lookupVariable = null;
@@ -881,7 +926,7 @@ public class JAUtilities {
             methodType = MethodType.CUSTOM;
         }
         
-        String representedProperty = (variable == null) ? null : xmlNameMap.get(variable);
+        String representedProperty = xmlNameMap.getNameMap(variable);
         if (representedProperty == null) representedProperty = variable;
         
         boolean key = false;
@@ -939,6 +984,27 @@ public class JAUtilities {
               isArray + "," +
               System.identityHashCode(this) + ")";
               
+        }
+    }
+    
+    private static class NameInformation {
+        private final Map<String, String> nameMapping;
+        private final Set<String> noXmlElement;
+        
+        private NameInformation(Map<String, String> nameMapping, Set<String> unmappedNames) {
+            this.nameMapping = nameMapping;
+            this.noXmlElement = unmappedNames;
+        }
+        
+        private String getNameMap(String mapMe) {
+            if (mapMe == null) return null;
+            if (!nameMapping.containsKey(mapMe)) return mapMe;
+            return nameMapping.get(mapMe);
+        }
+        
+        private boolean hasNoXmlElement(String variableName) {
+            if (variableName == null) return true;
+            return noXmlElement.contains(variableName);
         }
     }
     

@@ -60,7 +60,7 @@ public class NakedTest {
      * Tests that children with no XmlElement
      * attribute will work properly
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testChildrenWithNoAnnotation() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
