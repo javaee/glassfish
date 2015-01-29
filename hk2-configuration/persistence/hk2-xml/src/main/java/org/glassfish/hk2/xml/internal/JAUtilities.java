@@ -138,6 +138,11 @@ public class JAUtilities {
         LinkedHashSet<Class<?>> needsToBeConverted = new LinkedHashSet<Class<?>>();
         
         getAllToConvert(root, needsToBeConverted, new HashSet<Class<?>>());
+        
+        if (DEBUG_METHODS) {
+            Logger.getLogger().debug("Converting " + needsToBeConverted.size() + " nodes for root " + root.getName());
+        }
+        
         needsToBeConverted.removeAll(interface2NodeCache.keySet());
         
         LinkedList<UnparentedNode> contributions = new LinkedList<UnparentedNode>();

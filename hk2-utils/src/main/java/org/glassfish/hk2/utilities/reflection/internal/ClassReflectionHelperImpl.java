@@ -46,11 +46,13 @@ import java.security.PrivilegedAction;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.glassfish.hk2.utilities.cache.Computable;
+import org.glassfish.hk2.utilities.cache.HybridCacheEntry;
+import org.glassfish.hk2.utilities.cache.LRUHybridCache;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.MethodWrapper;
 import org.glassfish.hk2.utilities.reflection.Pretty;
@@ -60,20 +62,54 @@ import org.glassfish.hk2.utilities.reflection.Pretty;
  *
  */
 public class ClassReflectionHelperImpl implements ClassReflectionHelper {
+    private final int MAX_CACHE_SIZE = 200;
+    
     private final static String CONVENTION_POST_CONSTRUCT = "postConstruct";
     private final static String CONVENTION_PRE_DESTROY = "preDestroy";
     
     private final static Set<MethodWrapper> OBJECT_METHODS = getObjectMethods();
     private final static Set<Field> OBJECT_FIELDS = getObjectFields();
     
-    private final ConcurrentHashMap<Class<?>, MethodPresentValue> postConstructCache =
-            new ConcurrentHashMap<Class<?>, MethodPresentValue>();
-    private final ConcurrentHashMap<Class<?>, MethodPresentValue> preDestroyCache =
-            new ConcurrentHashMap<Class<?>, MethodPresentValue>();
-    private final ConcurrentHashMap<Class<?>, Set<MethodWrapper>> methodCache =
-            new ConcurrentHashMap<Class<?>, Set<MethodWrapper>>();
-    private final ConcurrentHashMap<Class<?>, Set<Field>> fieldCache =
-            new ConcurrentHashMap<Class<?>, Set<Field>>();
+    private final LRUHybridCache<LifecycleKey, Method> postConstructCache =
+            new LRUHybridCache<LifecycleKey, Method>(MAX_CACHE_SIZE, new Computable<LifecycleKey, HybridCacheEntry<Method>>() {
+
+                @Override
+                public HybridCacheEntry<Method> compute(LifecycleKey key) {
+                    return postConstructCache.createCacheEntry(key, getPostConstructMethod(key.clazz, key.matchingClass), false);
+                }
+                
+            });
+    
+    private final LRUHybridCache<LifecycleKey, Method> preDestroyCache =
+            new LRUHybridCache<LifecycleKey, Method>(MAX_CACHE_SIZE, new Computable<LifecycleKey, HybridCacheEntry<Method>>() {
+
+                @Override
+                public HybridCacheEntry<Method> compute(LifecycleKey key) {
+                    return preDestroyCache.createCacheEntry(key, getPreDestroyMethod(key.clazz, key.matchingClass), false);
+                }
+                
+            });
+    
+    private final LRUHybridCache<Class<?>, Set<MethodWrapper>> methodCache =
+            new LRUHybridCache<Class<?>, Set<MethodWrapper>>(MAX_CACHE_SIZE, new Computable<Class<?>, HybridCacheEntry<Set<MethodWrapper>>>() {
+
+                @Override
+                public HybridCacheEntry<Set<MethodWrapper>> compute(Class<?> key) {
+                    return methodCache.createCacheEntry(key, getAllMethodWrappers(key), false);
+                }
+                
+            });
+    
+    
+    private final LRUHybridCache<Class<?>, Set<Field>> fieldCache =
+            new LRUHybridCache<Class<?>, Set<Field>>(MAX_CACHE_SIZE, new Computable<Class<?>, HybridCacheEntry<Set<Field>>>() {
+
+                @Override
+                public HybridCacheEntry<Set<Field>> compute(Class<?> key) {
+                    return fieldCache.createCacheEntry(key, getAllFieldWrappers(key), false);
+                }
+                
+            });
     
     private static Set<MethodWrapper> getObjectMethods() {
         return AccessController.doPrivileged(new PrivilegedAction<Set<MethodWrapper>>() {
@@ -140,24 +176,12 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
      * @param clazz The class to examine
      * @return
      */
-    private Set<MethodWrapper> getDeclaredMethodWrappers(final Class<?> clazz) {
+    private static Set<MethodWrapper> getDeclaredMethodWrappers(final Class<?> clazz) {
         Method declaredMethods[] = secureGetDeclaredMethods(clazz);
         
         Set<MethodWrapper> retVal = new HashSet<MethodWrapper>();
         for (Method method : declaredMethods) {
             retVal.add(new MethodWrapperImpl(method));
-            
-            // Since postConstruct and preDestroy are top down it is fine to fill in the cache here.
-            // In other words if this class has a direct postConstruct/preDestroy then it is the method
-            // that should win.  Hence we can often pre-populate the cache here
-            if ((isPostConstruct(method) || isPreDestroy(method)) && (method.getParameterTypes().length == 0)) {
-                if (isPostConstruct(method) && !postConstructCache.containsKey(clazz)) {
-                    postConstructCache.put(clazz, new MethodPresentValue(method));
-                }
-                if (isPreDestroy(method) && !preDestroyCache.containsKey(clazz)) {
-                    preDestroyCache.put(clazz, new MethodPresentValue(method));
-                }
-            }
         }
         
         return retVal;
@@ -181,36 +205,24 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
         return retVal;
     }
     
-    public Set<Field> getAllFieldWrappers(Class<?> clazz) {
+    public static Set<Field> getAllFieldWrappers(Class<?> clazz) {
         if (clazz == null) return Collections.emptySet();
         if (Object.class.equals(clazz)) return OBJECT_FIELDS;
         if (clazz.isInterface()) return Collections.emptySet();
         
-        Set<Field> retVal = fieldCache.get(clazz);
-        if (retVal != null) {
-            return retVal;
-        }
-        
-        retVal = new HashSet<Field>();
+        Set<Field> retVal = new HashSet<Field>();
         
         retVal.addAll(getDeclaredFieldWrappers(clazz));
         retVal.addAll(getAllFieldWrappers(clazz.getSuperclass()));
         
-        fieldCache.put(clazz, retVal);
-        
         return retVal;
     }
     
-    public Set<MethodWrapper> getAllMethodWrappers(Class<?> clazz) {
+    public static Set<MethodWrapper> getAllMethodWrappers(Class<?> clazz) {
         if (clazz == null) return Collections.emptySet();
         if (Object.class.equals(clazz)) return OBJECT_METHODS;
         
-        Set<MethodWrapper> retVal = methodCache.get(clazz);
-        if (retVal != null) {
-            return retVal;
-        }
-        
-        retVal = new HashSet<MethodWrapper>();
+        Set<MethodWrapper> retVal = new HashSet<MethodWrapper>();
         
         if (clazz.isInterface()) {
             for (Method m : clazz.getDeclaredMethods()) {
@@ -228,128 +240,38 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
             retVal.addAll(getAllMethodWrappers(clazz.getSuperclass()));
         }
         
-        methodCache.put(clazz, retVal);
-        
         return retVal;
     }
     
     private static boolean isPostConstruct(Method m) {
-        if (m.isAnnotationPresent(PostConstruct.class)) return true;
+        if (m.isAnnotationPresent(PostConstruct.class)) {
+            if (m.getParameterTypes().length != 0) {
+                throw new IllegalArgumentException("The method " + Pretty.method(m) +
+                        " annotated with @PostConstruct must not have any arguments");
+            }
+            return true;
+        }
 
         if (m.getParameterTypes().length != 0) return false;
         return CONVENTION_POST_CONSTRUCT.equals(m.getName());
     }
     
     private static boolean isPreDestroy(Method m) {
-        if (m.isAnnotationPresent(PreDestroy.class)) return true;
+        if (m.isAnnotationPresent(PreDestroy.class)) {
+            if (m.getParameterTypes().length != 0) {
+                throw new IllegalArgumentException("The method " + Pretty.method(m) +
+                    " annotated with @PreDestroy must not have any arguments");
+            }
+            
+            return true;
+        }
 
         if (m.getParameterTypes().length != 0) return false;
         return CONVENTION_PRE_DESTROY.equals(m.getName());
     }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.utilities.reflection.ClassReflectionHelper#getAllMethods(java.lang.Class)
-     */
-    @Override
-    public Set<MethodWrapper> getAllMethods(final Class<?> clazz) {
-        return getAllMethodWrappers(clazz);
-    }
     
-    @Override
-    public Set<Field> getAllFields(final Class<?> clazz) {
-        return getAllFieldWrappers(clazz);
-    }
-    
-    private Method getPostConstructMethod(Class<?> clazz) {
+    private Method getPostConstructMethod(Class<?> clazz, Class<?> matchingClass) {
         if (clazz == null || Object.class.equals(clazz)) return null;
-        
-        MethodPresentValue cachedValue = postConstructCache.get(clazz);
-        if (cachedValue != null) {
-            if (!cachedValue.isPresent()) {
-                return null;
-            }
-            
-            Method retVal = cachedValue.getMethod();
-            if (retVal != null) {
-                return retVal;
-            }
-        }
-        
-        Method retVal = null;
-        for (Method m : secureGetDeclaredMethods(clazz)) {
-            if (isPostConstruct(m)) {
-                retVal = m;
-                break;
-            }
-        }
-        
-        if (retVal == null) {
-            retVal = getPostConstructMethod(clazz.getSuperclass());
-        }
-        
-        if (retVal != null && retVal.getParameterTypes().length != 0) {
-            // We do not cache fails
-            throw new IllegalArgumentException("The method " + Pretty.method(retVal) +
-                    " annotated with @PostConstruct must not have any arguments");
-        }
-        
-        postConstructCache.put(clazz, new MethodPresentValue(retVal));
-        
-        return retVal;
-    }
-    
-    private Method getPreDestroyMethod(Class<?> clazz) {
-        if (clazz == null || Object.class.equals(clazz)) return null;
-        
-        MethodPresentValue cachedValue = preDestroyCache.get(clazz);
-         if (cachedValue != null) {
-            if (!cachedValue.isPresent()) {
-                return null;
-            }
-            
-            Method retVal = cachedValue.getMethod();
-            if (retVal != null) {
-                return retVal;
-            }
-        }
-        
-        Method retVal = null;
-        for (Method m : secureGetDeclaredMethods(clazz)) {
-            if (isPreDestroy(m)) {
-                retVal = m;
-                break;
-            }
-        }
-        
-        if (retVal == null) {
-            retVal = getPreDestroyMethod(clazz.getSuperclass());
-        }
-        
-        if (retVal != null && retVal.getParameterTypes().length != 0) {
-            // We do not cache fails
-            throw new IllegalArgumentException("The method " + Pretty.method(retVal) +
-                    " annotated with @PreDestroy must not have any arguments");
-        }
-        
-        preDestroyCache.put(clazz, new MethodPresentValue(retVal));
-        
-        return retVal;
-    }
-    
-    @Override
-    public Method findPostConstruct(final Class<?> clazz, Class<?> matchingClass)
-            throws IllegalArgumentException {
-        MethodPresentValue cachedValue = postConstructCache.get(clazz);
-        if (cachedValue != null) {
-            if (!cachedValue.isPresent()) {
-                return null;
-            }
-            
-            Method retVal = cachedValue.getMethod();
-            if (retVal != null) {
-                return retVal;
-            }
-        }
         
         if (matchingClass.isAssignableFrom(clazz)) {
             // A little performance optimization
@@ -362,26 +284,19 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
                 retVal = null;
             }
             
-            postConstructCache.put(clazz, new MethodPresentValue(retVal));
+            return retVal;
         }
         
-        return getPostConstructMethod(clazz);
-    }
-
-    @Override
-    public Method findPreDestroy(final Class<?> clazz, Class<?> matchingClass)
-            throws IllegalArgumentException {
-        MethodPresentValue cachedValue = preDestroyCache.get(clazz);
-        if (cachedValue != null) {
-            if (!cachedValue.isPresent()) {
-                return null;
-            }
-            
-            Method retVal = cachedValue.getMethod();
-            if (retVal != null) {
-                return retVal;
-            }
+        for (MethodWrapper wrapper : getAllMethods(clazz)) {
+            Method m = wrapper.getMethod();
+            if (isPostConstruct(m)) return m;
         }
+        
+        return null;
+    }
+    
+    private Method getPreDestroyMethod(Class<?> clazz, Class<?> matchingClass) {
+        if (clazz == null || Object.class.equals(clazz)) return null;
         
         if (matchingClass.isAssignableFrom(clazz)) {
             // A little performance optimization
@@ -394,33 +309,47 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
                 retVal = null;
             }
             
-            preDestroyCache.put(clazz, new MethodPresentValue(retVal));
+            return retVal;
         }
         
-        return getPreDestroyMethod(clazz);
+        for (MethodWrapper wrapper : getAllMethods(clazz)) {
+            Method m = wrapper.getMethod();
+            if (isPreDestroy(m)) return m;
+        }
+        
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.utilities.reflection.ClassReflectionHelper#getAllMethods(java.lang.Class)
+     */
+    @Override
+    public Set<MethodWrapper> getAllMethods(final Class<?> clazz) {
+        return methodCache.compute(clazz).getValue();
     }
     
-    private static class MethodPresentValue {
-        private final Method method;
-        
-        private MethodPresentValue(Method method) {
-            this.method = method;
-        }
-        
-        private boolean isPresent() {
-            return method != null;
-        }
-        
-        private Method getMethod() {
-            return method;
-        }
+    @Override
+    public Set<Field> getAllFields(final Class<?> clazz) {
+        return fieldCache.compute(clazz).getValue();
+    }
+    
+    @Override
+    public Method findPostConstruct(final Class<?> clazz, Class<?> matchingClass)
+            throws IllegalArgumentException {
+        return postConstructCache.compute(new LifecycleKey(clazz, matchingClass)).getValue();
+    }
+
+    @Override
+    public Method findPreDestroy(final Class<?> clazz, Class<?> matchingClass)
+            throws IllegalArgumentException {
+        return preDestroyCache.compute(new LifecycleKey(clazz, matchingClass)).getValue();
     }
     
     @Override
     public void clean(Class<?> clazz) {
         while ((clazz != null) && !Object.class.equals(clazz)) {
-            postConstructCache.remove(clazz);
-            preDestroyCache.remove(clazz);
+            postConstructCache.remove(new LifecycleKey(clazz, null));
+            preDestroyCache.remove(new LifecycleKey(clazz, null));
             methodCache.remove(clazz);
             fieldCache.remove(clazz);
             
@@ -458,5 +387,27 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
     @Override
     public String toString() {
         return "ClassReflectionHelperImpl(" + System.identityHashCode(this) + ")";
+    }
+    
+    private final static class LifecycleKey {
+        private final Class<?> clazz;
+        private final Class<?> matchingClass;
+        private final int hash;
+        
+        private LifecycleKey(Class<?> clazz, Class<?> matchingClass) {
+            this.clazz = clazz;
+            this.matchingClass = matchingClass;
+            hash = clazz.hashCode();
+        }
+        
+        @Override
+        public int hashCode() { return hash; }
+        
+        @Override
+        public boolean equals(Object o) {
+            if (o == null) return false;
+            if (!(o instanceof LifecycleKey)) return false;
+            return clazz.equals(((LifecycleKey) o).clazz);
+        }
     }
 }
