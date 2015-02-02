@@ -64,5 +64,24 @@ public class ExtrasUtilities {
             ServiceLocatorUtilities.addClasses(locator, DefaultInterceptionService.class);
         }
     }
+    
+    /**
+     * This method will bridge all non-local services from the
+     * from ServiceLocator into the into ServiceLocator.  Changes
+     * to the set of services in the from ServiceLocator will be
+     * reflected in the into ServiceLocator
+     * 
+     * @param into The non-null ServiceLocator that will have services added
+     * to it from the from ServiceLocator
+     * @param from The non-null ServiceLocator that will add services to the
+     * into ServiceLocator
+     */
+    public static void bridgeServiceLocator(ServiceLocator into, ServiceLocator from) {
+        throw new AssertionError("not yet implemented");
+    }
+    
+    public static void unbridgeServiceLocator(ServiceLocator into, ServiceLocator from) {
+        throw new AssertionError("not yet implemented");
+    }
 
 }
