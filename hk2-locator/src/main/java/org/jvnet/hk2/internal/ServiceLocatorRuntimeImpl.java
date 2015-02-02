@@ -42,7 +42,9 @@ package org.jvnet.hk2.internal;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.Visibility;
 import org.jvnet.hk2.external.runtime.ServiceLocatorRuntimeBean;
 
 /**
@@ -50,6 +52,7 @@ import org.jvnet.hk2.external.runtime.ServiceLocatorRuntimeBean;
  *
  */
 @Singleton
+@Visibility(DescriptorVisibility.LOCAL)
 public class ServiceLocatorRuntimeImpl implements ServiceLocatorRuntimeBean {
     private final ServiceLocatorImpl locator;
     

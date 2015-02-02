@@ -1220,7 +1220,7 @@ public class Utilities {
                         Singleton.class,
                         InjectionResolver.SYSTEM_RESOLVER_NAME,
                         qualifiers,
-                        DescriptorVisibility.NORMAL,
+                        DescriptorVisibility.LOCAL,
                         0,
                         null,
                         null,

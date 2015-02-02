@@ -48,7 +48,9 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ClassAnalyzer;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.Visibility;
 
 /**
  * this is the default implementation of the ClassAnalyzer
@@ -56,7 +58,9 @@ import org.glassfish.hk2.api.MultiException;
  * @author jwells
  *
  */
-@Singleton @Named(ClassAnalyzer.DEFAULT_IMPLEMENTATION_NAME)
+@Singleton
+@Named(ClassAnalyzer.DEFAULT_IMPLEMENTATION_NAME)
+@Visibility(DescriptorVisibility.LOCAL)
 public class DefaultClassAnalyzer implements ClassAnalyzer {
     private final ServiceLocatorImpl locator;
     

@@ -41,18 +41,24 @@ package org.glassfish.hk2.tests.locator.parented;
 
 import java.util.List;
 
-import junit.framework.Assert;
+import javax.inject.Inject;
 
+import org.glassfish.hk2.api.ClassAnalyzer;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.Binder;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.NamedImpl;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.junit.Assert;
 import org.junit.Test;
+import org.jvnet.hk2.external.runtime.ServiceLocatorRuntimeBean;
 
 /**
  * @author jwells
@@ -89,6 +95,9 @@ public class ParentedTest {
     
     private final static String PARENT8 = "Parent8";
     private final static String CHILD8 = "Child8";
+    
+    private final static String PARENT9 = "Parent9";
+    private final static String CHILD9 = "Child9";
     
     /**
      * Tests three generations of locators
@@ -263,7 +272,7 @@ public class ParentedTest {
     }
     
     /**
-     * Tests that DynamicConfigurationService is a LOCAL service
+     * Tests that getParent works properly
      */
     @Test
     public void testGetParent() {
@@ -301,5 +310,20 @@ public class ParentedTest {
         CustomPerLookupServiceInParent ptsip = parent.getService(CustomPerLookupServiceInParent.class);
         
         Assert.assertNotNull(ptsip);
+    }
+    
+    /**
+     * Tests a context from the parent is not destroyed when the child is destroyed
+     */
+    @Test
+    public void testOtherInitialServicesAllLocal() {
+        ServiceLocator parent = factory.create(PARENT9);
+        ServiceLocator child = factory.create(CHILD9, parent);
+        
+        TypeLiteral<InjectionResolver<Inject>> threeThirtyLiteral = new TypeLiteral<InjectionResolver<Inject>>() {};
+        
+        Assert.assertEquals(1, child.getAllServices(ClassAnalyzer.class, new NamedImpl(ClassAnalyzer.DEFAULT_IMPLEMENTATION_NAME)).size());
+        Assert.assertEquals(1, child.getAllServices(ServiceLocatorRuntimeBean.class).size());
+        Assert.assertEquals(1, child.getAllServices(threeThirtyLiteral.getType(), new NamedImpl(InjectionResolver.SYSTEM_RESOLVER_NAME)).size());
     }
 }
