@@ -39,9 +39,12 @@
  */
 package org.glassfish.hk2.tests.hk2bridge;
 
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.extras.ExtrasUtilities;
 import org.glassfish.hk2.tests.extras.internal.Utilities;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -62,6 +65,35 @@ public class BridgeTest {
         ExtrasUtilities.bridgeServiceLocator(into, from);
         
         Assert.assertNotNull(into.getService(SimpleService.class));
+    }
+    
+    /**
+     * Tests the hk2 to hk2 bridging feature
+     */
+    @Test // @org.junit.Ignore
+    public void testDynamicallyAddAndRemove() {
+        ServiceLocator into = Utilities.getUniqueLocator();
+        ServiceLocator from = Utilities.getUniqueLocator(SimpleService.class);
+        
+        ExtrasUtilities.bridgeServiceLocator(into, from);
+        
+        Assert.assertNotNull(into.getService(SimpleService.class));
+        Assert.assertNull(into.getService(SimpleService2.class));
+        Assert.assertNotNull(from.getService(SimpleService.class));
+        Assert.assertNull(from.getService(SimpleService2.class));
+        
+        DynamicConfigurationService dcs = from.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
+        
+        config.addActiveDescriptor(SimpleService2.class);
+        config.addUnbindFilter(BuilderHelper.createContractFilter(SimpleService.class.getName()));
+        
+        config.commit();
+        
+        Assert.assertNull(into.getService(SimpleService.class));
+        Assert.assertNotNull(into.getService(SimpleService2.class));
+        Assert.assertNull(from.getService(SimpleService.class));
+        Assert.assertNotNull(from.getService(SimpleService2.class));
     }
 
 }

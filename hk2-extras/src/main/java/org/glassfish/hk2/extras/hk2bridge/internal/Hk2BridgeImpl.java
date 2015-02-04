@@ -110,6 +110,8 @@ public class Hk2BridgeImpl implements DynamicConfigurationListener {
         }
         
         config.commit();
+        
+        mirroredDescriptors = newDescriptors;
     }
     
     /* (non-Javadoc)
@@ -169,7 +171,6 @@ public class Hk2BridgeImpl implements DynamicConfigurationListener {
             
             long remoteLocatorId = getOneMetadataFieldAsLong(d, ExtrasUtilities.ORIGINAL_HK2BRIDGE_LOCATOR_ID);
             if (remoteLocatorId == -1) return false;
-            
             
             if (localLocatorId != remoteLocatorId) return false;
             
