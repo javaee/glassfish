@@ -40,8 +40,10 @@
 package org.glassfish.hk2.extras;
 
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.extras.hk2bridge.internal.Hk2BridgeImpl;
 import org.glassfish.hk2.extras.interception.internal.DefaultInterceptionService;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 
 /**
@@ -51,6 +53,18 @@ import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
  *
  */
 public class ExtrasUtilities {
+    /**
+     * This will be put into the metadata of a descriptor that is bridged from another service locator.
+     * The value will be the locator id of the service locator from which the service originates
+     */
+    public final static String ORIGINAL_HK2BRIDGE_LOCATOR_ID = "org.jvnet.hk2.hk2bridge.original.locator.id";
+    
+    /**
+     * This will be put into the metadata of a descriptor that is bridged from another service locator.
+     * The value will be the service id of the descriptor from which the service originates
+     */
+    public final static String ORIGINAL_HK2BRIDGE_SERVICE_ID = "org.jvnet.hk2.hk2bridge.original.service.id";
+    
     /**
      * This method adds in a default implementation of the {@link org.glassfish.hk2.api.InterceptionService}
      * which uses annotations to denote which services should intercept other services.  For more
@@ -65,6 +79,14 @@ public class ExtrasUtilities {
         }
     }
     
+    private final static String BRIDGE_NAME_PREFIX = "LocatorBridge(";
+    private final static String COMMA = ",";
+    private final static String BRIDGE_NAME_POSTFIX = ")";
+    
+    private static String getBridgeName(ServiceLocator into, ServiceLocator from) {
+        return BRIDGE_NAME_PREFIX + from.getLocatorId() + COMMA + into.getLocatorId() + BRIDGE_NAME_POSTFIX;
+    }
+    
     /**
      * This method will bridge all non-local services from the
      * from ServiceLocator into the into ServiceLocator.  Changes
@@ -77,7 +99,20 @@ public class ExtrasUtilities {
      * into ServiceLocator
      */
     public static void bridgeServiceLocator(ServiceLocator into, ServiceLocator from) {
-        throw new AssertionError("not yet implemented");
+        String bridgeName = getBridgeName(into, from);
+        if (from.getService(Hk2BridgeImpl.class, bridgeName) != null) {
+            throw new IllegalStateException("There is already a bridge from locator " + from.getName() + " to " + into.getName());
+        }
+        
+        DescriptorImpl di = BuilderHelper.createDescriptorFromClass(Hk2BridgeImpl.class);
+        di.setName(bridgeName);
+        
+        ServiceLocatorUtilities.addOneDescriptor(from, di);
+        
+        Hk2BridgeImpl bridge = from.getService(Hk2BridgeImpl.class, bridgeName);
+        
+        // Kick it off
+        bridge.setRemote(into);
     }
     
     public static void unbridgeServiceLocator(ServiceLocator into, ServiceLocator from) {

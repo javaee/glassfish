@@ -53,13 +53,12 @@ public class BridgeTest {
     /**
      * Tests the hk2 to hk2 bridging feature
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testBasicOneWayBridge() {
         ServiceLocator into = Utilities.getUniqueLocator();
         ServiceLocator from = Utilities.getUniqueLocator(SimpleService.class);
         
         Assert.assertNull(into.getService(SimpleService.class));
-        
         ExtrasUtilities.bridgeServiceLocator(into, from);
         
         Assert.assertNotNull(into.getService(SimpleService.class));

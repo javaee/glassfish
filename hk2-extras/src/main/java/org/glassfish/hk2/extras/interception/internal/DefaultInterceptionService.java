@@ -53,12 +53,14 @@ import org.aopalliance.intercept.ConstructorInterceptor;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.InterceptionService;
 import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.extras.interception.Intercepted;
 import org.glassfish.hk2.extras.interception.Interceptor;
 import org.glassfish.hk2.extras.interception.InterceptorOrderingService;
@@ -71,6 +73,7 @@ import org.glassfish.hk2.extras.interception.InterceptorOrderingService;
  * @author jwells
  */
 @Singleton
+@Visibility(DescriptorVisibility.LOCAL)
 public class DefaultInterceptionService implements InterceptionService {
     private final static IndexedFilter METHOD_FILTER = new IndexedFilter() {
 

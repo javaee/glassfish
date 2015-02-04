@@ -74,5 +74,10 @@ public class ImmediateResults {
     /* package */ void addValidatedResult(ActiveDescriptor<?> addMe) {
         validatedImmediateResults.add(addMe);
     }
+    
+    @Override
+    public String toString() {
+        return "ImmediateResults(" + timelessResults + "," + validatedImmediateResults + "," + System.identityHashCode(this) + ")";
+    }
 
 }
