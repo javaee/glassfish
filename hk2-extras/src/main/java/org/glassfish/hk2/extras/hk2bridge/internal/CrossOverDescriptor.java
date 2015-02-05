@@ -69,8 +69,8 @@ public class CrossOverDescriptor<T> extends AbstractActiveDescriptor<T> {
         
         setScopeAsAnnotation(remote.getScopeAsAnnotation());
         
-        addMetadata(ExtrasUtilities.ORIGINAL_HK2BRIDGE_LOCATOR_ID, Long.toString(local.getLocatorId()));
-        addMetadata(ExtrasUtilities.ORIGINAL_HK2BRIDGE_SERVICE_ID, Long.toString(localService.getServiceId()));
+        addMetadata(ExtrasUtilities.HK2BRIDGE_LOCATOR_ID, Long.toString(local.getLocatorId()));
+        addMetadata(ExtrasUtilities.HK2BRIDGE_SERVICE_ID, Long.toString(localService.getServiceId()));
     }
 
     /**

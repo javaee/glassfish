@@ -57,13 +57,13 @@ public class ExtrasUtilities {
      * This will be put into the metadata of a descriptor that is bridged from another service locator.
      * The value will be the locator id of the service locator from which the service originates
      */
-    public final static String ORIGINAL_HK2BRIDGE_LOCATOR_ID = "org.jvnet.hk2.hk2bridge.original.locator.id";
+    public final static String HK2BRIDGE_LOCATOR_ID = "org.jvnet.hk2.hk2bridge.locator.id";
     
     /**
      * This will be put into the metadata of a descriptor that is bridged from another service locator.
      * The value will be the service id of the descriptor from which the service originates
      */
-    public final static String ORIGINAL_HK2BRIDGE_SERVICE_ID = "org.jvnet.hk2.hk2bridge.original.service.id";
+    public final static String HK2BRIDGE_SERVICE_ID = "org.jvnet.hk2.hk2bridge.service.id";
     
     /**
      * This method adds in a default implementation of the {@link org.glassfish.hk2.api.InterceptionService}

@@ -42,6 +42,7 @@ package org.glassfish.hk2.extras.hk2bridge.internal;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -99,17 +100,22 @@ public class Hk2BridgeImpl implements DynamicConfigurationListener {
         DynamicConfigurationService remoteDCS = remote.getService(DynamicConfigurationService.class);
         DynamicConfiguration config = remoteDCS.createDynamicConfiguration();
         
+        boolean dirty = false;
         for (ActiveDescriptor<?> removeMe : toRemove) {
             Filter removeFilter = new RemoteFilter(removeMe.getLocatorId(), removeMe.getServiceId());
             config.addUnbindFilter(removeFilter);
+            dirty = true;
         }
         
         for (ActiveDescriptor<?> addMe : toAdd) {
             CrossOverDescriptor<Object> cod = new CrossOverDescriptor<Object>(local, (ActiveDescriptor<Object>) addMe);
             config.addActiveDescriptor(cod);
+            dirty = true;
         }
         
-        config.commit();
+        if (dirty) {
+            config.commit();
+        }
         
         mirroredDescriptors = newDescriptors;
     }
@@ -140,10 +146,9 @@ public class Hk2BridgeImpl implements DynamicConfigurationListener {
                 return false;
             }
             
-            long candidate = getOneMetadataFieldAsLong(d, ExtrasUtilities.ORIGINAL_HK2BRIDGE_LOCATOR_ID);
-            if (candidate == -1) return true;
+            Set<Long> previousVisits = getMetadataLongs(d, ExtrasUtilities.HK2BRIDGE_LOCATOR_ID);
             
-            if (candidate == remoteLocatorId) {
+            if (previousVisits.contains(new Long(remoteLocatorId))) {
                 // cycle!
                 return false;
             }
@@ -166,15 +171,15 @@ public class Hk2BridgeImpl implements DynamicConfigurationListener {
          */
         @Override
         public boolean matches(Descriptor d) {
-            String remoteLocatorVal = ServiceLocatorUtilities.getOneMetadataField(d, ExtrasUtilities.ORIGINAL_HK2BRIDGE_LOCATOR_ID);
+            String remoteLocatorVal = ServiceLocatorUtilities.getOneMetadataField(d, ExtrasUtilities.HK2BRIDGE_LOCATOR_ID);
             if (remoteLocatorVal == null) return false;
             
-            long remoteLocatorId = getOneMetadataFieldAsLong(d, ExtrasUtilities.ORIGINAL_HK2BRIDGE_LOCATOR_ID);
+            long remoteLocatorId = getOneMetadataFieldAsLong(d, ExtrasUtilities.HK2BRIDGE_LOCATOR_ID);
             if (remoteLocatorId == -1) return false;
             
             if (localLocatorId != remoteLocatorId) return false;
             
-            long remoteServiceId = getOneMetadataFieldAsLong(d, ExtrasUtilities.ORIGINAL_HK2BRIDGE_SERVICE_ID);
+            long remoteServiceId = getOneMetadataFieldAsLong(d, ExtrasUtilities.HK2BRIDGE_SERVICE_ID);
             if (remoteServiceId == -1) return false;
             
             return (remoteServiceId == localServiceId);
@@ -198,6 +203,33 @@ public class Hk2BridgeImpl implements DynamicConfigurationListener {
         catch (NumberFormatException nfe) {
             return -1;
         }
+    }
+    
+    /**
+     * Gets all of the longs encoded into this descriptors metadata
+     * field
+     * 
+     * @param d
+     * @param field
+     * @return
+     */
+    private static Set<Long> getMetadataLongs(Descriptor d, String field) {
+        Set<Long> retVal = new HashSet<Long>();
+        
+        List<String> metadataValues = d.getMetadata().get(field);
+        if (metadataValues == null) return retVal;
+        
+        for (String metadataValue : metadataValues) {
+            try {
+                Long val = new Long(metadataValue);
+                retVal.add(val);
+            }
+            catch (NumberFormatException nfe) {
+                // Do nothing, just skip it
+            }
+        }
+        
+        return retVal;
     }
 
     
