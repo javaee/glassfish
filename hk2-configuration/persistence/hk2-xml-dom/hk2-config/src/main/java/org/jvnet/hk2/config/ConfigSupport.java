@@ -675,10 +675,6 @@ public class ConfigSupport implements ConfigurationUtilities {
                         // much simpler, I can use the setter directly.
                         writeableParent.setter(element, null, childType);
                     }
-                    
-                    if (child != null) {
-                        child.release();
-                    }
                 } else {
                     throw new TransactionFailure("Parent " + parent.getProxyType() + " does not have a child of type " + childType);
                 }
