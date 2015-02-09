@@ -279,9 +279,34 @@ public class BridgeTest {
         Assert.assertEquals(0, from2.getAllServices(SimpleService.class).size());
         Assert.assertEquals(0, from2.getAllServices(SimpleService2.class).size());
         Assert.assertEquals(1, from2.getAllServices(SimpleService3.class).size());
-        
     }
     
+    /**
+     * Ensure chained removals works
+     */
+    @Test // @org.junit.Ignore
+    public void testChainedRemovals() {
+        ServiceLocator into = Utilities.getUniqueLocator();
+        ServiceLocator from1 = Utilities.getUniqueLocator();
+        ServiceLocator from2 = Utilities.getUniqueLocator(SimpleService.class, SimpleService2.class);
+        
+        ExtrasUtilities.bridgeServiceLocator(into, from1);
+        ExtrasUtilities.bridgeServiceLocator(from1, from2);
+        
+        // The into locator should now have all services
+        Assert.assertNotNull(into.getService(SimpleService.class));
+        Assert.assertNotNull(into.getService(SimpleService2.class));
+        
+        ServiceLocatorUtilities.removeFilter(from2, BuilderHelper.createContractFilter(SimpleService.class.getName()));
+        
+        // The into locator should now only have SimpleService2
+        Assert.assertNull(into.getService(SimpleService.class));
+        Assert.assertNotNull(into.getService(SimpleService2.class));
+    }
+    
+    /**
+     * Tests that we will not bridge parents or selfies
+     */
     @Test
     public void testNoParentedBridges() {
         ServiceLocator grandparent = Utilities.FACTORY.create("NoParentedBridges_Grandparent");

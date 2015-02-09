@@ -75,13 +75,22 @@ public class ProxyUtilities {
          */
         ClassLoader myLoader;
         synchronized (delegatingLoaderSet) {
-            ClassLoader loader = superclass.getClassLoader();
-            if (loader == null) loader = ClassLoader.getSystemClassLoader();
-            if (loader == null) {
-                throw new IllegalStateException("Could not find system classloader or classloader of " + superclass.getName());
-            }
+            ClassLoader loader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+
+                @Override
+                public ClassLoader run() {
+                    ClassLoader retVal = superclass.getClassLoader();
+                    if (retVal == null) retVal = ClassLoader.getSystemClassLoader();
+                    if (retVal == null) {
+                        throw new IllegalStateException("Could not find system classloader or classloader of " + superclass.getName());
+                    }
+                    
+                    return retVal;
+                }
+                
+            });
             
-            WeakDelegatingCacheEntry key = new WeakDelegatingCacheEntry(superclass.getClassLoader());
+            WeakDelegatingCacheEntry key = new WeakDelegatingCacheEntry(loader);
             WeakDelegatingCacheEntry found = null;
             for (WeakDelegatingCacheEntry entry : delegatingLoaderSet.keySet()) {
                 if (key.equals(entry)) {
