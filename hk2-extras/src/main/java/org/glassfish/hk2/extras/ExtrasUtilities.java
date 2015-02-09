@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.extras;
 
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.extras.hk2bridge.internal.Hk2BridgeImpl;
 import org.glassfish.hk2.extras.interception.internal.DefaultInterceptionService;
@@ -131,8 +132,30 @@ public class ExtrasUtilities {
         bridge.setRemote(into);
     }
     
+    /**
+     * This method will remove all non-local services from the
+     * from ServiceLocator into the into ServiceLocator.  The service
+     * locator will no longer be related by this bridge
+     * The two ServiceLocators involved must not have a parent/child relationship
+     * 
+     * @param into The non-null ServiceLocator that will have services added
+     * to it from the from ServiceLocator
+     * @param from The non-null ServiceLocator that will add services to the
+     * into ServiceLocator
+     */
     public static void unbridgeServiceLocator(ServiceLocator into, ServiceLocator from) {
-        throw new AssertionError("not yet implemented");
+        checkParentage(into, from);
+        checkParentage(from, into);
+        
+        String bridgeName = getBridgeName(into, from);
+        
+        ServiceHandle<Hk2BridgeImpl> handle = from.getServiceHandle(Hk2BridgeImpl.class, bridgeName);
+        if (handle == null) return;
+        
+        handle.destroy();
+        
+        ServiceLocatorUtilities.removeFilter(from, BuilderHelper.createNameAndContractFilter(
+                Hk2BridgeImpl.class.getName(),bridgeName));
     }
 
 }

@@ -337,5 +337,28 @@ public class BridgeTest {
             // Good
         }
     }
+    
+    /**
+     * Tests unbridging two locators
+     */
+    @Test // @org.junit.Ignore
+    public void testUnbridging() {
+        ServiceLocator into = Utilities.getUniqueLocator();
+        ServiceLocator from = Utilities.getUniqueLocator(SimpleService.class);
+        
+        Assert.assertNull(into.getService(SimpleService.class));
+        ExtrasUtilities.bridgeServiceLocator(into, from);
+        
+        Assert.assertNotNull(into.getService(SimpleService.class));
+        
+        ExtrasUtilities.unbridgeServiceLocator(into, from);
+        
+        Assert.assertNull(into.getService(SimpleService.class));
+        
+        ServiceLocatorUtilities.addClasses(from, SimpleService2.class);
+        
+        // Ensures no longer tracking services
+        Assert.assertNull(into.getService(SimpleService2.class));
+    }
 
 }

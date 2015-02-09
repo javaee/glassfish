@@ -45,6 +45,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -155,6 +156,11 @@ public class Hk2BridgeImpl implements DynamicConfigurationListener {
             
             return true;
         }
+    }
+    
+    @PreDestroy
+    private void preDestroy() {
+        handleChange(Collections.<ActiveDescriptor<?>>emptyList());
     }
     
     private static class RemoveFilter implements Filter {
