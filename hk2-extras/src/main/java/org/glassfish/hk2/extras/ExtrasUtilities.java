@@ -87,11 +87,24 @@ public class ExtrasUtilities {
         return BRIDGE_NAME_PREFIX + from.getLocatorId() + COMMA + into.getLocatorId() + BRIDGE_NAME_POSTFIX;
     }
     
+    private static void checkParentage(ServiceLocator a, ServiceLocator b) {
+        ServiceLocator originalA = a;
+        
+        while (a != null) {
+            if (a.getLocatorId() == b.getLocatorId()) {
+                throw new IllegalStateException("Locator " + originalA + " is a child of or is the same as locator " + b);
+            }
+            
+            a = a.getParent();
+        }
+    }
+    
     /**
      * This method will bridge all non-local services from the
      * from ServiceLocator into the into ServiceLocator.  Changes
      * to the set of services in the from ServiceLocator will be
-     * reflected in the into ServiceLocator
+     * reflected in the into ServiceLocator.  The two ServiceLocators
+     * involved must not have a parent/child relationship
      * 
      * @param into The non-null ServiceLocator that will have services added
      * to it from the from ServiceLocator
@@ -99,6 +112,9 @@ public class ExtrasUtilities {
      * into ServiceLocator
      */
     public static void bridgeServiceLocator(ServiceLocator into, ServiceLocator from) {
+        checkParentage(into, from);
+        checkParentage(from, into);
+        
         String bridgeName = getBridgeName(into, from);
         if (from.getService(Hk2BridgeImpl.class, bridgeName) != null) {
             throw new IllegalStateException("There is already a bridge from locator " + from.getName() + " to " + into.getName());

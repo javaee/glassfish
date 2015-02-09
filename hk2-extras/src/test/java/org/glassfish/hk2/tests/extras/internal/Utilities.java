@@ -49,7 +49,7 @@ import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
  *
  */
 public class Utilities {
-    private static final ServiceLocatorFactory FACTORY = ServiceLocatorFactory.getInstance();
+    public static final ServiceLocatorFactory FACTORY = ServiceLocatorFactory.getInstance();
     
     public static ServiceLocator getUniqueLocator(Class<?>...classes) {
         ServiceLocator retVal = FACTORY.create(null);

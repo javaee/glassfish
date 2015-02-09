@@ -281,5 +281,36 @@ public class BridgeTest {
         Assert.assertEquals(1, from2.getAllServices(SimpleService3.class).size());
         
     }
+    
+    @Test
+    public void testNoParentedBridges() {
+        ServiceLocator grandparent = Utilities.FACTORY.create("NoParentedBridges_Grandparent");
+        ServiceLocator parent = Utilities.FACTORY.create("NoParentedBridges_Parent", grandparent);
+        ServiceLocator child = Utilities.FACTORY.create("NoParentedBridges_Child", parent);
+        
+        try {
+            ExtrasUtilities.bridgeServiceLocator(grandparent, child);
+            Assert.fail("Bridging into parents is not allowed");
+        }
+        catch (IllegalStateException ise) {
+            // Good
+        }
+        
+        try {
+            ExtrasUtilities.bridgeServiceLocator(child, grandparent);
+            Assert.fail("Bridging into children is not allowed");
+        }
+        catch (IllegalStateException ise) {
+            // Good
+        }
+        
+        try {
+            ExtrasUtilities.bridgeServiceLocator(parent, parent);
+            Assert.fail("Bridging into self is not allowed");
+        }
+        catch (IllegalStateException ise) {
+            // Good
+        }
+    }
 
 }
