@@ -26,6 +26,7 @@ overview of each feature.  Among the set of HK2 features are:
 + [Class Analysis](extensibility.html#Class_Analysis)
 + [Run Level Services](extensibility.html#Run_Level_Services)
 + [Self Descriptor Injection](extensibility.html#Self_Descriptor_Injection)
++ [ServiceLocator to ServiceLocator Bridge](extensibility.html#ServiceLocator_to_ServiceLocator_Bridge)
 + [Error Handling](extensibility.html#Error_Handling)
 
 ### Events
@@ -318,6 +319,27 @@ public abstract class GenericService {
 }
 ```java
 
+### ServiceLocator to ServiceLocator Bridge
+
+It is possible to import all the [NORMAL] (non-[LOCAL]) services from one ServiceLocator into
+another ServiceLocator as long as the locators do not have a parent/child relationship.  You do
+this be creating a ServiceLocator bridge between the two ServiceLocators.  This is done using
+the [ExtrasUtilities.bridgeServiceLocator][bridgeservicelocator] method in the optional hk2-extras module.
+
+Bridges are one-way and dynamic.  Suppose you have a ServiceLocator named Foo and have bridged
+its services into the Bar ServiceLocator.  If you add a service to the Foo ServiceLocator that service
+will be locatable in the Bar ServiceLocator, even if the service is added after the bridge was
+created.
+
+Cycles between ServiceLocators are supported.  It will appear that all services from all ServiceLocators
+are available in all of the ServiceLocators involved in the cycle.  For example, if Foo and Bar
+service locators have bridges going in both directions then it will appear that Foo and Bar
+have the same set of [NORMAL] services.
+
+A bridge between two service locators is torn down by using the method
+[ExtrasUtilities.unbridgeServiceLocator][unbridgeservicelocator] or by shutting down the ServiceLocator
+supplying the services.
+
 ### Error Handling
 
 Errors can pop up in various phases of the HK2 service lifecycle.  Users can register implementations of the
@@ -375,3 +397,7 @@ Using the [ErrorService][errorservice] can be a convenient place to standardize 
 [events]: events.html
 [threaded-events-example]: threaded-events-example.html
 [errorservice]: apidocs/org/glassfish/hk2/api/ErrorService.html
+[bridgeservicelocator]: apidocs/org/glassfish/hk2/extras/ExtrasUtilities.html#bridgeServiceLocator(org.glassfish.hk2.api.ServiceLocator, org.glassfish.hk2.api.ServiceLocator)
+[unbridgeservicelocator]: apidocs/org/glassfish/hk2/extras/ExtrasUtilities.html#unbridgeServiceLocator(org.glassfish.hk2.api.ServiceLocator, org.glassfish.hk2.api.ServiceLocator)
+[NORMAL]: apidocs/org/glassfish/hk2/api/DescriptorVisibility.html#NORMAL
+[LOCAL]: apidocs/org/glassfish/hk2/api/DescriptorVisibility.html#LOCAL
