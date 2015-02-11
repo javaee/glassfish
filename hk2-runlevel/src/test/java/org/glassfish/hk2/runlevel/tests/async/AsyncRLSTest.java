@@ -321,15 +321,15 @@ public class AsyncRLSTest {
         List<Integer> proceedsA = listenerA.getAndPurgeProgressedLevels();
         List<Integer> proceedsB = listenerB.getAndPurgeProgressedLevels();
         
-        Assert.assertEquals(22, proceedsA.size());
-        Assert.assertEquals(22, proceedsB.size());
+        Assert.assertEquals(23, proceedsA.size());
+        Assert.assertEquals(23, proceedsB.size());
         
-        for (int lcv = -1; lcv < 21; lcv++) {
-            Assert.assertEquals(proceedsA.get(lcv + 1).intValue(), lcv);
+        for (int lcv = -2; lcv < 21; lcv++) {
+            Assert.assertEquals(proceedsA.get(lcv + 2).intValue(), lcv);
         }
         
-        for (int lcv = -1; lcv < 21; lcv++) {
-            Assert.assertEquals(proceedsB.get(lcv + 1).intValue(), lcv);
+        for (int lcv = -2; lcv < 21; lcv++) {
+            Assert.assertEquals(proceedsB.get(lcv + 2).intValue(), lcv);
         }
         
         future = controller.proceedToAsync(ZERO);
@@ -338,15 +338,15 @@ public class AsyncRLSTest {
         proceedsA = listenerA.getAndPurgeProgressedLevels();
         proceedsB = listenerB.getAndPurgeProgressedLevels();
         
-        Assert.assertEquals(proceedsA.size(), 20);
-        Assert.assertEquals(proceedsB.size(), 20);
+        Assert.assertEquals(proceedsA.size(), 21);
+        Assert.assertEquals(proceedsB.size(), 21);
         
-        for (int lcv = 0; lcv < TWENTY; lcv++) {
-            Assert.assertEquals(proceedsA.get(lcv).intValue(), (TWENTY - 1) - lcv);
+        for (int lcv = 0; lcv < (TWENTY + 1); lcv++) {
+            Assert.assertEquals(proceedsA.get(lcv).intValue(), TWENTY - lcv);
         }
         
-        for (int lcv = 0; lcv < TWENTY; lcv++) {
-            Assert.assertEquals(proceedsB.get(lcv).intValue(), (TWENTY - 1) - lcv);
+        for (int lcv = 0; lcv < (TWENTY + 1); lcv++) {
+            Assert.assertEquals(proceedsB.get(lcv).intValue(), TWENTY - lcv);
         }
     }
     

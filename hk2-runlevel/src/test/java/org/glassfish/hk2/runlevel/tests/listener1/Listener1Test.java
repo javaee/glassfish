@@ -53,7 +53,7 @@ public class Listener1Test {
     /**
      * Tests that onProgress is called before going up and down
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testOnProgressCalledBeforeAnythingElse() {
         ServiceLocator locator = Utilities.getServiceLocator(LevelThreeService.class, UpListener.class);
         
@@ -81,6 +81,235 @@ public class Listener1Test {
         
         Assert.assertFalse(ts.isUp());
         Assert.assertTrue(ts.isDown());
+    }
+    
+    private ServiceLocator setupChangerLocator() {
+      return Utilities.getServiceLocator(ChangeLevelListener.class,
+              ServiceRegistry.class,
+              S1.class, S3.class, S5.class, S7.class, S10.class);
+    }
+    
+    private static void verifyRegistry(ServiceLocator locator, boolean one, boolean three, boolean five, boolean seven, boolean ten) {
+        ServiceRegistry registry = locator.getService(ServiceRegistry.class);
+        
+        if (one) {
+            Assert.assertTrue(registry.contains(1));
+        }
+        else {
+            Assert.assertFalse(registry.contains(1));
+        }
+        
+        if (three) {
+            Assert.assertTrue(registry.contains(3));
+        }
+        else {
+            Assert.assertFalse(registry.contains(3));
+        }
+        
+        if (five) {
+            Assert.assertTrue(registry.contains(5));
+        }
+        else {
+            Assert.assertFalse(registry.contains(5));
+        }
+        
+        if (seven) {
+            Assert.assertTrue(registry.contains(7));
+        }
+        else {
+            Assert.assertFalse(registry.contains(7));
+        }
+        
+        if (ten) {
+            Assert.assertTrue(registry.contains(10));
+        }
+        else {
+            Assert.assertFalse(registry.contains(10));
+        }
+        
+    }
+    
+    private static void changerTest(ServiceLocator locator, int initial, int changedTo) {
+        RunLevelController rlc = locator.getService(RunLevelController.class);
+        rlc.proceedTo(5);
+        
+        ChangeLevelListener changer = locator.getService(ChangeLevelListener.class);
+        changer.changeLevels(5, changedTo);
+        
+        rlc.proceedTo(initial);
+        
+    }
+    
+    /**
+     * Scenario.  original target: 7, final target: 10
+     */
+    @Test
+    public void testChange_7_10() {
+        ServiceLocator locator = setupChangerLocator();
+        
+        changerTest(locator, 7, 10);
+        
+        verifyRegistry(locator,
+                true, /* 1 */
+                true, /* 3 */
+                true, /* 5 */
+                true, /* 7 */
+                true  /* 10 */);
+        
+    }
+    
+    /**
+     * Scenario.  original target: 3, final target: 1
+     */
+    @Test
+    public void testChange_3_1() {
+        ServiceLocator locator = setupChangerLocator();
+        
+        changerTest(locator, 3, 1);
+        
+        verifyRegistry(locator,
+                true, /* 1 */
+                false, /* 3 */
+                false, /* 5 */
+                false, /* 7 */
+                false  /* 10 */);
+        
+    }
+    
+    /**
+     * Scenario.  original target: 3, final target: 0
+     */
+    @Test
+    public void testChange_3_0() {
+        ServiceLocator locator = setupChangerLocator();
+        
+        changerTest(locator, 3, 0);
+        
+        verifyRegistry(locator,
+                false, /* 1 */
+                false, /* 3 */
+                false, /* 5 */
+                false, /* 7 */
+                false  /* 10 */);
+    }
+    
+    /**
+     * Scenario.  original target: 10, final target: 1
+     */
+    @Test
+    public void testChange_10_1() {
+        ServiceLocator locator = setupChangerLocator();
+        
+        changerTest(locator, 10, 1);
+        
+        verifyRegistry(locator,
+                true, /* 1 */
+                false, /* 3 */
+                false, /* 5 */
+                false, /* 7 */
+                false  /* 10 */);
+    }
+    
+    /**
+     * Scenario.  original target: 1, final target: 10
+     */
+    @Test
+    public void testChange_1_10() {
+        ServiceLocator locator = setupChangerLocator();
+        
+        changerTest(locator, 1, 10);
+        
+        verifyRegistry(locator,
+                true, /* 1 */
+                true, /* 3 */
+                true, /* 5 */
+                true, /* 7 */
+                true  /* 10 */);
+    }
+    
+    /**
+     * Scenario.  original target: 10, final target: 7
+     */
+    @Test
+    public void testChange_10_7() {
+        ServiceLocator locator = setupChangerLocator();
+        
+        changerTest(locator, 10, 7);
+        
+        verifyRegistry(locator,
+                true, /* 1 */
+                true, /* 3 */
+                true, /* 5 */
+                true, /* 7 */
+                false  /* 10 */);
+    }
+    
+    /**
+     * Scenario.  original target: 0, final target: 3
+     */
+    @Test
+    public void testChange_0_3() {
+        ServiceLocator locator = setupChangerLocator();
+        
+        changerTest(locator, 0, 3);
+        
+        verifyRegistry(locator,
+                true, /* 1 */
+                true, /* 3 */
+                false, /* 5 */
+                false, /* 7 */
+                false  /* 10 */);
+    }
+    
+    /**
+     * Scenario.  original target: 0, final target: 1
+     */
+    @Test
+    public void testChange_0_1() {
+        ServiceLocator locator = setupChangerLocator();
+        
+        changerTest(locator, 0, 1);
+        
+        verifyRegistry(locator,
+                true, /* 1 */
+                false, /* 3 */
+                false, /* 5 */
+                false, /* 7 */
+                false  /* 10 */);
+    }
+    
+    /**
+     * Scenario.  original target: 0, final target: 5
+     */
+    @Test
+    public void testChange_0_5() {
+        ServiceLocator locator = setupChangerLocator();
+        
+        changerTest(locator, 0, 5);
+        
+        verifyRegistry(locator,
+                true, /* 1 */
+                true, /* 3 */
+                true, /* 5 */
+                false, /* 7 */
+                false  /* 10 */);
+    }
+    
+    /**
+     * Scenario.  original target: 10, final target: 5
+     */
+    @Test
+    public void testChange_10_5() {
+        ServiceLocator locator = setupChangerLocator();
+        
+        changerTest(locator, 10, 5);
+        
+        verifyRegistry(locator,
+                true, /* 1 */
+                true, /* 3 */
+                true, /* 5 */
+                false, /* 7 */
+                false  /* 10 */);
     }
 
 }

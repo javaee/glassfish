@@ -138,6 +138,16 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
             localDownAllTheWay = downAllTheWay;
         }
         
+        if (localUpAllTheWay != null || localDownAllTheWay != null) {
+            int currentLevel = asyncContext.getCurrentLevel();
+            
+            invokeOnProgress(this, currentLevel, allListenerHandles);
+        }
+        
+        go(localUpAllTheWay, localDownAllTheWay);
+    }
+    
+    private void go(UpAllTheWay localUpAllTheWay, DownAllTheWay localDownAllTheWay) {
         if (localUpAllTheWay != null) {
             localUpAllTheWay.go();
         }
@@ -268,25 +278,13 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                 }
             }
             else {
-                if (proposedLevel > currentLevel) {
-                    upAllTheWay = new UpAllTheWay(proposedLevel,
-                            this,
-                            allListenerHandles,
-                            allSorterHandles,
-                            maxThreads,
-                            useThreads,
-                            cancelTimeout);
-                    needGo = true;
-                }
-                else if (proposedLevel < currentLevel) {
-                    downAllTheWay = new DownAllTheWay(proposedLevel, this, allListenerHandles);
-                    needGo = true;
-                }
+                // Should be impossible
+                throw new AssertionError("Can not determine previous job");
             }
         }
         
         if (needGo) {
-            go();
+            go(upAllTheWay, downAllTheWay);
         }
         
         return oldProposedVal;
@@ -372,7 +370,10 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         try {
             for (ServiceHandle<RunLevelListener> listener : listeners) {
                 try {
-                    listener.getService().onProgress(job, level);
+                    RunLevelListener rll = listener.getService();
+                    if (rll != null) {
+                        rll.onProgress(job, level);
+                    }
                 }
                 catch (Throwable th) {
                     // TODO:  Need a log message here
@@ -388,7 +389,10 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
             List<ServiceHandle<RunLevelListener>> listeners) {
         for (ServiceHandle<RunLevelListener> listener : listeners) {
             try {
-                listener.getService().onCancelled(new CurrentTaskFutureWrapper(job), levelAchieved);
+                RunLevelListener rll = listener.getService();
+                if (rll != null) {
+                    rll.onCancelled(new CurrentTaskFutureWrapper(job), levelAchieved);
+                }
             }
             catch (Throwable th) {
                 // TODO:  Need a log message here
@@ -404,8 +408,11 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         
         for (ServiceHandle<RunLevelListener> listener : listeners) {
             try {
-                listener.getService().onError(new CurrentTaskFutureWrapper(job),
+                RunLevelListener rll = listener.getService();
+                if (rll != null) {
+                    rll.onError(new CurrentTaskFutureWrapper(job),
                         errorInfo);
+                }
             }
             catch (Throwable th2) {
                  // TODO:  Need a log message here
@@ -430,7 +437,6 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         public Boolean waitForResult(long timeout, TimeUnit unit) throws InterruptedException, MultiException;
         
     }
-            
     
     private class UpAllTheWay implements AllTheWay {
         private final Object lock = new Object();
@@ -1323,9 +1329,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
     
     @Override
     public String toString() {
-        return "RunLevelFuture(proposedLevel=" + proposedLevel + "," +
+        return "CurrentTaskFuture(proposedLevel=" + proposedLevel + "," +
           System.identityHashCode(this) + ")";
     }
-
-    
 }
