@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.runlevel.internal;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Timer;
@@ -834,8 +835,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         private Throwable lastError = null;
         private ActiveDescriptor<?> lastErrorDescriptor = null;
         
-        private boolean queueWaiter = false;
-        private List<ActiveDescriptor<?>> queue;
+        private List<ActiveDescriptor<?>> queue = Collections.emptyList();
         private boolean downHardCancelled = false;
         
         private HardCancelDownTimer hardCancelDownTimer = null;
@@ -864,20 +864,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                 if (cancelled) return; // idempotent
                 cancelled = true;
                 
-                if (queue == null) {
-                    queueWaiter = true;
-                    
-                    while (!done && queue == null) {
-                        try {
-                            this.wait();
-                        }
-                        catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                    
-                    if (done) return;
-                }
+                if (done) return;
                 
                 localQueue = queue;
             }
@@ -945,10 +932,6 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                 List<ActiveDescriptor<?>> localQueue = asyncContext.getOrderedListOfServicesAtLevel(workingOn);
                 synchronized(this) {
                     queue = localQueue;
-                    if (queueWaiter) {
-                        this.notifyAll();
-                    }
-                    queueWaiter = false;
                 }
                 
                 ErrorInformation errorInfo = null;
@@ -995,7 +978,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                 }
                 
                 synchronized(this) {
-                    queue = null;
+                    queue = Collections.emptyList();
                 }
                 
                 if (errorInfo != null && ErrorInformation.ErrorAction.GO_TO_NEXT_LOWER_LEVEL_AND_STOP.equals(errorInfo.getAction())) {

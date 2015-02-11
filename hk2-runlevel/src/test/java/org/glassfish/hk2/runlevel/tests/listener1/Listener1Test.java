@@ -311,5 +311,55 @@ public class Listener1Test {
                 false, /* 7 */
                 false  /* 10 */);
     }
+    
+    /**
+     * Cancelling from the start (upward initial job)
+     */
+    @Test
+    public void testCancelUp() {
+        ServiceLocator locator = setupChangerLocator();
+        
+        RunLevelController rlc = locator.getService(RunLevelController.class);
+        rlc.proceedTo(5);
+        
+        ChangeLevelListener changer = locator.getService(ChangeLevelListener.class);
+        changer.setCancelLevel(5);
+        
+        rlc.proceedTo(10);
+        
+        verifyRegistry(locator,
+                true, /* 1 */
+                true, /* 3 */
+                true, /* 5 */
+                false, /* 7 */
+                false  /* 10 */);
+        
+        Assert.assertTrue(changer.getCancelCalled());
+    }
+    
+    /**
+     * Cancelling from the start (downward initial job)
+     */
+    @Test
+    public void testCancelDown() {
+        ServiceLocator locator = setupChangerLocator();
+        
+        RunLevelController rlc = locator.getService(RunLevelController.class);
+        rlc.proceedTo(5);
+        
+        ChangeLevelListener changer = locator.getService(ChangeLevelListener.class);
+        changer.setCancelLevel(5);
+        
+        rlc.proceedTo(0);
+        
+        verifyRegistry(locator,
+                true, /* 1 */
+                true, /* 3 */
+                true, /* 5 */
+                false, /* 7 */
+                false  /* 10 */);
+        
+        Assert.assertTrue(changer.getCancelCalled());
+    }
 
 }

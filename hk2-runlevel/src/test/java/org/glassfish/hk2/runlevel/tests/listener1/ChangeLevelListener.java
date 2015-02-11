@@ -55,9 +55,20 @@ public class ChangeLevelListener implements RunLevelListener {
     public int setLevelTo = -3;
     public int setLevelFrom = -3;
     
+    public int cancelLevelFrom = -3;
+    public boolean cancelCalled = false;
+    
     public void changeLevels(int setLevelFrom, int setLevelTo) {
         this.setLevelFrom = setLevelFrom;
         this.setLevelTo = setLevelTo;
+    }
+    
+    public void setCancelLevel(int cancelLevelFrom) {
+        this.cancelLevelFrom = cancelLevelFrom;
+    }
+    
+    public boolean getCancelCalled() {
+        return cancelCalled;
     }
     
 
@@ -70,6 +81,10 @@ public class ChangeLevelListener implements RunLevelListener {
         if (levelAchieved == setLevelFrom) {
             currentJob.changeProposedLevel(setLevelTo);
         }
+        
+        if (levelAchieved == cancelLevelFrom) {
+            currentJob.cancel(false);
+        }
     }
 
     /* (non-Javadoc)
@@ -77,6 +92,7 @@ public class ChangeLevelListener implements RunLevelListener {
      */
     @Override
     public void onCancelled(RunLevelFuture currentJob, int levelAchieved) {
+        cancelCalled = true;
 
     }
 
