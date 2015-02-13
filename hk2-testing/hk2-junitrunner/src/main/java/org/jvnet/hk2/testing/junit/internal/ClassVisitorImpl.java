@@ -40,7 +40,7 @@
 package org.jvnet.hk2.testing.junit.internal;
 
 import java.util.List;
-
+import java.util.Set;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.ServiceLocator;
@@ -61,17 +61,20 @@ public class ClassVisitorImpl extends ClassVisitor {
     
     private String implName;
     private boolean isAService = false;
+    private final Set<String> excludes;
     
     /**
      * Creates this with the config to add to if this is a service
      * @param config
      * @param verbose true if we should print out any service we are binding
+     * @param excludes The set of implementations to NOT add to the locator
      */
-    public ClassVisitorImpl(ServiceLocator locator, boolean verbose) {
+    public ClassVisitorImpl(ServiceLocator locator, boolean verbose, Set<String> excludes) {
         super(Opcodes.ASM5);
         
         this.locator = locator;
         this.verbose = verbose;
+        this.excludes = excludes;
     }
 
     /* (non-Javadoc)
@@ -107,6 +110,7 @@ public class ClassVisitorImpl extends ClassVisitor {
     @Override
     public void visitEnd() {
         if (!isAService) return;
+        if (excludes.contains(implName)) return;
         
         Class<?> implClass = null;
         try {

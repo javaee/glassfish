@@ -51,8 +51,10 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -124,9 +126,30 @@ public class HK2Runner {
      * &#64;Service or not.  If null this is considered to be the empty set
      */
     protected void initialize(String name, List<String> packages, List<Class<?>> clazzes) {
+        initialize(name, packages, clazzes, null);
+    }
+    
+    /**
+     * This method initializes the service locator with services from the given list
+     * of packages (in "." format) and with the set of classes given.
+     * 
+     * @param name The name of the service locator to create.  If there is already a
+     * service locator of this name then the remaining fields will be ignored and the existing
+     * locator with this name will be returned.  May not be null
+     * @param packages The list of packages (in "." format, i.e. "com.acme.test.services") that
+     * we should hunt through the classpath for in order to find services.  If null this is considered
+     * to be the empty set
+     * @param clazzes A set of classes that should be analyzed as services, whether they declare
+     * &#64;Service or not.  If null this is considered to be the empty set
+     * @param excludes A set of implementations that should be excluded from being added.  This list is
+     * NOT checked against the clazzes list (the explicit include wins), but instead against the set of
+     * things coming from packages or from the hk2-locator/default file
+     */
+    protected void initialize(String name, List<String> packages, List<Class<?>> clazzes, Set<String> excludes) {
         if (name == null) throw new IllegalArgumentException();
         if (packages == null) packages = new LinkedList<String>();
         if (clazzes == null) clazzes = new LinkedList<Class<?>>();
+        if (excludes == null) excludes = new HashSet<String>();
         
         ServiceLocator found = ServiceLocatorFactory.getInstance().find(name);
         if (found != null) {
@@ -143,9 +166,9 @@ public class HK2Runner {
         DynamicConfigurationService dcs = testLocator.getService(DynamicConfigurationService.class);
         DynamicConfiguration config = dcs.createDynamicConfiguration();
         
-        addServicesFromDefault(config);
+        addServicesFromDefault(config, excludes);
         
-        addServicesFromPackage(config, packages);
+        addServicesFromPackage(config, packages, excludes);
         
         for (Class<?> clazz : clazzes) {
             config.addActiveDescriptor(clazz);
@@ -160,19 +183,19 @@ public class HK2Runner {
         this.verbose = verbose;
     }
     
-    private void addServicesFromDefault(final DynamicConfiguration config) {
+    private void addServicesFromDefault(final DynamicConfiguration config, final Set<String> excludes) {
         AccessController.doPrivileged(new PrivilegedAction<Object>() {
 
             @Override
             public Object run() {
-                internalAddServicesFromDefault(config);
+                internalAddServicesFromDefault(config, excludes);
                 return null;
             }
             
         });
     }
     
-    private void internalAddServicesFromDefault(DynamicConfiguration config) {
+    private void internalAddServicesFromDefault(DynamicConfiguration config, Set<String> excludes) {
         ClassLoader loader = this.getClass().getClassLoader();
         
         Enumeration<URL> resources;
@@ -198,7 +221,7 @@ public class HK2Runner {
                     DescriptorImpl bindMe = new DescriptorImpl();
                 
                     goOn = bindMe.readObject(reader);
-                    if (goOn == true) {
+                    if (goOn == true && !excludes.contains(bindMe.getImplementation())) {
                         config.bind(bindMe);
                     }
                 }
@@ -214,19 +237,19 @@ public class HK2Runner {
         
     }
     
-    private void addServicesFromPackage(final DynamicConfiguration config, final List<String> packages) {
+    private void addServicesFromPackage(final DynamicConfiguration config, final List<String> packages, final Set<String> excludes) {
         AccessController.doPrivileged(new PrivilegedAction<Object>() {
 
             @Override
             public Object run() {
-                internalAddServicesFromPackage(config, packages);
+                internalAddServicesFromPackage(config, packages, excludes);
                 return null;
             }
             
         });
     }
     
-    private void internalAddServicesFromPackage(DynamicConfiguration config, List<String> packages) {
+    private void internalAddServicesFromPackage(DynamicConfiguration config, List<String> packages, Set<String> excludes) {
         if (packages.isEmpty()) {
             return;
         }
@@ -237,24 +260,24 @@ public class HK2Runner {
         while(st.hasMoreTokens()) {
             String pathElement = st.nextToken();
             
-            addServicesFromPathElement(config, packages, pathElement);
+            addServicesFromPathElement(config, packages, pathElement, excludes);
         }
         
     }
     
-    private void addServicesFromPathElement(DynamicConfiguration config, List<String> packages, String element) {
+    private void addServicesFromPathElement(DynamicConfiguration config, List<String> packages, String element, Set<String> excludes) {
         File fileElement = new File(element);
         if (!fileElement.exists()) return;
         
         if (fileElement.isDirectory()) {
-            addServicesFromPathDirectory(config, packages, fileElement);
+            addServicesFromPathDirectory(config, packages, fileElement, excludes);
         }
         else {
-            addServicesFromPathJar(config, packages, fileElement);
+            addServicesFromPathJar(config, packages, fileElement, excludes);
         }
     }
     
-    private void addServicesFromPathDirectory(DynamicConfiguration config, List<String> packages, File directory) {
+    private void addServicesFromPathDirectory(DynamicConfiguration config, List<String> packages, File directory, Set<String> excludes) {
         for (String pack : packages) {
             File searchDir = new File(directory, convertToFileFormat(pack));
             if (!searchDir.exists()) continue;
@@ -277,7 +300,7 @@ public class HK2Runner {
                 try {
                     FileInputStream fis = new FileInputStream(candidate);
                     
-                    addClassIfService(fis);
+                    addClassIfService(fis, excludes);
                 }
                 catch (IOException ioe) {
                     // Just don't add it
@@ -287,7 +310,7 @@ public class HK2Runner {
         
     }
     
-    private void addServicesFromPathJar(DynamicConfiguration config, List<String> packages, File jar) {
+    private void addServicesFromPathJar(DynamicConfiguration config, List<String> packages, File jar, Set<String> excludes) {
         JarFile jarFile;
         try {
             jarFile = new JarFile(jar);
@@ -321,7 +344,7 @@ public class HK2Runner {
                     }
                 
                     try {
-                        addClassIfService(jarFile.getInputStream(entry));
+                        addClassIfService(jarFile.getInputStream(entry), excludes);
                     }
                     catch (IOException ioe) {
                         // Simply don't add it if we can't read it
@@ -339,10 +362,10 @@ public class HK2Runner {
         }
     }
     
-    private void addClassIfService(InputStream is) throws IOException {
+    private void addClassIfService(InputStream is, Set<String> excludes) throws IOException {
         ClassReader reader = new ClassReader(is);
         
-        ClassVisitorImpl cvi = new ClassVisitorImpl(testLocator, verbose);
+        ClassVisitorImpl cvi = new ClassVisitorImpl(testLocator, verbose, excludes);
         
         reader.accept(cvi, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
         
