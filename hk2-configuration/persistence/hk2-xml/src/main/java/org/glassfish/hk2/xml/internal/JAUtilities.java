@@ -99,7 +99,7 @@ public class JAUtilities {
     /* package */ final static String ADD = "add";
     /* package */ final static String REMOVE = "remove";
     /* package */ final static String JAXB_DEFAULT_STRING = "##default";
-    /* package */ final static String JAXB_DEFAULT_DEFAULT = "\u0000";
+    public final static String JAXB_DEFAULT_DEFAULT = "\u0000";
     
     private final static String CLASS_ADD_ON_NAME = "_$$_Hk2_Jaxb";
     private final static HashSet<String> DO_NOT_HANDLE_METHODS = new HashSet<String>();

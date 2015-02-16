@@ -59,7 +59,7 @@ public class DefaultingTest {
      * Tests that we can default values with JAXB 
      * @throws Exception
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testDefaultedValues() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -70,7 +70,37 @@ public class DefaultingTest {
         DefaultedBean db = rootHandle.getRoot();
         
         Assert.assertEquals(13, db.getIntProp());
+        Assert.assertEquals(13L, db.getLongProp());
+        Assert.assertEquals((byte) 13, db.getByteProp());
+        Assert.assertEquals(true, db.isBooleanProp());
+        Assert.assertEquals((short) 13, db.getShortProp());
+        Assert.assertEquals('f', db.getCharProp());
+        Assert.assertEquals(0, Float.compare((float) 13.00, db.getFloatProp()));
+        Assert.assertEquals(0, Double.compare(13.00, db.getDoubleProp()));
+    }
+    
+    /**
+     * Tests that we can default values with JAXB 
+     * @throws Exception
+     */
+    @Test // @org.junit.Ignore
+    public void testDefaultDefaultedValues() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
         
+        URL url = getClass().getClassLoader().getResource(DEFAULTING_FILE);
+        
+        XmlRootHandle<DefaultedBean> rootHandle = xmlService.unmarshall(url.toURI(), DefaultedBean.class);
+        DefaultedBean db = rootHandle.getRoot();
+        
+        Assert.assertEquals(0, db.getDefaultIntProp());
+        Assert.assertEquals(0L, db.getDefaultLongProp());
+        Assert.assertEquals((byte) 0, db.getDefaultByteProp());
+        Assert.assertEquals(false, db.isDefaultBooleanProp());
+        Assert.assertEquals((short) 0, db.getDefaultShortProp());
+        Assert.assertEquals((char) 0, db.getDefaultCharProp());
+        Assert.assertEquals(0, Float.compare((float) 0.00, db.getDefaultFloatProp()));
+        Assert.assertEquals(0, Double.compare(0.00, db.getDefaultDoubleProp()));
     }
 
 }

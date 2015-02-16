@@ -66,6 +66,7 @@ import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlHubCommitMessage;
 import org.glassfish.hk2.xml.api.annotations.Customizer;
 import org.glassfish.hk2.xml.internal.DynamicChangeInfo;
+import org.glassfish.hk2.xml.internal.JAUtilities;
 import org.glassfish.hk2.xml.internal.ParentedNode;
 import org.glassfish.hk2.xml.internal.UnparentedNode;
 import org.glassfish.hk2.xml.internal.Utilities;
@@ -83,6 +84,15 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
     private final static String EMPTY = "";
     private final static char XML_PATH_SEPARATOR = '/';
     private final static String NOT_UNIQUE_UNIQUE_ID = "not-unique";
+    
+    private final static Boolean DEFAULT_BOOLEAN = Boolean.FALSE;
+    private final static Byte DEFAULT_BYTE = new Byte((byte) 0);
+    private final static Character DEFAULT_CHARACTER = new Character((char) 0);
+    private final static Short DEFAULT_SHORT = new Short((short) 0);
+    private final static Integer DEFAULT_INTEGER = new Integer(0);
+    private final static Long DEFAULT_LONG = new Long(0L);
+    private final static Float DEFAULT_FLOAT = new Float(0);
+    private final static Double DEFAULT_DOUBLE = new Double((double) 0);
     
     /**
      * All fields, including child lists and direct children
@@ -213,7 +223,73 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         _setProperty(propName, (Double) propValue);
     }
     
+    private Object getDefaultValue(String propName, Class<?> expectedClass) {
+        String givenStringDefault = model.getDefaultChildValue(propName);
+        if (givenStringDefault == null || JAUtilities.JAXB_DEFAULT_DEFAULT.equals(givenStringDefault)) {
+            if (int.class.equals(expectedClass)) {
+                return DEFAULT_INTEGER;
+            }
+            if (long.class.equals(expectedClass)) {
+                return DEFAULT_LONG;
+            }
+            if (boolean.class.equals(expectedClass)) {
+                return DEFAULT_BOOLEAN;
+            }
+            if (short.class.equals(expectedClass)) {
+                return DEFAULT_SHORT;
+            }
+            if (byte.class.equals(expectedClass)) {
+                return DEFAULT_BYTE;
+            }
+            if (char.class.equals(expectedClass)) {
+                return DEFAULT_CHARACTER;
+            }
+            if (float.class.equals(expectedClass)) {
+                return DEFAULT_FLOAT;
+            }
+            if (double.class.equals(expectedClass)) {
+                return DEFAULT_DOUBLE;
+            }
+            
+            return null;
+        }
+        
+        if (String.class.equals(expectedClass)) {
+            return givenStringDefault;
+        }
+        if (int.class.equals(expectedClass)) {
+            return Integer.parseInt(givenStringDefault);
+        }
+        if (long.class.equals(expectedClass)) {
+            return Long.parseLong(givenStringDefault);
+        }
+        if (boolean.class.equals(expectedClass)) {
+            return Boolean.parseBoolean(givenStringDefault);
+        }
+        if (short.class.equals(expectedClass)) {
+            return Short.parseShort(givenStringDefault);
+        }
+        if (byte.class.equals(expectedClass)) {
+            return Byte.parseByte(givenStringDefault);
+        }
+        if (char.class.equals(expectedClass)) {
+            return givenStringDefault.charAt(0);
+        }
+        if (float.class.equals(expectedClass)) {
+            return Float.parseFloat(givenStringDefault);
+        }
+        if (double.class.equals(expectedClass)) {
+            return Double.parseDouble(givenStringDefault);
+        }
+        
+        throw new AssertionError("Default for type " + expectedClass.getName() + " not implemented");
+    }
+    
     public Object _getProperty(String propName) {
+        return _getProperty(propName, null);
+    }
+    
+    public Object _getProperty(String propName, Class<?> expectedClass) {
         Object retVal;
         if (changeControl == null) {
             retVal = beanLikeMap.get(propName);
@@ -228,6 +304,10 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
             }
         }
         
+        if (retVal == null && expectedClass != null) {
+            retVal = getDefaultValue(propName, expectedClass);
+        }
+        
         if (DEBUG_GETS_AND_SETS) {
             // Hidden behind static because of potential expensive toString costs
             Logger.getLogger().debug("XmlService getting property " + propName + "=" + retVal + " in " + this);
@@ -237,35 +317,35 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
     }
     
     public boolean _getPropertyZ(String propName) {
-        return (Boolean) _getProperty(propName);
+        return (Boolean) _getProperty(propName, boolean.class);
     }
     
     public byte _getPropertyB(String propName) {
-        return (Byte) _getProperty(propName);
+        return (Byte) _getProperty(propName, byte.class);
     }
     
     public char _getPropertyC(String propName) {
-        return (Character) _getProperty(propName);
+        return (Character) _getProperty(propName, char.class);
     }
     
     public short _getPropertyS(String propName) {
-        return (Short) _getProperty(propName);
+        return (Short) _getProperty(propName, short.class);
     }
     
     public int _getPropertyI(String propName) {
-        return (Integer) _getProperty(propName);
+        return (Integer) _getProperty(propName, int.class);
     }
     
     public float _getPropertyF(String propName) {
-        return (Float) _getProperty(propName);
+        return (Float) _getProperty(propName, float.class);
     }
     
     public long _getPropertyJ(String propName) {
-        return (Long) _getProperty(propName);
+        return (Long) _getProperty(propName, long.class);
     }
     
     public double _getPropertyD(String propName) {
-        return (Double) _getProperty(propName);
+        return (Double) _getProperty(propName, double.class);
     }
     
     @SuppressWarnings("unchecked")

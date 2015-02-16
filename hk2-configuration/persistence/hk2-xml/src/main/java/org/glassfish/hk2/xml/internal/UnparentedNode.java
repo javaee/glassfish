@@ -205,6 +205,12 @@ public class UnparentedNode implements Serializable {
     public boolean isPlaceholder() {
         return isPlaceholder;
     }
+    
+    public String getDefaultChildValue(String propName) {
+        synchronized (lock) {
+            return nonChildProperty.get(propName);
+        }
+    }
 
     @Override
     public String toString() {

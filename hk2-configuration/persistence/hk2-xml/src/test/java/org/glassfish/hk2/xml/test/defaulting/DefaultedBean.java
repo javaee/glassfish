@@ -91,7 +91,7 @@ public interface DefaultedBean {
     public void setBooleanProp(boolean prop);
     
     @XmlElement(name="char-prop", defaultValue="f")
-    public char isCharProp();
+    public char getCharProp();
     public void setCharProp(char prop);
     
     @XmlElement(name="float-prop", defaultValue="13.00")
@@ -106,5 +106,15 @@ public interface DefaultedBean {
     public String getStringProp();
     public void setStringProp(String prop);
     
-
+    // Below are testing the default defaults which should all be zero
+    
+    public int getDefaultIntProp();
+    public long getDefaultLongProp();
+    public short getDefaultShortProp();
+    public short getDefaultByteProp();
+    public boolean isDefaultBooleanProp();
+    public char getDefaultCharProp();
+    public float getDefaultFloatProp();
+    public double getDefaultDoubleProp();
+    public String getDefaultStringProp();
 }
