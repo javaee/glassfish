@@ -75,8 +75,8 @@ public class UnparentedNode implements Serializable {
     /** A map from the property name (not the xml tag) to the parented child node */
     private final Map<String, ParentedNode> childrenByName = new HashMap<String, ParentedNode>();
     
-    /** A set of all non-child properties of this node */
-    private final Set<String> nonChildProperty = new HashSet<String>();
+    /** A map from non-child property name to the default value */
+    private final Map<String, String> nonChildProperty = new HashMap<String, String>();
     
     private Set<String> unKeyedChildren = null;
     
@@ -136,9 +136,9 @@ public class UnparentedNode implements Serializable {
         }
     }
     
-    public void addNonChildProperty(String xmlTag) {
+    public void addNonChildProperty(String xmlTag, String defaultValue) {
         synchronized (lock) {
-            nonChildProperty.add(xmlTag);
+            nonChildProperty.put(xmlTag, defaultValue);
         }
     }
     
@@ -183,9 +183,9 @@ public class UnparentedNode implements Serializable {
         }
     }
     
-    public Set<String> getNonChildProperties() {
+    public Map<String, String> getNonChildProperties() {
         synchronized (lock) {
-            return Collections.unmodifiableSet(nonChildProperty);
+            return Collections.unmodifiableMap(nonChildProperty);
         }
     }
     

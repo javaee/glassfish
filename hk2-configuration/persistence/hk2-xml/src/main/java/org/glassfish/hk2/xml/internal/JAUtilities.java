@@ -181,7 +181,7 @@ public class JAUtilities {
     }
     
     private static NameInformation getXmlNameMap(Class<?> convertMe) {
-        Map<String, String> xmlNameMap = new HashMap<String, String>();
+        Map<String, XmlElementData> xmlNameMap = new HashMap<String, XmlElementData>();
         HashSet<String> unmappedNames = new HashSet<String>();
         
         for (Method originalMethod : convertMe.getMethods()) {
@@ -193,21 +193,23 @@ public class JAUtilities {
             
             XmlElement xmlElement = originalMethod.getAnnotation(XmlElement.class);
             if (xmlElement != null) {
+                String defaultValue = xmlElement.defaultValue();
+                
                 if (JAXB_DEFAULT_STRING.equals(xmlElement.name())) {
-                    xmlNameMap.put(setterVariable, setterVariable);
+                    xmlNameMap.put(setterVariable, new XmlElementData(setterVariable, defaultValue));
                 }
                 else {
-                    xmlNameMap.put(setterVariable, xmlElement.name());
+                    xmlNameMap.put(setterVariable, new XmlElementData(xmlElement.name(), defaultValue));
                 }
             }
             else {
                 XmlAttribute xmlAttribute = originalMethod.getAnnotation(XmlAttribute.class);
                 if (xmlAttribute != null) {
                     if (JAXB_DEFAULT_STRING.equals(xmlAttribute.name())) {
-                        xmlNameMap.put(setterVariable, setterVariable);
+                        xmlNameMap.put(setterVariable, new XmlElementData(setterVariable, JAXB_DEFAULT_DEFAULT));
                     }
                     else {
-                        xmlNameMap.put(setterVariable, xmlAttribute.name());
+                        xmlNameMap.put(setterVariable, new XmlElementData(xmlAttribute.name(), JAXB_DEFAULT_DEFAULT));
                     }
                 }
                 else {
@@ -313,7 +315,7 @@ public class JAUtilities {
                         }
                     }
                     else {
-                        retVal.addNonChildProperty(mi.representedProperty);
+                        retVal.addNonChildProperty(mi.representedProperty, mi.defaultValue);
                     }
                 }
             }
@@ -634,7 +636,7 @@ public class JAUtilities {
                     }
                 }
                 else {
-                    retVal.addNonChildProperty(mi.representedProperty);
+                    retVal.addNonChildProperty(mi.representedProperty, mi.defaultValue);
                 }
             }
             
@@ -957,6 +959,8 @@ public class JAUtilities {
         String representedProperty = xmlNameMap.getNameMap(variable);
         if (representedProperty == null) representedProperty = variable;
         
+        String defaultValue = xmlNameMap.getDefaultNameMap(variable);
+        
         boolean key = false;
         if ((m.getAnnotation(XmlID.class) != null) || (m.getAnnotation(XmlIdentifier.class) != null)) {
             key = true;
@@ -965,6 +969,7 @@ public class JAUtilities {
         return new MethodInformation(m,
                 methodType,
                 representedProperty,
+                defaultValue,
                 baseChildType,
                 gsType,
                 key,
@@ -977,6 +982,7 @@ public class JAUtilities {
         private final MethodType methodType;
         private final Class<?> getterSetterType;
         private final String representedProperty;
+        private final String defaultValue;
         private final Class<?> baseChildType;
         private final boolean key;
         private final boolean isList;
@@ -985,6 +991,7 @@ public class JAUtilities {
         private MethodInformation(Method originalMethod,
                 MethodType methodType,
                 String representedProperty,
+                String defaultValue,
                 Class<?> baseChildType,
                 Class<?> gsType,
                 boolean key,
@@ -993,6 +1000,7 @@ public class JAUtilities {
             this.originalMethod = originalMethod;
             this.methodType = methodType;
             this.representedProperty = representedProperty;
+            this.defaultValue = defaultValue;
             this.baseChildType = baseChildType;
             this.getterSetterType = gsType;
             this.key = key;
@@ -1006,6 +1014,7 @@ public class JAUtilities {
               "type=" + methodType + "," +
               "getterType=" + getterSetterType + "," +
               "representedProperty=" + representedProperty + "," +
+              "defaultValue=" + defaultValue + "," +
               "baseChildType=" + baseChildType + "," +
               "key=" + key + "," +
               "isList=" + isList + "," +
@@ -1016,10 +1025,10 @@ public class JAUtilities {
     }
     
     private static class NameInformation {
-        private final Map<String, String> nameMapping;
+        private final Map<String, XmlElementData> nameMapping;
         private final Set<String> noXmlElement;
         
-        private NameInformation(Map<String, String> nameMapping, Set<String> unmappedNames) {
+        private NameInformation(Map<String, XmlElementData> nameMapping, Set<String> unmappedNames) {
             this.nameMapping = nameMapping;
             this.noXmlElement = unmappedNames;
         }
@@ -1027,12 +1036,28 @@ public class JAUtilities {
         private String getNameMap(String mapMe) {
             if (mapMe == null) return null;
             if (!nameMapping.containsKey(mapMe)) return mapMe;
-            return nameMapping.get(mapMe);
+            return nameMapping.get(mapMe).name;
+        }
+        
+        private String getDefaultNameMap(String mapMe) {
+            if (mapMe == null) return JAXB_DEFAULT_DEFAULT;
+            if (!nameMapping.containsKey(mapMe)) return JAXB_DEFAULT_DEFAULT;
+            return nameMapping.get(mapMe).defaultValue;
         }
         
         private boolean hasNoXmlElement(String variableName) {
             if (variableName == null) return true;
             return noXmlElement.contains(variableName);
+        }
+    }
+    
+    private static class XmlElementData {
+        private final String name;
+        private final String defaultValue;
+        
+        private XmlElementData(String name, String defaultValue) {
+            this.name = name;
+            this.defaultValue = defaultValue;
         }
     }
     
