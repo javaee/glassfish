@@ -322,7 +322,7 @@ public class JAUtilities {
         return retVal;
     }
     
-    private static Class<?> generate(Class<?> convertMe,
+    private static void generate(Class<?> convertMe,
             ClassReflectionHelper helper,
             CtClass superClazz,
             ClassPool defaultClassPool) throws Throwable {
@@ -688,9 +688,7 @@ public class JAUtilities {
             targetCtClass.addMethod(addMeCtMethod);
         }
         
-        Class<?> proxy = targetCtClass.toClass(convertMe.getClassLoader(), convertMe.getProtectionDomain());
-        
-        return proxy;
+        targetCtClass.toClass(convertMe.getClassLoader(), convertMe.getProtectionDomain());
     }
     
     private static void createAnnotationCopy(ConstPool parent, java.lang.annotation.Annotation javaAnnotation,
