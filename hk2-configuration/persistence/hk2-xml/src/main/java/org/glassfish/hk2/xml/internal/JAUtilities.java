@@ -232,99 +232,101 @@ public class JAUtilities {
         Logger.getLogger().debug("XmlService converting " + convertMe.getName());
         UnparentedNode retVal = new UnparentedNode(convertMe);
         
-        CtClass originalCtClass = defaultClassPool.get(convertMe.getName());
         String targetClassName = convertMe.getName() + CLASS_ADD_ON_NAME;
-        
         CtClass foundClass = defaultClassPool.getOrNull(targetClassName);
-        if (foundClass != null) {
-            Class<?> proxy = convertMe.getClassLoader().loadClass(targetClassName);
+        
+        if (foundClass == null) {
+            generate(convertMe,
+                    helper,
+                    superClazz,
+                    defaultClassPool);
             
-            for (java.lang.annotation.Annotation convertMeAnnotation : convertMe.getAnnotations()) {
-                if (!XmlRootElement.class.equals(convertMeAnnotation.annotationType())) continue;
+            foundClass = defaultClassPool.getOrNull(targetClassName);
+        }
+        
+        Class<?> proxy = convertMe.getClassLoader().loadClass(targetClassName);
+            
+        for (java.lang.annotation.Annotation convertMeAnnotation : convertMe.getAnnotations()) {
+            if (!XmlRootElement.class.equals(convertMeAnnotation.annotationType())) continue;
                 
-                XmlRootElement xre = (XmlRootElement) convertMeAnnotation;
+            XmlRootElement xre = (XmlRootElement) convertMeAnnotation;
                     
-                String rootName = Utilities.convertXmlRootElementName(xre, convertMe);
-                retVal.setRootName(rootName);
+            String rootName = Utilities.convertXmlRootElementName(xre, convertMe);
+            retVal.setRootName(rootName);
+        }
+            
+        NameInformation xmlNameMap = getXmlNameMap(convertMe);
+            
+        HashMap<Class<?>, String> childTypes = new HashMap<Class<?>, String>();
+        MethodInformation foundKey = null;
+        for (MethodWrapper wrapper : helper.getAllMethods(convertMe)) {
+            Method originalMethod = wrapper.getMethod();
+            MethodInformation mi = getMethodInformation(originalMethod, xmlNameMap);
+                
+            if (DEBUG_METHODS) {
+                Logger.getLogger().debug("Analyzing method " + mi + " of " + convertMe.getSimpleName());
             }
-            
-            NameInformation xmlNameMap = getXmlNameMap(convertMe);
-            
-            HashMap<Class<?>, String> childTypes = new HashMap<Class<?>, String>();
-            MethodInformation foundKey = null;
-            for (MethodWrapper wrapper : helper.getAllMethods(convertMe)) {
-                Method originalMethod = wrapper.getMethod();
-                MethodInformation mi = getMethodInformation(originalMethod, xmlNameMap);
                 
-                if (DEBUG_METHODS) {
-                    Logger.getLogger().debug("Analyzing method " + mi + " of " + convertMe.getSimpleName());
+            if (mi.key) {
+                if (foundKey != null) {
+                    throw new RuntimeException("Class " + convertMe.getName() + " has multiple key properties (" + originalMethod.getName() +
+                            " and " + foundKey.originalMethod.getName());
                 }
-                
-                if (mi.key) {
-                    if (foundKey != null) {
-                        throw new RuntimeException("Class " + convertMe.getName() + " has multiple key properties (" + originalMethod.getName() +
-                                " and " + foundKey.originalMethod.getName());
-                    }
-                    foundKey = mi;
+                foundKey = mi;
                     
-                    retVal.setKeyProperty(mi.representedProperty);
-                }
+                retVal.setKeyProperty(mi.representedProperty);
+            }
                 
-                boolean getterOrSetter = false;
-                UnparentedNode childType = null;
-                if (MethodType.SETTER.equals(mi.methodType)) {
-                    getterOrSetter = true;
-                    if (mi.baseChildType != null) {
-                        if (!interface2NodeCache.containsKey(mi.baseChildType)) {
-                            // Must use a placeholder
-                            childType = new UnparentedNode(mi.baseChildType, true);
-                        }
-                        else {
-                            childType = interface2NodeCache.get(mi.baseChildType);
-                        }
-                    }
-                }
-                else if (MethodType.GETTER.equals(mi.methodType)) {
-                    getterOrSetter = true;
-                    if (mi.baseChildType != null) {
-                        if (!interface2NodeCache.containsKey(mi.baseChildType)) {
-                            // Must use a placeholder
-                            childType = new UnparentedNode(mi.baseChildType, true);
-                        }
-                        else {
-                            childType = interface2NodeCache.get(mi.baseChildType);
-                        }
-                    }
-                }
-                
-                if (getterOrSetter) {
-                    if (childType != null) {
-                        if (childTypes.containsKey(childType.getOriginalInterface())) {
-                            String variableName = childTypes.get(childType.getOriginalInterface());
-                            if (!variableName.equals(mi.representedProperty)) {
-                                throw new RuntimeException(
-                                    "Multiple children of " + convertMe.getName() +
-                                    " cannot have the same type.  Consider extending one or more of these to disambiguate the child: " +
-                                    childType.getOriginalInterface().getName());
-                            }
-                        }
-                        else {
-                            childTypes.put(childType.getOriginalInterface(), mi.representedProperty);
-                        
-                            retVal.addChild(mi.representedProperty, mi.isList, mi.isArray, childType);
-                        }
+            boolean getterOrSetter = false;
+            UnparentedNode childType = null;
+            if (MethodType.SETTER.equals(mi.methodType)) {
+                getterOrSetter = true;
+                if (mi.baseChildType != null) {
+                    if (!interface2NodeCache.containsKey(mi.baseChildType)) {
+                        // Must use a placeholder
+                        childType = new UnparentedNode(mi.baseChildType, true);
                     }
                     else {
-                        retVal.addNonChildProperty(mi.representedProperty, mi.defaultValue);
+                        childType = interface2NodeCache.get(mi.baseChildType);
                     }
                 }
             }
-            
-            retVal.setTranslatedClass(proxy);
-            proxy2NodeCache.put(proxy, retVal);
-            
-            return retVal;
+            else if (MethodType.GETTER.equals(mi.methodType)) {
+                getterOrSetter = true;
+                if (mi.baseChildType != null) {
+                    if (!interface2NodeCache.containsKey(mi.baseChildType)) {
+                        // Must use a placeholder
+                        childType = new UnparentedNode(mi.baseChildType, true);
+                    }
+                    else {
+                        childType = interface2NodeCache.get(mi.baseChildType);
+                    }
+                }
+            }
+                
+            if (getterOrSetter) {
+                if (childType != null) {
+                    childTypes.put(childType.getOriginalInterface(), mi.representedProperty);
+                        
+                    retVal.addChild(mi.representedProperty, mi.isList, mi.isArray, childType);
+                }
+                else {
+                    retVal.addNonChildProperty(mi.representedProperty, mi.defaultValue);
+                }
+            }
         }
+            
+        retVal.setTranslatedClass(proxy);
+        proxy2NodeCache.put(proxy, retVal);
+            
+        return retVal;
+    }
+    
+    private static Class<?> generate(Class<?> convertMe,
+            ClassReflectionHelper helper,
+            CtClass superClazz,
+            ClassPool defaultClassPool) throws Throwable {
+        String targetClassName = convertMe.getName() + CLASS_ADD_ON_NAME;
         
         CtClass targetCtClass = defaultClassPool.makeClass(targetClassName);
         ClassFile targetClassFile = targetCtClass.getClassFile();
@@ -352,7 +354,6 @@ public class JAUtilities {
                 XmlRootElement xre = (XmlRootElement) convertMeAnnotation;
                 
                 String rootName = Utilities.convertXmlRootElementName(xre, convertMe);
-                retVal.setRootName(rootName);
                 
                 XmlRootElement replacement = new XmlRootElementImpl(xre.namespace(), rootName);
                 
@@ -366,6 +367,8 @@ public class JAUtilities {
             targetClassFile.addAttribute(ctAnnotations);
         }
         
+        CtClass originalCtClass = defaultClassPool.get(convertMe.getName());
+        
         targetCtClass.setSuperclass(superClazz);
         targetCtClass.addInterface(originalCtClass);
         
@@ -373,8 +376,6 @@ public class JAUtilities {
         HashSet<String> alreadyAddedNaked = new HashSet<String>();
         
         HashMap<Class<?>, String> childTypes = new HashMap<Class<?>, String>();
-        MethodInformation foundKey = null;
-        
         
         Set<MethodWrapper> allMethods = helper.getAllMethods(convertMe);
         if (DEBUG_METHODS) {
@@ -389,16 +390,6 @@ public class JAUtilities {
             
             if (DEBUG_METHODS) {
                 Logger.getLogger().debug("Analyzing method " + mi + " of " + convertMe.getSimpleName());
-            }
-            
-            if (mi.key) {
-                if (foundKey != null) {
-                    throw new RuntimeException("Class " + convertMe.getName() + " has multiple key properties (" + originalMethod.getName() +
-                            " and " + foundKey.originalMethod.getName());
-                }
-                foundKey = mi;
-                
-                retVal.setKeyProperty(mi.representedProperty);
             }
             
             String name = originalMethod.getName();
@@ -418,21 +409,13 @@ public class JAUtilities {
             
             sb.append(name + "(");
             
-            UnparentedNode childType = null;
+            Class<?> childType = null;
             boolean getterOrSetter = false;
             if (MethodType.SETTER.equals(mi.methodType)) {
                 getterOrSetter = true;
                 setters.add(mi.representedProperty);
                 
-                if (mi.baseChildType != null) {
-                    if (!interface2NodeCache.containsKey(mi.baseChildType)) {
-                        // Must use placeholder
-                        childType = new UnparentedNode(mi.baseChildType, true);
-                    }
-                    else {
-                        childType = interface2NodeCache.get(mi.baseChildType);
-                    }
-                }
+                childType = mi.baseChildType;
                 
                 sb.append(Utilities.getCompilableClass(mi.getterSetterType) + " arg0) { super._setProperty(\"" + mi.representedProperty + "\", arg0); }");
             }
@@ -440,15 +423,7 @@ public class JAUtilities {
                 getterOrSetter = true;
                 getters.put(mi.representedProperty, mi);
                 
-                if (mi.baseChildType != null) {
-                    if (!interface2NodeCache.containsKey(mi.baseChildType)) {
-                        // Must use placeholder
-                        childType = new UnparentedNode(mi.baseChildType, true);
-                    }
-                    else {
-                        childType = interface2NodeCache.get(mi.baseChildType);
-                    }
-                }
+                childType = mi.baseChildType;
                 
                 String cast = "";
                 String superMethodName = "_getProperty";
@@ -627,17 +602,10 @@ public class JAUtilities {
                 sb.append("super." + superMethodName + "(\"" + name + "\", mParams, mVars);}");
             }
             
-            if (getterOrSetter) {
-                if (childType != null) {
-                    if (!childTypes.containsKey(childType.getOriginalInterface())) {
-                        childTypes.put(childType.getOriginalInterface(), mi.representedProperty);
-                        
-                        retVal.addChild(mi.representedProperty, mi.isList, mi.isArray, childType);   
-                    }
-                }
-                else {
-                    retVal.addNonChildProperty(mi.representedProperty, mi.defaultValue);
-                }
+            if (getterOrSetter && 
+                    (childType != null) &&
+                    !childTypes.containsKey(childType)) {
+                childTypes.put(childType, mi.representedProperty);
             }
             
             if (DEBUG_METHODS) {
@@ -661,26 +629,15 @@ public class JAUtilities {
                 if ((childType != null) && XmlElement.class.equals(convertMeAnnotation.annotationType())) {
                     XmlElement original = (XmlElement) convertMeAnnotation;
                         
-                    // Use generated child class
-                    if (!childType.isPlaceholder()) {
-                        convertMeAnnotation = new XmlElementImpl(
+                    
+                    String translatedClassName = childType.getName() + CLASS_ADD_ON_NAME;
+                    convertMeAnnotation = new XmlElementImpl(
                             original.name(),
                             original.nillable(),
                             original.required(),
                             original.namespace(),
                             original.defaultValue(),
-                            childType.getTranslatedClass());
-                    }
-                    else {
-                        String translatedClassName = childType.getOriginalInterface().getName() + CLASS_ADD_ON_NAME;
-                        convertMeAnnotation = new XmlElementImpl(
-                                original.name(),
-                                original.nillable(),
-                                original.required(),
-                                original.namespace(),
-                                original.defaultValue(),
-                                translatedClassName);
-                    }
+                            translatedClassName);
                 }
                     
                 createAnnotationCopy(methodConstPool, convertMeAnnotation, ctAnnotations);
@@ -695,25 +652,14 @@ public class JAUtilities {
                 }
                 
                 java.lang.annotation.Annotation convertMeAnnotation;
-                if (!childType.isPlaceholder()) {
-                    convertMeAnnotation = new XmlElementImpl(
+                String translatedClassName = childType.getName() + CLASS_ADD_ON_NAME;
+                convertMeAnnotation = new XmlElementImpl(
                         JAXB_DEFAULT_STRING,
                         false,
                         false,
                         JAXB_DEFAULT_STRING,
                         JAXB_DEFAULT_DEFAULT,
-                        childType.getTranslatedClass());
-                }
-                else {
-                    String translatedClassName = childType.getOriginalInterface().getName() + CLASS_ADD_ON_NAME;
-                    convertMeAnnotation = new XmlElementImpl(
-                            JAXB_DEFAULT_STRING,
-                            false,
-                            false,
-                            JAXB_DEFAULT_STRING,
-                            JAXB_DEFAULT_DEFAULT,
-                            translatedClassName);
-                }
+                        translatedClassName);
                 
                 createAnnotationCopy(methodConstPool, convertMeAnnotation, ctAnnotations);
             }
@@ -744,10 +690,7 @@ public class JAUtilities {
         
         Class<?> proxy = targetCtClass.toClass(convertMe.getClassLoader(), convertMe.getProtectionDomain());
         
-        retVal.setTranslatedClass(proxy);
-        proxy2NodeCache.put(proxy, retVal);
-        
-        return retVal;
+        return proxy;
     }
     
     private static void createAnnotationCopy(ConstPool parent, java.lang.annotation.Annotation javaAnnotation,
@@ -847,7 +790,6 @@ public class JAUtilities {
             needsToBeConverted.add(toBeConverted);
         }
         finally {
-            // TODO Auto-generated catch block
             cycleDetector.remove(toBeConverted);
         }
     }
