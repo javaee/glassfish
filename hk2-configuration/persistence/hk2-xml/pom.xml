@@ -56,6 +56,12 @@
     <build>
         <plugins>
             <plugin>
+              <artifactId>maven-compiler-plugin</artifactId>
+              <configuration>
+                <compilerArgument>-proc:none</compilerArgument>
+              </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.glassfish.hk2</groupId>
                 <artifactId>osgiversion-maven-plugin</artifactId>
             </plugin>             

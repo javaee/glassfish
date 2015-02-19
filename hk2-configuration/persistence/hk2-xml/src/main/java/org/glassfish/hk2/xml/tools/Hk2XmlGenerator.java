@@ -37,24 +37,33 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.api.annotations;
+package org.glassfish.hk2.xml.tools;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.util.Set;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedSourceVersion;
+import javax.lang.model.SourceVersion;
+import javax.lang.model.element.TypeElement;
+import javax.tools.Diagnostic.Kind;
 
 /**
- * This annotation is placed on interfaces that should
- * have their implementations pre-generated at build time
- * 
  * @author jwells
+ *
  */
-@Documented
-@Retention(RUNTIME)
-@Target(TYPE)
-public @interface Hk2XmlPreGenerate {
+@SupportedAnnotationTypes("org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate")
+@SupportedSourceVersion(SourceVersion.RELEASE_6)
+public class Hk2XmlGenerator extends AbstractProcessor {
+
+    /* (non-Javadoc)
+     * @see javax.annotation.processing.AbstractProcessor#process(java.util.Set, javax.annotation.processing.RoundEnvironment)
+     */
+    @Override
+    public boolean process(Set<? extends TypeElement> annotations,
+            RoundEnvironment roundEnv) {
+        return true;
+    }
 
 }
