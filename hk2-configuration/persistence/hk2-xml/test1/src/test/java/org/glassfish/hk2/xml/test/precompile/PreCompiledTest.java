@@ -44,8 +44,7 @@ import java.net.URL;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
-import org.glassfish.hk2.xml.test.basic.UnmarshallTest;
-import org.glassfish.hk2.xml.test.utilities.Utilities;
+import org.glassfish.hk2.xml.test1.utilities.Utilities;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -56,6 +55,10 @@ import org.junit.Test;
 public class PreCompiledTest {
     private final static String CLASS_ADD_ON_NAME = "_$$_Hk2_Jaxb";
     private final static String PRE_COMPILED_FILE = "pre-compiled.xml";
+    private final static String ALICE = "Alice";
+    private final static String BOB = "Bob";
+    private final static String CAROL = "Carol";
+    private final static String DAVE = "Dave";
     
     private Class<?> getAssociatedClass(Class<?> forInterface) {
         ClassLoader loader = getClass().getClassLoader();
@@ -96,16 +99,16 @@ public class PreCompiledTest {
         
         PreCompiledRoot root = rootHandle.getRoot();
         
-        Assert.assertEquals(UnmarshallTest.ALICE, root.getPreCompiledMultiChild().get(0).getName());
+        Assert.assertEquals(ALICE, root.getPreCompiledMultiChild().get(0).getName());
         Assert.assertEquals("d1", root.getPreCompiledMultiChild().get(0).getData());
         
-        Assert.assertEquals(UnmarshallTest.BOB, root.getPreCompiledMultiChild().get(1).getName());
+        Assert.assertEquals(BOB, root.getPreCompiledMultiChild().get(1).getName());
         Assert.assertEquals("d2", root.getPreCompiledMultiChild().get(1).getData());
         
-        Assert.assertEquals(UnmarshallTest.CAROL, root.getMultiChild().get(0).getName());
+        Assert.assertEquals(CAROL, root.getMultiChild().get(0).getName());
         Assert.assertEquals(1, root.getMultiChild().get(0).getFoo());
         
-        Assert.assertEquals(UnmarshallTest.DAVE, root.getMultiChild().get(1).getName());
+        Assert.assertEquals(DAVE, root.getMultiChild().get(1).getName());
         Assert.assertEquals(2, root.getMultiChild().get(1).getFoo());
         
         Assert.assertEquals(7001, root.getPreCompiledDirectChild().getPort());
