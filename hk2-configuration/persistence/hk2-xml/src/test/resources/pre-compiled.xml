@@ -1,0 +1,22 @@
+<root>
+  <pre-compiled-multi-child data="d1">
+    <name>Alice</name>
+  </pre-compiled-multi-child>
+  <pre-compiled-multi-child data="d2">
+    <name>Bob</name>
+  </pre-compiled-multi-child>
+  <multi-child>
+    <name>Carol</name>
+    <foo>1</foo>
+  </multi-child>
+  <multi-child>
+    <name>Dave</name>
+    <foo>2</foo>
+  </multi-child>
+  <pre-compiled-direct-child>
+    <port>7001</port>
+  </pre-compiled-direct-child>
+  <direct-child>
+    <identifier>thirteen</identifier>
+  </direct-child>
+</root>
