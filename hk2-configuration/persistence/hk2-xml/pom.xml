@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010-2014 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -42,103 +42,19 @@
 -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.glassfish.hk2</groupId>
         <artifactId>hk2-configuration-persistence</artifactId>
         <version>2.4.0-b12-SNAPSHOT</version>
     </parent>
-    <artifactId>hk2-xml</artifactId>
+    <modelVersion>4.0.0</modelVersion>
     
-    <name>HK2 XML Reader</name>
-    <description>${project.name}</description>
+    <artifactId>hk2-xml-parent</artifactId>
+    <packaging>pom</packaging>
+    <name>HK2 XML Parser using JAXB</name>
     
-    <build>
-        <plugins>
-            <plugin>
-              <artifactId>maven-compiler-plugin</artifactId>
-              <configuration>
-                <compilerArgument>-proc:none</compilerArgument>
-              </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.glassfish.hk2</groupId>
-                <artifactId>osgiversion-maven-plugin</artifactId>
-            </plugin>             
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>test-jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.glassfish.hk2</groupId>
-                <artifactId>hk2-inhabitant-generator</artifactId>
-                <executions>
-                    <execution>
-                        <id>generate-inhabitants</id>
-                        <goals>
-                            <goal>generate-inhabitants</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>generate-test-inhabitants</id>
-                        <goals>
-                            <goal>generate-test-inhabitants</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>            
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>bundle-manifest</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>manifest</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <!-- Turns on debug logging -->
-                    <argLine>-Dorg.jvnet.hk2.logger.debugToStdout=false -Dorg.jvnet.hk2.properties.xmlservice.jaxb.getsandsets=false</argLine>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.glassfish.hk2</groupId>
-            <artifactId>hk2-configuration-hub</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.hk2</groupId>
-            <artifactId>hk2-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.hk2</groupId>
-            <artifactId>hk2-utils</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.javassist</groupId>
-            <artifactId>javassist</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.hk2</groupId>
-            <artifactId>hk2-junitrunner</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>main</module>
+        <module>test1</module>
+    </modules>
 </project>
