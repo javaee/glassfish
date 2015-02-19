@@ -39,15 +39,31 @@
  */
 package org.glassfish.hk2.xml.tools;
 
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.List;
+import java.util.Properties;
 import java.util.Set;
+
+import javassist.ClassPath;
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.NotFoundException;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic.Kind;
+
+import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 
 /**
  * @author jwells
@@ -56,6 +72,47 @@ import javax.tools.Diagnostic.Kind;
 @SupportedAnnotationTypes("org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate")
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 public class Hk2XmlGenerator extends AbstractProcessor {
+    private final ClassPool defaultClassPool;
+    private final CtClass superClazz;
+    
+    public Hk2XmlGenerator() {
+        super();
+        
+        defaultClassPool = new ClassPool(true);
+        
+        ClassLoader localLoader = getClass().getClassLoader();
+        if (!(localLoader instanceof URLClassLoader)) {
+            throw new RuntimeException("Unknown classloader: " + localLoader);
+        }
+        
+        @SuppressWarnings("resource")
+        URLClassLoader urlLoader = (URLClassLoader) localLoader;
+        
+        for (URL url : urlLoader.getURLs()) {
+            URI uri;
+            try {
+                uri = url.toURI();
+            }
+            catch (URISyntaxException e) {
+                throw new RuntimeException(e);
+            }
+            
+            File asFile = new File(uri);
+            try {
+                defaultClassPool.appendClassPath(asFile.getAbsolutePath());
+            }
+            catch (NotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        
+        try {
+            superClazz = defaultClassPool.get("org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean");
+        }
+        catch (NotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /* (non-Javadoc)
      * @see javax.annotation.processing.AbstractProcessor#process(java.util.Set, javax.annotation.processing.RoundEnvironment)
@@ -63,6 +120,21 @@ public class Hk2XmlGenerator extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> annotations,
             RoundEnvironment roundEnv) {
+        for (TypeElement annotation : annotations) {
+            Set<? extends Element> clazzes = roundEnv.getElementsAnnotatedWith(annotation);
+            
+            for (Element clazzElement : clazzes) {
+                if (!(clazzElement instanceof TypeElement)) continue;
+                
+                TypeElement clazz = (TypeElement) clazzElement;
+                
+                List<? extends Element> innerElements = processingEnv.getElementUtils().getAllMembers(clazz);
+                for (Element innerElementElement : innerElements) {
+                    processingEnv.getMessager().printMessage(Kind.NOTE, ("innerElementElement " + innerElementElement));
+                }
+            }
+            
+        }
         return true;
     }
 

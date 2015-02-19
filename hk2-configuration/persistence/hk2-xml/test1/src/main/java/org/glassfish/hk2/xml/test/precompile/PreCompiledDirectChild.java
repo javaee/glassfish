@@ -41,10 +41,13 @@ package org.glassfish.hk2.xml.test.precompile;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
+
 /**
  * @author jwells
  *
  */
+@Hk2XmlPreGenerate
 public interface PreCompiledDirectChild {
     @XmlElement
     public int getPort();
