@@ -37,7 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.internal.clazz;
+package org.glassfish.hk2.xml.internal.alt;
 
 import java.util.List;
 
@@ -45,19 +45,21 @@ import java.util.List;
  * @author jwells
  *
  */
-public interface InterfaceInformation {
+public interface AltMethod {
     public String getName();
     
-    public String getSimpleName();
+    public AltClass getReturnType();
     
-    List<AnnotationInformation> getAnnotations();
+    public List<AltClass> getParameterTypes();
     
-    List<AltMethodInformation> getMethods();
+    public AltClass getFirstTypeArgument();
     
-    public boolean isInterface();
+    public AltClass getFirstTypeArgumentOfParameter(int index);
     
-    public boolean isArray();
+    public AltAnnotation getAnnotation(String annotation);
     
-    public InterfaceInformation getComponentType();
+    public List<AltAnnotation> getAnnotations();
+    
+    public boolean isVarArgs();
 
 }

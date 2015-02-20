@@ -37,31 +37,20 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.internal.clazz;
+package org.glassfish.hk2.xml.internal.alt;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * @author jwells
  *
  */
-public interface AltMethodInformation {
-    public String getName();
+public interface AltAnnotation {
+    public String annotationType();
     
-    public InterfaceInformation getReturnType();
+    public String getStringValue(String methodName);
+    public boolean getBooleanValue(String methodName);
     
-    public List<InterfaceInformation> getParameterTypes();
-    
-    public InterfaceInformation getFirstTypeArgument();
-    
-    public List<InterfaceInformation> getGenericParameterTypes();
-    
-    public InterfaceInformation getFirstTypeArgumentOfParameter(int index);
-    
-    public AnnotationInformation getAnnotation(String annotation);
-    
-    public List<AnnotationInformation> getAnnotations();
-    
-    public boolean isVarArgs();
+    public Map<String, Object> getAnnotationValues();
 
 }

@@ -37,20 +37,27 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.internal.clazz;
+package org.glassfish.hk2.xml.internal.alt;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * @author jwells
  *
  */
-public interface AnnotationInformation {
-    public String annotationType();
+public interface AltClass {
+    public String getName();
     
-    public String getStringValue(String methodName);
-    public boolean getBooleanValue(String methodName);
+    public String getSimpleName();
     
-    public Map<String, Object> getAnnotationValues();
+    List<AltAnnotation> getAnnotations();
+    
+    List<AltMethod> getMethods();
+    
+    public boolean isInterface();
+    
+    public boolean isArray();
+    
+    public AltClass getComponentType();
 
 }

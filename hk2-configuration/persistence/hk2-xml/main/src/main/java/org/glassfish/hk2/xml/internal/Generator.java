@@ -40,8 +40,6 @@
 package org.glassfish.hk2.xml.internal;
 
 import java.beans.Introspector;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -72,9 +70,9 @@ import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
-import org.glassfish.hk2.xml.internal.clazz.AltMethodInformation;
-import org.glassfish.hk2.xml.internal.clazz.AnnotationInformation;
-import org.glassfish.hk2.xml.internal.clazz.InterfaceInformation;
+import org.glassfish.hk2.xml.internal.alt.AltAnnotation;
+import org.glassfish.hk2.xml.internal.alt.AltClass;
+import org.glassfish.hk2.xml.internal.alt.AltMethod;
 import org.glassfish.hk2.xml.jaxb.internal.XmlElementImpl;
 import org.glassfish.hk2.xml.jaxb.internal.XmlRootElementImpl;
 import org.jvnet.hk2.annotations.Contract;
@@ -100,7 +98,7 @@ public class Generator {
         DO_NOT_HANDLE_METHODS.add("annotationType");
     }
     
-    public static void generate(InterfaceInformation convertMe,
+    public static CtClass generate(AltClass convertMe,
             ClassReflectionHelper helper,
             CtClass superClazz,
             ClassPool defaultClassPool) throws Throwable {
@@ -112,7 +110,7 @@ public class Generator {
         ConstPool targetConstPool = targetClassFile.getConstPool();
         
         AnnotationsAttribute ctAnnotations = null;
-        for (AnnotationInformation convertMeAnnotation : convertMe.getAnnotations()) {
+        for (AltAnnotation convertMeAnnotation : convertMe.getAnnotations()) {
             if (Contract.class.getName().equals(convertMeAnnotation.annotationType()) ||
                     XmlTransient.class.getName().equals(convertMeAnnotation.annotationType())) {
                 // We do NOT want the generated class to be in the set of contracts, so
@@ -152,16 +150,16 @@ public class Generator {
         NameInformation xmlNameMap = getXmlNameMap(convertMe);
         HashSet<String> alreadyAddedNaked = new HashSet<String>();
         
-        HashMap<InterfaceInformation, String> childTypes = new HashMap<InterfaceInformation, String>();
+        HashMap<AltClass, String> childTypes = new HashMap<AltClass, String>();
         
-        List<AltMethodInformation> allMethods = convertMe.getMethods();
+        List<AltMethod> allMethods = convertMe.getMethods();
         if (DEBUG_METHODS) {
             Logger.getLogger().debug("Analyzing " + allMethods.size() + " methods of " + convertMe.getName());
         }
         
         HashSet<String> setters = new HashSet<String>();
         HashMap<String, MethodInformation> getters = new HashMap<String, MethodInformation>();
-        for (AltMethodInformation wrapper : allMethods) {
+        for (AltMethod wrapper : allMethods) {
             MethodInformation mi = getMethodInformation(wrapper, xmlNameMap);
             
             if (DEBUG_METHODS) {
@@ -172,7 +170,7 @@ public class Generator {
             
             StringBuffer sb = new StringBuffer("public ");
             
-            InterfaceInformation originalRetType = wrapper.getReturnType();
+            AltClass originalRetType = wrapper.getReturnType();
             boolean isVoid;
             if (originalRetType == null || void.class.equals(originalRetType)) {
                 sb.append("void ");
@@ -185,7 +183,7 @@ public class Generator {
             
             sb.append(name + "(");
             
-            InterfaceInformation childType = null;
+            AltClass childType = null;
             boolean getterOrSetter = false;
             if (MethodType.SETTER.equals(mi.methodType)) {
                 getterOrSetter = true;
@@ -239,7 +237,7 @@ public class Generator {
                 
             }
             else if (MethodType.ADD.equals(mi.methodType)) {
-                List<InterfaceInformation> paramTypes = wrapper.getParameterTypes();
+                List<AltClass> paramTypes = wrapper.getParameterTypes();
                 if (paramTypes.size() == 0) {
                     sb.append(") { super._doAdd(\"" + mi.representedProperty + "\", null, null, -1); }");
                 }
@@ -268,7 +266,7 @@ public class Generator {
                 }
             }
             else if (MethodType.REMOVE.equals(mi.methodType)) {
-                List<InterfaceInformation> paramTypes = wrapper.getParameterTypes();
+                List<AltClass> paramTypes = wrapper.getParameterTypes();
                 String cast = "";
                 String function = "super._doRemoveZ(\"";
                 if (!boolean.class.getName().equals(originalRetType.getName())) {
@@ -290,13 +288,13 @@ public class Generator {
                 }
             }
             else if (MethodType.CUSTOM.equals(mi.methodType)) {
-                List<InterfaceInformation> paramTypes = wrapper.getParameterTypes();
+                List<AltClass> paramTypes = wrapper.getParameterTypes();
                 
                 StringBuffer classSets = new StringBuffer();
                 StringBuffer valSets = new StringBuffer();
                 
                 int lcv = 0;
-                for (InterfaceInformation paramType : paramTypes) {
+                for (AltClass paramType : paramTypes) {
                     if (lcv == 0) {
                         sb.append(getCompilableClass(paramType) + " arg" + lcv);
                     }
@@ -397,7 +395,7 @@ public class Generator {
             ConstPool methodConstPool = methodInfo.getConstPool();
            
             ctAnnotations = null;
-            for (AnnotationInformation convertMeAnnotation : wrapper.getAnnotations()) {
+            for (AltAnnotation convertMeAnnotation : wrapper.getAnnotations()) {
                 if (ctAnnotations == null) {
                     ctAnnotations = new AnnotationsAttribute(methodConstPool, AnnotationsAttribute.visibleTag);
                 }
@@ -465,6 +463,7 @@ public class Generator {
             targetCtClass.addMethod(addMeCtMethod);
         }
         
+        return targetCtClass;
         // targetCtClass.toClass(convertMe.getClassLoader(), convertMe.getProtectionDomain());
     }
     
@@ -474,7 +473,7 @@ public class Generator {
         
     }
     
-    private static void createAnnotationCopy(ConstPool parent, AnnotationInformation javaAnnotation,
+    private static void createAnnotationCopy(ConstPool parent, AltAnnotation javaAnnotation,
             AnnotationsAttribute retVal) throws Throwable {
         Annotation annotation = new Annotation(javaAnnotation.annotationType(), parent);
         
@@ -514,18 +513,18 @@ public class Generator {
         retVal.addAnnotation(annotation);
     }
     
-    private static NameInformation getXmlNameMap(InterfaceInformation convertMe) {
+    private static NameInformation getXmlNameMap(AltClass convertMe) {
         Map<String, XmlElementData> xmlNameMap = new HashMap<String, XmlElementData>();
         HashSet<String> unmappedNames = new HashSet<String>();
         
-        for (AltMethodInformation originalMethod : convertMe.getMethods()) {
+        for (AltMethod originalMethod : convertMe.getMethods()) {
             String setterVariable = isSetter(originalMethod);
             if (setterVariable == null) {
                 setterVariable = isGetter(originalMethod);
                 if (setterVariable == null) continue;
             }
             
-            AnnotationInformation xmlElement = originalMethod.getAnnotation(XmlElement.class.getName());
+            AltAnnotation xmlElement = originalMethod.getAnnotation(XmlElement.class.getName());
             if (xmlElement != null) {
                 String defaultValue = xmlElement.getStringValue("defaultValue");
                 
@@ -537,7 +536,7 @@ public class Generator {
                 }
             }
             else {
-                AnnotationInformation xmlAttribute = originalMethod.getAnnotation(XmlAttribute.class.getName());
+                AltAnnotation xmlAttribute = originalMethod.getAnnotation(XmlAttribute.class.getName());
                 if (xmlAttribute != null) {
                     if (JAXB_DEFAULT_STRING.equals(xmlAttribute.getStringValue("name"))) {
                         xmlNameMap.put(setterVariable, new XmlElementData(setterVariable, JAXB_DEFAULT_DEFAULT));
@@ -562,7 +561,7 @@ public class Generator {
         return new NameInformation(xmlNameMap, noXmlElementNames);
     }
     
-    private static MethodInformation getMethodInformation(AltMethodInformation m, NameInformation xmlNameMap) {
+    private static MethodInformation getMethodInformation(AltMethod m, NameInformation xmlNameMap) {
         String setterVariable = isSetter(m);
         String getterVariable = null;
         String lookupVariable = null;
@@ -583,8 +582,8 @@ public class Generator {
         }
         
         MethodType methodType;
-        InterfaceInformation baseChildType = null;
-        InterfaceInformation gsType = null;
+        AltClass baseChildType = null;
+        AltClass gsType = null;
         String variable = null;
         boolean isList = false;
         boolean isArray = false;
@@ -593,12 +592,12 @@ public class Generator {
             methodType = MethodType.GETTER;
             variable = getterVariable;
             
-            InterfaceInformation returnType = m.getReturnType();
+            AltClass returnType = m.getReturnType();
             gsType = returnType;
             
             if (List.class.equals(returnType)) {
                 isList = true;
-                InterfaceInformation typeChildType = m.getFirstTypeArgument();
+                AltClass typeChildType = m.getFirstTypeArgument();
                 
                 baseChildType = typeChildType;
                 if (baseChildType == null) {
@@ -606,7 +605,7 @@ public class Generator {
                 }
             }
             else if (returnType.isArray()) {
-                InterfaceInformation arrayType = returnType.getComponentType();
+                AltClass arrayType = returnType.getComponentType();
                 if (arrayType.isInterface()) {
                     isArray = true;
                     baseChildType = arrayType;
@@ -621,12 +620,12 @@ public class Generator {
             methodType = MethodType.SETTER;
             variable = setterVariable;
             
-            InterfaceInformation setterType = m.getParameterTypes().get(0);
+            AltClass setterType = m.getParameterTypes().get(0);
             gsType = setterType;
             
             if (List.class.equals(setterType)) {
                 isList = true;
-                InterfaceInformation typeChildType = m.getFirstTypeArgumentOfParameter(0);
+                AltClass typeChildType = m.getFirstTypeArgumentOfParameter(0);
                 
                 baseChildType = typeChildType;
                 if (baseChildType == null) {
@@ -634,7 +633,7 @@ public class Generator {
                 }
             }
             else if (setterType.isArray()) {
-                InterfaceInformation arrayType = setterType.getComponentType();
+                AltClass arrayType = setterType.getComponentType();
                 if (arrayType.isInterface()) {
                     isArray = true;
                     baseChildType = arrayType;
@@ -649,7 +648,7 @@ public class Generator {
             methodType = MethodType.LOOKUP;
             variable = lookupVariable;
             
-            InterfaceInformation lookupType = m.getReturnType();
+            AltClass lookupType = m.getReturnType();
             gsType = lookupType;
         }
         else if (addVariable != null) {
@@ -697,22 +696,22 @@ public class Generator {
     }
     
     private static class MethodInformation {
-        private final AltMethodInformation originalMethod;
+        private final AltMethod originalMethod;
         private final MethodType methodType;
-        private final InterfaceInformation getterSetterType;
+        private final AltClass getterSetterType;
         private final String representedProperty;
         private final String defaultValue;
-        private final InterfaceInformation baseChildType;
+        private final AltClass baseChildType;
         private final boolean key;
         private final boolean isList;
         private final boolean isArray;
         
-        private MethodInformation(AltMethodInformation originalMethod,
+        private MethodInformation(AltMethod originalMethod,
                 MethodType methodType,
                 String representedProperty,
                 String defaultValue,
-                InterfaceInformation baseChildType,
-                InterfaceInformation gsType,
+                AltClass baseChildType,
+                AltClass gsType,
                 boolean key,
                 boolean isList,
                 boolean isArray) {
@@ -780,7 +779,7 @@ public class Generator {
         }
     }
     
-    private static String convertXmlRootElementName(AnnotationInformation root, InterfaceInformation clazz) {
+    private static String convertXmlRootElementName(AltAnnotation root, AltClass clazz) {
         String rootName = root.getStringValue("name");
         
         if (!"##default".equals(rootName)) return rootName;
@@ -825,7 +824,7 @@ public class Generator {
         return sb.toString();
     }
     
-    private static String isGetter(AltMethodInformation method) {
+    private static String isGetter(AltMethod method) {
         String name = method.getName();
         
         if (name.startsWith(JAUtilities.GET)) {
@@ -853,7 +852,7 @@ public class Generator {
         return null;
     }
     
-    private static String isSetter(AltMethodInformation method) {
+    private static String isSetter(AltMethod method) {
         String name = method.getName();
         
         if (name.startsWith(JAUtilities.SET)) {
@@ -871,13 +870,13 @@ public class Generator {
         return null;
     }
     
-    private static String isLookup(AltMethodInformation method) {
+    private static String isLookup(AltMethod method) {
         String name = method.getName();
         
         if (!name.startsWith(JAUtilities.LOOKUP)) return null;
         
         if (name.length() <= JAUtilities.LOOKUP.length()) return null;
-        List<InterfaceInformation> parameterTypes = method.getParameterTypes();
+        List<AltClass> parameterTypes = method.getParameterTypes();
         if (parameterTypes.size() != 1) return null;
         if (!String.class.getName().equals(parameterTypes.get(0).getName())) return null;
             
@@ -888,7 +887,7 @@ public class Generator {
         return Introspector.decapitalize(variableName);
     }
     
-    private static String isAdd(AltMethodInformation method) {
+    private static String isAdd(AltMethod method) {
         String name = method.getName();
         
         if (!name.startsWith(JAUtilities.ADD)) return null;
@@ -899,13 +898,13 @@ public class Generator {
         String variableName = name.substring(JAUtilities.ADD.length());
         String retVal = Introspector.decapitalize(variableName);
         
-        List<InterfaceInformation> parameterTypes = method.getParameterTypes();
+        List<AltClass> parameterTypes = method.getParameterTypes();
         if (parameterTypes.size() > 2) return null;
         
         if (parameterTypes.size() == 0) return retVal;
         
-        InterfaceInformation param0 = parameterTypes.get(0);
-        InterfaceInformation param1 = null;
+        AltClass param0 = parameterTypes.get(0);
+        AltClass param1 = null;
         if (parameterTypes.size() == 2) {
             param1 = parameterTypes.get(1);
         }
@@ -935,7 +934,7 @@ public class Generator {
         return null;
     }
     
-    private static String isRemove(AltMethodInformation method) {
+    private static String isRemove(AltMethod method) {
         String name = method.getName();
         
         if (!name.startsWith(JAUtilities.REMOVE)) return null;
@@ -943,25 +942,25 @@ public class Generator {
         if (name.length() <= JAUtilities.REMOVE.length()) return null;
         if (method.getReturnType() == null || void.class.equals(method.getReturnType())) return null;
         
-        InterfaceInformation returnType = method.getReturnType();
+        AltClass returnType = method.getReturnType();
         if (!boolean.class.getName().equals(returnType.getName()) && !returnType.isInterface()) return null;
         
         String variableName = name.substring(JAUtilities.REMOVE.length());
         String retVal = Introspector.decapitalize(variableName);
         
-        List<InterfaceInformation> parameterTypes = method.getParameterTypes();
+        List<AltClass> parameterTypes = method.getParameterTypes();
         if (parameterTypes.size() > 1) return null;
         
         if (parameterTypes.size() == 0) return retVal;
         
-        InterfaceInformation param0 = parameterTypes.get(0);
+        AltClass param0 = parameterTypes.get(0);
         
         if (String.class.getName().equals(param0.getName()) ||
                 int.class.getName().equals(param0.getName())) return retVal;
         return null;
     }
     
-    private static String getCompilableClass(InterfaceInformation clazz) {
+    private static String getCompilableClass(AltClass clazz) {
         int depth = 0;
         while (clazz.isArray()) {
             depth++;
