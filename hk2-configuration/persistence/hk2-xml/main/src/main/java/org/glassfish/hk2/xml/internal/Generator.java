@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,29 +39,20 @@
  */
 package org.glassfish.hk2.xml.internal;
 
+import java.beans.Introspector;
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.Modifier;
-import javassist.NotFoundException;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.ConstPool;
@@ -71,15 +62,19 @@ import javassist.bytecode.annotation.BooleanMemberValue;
 import javassist.bytecode.annotation.ClassMemberValue;
 import javassist.bytecode.annotation.StringMemberValue;
 
-import org.glassfish.hk2.api.MultiException;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.Logger;
-import org.glassfish.hk2.utilities.reflection.MethodWrapper;
-import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
-import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
 import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
-import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
+import org.glassfish.hk2.xml.internal.clazz.AltMethodInformation;
+import org.glassfish.hk2.xml.internal.clazz.AnnotationInformation;
+import org.glassfish.hk2.xml.internal.clazz.InterfaceInformation;
 import org.glassfish.hk2.xml.jaxb.internal.XmlElementImpl;
 import org.glassfish.hk2.xml.jaxb.internal.XmlRootElementImpl;
 import org.jvnet.hk2.annotations.Contract;
@@ -88,27 +83,15 @@ import org.jvnet.hk2.annotations.Contract;
  * @author jwells
  *
  */
-public class JAUtilities {
+public class Generator {
     private final static boolean DEBUG_METHODS = Boolean.parseBoolean(GeneralUtilities.getSystemProperty(
             "org.jvnet.hk2.properties.xmlservice.jaxb.methods", "false"));
     
-    public final static String GET = "get";
-    public final static String SET = "set";
-    public final static String IS = "is";
-    public final static String LOOKUP = "lookup";
-    public final static String ADD = "add";
-    public final static String REMOVE = "remove";
-    public final static String JAXB_DEFAULT_STRING = "##default";
-    public final static String JAXB_DEFAULT_DEFAULT = "\u0000";
-    
     private final static String CLASS_ADD_ON_NAME = "_$$_Hk2_Jaxb";
     private final static HashSet<String> DO_NOT_HANDLE_METHODS = new HashSet<String>();
+    private final static String JAXB_DEFAULT_STRING = "##default";
+    public final static String JAXB_DEFAULT_DEFAULT = "\u0000";
     private final static String NO_CHILD_PACKAGE = "java.";
-    
-    private final HashMap<Class<?>, UnparentedNode> interface2NodeCache = new HashMap<Class<?>, UnparentedNode>();
-    private final HashMap<Class<?>, UnparentedNode> proxy2NodeCache = new HashMap<Class<?>, UnparentedNode>();
-    private final ClassPool defaultClassPool = ClassPool.getDefault(); // TODO:  We probably need to be more sophisticated about this
-    private final CtClass superClazz;
     
     static {
         DO_NOT_HANDLE_METHODS.add("hashCode");
@@ -117,212 +100,7 @@ public class JAUtilities {
         DO_NOT_HANDLE_METHODS.add("annotationType");
     }
     
-    /* package */ JAUtilities() {
-        try {
-            superClazz = defaultClassPool.get(BaseHK2JAXBBean.class.getName());
-        }
-        catch (NotFoundException e) {
-            throw new MultiException(e);
-        }
-        
-    }
-    
-    public synchronized UnparentedNode getNode(Class<?> type) {
-        UnparentedNode retVal = proxy2NodeCache.get(type);
-        if (retVal == null) return interface2NodeCache.get(type);
-        return retVal;
-    }
-    
-    public synchronized UnparentedNode convertRootAndLeaves(Class<?> root) {
-        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
-        LinkedHashSet<Class<?>> needsToBeConverted = new LinkedHashSet<Class<?>>();
-        
-        getAllToConvert(root, needsToBeConverted, new HashSet<Class<?>>());
-        
-        if (DEBUG_METHODS) {
-            Logger.getLogger().debug("Converting " + needsToBeConverted.size() + " nodes for root " + root.getName());
-        }
-        
-        needsToBeConverted.removeAll(interface2NodeCache.keySet());
-        
-        LinkedList<UnparentedNode> contributions = new LinkedList<UnparentedNode>();
-        for (Class<?> convertMe : needsToBeConverted) {
-            UnparentedNode converted;
-            try {
-                converted = convert(convertMe, helper);
-            }
-            catch (RuntimeException re) {
-                throw re;
-            }
-            catch (Throwable e) {
-                throw new MultiException(e);
-            }
-            
-            interface2NodeCache.put(convertMe, converted);
-            contributions.add(converted);
-        }
-        
-        for (UnparentedNode node : contributions) {
-            for (ParentedNode child : node.getAllChildren()) {
-                if (child.getChild().isPlaceholder()) {
-                    UnparentedNode nonPlaceholder = interface2NodeCache.get(child.getChild().getOriginalInterface());
-                    if (nonPlaceholder == null) {
-                        throw new RuntimeException("The child of type " + child.getChild().getOriginalInterface().getName() +
-                                " is unknown for " + node);  
-                    }
-                    
-                    child.setChild(nonPlaceholder);
-                }
-            }
-        }
-        
-        helper.dispose();
-        return interface2NodeCache.get(root);
-    }
-    
-    private static NameInformation getXmlNameMap(Class<?> convertMe) {
-        Map<String, XmlElementData> xmlNameMap = new HashMap<String, XmlElementData>();
-        HashSet<String> unmappedNames = new HashSet<String>();
-        
-        for (Method originalMethod : convertMe.getMethods()) {
-            String setterVariable = Utilities.isSetter(originalMethod);
-            if (setterVariable == null) {
-                setterVariable = Utilities.isGetter(originalMethod);
-                if (setterVariable == null) continue;
-            }
-            
-            XmlElement xmlElement = originalMethod.getAnnotation(XmlElement.class);
-            if (xmlElement != null) {
-                String defaultValue = xmlElement.defaultValue();
-                
-                if (JAXB_DEFAULT_STRING.equals(xmlElement.name())) {
-                    xmlNameMap.put(setterVariable, new XmlElementData(setterVariable, defaultValue));
-                }
-                else {
-                    xmlNameMap.put(setterVariable, new XmlElementData(xmlElement.name(), defaultValue));
-                }
-            }
-            else {
-                XmlAttribute xmlAttribute = originalMethod.getAnnotation(XmlAttribute.class);
-                if (xmlAttribute != null) {
-                    if (JAXB_DEFAULT_STRING.equals(xmlAttribute.name())) {
-                        xmlNameMap.put(setterVariable, new XmlElementData(setterVariable, JAXB_DEFAULT_DEFAULT));
-                    }
-                    else {
-                        xmlNameMap.put(setterVariable, new XmlElementData(xmlAttribute.name(), JAXB_DEFAULT_DEFAULT));
-                    }
-                }
-                else {
-                    unmappedNames.add(setterVariable);
-                }
-            }
-        }
-        
-        Set<String> noXmlElementNames = new HashSet<String>();
-        for (String unmappedName : unmappedNames) {
-            if (!xmlNameMap.containsKey(unmappedName)) {
-                noXmlElementNames.add(unmappedName);
-            }
-        }
-        
-        return new NameInformation(xmlNameMap, noXmlElementNames);
-    }
-    
-    private UnparentedNode convert(Class<?> convertMe, ClassReflectionHelper helper) throws Throwable {
-        Logger.getLogger().debug("XmlService converting " + convertMe.getName());
-        UnparentedNode retVal = new UnparentedNode(convertMe);
-        
-        String targetClassName = convertMe.getName() + CLASS_ADD_ON_NAME;
-        CtClass foundClass = defaultClassPool.getOrNull(targetClassName);
-        
-        if (foundClass == null) {
-            generate(convertMe,
-                    helper,
-                    superClazz,
-                    defaultClassPool);
-            
-            foundClass = defaultClassPool.getOrNull(targetClassName);
-        }
-        
-        Class<?> proxy = convertMe.getClassLoader().loadClass(targetClassName);
-            
-        for (java.lang.annotation.Annotation convertMeAnnotation : convertMe.getAnnotations()) {
-            if (!XmlRootElement.class.equals(convertMeAnnotation.annotationType())) continue;
-                
-            XmlRootElement xre = (XmlRootElement) convertMeAnnotation;
-                    
-            String rootName = Utilities.convertXmlRootElementName(xre, convertMe);
-            retVal.setRootName(rootName);
-        }
-            
-        NameInformation xmlNameMap = getXmlNameMap(convertMe);
-            
-        HashMap<Class<?>, String> childTypes = new HashMap<Class<?>, String>();
-        MethodInformation foundKey = null;
-        for (MethodWrapper wrapper : helper.getAllMethods(convertMe)) {
-            Method originalMethod = wrapper.getMethod();
-            MethodInformation mi = getMethodInformation(originalMethod, xmlNameMap);
-                
-            if (DEBUG_METHODS) {
-                Logger.getLogger().debug("Analyzing method " + mi + " of " + convertMe.getSimpleName());
-            }
-                
-            if (mi.key) {
-                if (foundKey != null) {
-                    throw new RuntimeException("Class " + convertMe.getName() + " has multiple key properties (" + originalMethod.getName() +
-                            " and " + foundKey.originalMethod.getName());
-                }
-                foundKey = mi;
-                    
-                retVal.setKeyProperty(mi.representedProperty);
-            }
-                
-            boolean getterOrSetter = false;
-            UnparentedNode childType = null;
-            if (MethodType.SETTER.equals(mi.methodType)) {
-                getterOrSetter = true;
-                if (mi.baseChildType != null) {
-                    if (!interface2NodeCache.containsKey(mi.baseChildType)) {
-                        // Must use a placeholder
-                        childType = new UnparentedNode(mi.baseChildType, true);
-                    }
-                    else {
-                        childType = interface2NodeCache.get(mi.baseChildType);
-                    }
-                }
-            }
-            else if (MethodType.GETTER.equals(mi.methodType)) {
-                getterOrSetter = true;
-                if (mi.baseChildType != null) {
-                    if (!interface2NodeCache.containsKey(mi.baseChildType)) {
-                        // Must use a placeholder
-                        childType = new UnparentedNode(mi.baseChildType, true);
-                    }
-                    else {
-                        childType = interface2NodeCache.get(mi.baseChildType);
-                    }
-                }
-            }
-                
-            if (getterOrSetter) {
-                if (childType != null) {
-                    childTypes.put(childType.getOriginalInterface(), mi.representedProperty);
-                        
-                    retVal.addChild(mi.representedProperty, mi.isList, mi.isArray, childType);
-                }
-                else {
-                    retVal.addNonChildProperty(mi.representedProperty, mi.defaultValue);
-                }
-            }
-        }
-            
-        retVal.setTranslatedClass(proxy);
-        proxy2NodeCache.put(proxy, retVal);
-            
-        return retVal;
-    }
-    
-    private static void generate(Class<?> convertMe,
+    public static void generate(InterfaceInformation convertMe,
             ClassReflectionHelper helper,
             CtClass superClazz,
             ClassPool defaultClassPool) throws Throwable {
@@ -334,9 +112,9 @@ public class JAUtilities {
         ConstPool targetConstPool = targetClassFile.getConstPool();
         
         AnnotationsAttribute ctAnnotations = null;
-        for (java.lang.annotation.Annotation convertMeAnnotation : convertMe.getAnnotations()) {
-            if (Contract.class.equals(convertMeAnnotation.annotationType()) ||
-                    XmlTransient.class.equals(convertMeAnnotation.annotationType())) {
+        for (AnnotationInformation convertMeAnnotation : convertMe.getAnnotations()) {
+            if (Contract.class.getName().equals(convertMeAnnotation.annotationType()) ||
+                    XmlTransient.class.getName().equals(convertMeAnnotation.annotationType())) {
                 // We do NOT want the generated class to be in the set of contracts, so
                 // skip this one if it is there.
                 // We also DO want our own class to be processed by JAXB even
@@ -350,12 +128,11 @@ public class JAUtilities {
                 ctAnnotations = new AnnotationsAttribute(targetConstPool, AnnotationsAttribute.visibleTag);
             }
             
-            if (XmlRootElement.class.equals(convertMeAnnotation.annotationType())) {
-                XmlRootElement xre = (XmlRootElement) convertMeAnnotation;
+            if (XmlRootElement.class.getName().equals(convertMeAnnotation.annotationType())) {
+                String rootName = convertXmlRootElementName(convertMeAnnotation, convertMe);
                 
-                String rootName = Utilities.convertXmlRootElementName(xre, convertMe);
-                
-                XmlRootElement replacement = new XmlRootElementImpl(xre.namespace(), rootName);
+                XmlRootElement replacement = new XmlRootElementImpl(convertMeAnnotation.getStringValue("namespace"), rootName);
+               
                 
                 createAnnotationCopy(targetConstPool, replacement, ctAnnotations);
             }
@@ -375,41 +152,40 @@ public class JAUtilities {
         NameInformation xmlNameMap = getXmlNameMap(convertMe);
         HashSet<String> alreadyAddedNaked = new HashSet<String>();
         
-        HashMap<Class<?>, String> childTypes = new HashMap<Class<?>, String>();
+        HashMap<InterfaceInformation, String> childTypes = new HashMap<InterfaceInformation, String>();
         
-        Set<MethodWrapper> allMethods = helper.getAllMethods(convertMe);
+        List<AltMethodInformation> allMethods = convertMe.getMethods();
         if (DEBUG_METHODS) {
             Logger.getLogger().debug("Analyzing " + allMethods.size() + " methods of " + convertMe.getName());
         }
         
         HashSet<String> setters = new HashSet<String>();
         HashMap<String, MethodInformation> getters = new HashMap<String, MethodInformation>();
-        for (MethodWrapper wrapper : allMethods) {
-            Method originalMethod = wrapper.getMethod();
-            MethodInformation mi = getMethodInformation(originalMethod, xmlNameMap);
+        for (AltMethodInformation wrapper : allMethods) {
+            MethodInformation mi = getMethodInformation(wrapper, xmlNameMap);
             
             if (DEBUG_METHODS) {
                 Logger.getLogger().debug("Analyzing method " + mi + " of " + convertMe.getSimpleName());
             }
             
-            String name = originalMethod.getName();
+            String name = wrapper.getName();
             
             StringBuffer sb = new StringBuffer("public ");
             
-            Class<?> originalRetType = originalMethod.getReturnType();
+            InterfaceInformation originalRetType = wrapper.getReturnType();
             boolean isVoid;
             if (originalRetType == null || void.class.equals(originalRetType)) {
                 sb.append("void ");
                 isVoid = true;
             }
             else {
-                sb.append(Utilities.getCompilableClass(originalRetType) + " ");
+                sb.append(getCompilableClass(originalRetType) + " ");
                 isVoid = false;
             }
             
             sb.append(name + "(");
             
-            Class<?> childType = null;
+            InterfaceInformation childType = null;
             boolean getterOrSetter = false;
             if (MethodType.SETTER.equals(mi.methodType)) {
                 getterOrSetter = true;
@@ -417,7 +193,7 @@ public class JAUtilities {
                 
                 childType = mi.baseChildType;
                 
-                sb.append(Utilities.getCompilableClass(mi.getterSetterType) + " arg0) { super._setProperty(\"" + mi.representedProperty + "\", arg0); }");
+                sb.append(getCompilableClass(mi.getterSetterType) + " arg0) { super._setProperty(\"" + mi.representedProperty + "\", arg0); }");
             }
             else if (MethodType.GETTER.equals(mi.methodType)) {
                 getterOrSetter = true;
@@ -452,28 +228,28 @@ public class JAUtilities {
                     superMethodName += "D";
                 }
                 else {
-                    cast = "(" + Utilities.getCompilableClass(mi.getterSetterType) + ") ";
+                    cast = "(" + getCompilableClass(mi.getterSetterType) + ") ";
                 }
                 
                 sb.append(") { return " + cast + "super." + superMethodName + "(\"" + mi.representedProperty + "\"); }");
             }
             else if (MethodType.LOOKUP.equals(mi.methodType)) {
-                sb.append("java.lang.String arg0) { return (" + Utilities.getCompilableClass(originalRetType) +
+                sb.append("java.lang.String arg0) { return (" + getCompilableClass(originalRetType) +
                         ") super._lookupChild(\"" + mi.representedProperty + "\", arg0); }");
                 
             }
             else if (MethodType.ADD.equals(mi.methodType)) {
-                Class<?>[] paramTypes = originalMethod.getParameterTypes();
-                if (paramTypes.length == 0) {
+                List<InterfaceInformation> paramTypes = wrapper.getParameterTypes();
+                if (paramTypes.size() == 0) {
                     sb.append(") { super._doAdd(\"" + mi.representedProperty + "\", null, null, -1); }");
                 }
-                else if (paramTypes.length == 1) {
-                    sb.append(paramTypes[0].getName() + " arg0) { super._doAdd(\"" + mi.representedProperty + "\",");
+                else if (paramTypes.size() == 1) {
+                    sb.append(paramTypes.get(0).getName() + " arg0) { super._doAdd(\"" + mi.representedProperty + "\",");
                     
-                    if (paramTypes[0].isInterface()) {
+                    if (paramTypes.get(0).isInterface()) {
                         sb.append("arg0, null, -1); }");
                     }
-                    else if (String.class.equals(paramTypes[0])) {
+                    else if (String.class.getName().equals(paramTypes.get(0).getName())) {
                         sb.append("null, arg0, -1); }");
                     }
                     else {
@@ -481,9 +257,9 @@ public class JAUtilities {
                     }
                 }
                 else {
-                    sb.append(paramTypes[0].getName() + " arg0, int arg1) { super._doAdd(\"" + mi.representedProperty + "\",");
+                    sb.append(paramTypes.get(0).getName() + " arg0, int arg1) { super._doAdd(\"" + mi.representedProperty + "\",");
                     
-                    if (paramTypes[0].isInterface()) {
+                    if (paramTypes.get(0).isInterface()) {
                         sb.append("arg0, null, arg1); }");
                     }
                     else {
@@ -492,19 +268,19 @@ public class JAUtilities {
                 }
             }
             else if (MethodType.REMOVE.equals(mi.methodType)) {
-                Class<?>[] paramTypes = originalMethod.getParameterTypes();
+                List<InterfaceInformation> paramTypes = wrapper.getParameterTypes();
                 String cast = "";
                 String function = "super._doRemoveZ(\"";
-                if (!boolean.class.equals(originalRetType)) {
-                    cast = "(" + Utilities.getCompilableClass(originalRetType) + ") ";
+                if (!boolean.class.getName().equals(originalRetType.getName())) {
+                    cast = "(" + getCompilableClass(originalRetType) + ") ";
                     function = "super._doRemove(\"";
                 }
                 
-                if (paramTypes.length == 0) {
+                if (paramTypes.size() == 0) {
                     sb.append(") { return " + cast + function +
                             mi.representedProperty + "\", null, -1); }");
                 }
-                else if (String.class.equals(paramTypes[0])) {
+                else if (String.class.getName().equals(paramTypes.get(0))) {
                     sb.append("java.lang.String arg0) { return " + cast  + function +
                             mi.representedProperty + "\", arg0, -1); }");
                 }
@@ -514,21 +290,21 @@ public class JAUtilities {
                 }
             }
             else if (MethodType.CUSTOM.equals(mi.methodType)) {
-                Class<?>[] paramTypes = originalMethod.getParameterTypes();
+                List<InterfaceInformation> paramTypes = wrapper.getParameterTypes();
                 
                 StringBuffer classSets = new StringBuffer();
                 StringBuffer valSets = new StringBuffer();
                 
                 int lcv = 0;
-                for (Class<?> paramType : paramTypes) {
+                for (InterfaceInformation paramType : paramTypes) {
                     if (lcv == 0) {
-                        sb.append(Utilities.getCompilableClass(paramType) + " arg" + lcv);
+                        sb.append(getCompilableClass(paramType) + " arg" + lcv);
                     }
                     else {
-                        sb.append(", " + Utilities.getCompilableClass(paramType) + " arg" + lcv);
+                        sb.append(", " + getCompilableClass(paramType) + " arg" + lcv);
                     }
                     
-                    classSets.append("mParams[" + lcv + "] = " + Utilities.getCompilableClass(paramType) + ".class;\n");
+                    classSets.append("mParams[" + lcv + "] = " + getCompilableClass(paramType) + ".class;\n");
                     valSets.append("mVars[" + lcv + "] = ");
                     if (int.class.equals(paramType)) {
                         valSets.append("new java.lang.Integer(arg" + lcv + ");\n");
@@ -561,8 +337,8 @@ public class JAUtilities {
                     lcv++;
                 }
                 
-                sb.append(") { Class[] mParams = new Class[" + paramTypes.length + "];\n");
-                sb.append("Object[] mVars = new Object[" + paramTypes.length + "];\n");
+                sb.append(") { Class[] mParams = new Class[" + paramTypes.size() + "];\n");
+                sb.append("Object[] mVars = new Object[" + paramTypes.size() + "];\n");
                 sb.append(classSets.toString());
                 sb.append(valSets.toString());
                 
@@ -593,7 +369,7 @@ public class JAUtilities {
                     superMethodName += "D";
                 }
                 else if (!isVoid) {
-                    cast = "(" + Utilities.getCompilableClass(originalRetType) + ") ";
+                    cast = "(" + getCompilableClass(originalRetType) + ") ";
                 }
                 
                 if (!isVoid) {
@@ -614,33 +390,34 @@ public class JAUtilities {
             }
             
             CtMethod addMeCtMethod = CtNewMethod.make(sb.toString(), targetCtClass);
-            if (originalMethod.isVarArgs()) {
+            if (wrapper.isVarArgs()) {
                 addMeCtMethod.setModifiers(addMeCtMethod.getModifiers() | Modifier.VARARGS);
             }
             MethodInfo methodInfo = addMeCtMethod.getMethodInfo();
             ConstPool methodConstPool = methodInfo.getConstPool();
            
             ctAnnotations = null;
-            for (java.lang.annotation.Annotation convertMeAnnotation : originalMethod.getAnnotations()) {
+            for (AnnotationInformation convertMeAnnotation : wrapper.getAnnotations()) {
                 if (ctAnnotations == null) {
                     ctAnnotations = new AnnotationsAttribute(methodConstPool, AnnotationsAttribute.visibleTag);
                 }
                 
-                if ((childType != null) && XmlElement.class.equals(convertMeAnnotation.annotationType())) {
-                    XmlElement original = (XmlElement) convertMeAnnotation;
+                if ((childType != null) && XmlElement.class.getName().equals(convertMeAnnotation.annotationType())) {
                         
-                    
                     String translatedClassName = childType.getName() + CLASS_ADD_ON_NAME;
-                    convertMeAnnotation = new XmlElementImpl(
-                            original.name(),
-                            original.nillable(),
-                            original.required(),
-                            original.namespace(),
-                            original.defaultValue(),
+                    java.lang.annotation.Annotation anno = new XmlElementImpl(
+                            convertMeAnnotation.getStringValue("name"),
+                            convertMeAnnotation.getBooleanValue("nillable"),
+                            convertMeAnnotation.getBooleanValue("required"),
+                            convertMeAnnotation.getStringValue("namespace"),
+                            convertMeAnnotation.getStringValue("defaultValue"),
                             translatedClassName);
-                }
                     
-                createAnnotationCopy(methodConstPool, convertMeAnnotation, ctAnnotations);
+                    createAnnotationCopy(methodConstPool, anno, ctAnnotations);
+                }
+                else {  
+                    createAnnotationCopy(methodConstPool, convertMeAnnotation, ctAnnotations);
+                }
             }
             
             if (getterOrSetter && childType != null &&
@@ -682,33 +459,40 @@ public class JAUtilities {
             String setterName = Utilities.convertToSetter(getterName);
             
             StringBuffer sb = new StringBuffer("private void " + setterName + "(");
-            sb.append(Utilities.getCompilableClass(mi.getterSetterType) + " arg0) { super._setProperty(\"" + mi.representedProperty + "\", arg0); }");
+            sb.append(getCompilableClass(mi.getterSetterType) + " arg0) { super._setProperty(\"" + mi.representedProperty + "\", arg0); }");
             
             CtMethod addMeCtMethod = CtNewMethod.make(sb.toString(), targetCtClass);
             targetCtClass.addMethod(addMeCtMethod);
         }
         
-        targetCtClass.toClass(convertMe.getClassLoader(), convertMe.getProtectionDomain());
+        // targetCtClass.toClass(convertMe.getClassLoader(), convertMe.getProtectionDomain());
     }
     
     private static void createAnnotationCopy(ConstPool parent, java.lang.annotation.Annotation javaAnnotation,
             AnnotationsAttribute retVal) throws Throwable {
-        Annotation annotation = new Annotation(javaAnnotation.annotationType().getName(), parent);
+        throw new AssertionError("not yet handled");
         
-        for (Method javaAnnotationMethod : javaAnnotation.annotationType().getMethods()) {
-            if (javaAnnotationMethod.getParameterTypes().length != 0) continue;
-            if (DO_NOT_HANDLE_METHODS.contains(javaAnnotationMethod.getName())) continue;
+    }
+    
+    private static void createAnnotationCopy(ConstPool parent, AnnotationInformation javaAnnotation,
+            AnnotationsAttribute retVal) throws Throwable {
+        Annotation annotation = new Annotation(javaAnnotation.annotationType(), parent);
+        
+        Map<String, Object> annotationValues = javaAnnotation.getAnnotationValues();
+        for (Map.Entry<String, Object> entry : annotationValues.entrySet()) {
+            String valueName = entry.getKey();
+            Object value = entry.getValue();
             
-            Class<?> javaAnnotationType = javaAnnotationMethod.getReturnType();
+            if (DO_NOT_HANDLE_METHODS.contains(valueName)) continue;
+            
+            Class<?> javaAnnotationType = value.getClass();
             if (String.class.equals(javaAnnotationType)) {
-                String value = (String) ReflectionHelper.invoke(javaAnnotation, javaAnnotationMethod, new Object[0], false);
-                
-                annotation.addMemberValue(javaAnnotationMethod.getName(), new StringMemberValue(value, parent));
+                annotation.addMemberValue(valueName, new StringMemberValue((String) value, parent));
             }
-            else if (boolean.class.equals(javaAnnotationType)) {
-                boolean value = (Boolean) ReflectionHelper.invoke(javaAnnotation, javaAnnotationMethod, new Object[0], false);
+            else if (Boolean.class.equals(javaAnnotationType)) {
+                boolean bvalue = (Boolean) value;
                 
-                annotation.addMemberValue(javaAnnotationMethod.getName(), new BooleanMemberValue(value, parent));
+                annotation.addMemberValue(valueName, new BooleanMemberValue(bvalue, parent));
             }
             else if (Class.class.equals(javaAnnotationType)) {
                 String sValue;
@@ -716,17 +500,10 @@ public class JAUtilities {
                     sValue = ((XmlElementImpl) javaAnnotation).getTypeByName();
                 }
                 else {
-                    Class<?> value = (Class<?>) ReflectionHelper.invoke(javaAnnotation, javaAnnotationMethod, new Object[0], false);
-                
-                    if (value == null) {
-                        sValue = null;
-                    }
-                    else {
-                        sValue = value.getName();
-                    }
+                    sValue = ((Class<?>) value).getName();
                 }
                 
-                annotation.addMemberValue(javaAnnotationMethod.getName(), new ClassMemberValue(sValue, parent));
+                annotation.addMemberValue(valueName, new ClassMemberValue(sValue, parent));
             }
             else {
                 throw new AssertionError("Annotation type " + javaAnnotationType.getName() + " is not yet implemented");
@@ -737,84 +514,77 @@ public class JAUtilities {
         retVal.addAnnotation(annotation);
     }
     
-    private static void getAllToConvert(Class<?> toBeConverted,
-            LinkedHashSet<Class<?>> needsToBeConverted,
-            Set<Class<?>> cycleDetector) {
-        if (needsToBeConverted.contains(toBeConverted)) return;
+    private static NameInformation getXmlNameMap(InterfaceInformation convertMe) {
+        Map<String, XmlElementData> xmlNameMap = new HashMap<String, XmlElementData>();
+        HashSet<String> unmappedNames = new HashSet<String>();
         
-        if (cycleDetector.contains(toBeConverted)) return;
-        cycleDetector.add(toBeConverted);
-        
-        try {
-            // Find all the children
-            for (Method method : toBeConverted.getMethods()) {
-                if (Utilities.isGetter(method) == null) continue;
-                
-                Class<?> returnClass = method.getReturnType();
-                if (returnClass.isInterface() && !(List.class.equals(returnClass))) {
-                    // The assumption is that this is a non-instanced child
-                    if (returnClass.getName().startsWith(NO_CHILD_PACKAGE)) continue;
-                    
-                    getAllToConvert(returnClass, needsToBeConverted, cycleDetector);
-                    
-                    continue;
-                }
-                
-                if (returnClass.isArray()) {
-                    Class<?> aType = returnClass.getComponentType();
-                    
-                    if (aType.isInterface()) {
-                        getAllToConvert(aType, needsToBeConverted, cycleDetector);
-                        
-                        continue;
-                    }
-                }
-                
-                Type retType = method.getGenericReturnType();
-                if (retType == null || !(retType instanceof ParameterizedType)) continue;
-                
-                Class<?> returnRawClass = ReflectionHelper.getRawClass(retType);
-                if (returnRawClass == null || !List.class.equals(returnRawClass)) continue;
-                
-                Type listReturnType = ReflectionHelper.getFirstTypeArgument(retType);
-                if (Object.class.equals(listReturnType)) continue;
-                
-                Class<?> childClass = ReflectionHelper.getRawClass(listReturnType);
-                if (childClass == null || Object.class.equals(childClass)) continue;
-                
-                getAllToConvert(childClass, needsToBeConverted, cycleDetector);
+        for (AltMethodInformation originalMethod : convertMe.getMethods()) {
+            String setterVariable = isSetter(originalMethod);
+            if (setterVariable == null) {
+                setterVariable = isGetter(originalMethod);
+                if (setterVariable == null) continue;
             }
             
-            needsToBeConverted.add(toBeConverted);
+            AnnotationInformation xmlElement = originalMethod.getAnnotation(XmlElement.class.getName());
+            if (xmlElement != null) {
+                String defaultValue = xmlElement.getStringValue("defaultValue");
+                
+                if (JAXB_DEFAULT_STRING.equals(xmlElement.getStringValue("name"))) {
+                    xmlNameMap.put(setterVariable, new XmlElementData(setterVariable, defaultValue));
+                }
+                else {
+                    xmlNameMap.put(setterVariable, new XmlElementData(xmlElement.getStringValue("name"), defaultValue));
+                }
+            }
+            else {
+                AnnotationInformation xmlAttribute = originalMethod.getAnnotation(XmlAttribute.class.getName());
+                if (xmlAttribute != null) {
+                    if (JAXB_DEFAULT_STRING.equals(xmlAttribute.getStringValue("name"))) {
+                        xmlNameMap.put(setterVariable, new XmlElementData(setterVariable, JAXB_DEFAULT_DEFAULT));
+                    }
+                    else {
+                        xmlNameMap.put(setterVariable, new XmlElementData(xmlAttribute.getStringValue("name"), JAXB_DEFAULT_DEFAULT));
+                    }
+                }
+                else {
+                    unmappedNames.add(setterVariable);
+                }
+            }
         }
-        finally {
-            cycleDetector.remove(toBeConverted);
+        
+        Set<String> noXmlElementNames = new HashSet<String>();
+        for (String unmappedName : unmappedNames) {
+            if (!xmlNameMap.containsKey(unmappedName)) {
+                noXmlElementNames.add(unmappedName);
+            }
         }
+        
+        return new NameInformation(xmlNameMap, noXmlElementNames);
     }
     
-    private static MethodInformation getMethodInformation(Method m, NameInformation xmlNameMap) {
-        String setterVariable = Utilities.isSetter(m);
+    private static MethodInformation getMethodInformation(AltMethodInformation m, NameInformation xmlNameMap) {
+        String setterVariable = isSetter(m);
         String getterVariable = null;
         String lookupVariable = null;
         String addVariable = null;
         String removeVariable = null;
         
         if (setterVariable == null) {
-            getterVariable = Utilities.isGetter(m);
+            getterVariable = isGetter(m);
             if (getterVariable == null) {
-                lookupVariable = Utilities.isLookup(m);
+                lookupVariable = isLookup(m);
                 if (lookupVariable == null) {
-                    addVariable = Utilities.isAdd(m);
+                    addVariable = isAdd(m);
                     if (addVariable == null) {
-                        removeVariable = Utilities.isRemove(m);
+                        removeVariable = isRemove(m);
                     }
                 }
             }
         }
         
         MethodType methodType;
-        Class<?> baseChildType = null;
-        Class<?> gsType = null;
+        InterfaceInformation baseChildType = null;
+        InterfaceInformation gsType = null;
         String variable = null;
         boolean isList = false;
         boolean isArray = false;
@@ -823,20 +593,20 @@ public class JAUtilities {
             methodType = MethodType.GETTER;
             variable = getterVariable;
             
-            Class<?> returnType = m.getReturnType();
+            InterfaceInformation returnType = m.getReturnType();
             gsType = returnType;
             
             if (List.class.equals(returnType)) {
                 isList = true;
-                Type typeChildType = ReflectionHelper.getFirstTypeArgument(m.getGenericReturnType());
+                InterfaceInformation typeChildType = m.getFirstTypeArgument();
                 
-                baseChildType = ReflectionHelper.getRawClass(typeChildType);
+                baseChildType = typeChildType;
                 if (baseChildType == null) {
                     throw new RuntimeException("Cannot find child type of method " + m);
                 }
             }
             else if (returnType.isArray()) {
-                Class<?> arrayType = returnType.getComponentType();
+                InterfaceInformation arrayType = returnType.getComponentType();
                 if (arrayType.isInterface()) {
                     isArray = true;
                     baseChildType = arrayType;
@@ -851,20 +621,20 @@ public class JAUtilities {
             methodType = MethodType.SETTER;
             variable = setterVariable;
             
-            Class<?> setterType = m.getParameterTypes()[0];
+            InterfaceInformation setterType = m.getParameterTypes().get(0);
             gsType = setterType;
             
             if (List.class.equals(setterType)) {
                 isList = true;
-                Type typeChildType = ReflectionHelper.getFirstTypeArgument(m.getGenericParameterTypes()[0]);
+                InterfaceInformation typeChildType = m.getFirstTypeArgumentOfParameter(0);
                 
-                baseChildType = ReflectionHelper.getRawClass(typeChildType);
+                baseChildType = typeChildType;
                 if (baseChildType == null) {
                     throw new RuntimeException("Cannot find child type of method " + m);
                 }
             }
             else if (setterType.isArray()) {
-                Class<?> arrayType = setterType.getComponentType();
+                InterfaceInformation arrayType = setterType.getComponentType();
                 if (arrayType.isInterface()) {
                     isArray = true;
                     baseChildType = arrayType;
@@ -879,7 +649,7 @@ public class JAUtilities {
             methodType = MethodType.LOOKUP;
             variable = lookupVariable;
             
-            Class<?> lookupType = m.getReturnType();
+            InterfaceInformation lookupType = m.getReturnType();
             gsType = lookupType;
         }
         else if (addVariable != null) {
@@ -902,7 +672,7 @@ public class JAUtilities {
         String defaultValue = xmlNameMap.getDefaultNameMap(variable);
         
         boolean key = false;
-        if ((m.getAnnotation(XmlID.class) != null) || (m.getAnnotation(XmlIdentifier.class) != null)) {
+        if ((m.getAnnotation(XmlID.class.getName()) != null) || (m.getAnnotation(XmlIdentifier.class.getName()) != null)) {
             key = true;
         }
         
@@ -917,23 +687,32 @@ public class JAUtilities {
                 isArray);
     }
     
+    private static enum MethodType {
+        GETTER,
+        SETTER,
+        LOOKUP,
+        ADD,
+        REMOVE,
+        CUSTOM
+    }
+    
     private static class MethodInformation {
-        private final Method originalMethod;
+        private final AltMethodInformation originalMethod;
         private final MethodType methodType;
-        private final Class<?> getterSetterType;
+        private final InterfaceInformation getterSetterType;
         private final String representedProperty;
         private final String defaultValue;
-        private final Class<?> baseChildType;
+        private final InterfaceInformation baseChildType;
         private final boolean key;
         private final boolean isList;
         private final boolean isArray;
         
-        private MethodInformation(Method originalMethod,
+        private MethodInformation(AltMethodInformation originalMethod,
                 MethodType methodType,
                 String representedProperty,
                 String defaultValue,
-                Class<?> baseChildType,
-                Class<?> gsType,
+                InterfaceInformation baseChildType,
+                InterfaceInformation gsType,
                 boolean key,
                 boolean isList,
                 boolean isArray) {
@@ -1001,12 +780,200 @@ public class JAUtilities {
         }
     }
     
-    private static enum MethodType {
-        GETTER,
-        SETTER,
-        LOOKUP,
-        ADD,
-        REMOVE,
-        CUSTOM
+    private static String convertXmlRootElementName(AnnotationInformation root, InterfaceInformation clazz) {
+        String rootName = root.getStringValue("name");
+        
+        if (!"##default".equals(rootName)) return rootName;
+        
+        String simpleName = clazz.getSimpleName();
+        
+        char asChars[] = simpleName.toCharArray();
+        StringBuffer sb = new StringBuffer();
+        
+        boolean firstChar = true;
+        boolean lastCharWasCapital = false;
+        for (char asChar : asChars) {
+            if (firstChar) {
+                firstChar = false;
+                if (Character.isUpperCase(asChar)) {
+                    lastCharWasCapital = true;
+                    sb.append(Character.toLowerCase(asChar));
+                }
+                else {
+                    lastCharWasCapital = false;
+                    sb.append(asChar);
+                }
+            }
+            else {
+                if (Character.isUpperCase(asChar)) {
+                    if (!lastCharWasCapital) {
+                        sb.append('-');
+                    }
+                    
+                    sb.append(Character.toLowerCase(asChar));
+                    
+                    lastCharWasCapital = true;
+                }
+                else {
+                    sb.append(asChar);
+                    
+                    lastCharWasCapital = false;
+                }
+            }
+        }
+        
+        return sb.toString();
     }
+    
+    private static String isGetter(AltMethodInformation method) {
+        String name = method.getName();
+        
+        if (name.startsWith(JAUtilities.GET)) {
+            if (name.length() <= JAUtilities.GET.length()) return null;
+            if (method.getParameterTypes().size() != 0) return null;
+            if (void.class.getName().equals(method.getReturnType().getName())) return null;
+            
+            String variableName = name.substring(JAUtilities.GET.length());
+            
+            return Introspector.decapitalize(variableName);
+        }
+        
+        if (name.startsWith(JAUtilities.IS)) {
+            if (name.length() <= JAUtilities.IS.length()) return null;
+            if (method.getParameterTypes().size() != 0) return null;
+            if (boolean.class.getName().equals(method.getReturnType().getName()) || Boolean.class.getName().equals(method.getReturnType().getName())) {
+                String variableName = name.substring(JAUtilities.IS.length());
+                
+                return Introspector.decapitalize(variableName);
+            }
+            
+            return null;
+        }
+        
+        return null;
+    }
+    
+    private static String isSetter(AltMethodInformation method) {
+        String name = method.getName();
+        
+        if (name.startsWith(JAUtilities.SET)) {
+            if (name.length() <= JAUtilities.SET.length()) return null;
+            if (method.getParameterTypes().size() != 1) return null;
+            if (void.class.getName().equals(method.getReturnType().getName())) {
+                String variableName = name.substring(JAUtilities.SET.length());
+                
+                return Introspector.decapitalize(variableName);
+            }
+            
+            return null;
+        }
+        
+        return null;
+    }
+    
+    private static String isLookup(AltMethodInformation method) {
+        String name = method.getName();
+        
+        if (!name.startsWith(JAUtilities.LOOKUP)) return null;
+        
+        if (name.length() <= JAUtilities.LOOKUP.length()) return null;
+        List<InterfaceInformation> parameterTypes = method.getParameterTypes();
+        if (parameterTypes.size() != 1) return null;
+        if (!String.class.getName().equals(parameterTypes.get(0).getName())) return null;
+            
+        if (method.getReturnType() == null || void.class.getName().equals(method.getReturnType().getName())) return null;
+            
+        String variableName = name.substring(JAUtilities.LOOKUP.length());
+                
+        return Introspector.decapitalize(variableName);
+    }
+    
+    private static String isAdd(AltMethodInformation method) {
+        String name = method.getName();
+        
+        if (!name.startsWith(JAUtilities.ADD)) return null;
+        
+        if (name.length() <= JAUtilities.ADD.length()) return null;
+        if (!void.class.equals(method.getReturnType())) return null;
+        
+        String variableName = name.substring(JAUtilities.ADD.length());
+        String retVal = Introspector.decapitalize(variableName);
+        
+        List<InterfaceInformation> parameterTypes = method.getParameterTypes();
+        if (parameterTypes.size() > 2) return null;
+        
+        if (parameterTypes.size() == 0) return retVal;
+        
+        InterfaceInformation param0 = parameterTypes.get(0);
+        InterfaceInformation param1 = null;
+        if (parameterTypes.size() == 2) {
+            param1 = parameterTypes.get(1);
+        }
+        
+        if (String.class.getName().equals(param0.getName()) ||
+                int.class.getName().equals(param0.getName()) ||
+                param0.isInterface()) {
+            // Yes, this is possibly an add
+            if (parameterTypes.size() == 1) {
+                // add(int), add(String), add(interface) are legal adds
+                return retVal;
+            }
+            
+            if (int.class.getName().equals(param0.getName())) {
+                // If int is first there must not be any other parameter
+                return null;
+            }
+            else if (String.class.getName().equals(param0.getName())) {
+                // add(String, int) is a legal add
+                if (int.class.getName().equals(param1.getName())) return retVal;
+            }
+            else {
+                // add(interface, int) is a legal add
+                if (int.class.getName().equals(param1.getName())) return retVal;
+            }
+        }
+        return null;
+    }
+    
+    private static String isRemove(AltMethodInformation method) {
+        String name = method.getName();
+        
+        if (!name.startsWith(JAUtilities.REMOVE)) return null;
+        
+        if (name.length() <= JAUtilities.REMOVE.length()) return null;
+        if (method.getReturnType() == null || void.class.equals(method.getReturnType())) return null;
+        
+        InterfaceInformation returnType = method.getReturnType();
+        if (!boolean.class.getName().equals(returnType.getName()) && !returnType.isInterface()) return null;
+        
+        String variableName = name.substring(JAUtilities.REMOVE.length());
+        String retVal = Introspector.decapitalize(variableName);
+        
+        List<InterfaceInformation> parameterTypes = method.getParameterTypes();
+        if (parameterTypes.size() > 1) return null;
+        
+        if (parameterTypes.size() == 0) return retVal;
+        
+        InterfaceInformation param0 = parameterTypes.get(0);
+        
+        if (String.class.getName().equals(param0.getName()) ||
+                int.class.getName().equals(param0.getName())) return retVal;
+        return null;
+    }
+    
+    private static String getCompilableClass(InterfaceInformation clazz) {
+        int depth = 0;
+        while (clazz.isArray()) {
+            depth++;
+            clazz = clazz.getComponentType();
+        }
+        
+        StringBuffer sb = new StringBuffer(clazz.getName());
+        for (int lcv = 0; lcv < depth; lcv++) {
+            sb.append("[]");
+        }
+        
+        return sb.toString();
+    }
+
 }
