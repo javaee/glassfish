@@ -48,6 +48,7 @@ import java.util.Map;
 
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.xml.internal.alt.AltAnnotation;
+import org.glassfish.hk2.xml.jaxb.internal.XmlElementImpl;
 
 /**
  * @author jwells
@@ -83,6 +84,12 @@ public class AnnotationAltAnnotationImpl implements AltAnnotation {
     @Override
     public synchronized String getStringValue(String methodName) {
         if (values == null) getAnnotationValues();
+        
+        if (XmlElementImpl.class.equals(annotation.getClass()) &&
+                "getTypeByName".equals(methodName)) {
+            XmlElementImpl xei = (XmlElementImpl) annotation;
+            return xei.getTypeByName();
+        }
         
         return (String) values.get(methodName);
     }

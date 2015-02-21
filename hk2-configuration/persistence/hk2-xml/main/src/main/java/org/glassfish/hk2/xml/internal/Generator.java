@@ -67,12 +67,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
-import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
 import org.glassfish.hk2.xml.internal.alt.AltAnnotation;
 import org.glassfish.hk2.xml.internal.alt.AltClass;
 import org.glassfish.hk2.xml.internal.alt.AltMethod;
+import org.glassfish.hk2.xml.internal.alt.clazz.AnnotationAltAnnotationImpl;
 import org.glassfish.hk2.xml.jaxb.internal.XmlElementImpl;
 import org.glassfish.hk2.xml.jaxb.internal.XmlRootElementImpl;
 import org.jvnet.hk2.annotations.Contract;
@@ -86,20 +86,11 @@ public class Generator {
             "org.jvnet.hk2.properties.xmlservice.jaxb.methods", "false"));
     
     private final static String CLASS_ADD_ON_NAME = "_$$_Hk2_Jaxb";
-    private final static HashSet<String> DO_NOT_HANDLE_METHODS = new HashSet<String>();
     private final static String JAXB_DEFAULT_STRING = "##default";
     public final static String JAXB_DEFAULT_DEFAULT = "\u0000";
     private final static String NO_CHILD_PACKAGE = "java.";
     
-    static {
-        DO_NOT_HANDLE_METHODS.add("hashCode");
-        DO_NOT_HANDLE_METHODS.add("equals");
-        DO_NOT_HANDLE_METHODS.add("toString");
-        DO_NOT_HANDLE_METHODS.add("annotationType");
-    }
-    
     public static CtClass generate(AltClass convertMe,
-            ClassReflectionHelper helper,
             CtClass superClazz,
             ClassPool defaultClassPool) throws Throwable {
         String targetClassName = convertMe.getName() + CLASS_ADD_ON_NAME;
@@ -172,7 +163,7 @@ public class Generator {
             
             AltClass originalRetType = wrapper.getReturnType();
             boolean isVoid;
-            if (originalRetType == null || void.class.equals(originalRetType)) {
+            if (originalRetType == null || void.class.getName().equals(originalRetType.getName())) {
                 sb.append("void ");
                 isVoid = true;
             }
@@ -201,28 +192,28 @@ public class Generator {
                 
                 String cast = "";
                 String superMethodName = "_getProperty";
-                if (int.class.equals(mi.getterSetterType)) {
+                if (int.class.getName().equals(mi.getterSetterType.getName())) {
                     superMethodName += "I"; 
                 }
-                else if (long.class.equals(mi.getterSetterType)) {
+                else if (long.class.getName().equals(mi.getterSetterType.getName())) {
                     superMethodName += "J";
                 }
-                else if (boolean.class.equals(mi.getterSetterType)) {
+                else if (boolean.class.getName().equals(mi.getterSetterType.getName())) {
                     superMethodName += "Z";
                 }
-                else if (byte.class.equals(mi.getterSetterType)) {
+                else if (byte.class.getName().equals(mi.getterSetterType.getName())) {
                     superMethodName += "B";
                 }
-                else if (char.class.equals(mi.getterSetterType)) {
+                else if (char.class.getName().equals(mi.getterSetterType.getName())) {
                     superMethodName += "C";
                 }
-                else if (short.class.equals(mi.getterSetterType)) {
+                else if (short.class.getName().equals(mi.getterSetterType.getName())) {
                     superMethodName += "S";
                 }
-                else if (float.class.equals(mi.getterSetterType)) {
+                else if (float.class.getName().equals(mi.getterSetterType.getName())) {
                     superMethodName += "F";
                 }
-                else if (double.class.equals(mi.getterSetterType)) {
+                else if (double.class.getName().equals(mi.getterSetterType.getName())) {
                     superMethodName += "D";
                 }
                 else {
@@ -304,28 +295,28 @@ public class Generator {
                     
                     classSets.append("mParams[" + lcv + "] = " + getCompilableClass(paramType) + ".class;\n");
                     valSets.append("mVars[" + lcv + "] = ");
-                    if (int.class.equals(paramType)) {
+                    if (int.class.getName().equals(paramType.getName())) {
                         valSets.append("new java.lang.Integer(arg" + lcv + ");\n");
                     }
-                    else if (long.class.equals(paramType)) {
+                    else if (long.class.getName().equals(paramType.getName())) {
                         valSets.append("new java.lang.Long(arg" + lcv + ");\n");
                     }
-                    else if (boolean.class.equals(paramType)) {
+                    else if (boolean.class.getName().equals(paramType.getName())) {
                         valSets.append("new java.lang.Boolean(arg" + lcv + ");\n");
                     }
-                    else if (byte.class.equals(paramType)) {
+                    else if (byte.class.getName().equals(paramType.getName())) {
                         valSets.append("new java.lang.Byte(arg" + lcv + ");\n");
                     }
-                    else if (char.class.equals(paramType)) {
+                    else if (char.class.getName().equals(paramType.getName())) {
                         valSets.append("new java.lang.Character(arg" + lcv + ");\n");
                     }
-                    else if (short.class.equals(paramType)) {
+                    else if (short.class.getName().equals(paramType.getName())) {
                         valSets.append("new java.lang.Short(arg" + lcv + ");\n");
                     }
-                    else if (float.class.equals(paramType)) {
+                    else if (float.class.getName().equals(paramType.getName())) {
                         valSets.append("new java.lang.Float(arg" + lcv + ");\n");
                     }
-                    else if (double.class.equals(paramType)) {
+                    else if (double.class.getName().equals(paramType.getName())) {
                         valSets.append("new java.lang.Double(arg" + lcv + ");\n");
                     }
                     else {
@@ -342,28 +333,28 @@ public class Generator {
                 
                 String cast = "";
                 String superMethodName = "_invokeCustomizedMethod";
-                if (int.class.equals(originalRetType)) {
+                if (int.class.getName().equals(originalRetType.getName())) {
                     superMethodName += "I"; 
                 }
-                else if (long.class.equals(originalRetType)) {
+                else if (long.class.getName().equals(originalRetType.getName())) {
                     superMethodName += "J";
                 }
-                else if (boolean.class.equals(originalRetType)) {
+                else if (boolean.class.getName().equals(originalRetType.getName())) {
                     superMethodName += "Z";
                 }
-                else if (byte.class.equals(originalRetType)) {
+                else if (byte.class.getName().equals(originalRetType.getName())) {
                     superMethodName += "B";
                 }
-                else if (char.class.equals(originalRetType)) {
+                else if (char.class.getName().equals(originalRetType.getName())) {
                     superMethodName += "C";
                 }
-                else if (short.class.equals(originalRetType)) {
+                else if (short.class.getName().equals(originalRetType.getName())) {
                     superMethodName += "S";
                 }
-                else if (float.class.equals(originalRetType)) {
+                else if (float.class.getName().equals(originalRetType.getName())) {
                     superMethodName += "F";
                 }
-                else if (double.class.equals(originalRetType)) {
+                else if (double.class.getName().equals(originalRetType.getName())) {
                     superMethodName += "D";
                 }
                 else if (!isVoid) {
@@ -469,8 +460,7 @@ public class Generator {
     
     private static void createAnnotationCopy(ConstPool parent, java.lang.annotation.Annotation javaAnnotation,
             AnnotationsAttribute retVal) throws Throwable {
-        throw new AssertionError("not yet handled");
-        
+        createAnnotationCopy(parent, new AnnotationAltAnnotationImpl(javaAnnotation), retVal);
     }
     
     private static void createAnnotationCopy(ConstPool parent, AltAnnotation javaAnnotation,
@@ -481,8 +471,6 @@ public class Generator {
         for (Map.Entry<String, Object> entry : annotationValues.entrySet()) {
             String valueName = entry.getKey();
             Object value = entry.getValue();
-            
-            if (DO_NOT_HANDLE_METHODS.contains(valueName)) continue;
             
             Class<?> javaAnnotationType = value.getClass();
             if (String.class.equals(javaAnnotationType)) {
@@ -495,8 +483,9 @@ public class Generator {
             }
             else if (Class.class.equals(javaAnnotationType)) {
                 String sValue;
-                if (javaAnnotation instanceof XmlElementImpl) {
-                    sValue = ((XmlElementImpl) javaAnnotation).getTypeByName();
+                if (javaAnnotation.annotationType().equals(XmlElement.class.getName()) &&
+                        (javaAnnotation.getStringValue("getTypeByName") != null)) {
+                    sValue = javaAnnotation.getStringValue("getTypeByName");
                 }
                 else {
                     sValue = ((Class<?>) value).getName();
@@ -595,7 +584,7 @@ public class Generator {
             AltClass returnType = m.getReturnType();
             gsType = returnType;
             
-            if (List.class.equals(returnType)) {
+            if (List.class.getName().equals(returnType.getName())) {
                 isList = true;
                 AltClass typeChildType = m.getFirstTypeArgument();
                 
@@ -623,7 +612,7 @@ public class Generator {
             AltClass setterType = m.getParameterTypes().get(0);
             gsType = setterType;
             
-            if (List.class.equals(setterType)) {
+            if (List.class.getName().equals(setterType.getName())) {
                 isList = true;
                 AltClass typeChildType = m.getFirstTypeArgumentOfParameter(0);
                 
@@ -732,7 +721,7 @@ public class Generator {
               "type=" + methodType + "," +
               "getterType=" + getterSetterType + "," +
               "representedProperty=" + representedProperty + "," +
-              "defaultValue=" + defaultValue + "," +
+              "defaultValue=" + ((JAXB_DEFAULT_DEFAULT.equals(defaultValue)) ? "" : defaultValue) + "," +
               "baseChildType=" + baseChildType + "," +
               "key=" + key + "," +
               "isList=" + isList + "," +
@@ -893,7 +882,7 @@ public class Generator {
         if (!name.startsWith(JAUtilities.ADD)) return null;
         
         if (name.length() <= JAUtilities.ADD.length()) return null;
-        if (!void.class.equals(method.getReturnType())) return null;
+        if (!void.class.getName().equals(method.getReturnType().getName())) return null;
         
         String variableName = name.substring(JAUtilities.ADD.length());
         String retVal = Introspector.decapitalize(variableName);

@@ -79,6 +79,7 @@ import org.glassfish.hk2.utilities.reflection.MethodWrapper;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
 import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
+import org.glassfish.hk2.xml.internal.alt.clazz.ClassAltClassImpl;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 import org.glassfish.hk2.xml.jaxb.internal.XmlElementImpl;
 import org.glassfish.hk2.xml.jaxb.internal.XmlRootElementImpl;
@@ -236,10 +237,17 @@ public class JAUtilities {
         CtClass foundClass = defaultClassPool.getOrNull(targetClassName);
         
         if (foundClass == null) {
+            /*
             generate(convertMe,
                     helper,
                     superClazz,
                     defaultClassPool);
+             */       
+            
+            CtClass experimental = Generator.generate(
+                    new ClassAltClassImpl(convertMe, helper), superClazz, defaultClassPool);
+            
+            experimental.toClass(convertMe.getClassLoader(), convertMe.getProtectionDomain());
             
             foundClass = defaultClassPool.getOrNull(targetClassName);
         }
@@ -954,7 +962,7 @@ public class JAUtilities {
               "type=" + methodType + "," +
               "getterType=" + getterSetterType + "," +
               "representedProperty=" + representedProperty + "," +
-              "defaultValue=" + defaultValue + "," +
+              "defaultValue=" + ((JAXB_DEFAULT_DEFAULT.equals(defaultValue)) ? "" : defaultValue) + "," +
               "baseChildType=" + baseChildType + "," +
               "key=" + key + "," +
               "isList=" + isList + "," +
