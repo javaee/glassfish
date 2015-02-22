@@ -61,6 +61,7 @@ public class Utilities {
     /** Separator for instance names */
     public final static char INSTANCE_PATH_SEPARATOR = '.';
 
+    
     /* package */ static String isGetter(Method method) {
         String name = method.getName();
         

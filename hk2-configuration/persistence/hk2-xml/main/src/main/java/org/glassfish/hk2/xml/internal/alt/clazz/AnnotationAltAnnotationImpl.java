@@ -69,6 +69,10 @@ public class AnnotationAltAnnotationImpl implements AltAnnotation {
     public AnnotationAltAnnotationImpl(Annotation annotation) {
         this.annotation = annotation;
     }
+    
+    public Annotation getOriginalAnnotation() {
+        return annotation;
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.internal.alt.AltAnnotation#annotationType()

@@ -65,6 +65,10 @@ public class ClassAltClassImpl implements AltClass {
         this.clazz = clazz;
         this.helper = helper;
     }
+    
+    public Class<?> getOriginalClass() {
+        return clazz;
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.internal.alt.AltClass#getName()

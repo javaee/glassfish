@@ -675,15 +675,6 @@ public class Generator {
                 isArray);
     }
     
-    private static enum MethodType {
-        GETTER,
-        SETTER,
-        LOOKUP,
-        ADD,
-        REMOVE,
-        CUSTOM
-    }
-    
     private static class MethodInformation {
         private final AltMethod originalMethod;
         private final MethodType methodType;
@@ -743,28 +734,18 @@ public class Generator {
         private String getNameMap(String mapMe) {
             if (mapMe == null) return null;
             if (!nameMapping.containsKey(mapMe)) return mapMe;
-            return nameMapping.get(mapMe).name;
+            return nameMapping.get(mapMe).getName();
         }
         
         private String getDefaultNameMap(String mapMe) {
             if (mapMe == null) return JAXB_DEFAULT_DEFAULT;
             if (!nameMapping.containsKey(mapMe)) return JAXB_DEFAULT_DEFAULT;
-            return nameMapping.get(mapMe).defaultValue;
+            return nameMapping.get(mapMe).getDefaultValue();
         }
         
         private boolean hasNoXmlElement(String variableName) {
             if (variableName == null) return true;
             return noXmlElement.contains(variableName);
-        }
-    }
-    
-    private static class XmlElementData {
-        private final String name;
-        private final String defaultValue;
-        
-        private XmlElementData(String name, String defaultValue) {
-            this.name = name;
-            this.defaultValue = defaultValue;
         }
     }
     

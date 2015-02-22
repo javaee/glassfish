@@ -66,6 +66,10 @@ public class MethodAltMethodImpl implements AltMethod {
         this.method = method;
         this.helper = helper;
     }
+    
+    public Method getOriginalMethod() {
+        return method;
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.internal.alt.AltMethod#getName()

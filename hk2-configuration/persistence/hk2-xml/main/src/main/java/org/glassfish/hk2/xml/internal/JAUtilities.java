@@ -54,22 +54,10 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import javassist.ClassPool;
 import javassist.CtClass;
-import javassist.CtMethod;
-import javassist.CtNewMethod;
-import javassist.Modifier;
 import javassist.NotFoundException;
-import javassist.bytecode.AnnotationsAttribute;
-import javassist.bytecode.ClassFile;
-import javassist.bytecode.ConstPool;
-import javassist.bytecode.MethodInfo;
-import javassist.bytecode.annotation.Annotation;
-import javassist.bytecode.annotation.BooleanMemberValue;
-import javassist.bytecode.annotation.ClassMemberValue;
-import javassist.bytecode.annotation.StringMemberValue;
 
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
@@ -81,9 +69,6 @@ import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl
 import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
 import org.glassfish.hk2.xml.internal.alt.clazz.ClassAltClassImpl;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
-import org.glassfish.hk2.xml.jaxb.internal.XmlElementImpl;
-import org.glassfish.hk2.xml.jaxb.internal.XmlRootElementImpl;
-import org.jvnet.hk2.annotations.Contract;
 
 /**
  * @author jwells
@@ -183,7 +168,6 @@ public class JAUtilities {
     
     private static NameInformation getXmlNameMap(Class<?> convertMe) {
         Map<String, XmlElementData> xmlNameMap = new HashMap<String, XmlElementData>();
-        HashSet<String> unmappedNames = new HashSet<String>();
         
         for (Method originalMethod : convertMe.getMethods()) {
             String setterVariable = Utilities.isSetter(originalMethod);
@@ -213,20 +197,10 @@ public class JAUtilities {
                         xmlNameMap.put(setterVariable, new XmlElementData(xmlAttribute.name(), JAXB_DEFAULT_DEFAULT));
                     }
                 }
-                else {
-                    unmappedNames.add(setterVariable);
-                }
             }
         }
         
-        Set<String> noXmlElementNames = new HashSet<String>();
-        for (String unmappedName : unmappedNames) {
-            if (!xmlNameMap.containsKey(unmappedName)) {
-                noXmlElementNames.add(unmappedName);
-            }
-        }
-        
-        return new NameInformation(xmlNameMap, noXmlElementNames);
+        return new NameInformation(xmlNameMap);
     }
     
     private UnparentedNode convert(Class<?> convertMe, ClassReflectionHelper helper) throws Throwable {
@@ -237,17 +211,10 @@ public class JAUtilities {
         CtClass foundClass = defaultClassPool.getOrNull(targetClassName);
         
         if (foundClass == null) {
-            /*
-            generate(convertMe,
-                    helper,
-                    superClazz,
-                    defaultClassPool);
-             */       
-            
-            CtClass experimental = Generator.generate(
+            CtClass generated = Generator.generate(
                     new ClassAltClassImpl(convertMe, helper), superClazz, defaultClassPool);
             
-            experimental.toClass(convertMe.getClassLoader(), convertMe.getProtectionDomain());
+            generated.toClass(convertMe.getClassLoader(), convertMe.getProtectionDomain());
             
             foundClass = defaultClassPool.getOrNull(targetClassName);
         }
@@ -328,421 +295,6 @@ public class JAUtilities {
         proxy2NodeCache.put(proxy, retVal);
             
         return retVal;
-    }
-    
-    private static void generate(Class<?> convertMe,
-            ClassReflectionHelper helper,
-            CtClass superClazz,
-            ClassPool defaultClassPool) throws Throwable {
-        String targetClassName = convertMe.getName() + CLASS_ADD_ON_NAME;
-        
-        CtClass targetCtClass = defaultClassPool.makeClass(targetClassName);
-        ClassFile targetClassFile = targetCtClass.getClassFile();
-        targetClassFile.setVersionToJava5();
-        ConstPool targetConstPool = targetClassFile.getConstPool();
-        
-        AnnotationsAttribute ctAnnotations = null;
-        for (java.lang.annotation.Annotation convertMeAnnotation : convertMe.getAnnotations()) {
-            if (Contract.class.equals(convertMeAnnotation.annotationType()) ||
-                    XmlTransient.class.equals(convertMeAnnotation.annotationType())) {
-                // We do NOT want the generated class to be in the set of contracts, so
-                // skip this one if it is there.
-                // We also DO want our own class to be processed by JAXB even
-                // if the interface is not.  This is needed for the Eclipselink
-                // Moxy version of JAXB, which does some processing of interfaces
-                // we do not want them to do
-                continue;
-            }
-            
-            if (ctAnnotations == null) {
-                ctAnnotations = new AnnotationsAttribute(targetConstPool, AnnotationsAttribute.visibleTag);
-            }
-            
-            if (XmlRootElement.class.equals(convertMeAnnotation.annotationType())) {
-                XmlRootElement xre = (XmlRootElement) convertMeAnnotation;
-                
-                String rootName = Utilities.convertXmlRootElementName(xre, convertMe);
-                
-                XmlRootElement replacement = new XmlRootElementImpl(xre.namespace(), rootName);
-                
-                createAnnotationCopy(targetConstPool, replacement, ctAnnotations);
-            }
-            else {
-                createAnnotationCopy(targetConstPool, convertMeAnnotation, ctAnnotations);
-            }
-        }
-        if (ctAnnotations != null) {
-            targetClassFile.addAttribute(ctAnnotations);
-        }
-        
-        CtClass originalCtClass = defaultClassPool.get(convertMe.getName());
-        
-        targetCtClass.setSuperclass(superClazz);
-        targetCtClass.addInterface(originalCtClass);
-        
-        NameInformation xmlNameMap = getXmlNameMap(convertMe);
-        HashSet<String> alreadyAddedNaked = new HashSet<String>();
-        
-        HashMap<Class<?>, String> childTypes = new HashMap<Class<?>, String>();
-        
-        Set<MethodWrapper> allMethods = helper.getAllMethods(convertMe);
-        if (DEBUG_METHODS) {
-            Logger.getLogger().debug("Analyzing " + allMethods.size() + " methods of " + convertMe.getName());
-        }
-        
-        HashSet<String> setters = new HashSet<String>();
-        HashMap<String, MethodInformation> getters = new HashMap<String, MethodInformation>();
-        for (MethodWrapper wrapper : allMethods) {
-            Method originalMethod = wrapper.getMethod();
-            MethodInformation mi = getMethodInformation(originalMethod, xmlNameMap);
-            
-            if (DEBUG_METHODS) {
-                Logger.getLogger().debug("Analyzing method " + mi + " of " + convertMe.getSimpleName());
-            }
-            
-            String name = originalMethod.getName();
-            
-            StringBuffer sb = new StringBuffer("public ");
-            
-            Class<?> originalRetType = originalMethod.getReturnType();
-            boolean isVoid;
-            if (originalRetType == null || void.class.equals(originalRetType)) {
-                sb.append("void ");
-                isVoid = true;
-            }
-            else {
-                sb.append(Utilities.getCompilableClass(originalRetType) + " ");
-                isVoid = false;
-            }
-            
-            sb.append(name + "(");
-            
-            Class<?> childType = null;
-            boolean getterOrSetter = false;
-            if (MethodType.SETTER.equals(mi.methodType)) {
-                getterOrSetter = true;
-                setters.add(mi.representedProperty);
-                
-                childType = mi.baseChildType;
-                
-                sb.append(Utilities.getCompilableClass(mi.getterSetterType) + " arg0) { super._setProperty(\"" + mi.representedProperty + "\", arg0); }");
-            }
-            else if (MethodType.GETTER.equals(mi.methodType)) {
-                getterOrSetter = true;
-                getters.put(mi.representedProperty, mi);
-                
-                childType = mi.baseChildType;
-                
-                String cast = "";
-                String superMethodName = "_getProperty";
-                if (int.class.equals(mi.getterSetterType)) {
-                    superMethodName += "I"; 
-                }
-                else if (long.class.equals(mi.getterSetterType)) {
-                    superMethodName += "J";
-                }
-                else if (boolean.class.equals(mi.getterSetterType)) {
-                    superMethodName += "Z";
-                }
-                else if (byte.class.equals(mi.getterSetterType)) {
-                    superMethodName += "B";
-                }
-                else if (char.class.equals(mi.getterSetterType)) {
-                    superMethodName += "C";
-                }
-                else if (short.class.equals(mi.getterSetterType)) {
-                    superMethodName += "S";
-                }
-                else if (float.class.equals(mi.getterSetterType)) {
-                    superMethodName += "F";
-                }
-                else if (double.class.equals(mi.getterSetterType)) {
-                    superMethodName += "D";
-                }
-                else {
-                    cast = "(" + Utilities.getCompilableClass(mi.getterSetterType) + ") ";
-                }
-                
-                sb.append(") { return " + cast + "super." + superMethodName + "(\"" + mi.representedProperty + "\"); }");
-            }
-            else if (MethodType.LOOKUP.equals(mi.methodType)) {
-                sb.append("java.lang.String arg0) { return (" + Utilities.getCompilableClass(originalRetType) +
-                        ") super._lookupChild(\"" + mi.representedProperty + "\", arg0); }");
-                
-            }
-            else if (MethodType.ADD.equals(mi.methodType)) {
-                Class<?>[] paramTypes = originalMethod.getParameterTypes();
-                if (paramTypes.length == 0) {
-                    sb.append(") { super._doAdd(\"" + mi.representedProperty + "\", null, null, -1); }");
-                }
-                else if (paramTypes.length == 1) {
-                    sb.append(paramTypes[0].getName() + " arg0) { super._doAdd(\"" + mi.representedProperty + "\",");
-                    
-                    if (paramTypes[0].isInterface()) {
-                        sb.append("arg0, null, -1); }");
-                    }
-                    else if (String.class.equals(paramTypes[0])) {
-                        sb.append("null, arg0, -1); }");
-                    }
-                    else {
-                        sb.append("null, null, arg0); }");
-                    }
-                }
-                else {
-                    sb.append(paramTypes[0].getName() + " arg0, int arg1) { super._doAdd(\"" + mi.representedProperty + "\",");
-                    
-                    if (paramTypes[0].isInterface()) {
-                        sb.append("arg0, null, arg1); }");
-                    }
-                    else {
-                        sb.append("null, arg0, arg1); }");
-                    }
-                }
-            }
-            else if (MethodType.REMOVE.equals(mi.methodType)) {
-                Class<?>[] paramTypes = originalMethod.getParameterTypes();
-                String cast = "";
-                String function = "super._doRemoveZ(\"";
-                if (!boolean.class.equals(originalRetType)) {
-                    cast = "(" + Utilities.getCompilableClass(originalRetType) + ") ";
-                    function = "super._doRemove(\"";
-                }
-                
-                if (paramTypes.length == 0) {
-                    sb.append(") { return " + cast + function +
-                            mi.representedProperty + "\", null, -1); }");
-                }
-                else if (String.class.equals(paramTypes[0])) {
-                    sb.append("java.lang.String arg0) { return " + cast  + function +
-                            mi.representedProperty + "\", arg0, -1); }");
-                }
-                else {
-                    sb.append("int arg0) { return " + cast + function +
-                            mi.representedProperty + "\", null, arg0); }");
-                }
-            }
-            else if (MethodType.CUSTOM.equals(mi.methodType)) {
-                Class<?>[] paramTypes = originalMethod.getParameterTypes();
-                
-                StringBuffer classSets = new StringBuffer();
-                StringBuffer valSets = new StringBuffer();
-                
-                int lcv = 0;
-                for (Class<?> paramType : paramTypes) {
-                    if (lcv == 0) {
-                        sb.append(Utilities.getCompilableClass(paramType) + " arg" + lcv);
-                    }
-                    else {
-                        sb.append(", " + Utilities.getCompilableClass(paramType) + " arg" + lcv);
-                    }
-                    
-                    classSets.append("mParams[" + lcv + "] = " + Utilities.getCompilableClass(paramType) + ".class;\n");
-                    valSets.append("mVars[" + lcv + "] = ");
-                    if (int.class.equals(paramType)) {
-                        valSets.append("new java.lang.Integer(arg" + lcv + ");\n");
-                    }
-                    else if (long.class.equals(paramType)) {
-                        valSets.append("new java.lang.Long(arg" + lcv + ");\n");
-                    }
-                    else if (boolean.class.equals(paramType)) {
-                        valSets.append("new java.lang.Boolean(arg" + lcv + ");\n");
-                    }
-                    else if (byte.class.equals(paramType)) {
-                        valSets.append("new java.lang.Byte(arg" + lcv + ");\n");
-                    }
-                    else if (char.class.equals(paramType)) {
-                        valSets.append("new java.lang.Character(arg" + lcv + ");\n");
-                    }
-                    else if (short.class.equals(paramType)) {
-                        valSets.append("new java.lang.Short(arg" + lcv + ");\n");
-                    }
-                    else if (float.class.equals(paramType)) {
-                        valSets.append("new java.lang.Float(arg" + lcv + ");\n");
-                    }
-                    else if (double.class.equals(paramType)) {
-                        valSets.append("new java.lang.Double(arg" + lcv + ");\n");
-                    }
-                    else {
-                        valSets.append("arg" + lcv + ";\n");
-                    }
-                    
-                    lcv++;
-                }
-                
-                sb.append(") { Class[] mParams = new Class[" + paramTypes.length + "];\n");
-                sb.append("Object[] mVars = new Object[" + paramTypes.length + "];\n");
-                sb.append(classSets.toString());
-                sb.append(valSets.toString());
-                
-                String cast = "";
-                String superMethodName = "_invokeCustomizedMethod";
-                if (int.class.equals(originalRetType)) {
-                    superMethodName += "I"; 
-                }
-                else if (long.class.equals(originalRetType)) {
-                    superMethodName += "J";
-                }
-                else if (boolean.class.equals(originalRetType)) {
-                    superMethodName += "Z";
-                }
-                else if (byte.class.equals(originalRetType)) {
-                    superMethodName += "B";
-                }
-                else if (char.class.equals(originalRetType)) {
-                    superMethodName += "C";
-                }
-                else if (short.class.equals(originalRetType)) {
-                    superMethodName += "S";
-                }
-                else if (float.class.equals(originalRetType)) {
-                    superMethodName += "F";
-                }
-                else if (double.class.equals(originalRetType)) {
-                    superMethodName += "D";
-                }
-                else if (!isVoid) {
-                    cast = "(" + Utilities.getCompilableClass(originalRetType) + ") ";
-                }
-                
-                if (!isVoid) {
-                    sb.append("return " + cast);
-                }
-                sb.append("super." + superMethodName + "(\"" + name + "\", mParams, mVars);}");
-            }
-            
-            if (getterOrSetter && 
-                    (childType != null) &&
-                    !childTypes.containsKey(childType)) {
-                childTypes.put(childType, mi.representedProperty);
-            }
-            
-            if (DEBUG_METHODS) {
-                // Hidden behind static because of potential expensive toString costs
-                Logger.getLogger().debug("Adding method for " + convertMe.getSimpleName() + " with implementation " + sb);
-            }
-            
-            CtMethod addMeCtMethod = CtNewMethod.make(sb.toString(), targetCtClass);
-            if (originalMethod.isVarArgs()) {
-                addMeCtMethod.setModifiers(addMeCtMethod.getModifiers() | Modifier.VARARGS);
-            }
-            MethodInfo methodInfo = addMeCtMethod.getMethodInfo();
-            ConstPool methodConstPool = methodInfo.getConstPool();
-           
-            ctAnnotations = null;
-            for (java.lang.annotation.Annotation convertMeAnnotation : originalMethod.getAnnotations()) {
-                if (ctAnnotations == null) {
-                    ctAnnotations = new AnnotationsAttribute(methodConstPool, AnnotationsAttribute.visibleTag);
-                }
-                
-                if ((childType != null) && XmlElement.class.equals(convertMeAnnotation.annotationType())) {
-                    XmlElement original = (XmlElement) convertMeAnnotation;
-                        
-                    
-                    String translatedClassName = childType.getName() + CLASS_ADD_ON_NAME;
-                    convertMeAnnotation = new XmlElementImpl(
-                            original.name(),
-                            original.nillable(),
-                            original.required(),
-                            original.namespace(),
-                            original.defaultValue(),
-                            translatedClassName);
-                }
-                    
-                createAnnotationCopy(methodConstPool, convertMeAnnotation, ctAnnotations);
-            }
-            
-            if (getterOrSetter && childType != null &&
-                    xmlNameMap.hasNoXmlElement(mi.representedProperty) &&
-                    !alreadyAddedNaked.contains(mi.representedProperty)) {
-                alreadyAddedNaked.add(mi.representedProperty);
-                if (ctAnnotations == null) {
-                    ctAnnotations = new AnnotationsAttribute(methodConstPool, AnnotationsAttribute.visibleTag);
-                }
-                
-                java.lang.annotation.Annotation convertMeAnnotation;
-                String translatedClassName = childType.getName() + CLASS_ADD_ON_NAME;
-                convertMeAnnotation = new XmlElementImpl(
-                        JAXB_DEFAULT_STRING,
-                        false,
-                        false,
-                        JAXB_DEFAULT_STRING,
-                        JAXB_DEFAULT_DEFAULT,
-                        translatedClassName);
-                
-                createAnnotationCopy(methodConstPool, convertMeAnnotation, ctAnnotations);
-            }
-            
-            if (ctAnnotations != null) {
-                methodInfo.addAttribute(ctAnnotations);
-            }
-            
-            targetCtClass.addMethod(addMeCtMethod);
-        }
-        
-        // Now generate the invisible setters for JAXB
-        for (Map.Entry<String, MethodInformation> getterEntry : getters.entrySet()) {
-            String getterProperty = getterEntry.getKey();
-            MethodInformation mi = getterEntry.getValue();
-            
-            if (setters.contains(getterProperty)) continue;
-            
-            String getterName = mi.originalMethod.getName();
-            String setterName = Utilities.convertToSetter(getterName);
-            
-            StringBuffer sb = new StringBuffer("private void " + setterName + "(");
-            sb.append(Utilities.getCompilableClass(mi.getterSetterType) + " arg0) { super._setProperty(\"" + mi.representedProperty + "\", arg0); }");
-            
-            CtMethod addMeCtMethod = CtNewMethod.make(sb.toString(), targetCtClass);
-            targetCtClass.addMethod(addMeCtMethod);
-        }
-        
-        targetCtClass.toClass(convertMe.getClassLoader(), convertMe.getProtectionDomain());
-    }
-    
-    private static void createAnnotationCopy(ConstPool parent, java.lang.annotation.Annotation javaAnnotation,
-            AnnotationsAttribute retVal) throws Throwable {
-        Annotation annotation = new Annotation(javaAnnotation.annotationType().getName(), parent);
-        
-        for (Method javaAnnotationMethod : javaAnnotation.annotationType().getMethods()) {
-            if (javaAnnotationMethod.getParameterTypes().length != 0) continue;
-            if (DO_NOT_HANDLE_METHODS.contains(javaAnnotationMethod.getName())) continue;
-            
-            Class<?> javaAnnotationType = javaAnnotationMethod.getReturnType();
-            if (String.class.equals(javaAnnotationType)) {
-                String value = (String) ReflectionHelper.invoke(javaAnnotation, javaAnnotationMethod, new Object[0], false);
-                
-                annotation.addMemberValue(javaAnnotationMethod.getName(), new StringMemberValue(value, parent));
-            }
-            else if (boolean.class.equals(javaAnnotationType)) {
-                boolean value = (Boolean) ReflectionHelper.invoke(javaAnnotation, javaAnnotationMethod, new Object[0], false);
-                
-                annotation.addMemberValue(javaAnnotationMethod.getName(), new BooleanMemberValue(value, parent));
-            }
-            else if (Class.class.equals(javaAnnotationType)) {
-                String sValue;
-                if (javaAnnotation instanceof XmlElementImpl) {
-                    sValue = ((XmlElementImpl) javaAnnotation).getTypeByName();
-                }
-                else {
-                    Class<?> value = (Class<?>) ReflectionHelper.invoke(javaAnnotation, javaAnnotationMethod, new Object[0], false);
-                
-                    if (value == null) {
-                        sValue = null;
-                    }
-                    else {
-                        sValue = value.getName();
-                    }
-                }
-                
-                annotation.addMemberValue(javaAnnotationMethod.getName(), new ClassMemberValue(sValue, parent));
-            }
-            else {
-                throw new AssertionError("Annotation type " + javaAnnotationType.getName() + " is not yet implemented");
-            }
-            
-        }
-        
-        retVal.addAnnotation(annotation);
     }
     
     private static void getAllToConvert(Class<?> toBeConverted,
@@ -974,47 +526,21 @@ public class JAUtilities {
     
     private static class NameInformation {
         private final Map<String, XmlElementData> nameMapping;
-        private final Set<String> noXmlElement;
         
-        private NameInformation(Map<String, XmlElementData> nameMapping, Set<String> unmappedNames) {
+        private NameInformation(Map<String, XmlElementData> nameMapping) {
             this.nameMapping = nameMapping;
-            this.noXmlElement = unmappedNames;
         }
         
         private String getNameMap(String mapMe) {
             if (mapMe == null) return null;
             if (!nameMapping.containsKey(mapMe)) return mapMe;
-            return nameMapping.get(mapMe).name;
+            return nameMapping.get(mapMe).getName();
         }
         
         private String getDefaultNameMap(String mapMe) {
             if (mapMe == null) return JAXB_DEFAULT_DEFAULT;
             if (!nameMapping.containsKey(mapMe)) return JAXB_DEFAULT_DEFAULT;
-            return nameMapping.get(mapMe).defaultValue;
+            return nameMapping.get(mapMe).getDefaultValue();
         }
-        
-        private boolean hasNoXmlElement(String variableName) {
-            if (variableName == null) return true;
-            return noXmlElement.contains(variableName);
-        }
-    }
-    
-    private static class XmlElementData {
-        private final String name;
-        private final String defaultValue;
-        
-        private XmlElementData(String name, String defaultValue) {
-            this.name = name;
-            this.defaultValue = defaultValue;
-        }
-    }
-    
-    private static enum MethodType {
-        GETTER,
-        SETTER,
-        LOOKUP,
-        ADD,
-        REMOVE,
-        CUSTOM
     }
 }
