@@ -47,11 +47,8 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -166,43 +163,6 @@ public class JAUtilities {
         return interface2NodeCache.get(root);
     }
     
-    private static NameInformation getXmlNameMap(Class<?> convertMe) {
-        Map<String, XmlElementData> xmlNameMap = new HashMap<String, XmlElementData>();
-        
-        for (Method originalMethod : convertMe.getMethods()) {
-            String setterVariable = Utilities.isSetter(originalMethod);
-            if (setterVariable == null) {
-                setterVariable = Utilities.isGetter(originalMethod);
-                if (setterVariable == null) continue;
-            }
-            
-            XmlElement xmlElement = originalMethod.getAnnotation(XmlElement.class);
-            if (xmlElement != null) {
-                String defaultValue = xmlElement.defaultValue();
-                
-                if (JAXB_DEFAULT_STRING.equals(xmlElement.name())) {
-                    xmlNameMap.put(setterVariable, new XmlElementData(setterVariable, defaultValue));
-                }
-                else {
-                    xmlNameMap.put(setterVariable, new XmlElementData(xmlElement.name(), defaultValue));
-                }
-            }
-            else {
-                XmlAttribute xmlAttribute = originalMethod.getAnnotation(XmlAttribute.class);
-                if (xmlAttribute != null) {
-                    if (JAXB_DEFAULT_STRING.equals(xmlAttribute.name())) {
-                        xmlNameMap.put(setterVariable, new XmlElementData(setterVariable, JAXB_DEFAULT_DEFAULT));
-                    }
-                    else {
-                        xmlNameMap.put(setterVariable, new XmlElementData(xmlAttribute.name(), JAXB_DEFAULT_DEFAULT));
-                    }
-                }
-            }
-        }
-        
-        return new NameInformation(xmlNameMap);
-    }
-    
     private UnparentedNode convert(Class<?> convertMe, ClassReflectionHelper helper) throws Throwable {
         Logger.getLogger().debug("XmlService converting " + convertMe.getName());
         UnparentedNode retVal = new UnparentedNode(convertMe);
@@ -229,8 +189,9 @@ public class JAUtilities {
             String rootName = Utilities.convertXmlRootElementName(xre, convertMe);
             retVal.setRootName(rootName);
         }
-            
-        NameInformation xmlNameMap = getXmlNameMap(convertMe);
+        
+        ClassAltClassImpl altConvertMe = new ClassAltClassImpl(convertMe, helper);
+        NameInformation xmlNameMap = Generator.getXmlNameMap(altConvertMe);
             
         HashMap<Class<?>, String> childTypes = new HashMap<Class<?>, String>();
         MethodInformation foundKey = null;
@@ -521,26 +482,6 @@ public class JAUtilities {
               "isArray=" + isArray + "," +
               System.identityHashCode(this) + ")";
               
-        }
-    }
-    
-    private static class NameInformation {
-        private final Map<String, XmlElementData> nameMapping;
-        
-        private NameInformation(Map<String, XmlElementData> nameMapping) {
-            this.nameMapping = nameMapping;
-        }
-        
-        private String getNameMap(String mapMe) {
-            if (mapMe == null) return null;
-            if (!nameMapping.containsKey(mapMe)) return mapMe;
-            return nameMapping.get(mapMe).getName();
-        }
-        
-        private String getDefaultNameMap(String mapMe) {
-            if (mapMe == null) return JAXB_DEFAULT_DEFAULT;
-            if (!nameMapping.containsKey(mapMe)) return JAXB_DEFAULT_DEFAULT;
-            return nameMapping.get(mapMe).getDefaultValue();
         }
     }
 }

@@ -502,7 +502,7 @@ public class Generator {
         retVal.addAnnotation(annotation);
     }
     
-    private static NameInformation getXmlNameMap(AltClass convertMe) {
+    /* package */ static NameInformation getXmlNameMap(AltClass convertMe) {
         Map<String, XmlElementData> xmlNameMap = new HashMap<String, XmlElementData>();
         HashSet<String> unmappedNames = new HashSet<String>();
         
@@ -719,33 +719,6 @@ public class Generator {
               "isArray=" + isArray + "," +
               System.identityHashCode(this) + ")";
               
-        }
-    }
-    
-    private static class NameInformation {
-        private final Map<String, XmlElementData> nameMapping;
-        private final Set<String> noXmlElement;
-        
-        private NameInformation(Map<String, XmlElementData> nameMapping, Set<String> unmappedNames) {
-            this.nameMapping = nameMapping;
-            this.noXmlElement = unmappedNames;
-        }
-        
-        private String getNameMap(String mapMe) {
-            if (mapMe == null) return null;
-            if (!nameMapping.containsKey(mapMe)) return mapMe;
-            return nameMapping.get(mapMe).getName();
-        }
-        
-        private String getDefaultNameMap(String mapMe) {
-            if (mapMe == null) return JAXB_DEFAULT_DEFAULT;
-            if (!nameMapping.containsKey(mapMe)) return JAXB_DEFAULT_DEFAULT;
-            return nameMapping.get(mapMe).getDefaultValue();
-        }
-        
-        private boolean hasNoXmlElement(String variableName) {
-            if (variableName == null) return true;
-            return noXmlElement.contains(variableName);
         }
     }
     
