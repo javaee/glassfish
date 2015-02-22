@@ -176,64 +176,64 @@ public class Generator {
             
             AltClass childType = null;
             boolean getterOrSetter = false;
-            if (MethodType.SETTER.equals(mi.methodType)) {
+            if (MethodType.SETTER.equals(mi.getMethodType())) {
                 getterOrSetter = true;
-                setters.add(mi.representedProperty);
+                setters.add(mi.getRepresentedProperty());
                 
-                childType = mi.baseChildType;
+                childType = mi.getBaseChildType();
                 
-                sb.append(getCompilableClass(mi.getterSetterType) + " arg0) { super._setProperty(\"" + mi.representedProperty + "\", arg0); }");
+                sb.append(getCompilableClass(mi.getGetterSetterType()) + " arg0) { super._setProperty(\"" + mi.getRepresentedProperty() + "\", arg0); }");
             }
-            else if (MethodType.GETTER.equals(mi.methodType)) {
+            else if (MethodType.GETTER.equals(mi.getMethodType())) {
                 getterOrSetter = true;
-                getters.put(mi.representedProperty, mi);
+                getters.put(mi.getRepresentedProperty(), mi);
                 
-                childType = mi.baseChildType;
+                childType = mi.getBaseChildType();
                 
                 String cast = "";
                 String superMethodName = "_getProperty";
-                if (int.class.getName().equals(mi.getterSetterType.getName())) {
+                if (int.class.getName().equals(mi.getGetterSetterType().getName())) {
                     superMethodName += "I"; 
                 }
-                else if (long.class.getName().equals(mi.getterSetterType.getName())) {
+                else if (long.class.getName().equals(mi.getGetterSetterType().getName())) {
                     superMethodName += "J";
                 }
-                else if (boolean.class.getName().equals(mi.getterSetterType.getName())) {
+                else if (boolean.class.getName().equals(mi.getGetterSetterType().getName())) {
                     superMethodName += "Z";
                 }
-                else if (byte.class.getName().equals(mi.getterSetterType.getName())) {
+                else if (byte.class.getName().equals(mi.getGetterSetterType().getName())) {
                     superMethodName += "B";
                 }
-                else if (char.class.getName().equals(mi.getterSetterType.getName())) {
+                else if (char.class.getName().equals(mi.getGetterSetterType().getName())) {
                     superMethodName += "C";
                 }
-                else if (short.class.getName().equals(mi.getterSetterType.getName())) {
+                else if (short.class.getName().equals(mi.getGetterSetterType().getName())) {
                     superMethodName += "S";
                 }
-                else if (float.class.getName().equals(mi.getterSetterType.getName())) {
+                else if (float.class.getName().equals(mi.getGetterSetterType().getName())) {
                     superMethodName += "F";
                 }
-                else if (double.class.getName().equals(mi.getterSetterType.getName())) {
+                else if (double.class.getName().equals(mi.getGetterSetterType().getName())) {
                     superMethodName += "D";
                 }
                 else {
-                    cast = "(" + getCompilableClass(mi.getterSetterType) + ") ";
+                    cast = "(" + getCompilableClass(mi.getGetterSetterType()) + ") ";
                 }
                 
-                sb.append(") { return " + cast + "super." + superMethodName + "(\"" + mi.representedProperty + "\"); }");
+                sb.append(") { return " + cast + "super." + superMethodName + "(\"" + mi.getRepresentedProperty() + "\"); }");
             }
-            else if (MethodType.LOOKUP.equals(mi.methodType)) {
+            else if (MethodType.LOOKUP.equals(mi.getMethodType())) {
                 sb.append("java.lang.String arg0) { return (" + getCompilableClass(originalRetType) +
-                        ") super._lookupChild(\"" + mi.representedProperty + "\", arg0); }");
+                        ") super._lookupChild(\"" + mi.getRepresentedProperty() + "\", arg0); }");
                 
             }
-            else if (MethodType.ADD.equals(mi.methodType)) {
+            else if (MethodType.ADD.equals(mi.getMethodType())) {
                 List<AltClass> paramTypes = wrapper.getParameterTypes();
                 if (paramTypes.size() == 0) {
-                    sb.append(") { super._doAdd(\"" + mi.representedProperty + "\", null, null, -1); }");
+                    sb.append(") { super._doAdd(\"" + mi.getRepresentedProperty() + "\", null, null, -1); }");
                 }
                 else if (paramTypes.size() == 1) {
-                    sb.append(paramTypes.get(0).getName() + " arg0) { super._doAdd(\"" + mi.representedProperty + "\",");
+                    sb.append(paramTypes.get(0).getName() + " arg0) { super._doAdd(\"" + mi.getRepresentedProperty() + "\",");
                     
                     if (paramTypes.get(0).isInterface()) {
                         sb.append("arg0, null, -1); }");
@@ -246,7 +246,7 @@ public class Generator {
                     }
                 }
                 else {
-                    sb.append(paramTypes.get(0).getName() + " arg0, int arg1) { super._doAdd(\"" + mi.representedProperty + "\",");
+                    sb.append(paramTypes.get(0).getName() + " arg0, int arg1) { super._doAdd(\"" + mi.getRepresentedProperty() + "\",");
                     
                     if (paramTypes.get(0).isInterface()) {
                         sb.append("arg0, null, arg1); }");
@@ -256,7 +256,7 @@ public class Generator {
                     }
                 }
             }
-            else if (MethodType.REMOVE.equals(mi.methodType)) {
+            else if (MethodType.REMOVE.equals(mi.getMethodType())) {
                 List<AltClass> paramTypes = wrapper.getParameterTypes();
                 String cast = "";
                 String function = "super._doRemoveZ(\"";
@@ -267,18 +267,18 @@ public class Generator {
                 
                 if (paramTypes.size() == 0) {
                     sb.append(") { return " + cast + function +
-                            mi.representedProperty + "\", null, -1); }");
+                            mi.getRepresentedProperty() + "\", null, -1); }");
                 }
                 else if (String.class.getName().equals(paramTypes.get(0))) {
                     sb.append("java.lang.String arg0) { return " + cast  + function +
-                            mi.representedProperty + "\", arg0, -1); }");
+                            mi.getRepresentedProperty() + "\", arg0, -1); }");
                 }
                 else {
                     sb.append("int arg0) { return " + cast + function +
-                            mi.representedProperty + "\", null, arg0); }");
+                            mi.getRepresentedProperty() + "\", null, arg0); }");
                 }
             }
-            else if (MethodType.CUSTOM.equals(mi.methodType)) {
+            else if (MethodType.CUSTOM.equals(mi.getMethodType())) {
                 List<AltClass> paramTypes = wrapper.getParameterTypes();
                 
                 StringBuffer classSets = new StringBuffer();
@@ -370,7 +370,7 @@ public class Generator {
             if (getterOrSetter && 
                     (childType != null) &&
                     !childTypes.containsKey(childType)) {
-                childTypes.put(childType, mi.representedProperty);
+                childTypes.put(childType, mi.getRepresentedProperty());
             }
             
             if (DEBUG_METHODS) {
@@ -410,9 +410,9 @@ public class Generator {
             }
             
             if (getterOrSetter && childType != null &&
-                    xmlNameMap.hasNoXmlElement(mi.representedProperty) &&
-                    !alreadyAddedNaked.contains(mi.representedProperty)) {
-                alreadyAddedNaked.add(mi.representedProperty);
+                    xmlNameMap.hasNoXmlElement(mi.getRepresentedProperty()) &&
+                    !alreadyAddedNaked.contains(mi.getRepresentedProperty())) {
+                alreadyAddedNaked.add(mi.getRepresentedProperty());
                 if (ctAnnotations == null) {
                     ctAnnotations = new AnnotationsAttribute(methodConstPool, AnnotationsAttribute.visibleTag);
                 }
@@ -444,11 +444,11 @@ public class Generator {
             
             if (setters.contains(getterProperty)) continue;
             
-            String getterName = mi.originalMethod.getName();
+            String getterName = mi.getOriginalMethod().getName();
             String setterName = Utilities.convertToSetter(getterName);
             
             StringBuffer sb = new StringBuffer("private void " + setterName + "(");
-            sb.append(getCompilableClass(mi.getterSetterType) + " arg0) { super._setProperty(\"" + mi.representedProperty + "\", arg0); }");
+            sb.append(getCompilableClass(mi.getGetterSetterType()) + " arg0) { super._setProperty(\"" + mi.getRepresentedProperty() + "\", arg0); }");
             
             CtMethod addMeCtMethod = CtNewMethod.make(sb.toString(), targetCtClass);
             targetCtClass.addMethod(addMeCtMethod);
@@ -550,7 +550,7 @@ public class Generator {
         return new NameInformation(xmlNameMap, noXmlElementNames);
     }
     
-    private static MethodInformation getMethodInformation(AltMethod m, NameInformation xmlNameMap) {
+    /* package */ static MethodInformation getMethodInformation(AltMethod m, NameInformation xmlNameMap) {
         String setterVariable = isSetter(m);
         String getterVariable = null;
         String lookupVariable = null;
@@ -673,53 +673,6 @@ public class Generator {
                 key,
                 isList,
                 isArray);
-    }
-    
-    private static class MethodInformation {
-        private final AltMethod originalMethod;
-        private final MethodType methodType;
-        private final AltClass getterSetterType;
-        private final String representedProperty;
-        private final String defaultValue;
-        private final AltClass baseChildType;
-        private final boolean key;
-        private final boolean isList;
-        private final boolean isArray;
-        
-        private MethodInformation(AltMethod originalMethod,
-                MethodType methodType,
-                String representedProperty,
-                String defaultValue,
-                AltClass baseChildType,
-                AltClass gsType,
-                boolean key,
-                boolean isList,
-                boolean isArray) {
-            this.originalMethod = originalMethod;
-            this.methodType = methodType;
-            this.representedProperty = representedProperty;
-            this.defaultValue = defaultValue;
-            this.baseChildType = baseChildType;
-            this.getterSetterType = gsType;
-            this.key = key;
-            this.isList = isList;
-            this.isArray = isArray;
-        }
-        
-        @Override
-        public String toString() {
-            return "MethodInformation(name=" + originalMethod.getName() + "," +
-              "type=" + methodType + "," +
-              "getterType=" + getterSetterType + "," +
-              "representedProperty=" + representedProperty + "," +
-              "defaultValue=" + ((JAXB_DEFAULT_DEFAULT.equals(defaultValue)) ? "" : defaultValue) + "," +
-              "baseChildType=" + baseChildType + "," +
-              "key=" + key + "," +
-              "isList=" + isList + "," +
-              "isArray=" + isArray + "," +
-              System.identityHashCode(this) + ")";
-              
-        }
     }
     
     private static String convertXmlRootElementName(AltAnnotation root, AltClass clazz) {

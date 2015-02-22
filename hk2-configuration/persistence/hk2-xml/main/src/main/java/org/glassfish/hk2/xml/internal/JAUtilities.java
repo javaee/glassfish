@@ -49,7 +49,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import javassist.ClassPool;
@@ -60,11 +59,11 @@ import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.Logger;
-import org.glassfish.hk2.utilities.reflection.MethodWrapper;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
-import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
+import org.glassfish.hk2.xml.internal.alt.AltMethod;
 import org.glassfish.hk2.xml.internal.alt.clazz.ClassAltClassImpl;
+import org.glassfish.hk2.xml.internal.alt.clazz.MethodAltMethodImpl;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 
 /**
@@ -180,12 +179,9 @@ public class JAUtilities {
         }
         
         Class<?> proxy = convertMe.getClassLoader().loadClass(targetClassName);
-            
-        for (java.lang.annotation.Annotation convertMeAnnotation : convertMe.getAnnotations()) {
-            if (!XmlRootElement.class.equals(convertMeAnnotation.annotationType())) continue;
-                
-            XmlRootElement xre = (XmlRootElement) convertMeAnnotation;
-                    
+         
+        XmlRootElement xre = convertMe.getAnnotation(XmlRootElement.class);
+        if (xre != null) {        
             String rootName = Utilities.convertXmlRootElementName(xre, convertMe);
             retVal.setRootName(rootName);
         }
@@ -195,59 +191,61 @@ public class JAUtilities {
             
         HashMap<Class<?>, String> childTypes = new HashMap<Class<?>, String>();
         MethodInformation foundKey = null;
-        for (MethodWrapper wrapper : helper.getAllMethods(convertMe)) {
-            Method originalMethod = wrapper.getMethod();
-            MethodInformation mi = getMethodInformation(originalMethod, xmlNameMap);
+        for (AltMethod altMethodRaw : altConvertMe.getMethods()) {
+            MethodAltMethodImpl altMethod = (MethodAltMethodImpl) altMethodRaw;
+            
+            Method originalMethod = altMethod.getOriginalMethod();
+            MethodInformation mi = Generator.getMethodInformation(altMethod, xmlNameMap);
                 
             if (DEBUG_METHODS) {
                 Logger.getLogger().debug("Analyzing method " + mi + " of " + convertMe.getSimpleName());
             }
                 
-            if (mi.key) {
+            if (mi.isKey()) {
                 if (foundKey != null) {
                     throw new RuntimeException("Class " + convertMe.getName() + " has multiple key properties (" + originalMethod.getName() +
-                            " and " + foundKey.originalMethod.getName());
+                            " and " + foundKey.getOriginalMethod().getName());
                 }
                 foundKey = mi;
                     
-                retVal.setKeyProperty(mi.representedProperty);
+                retVal.setKeyProperty(mi.getRepresentedProperty());
             }
                 
             boolean getterOrSetter = false;
             UnparentedNode childType = null;
-            if (MethodType.SETTER.equals(mi.methodType)) {
+            if (MethodType.SETTER.equals(mi.getMethodType())) {
                 getterOrSetter = true;
-                if (mi.baseChildType != null) {
-                    if (!interface2NodeCache.containsKey(mi.baseChildType)) {
+                if (mi.getBaseChildType() != null) {
+                    if (!interface2NodeCache.containsKey(((ClassAltClassImpl) mi.getBaseChildType()).getOriginalClass())) {
                         // Must use a placeholder
-                        childType = new UnparentedNode(mi.baseChildType, true);
+                        childType = new UnparentedNode(((ClassAltClassImpl) mi.getBaseChildType()).getOriginalClass(), true);
                     }
                     else {
-                        childType = interface2NodeCache.get(mi.baseChildType);
+                        childType = interface2NodeCache.get(((ClassAltClassImpl) mi.getBaseChildType()).getOriginalClass());
                     }
                 }
             }
-            else if (MethodType.GETTER.equals(mi.methodType)) {
+            else if (MethodType.GETTER.equals(mi.getMethodType())) {
                 getterOrSetter = true;
-                if (mi.baseChildType != null) {
-                    if (!interface2NodeCache.containsKey(mi.baseChildType)) {
+                if (mi.getBaseChildType() != null) {
+                    if (!interface2NodeCache.containsKey(((ClassAltClassImpl) mi.getBaseChildType()).getOriginalClass())) {
                         // Must use a placeholder
-                        childType = new UnparentedNode(mi.baseChildType, true);
+                        childType = new UnparentedNode(((ClassAltClassImpl) mi.getBaseChildType()).getOriginalClass(), true);
                     }
                     else {
-                        childType = interface2NodeCache.get(mi.baseChildType);
+                        childType = interface2NodeCache.get(((ClassAltClassImpl) mi.getBaseChildType()).getOriginalClass());
                     }
                 }
             }
                 
             if (getterOrSetter) {
                 if (childType != null) {
-                    childTypes.put(childType.getOriginalInterface(), mi.representedProperty);
+                    childTypes.put(childType.getOriginalInterface(), mi.getRepresentedProperty());
                         
-                    retVal.addChild(mi.representedProperty, mi.isList, mi.isArray, childType);
+                    retVal.addChild(mi.getRepresentedProperty(), mi.isList(), mi.isArray(), childType);
                 }
                 else {
-                    retVal.addNonChildProperty(mi.representedProperty, mi.defaultValue);
+                    retVal.addNonChildProperty(mi.getRepresentedProperty(), mi.getDefaultValue());
                 }
             }
         }
@@ -310,178 +308,6 @@ public class JAUtilities {
         }
         finally {
             cycleDetector.remove(toBeConverted);
-        }
-    }
-    
-    private static MethodInformation getMethodInformation(Method m, NameInformation xmlNameMap) {
-        String setterVariable = Utilities.isSetter(m);
-        String getterVariable = null;
-        String lookupVariable = null;
-        String addVariable = null;
-        String removeVariable = null;
-        
-        if (setterVariable == null) {
-            getterVariable = Utilities.isGetter(m);
-            if (getterVariable == null) {
-                lookupVariable = Utilities.isLookup(m);
-                if (lookupVariable == null) {
-                    addVariable = Utilities.isAdd(m);
-                    if (addVariable == null) {
-                        removeVariable = Utilities.isRemove(m);
-                    }
-                }
-            }
-        }
-        
-        MethodType methodType;
-        Class<?> baseChildType = null;
-        Class<?> gsType = null;
-        String variable = null;
-        boolean isList = false;
-        boolean isArray = false;
-        if (getterVariable != null) {
-            // This is a getter
-            methodType = MethodType.GETTER;
-            variable = getterVariable;
-            
-            Class<?> returnType = m.getReturnType();
-            gsType = returnType;
-            
-            if (List.class.equals(returnType)) {
-                isList = true;
-                Type typeChildType = ReflectionHelper.getFirstTypeArgument(m.getGenericReturnType());
-                
-                baseChildType = ReflectionHelper.getRawClass(typeChildType);
-                if (baseChildType == null) {
-                    throw new RuntimeException("Cannot find child type of method " + m);
-                }
-            }
-            else if (returnType.isArray()) {
-                Class<?> arrayType = returnType.getComponentType();
-                if (arrayType.isInterface()) {
-                    isArray = true;
-                    baseChildType = arrayType;
-                }
-            }
-            else if (returnType.isInterface() && !returnType.getName().startsWith(NO_CHILD_PACKAGE)) {
-                baseChildType = returnType;
-            }
-        }
-        else if (setterVariable != null) {
-            // This is a setter
-            methodType = MethodType.SETTER;
-            variable = setterVariable;
-            
-            Class<?> setterType = m.getParameterTypes()[0];
-            gsType = setterType;
-            
-            if (List.class.equals(setterType)) {
-                isList = true;
-                Type typeChildType = ReflectionHelper.getFirstTypeArgument(m.getGenericParameterTypes()[0]);
-                
-                baseChildType = ReflectionHelper.getRawClass(typeChildType);
-                if (baseChildType == null) {
-                    throw new RuntimeException("Cannot find child type of method " + m);
-                }
-            }
-            else if (setterType.isArray()) {
-                Class<?> arrayType = setterType.getComponentType();
-                if (arrayType.isInterface()) {
-                    isArray = true;
-                    baseChildType = arrayType;
-                }
-            }
-            else if (setterType.isInterface() && !setterType.getName().startsWith(NO_CHILD_PACKAGE)) {
-                baseChildType = setterType;
-            }
-        }
-        else if (lookupVariable != null) {
-            // This is a lookup
-            methodType = MethodType.LOOKUP;
-            variable = lookupVariable;
-            
-            Class<?> lookupType = m.getReturnType();
-            gsType = lookupType;
-        }
-        else if (addVariable != null) {
-            // This is an add
-            methodType = MethodType.ADD;
-            variable = addVariable;
-        }
-        else if (removeVariable != null) {
-            // This is an remove
-            methodType = MethodType.REMOVE;
-            variable = addVariable;
-        }
-        else {
-            methodType = MethodType.CUSTOM;
-        }
-        
-        String representedProperty = xmlNameMap.getNameMap(variable);
-        if (representedProperty == null) representedProperty = variable;
-        
-        String defaultValue = xmlNameMap.getDefaultNameMap(variable);
-        
-        boolean key = false;
-        if ((m.getAnnotation(XmlID.class) != null) || (m.getAnnotation(XmlIdentifier.class) != null)) {
-            key = true;
-        }
-        
-        return new MethodInformation(m,
-                methodType,
-                representedProperty,
-                defaultValue,
-                baseChildType,
-                gsType,
-                key,
-                isList,
-                isArray);
-    }
-    
-    private static class MethodInformation {
-        private final Method originalMethod;
-        private final MethodType methodType;
-        private final Class<?> getterSetterType;
-        private final String representedProperty;
-        private final String defaultValue;
-        private final Class<?> baseChildType;
-        private final boolean key;
-        private final boolean isList;
-        private final boolean isArray;
-        
-        private MethodInformation(Method originalMethod,
-                MethodType methodType,
-                String representedProperty,
-                String defaultValue,
-                Class<?> baseChildType,
-                Class<?> gsType,
-                boolean key,
-                boolean isList,
-                boolean isArray) {
-            this.originalMethod = originalMethod;
-            this.methodType = methodType;
-            this.representedProperty = representedProperty;
-            this.defaultValue = defaultValue;
-            this.baseChildType = baseChildType;
-            this.getterSetterType = gsType;
-            this.key = key;
-            this.isList = isList;
-            this.isArray = isArray;
-        }
-        
-        @Override
-        public String toString() {
-            return "MethodInformation(name=" + originalMethod.getName() + "," +
-              "type=" + methodType + "," +
-              "getterType=" + getterSetterType + "," +
-              "representedProperty=" + representedProperty + "," +
-              "defaultValue=" + ((JAXB_DEFAULT_DEFAULT.equals(defaultValue)) ? "" : defaultValue) + "," +
-              "baseChildType=" + baseChildType + "," +
-              "key=" + key + "," +
-              "isList=" + isList + "," +
-              "isArray=" + isArray + "," +
-              System.identityHashCode(this) + ")";
-              
         }
     }
 }
