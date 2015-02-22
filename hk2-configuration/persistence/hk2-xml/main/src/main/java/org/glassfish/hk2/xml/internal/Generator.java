@@ -720,7 +720,7 @@ public class Generator {
         return sb.toString();
     }
     
-    private static String isGetter(AltMethod method) {
+    /* package */ static String isGetter(AltMethod method) {
         String name = method.getName();
         
         if (name.startsWith(JAUtilities.GET)) {

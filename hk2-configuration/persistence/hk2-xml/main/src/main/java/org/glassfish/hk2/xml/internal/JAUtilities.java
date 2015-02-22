@@ -119,7 +119,7 @@ public class JAUtilities {
         ClassReflectionHelper helper = new ClassReflectionHelperImpl();
         LinkedHashSet<Class<?>> needsToBeConverted = new LinkedHashSet<Class<?>>();
         
-        getAllToConvert(root, needsToBeConverted, new HashSet<Class<?>>());
+        getAllToConvert(root, needsToBeConverted, new HashSet<Class<?>>(), helper);
         
         if (DEBUG_METHODS) {
             Logger.getLogger().debug("Converting " + needsToBeConverted.size() + " nodes for root " + root.getName());
@@ -258,7 +258,8 @@ public class JAUtilities {
     
     private static void getAllToConvert(Class<?> toBeConverted,
             LinkedHashSet<Class<?>> needsToBeConverted,
-            Set<Class<?>> cycleDetector) {
+            Set<Class<?>> cycleDetector,
+            ClassReflectionHelper helper) {
         if (needsToBeConverted.contains(toBeConverted)) return;
         
         if (cycleDetector.contains(toBeConverted)) return;
@@ -267,14 +268,14 @@ public class JAUtilities {
         try {
             // Find all the children
             for (Method method : toBeConverted.getMethods()) {
-                if (Utilities.isGetter(method) == null) continue;
+                if (Generator.isGetter(new MethodAltMethodImpl(method, helper)) == null) continue;
                 
                 Class<?> returnClass = method.getReturnType();
                 if (returnClass.isInterface() && !(List.class.equals(returnClass))) {
                     // The assumption is that this is a non-instanced child
                     if (returnClass.getName().startsWith(NO_CHILD_PACKAGE)) continue;
                     
-                    getAllToConvert(returnClass, needsToBeConverted, cycleDetector);
+                    getAllToConvert(returnClass, needsToBeConverted, cycleDetector, helper);
                     
                     continue;
                 }
@@ -283,7 +284,7 @@ public class JAUtilities {
                     Class<?> aType = returnClass.getComponentType();
                     
                     if (aType.isInterface()) {
-                        getAllToConvert(aType, needsToBeConverted, cycleDetector);
+                        getAllToConvert(aType, needsToBeConverted, cycleDetector, helper);
                         
                         continue;
                     }
@@ -301,7 +302,7 @@ public class JAUtilities {
                 Class<?> childClass = ReflectionHelper.getRawClass(listReturnType);
                 if (childClass == null || Object.class.equals(childClass)) continue;
                 
-                getAllToConvert(childClass, needsToBeConverted, cycleDetector);
+                getAllToConvert(childClass, needsToBeConverted, cycleDetector, helper);
             }
             
             needsToBeConverted.add(toBeConverted);
