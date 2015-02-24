@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
@@ -90,6 +91,15 @@ public class Generator {
     public final static String JAXB_DEFAULT_DEFAULT = "\u0000";
     private final static String NO_CHILD_PACKAGE = "java.";
     
+    /**
+     * Converts the given interface into a JAXB implementation proxy
+     * 
+     * @param convertMe
+     * @param superClazz
+     * @param defaultClassPool
+     * @return
+     * @throws Throwable
+     */
     public static CtClass generate(AltClass convertMe,
             CtClass superClazz,
             ClassPool defaultClassPool) throws Throwable {
@@ -122,7 +132,6 @@ public class Generator {
                 
                 XmlRootElement replacement = new XmlRootElementImpl(convertMeAnnotation.getStringValue("namespace"), rootName);
                
-                
                 createAnnotationCopy(targetConstPool, replacement, ctAnnotations);
             }
             else {
@@ -133,7 +142,10 @@ public class Generator {
             targetClassFile.addAttribute(ctAnnotations);
         }
         
-        CtClass originalCtClass = defaultClassPool.get(convertMe.getName());
+        CtClass originalCtClass = defaultClassPool.getOrNull(convertMe.getName());
+        if (originalCtClass == null) {
+            originalCtClass = defaultClassPool.makeInterface(convertMe.getName());
+        }
         
         targetCtClass.setSuperclass(superClazz);
         targetCtClass.addInterface(originalCtClass);
@@ -152,6 +164,14 @@ public class Generator {
         HashMap<String, MethodInformation> getters = new HashMap<String, MethodInformation>();
         for (AltMethod wrapper : allMethods) {
             MethodInformation mi = getMethodInformation(wrapper, xmlNameMap);
+            
+            AltClass fixer = mi.getGetterSetterType();
+            if (fixer != null) {
+                String fixerClass = fixer.getName();
+                if (defaultClassPool.getOrNull(fixerClass) == null) {
+                    originalCtClass = defaultClassPool.makeInterface(fixerClass);
+                }
+            }
             
             if (DEBUG_METHODS) {
                 Logger.getLogger().debug("Analyzing method " + mi + " of " + convertMe.getSimpleName());
@@ -460,7 +480,7 @@ public class Generator {
     
     private static void createAnnotationCopy(ConstPool parent, java.lang.annotation.Annotation javaAnnotation,
             AnnotationsAttribute retVal) throws Throwable {
-        createAnnotationCopy(parent, new AnnotationAltAnnotationImpl(javaAnnotation), retVal);
+        createAnnotationCopy(parent, new AnnotationAltAnnotationImpl(javaAnnotation, null), retVal);
     }
     
     private static void createAnnotationCopy(ConstPool parent, AltAnnotation javaAnnotation,
@@ -481,14 +501,16 @@ public class Generator {
                 
                 annotation.addMemberValue(valueName, new BooleanMemberValue(bvalue, parent));
             }
-            else if (Class.class.equals(javaAnnotationType)) {
+            else if (AltClass.class.isAssignableFrom(javaAnnotationType)) {
+                AltClass altJavaAnnotationType = (AltClass) value;
+                
                 String sValue;
                 if (javaAnnotation.annotationType().equals(XmlElement.class.getName()) &&
                         (javaAnnotation.getStringValue("getTypeByName") != null)) {
                     sValue = javaAnnotation.getStringValue("getTypeByName");
                 }
                 else {
-                    sValue = ((Class<?>) value).getName();
+                    sValue = altJavaAnnotationType.getName();
                 }
                 
                 annotation.addMemberValue(valueName, new ClassMemberValue(sValue, parent));

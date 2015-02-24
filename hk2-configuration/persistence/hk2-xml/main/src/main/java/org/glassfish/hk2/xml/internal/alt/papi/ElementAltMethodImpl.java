@@ -37,17 +37,24 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.internal.alt.clazz;
+package org.glassfish.hk2.xml.internal.alt.papi;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
-import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeParameterElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.TypeMirror;
+
+import org.glassfish.hk2.xml.internal.Utilities;
 import org.glassfish.hk2.xml.internal.alt.AltAnnotation;
 import org.glassfish.hk2.xml.internal.alt.AltClass;
 import org.glassfish.hk2.xml.internal.alt.AltMethod;
@@ -56,19 +63,16 @@ import org.glassfish.hk2.xml.internal.alt.AltMethod;
  * @author jwells
  *
  */
-public class MethodAltMethodImpl implements AltMethod {
-    private final Method method;
-    private final ClassReflectionHelper helper;
-    private List<AltClass> parameterTypes;
-    private List<AltAnnotation> altAnnotations;
+public class ElementAltMethodImpl implements AltMethod {
+    private final ExecutableElement method;
+    private final ProcessingEnvironment processingEnv;
+    private List<AltClass> parameters;
+    private AltClass returnType;
+    private Map<String, AltAnnotation> annotations;
     
-    public MethodAltMethodImpl(Method method, ClassReflectionHelper helper) {
-        this.method = method;
-        this.helper = helper;
-    }
-    
-    public Method getOriginalMethod() {
-        return method;
+    public ElementAltMethodImpl(Element method, ProcessingEnvironment processingEnv) {
+        this.method = (ExecutableElement) method;
+        this.processingEnv = processingEnv;
     }
 
     /* (non-Javadoc)
@@ -76,18 +80,23 @@ public class MethodAltMethodImpl implements AltMethod {
      */
     @Override
     public String getName() {
-        return method.getName();
+        return Utilities.convertNameToString(method.getSimpleName());
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.internal.alt.AltMethod#getReturnType()
      */
     @Override
-    public AltClass getReturnType() {
-        Class<?> retVal = method.getReturnType();
-        if (retVal == null) retVal = void.class;
+    public synchronized AltClass getReturnType() {
+        if (returnType != null) return returnType;
         
-        return new ClassAltClassImpl(retVal, helper);
+        ExecutableType executable = (ExecutableType) method.asType();
+        TypeMirror returnMirror = executable.getReturnType();
+        
+        AltClass retVal = Utilities.convertTypeMirror(returnMirror, processingEnv);
+        
+        returnType = retVal;
+        return returnType;
     }
 
     /* (non-Javadoc)
@@ -95,17 +104,19 @@ public class MethodAltMethodImpl implements AltMethod {
      */
     @Override
     public synchronized List<AltClass> getParameterTypes() {
-        if (parameterTypes != null) return parameterTypes;
+        if (parameters != null) return parameters;
         
-        Class<?> pTypes[] = method.getParameterTypes();
-        List<AltClass> retVal = new ArrayList<AltClass>(pTypes.length);
+        ExecutableType executable = (ExecutableType) method.asType();
+        List<? extends TypeMirror> paramMirrors = executable.getParameterTypes();
         
-        for (Class<?> pType : pTypes) {
-            retVal.add(new ClassAltClassImpl(pType, helper));
+        List<AltClass> retVal = new ArrayList<AltClass>(paramMirrors.size());
+        
+        for (TypeMirror paramMirror : paramMirrors) {
+            retVal.add(Utilities.convertTypeMirror(paramMirror, processingEnv));
         }
         
-        parameterTypes = Collections.unmodifiableList(retVal);
-        return parameterTypes;
+        parameters = Collections.unmodifiableList(retVal);
+        return parameters;
     }
 
     /* (non-Javadoc)
@@ -113,16 +124,18 @@ public class MethodAltMethodImpl implements AltMethod {
      */
     @Override
     public AltClass getFirstTypeArgument() {
-        Type type = method.getGenericReturnType();
-        if (type == null) return null;
+        TypeMirror typeMirror = method.getReturnType();
+        if (!(typeMirror instanceof DeclaredType)) return null;
         
-        Type first = ReflectionHelper.getFirstTypeArgument(type);
-        if (first == null) return null;
         
-        Class<?> retVal = ReflectionHelper.getRawClass(first);
-        if (retVal == null) return null;
         
-        return new ClassAltClassImpl(retVal, helper);
+        DeclaredType declaredReturn = (DeclaredType) typeMirror;
+        List<? extends TypeMirror> types = declaredReturn.getTypeArguments();
+        if (types == null || types.size() < 1) return null;
+        
+        TypeMirror firstTypeMirror = types.get(0);
+        
+        return Utilities.convertTypeMirror(firstTypeMirror, processingEnv);
     }
 
     /* (non-Javadoc)
@@ -130,34 +143,19 @@ public class MethodAltMethodImpl implements AltMethod {
      */
     @Override
     public AltClass getFirstTypeArgumentOfParameter(int index) {
-        Type pTypes[] = method.getGenericParameterTypes();
-        Type pType = pTypes[index];
-        
-        Type first = ReflectionHelper.getFirstTypeArgument(pType);
-        if (first == null) return null;
-        
-        Class<?> retVal = ReflectionHelper.getRawClass(first);
-        if (retVal == null) return null;
-        
-        return new ClassAltClassImpl(retVal, helper);
+        throw new AssertionError("ElementAltMethodImpl.getFirstTypeArgumentOfParameter not yet implemented");
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.internal.alt.AltMethod#getAnnotation(java.lang.String)
      */
     @Override
-    public AltAnnotation getAnnotation(String annotation) {
-        if (annotation == null) return null;
-        
-        Annotation annotations[] = method.getAnnotations();
-        
-        for (Annotation anno : annotations) {
-            if (annotation.equals(anno.annotationType().getName())) {
-                return new AnnotationAltAnnotationImpl(anno, helper);
-            }
+    public synchronized AltAnnotation getAnnotation(String annotation) {
+        if (annotations == null) {
+            getAnnotations();
         }
         
-        return null;
+        return annotations.get(annotation);
     }
 
     /* (non-Javadoc)
@@ -165,17 +163,20 @@ public class MethodAltMethodImpl implements AltMethod {
      */
     @Override
     public synchronized List<AltAnnotation> getAnnotations() {
-        if (altAnnotations != null) return altAnnotations;
-        
-        Annotation annotations[] = method.getAnnotations();
-        List<AltAnnotation> retVal = new ArrayList<AltAnnotation>(annotations.length);
-        
-        for (Annotation annotation : annotations) {
-            retVal.add(new AnnotationAltAnnotationImpl(annotation, helper));
+        if (annotations != null) {
+            return Collections.unmodifiableList(new ArrayList<AltAnnotation>(annotations.values()));
         }
         
-        altAnnotations = Collections.unmodifiableList(retVal);
-        return altAnnotations;
+        Map<String, AltAnnotation> retVal = new HashMap<String, AltAnnotation>();
+        
+        for (AnnotationMirror annoMirror : method.getAnnotationMirrors()) {
+            AnnotationMirrorAltAnnotationImpl addMe = new AnnotationMirrorAltAnnotationImpl(annoMirror, processingEnv);
+            
+            retVal.put(addMe.annotationType(), addMe);
+        }
+        
+        annotations = Collections.unmodifiableMap(retVal);
+        return Collections.unmodifiableList(new ArrayList<AltAnnotation>(annotations.values()));
     }
 
     /* (non-Javadoc)
@@ -186,8 +187,4 @@ public class MethodAltMethodImpl implements AltMethod {
         return method.isVarArgs();
     }
 
-    @Override
-    public String toString() {
-        return "MethodAltMethodImpl(" + method + "," + System.identityHashCode(this) + ")";
-    }
 }

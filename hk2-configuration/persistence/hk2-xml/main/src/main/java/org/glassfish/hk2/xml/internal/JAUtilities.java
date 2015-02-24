@@ -84,20 +84,12 @@ public class JAUtilities {
     public final static String JAXB_DEFAULT_DEFAULT = "\u0000";
     
     private final static String CLASS_ADD_ON_NAME = "_$$_Hk2_Jaxb";
-    private final static HashSet<String> DO_NOT_HANDLE_METHODS = new HashSet<String>();
     private final static String NO_CHILD_PACKAGE = "java.";
     
     private final HashMap<Class<?>, UnparentedNode> interface2NodeCache = new HashMap<Class<?>, UnparentedNode>();
     private final HashMap<Class<?>, UnparentedNode> proxy2NodeCache = new HashMap<Class<?>, UnparentedNode>();
     private final ClassPool defaultClassPool = ClassPool.getDefault(); // TODO:  We probably need to be more sophisticated about this
     private final CtClass superClazz;
-    
-    static {
-        DO_NOT_HANDLE_METHODS.add("hashCode");
-        DO_NOT_HANDLE_METHODS.add("equals");
-        DO_NOT_HANDLE_METHODS.add("toString");
-        DO_NOT_HANDLE_METHODS.add("annotationType");
-    }
     
     /* package */ JAUtilities() {
         try {

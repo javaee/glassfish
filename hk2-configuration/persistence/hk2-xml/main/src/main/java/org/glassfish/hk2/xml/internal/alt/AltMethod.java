@@ -46,12 +46,32 @@ import java.util.List;
  *
  */
 public interface AltMethod {
+    /**
+     * Returns the name of the method
+     * 
+     * @return The non null name of the method
+     */
     public String getName();
     
+    /**
+     * Returns the return type of the method
+     * @return The non-null return type (may still be
+     * an AltClass representing void.class)
+     */
     public AltClass getReturnType();
     
     public List<AltClass> getParameterTypes();
     
+    /**
+     * Returns the first type argument of the
+     * return value.  For example, if the
+     * return type is List&lt;String&gt; then
+     * this would return an AltClass for String
+     * 
+     * @return The possibly null (if there is
+     * no first type argument) Class that is
+     * the first type argument of the return value
+     */
     public AltClass getFirstTypeArgument();
     
     public AltClass getFirstTypeArgumentOfParameter(int index);

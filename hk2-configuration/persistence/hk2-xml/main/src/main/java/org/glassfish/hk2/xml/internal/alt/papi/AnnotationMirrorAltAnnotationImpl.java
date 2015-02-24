@@ -37,72 +37,60 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.internal.alt.clazz;
+package org.glassfish.hk2.xml.internal.alt.papi;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
-import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
-import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
-import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
+
+import org.glassfish.hk2.xml.internal.Utilities;
 import org.glassfish.hk2.xml.internal.alt.AltAnnotation;
-import org.glassfish.hk2.xml.jaxb.internal.XmlElementImpl;
 
 /**
  * @author jwells
  *
  */
-public class AnnotationAltAnnotationImpl implements AltAnnotation {
-    private final static HashSet<String> DO_NOT_HANDLE_METHODS = new HashSet<String>();
-    static {
-        DO_NOT_HANDLE_METHODS.add("hashCode");
-        DO_NOT_HANDLE_METHODS.add("equals");
-        DO_NOT_HANDLE_METHODS.add("toString");
-        DO_NOT_HANDLE_METHODS.add("annotationType");
-    }
-    
-    private final Annotation annotation;
-    private final ClassReflectionHelper helper;
+public class AnnotationMirrorAltAnnotationImpl implements AltAnnotation {
+    private final AnnotationMirror annotation;
+    private final ProcessingEnvironment processingEnv;
+    private String type;
     private Map<String, Object> values;
     
-    public AnnotationAltAnnotationImpl(Annotation annotation, ClassReflectionHelper helper) {
+    public AnnotationMirrorAltAnnotationImpl(AnnotationMirror annotation, ProcessingEnvironment processingEnv) {
         this.annotation = annotation;
-        if (helper == null) {
-            this.helper = new ClassReflectionHelperImpl();
-        }
-        else {
-            this.helper = helper;
-        }
-    }
-    
-    public Annotation getOriginalAnnotation() {
-        return annotation;
+        this.processingEnv = processingEnv;
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.internal.alt.AltAnnotation#annotationType()
      */
     @Override
-    public String annotationType() {
-        return annotation.annotationType().getName();
+    public synchronized String annotationType() {
+        if (type != null) return type;
+        
+        DeclaredType dt = annotation.getAnnotationType();
+        TypeElement clazzType = (TypeElement) dt.asElement();
+        type = Utilities.convertNameToString(clazzType.getQualifiedName());
+        
+        return type;
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.internal.alt.AltAnnotation#getStringValue(java.lang.String)
      */
     @Override
-    public synchronized String getStringValue(String methodName) {
-        if (values == null) getAnnotationValues();
-        
-        if (XmlElementImpl.class.equals(annotation.getClass()) &&
-                "getTypeByName".equals(methodName)) {
-            XmlElementImpl xei = (XmlElementImpl) annotation;
-            return xei.getTypeByName();
-        }
+    public String getStringValue(String methodName) {
+        getAnnotationValues();
         
         return (String) values.get(methodName);
     }
@@ -111,8 +99,8 @@ public class AnnotationAltAnnotationImpl implements AltAnnotation {
      * @see org.glassfish.hk2.xml.internal.alt.AltAnnotation#getBooleanValue(java.lang.String)
      */
     @Override
-    public synchronized boolean getBooleanValue(String methodName) {
-        if (values == null) getAnnotationValues();
+    public boolean getBooleanValue(String methodName) {
+        getAnnotationValues();
         
         return (Boolean) values.get(methodName);
     }
@@ -124,26 +112,28 @@ public class AnnotationAltAnnotationImpl implements AltAnnotation {
     public synchronized Map<String, Object> getAnnotationValues() {
         if (values != null) return values;
         
+        Map<? extends ExecutableElement, ? extends AnnotationValue> rawValues =
+                processingEnv.getElementUtils().getElementValuesWithDefaults(annotation);
         HashMap<String, Object> retVal = new HashMap<String, Object>();
-        for (Method javaAnnotationMethod : annotation.annotationType().getMethods()) {
-            if (javaAnnotationMethod.getParameterTypes().length != 0) continue;
-            if (DO_NOT_HANDLE_METHODS.contains(javaAnnotationMethod.getName())) continue;
+        
+        for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : rawValues.entrySet()) {
+            ExecutableElement annoMethod = entry.getKey();
+            AnnotationValue annoValue = entry.getValue();
             
-            String key = javaAnnotationMethod.getName();
+            String key = Utilities.convertNameToString(annoMethod.getSimpleName());
+            Object value = annoValue.getValue();
             
-            Object value;
-            try {
-                value = ReflectionHelper.invoke(annotation, javaAnnotationMethod, new Object[0], false);
+            if (value instanceof TypeMirror) {
+                value = Utilities.convertTypeMirror((TypeMirror) value, processingEnv);
             }
-            catch (RuntimeException re) {
-                throw re;
+            else if (value instanceof VariableElement) {
+                throw new AssertionError("The annotation " + annotation + " key " + key + " has unimplemented enum");
             }
-            catch (Throwable th) {
-                throw new RuntimeException(th);
+            else if (value instanceof AnnotationMirror) {
+                throw new AssertionError("The annotation " + annotation + " key " + key + " has unimplemented type AnnotationMirror");
             }
-            
-            if (value instanceof Class) {
-                value = new ClassAltClassImpl((Class<?>) value, helper);
+            else if (value instanceof List) {
+                throw new AssertionError("The annotation " + annotation + " key " + key + " is an unimplemented array");
             }
             
             retVal.put(key, value);
@@ -152,9 +142,5 @@ public class AnnotationAltAnnotationImpl implements AltAnnotation {
         values = Collections.unmodifiableMap(retVal);
         return values;
     }
-    
-    @Override
-    public String toString() {
-        return "AnnotationAltAnnotationImpl(" + annotation + "," + System.identityHashCode(this) + ")";
-    }
+
 }

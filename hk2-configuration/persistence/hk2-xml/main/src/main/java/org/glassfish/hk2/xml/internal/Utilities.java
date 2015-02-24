@@ -41,6 +41,12 @@ package org.glassfish.hk2.xml.internal;
 
 import java.lang.reflect.Constructor;
 
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.Name;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.glassfish.hk2.api.DynamicConfiguration;
@@ -49,6 +55,9 @@ import org.glassfish.hk2.configuration.hub.api.WriteableType;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
+import org.glassfish.hk2.xml.internal.alt.AltClass;
+import org.glassfish.hk2.xml.internal.alt.clazz.ClassAltClassImpl;
+import org.glassfish.hk2.xml.internal.alt.papi.TypeElementAltClassImpl;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 
 /**
@@ -189,5 +198,60 @@ public class Utilities {
         }
         
         return sb.toString();
+    }
+    
+    /**
+     * Converts the Name from the Element to a String
+     * @param name
+     * @return
+     */
+    public static String convertNameToString(Name name) {
+        if (name == null) return null;
+        return name.toString();
+    }
+    
+    public static AltClass convertTypeMirror(TypeMirror typeMirror, ProcessingEnvironment processingEnv) {
+        if (TypeKind.VOID.equals(typeMirror.getKind())) {
+            return ClassAltClassImpl.VOID;
+        }
+        if (TypeKind.BOOLEAN.equals(typeMirror.getKind())) {
+            return ClassAltClassImpl.BOOLEAN;
+        }
+        if (TypeKind.INT.equals(typeMirror.getKind())) {
+            return ClassAltClassImpl.INT;
+        }
+        if (TypeKind.LONG.equals(typeMirror.getKind())) {
+            return ClassAltClassImpl.LONG;
+        }
+        if (TypeKind.BYTE.equals(typeMirror.getKind())) {
+            return ClassAltClassImpl.BYTE;
+        }
+        if (TypeKind.CHAR.equals(typeMirror.getKind())) {
+            return ClassAltClassImpl.CHAR;
+        }
+        if (TypeKind.SHORT.equals(typeMirror.getKind())) {
+            return ClassAltClassImpl.SHORT;
+        }
+        if (TypeKind.FLOAT.equals(typeMirror.getKind())) {
+            return ClassAltClassImpl.FLOAT;
+        }
+        if (TypeKind.DOUBLE.equals(typeMirror.getKind())) {
+            return ClassAltClassImpl.DOUBLE;
+        }
+        if (TypeKind.DECLARED.equals(typeMirror.getKind())) {
+            DeclaredType dt = (DeclaredType) typeMirror;
+            
+            TypeElement typeElement = (TypeElement) dt.asElement();
+            
+            TypeElementAltClassImpl addMe = new TypeElementAltClassImpl(typeElement, processingEnv);
+            
+            return addMe;
+        }
+        
+        if (TypeKind.ARRAY.equals(typeMirror.getKind())) {
+            throw new AssertionError("Array parameters not yet implemented");
+        }
+        
+        throw new AssertionError("Unknown parameter kind: " + typeMirror.getKind());
     }
 }

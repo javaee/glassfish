@@ -47,6 +47,7 @@ import java.util.Set;
 
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.MethodWrapper;
+import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
 import org.glassfish.hk2.xml.internal.alt.AltAnnotation;
 import org.glassfish.hk2.xml.internal.alt.AltClass;
 import org.glassfish.hk2.xml.internal.alt.AltMethod;
@@ -56,6 +57,17 @@ import org.glassfish.hk2.xml.internal.alt.AltMethod;
  *
  */
 public class ClassAltClassImpl implements AltClass {
+    private static final ClassReflectionHelper SCALAR_HELPER = new ClassReflectionHelperImpl();
+    public static final AltClass VOID = new ClassAltClassImpl(void.class, SCALAR_HELPER);
+    public static final AltClass BOOLEAN = new ClassAltClassImpl(boolean.class, SCALAR_HELPER);
+    public static final AltClass BYTE = new ClassAltClassImpl(byte.class, SCALAR_HELPER);
+    public static final AltClass CHAR = new ClassAltClassImpl(char.class, SCALAR_HELPER);
+    public static final AltClass SHORT = new ClassAltClassImpl(short.class, SCALAR_HELPER);
+    public static final AltClass INT = new ClassAltClassImpl(int.class, SCALAR_HELPER);
+    public static final AltClass LONG = new ClassAltClassImpl(long.class, SCALAR_HELPER);
+    public static final AltClass FLOAT = new ClassAltClassImpl(float.class, SCALAR_HELPER);
+    public static final AltClass DOUBLE = new ClassAltClassImpl(double.class, SCALAR_HELPER);
+    
     private final Class<?> clazz;
     private final ClassReflectionHelper helper;
     private List<AltMethod> methods;
@@ -97,7 +109,7 @@ public class ClassAltClassImpl implements AltClass {
         
         List<AltAnnotation> retVal = new ArrayList<AltAnnotation>(annotationz.length);
         for (Annotation annotation : annotationz) {
-            retVal.add(new AnnotationAltAnnotationImpl(annotation));
+            retVal.add(new AnnotationAltAnnotationImpl(annotation, helper));
         }
         
         annotations = Collections.unmodifiableList(retVal);

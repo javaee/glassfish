@@ -44,6 +44,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -63,6 +64,8 @@ import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic.Kind;
 
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.xml.internal.Generator;
+import org.glassfish.hk2.xml.internal.alt.papi.TypeElementAltClassImpl;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 
 /**
@@ -113,7 +116,7 @@ public class Hk2XmlGenerator extends AbstractProcessor {
             throw new RuntimeException(e);
         }
     }
-
+    
     /* (non-Javadoc)
      * @see javax.annotation.processing.AbstractProcessor#process(java.util.Set, javax.annotation.processing.RoundEnvironment)
      */
@@ -128,13 +131,21 @@ public class Hk2XmlGenerator extends AbstractProcessor {
                 
                 TypeElement clazz = (TypeElement) clazzElement;
                 
-                List<? extends Element> innerElements = processingEnv.getElementUtils().getAllMembers(clazz);
-                for (Element innerElementElement : innerElements) {
-                    processingEnv.getMessager().printMessage(Kind.NOTE, ("innerElementElement " + innerElementElement));
+                TypeElementAltClassImpl altClass = new TypeElementAltClassImpl(clazz, processingEnv);
+                
+                try {
+                    CtClass ctClass = Generator.generate(altClass, superClazz, defaultClassPool);
+                }
+                catch (Throwable e) {
+                    String msg = e.getMessage();
+                    if (msg == null) msg = "Exception of type " + e.getClass().getName();
+                
+                    processingEnv.getMessager().printMessage(Kind.ERROR, msg);
+                    e.printStackTrace();
                 }
             }
-            
         }
+        
         return true;
     }
 
