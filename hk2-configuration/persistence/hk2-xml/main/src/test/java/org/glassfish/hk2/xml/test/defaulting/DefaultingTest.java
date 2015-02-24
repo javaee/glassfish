@@ -77,6 +77,7 @@ public class DefaultingTest {
         Assert.assertEquals('f', db.getCharProp());
         Assert.assertEquals(0, Float.compare((float) 13.00, db.getFloatProp()));
         Assert.assertEquals(0, Double.compare(13.00, db.getDoubleProp()));
+        Assert.assertEquals("13", db.getStringProp());
     }
     
     /**
@@ -101,6 +102,7 @@ public class DefaultingTest {
         Assert.assertEquals((char) 0, db.getDefaultCharProp());
         Assert.assertEquals(0, Float.compare((float) 0.00, db.getDefaultFloatProp()));
         Assert.assertEquals(0, Double.compare(0.00, db.getDefaultDoubleProp()));
+        Assert.assertEquals(null, db.getDefaultStringProp());
     }
 
 }

@@ -286,17 +286,20 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
     }
     
     public Object _getProperty(String propName) {
-        return _getProperty(propName, null);
+        return _getProperty(propName, ((model != null) ? model.getChildType(propName) : null));
     }
     
     public Object _getProperty(String propName, Class<?> expectedClass) {
+        boolean isSet;
         Object retVal;
         if (changeControl == null) {
+            isSet = beanLikeMap.containsKey(propName);
             retVal = beanLikeMap.get(propName);
         }
         else {
             changeControl.getReadLock().lock();
             try {
+                isSet = beanLikeMap.containsKey(propName);
                 retVal = beanLikeMap.get(propName);
             }
             finally {
@@ -304,7 +307,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
             }
         }
         
-        if (retVal == null && expectedClass != null) {
+        if (retVal == null && !isSet && expectedClass != null) {
             retVal = getDefaultValue(propName, expectedClass);
         }
         
@@ -550,7 +553,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         
         // Handling of children will be handled once the real child is better setup
         BaseHK2JAXBBean childToCopy = (BaseHK2JAXBBean) rawRoot;
-        for (String nonChildProperty : childToCopy.model.getNonChildProperties().keySet()) {
+        for (String nonChildProperty : childToCopy.model.getNonChildProperties()) {
             Object value = childToCopy._getProperty(nonChildProperty);
             if (value == null) continue;
             
@@ -633,7 +636,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         if (rawChild != null) {
             // Handling of children will be handled once the real child is better setup
             BaseHK2JAXBBean childToCopy = (BaseHK2JAXBBean) rawChild;
-            for (String nonChildProperty : childToCopy.model.getNonChildProperties().keySet()) {
+            for (String nonChildProperty : childToCopy.model.getNonChildProperties()) {
                 Object value = childToCopy._getProperty(nonChildProperty);
                 if (value == null) continue;
                 

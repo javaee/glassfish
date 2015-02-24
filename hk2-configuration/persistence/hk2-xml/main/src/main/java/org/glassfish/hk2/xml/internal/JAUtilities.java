@@ -61,6 +61,7 @@ import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
+import org.glassfish.hk2.xml.internal.alt.AltClass;
 import org.glassfish.hk2.xml.internal.alt.AltMethod;
 import org.glassfish.hk2.xml.internal.alt.clazz.ClassAltClassImpl;
 import org.glassfish.hk2.xml.internal.alt.clazz.MethodAltMethodImpl;
@@ -237,7 +238,13 @@ public class JAUtilities {
                     retVal.addChild(mi.getRepresentedProperty(), mi.isList(), mi.isArray(), childType);
                 }
                 else {
-                    retVal.addNonChildProperty(mi.getRepresentedProperty(), mi.getDefaultValue());
+                    Class<?> expectedType = null;
+                    AltClass gsType = mi.getGetterSetterType();
+                    if (gsType instanceof ClassAltClassImpl) {
+                        expectedType = ((ClassAltClassImpl) gsType).getOriginalClass();
+                    }
+                    
+                    retVal.addNonChildProperty(mi.getRepresentedProperty(), mi.getDefaultValue(), expectedType);
                 }
             }
         }

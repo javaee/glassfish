@@ -76,7 +76,7 @@ public class UnparentedNode implements Serializable {
     private final Map<String, ParentedNode> childrenByName = new HashMap<String, ParentedNode>();
     
     /** A map from non-child property name to the default value */
-    private final Map<String, String> nonChildProperty = new HashMap<String, String>();
+    private final Map<String, ChildData> nonChildProperty = new HashMap<String, ChildData>();
     
     private Set<String> unKeyedChildren = null;
     
@@ -136,9 +136,9 @@ public class UnparentedNode implements Serializable {
         }
     }
     
-    public void addNonChildProperty(String xmlTag, String defaultValue) {
+    public void addNonChildProperty(String xmlTag, String defaultValue, Class<?> childType) {
         synchronized (lock) {
-            nonChildProperty.put(xmlTag, defaultValue);
+            nonChildProperty.put(xmlTag, new ChildData(defaultValue, childType));
         }
     }
     
@@ -183,9 +183,9 @@ public class UnparentedNode implements Serializable {
         }
     }
     
-    public Map<String, String> getNonChildProperties() {
+    public Set<String> getNonChildProperties() {
         synchronized (lock) {
-            return Collections.unmodifiableMap(nonChildProperty);
+            return Collections.unmodifiableSet(nonChildProperty.keySet());
         }
     }
     
@@ -208,7 +208,17 @@ public class UnparentedNode implements Serializable {
     
     public String getDefaultChildValue(String propName) {
         synchronized (lock) {
-            return nonChildProperty.get(propName);
+            ChildData cd = nonChildProperty.get(propName);
+            if (cd == null) return null;
+            return cd.getDefaultAsString();
+        }
+    }
+    
+    public Class<?> getChildType(String propName) {
+        synchronized (lock) {
+            ChildData cd = nonChildProperty.get(propName);
+            if (cd == null) return null;
+            return cd.getChildType();
         }
     }
 

@@ -59,6 +59,26 @@ public class MethodInformation {
     private final boolean isList;
     private final boolean isArray;
     
+    public MethodInformation(AltMethod originalMethod,
+            MethodType methodType,
+            String representedProperty,
+            String defaultValue,
+            AltClass baseChildType,
+            AltClass gsType,
+            boolean key,
+            boolean isList,
+            boolean isArray) {
+        this.originalMethod = originalMethod;
+        this.methodType = methodType;
+        this.representedProperty = representedProperty;
+        this.defaultValue = defaultValue;
+        this.baseChildType = baseChildType;
+        this.getterSetterType = gsType;
+        this.key = key;
+        this.isList = isList;
+        this.isArray = isArray;
+    }
+    
     /**
      * @return the originalMethod
      */
@@ -121,28 +141,6 @@ public class MethodInformation {
     public boolean isArray() {
         return isArray;
     }
-
-    MethodInformation(AltMethod originalMethod,
-            MethodType methodType,
-            String representedProperty,
-            String defaultValue,
-            AltClass baseChildType,
-            AltClass gsType,
-            boolean key,
-            boolean isList,
-            boolean isArray) {
-        this.originalMethod = originalMethod;
-        this.methodType = methodType;
-        this.representedProperty = representedProperty;
-        this.defaultValue = defaultValue;
-        this.baseChildType = baseChildType;
-        this.getterSetterType = gsType;
-        this.key = key;
-        this.isList = isList;
-        this.isArray = isArray;
-    }
-    
-    
     
     @Override
     public String toString() {
