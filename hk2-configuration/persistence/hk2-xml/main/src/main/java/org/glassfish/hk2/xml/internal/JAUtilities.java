@@ -84,7 +84,6 @@ public class JAUtilities {
     public final static String JAXB_DEFAULT_STRING = "##default";
     public final static String JAXB_DEFAULT_DEFAULT = "\u0000";
     
-    private final static String CLASS_ADD_ON_NAME = "_$$_Hk2_Jaxb";
     private final static String NO_CHILD_PACKAGE = "java.";
     
     private final HashMap<Class<?>, UnparentedNode> interface2NodeCache = new HashMap<Class<?>, UnparentedNode>();
@@ -159,7 +158,7 @@ public class JAUtilities {
         Logger.getLogger().debug("XmlService converting " + convertMe.getName());
         UnparentedNode retVal = new UnparentedNode(convertMe);
         
-        String targetClassName = convertMe.getName() + CLASS_ADD_ON_NAME;
+        String targetClassName = convertMe.getName() + Generator.CLASS_ADD_ON_NAME;
         CtClass foundClass = defaultClassPool.getOrNull(targetClassName);
         
         if (foundClass == null) {

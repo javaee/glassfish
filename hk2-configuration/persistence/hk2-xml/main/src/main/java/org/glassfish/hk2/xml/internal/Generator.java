@@ -40,13 +40,13 @@
 package org.glassfish.hk2.xml.internal;
 
 import java.beans.Introspector;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
@@ -69,6 +69,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.Logger;
+import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
 import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
 import org.glassfish.hk2.xml.internal.alt.AltAnnotation;
 import org.glassfish.hk2.xml.internal.alt.AltClass;
@@ -86,10 +87,16 @@ public class Generator {
     private final static boolean DEBUG_METHODS = Boolean.parseBoolean(GeneralUtilities.getSystemProperty(
             "org.jvnet.hk2.properties.xmlservice.jaxb.methods", "false"));
     
-    private final static String CLASS_ADD_ON_NAME = "_$$_Hk2_Jaxb";
+    public final static String CLASS_ADD_ON_NAME = "_Hk2_Jaxb";
     private final static String JAXB_DEFAULT_STRING = "##default";
     public final static String JAXB_DEFAULT_DEFAULT = "\u0000";
     private final static String NO_CHILD_PACKAGE = "java.";
+    
+    private final static Set<String> NO_COPY_ANNOTATIONS = new HashSet<String>(Arrays.asList(new String[] {
+            Contract.class.getName(),
+            XmlTransient.class.getName(),
+            Hk2XmlPreGenerate.class.getName()
+    }));
     
     /**
      * Converts the given interface into a JAXB implementation proxy
@@ -104,6 +111,9 @@ public class Generator {
             CtClass superClazz,
             ClassPool defaultClassPool) throws Throwable {
         String targetClassName = convertMe.getName() + CLASS_ADD_ON_NAME;
+        if (DEBUG_METHODS) {
+            Logger.getLogger().debug("Converting " + convertMe.getName() + " to " + targetClassName);
+        }
         
         CtClass targetCtClass = defaultClassPool.makeClass(targetClassName);
         ClassFile targetClassFile = targetCtClass.getClassFile();
@@ -112,8 +122,7 @@ public class Generator {
         
         AnnotationsAttribute ctAnnotations = null;
         for (AltAnnotation convertMeAnnotation : convertMe.getAnnotations()) {
-            if (Contract.class.getName().equals(convertMeAnnotation.annotationType()) ||
-                    XmlTransient.class.getName().equals(convertMeAnnotation.annotationType())) {
+            if (NO_COPY_ANNOTATIONS.contains(convertMeAnnotation.annotationType())) {
                 // We do NOT want the generated class to be in the set of contracts, so
                 // skip this one if it is there.
                 // We also DO want our own class to be processed by JAXB even
@@ -858,7 +867,7 @@ public class Generator {
         if (!name.startsWith(JAUtilities.REMOVE)) return null;
         
         if (name.length() <= JAUtilities.REMOVE.length()) return null;
-        if (method.getReturnType() == null || void.class.equals(method.getReturnType())) return null;
+        if (method.getReturnType() == null || void.class.getName().equals(method.getReturnType().getName())) return null;
         
         AltClass returnType = method.getReturnType();
         if (!boolean.class.getName().equals(returnType.getName()) && !returnType.isInterface()) return null;

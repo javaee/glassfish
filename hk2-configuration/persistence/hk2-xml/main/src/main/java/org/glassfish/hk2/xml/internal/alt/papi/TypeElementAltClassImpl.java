@@ -83,7 +83,7 @@ public class TypeElementAltClassImpl implements AltClass {
      */
     @Override
     public String getName() {
-        return Utilities.convertNameToString(clazz.getQualifiedName());
+        return Utilities.convertNameToString(processingEnv.getElementUtils().getBinaryName(clazz));
     }
 
     /* (non-Javadoc)

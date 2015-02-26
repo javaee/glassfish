@@ -39,7 +39,9 @@
  */
 package org.glassfish.hk2.xml.tools;
 
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -55,6 +57,7 @@ import javassist.CtClass;
 import javassist.NotFoundException;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Filer;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
@@ -62,6 +65,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic.Kind;
+import javax.tools.JavaFileObject;
 
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.xml.internal.Generator;
@@ -123,6 +127,8 @@ public class Hk2XmlGenerator extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> annotations,
             RoundEnvironment roundEnv) {
+        Filer filer = processingEnv.getFiler();
+        
         for (TypeElement annotation : annotations) {
             Set<? extends Element> clazzes = roundEnv.getElementsAnnotatedWith(annotation);
             
@@ -135,12 +141,31 @@ public class Hk2XmlGenerator extends AbstractProcessor {
                 
                 try {
                     CtClass ctClass = Generator.generate(altClass, superClazz, defaultClassPool);
+                    
+                    String ctClassName = ctClass.getName();
+                    
+                    JavaFileObject jfo = filer.createClassFile(ctClassName, clazzElement);
+                    
+                    OutputStream outputStream = jfo.openOutputStream();
+                    DataOutputStream dataOutputStream = null;
+                    try {
+                        dataOutputStream = new DataOutputStream(outputStream);
+                    
+                        ctClass.toBytecode(dataOutputStream);
+                    }
+                    finally {
+                        if (dataOutputStream != null) {
+                            dataOutputStream.close();
+                        }
+                        
+                        outputStream.close();
+                    }
                 }
                 catch (Throwable e) {
                     String msg = e.getMessage();
                     if (msg == null) msg = "Exception of type " + e.getClass().getName();
                 
-                    processingEnv.getMessager().printMessage(Kind.ERROR, msg);
+                    processingEnv.getMessager().printMessage(Kind.ERROR, "While processing class: " + clazz.getQualifiedName() + " got exeption: " + msg);
                     e.printStackTrace();
                 }
             }

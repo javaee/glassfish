@@ -37,26 +37,22 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.internal;
+package org.glassfish.hk2.xml.test.precompile;
 
-import java.io.Serializable;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
 
 /**
- * Information about non-bean children
- * 
  * @author jwells
+ *
  */
-public class ChildData implements Serializable {
-    private static final long serialVersionUID = -2690787310154109720L;
-    
-    private final String defaultAsString;
-    private final Class<?> childType;
-    
-    public ChildData(String defaultAsString, Class<?> childType) {
-        this.defaultAsString = defaultAsString;
-        this.childType = childType;
-    }
-    
-    public String getDefaultAsString() { return defaultAsString; }
-    public Class<?> getChildType() { return childType; }
+@Hk2XmlPreGenerate
+@XmlRootElement(name="simple-bean")
+public interface SimpleBean {
+    @XmlElement
+    public String getName();
+    public void setName(String name);
+
 }

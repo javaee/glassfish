@@ -53,8 +53,9 @@ import org.junit.Test;
  *
  */
 public class PreCompiledTest {
-    private final static String CLASS_ADD_ON_NAME = "_$$_Hk2_Jaxb";
+    private final static String CLASS_ADD_ON_NAME = "_Hk2_Jaxb";
     private final static String PRE_COMPILED_FILE = "pre-compiled.xml";
+    private final static String SIMPLE_FILE = "simple.xml";
     private final static String ALICE = "Alice";
     private final static String BOB = "Bob";
     private final static String CAROL = "Carol";
@@ -81,7 +82,7 @@ public class PreCompiledTest {
      * and then that the system can see everything
      * properly
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testPreCompiledGotPreCompile() throws Exception {
         Assert.assertNull(getAssociatedClass(MultiChild.class));
         Assert.assertNull(getAssociatedClass(DirectChild.class));
@@ -113,6 +114,29 @@ public class PreCompiledTest {
         
         Assert.assertEquals(7001, root.getPreCompiledDirectChild().getPort());
         Assert.assertEquals("thirteen", root.getDirectChild().getIdentifier());
+    }
+    
+    /**
+     * The SimpleBean has no children, but has all kinds of other types
+     * such as arrays
+     * 
+     * @throws Exception
+     */
+    @Test // @org.junit.Ignore
+    public void testSimple() throws Exception {
+        Assert.assertNotNull(getAssociatedClass(SimpleBean.class));
+        
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(SIMPLE_FILE);
+        
+        XmlRootHandle<SimpleBean> rootHandle = xmlService.unmarshall(url.toURI(), SimpleBean.class);
+        Assert.assertNotNull(rootHandle);
+        
+        SimpleBean root = rootHandle.getRoot();
+        
+        Assert.assertEquals(BOB, root.getName());
     }
 
 }
