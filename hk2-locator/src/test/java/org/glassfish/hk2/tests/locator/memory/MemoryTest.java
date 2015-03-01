@@ -39,13 +39,18 @@
  */
 package org.glassfish.hk2.tests.locator.memory;
 
+import java.util.WeakHashMap;
+
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.api.ServiceLocatorState;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -60,6 +65,8 @@ import org.junit.Test;
  *
  */
 public class MemoryTest {
+    private final static ServiceLocatorFactory factory = ServiceLocatorFactory.getInstance();
+    
     /**
      * This test causes the injecteeToResolverCache in ServiceLocatorImpl
      * to grow, as every time reifyDescriptor is called a new SystemDescriptor
@@ -83,9 +90,42 @@ public class MemoryTest {
             
             issDescriptor = locator.reifyDescriptor(issDescriptor);
             
-            InjectsSimpleServiceService iss = (InjectsSimpleServiceService) issDescriptor.create(null);
+            issDescriptor.create(null);
         }
         
+    }
+    
+    /**
+     * Tests that an empty ServiceLocator goes away
+     * 
+     * @throws Throwable
+     */
+    @Test
+    public void testLocatorDestroyed() throws Throwable {
+        WeakHashMap<ServiceLocator, Object> weakMap = new WeakHashMap<ServiceLocator, Object>();
+        
+        ServiceLocator locator = factory.create("testLocatorDestroyedServiceLocator");
+        Assert.assertNotNull(locator);
+        
+        weakMap.put(locator, new Integer(0));
+        
+        Assert.assertEquals(1, weakMap.size());
+        
+        factory.destroy(locator);
+        
+        Assert.assertEquals(ServiceLocatorState.SHUTDOWN, locator.getState());
+        
+        locator = null;
+        
+        System.gc();
+        
+        for (int lcv = 0; lcv < 400; lcv++) {
+            if (weakMap.isEmpty()) break;
+            
+            Thread.sleep(50);
+        }
+        
+        Assert.assertTrue(weakMap.isEmpty());
     }
 
 }
