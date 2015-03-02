@@ -47,6 +47,7 @@ import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.api.ServiceLocatorState;
+import org.glassfish.hk2.tests.locator.proxysamescope.ProxiableSingletonContext;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
@@ -108,6 +109,49 @@ public class MemoryTest {
         Assert.assertNotNull(locator);
         
         weakMap.put(locator, new Integer(0));
+        
+        Assert.assertEquals(1, weakMap.size());
+        
+        factory.destroy(locator);
+        
+        Assert.assertEquals(ServiceLocatorState.SHUTDOWN, locator.getState());
+        
+        locator = null;
+        
+        System.gc();
+        
+        for (int lcv = 0; lcv < 400; lcv++) {
+            if (weakMap.isEmpty()) break;
+            
+            Thread.sleep(50);
+        }
+        
+        Assert.assertTrue(weakMap.isEmpty());
+    }
+    
+    /**
+     * Tests that a service locator with some proxiable
+     * services goes away
+     * 
+     * @throws Throwable
+     */
+    @Test @org.junit.Ignore
+    public void testLocatorWithObjectProxiesDestroyed() throws Throwable {
+        WeakHashMap<ServiceLocator, Object> weakMap = new WeakHashMap<ServiceLocator, Object>();
+        
+        ServiceLocator locator = factory.create("testLocatorWithObjectProxiesDestroyed");
+        Assert.assertNotNull(locator);
+        
+        weakMap.put(locator, new Integer(0));
+        
+        ServiceLocatorUtilities.addClasses(locator, ProxiableSingletonContext.class,
+                ProxiableSimpleService.class,
+                SimpleService.class,
+                InjectsProxiableStuff.class);
+        
+        InjectsProxiableStuff ips = locator.getService(InjectsProxiableStuff.class);
+        ips.operate();
+        ips = null;
         
         Assert.assertEquals(1, weakMap.size());
         

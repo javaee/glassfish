@@ -48,6 +48,7 @@ import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ProxyCtl;
 import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.api.ServiceLocator;
 
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
@@ -61,13 +62,26 @@ import javassist.util.proxy.ProxyObject;
  */
 public class ProxyUtilities {
     private final static Object proxyCreationLock = new Object();
-    private final static WeakHashMap<WeakDelegatingCacheEntry, Object> delegatingLoaderSet =
-            new WeakHashMap<WeakDelegatingCacheEntry, Object>();
+    private final static WeakHashMap<WeakDelegatingCacheEntry, ServiceLocator> delegatingLoaderSet =
+            new WeakHashMap<WeakDelegatingCacheEntry, ServiceLocator>();
     
+    /**
+     * We put the anchor as the value even though we don't use it in order to
+     * make it easier to catch memory leaks here.  See MemoryTest
+     * 
+     * @param superclass
+     * @param interfaces
+     * @param callback
+     * @param useJDKProxy
+     * @param anchor This is put into the WeakMap to make sure that IF this
+     * map should leak that it will leak big, making it easier to detect
+     * @return
+     */
     private static <T> T secureCreate(final Class<?> superclass,
             final Class<?>[] interfaces,
             final MethodHandler callback,
-            boolean useJDKProxy) {
+            boolean useJDKProxy,
+            ServiceLocator anchor) {
 
         /* construct the classloader where the generated proxy will be created --
          * this classloader must have visibility into the javaassist classloader as well as
@@ -102,7 +116,7 @@ public class ProxyUtilities {
             if (found == null) {
                 found = key;
                 
-                delegatingLoaderSet.put(found, null);
+                delegatingLoaderSet.put(found, anchor);
             }
             
             myLoader = found.getDelegator();
@@ -193,7 +207,7 @@ public class ProxyUtilities {
             proxy = (T) secureCreate(proxyClass,
                 iFaces,
                 new MethodInterceptorImpl(locator, root, handle),
-                isInterface);
+                isInterface, locator);
         }
         catch (Throwable th) {
             Exception addMe = new IllegalArgumentException("While attempting to create a Proxy for " + proxyClass.getName() +
@@ -274,5 +288,4 @@ public class ProxyUtilities {
             return key.equals(other.key);
         }
     }
-
 }
