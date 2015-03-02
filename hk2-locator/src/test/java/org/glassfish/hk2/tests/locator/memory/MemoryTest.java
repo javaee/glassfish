@@ -53,7 +53,6 @@ import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Test;
-import org.jvnet.hk2.internal.ProxyUtilities;
 
 /**
  * These tests are funnny, in that they at one time or another exhibited a memory
@@ -132,7 +131,9 @@ public class MemoryTest {
     
     /**
      * Tests that a service locator with some proxiable
-     * services goes away
+     * services goes away.
+     * 
+     * See https://java.net/jira/browse/HK2-247
      * 
      * @throws Throwable
      */
