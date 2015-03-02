@@ -47,23 +47,16 @@ import org.glassfish.hk2.utilities.reflection.Pretty;
  * A classloader that delegates first to an optional parent and then to a delegate loader
  */
 class DelegatingClassLoader extends ClassLoader {
-	private final Object hardPointer;
 	private final ClassLoader delegates[];
 
 	/**
 	 * Constructor for special classloader to give to proxy making code
 	 * 
 	 * @param parent the java-style classloader parent of this loader
-	 * @param hardPointer this is a hard pointer back to a key in a WeakHashMap.  This
-	 * will cause the WeakHashMap to have a hard reference back to the key as long as
-	 * someone has a hard reference to this DelegatingClassLoader.  That will cause
-	 * the key to not get removed until there are no more hard references to this
-	 * DelegatingClassLoader
 	 * @param classLoaderDelegates other classloaders to delegate to
 	 */
-	DelegatingClassLoader(ClassLoader parent, Object hardPointer, ClassLoader... classLoaderDelegates) {
+	DelegatingClassLoader(ClassLoader parent, ClassLoader... classLoaderDelegates) {
 		super(parent);
-		this.hardPointer = hardPointer;
         delegates=classLoaderDelegates;
     }
 	
@@ -112,7 +105,7 @@ class DelegatingClassLoader extends ClassLoader {
 	
 	@Override
 	public String toString() {
-	    return "DelegatingClassLoader(" + getParent() + "," + hardPointer + "," +
+	    return "DelegatingClassLoader(" + getParent() + "," +
 	        Pretty.array(delegates) + "," + System.identityHashCode(this) + ")";
 	}
 }

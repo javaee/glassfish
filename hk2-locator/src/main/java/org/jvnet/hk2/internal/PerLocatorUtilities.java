@@ -78,6 +78,8 @@ public class PerLocatorUtilities {
                 }
             };
             
+    private volatile ProxyUtilities proxyUtilities;
+            
     /**
      * Gets the analyzer name from the Service annotation
      *
@@ -199,5 +201,22 @@ public class PerLocatorUtilities {
         }
         return hard;
     }
-
+    
+    public synchronized void releaseCaches() {
+        if (proxyUtilities != null) {
+            proxyUtilities.releaseCache();
+        }
+    }
+    
+    public ProxyUtilities getProxyUtilities() {
+        if (proxyUtilities != null) return proxyUtilities;
+        
+        synchronized (this) {
+            if (proxyUtilities != null) return proxyUtilities;
+            
+            proxyUtilities = new ProxyUtilities();
+            
+            return proxyUtilities;
+        }
+    }
 }

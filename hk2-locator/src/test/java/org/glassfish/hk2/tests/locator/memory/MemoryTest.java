@@ -53,6 +53,7 @@ import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Test;
+import org.jvnet.hk2.internal.ProxyUtilities;
 
 /**
  * These tests are funnny, in that they at one time or another exhibited a memory
@@ -135,7 +136,7 @@ public class MemoryTest {
      * 
      * @throws Throwable
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testLocatorWithObjectProxiesDestroyed() throws Throwable {
         WeakHashMap<ServiceLocator, Object> weakMap = new WeakHashMap<ServiceLocator, Object>();
         

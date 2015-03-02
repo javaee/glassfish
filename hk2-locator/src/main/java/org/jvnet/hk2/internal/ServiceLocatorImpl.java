@@ -872,6 +872,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             igashCache.clear();
             classReflectionHelper.dispose();
             contextCache.clear();
+            perLocatorUtilities.releaseCaches();
             
             synchronized (children) {
                 children.clear();
@@ -1702,11 +1703,17 @@ public class ServiceLocatorImpl implements ServiceLocator {
             }
         }
         
+        boolean hasOneUnbind = false;
         for (SystemDescriptor<?> unbind : unbinds) {
+            hasOneUnbind = true;
             // Do this after all the other work has been done
             // to ensure we can possibly still use things such
             // as the validation service while we are unbinding
             unbind.close();
+        }
+        
+        if (hasOneUnbind) {
+            perLocatorUtilities.releaseCaches();
         }
     }
 

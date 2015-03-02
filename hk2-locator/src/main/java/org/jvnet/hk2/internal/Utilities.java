@@ -2034,7 +2034,7 @@ public class Utilities {
                 throw new IllegalStateException("A descriptor " + root + " requires a proxy, but the proxyable library is not on the classpath");
             }
             
-            return ProxyUtilities.generateProxy(requestedClass, locator, root, handle);
+            return locator.getPerLocatorUtilities().getProxyUtilities().generateProxy(requestedClass, locator, root, handle);
         }
 
         Context<?> context;
