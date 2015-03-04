@@ -80,4 +80,32 @@ public interface Employees {
     public void addOtherData(OtherData otherData);
     public void addOtherData(OtherData otherData, int position);
     public boolean removeOtherData(int position);
+    
+    @XmlElement(name="bagel-type")
+    /*
+    @EverythingBagel(byteValue = 13,
+        booleanValue=true,
+        charValue = 'e',
+        shortValue = 13,
+        intValue = 13,
+        longValue = 13L,
+        floatValue = (float) 13.00,
+        doubleValue = 13.00,
+        enumValue = GreekEnum.BETA,
+        stringValue = "13",
+        classValue = Employees.class,
+    
+        byteArrayValue = { 13, 14 },
+        booleanArrayValue = { true, false },
+        charArrayValue = { 'e', 'E' },
+        shortArrayValue = { 13, 14 },
+        intArrayValue = { 13, 14 },
+        longArrayValue = { 13L, 14L },
+        floatArrayValue = { (float) 13.00, (float) 14,00 },
+        doubleArrayValue = { 13.00, 14.00 },
+        enumArrayValue = { GreekEnum.GAMMA, GreekEnum.ALPHA },
+        stringArrayValue = { "13", "14" },
+        classArrayValue = { String.class, double.class }) */
+    public void setBagelPreference(int bagelType);
+    public int getBagelPreference();
 }

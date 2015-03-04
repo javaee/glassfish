@@ -525,7 +525,7 @@ public class Generator {
                 annotation.addMemberValue(valueName, new ClassMemberValue(sValue, parent));
             }
             else {
-                throw new AssertionError("Annotation type " + javaAnnotationType.getName() + " is not yet implemented");
+                throw new AssertionError("Annotation type " + javaAnnotationType.getName() + " is not yet implemented for " + valueName);
             }
             
         }
