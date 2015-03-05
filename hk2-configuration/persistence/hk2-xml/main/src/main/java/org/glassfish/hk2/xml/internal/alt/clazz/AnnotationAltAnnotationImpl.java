@@ -50,6 +50,7 @@ import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
 import org.glassfish.hk2.xml.internal.alt.AltAnnotation;
+import org.glassfish.hk2.xml.internal.alt.AltClass;
 import org.glassfish.hk2.xml.jaxb.internal.XmlElementImpl;
 
 /**
@@ -134,6 +135,10 @@ public class AnnotationAltAnnotationImpl implements AltAnnotation {
             Object value;
             try {
                 value = ReflectionHelper.invoke(annotation, javaAnnotationMethod, new Object[0], false);
+                
+                if (value == null) {
+                    throw new AssertionError("Recieved null from annotation method " + javaAnnotationMethod.getName());
+                }
             }
             catch (RuntimeException re) {
                 throw re;
@@ -144,6 +149,17 @@ public class AnnotationAltAnnotationImpl implements AltAnnotation {
             
             if (value instanceof Class) {
                 value = new ClassAltClassImpl((Class<?>) value, helper);
+            }
+            else if (value.getClass().isArray() && Class.class.equals(value.getClass().getComponentType())) {
+                Class<?> cValue[] = (Class<?>[]) value;
+                
+                AltClass[] translatedValue = new AltClass[cValue.length];
+                
+                for (int lcv = 0; lcv < cValue.length; lcv++) {
+                    translatedValue[lcv] = new ClassAltClassImpl(cValue[lcv], helper);
+                }
+                
+                value = translatedValue;
             }
             
             retVal.put(key, value);

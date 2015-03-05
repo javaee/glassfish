@@ -57,8 +57,18 @@ import javassist.bytecode.ClassFile;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.annotation.Annotation;
+import javassist.bytecode.annotation.ArrayMemberValue;
 import javassist.bytecode.annotation.BooleanMemberValue;
+import javassist.bytecode.annotation.ByteMemberValue;
+import javassist.bytecode.annotation.CharMemberValue;
 import javassist.bytecode.annotation.ClassMemberValue;
+import javassist.bytecode.annotation.DoubleMemberValue;
+import javassist.bytecode.annotation.EnumMemberValue;
+import javassist.bytecode.annotation.FloatMemberValue;
+import javassist.bytecode.annotation.IntegerMemberValue;
+import javassist.bytecode.annotation.LongMemberValue;
+import javassist.bytecode.annotation.MemberValue;
+import javassist.bytecode.annotation.ShortMemberValue;
 import javassist.bytecode.annotation.StringMemberValue;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -523,6 +533,158 @@ public class Generator {
                 }
                 
                 annotation.addMemberValue(valueName, new ClassMemberValue(sValue, parent));
+            }
+            else if (Integer.class.equals(javaAnnotationType)) {
+                int ivalue = (Integer) value;
+                
+                annotation.addMemberValue(valueName, new IntegerMemberValue(parent, ivalue));
+            }
+            else if (Long.class.equals(javaAnnotationType)) {
+                long lvalue = (Long) value;
+                
+                annotation.addMemberValue(valueName, new LongMemberValue(lvalue, parent));
+            }
+            else if (Double.class.equals(javaAnnotationType)) {
+                double dvalue = (Double) value;
+                
+                annotation.addMemberValue(valueName, new DoubleMemberValue(dvalue, parent));
+            }
+            else if (Byte.class.equals(javaAnnotationType)) {
+                byte bvalue = (Byte) value;
+                
+                annotation.addMemberValue(valueName, new ByteMemberValue(bvalue, parent));
+            }
+            else if (Character.class.equals(javaAnnotationType)) {
+                char cvalue = (Character) value;
+                
+                annotation.addMemberValue(valueName, new CharMemberValue(cvalue, parent));
+            }
+            else if (Short.class.equals(javaAnnotationType)) {
+                short svalue = (Short) value;
+                
+                annotation.addMemberValue(valueName, new ShortMemberValue(svalue, parent));
+            }
+            else if (Float.class.equals(javaAnnotationType)) {
+                float fvalue = (Float) value;
+                
+                annotation.addMemberValue(valueName, new FloatMemberValue(fvalue, parent));
+            }
+            else if (Enum.class.isAssignableFrom(javaAnnotationType)) {
+                Enum<?> evalue = (Enum<?>) value;
+                
+                EnumMemberValue jaEnum = new EnumMemberValue(parent);
+                jaEnum.setType(evalue.getDeclaringClass().getName());
+                jaEnum.setValue(evalue.name());
+                    
+                annotation.addMemberValue(valueName, jaEnum);
+            }
+            else if (javaAnnotationType.isArray()) {
+                Class<?> typeOfArray = javaAnnotationType.getComponentType();
+                
+                MemberValue arrayValue[];
+                if (int.class.equals(typeOfArray)) {
+                    int[] iVals = (int[]) value;
+                    
+                    arrayValue = new MemberValue[iVals.length];
+                    for (int lcv = 0; lcv < iVals.length; lcv++) {
+                        arrayValue[lcv] = new IntegerMemberValue(parent, iVals[lcv]);
+                    }
+                }
+                else if (String.class.equals(typeOfArray)) {
+                    String[] iVals = (String[]) value;
+                    
+                    arrayValue = new MemberValue[iVals.length];
+                    for (int lcv = 0; lcv < iVals.length; lcv++) {
+                        arrayValue[lcv] = new StringMemberValue(iVals[lcv], parent);
+                    }
+                }
+                else if (long.class.equals(typeOfArray)) {
+                    long[] iVals = (long[]) value;
+                    
+                    arrayValue = new MemberValue[iVals.length];
+                    for (int lcv = 0; lcv < iVals.length; lcv++) {
+                        arrayValue[lcv] = new LongMemberValue(iVals[lcv], parent);
+                    }
+                }
+                else if (boolean.class.equals(typeOfArray)) {
+                    boolean[] iVals = (boolean[]) value;
+                    
+                    arrayValue = new MemberValue[iVals.length];
+                    for (int lcv = 0; lcv < iVals.length; lcv++) {
+                        arrayValue[lcv] = new BooleanMemberValue(iVals[lcv], parent);
+                    }
+                }
+                else if (float.class.equals(typeOfArray)) {
+                    float[] iVals = (float[]) value;
+                    
+                    arrayValue = new MemberValue[iVals.length];
+                    for (int lcv = 0; lcv < iVals.length; lcv++) {
+                        arrayValue[lcv] = new FloatMemberValue(iVals[lcv], parent);
+                    }
+                }
+                else if (double.class.equals(typeOfArray)) {
+                    double[] iVals = (double[]) value;
+                    
+                    arrayValue = new MemberValue[iVals.length];
+                    for (int lcv = 0; lcv < iVals.length; lcv++) {
+                        arrayValue[lcv] = new DoubleMemberValue(iVals[lcv], parent);
+                    }
+                }
+                else if (byte.class.equals(typeOfArray)) {
+                    byte[] iVals = (byte[]) value;
+                    
+                    arrayValue = new MemberValue[iVals.length];
+                    for (int lcv = 0; lcv < iVals.length; lcv++) {
+                        arrayValue[lcv] = new ByteMemberValue(iVals[lcv], parent);
+                    }
+                }
+                else if (char.class.equals(typeOfArray)) {
+                    char[] iVals = (char[]) value;
+                    
+                    arrayValue = new MemberValue[iVals.length];
+                    for (int lcv = 0; lcv < iVals.length; lcv++) {
+                        arrayValue[lcv] = new CharMemberValue(iVals[lcv], parent);
+                    }
+                }
+                else if (short.class.equals(typeOfArray)) {
+                    short[] iVals = (short[]) value;
+                    
+                    arrayValue = new MemberValue[iVals.length];
+                    for (int lcv = 0; lcv < iVals.length; lcv++) {
+                        arrayValue[lcv] = new ShortMemberValue(iVals[lcv], parent);
+                    }
+                }
+                else if (Enum.class.isAssignableFrom(typeOfArray)) {
+                    Enum<?>[] iVals = (Enum<?>[]) value;
+                    
+                    arrayValue = new MemberValue[iVals.length];
+                    for (int lcv = 0; lcv < iVals.length; lcv++) {
+                        EnumMemberValue jaEnum = new EnumMemberValue(parent);
+                        jaEnum.setType(iVals[lcv].getDeclaringClass().getName());
+                        jaEnum.setValue(iVals[lcv].name());
+                        
+                        arrayValue[lcv] = jaEnum;
+                    }
+                }
+                else if (AltClass.class.isAssignableFrom(typeOfArray)) {
+                    AltClass[] iVals = (AltClass[]) value;
+                    
+                    arrayValue = new MemberValue[iVals.length];
+                    for (int lcv = 0; lcv < iVals.length; lcv++) {
+                        AltClass arrayElementClass = iVals[lcv];
+                        
+                        arrayValue[lcv] = new ClassMemberValue(arrayElementClass.getName(), parent);
+                    }
+                }
+                else {
+                    throw new AssertionError("Array type " + typeOfArray.getName() + " is not yet implemented for " + valueName);
+                }
+                
+                ArrayMemberValue arrayMemberValue = new ArrayMemberValue(parent);
+                arrayMemberValue.setValue(arrayValue);
+                
+                annotation.addMemberValue(valueName, arrayMemberValue);
+                
             }
             else {
                 throw new AssertionError("Annotation type " + javaAnnotationType.getName() + " is not yet implemented for " + valueName);

@@ -82,7 +82,6 @@ public interface Employees {
     public boolean removeOtherData(int position);
     
     @XmlElement(name="bagel-type")
-    /*
     @EverythingBagel(byteValue = 13,
         booleanValue=true,
         charValue = 'e',
@@ -105,7 +104,7 @@ public interface Employees {
         doubleArrayValue = { 13.00, 14.00 },
         enumArrayValue = { GreekEnum.GAMMA, GreekEnum.ALPHA },
         stringArrayValue = { "13", "14" },
-        classArrayValue = { String.class, double.class }) */
+        classArrayValue = { String.class, double.class })
     public void setBagelPreference(int bagelType);
     public int getBagelPreference();
 }
