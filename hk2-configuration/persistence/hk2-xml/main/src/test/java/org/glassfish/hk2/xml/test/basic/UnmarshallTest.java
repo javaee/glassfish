@@ -39,7 +39,9 @@
  */
 package org.glassfish.hk2.xml.test.basic;
 
+import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -445,5 +447,53 @@ public class UnmarshallTest {
         Assert.assertEquals((short) 161, types.getSType());
         Assert.assertEquals(0, Float.compare((float) 3.14, types.getFType()));
         Assert.assertEquals(0, Double.compare(2.71828, types.getDType()));
+    }
+    
+    /**
+     * Tests that the annotation is fully copied over on the method
+     * 
+     * @throws Exception
+     */
+    @Test // @org.junit.Ignore
+    public void testAnnotationWithEverythingCopied() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(ACME1_FILE);
+        
+        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
+        Employees employees = rootHandle.getRoot();
+        
+        Method setBagelMethod = employees.getClass().getMethod("setBagelPreference", new Class<?>[] { int.class });
+        EverythingBagel bagel = setBagelMethod.getAnnotation(EverythingBagel.class);
+        
+        Assert.assertEquals((byte) 13, bagel.byteValue());
+        Assert.assertTrue(bagel.booleanValue());
+        Assert.assertEquals('e', bagel.charValue());
+        Assert.assertEquals((short) 13, bagel.shortValue());
+        Assert.assertEquals(13, bagel.intValue());
+        Assert.assertEquals(13L, bagel.longValue());
+        Assert.assertEquals(0, Float.compare((float) 13.00, bagel.floatValue()));
+        Assert.assertEquals(0, Double.compare(13.00, bagel.doubleValue()));
+        Assert.assertEquals("13", bagel.stringValue());
+        Assert.assertEquals(Employees.class, bagel.classValue());
+        Assert.assertEquals(GreekEnum.BETA, bagel.enumValue());
+        
+        Assert.assertTrue(Arrays.equals(new byte[] { 13, 14 }, bagel.byteArrayValue()));
+        Assert.assertTrue(Arrays.equals(new boolean[] { true, false }, bagel.booleanArrayValue()));
+        Assert.assertTrue(Arrays.equals(new char[] { 'e', 'E' }, bagel.charArrayValue()));
+        Assert.assertTrue(Arrays.equals(new short[] { 13, 14 }, bagel.shortArrayValue()));
+        Assert.assertTrue(Arrays.equals(new int[] { 13, 14 }, bagel.intArrayValue()));
+        Assert.assertTrue(Arrays.equals(new long[] { 13, 14 }, bagel.longArrayValue()));
+        Assert.assertTrue(Arrays.equals(new String[] { "13", "14" }, bagel.stringArrayValue()));
+        Assert.assertTrue(Arrays.equals(new Class[] { String.class, double.class }, bagel.classArrayValue()));
+        Assert.assertTrue(Arrays.equals(new GreekEnum[] { GreekEnum.GAMMA, GreekEnum.ALPHA }, bagel.enumArrayValue()));
+        
+        // The remaining need to be compared manually (not with Arrays)
+        Assert.assertEquals(0, Float.compare((float) 13.00, bagel.floatArrayValue()[0]));
+        Assert.assertEquals(0, Float.compare((float) 14.00, bagel.floatArrayValue()[1]));
+        
+        Assert.assertEquals(0, Double.compare(13.00, bagel.doubleArrayValue()[0]));
+        Assert.assertEquals(0, Double.compare(14.00, bagel.doubleArrayValue()[1]));
     }
 }
