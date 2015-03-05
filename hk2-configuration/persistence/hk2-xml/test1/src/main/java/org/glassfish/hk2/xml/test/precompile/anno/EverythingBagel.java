@@ -37,61 +37,46 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test.precompile;
+package org.glassfish.hk2.xml.test.precompile.anno;
 
-import java.util.List;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
-import org.glassfish.hk2.xml.test.precompile.anno.EverythingBagel;
-import org.glassfish.hk2.xml.test.precompile.anno.GreekEnum;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
 /**
  * @author jwells
  *
  */
-@Hk2XmlPreGenerate
-@XmlRootElement(name="root")
-public interface PreCompiledRoot {
-    @XmlElement(name="pre-compiled-multi-child")
-    public List<PreCompiledMultiChild> getPreCompiledMultiChild();
+@Retention(RUNTIME)
+@Target( { TYPE, METHOD, FIELD, PARAMETER })
+public @interface EverythingBagel {
+    public byte byteValue();
+    public boolean booleanValue();
+    public char charValue();
+    public short shortValue();
+    public int intValue();
+    public long longValue();
+    public float floatValue();
+    public double doubleValue();
+    public GreekEnum enumValue();
+    public String stringValue();
+    public Class<?> classValue();
     
-    @XmlElement(name="multi-child")
-    public List<MultiChild> getMultiChild();
-    
-    @XmlElement(name="pre-compiled-direct-child")
-    public PreCompiledDirectChild getPreCompiledDirectChild();
-    
-    @XmlElement(name="direct-child")
-    public DirectChild getDirectChild();
-    
-    @XmlElement(name="bagel-type")
-    /*
-    @EverythingBagel(byteValue = 13,
-        booleanValue=true,
-        charValue = 'e',
-        shortValue = 13,
-        intValue = 13,
-        longValue = 13L,
-        floatValue = (float) 13.00,
-        doubleValue = 13.00,
-        enumValue = GreekEnum.BETA,
-        stringValue = "13",
-        classValue = PreCompiledRoot.class,
-    
-        byteArrayValue = { 13, 14 },
-        booleanArrayValue = { true, false },
-        charArrayValue = { 'e', 'E' },
-        shortArrayValue = { 13, 14 },
-        intArrayValue = { 13, 14 },
-        longArrayValue = { 13L, 14L },
-        floatArrayValue = { (float) 13.00, (float) 14,00 },
-        doubleArrayValue = { 13.00, 14.00 },
-        enumArrayValue = { GreekEnum.GAMMA, GreekEnum.ALPHA },
-        stringArrayValue = { "13", "14" },
-        classArrayValue = { String.class, double.class }) */
-    public int getBagelPreference();
-    public void setBagelPreference(int bagelType);
+    public byte[] byteArrayValue();
+    public boolean[] booleanArrayValue();
+    public char[] charArrayValue();
+    public short[] shortArrayValue();
+    public int[] intArrayValue();
+    public long[] longArrayValue();
+    public float[] floatArrayValue();
+    public double[] doubleArrayValue();
+    public GreekEnum[] enumArrayValue();
+    public String[] stringArrayValue();
+    public Class<?>[] classArrayValue();
+
 }
