@@ -127,6 +127,8 @@ public class AnnotationMirrorAltAnnotationImpl implements AltAnnotation {
                 value = Utilities.convertTypeMirror((TypeMirror) value, processingEnv);
             }
             else if (value instanceof VariableElement) {
+                VariableElement variable = (VariableElement) value;
+                
                 throw new AssertionError("The annotation " + annotation + " key " + key + " has unimplemented enum");
             }
             else if (value instanceof AnnotationMirror) {

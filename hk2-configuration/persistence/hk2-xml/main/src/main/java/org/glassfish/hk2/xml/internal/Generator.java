@@ -83,6 +83,7 @@ import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
 import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
 import org.glassfish.hk2.xml.internal.alt.AltAnnotation;
 import org.glassfish.hk2.xml.internal.alt.AltClass;
+import org.glassfish.hk2.xml.internal.alt.AltEnum;
 import org.glassfish.hk2.xml.internal.alt.AltMethod;
 import org.glassfish.hk2.xml.internal.alt.clazz.AnnotationAltAnnotationImpl;
 import org.glassfish.hk2.xml.jaxb.internal.XmlElementImpl;
@@ -569,12 +570,12 @@ public class Generator {
                 
                 annotation.addMemberValue(valueName, new FloatMemberValue(fvalue, parent));
             }
-            else if (Enum.class.isAssignableFrom(javaAnnotationType)) {
-                Enum<?> evalue = (Enum<?>) value;
+            else if (AltEnum.class.isAssignableFrom(javaAnnotationType)) {
+                AltEnum evalue = (AltEnum) value;
                 
                 EnumMemberValue jaEnum = new EnumMemberValue(parent);
-                jaEnum.setType(evalue.getDeclaringClass().getName());
-                jaEnum.setValue(evalue.name());
+                jaEnum.setType(evalue.getDeclaringClass());
+                jaEnum.setValue(evalue.getName());
                     
                 annotation.addMemberValue(valueName, jaEnum);
             }
@@ -654,14 +655,14 @@ public class Generator {
                         arrayValue[lcv] = new ShortMemberValue(iVals[lcv], parent);
                     }
                 }
-                else if (Enum.class.isAssignableFrom(typeOfArray)) {
-                    Enum<?>[] iVals = (Enum<?>[]) value;
+                else if (AltEnum.class.isAssignableFrom(typeOfArray)) {
+                    AltEnum[] iVals = (AltEnum[]) value;
                     
                     arrayValue = new MemberValue[iVals.length];
                     for (int lcv = 0; lcv < iVals.length; lcv++) {
                         EnumMemberValue jaEnum = new EnumMemberValue(parent);
-                        jaEnum.setType(iVals[lcv].getDeclaringClass().getName());
-                        jaEnum.setValue(iVals[lcv].name());
+                        jaEnum.setType(iVals[lcv].getDeclaringClass());
+                        jaEnum.setValue(iVals[lcv].getName());
                         
                         arrayValue[lcv] = jaEnum;
                     }

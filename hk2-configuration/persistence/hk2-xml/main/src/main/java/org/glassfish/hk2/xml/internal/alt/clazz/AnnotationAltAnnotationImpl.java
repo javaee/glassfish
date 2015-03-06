@@ -51,6 +51,7 @@ import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
 import org.glassfish.hk2.xml.internal.alt.AltAnnotation;
 import org.glassfish.hk2.xml.internal.alt.AltClass;
+import org.glassfish.hk2.xml.internal.alt.AltEnum;
 import org.glassfish.hk2.xml.jaxb.internal.XmlElementImpl;
 
 /**
@@ -150,6 +151,9 @@ public class AnnotationAltAnnotationImpl implements AltAnnotation {
             if (value instanceof Class) {
                 value = new ClassAltClassImpl((Class<?>) value, helper);
             }
+            else if (Enum.class.isAssignableFrom(value.getClass())) {
+                value = new EnumAltEnumImpl((Enum<?>) value);
+            }
             else if (value.getClass().isArray() && Class.class.equals(value.getClass().getComponentType())) {
                 Class<?> cValue[] = (Class<?>[]) value;
                 
@@ -157,6 +161,17 @@ public class AnnotationAltAnnotationImpl implements AltAnnotation {
                 
                 for (int lcv = 0; lcv < cValue.length; lcv++) {
                     translatedValue[lcv] = new ClassAltClassImpl(cValue[lcv], helper);
+                }
+                
+                value = translatedValue;
+            }
+            else if (value.getClass().isArray() && Enum.class.isAssignableFrom(value.getClass().getComponentType())) {
+                Enum<?> eValue[] = (Enum<?>[]) value;
+                
+                AltEnum[] translatedValue = new AltEnum[eValue.length];
+                
+                for (int lcv = 0; lcv < eValue.length; lcv++) {
+                    translatedValue[lcv] = new EnumAltEnumImpl(eValue[lcv]);
                 }
                 
                 value = translatedValue;
