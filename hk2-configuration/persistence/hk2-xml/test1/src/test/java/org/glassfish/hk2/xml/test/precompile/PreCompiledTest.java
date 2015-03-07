@@ -141,25 +141,6 @@ public class PreCompiledTest {
         SimpleBean root = rootHandle.getRoot();
         
         Assert.assertEquals(BOB, root.getName());
-    }
-    
-    /**
-     * Checks to see that the pre-compiled class
-     * is available prior to it getting generated,
-     * and then that the system can see everything
-     * properly
-     */
-    @Test @org.junit.Ignore
-    public void testAnnotationWithEverythingCopied() throws Exception {
-        ServiceLocator locator = Utilities.createLocator();
-        XmlService xmlService = locator.getService(XmlService.class);
-        
-        URL url = getClass().getClassLoader().getResource(PRE_COMPILED_FILE);
-        
-        XmlRootHandle<PreCompiledRoot> rootHandle = xmlService.unmarshall(url.toURI(), PreCompiledRoot.class);
-        Assert.assertNotNull(rootHandle);
-        
-        PreCompiledRoot root = rootHandle.getRoot();
         
         Method setBagelMethod = root.getClass().getMethod("getBagelPreference", new Class<?>[] { });
         EverythingBagel bagel = setBagelMethod.getAnnotation(EverythingBagel.class);

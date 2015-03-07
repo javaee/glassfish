@@ -37,51 +37,42 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test.precompile;
+package org.glassfish.hk2.xml.internal.alt.papi;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
-import org.glassfish.hk2.xml.test.precompile.anno.EverythingBagel;
-import org.glassfish.hk2.xml.test.precompile.anno.GreekEnum;
+import org.glassfish.hk2.xml.internal.alt.AltEnum;
 
 /**
  * @author jwells
  *
  */
-@Hk2XmlPreGenerate
-@XmlRootElement(name="simple-bean")
-public interface SimpleBean {
-    @XmlElement
-    public String getName();
-    public void setName(String name);
+public class StringAltEnumImpl implements AltEnum {
+    private final String declaringClass;
+    private final String name;
     
-    @XmlElement(name="bagel-type")
-    @EverythingBagel(byteValue = 13,
-        booleanValue=true,
-        charValue = 'e',
-        shortValue = 13,
-        intValue = 13,
-        longValue = 13L,
-        floatValue = (float) 13.00,
-        doubleValue = 13.00,
-        enumValue = GreekEnum.BETA,
-        stringValue = "13",
-        classValue = PreCompiledRoot.class,
+    public StringAltEnumImpl(String declaringClass, String name) {
+        this.declaringClass = declaringClass;
+        this.name = name;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.internal.alt.AltEnum#getDeclaringClass()
+     */
+    @Override
+    public String getDeclaringClass() {
+        return declaringClass;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.internal.alt.AltEnum#getName()
+     */
+    @Override
+    public String getName() {
+        return name;
+    }
     
-        byteArrayValue = { 13, 14 },
-        booleanArrayValue = { true, false },
-        charArrayValue = { 'e', 'E' },
-        shortArrayValue = { 13, 14 },
-        intArrayValue = { 13, 14 },
-        longArrayValue = { 13L, 14L },
-        floatArrayValue = { (float) 13.00, (float) 14,00 },
-        doubleArrayValue = { 13.00, 14.00 },
-        enumArrayValue = { GreekEnum.GAMMA, GreekEnum.ALPHA },
-        stringArrayValue = { "13", "14" },
-        classArrayValue = { String.class, double.class })
-    public int getBagelPreference();
-    public void setBagelPreference(int bagelType);
+    @Override
+    public String toString() {
+        return "StringAltEnumImpl(" + declaringClass + "," + name + "," + System.identityHashCode(this) + ")";
+    }
 
 }
