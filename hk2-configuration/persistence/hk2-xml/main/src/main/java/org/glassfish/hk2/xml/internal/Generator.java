@@ -79,6 +79,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.Logger;
+import org.glassfish.hk2.xml.api.annotations.Customize;
 import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
 import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
 import org.glassfish.hk2.xml.internal.alt.AltAnnotation;
@@ -745,20 +746,24 @@ public class Generator {
     }
     
     /* package */ static MethodInformation getMethodInformation(AltMethod m, NameInformation xmlNameMap) {
-        String setterVariable = isSetter(m);
+        boolean isCustom = isSpecifiedCustom(m);
+        String setterVariable = null;
         String getterVariable = null;
         String lookupVariable = null;
         String addVariable = null;
         String removeVariable = null;
         
-        if (setterVariable == null) {
-            getterVariable = isGetter(m);
-            if (getterVariable == null) {
-                lookupVariable = isLookup(m);
-                if (lookupVariable == null) {
-                    addVariable = isAdd(m);
-                    if (addVariable == null) {
-                        removeVariable = isRemove(m);
+        if (!isCustom) {
+            setterVariable = isSetter(m);
+            if (setterVariable == null) {
+                getterVariable = isGetter(m);
+                if (getterVariable == null) {
+                    lookupVariable = isLookup(m);
+                    if (lookupVariable == null) {
+                        addVariable = isAdd(m);
+                        if (addVariable == null) {
+                            removeVariable = isRemove(m);
+                        }
                     }
                 }
             }
@@ -940,6 +945,12 @@ public class Generator {
         }
         
         return null;
+    }
+    
+    private static boolean isSpecifiedCustom(AltMethod method) {
+        AltAnnotation customAnnotation = method.getAnnotation(Customize.class.getName());
+        return (customAnnotation != null);
+        
     }
     
     private static String isSetter(AltMethod method) {

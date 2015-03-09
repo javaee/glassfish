@@ -112,8 +112,8 @@ public class CustomizerTest {
         Assert.assertEquals(2, varSize);
         
         Assert.assertFalse(customizer.getFauxAddCalled());
-        // museum.addListener(null);
-        // Assert.assertTrue(customizer.getFauxAddCalled());
+        museum.addListener(null);
+        Assert.assertTrue(customizer.getFauxAddCalled());
     }
 
 }

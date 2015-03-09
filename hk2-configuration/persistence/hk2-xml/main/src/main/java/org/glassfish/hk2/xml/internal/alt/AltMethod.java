@@ -76,6 +76,13 @@ public interface AltMethod {
     
     public AltClass getFirstTypeArgumentOfParameter(int index);
     
+    /**
+     * Returns the annotation if found on the method, or
+     * null if not found
+     * 
+     * @param annotation
+     * @return
+     */
     public AltAnnotation getAnnotation(String annotation);
     
     public List<AltAnnotation> getAnnotations();
