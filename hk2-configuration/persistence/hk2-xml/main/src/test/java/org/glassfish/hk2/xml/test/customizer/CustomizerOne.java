@@ -54,6 +54,7 @@ public class CustomizerOne {
     private MuseumBean customized;
     
     private boolean customizer2Called = false;
+    private boolean fauxAddCalled = false;
     
     public String customizer1(String prefix, String postfix) {
         return prefix + customized.getName() + postfix;
@@ -101,4 +102,11 @@ public class CustomizerOne {
         return var.length;
     }
 
+    public void addListener(BeanListener listener) {
+        fauxAddCalled = true;
+    }
+    
+    public boolean getFauxAddCalled() {
+        return fauxAddCalled;
+    }
 }
