@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
@@ -419,7 +420,14 @@ public class Generator {
                 Logger.getLogger().debug("Adding method for " + convertMe.getSimpleName() + " with implementation " + sb);
             }
             
-            CtMethod addMeCtMethod = CtNewMethod.make(sb.toString(), targetCtClass);
+            CtMethod addMeCtMethod;
+            try {
+                addMeCtMethod = CtNewMethod.make(sb.toString(), targetCtClass);
+            }
+            catch (CannotCompileException cce) {
+                throw new AssertionError("Cannot compile method with source " + sb.toString(), cce);
+                
+            }
             if (wrapper.isVarArgs()) {
                 addMeCtMethod.setModifiers(addMeCtMethod.getModifiers() | Modifier.VARARGS);
             }

@@ -210,9 +210,7 @@ public class TypeElementAltClassImpl implements AltClass {
      */
     @Override
     public boolean isArray() {
-        TypeMirror mirror = clazz.asType();
-        
-        return TypeKind.ARRAY.equals(mirror.getKind());
+        return false;
     }
 
     /* (non-Javadoc)
@@ -220,7 +218,7 @@ public class TypeElementAltClassImpl implements AltClass {
      */
     @Override
     public AltClass getComponentType() {
-        throw new AssertionError("TypeElementClassImpl.getComponentType not yet implemented");
+        return null;
     }
 
     @Override

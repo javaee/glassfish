@@ -42,11 +42,14 @@ package org.glassfish.hk2.xml.internal;
 import java.lang.reflect.Constructor;
 
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Types;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.glassfish.hk2.api.DynamicConfiguration;
@@ -57,6 +60,7 @@ import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.xml.internal.alt.AltClass;
 import org.glassfish.hk2.xml.internal.alt.clazz.ClassAltClassImpl;
+import org.glassfish.hk2.xml.internal.alt.papi.ArrayTypeAltClassImpl;
 import org.glassfish.hk2.xml.internal.alt.papi.TypeElementAltClassImpl;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 
@@ -185,21 +189,6 @@ public class Utilities {
         return JAUtilities.SET + getterName.substring(JAUtilities.GET.length());
     }
     
-    /* package */ static String getCompilableClass(Class<?> clazz) {
-        int depth = 0;
-        while (clazz.isArray()) {
-            depth++;
-            clazz = clazz.getComponentType();
-        }
-        
-        StringBuffer sb = new StringBuffer(clazz.getName());
-        for (int lcv = 0; lcv < depth; lcv++) {
-            sb.append("[]");
-        }
-        
-        return sb.toString();
-    }
-    
     /**
      * Converts the Name from the Element to a String
      * @param name
@@ -247,9 +236,10 @@ public class Utilities {
             
             return addMe;
         }
-        
         if (TypeKind.ARRAY.equals(typeMirror.getKind())) {
-            throw new AssertionError("Array parameters not yet implemented");
+            ArrayType at = (ArrayType) typeMirror;
+            
+            return new ArrayTypeAltClassImpl(at, processingEnv);
         }
         
         throw new AssertionError("Unknown parameter kind: " + typeMirror.getKind());

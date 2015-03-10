@@ -130,7 +130,7 @@ public class PreCompiledTest {
     public void testSimple() throws Exception {
         Assert.assertNotNull(getAssociatedClass(SimpleBean.class));
         
-        ServiceLocator locator = Utilities.createLocator();
+        ServiceLocator locator = Utilities.createLocator(SimpleBeanCustomizer.class);
         XmlService xmlService = locator.getService(XmlService.class);
         
         URL url = getClass().getClassLoader().getResource(SIMPLE_FILE);
@@ -173,6 +173,21 @@ public class PreCompiledTest {
         
         Assert.assertEquals(0, Double.compare(13.00, bagel.doubleArrayValue()[0]));
         Assert.assertEquals(0, Double.compare(14.00, bagel.doubleArrayValue()[1]));
+        
+        // Make sure Customizer is called when appropriate
+        SimpleBeanCustomizer customizer = locator.getService(SimpleBeanCustomizer.class);
+        
+        Assert.assertFalse(customizer.getCustomizer12Called());
+        Assert.assertEquals(13, root.customizer12(false, 13, 13L, (float) 13.00,
+                13.00, (byte) 13, (short) 13, 'e', 1, 2, 3));
+        Assert.assertTrue(customizer.getCustomizer12Called());
+        
+        Assert.assertFalse(customizer.getListenerCustomizerCalled());
+        root.addListener(null, null, null, null, null, null, null);
+        Assert.assertFalse(customizer.getListenerCustomizerCalled()); // because first item was null
+        
+        root.addListener(new boolean[] { true, false, true }, null, null, null, null, null, null);
+        Assert.assertTrue(customizer.getListenerCustomizerCalled()); // because first item was not null
     }
 
 }

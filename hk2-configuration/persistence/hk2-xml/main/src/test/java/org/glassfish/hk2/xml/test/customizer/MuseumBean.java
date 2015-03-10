@@ -83,6 +83,8 @@ public interface MuseumBean {
     
     public int customizer12(boolean z, int i, long j, float f, double d, byte b, short s, char c, int[]... var);
     
+    public String[] toUpper(String[] strings);
+    
     @Customize
     public void addListener(BeanListener listener);
 

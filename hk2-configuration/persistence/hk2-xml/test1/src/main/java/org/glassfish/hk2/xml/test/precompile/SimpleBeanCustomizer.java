@@ -37,89 +37,36 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test.customizer;
+package org.glassfish.hk2.xml.test.precompile;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import org.jvnet.hk2.annotations.Contract;
+import org.jvnet.hk2.annotations.Service;
 
 /**
  * @author jwells
  *
  */
-@Contract @Singleton
-public class CustomizerOne {
-    @Inject
-    private MuseumBean customized;
+@Service
+public class SimpleBeanCustomizer {
+    private boolean customizer12Called = false;
+    private boolean listenerCustomizerCalled = false;
     
-    private boolean customizer2Called = false;
-    private boolean fauxAddCalled = false;
-    
-    public String customizer1(String prefix, String postfix) {
-        return prefix + customized.getName() + postfix;
+    public int customizer12(boolean z, int i, long j, float f, double d, byte b, short s, char c, int... var) {
+        customizer12Called = true;
+        return 13;
     }
     
-    public void customizer2() {
-        customizer2Called = true;
-    }
-    
-    public boolean getCustomizer2Called() {
-        return customizer2Called;
-    }
-    
-    public long[] customizer3(String[][] anArray) {
-        return new long[0];
-    }
-    
-    public boolean customizer4() {
-        return CustomizerTest.C4;
-    }
-    public int customizer5(){
-        return CustomizerTest.C5;
-    }
-    public long customizer6(){
-        return CustomizerTest.C6;
-    }
-    public float customizer7(){
-        return CustomizerTest.C7;
-    }
-    public double customizer8(){
-        return CustomizerTest.C8;
-    }
-    
-    public byte customizer9(){
-        return CustomizerTest.C9;
-    }
-    public short customizer10(){
-        return CustomizerTest.C10;
-    }
-    public char customizer11(){
-        return CustomizerTest.C11;
-    }
-    
-    public int customizer12(boolean z, int i, long j, float f, double d, byte b, short s, char c, int[]... var) {
-        return var.length;
-    }
-    
-    public String[] toUpper(String lowers[]) {
-        if (lowers == null) return null;
-        
-        String[] retVal = new String[lowers.length];
-        
-        int lcv = 0;
-        for (String lower : lowers) {
-            retVal[lcv++] = lower.toUpperCase();
+    public void addListener(boolean[] z, byte[] b, char[] c, short[] s, int[] i, long[]j, String[] l) {
+        if (z != null) {
+            listenerCustomizerCalled = true;
         }
-        
-        return retVal;
+    }
+    
+    public boolean getCustomizer12Called() {
+        return customizer12Called;
+    }
+    
+    public boolean getListenerCustomizerCalled() {
+        return listenerCustomizerCalled;
     }
 
-    public void addListener(BeanListener listener) {
-        fauxAddCalled = true;
-    }
-    
-    public boolean getFauxAddCalled() {
-        return fauxAddCalled;
-    }
 }

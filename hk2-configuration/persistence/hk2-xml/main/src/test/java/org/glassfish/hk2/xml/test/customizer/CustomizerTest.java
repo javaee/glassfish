@@ -114,6 +114,11 @@ public class CustomizerTest {
         Assert.assertFalse(customizer.getFauxAddCalled());
         museum.addListener(null);
         Assert.assertTrue(customizer.getFauxAddCalled());
+        
+        String[] uppers = museum.toUpper(new String[] { "Go", "Eagles" });
+        Assert.assertEquals("GO", uppers[0]);
+        Assert.assertEquals("EAGLES", uppers[1]);
+        Assert.assertEquals(2, uppers.length);
     }
 
 }

@@ -42,6 +42,8 @@ package org.glassfish.hk2.xml.test.precompile;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.glassfish.hk2.xml.api.annotations.Customize;
+import org.glassfish.hk2.xml.api.annotations.Customizer;
 import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
 import org.glassfish.hk2.xml.test.precompile.anno.EverythingBagel;
 import org.glassfish.hk2.xml.test.precompile.anno.GreekEnum;
@@ -52,6 +54,7 @@ import org.glassfish.hk2.xml.test.precompile.anno.GreekEnum;
  */
 @Hk2XmlPreGenerate
 @XmlRootElement(name="simple-bean")
+@Customizer(SimpleBeanCustomizer.class)
 public interface SimpleBean {
     @XmlElement
     public String getName();
@@ -83,5 +86,9 @@ public interface SimpleBean {
         classArrayValue = { String.class, double.class })
     public int getBagelPreference();
     public void setBagelPreference(int bagelType);
-
+    
+    public int customizer12(boolean z, int i, long j, float f, double d, byte b, short s, char c, int... var);
+    
+    @Customize
+    public void addListener(boolean[] z, byte[] b, char[] c, short[] s, int[] i, long[]j, String[] l);
 }
