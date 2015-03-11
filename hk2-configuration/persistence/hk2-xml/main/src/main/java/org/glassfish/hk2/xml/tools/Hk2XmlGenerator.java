@@ -46,12 +46,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 
-import javassist.ClassPath;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.NotFoundException;
@@ -67,10 +63,8 @@ import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic.Kind;
 import javax.tools.JavaFileObject;
 
-import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.xml.internal.Generator;
 import org.glassfish.hk2.xml.internal.alt.papi.TypeElementAltClassImpl;
-import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 
 /**
  * @author jwells
