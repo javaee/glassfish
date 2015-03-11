@@ -78,6 +78,7 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.xml.api.annotations.Customize;
@@ -425,8 +426,9 @@ public class Generator {
                 addMeCtMethod = CtNewMethod.make(sb.toString(), targetCtClass);
             }
             catch (CannotCompileException cce) {
-                throw new AssertionError("Cannot compile method with source " + sb.toString(), cce);
-                
+                MultiException me = new MultiException(cce);
+                me.addError(new AssertionError("Cannot compile method with source " + sb.toString()));
+                throw me;
             }
             if (wrapper.isVarArgs()) {
                 addMeCtMethod.setModifiers(addMeCtMethod.getModifiers() | Modifier.VARARGS);
