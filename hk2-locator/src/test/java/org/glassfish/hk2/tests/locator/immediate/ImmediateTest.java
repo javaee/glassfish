@@ -351,6 +351,37 @@ public class ImmediateTest {
         Assert.assertEquals(1, service.getNumCreations());
     }
     
+    /**
+     * Tests that an immediate service that is running after its associated
+     * service locator has died will not send spurious messages in the
+     * output
+     * 
+     * @throws InterruptedException 
+     */
+    @Test
+    public void testImmediateServiceStillGoingAfterLocatorShutdown() throws InterruptedException {
+        ServiceLocator locator = LocatorHelper.getServiceLocator(
+                LongTimePostConstructImmediateService.class,
+                EmptyImmediateServiceOne.class,
+                ImmediateErrorHandlerImpl.class);
+        ServiceLocatorUtilities.enableImmediateScope(locator);
+        
+        ImmediateErrorHandlerImpl errorHandler = locator.getService(ImmediateErrorHandlerImpl.class);
+        
+        LongTimePostConstructImmediateService.waitUntilRunning();
+        
+        locator.shutdown();
+        
+        LongTimePostConstructImmediateService.release();
+        
+        List<ErrorData> errorData = errorHandler.waitForAtLeastOneConstructionError(20 * 1000);
+        Assert.assertEquals(1, errorData.size());
+        
+        Throwable th = errorData.get(0).getThrowable();
+        Assert.assertTrue(th instanceof IllegalStateException);
+        Assert.assertTrue(th.getMessage().contains(locator.getName()));
+    }
+    
     private final static Object sLock = new Object();
     private static long immediateTid = -1;
     

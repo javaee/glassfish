@@ -39,8 +39,10 @@
  */
 package org.glassfish.hk2.internal;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
@@ -327,7 +329,14 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
     }
     
     private List<ActiveDescriptor<?>> getImmediateServices() {
-        List<ActiveDescriptor<?>> inScopeAndInThisLocator = locator.getDescriptors(validationFilter);
+        List<ActiveDescriptor<?>> inScopeAndInThisLocator;
+        try {
+            inScopeAndInThisLocator = locator.getDescriptors(validationFilter);
+        }
+        catch (IllegalStateException ise) {
+            // locator has been shutdown
+            inScopeAndInThisLocator = Collections.emptyList();
+        }
         
         return inScopeAndInThisLocator;
     }
@@ -395,11 +404,18 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
     private void doWork() {
         List<ActiveDescriptor<?>> inScopeAndInThisLocator = getImmediateServices();
         
-        List<ImmediateErrorHandler> errorHandlers = locator.getAllServices(ImmediateErrorHandler.class);
+        List<ImmediateErrorHandler> errorHandlers;
+        try {
+            errorHandlers = locator.getAllServices(ImmediateErrorHandler.class);
+        }
+        catch (IllegalStateException ise) {
+            // Locator has been shut down
+            return;
+        }
         
-        HashSet<ActiveDescriptor<?>> oldSet;
-        HashSet<ActiveDescriptor<?>> newFullSet = new HashSet<ActiveDescriptor<?>>(inScopeAndInThisLocator);
-        HashSet<ActiveDescriptor<?>> addMe = new HashSet<ActiveDescriptor<?>>();
+        LinkedHashSet<ActiveDescriptor<?>> oldSet;
+        LinkedHashSet<ActiveDescriptor<?>> newFullSet = new LinkedHashSet<ActiveDescriptor<?>>(inScopeAndInThisLocator);
+        LinkedHashSet<ActiveDescriptor<?>> addMe = new LinkedHashSet<ActiveDescriptor<?>>();
         
         synchronized (this) {
             // First thing to do is wait until all the things in-flight have gone
@@ -412,7 +428,7 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
                 }
             }
             
-            oldSet = new HashSet<ActiveDescriptor<?>>(currentImmediateServices.keySet());
+            oldSet = new LinkedHashSet<ActiveDescriptor<?>>(currentImmediateServices.keySet());
             
             for (ActiveDescriptor<?> ad : inScopeAndInThisLocator) {
                 if (!oldSet.contains(ad)) {
