@@ -139,7 +139,7 @@ public class XmlServiceImpl implements XmlService {
         T root = (T) unmarshaller.unmarshal(uri.toURL());
         
         DynamicChangeInfo changeControl = new DynamicChangeInfo(jaUtilities,
-                hub,
+                ((advertiseInHub) ? hub : null),
                 this,
                 ((advertise) ? dynamicConfigurationService : null),
                 serviceLocator);

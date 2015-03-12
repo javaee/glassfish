@@ -142,7 +142,7 @@ public class AddsTest {
      * Tests that we can add to an existing tree with just a basic add (no copy or overlay) not in Hub
      * @throws Exception
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testAddToExistingTreeNoHub() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -177,7 +177,7 @@ public class AddsTest {
      * or Hub
      * @throws Exception
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testAddToExistingTreeNoHk2ServiceOrHub() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
