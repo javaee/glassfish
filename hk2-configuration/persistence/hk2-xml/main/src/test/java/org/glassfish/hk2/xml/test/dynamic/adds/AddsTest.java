@@ -98,6 +98,30 @@ public class AddsTest {
         Assert.assertNull(root.getCompanyName());
     }
     
+    private void addToExistingTree(ServiceLocator locator, Hub hub, XmlRootHandle<Employees> rootHandle, boolean inRegistry, boolean inHub) {
+        Employees employees = rootHandle.getRoot();
+        
+        employees.addEmployees(DAVE);
+        
+        Employee daveDirect = employees.lookupEmployees(DAVE);
+        Assert.assertNotNull(daveDirect);
+        
+        if (inRegistry) {
+            Employee daveService = locator.getService(Employee.class, DAVE);
+            Assert.assertNotNull(daveService);
+        }
+        else {
+            Assert.assertNull(locator.getService(Employee.class, DAVE));
+        }
+        
+        if (inHub) {
+            Assert.assertNotNull(hub.getCurrentDatabase().getInstance(EMPLOYEE_TYPE, DAVE_INSTANCE));
+        }
+        else {
+            Assert.assertNull(hub.getCurrentDatabase().getInstance(EMPLOYEE_TYPE, DAVE_INSTANCE));
+        }
+    }
+    
     /**
      * Tests that we can add to an existing tree with just a basic add (no copy or overlay)
      */
@@ -110,18 +134,63 @@ public class AddsTest {
         URL url = getClass().getClassLoader().getResource(UnmarshallTest.ACME1_FILE);
         
         XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
-        Employees employees = rootHandle.getRoot();
         
-        employees.addEmployees(DAVE);
-        
-        Employee daveDirect = employees.lookupEmployees(DAVE);
-        Assert.assertNotNull(daveDirect);
-        
-        Employee daveService = locator.getService(Employee.class, DAVE);
-        Assert.assertNotNull(daveService);
-        
-        Assert.assertNotNull(hub.getCurrentDatabase().getInstance(EMPLOYEE_TYPE, DAVE_INSTANCE));
+        addToExistingTree(locator, hub, rootHandle, true, true);
     }
+    
+    /**
+     * Tests that we can add to an existing tree with just a basic add (no copy or overlay) not in Hub
+     * @throws Exception
+     */
+    @Test @org.junit.Ignore
+    public void testAddToExistingTreeNoHub() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource(UnmarshallTest.ACME1_FILE);
+        
+        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class, true, false);
+        
+        addToExistingTree(locator, hub, rootHandle, true, false);
+    }
+    
+    /**
+     * Tests that we can add to an existing tree with just a basic add (no copy or overlay) not in ServiceLocator
+     * @throws Exception
+     */
+    @Test // @org.junit.Ignore
+    public void testAddToExistingTreeNoHk2Service() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource(UnmarshallTest.ACME1_FILE);
+        
+        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class, false, true);
+        
+        addToExistingTree(locator, hub, rootHandle, false, true);
+    }
+    
+    /**
+     * Tests that we can add to an existing tree with just a basic add (no copy or overlay) not in ServiceLocator
+     * or Hub
+     * @throws Exception
+     */
+    @Test @org.junit.Ignore
+    public void testAddToExistingTreeNoHk2ServiceOrHub() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource(UnmarshallTest.ACME1_FILE);
+        
+        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class, false, false);
+        
+        addToExistingTree(locator, hub, rootHandle, false, false);
+    }
+    
+    
     
     /**
      * Tests that we can add to an existing tree with just a basic add
