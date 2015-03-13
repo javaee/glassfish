@@ -49,6 +49,12 @@ import java.lang.annotation.Target;
 /**
  * This annotation is placed on interfaces that should
  * have their implementations pre-generated at build time
+ * <p>
+ * There is a restriction when using Hk2XmlPreGenerate that
+ * if a bean represents a child element with an array (as opposed
+ * to a List) then that child must also have Hk2XmlPreGenerate
+ * put on it (or the child must be from another module that
+ * has already been compiled)
  * 
  * @author jwells
  */

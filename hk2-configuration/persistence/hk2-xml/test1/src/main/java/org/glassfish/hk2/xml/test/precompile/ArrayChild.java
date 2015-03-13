@@ -39,39 +39,22 @@
  */
 package org.glassfish.hk2.xml.test.precompile;
 
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
-import org.glassfish.hk2.xml.test.precompile.anno.EverythingBagel;
-import org.glassfish.hk2.xml.test.precompile.anno.GreekEnum;
 
 /**
+ * This child does not have an index.  Since it is
+ * a child that is referenced via array by its parent
+ * it MUST be pre-compiled
+ * 
  * @author jwells
  *
  */
 @Hk2XmlPreGenerate
-@XmlRootElement(name="root")
-public interface PreCompiledRoot {
-    @XmlElement(name="pre-compiled-multi-child")
-    public List<PreCompiledMultiChild> getPreCompiledMultiChild();
-    
-    @XmlElement(name="multi-child")
-    public List<MultiChild> getMultiChild();
-    
-    @XmlElement(name="pre-compiled-direct-child")
-    public PreCompiledDirectChild getPreCompiledDirectChild();
-    
-    @XmlElement(name="direct-child")
-    public DirectChild getDirectChild();
-    
-    @XmlElement(name="pre-compiled-array-child")
-    public void setPreCompiledArrayChild(PreCompiledArrayChild children[]);
-    public PreCompiledArrayChild[] getPreCompiledArrayChild();
-    
-    @XmlElement(name="array-child")
-    public ArrayChild[] getArrayChild();
-    public void setArrayChild(ArrayChild children[]);
+public interface ArrayChild {
+    @XmlElement
+    public long getTime();
+    public void setTime(long time);
+
 }

@@ -64,6 +64,7 @@ public class PreCompiledTest {
     private final static String BOB = "Bob";
     private final static String CAROL = "Carol";
     private final static String DAVE = "Dave";
+    private final static String ENGLEBERT = "Englebert";
     
     private Class<?> getAssociatedClass(Class<?> forInterface) {
         ClassLoader loader = getClass().getClassLoader();
@@ -93,6 +94,8 @@ public class PreCompiledTest {
         Assert.assertNotNull(getAssociatedClass(PreCompiledRoot.class));
         Assert.assertNotNull(getAssociatedClass(PreCompiledMultiChild.class));
         Assert.assertNotNull(getAssociatedClass(PreCompiledDirectChild.class));
+        Assert.assertNotNull(getAssociatedClass(PreCompiledArrayChild.class));
+        Assert.assertNotNull(getAssociatedClass(ArrayChild.class));
         
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -118,6 +121,18 @@ public class PreCompiledTest {
         
         Assert.assertEquals(7001, root.getPreCompiledDirectChild().getPort());
         Assert.assertEquals("thirteen", root.getDirectChild().getIdentifier());
+        
+        PreCompiledArrayChild preCompiledArrayChildren[] = root.getPreCompiledArrayChild();
+        Assert.assertEquals(1, preCompiledArrayChildren.length);
+        
+        Assert.assertEquals(ENGLEBERT, preCompiledArrayChildren[0].getName());
+        Assert.assertEquals("foo", preCompiledArrayChildren[0].getAttribute());
+        
+        ArrayChild arrayChildren[] = root.getArrayChild();
+        Assert.assertEquals(2, arrayChildren.length);
+        
+        Assert.assertEquals(1011L, arrayChildren[0].getTime());
+        Assert.assertEquals(2022L, arrayChildren[1].getTime());
     }
     
     /**

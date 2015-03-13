@@ -41,12 +41,14 @@ package org.glassfish.hk2.xml.test.precompile;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
+
 /**
  * @author jwells
  *
  */
 public interface NamedBean {
-    @XmlElement
+    @XmlElement @XmlIdentifier
     public String getName();
 
 }

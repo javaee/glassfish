@@ -19,4 +19,14 @@
   <direct-child>
     <identifier>thirteen</identifier>
   </direct-child>
+  <pre-compiled-array-child attribute="foo">
+    <name>Englebert</name>
+  </pre-compiled-array-child>
+  
+  <array-child>
+    <time>1011</time>
+  </array-child>
+  <array-child>
+    <time>2022</time>
+  </array-child>
 </root>
