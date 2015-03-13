@@ -284,6 +284,14 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
         throw new AssertionError("removeRoot not implemented");
     }
     
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlRootHandle#getReadOnlyRoot(boolean)
+     */
+    @Override
+    public T getReadOnlyRoot(boolean representDefaults) {
+        throw new AssertionError("getReadOnlyRoot not implemented");
+    }
+    
     /* package */ DynamicChangeInfo getChangeInfo() {
         return changeControl;
     }
@@ -292,4 +300,6 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
     public String toString() {
         return "XmlRootHandleImpl(" + root + "," + rootNode + "," + rootURI + "," + System.identityHashCode(this) + ")";
     }
+
+    
 }

@@ -96,6 +96,27 @@ public interface XmlRootHandle<T> {
     public boolean isAdvertisedInHub();
     
     /**
+     * This method returns a read-only copy of the existing
+     * tree.  Any method that would change anything in this
+     * tree will fail.  Methods that are customized will also
+     * fail
+     * <p>
+     * If representsDefaults is true then getters for unset
+     * fields will return the default value.  If representsDefaults
+     * is false then getters for unset fields will return null
+     * (or 0 (and false) for scalars).  Setting representsDefault
+     * to false is useful if this tree is to be used to marshall
+     * back to XML, since JAXB will then not write the values back
+     * out to the file
+     * 
+     * @param representDefaults If true getters will return default values,
+     * if false getters will return null (or zero/false for scalars)
+     * @return A read-only copy of this xml tree or null if there is
+     * no current root for this handle
+     */
+    public T getReadOnlyRoot(boolean representDefaults);
+    
+    /**
      * Creates a copy of this tree that is not advertised.
      * Modifications can be made to this copy and then
      * merged back into the parent in a single transaction

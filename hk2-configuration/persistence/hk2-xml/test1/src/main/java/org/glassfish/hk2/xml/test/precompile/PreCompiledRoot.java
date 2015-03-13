@@ -67,6 +67,7 @@ public interface PreCompiledRoot {
     @XmlElement(name="direct-child")
     public DirectChild getDirectChild();
     
+    /*
     @XmlElement(name="pre-compiled-array-child")
     public void setPreCompiledArrayChild(PreCompiledArrayChild children[]);
     public PreCompiledArrayChild[] getPreCompiledArrayChild();
@@ -74,4 +75,5 @@ public interface PreCompiledRoot {
     @XmlElement(name="array-child")
     public ArrayChild[] getArrayChild();
     public void setArrayChild(ArrayChild children[]);
+    */
 }
