@@ -188,13 +188,7 @@ public class Generator {
         for (AltMethod wrapper : allMethods) {
             MethodInformation mi = getMethodInformation(wrapper, xmlNameMap);
             
-            AltClass fixer = getUltimateNonArrayClass(mi.getGetterSetterType());
-            if (fixer != null) {
-                String fixerClass = fixer.getName();
-                if (defaultClassPool.getOrNull(fixerClass) == null) {
-                    originalCtClass = defaultClassPool.makeInterface(fixerClass);
-                }
-            }
+            createInterfaceForAltClassIfNeeded(mi.getGetterSetterType(), defaultClassPool);
             
             if (DEBUG_METHODS) {
                 Logger.getLogger().debug("Analyzing method " + mi + " of " + convertMe.getSimpleName());
@@ -329,6 +323,8 @@ public class Generator {
                 
                 int lcv = 0;
                 for (AltClass paramType : paramTypes) {
+                    createInterfaceForAltClassIfNeeded(paramType, defaultClassPool);
+                    
                     if (lcv == 0) {
                         sb.append(getCompilableClass(paramType) + " arg" + lcv);
                     }
@@ -1094,6 +1090,16 @@ public class Generator {
         }
         
         return clazz;
+    }
+    
+    private static void createInterfaceForAltClassIfNeeded(AltClass toFix, ClassPool defaultClassPool) {
+        if (toFix == null) return;
+        toFix = getUltimateNonArrayClass(toFix);
+        
+        String fixerClass = toFix.getName();
+        if (defaultClassPool.getOrNull(fixerClass) == null) {
+            defaultClassPool.makeInterface(fixerClass);
+        }
     }
 
 }

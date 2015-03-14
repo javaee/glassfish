@@ -91,4 +91,18 @@ public interface SimpleBean {
     
     @Customize
     public void addListener(boolean[] z, byte[] b, char[] c, short[] s, int[] i, long[]j, String[] l);
+    
+    /**
+     * This customized method references an interface that is not a child
+     * 
+     * @param iFace An interface that is not a child
+     */
+    public void customizer13(BeanListenerInterface iFace);
+    
+    /**
+     * This customized method references a hard class that is not a child
+     * 
+     * @param clazz An class that is not a child
+     */
+    public int customizer14(WorkerClass clazz);
 }

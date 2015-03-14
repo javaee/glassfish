@@ -39,42 +39,14 @@
  */
 package org.glassfish.hk2.xml.test.precompile;
 
-import org.jvnet.hk2.annotations.Service;
-
 /**
  * @author jwells
  *
  */
-@Service
-public class SimpleBeanCustomizer {
-    private boolean customizer12Called = false;
-    private boolean listenerCustomizerCalled = false;
+public class WorkerClass {
     
-    public int customizer12(boolean z, int i, long j, float f, double d, byte b, short s, char c, int... var) {
-        customizer12Called = true;
-        return 13;
-    }
-    
-    public void addListener(boolean[] z, byte[] b, char[] c, short[] s, int[] i, long[]j, String[] l) {
-        if (z != null) {
-            listenerCustomizerCalled = true;
-        }
-    }
-    
-    public boolean getCustomizer12Called() {
-        return customizer12Called;
-    }
-    
-    public boolean getListenerCustomizerCalled() {
-        return listenerCustomizerCalled;
-    }
-    
-    public void customizer13(BeanListenerInterface iFace) {
-        iFace.doSomething();
-    }
-    
-    public int customizer14(WorkerClass clazz) {
-        return clazz.returnFourteen();
+    public int returnFourteen() {
+        return 14;
     }
 
 }

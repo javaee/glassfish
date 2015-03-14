@@ -203,6 +203,31 @@ public class PreCompiledTest {
         
         root.addListener(new boolean[] { true, false, true }, null, null, null, null, null, null);
         Assert.assertTrue(customizer.getListenerCustomizerCalled()); // because first item was not null
+        
+        BeanListenerInterfaceImpl interfaceArgument = new BeanListenerInterfaceImpl();
+        root.customizer13(interfaceArgument);
+        Assert.assertTrue(interfaceArgument.isCalled());
+        
+        WorkerClass worker = new WorkerClass();
+        root.customizer14(worker);
+        Assert.assertEquals(14, worker.returnFourteen());
+    }
+    
+    private static class BeanListenerInterfaceImpl implements BeanListenerInterface {
+        private boolean called;
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.xml.test.precompile.BeanListenerInterface#doSomething()
+         */
+        @Override
+        public void doSomething() {
+            called = true;
+        }
+        
+        private boolean isCalled() {
+            return called;
+        }
+        
     }
 
 }
