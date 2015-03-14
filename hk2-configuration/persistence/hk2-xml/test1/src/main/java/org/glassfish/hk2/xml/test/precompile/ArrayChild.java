@@ -41,17 +41,12 @@ package org.glassfish.hk2.xml.test.precompile;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
-
 /**
- * This child does not have an index.  Since it is
- * a child that is referenced via array by its parent
- * it MUST be pre-compiled
+ * This child does not have an index
  * 
  * @author jwells
  *
  */
-@Hk2XmlPreGenerate
 public interface ArrayChild {
     @XmlElement
     public long getTime();

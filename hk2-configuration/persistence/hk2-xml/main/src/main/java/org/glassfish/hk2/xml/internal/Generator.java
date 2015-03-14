@@ -188,7 +188,7 @@ public class Generator {
         for (AltMethod wrapper : allMethods) {
             MethodInformation mi = getMethodInformation(wrapper, xmlNameMap);
             
-            AltClass fixer = mi.getGetterSetterType();
+            AltClass fixer = getUltimateNonArrayClass(mi.getGetterSetterType());
             if (fixer != null) {
                 String fixerClass = fixer.getName();
                 if (defaultClassPool.getOrNull(fixerClass) == null) {
@@ -1084,6 +1084,16 @@ public class Generator {
         }
         
         return sb.toString();
+    }
+    
+    private static AltClass getUltimateNonArrayClass(AltClass clazz) {
+        if (clazz == null) return null;
+        
+        while (clazz.isArray()) {
+            clazz = clazz.getComponentType();
+        }
+        
+        return clazz;
     }
 
 }

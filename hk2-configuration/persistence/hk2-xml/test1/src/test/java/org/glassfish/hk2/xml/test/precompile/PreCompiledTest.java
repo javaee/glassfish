@@ -95,7 +95,7 @@ public class PreCompiledTest {
         Assert.assertNotNull(getAssociatedClass(PreCompiledMultiChild.class));
         Assert.assertNotNull(getAssociatedClass(PreCompiledDirectChild.class));
         Assert.assertNotNull(getAssociatedClass(PreCompiledArrayChild.class));
-        Assert.assertNotNull(getAssociatedClass(ArrayChild.class));
+        Assert.assertNull(getAssociatedClass(ArrayChild.class));
         
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -122,7 +122,6 @@ public class PreCompiledTest {
         Assert.assertEquals(7001, root.getPreCompiledDirectChild().getPort());
         Assert.assertEquals("thirteen", root.getDirectChild().getIdentifier());
         
-        /*
         PreCompiledArrayChild preCompiledArrayChildren[] = root.getPreCompiledArrayChild();
         Assert.assertEquals(1, preCompiledArrayChildren.length);
         
@@ -134,7 +133,6 @@ public class PreCompiledTest {
         
         Assert.assertEquals(1011L, arrayChildren[0].getTime());
         Assert.assertEquals(2022L, arrayChildren[1].getTime());
-        */
     }
     
     /**
