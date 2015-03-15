@@ -245,7 +245,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
                 config = parent.getDynamicConfigurationService().createDynamicConfiguration();
             }
             
-            BaseHK2JAXBBean copiedRoot = BaseHK2JAXBBean._addRoot(rootNode,
+            BaseHK2JAXBBean copiedRoot = Utilities._addRoot(rootNode,
                     newRoot,
                     changeControl,
                     parent.getClassReflectionHelper(),
