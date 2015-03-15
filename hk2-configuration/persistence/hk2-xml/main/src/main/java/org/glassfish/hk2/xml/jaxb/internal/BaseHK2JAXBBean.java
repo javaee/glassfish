@@ -805,11 +805,11 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
     }
     
     public Object _doRemove(String childProperty, String childKey, int index) {
-        throw new AssertionError("Add not yet implemented: childProperty=" + childProperty + " childKey=" + childKey + " index=" + index);
+        throw new AssertionError("Remove not yet implemented: childProperty=" + childProperty + " childKey=" + childKey + " index=" + index);
     }
     
     public boolean _doRemoveZ(String childProperty, String childKey, int index) {
-        throw new AssertionError("Add not yet implemented: childProperty=" + childProperty + " childKey=" + childKey + " index=" + index);
+        throw new AssertionError("Remove not yet implemented: childProperty=" + childProperty + " childKey=" + childKey + " index=" + index);
     }
 
     public boolean _hasProperty(String propName) {

@@ -306,7 +306,7 @@ public class Generator {
                     sb.append(") { return " + cast + function +
                             mi.getRepresentedProperty() + "\", null, -1); }");
                 }
-                else if (String.class.getName().equals(paramTypes.get(0))) {
+                else if (String.class.getName().equals(paramTypes.get(0).getName())) {
                     sb.append("java.lang.String arg0) { return " + cast  + function +
                             mi.getRepresentedProperty() + "\", arg0, -1); }");
                 }
