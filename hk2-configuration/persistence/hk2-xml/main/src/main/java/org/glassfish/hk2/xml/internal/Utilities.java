@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.xml.internal;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -381,7 +382,18 @@ public class Utilities {
         // Now modify the actual list
         if (multiChildren != null) {
             multiChildren.add(index, child);
-            List<Object> finalChildList = Collections.unmodifiableList(multiChildren);
+            
+            Object finalChildList;
+            if (ChildType.LIST.equals(childNode.getChildType())) {
+                finalChildList = Collections.unmodifiableList(multiChildren);
+            }
+            else {
+                // ARRAY
+                finalChildList = Array.newInstance(childNode.getChild().getOriginalInterface(), multiChildren.size());
+                for (int lcv = 0; lcv < multiChildren.size(); lcv++) {
+                    Array.set(finalChildList, lcv, multiChildren.get(lcv));
+                }
+            }
             
             if (writeableDatabase != null) {
                 myParent.changeInHub(childProperty, finalChildList, writeableDatabase);
@@ -409,26 +421,41 @@ public class Utilities {
             ParentedNode childsChildParentNode = childsChildrenEntry.getValue();
             
             if (!ChildType.DIRECT.equals(childsChildParentNode.getChildType())) {
-                List<BaseHK2JAXBBean> childsChildren;
+                List<BaseHK2JAXBBean> childsChildren = null;
                 if (ChildType.LIST.equals(childsChildParentNode.getChildType())) {
                     childsChildren = (List<BaseHK2JAXBBean>) childToCopy._getProperty(childsChildProperty);
                 }
                 else {
-                    childsChildren = Arrays.asList((BaseHK2JAXBBean[]) childToCopy._getProperty(childsChildProperty));
+                    Object arrayChildsChildren = childToCopy._getProperty(childsChildProperty);
+                    if (arrayChildsChildren != null) {
+                        // This object is an array
+                        childsChildren = new ArrayList<BaseHK2JAXBBean>(Array.getLength(arrayChildsChildren));
+                        for (int lcv = 0; lcv < Array.getLength(arrayChildsChildren); lcv++) {
+                            childsChildren.add(lcv, (BaseHK2JAXBBean) Array.get(arrayChildsChildren, lcv));
+                        }
+                    }
                 }
                 
                 if (childsChildren == null) continue;
                 if (childsChildren.size() <= 0) continue;
                 
                 ArrayList<BaseHK2JAXBBean> copiedChildArray = new ArrayList<BaseHK2JAXBBean>(childsChildren.size());
+                Object asArray = Array.newInstance(childsChildParentNode.getChild().getOriginalInterface(), childsChildren.size());
+                int lcv = 0;
                 for (BaseHK2JAXBBean childsChild : childsChildren) {
                     BaseHK2JAXBBean grandchild = internalAdd(child, childsChildProperty,
                             childsChild, null, -1, changeInformation, null, null);
                     
                     copiedChildArray.add(grandchild);
+                    Array.set(asArray, lcv++, grandchild);
                 }
                 
-                child._setProperty(childsChildProperty, copiedChildArray, false);
+                if (ChildType.LIST.equals(childsChildParentNode.getChildType())) {
+                    child._setProperty(childsChildProperty, copiedChildArray, false);
+                }
+                else {
+                    child._setProperty(childsChildProperty, asArray, false);
+                }
             }
             else {
                 BaseHK2JAXBBean childsChild = (BaseHK2JAXBBean) childToCopy._getProperty(childsChildProperty);
@@ -458,6 +485,14 @@ public class Utilities {
                     externalAdd(child, config, writeableDatabase);
                 }
             }
+            else if (keyedRawChild.getClass().isArray()) {
+                int aLength = Array.getLength(keyedRawChild);
+                for (int lcv = 0; lcv < aLength; lcv++) {
+                    BaseHK2JAXBBean child = (BaseHK2JAXBBean) Array.get(keyedRawChild, lcv);
+                    externalAdd(child, config, writeableDatabase);
+                }
+                
+            }
             else {
                 externalAdd((BaseHK2JAXBBean) keyedRawChild, config, writeableDatabase);
             }
@@ -470,6 +505,13 @@ public class Utilities {
             if (unkeyedRawChild instanceof Iterable) {
                 Iterable<BaseHK2JAXBBean> unkeyedMultiChildren = (Iterable<BaseHK2JAXBBean>) unkeyedRawChild;
                 for (BaseHK2JAXBBean child : unkeyedMultiChildren) {
+                    externalAdd(child, config, writeableDatabase);
+                }
+            }
+            else if (unkeyedRawChild.getClass().isArray()) {
+                int aLength = Array.getLength(unkeyedRawChild);
+                for (int lcv = 0; lcv < aLength; lcv++) {
+                    BaseHK2JAXBBean child = (BaseHK2JAXBBean) Array.get(unkeyedRawChild, lcv);
                     externalAdd(child, config, writeableDatabase);
                 }
             }

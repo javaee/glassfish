@@ -81,7 +81,7 @@ public class AddsArrayTest {
     /**
      * Tests that we can call createAndAdd successfully on a root with no required elements
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testCreateAndAdd() {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -196,7 +196,7 @@ public class AddsArrayTest {
      * Tests that we can add to an existing tree with just a basic add
      * with an unkeyed field
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testAddToExistingTreeUnKeyed() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -299,7 +299,7 @@ public class AddsArrayTest {
      * Creates an entire tree unassociated with a root then sets it as
      * the root
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testAddOneLevelComplexRoot() {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
