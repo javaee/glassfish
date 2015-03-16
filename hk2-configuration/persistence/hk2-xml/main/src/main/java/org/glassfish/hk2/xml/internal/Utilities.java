@@ -283,12 +283,12 @@ public class Utilities {
         
         Object allMyChildren = myParent._getProperty(childProperty);
         List<Object> multiChildren = null;
-        if (childNode.isMultiChildList() || childNode.isMultiChildArray()) {
+        if (!ChildType.DIRECT.equals(childNode.getChildType())) {
             if (allMyChildren == null) {
                 multiChildren = new ArrayList<Object>(10);
             }
             else {
-                if (childNode.isMultiChildList()) {
+                if (ChildType.LIST.equals(childNode.getChildType())) {
                     multiChildren = new ArrayList<Object>((List<Object>) allMyChildren);
                 }
                 else {
@@ -323,7 +323,7 @@ public class Utilities {
         }
         
         if (childKey == null) {
-            if (childNode.isMultiChildList() || childNode.isMultiChildArray()) {
+            if (!ChildType.DIRECT.equals(childNode.getChildType())) {
                 if (childNode.getChild().getKeyProperty() != null) {
                     if (rawChild != null) {
                         childKey = (String) child._getProperty(childNode.getChild().getKeyProperty());
@@ -361,7 +361,7 @@ public class Utilities {
         child._setParent(myParent);
         child._setSelfXmlTag(childNode.getChildName());
         child._setKeyValue(childKey);
-        if (childNode.isMultiChildList() || childNode.isMultiChildArray()) {
+        if (!ChildType.DIRECT.equals(childNode.getChildType())) {
             child._setInstanceName(myParent._getInstanceName() + Utilities.INSTANCE_PATH_SEPARATOR + child._getKeyValue());
         }
         else {
@@ -408,9 +408,9 @@ public class Utilities {
             String childsChildProperty = childsChildrenEntry.getKey();
             ParentedNode childsChildParentNode = childsChildrenEntry.getValue();
             
-            if (childsChildParentNode.isMultiChildList() || childsChildParentNode.isMultiChildArray()) {
+            if (!ChildType.DIRECT.equals(childsChildParentNode.getChildType())) {
                 List<BaseHK2JAXBBean> childsChildren;
-                if (childsChildParentNode.isMultiChildList()) {
+                if (ChildType.LIST.equals(childsChildParentNode.getChildType())) {
                     childsChildren = (List<BaseHK2JAXBBean>) childToCopy._getProperty(childsChildProperty);
                 }
                 else {

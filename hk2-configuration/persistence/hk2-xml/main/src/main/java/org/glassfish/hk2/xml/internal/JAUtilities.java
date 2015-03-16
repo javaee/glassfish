@@ -234,7 +234,7 @@ public class JAUtilities {
                 if (childType != null) {
                     childTypes.put(childType.getOriginalInterface(), mi.getRepresentedProperty());
                         
-                    retVal.addChild(mi.getRepresentedProperty(), mi.isList(), mi.isArray(), childType);
+                    retVal.addChild(mi.getRepresentedProperty(), getChildType(mi.isList(), mi.isArray()), childType);
                 }
                 else {
                     Class<?> expectedType = null;
@@ -252,6 +252,12 @@ public class JAUtilities {
         proxy2NodeCache.put(proxy, retVal);
             
         return retVal;
+    }
+    
+    private static ChildType getChildType(boolean isList, boolean isArray) {
+        if (isList) return ChildType.LIST;
+        if (isArray) return ChildType.ARRAY;
+        return ChildType.DIRECT;
     }
     
     private static void getAllToConvert(Class<?> toBeConverted,

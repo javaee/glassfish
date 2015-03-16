@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,58 +39,20 @@
  */
 package org.glassfish.hk2.xml.internal;
 
-import java.io.Serializable;
-
 /**
- * A node with information about the parent, which is therefor
- * specific to a place in a tree
+ * Indicates the type of child, whether that child be
+ * direct, or indicated with a List, or indicated with
+ * an array
  * 
  * @author jwells
  *
  */
-public class ParentedNode implements Serializable {
-    private static final long serialVersionUID = 7004413497291650707L;
-    
-    private String childName;
-    private ChildType childType;
-    private UnparentedNode child;
-    
-    public ParentedNode() {
-    }
-    
-    public ParentedNode(String childName, ChildType childType, UnparentedNode child) {
-        this.childName = childName;
-        this.childType = childType;
-        this.child = child;
-    }
-    
-    public String getChildName() {
-        return childName;
-    }
-    
-    public UnparentedNode getChild() {
-        return child;
-    }
-    
-    public ChildType getChildType() {
-        return childType;
-    }
-    
-    /**
-     * This is used when there are bean cycles.  If
-     * the original child had not yet been processed
-     * a placeholder was used, this method is used
-     * to replace the placeholder with the real thing
-     * 
-     * @param child A non-placeholder child
-     */
-    public void setChild(UnparentedNode child) {
-        this.child = child;
-    }
-    
-    @Override
-    public String toString() {
-        return "ParentedNode(" + childName + "," + child + "," + System.identityHashCode(this) + ")";
-    }
+public enum ChildType {
+    /** Single child, directly placed on the parent */
+    DIRECT,
+    /** A set of children represented by a {@link java.util.List} */
+    LIST,
+    /** A set of children represented by an array */
+    ARRAY
 
 }
