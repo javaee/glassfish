@@ -52,6 +52,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
@@ -98,9 +99,11 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
     
     /**
      * All children whose type has an identifier.  First key is the xml parameter name, second
-     * key is the identifier of the specific child.  Used in lookup operations
+     * key is the identifier of the specific child.  Used in lookup operations.  Works
+     * as a cache, may not be completely accurate and must be flushed on remove
+     * operations
      */
-    private final Map<String, Map<String, BaseHK2JAXBBean>> children = new HashMap<String, Map<String, BaseHK2JAXBBean>>();
+    private final Map<String, Map<String, BaseHK2JAXBBean>> keyedChildrenCache = new HashMap<String, Map<String, BaseHK2JAXBBean>>();
     
     /** The model for this, including lists of all children property names */
     private UnparentedNode model;
@@ -132,13 +135,22 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
     private volatile transient DynamicChangeInfo changeControl;
     
     /**
+     * The descriptor that this bean is advertised with
+     */
+    private transient ActiveDescriptor<?> selfDescriptor;
+    
+    /**
      * For JAXB and Serialization
      */
     public BaseHK2JAXBBean() {
     }
     
-    @SuppressWarnings("unchecked")
     public void _setProperty(String propName, Object propValue) {
+        _setProperty(propName, propValue, true);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public void _setProperty(String propName, Object propValue, boolean changeInHub) {
         if (propName == null) throw new IllegalArgumentException("properyName may not be null");
         
         if (DEBUG_GETS_AND_SETS) {
@@ -162,7 +174,9 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         else {
             changeControl.getWriteLock().lock();
             try {
-                changeInHub(propName, propValue);
+                if (changeInHub) {
+                    changeInHub(propName, propValue);
+                }
                 
                 beanLikeMap.put(propName, propValue);
             }
@@ -353,11 +367,10 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         // First look in the cache
         Object retVal = null;
         
-        Map<String, BaseHK2JAXBBean> byName = children.get(propName);
+        Map<String, BaseHK2JAXBBean> byName = keyedChildrenCache.get(propName);
         if (byName != null) {
             retVal = byName.get(keyValue);
         }
-        
         
         if (retVal != null) {
             // Found it in cache!
@@ -375,7 +388,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
                     if (byName == null) {
                         byName = new HashMap<String, BaseHK2JAXBBean>();
                         
-                        children.put(propName, byName);
+                        keyedChildrenCache.put(propName, byName);
                     }
                     
                     byName.put(keyValue, child);
@@ -394,7 +407,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
                     if (byName == null) {
                         byName = new HashMap<String, BaseHK2JAXBBean>();
                         
-                        children.put(propName, byName);
+                        keyedChildrenCache.put(propName, byName);
                     }
                     
                     byName.put(keyValue, child);
@@ -659,10 +672,6 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         this.classReflectionHelper = helper;
     }
     
-    public UnparentedNode _getModel() {
-        return model;
-    }
-    
     @Override
     public String _getKeyValue() {
         return keyValue;
@@ -702,7 +711,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
      * @return The set of all children tags
      */
     public Set<String> _getChildrenXmlTags() {
-        HashSet<String> retVal = new HashSet<String>(children.keySet());
+        HashSet<String> retVal = new HashSet<String>(keyedChildrenCache.keySet());
         retVal.addAll(model.getUnKeyedChildren());
         
         return retVal;
@@ -728,7 +737,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         for (Map.Entry<String, Object> entrySet : copyMe.beanLikeMap.entrySet()) {
             String xmlTag = entrySet.getKey();
             
-            if (copyMe.children.containsKey(xmlTag) || copyMe.model.getUnKeyedChildren().contains(xmlTag)) continue;
+            if (copyMe.keyedChildrenCache.containsKey(xmlTag) || copyMe.model.getUnKeyedChildren().contains(xmlTag)) continue;
             
             beanLikeMap.put(entrySet.getKey(), entrySet.getValue());
         }
@@ -816,7 +825,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
      * 
      * @return The model for this bean
      */
-    public UnparentedNode __getModel() {
+    public UnparentedNode _getModel() {
         return model;
     }
     
@@ -838,28 +847,12 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         return classReflectionHelper;
     }
     
-    /**
-     * Returns the raw child map for this bean
-     * Do not use this method without knowing
-     * the state of the lock
-     * 
-     * @return The raw set of children for use by
-     * utility methods
-     */
-    public Map<String, Map<String, BaseHK2JAXBBean>> __getChildren() {
-        return children;
+    public void _setSelfDescriptor(ActiveDescriptor<?> selfDescriptor) {
+        this.selfDescriptor = selfDescriptor;
     }
     
-    /**
-     * Returns the raw bean like map for this bean
-     * Do not use this method without knowing
-     * the state of the lock
-     * 
-     * @return The raw bean like map for use by
-     * utility methods
-     */
-    public ConcurrentHashMap<String, Object> __getBeanLikeMap() {
-        return beanLikeMap;
+    public ActiveDescriptor<?> _getSelfDescriptor() {
+        return selfDescriptor;
     }
     
     @Override

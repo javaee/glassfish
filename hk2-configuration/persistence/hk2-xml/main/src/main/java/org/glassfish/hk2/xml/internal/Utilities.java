@@ -43,7 +43,6 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -56,6 +55,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
@@ -168,7 +168,9 @@ public class Utilities {
             if (bean._getKeyValue() != null) {
                 cDesc.setName(bean._getKeyValue());
             }
-            config.addActiveDescriptor(cDesc);
+            ActiveDescriptor<?> selfDescriptor = config.addActiveDescriptor(cDesc);
+            
+            bean._setSelfDescriptor(selfDescriptor);
         }
         
         if (wbd != null) {
@@ -274,12 +276,12 @@ public class Utilities {
             throw new IllegalArgumentException("The child added must be from XmlService.createBean");
         }
         
-        ParentedNode childNode = myParent.__getModel().getChild(childProperty);
+        ParentedNode childNode = myParent._getModel().getChild(childProperty);
         if (childNode == null) {
             throw new IllegalArgumentException("There is no child with xmlTag " + childProperty + " of " + myParent);
         }
         
-        Object allMyChildren = myParent.__getBeanLikeMap().get(childProperty);
+        Object allMyChildren = myParent._getProperty(childProperty);
         List<Object> multiChildren = null;
         if (childNode.isMultiChildList() || childNode.isMultiChildArray()) {
             if (allMyChildren == null) {
@@ -306,15 +308,17 @@ public class Utilities {
             throw new IllegalStateException("Attempting to add direct child of " + myParent + " of name " + childProperty + " but there is already one there");
         }
         
-        BaseHK2JAXBBean child = Utilities.createBean(childNode.getChild().getTranslatedClass());
+        BaseHK2JAXBBean child = createBean(childNode.getChild().getTranslatedClass());
+        child._setModel(childNode.getChild(), myParent._getClassReflectionHelper());
+        
         if (rawChild != null) {
             // Handling of children will be handled once the real child is better setup
             BaseHK2JAXBBean childToCopy = (BaseHK2JAXBBean) rawChild;
-            for (String nonChildProperty : childToCopy.__getModel().getNonChildProperties()) {
+            for (String nonChildProperty : childToCopy._getModel().getNonChildProperties()) {
                 Object value = childToCopy._getProperty(nonChildProperty);
                 if (value == null) continue;
                 
-                child._setProperty(nonChildProperty, value);
+                child._setProperty(nonChildProperty, value, false);
             }
         }
         
@@ -350,11 +354,10 @@ public class Utilities {
                 throw new IllegalArgumentException("Attempted to add an unkeyed child with key " + childKey + " in " + myParent);
             }
                 
-            child._setProperty(childNode.getChild().getKeyProperty(), childKey);
+            child._setProperty(childNode.getChild().getKeyProperty(), childKey, false);
             child._setKeyValue(childKey);
         }
-            
-        child._setModel(childNode.getChild(), myParent._getClassReflectionHelper());
+        
         child._setParent(myParent);
         child._setSelfXmlTag(childNode.getChildName());
         child._setKeyValue(childKey);
@@ -384,24 +387,14 @@ public class Utilities {
                 myParent.changeInHub(childProperty, finalChildList, writeableDatabase);
             }
             
-            myParent.__getBeanLikeMap().put(childProperty, finalChildList);
-            
-            if (!myParent.__getModel().getUnKeyedChildren().contains(childProperty)) {
-                Map<String, BaseHK2JAXBBean> byKeyMap = myParent.__getChildren().get(childProperty);
-                if (byKeyMap == null) {
-                    byKeyMap = new HashMap<String, BaseHK2JAXBBean>();
-                    myParent.__getChildren().put(childProperty, byKeyMap);
-                }
-                
-                byKeyMap.put(child._getKeyValue(), child);
-            }
+            myParent._setProperty(childProperty, finalChildList, false);
         }
         else {
             if (writeableDatabase != null){
                 myParent.changeInHub(childProperty, child, writeableDatabase);
             }
             
-            myParent.__getBeanLikeMap().put(childProperty, child);
+            myParent._setProperty(childProperty, child, false);
         }
         
         return child;
@@ -409,7 +402,7 @@ public class Utilities {
     
     @SuppressWarnings("unchecked")
     private static void handleChildren(BaseHK2JAXBBean child, BaseHK2JAXBBean childToCopy, DynamicChangeInfo changeInformation) {
-        Map<String, ParentedNode> childrenMap = childToCopy.__getModel().getChildrenProperties();
+        Map<String, ParentedNode> childrenMap = childToCopy._getModel().getChildrenProperties();
         
         for (Map.Entry<String, ParentedNode> childsChildrenEntry : childrenMap.entrySet()) {
             String childsChildProperty = childsChildrenEntry.getKey();
@@ -435,7 +428,7 @@ public class Utilities {
                     copiedChildArray.add(grandchild);
                 }
                 
-                child._setProperty(childsChildProperty, copiedChildArray);
+                child._setProperty(childsChildProperty, copiedChildArray, false);
             }
             else {
                 BaseHK2JAXBBean childsChild = (BaseHK2JAXBBean) childToCopy._getProperty(childsChildProperty);
@@ -444,7 +437,7 @@ public class Utilities {
                 BaseHK2JAXBBean grandchild = internalAdd(child, childsChildProperty,
                         childsChild, null, -1, changeInformation, null, null);
                 
-                child._setProperty(childsChildProperty, grandchild);
+                child._setProperty(childsChildProperty, grandchild, false);
             }
         }
     }
@@ -455,18 +448,27 @@ public class Utilities {
         
         Utilities.advertise(writeableDatabase, config, root);
         
-        for (Map<String, BaseHK2JAXBBean> specificChildren : root.__getChildren().values()) {
-            for (BaseHK2JAXBBean child : specificChildren.values()) {
-                externalAdd(child, config, writeableDatabase);
+        for (String keyedChildProperty : root._getModel().getKeyedChildren()) {
+            Object keyedRawChild = root._getProperty(keyedChildProperty);
+            if (keyedRawChild == null) continue;
+            
+            if (keyedRawChild instanceof Iterable) {
+                Iterable<BaseHK2JAXBBean> iterable = (Iterable<BaseHK2JAXBBean>) keyedRawChild;
+                for (BaseHK2JAXBBean child : iterable) {
+                    externalAdd(child, config, writeableDatabase);
+                }
+            }
+            else {
+                externalAdd((BaseHK2JAXBBean) keyedRawChild, config, writeableDatabase);
             }
         }
         
-        for (String unkeyedChildProperty : root.__getModel().getUnKeyedChildren()) {
-            Object unkeyedRawChild = root.__getBeanLikeMap().get(unkeyedChildProperty);
+        for (String unkeyedChildProperty : root._getModel().getUnKeyedChildren()) {
+            Object unkeyedRawChild = root._getProperty(unkeyedChildProperty);
             if (unkeyedRawChild == null) continue;
             
-            if (unkeyedRawChild instanceof List) {
-                List<BaseHK2JAXBBean> unkeyedMultiChildren = (List<BaseHK2JAXBBean>) unkeyedRawChild;
+            if (unkeyedRawChild instanceof Iterable) {
+                Iterable<BaseHK2JAXBBean> unkeyedMultiChildren = (Iterable<BaseHK2JAXBBean>) unkeyedRawChild;
                 for (BaseHK2JAXBBean child : unkeyedMultiChildren) {
                     externalAdd(child, config, writeableDatabase);
                 }
@@ -489,21 +491,21 @@ public class Utilities {
         }
         
         BaseHK2JAXBBean child = Utilities.createBean(rootNode.getTranslatedClass());
+        child._setModel(rootNode, helper);
         
         // Handling of children will be handled once the real child is better setup
         BaseHK2JAXBBean childToCopy = (BaseHK2JAXBBean) rawRoot;
-        for (String nonChildProperty : childToCopy.__getModel().getNonChildProperties()) {
+        for (String nonChildProperty : childToCopy._getModel().getNonChildProperties()) {
             Object value = childToCopy._getProperty(nonChildProperty);
             if (value == null) continue;
             
-            child._setProperty(nonChildProperty, value);
+            child._setProperty(nonChildProperty, value, false);
         }
         
         if (rootNode.getKeyProperty() != null) {
             child._setKeyValue((String) child._getProperty(rootNode.getKeyProperty())); 
         }
-            
-        child._setModel(rootNode, helper);
+        
         child._setSelfXmlTag(rootNode.getRootName());
         child._setInstanceName(rootNode.getRootName());
         
@@ -536,6 +538,17 @@ public class Utilities {
             DynamicChangeInfo changeInformation,
             WriteableBeanDatabase writeableDatabase,
             DynamicConfiguration dynamicService) {
+        if (childProperty == null) return null;
+        
+        // BaseHK2JAXBBean rootForDeletion = null;
+        if (childKey != null) {
+            // Map<String, Map<String, BaseHK2JAXBBean>> children = myParent.__getChildren();
+
+            // Map<String, BaseHK2JAXBBean> byKey = children.get(childProperty);
+            
+            // rootForDeletion = null;
+        }
+        
         throw new AssertionError("Remove not yet implemented");
     }
     

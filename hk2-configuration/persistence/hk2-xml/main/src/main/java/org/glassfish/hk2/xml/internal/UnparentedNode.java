@@ -79,6 +79,7 @@ public class UnparentedNode implements Serializable {
     private final Map<String, ChildData> nonChildProperty = new HashMap<String, ChildData>();
     
     private Set<String> unKeyedChildren = null;
+    private Set<String> keyedChildren = null;
     
     /** If this node has a key, this is the property name of the key */
     private String keyProperty;
@@ -180,6 +181,21 @@ public class UnparentedNode implements Serializable {
             }
             
             return unKeyedChildren;
+        }
+    }
+    
+    public Set<String> getKeyedChildren() {
+        synchronized (lock) {
+            if (keyedChildren != null) return keyedChildren;
+            
+            keyedChildren = new HashSet<String>();
+            
+            for (Map.Entry<String, ParentedNode> entry : childrenByName.entrySet()) {
+                if (entry.getValue().getChild().getKeyProperty() == null) continue;
+                keyedChildren.add(entry.getKey());
+            }
+            
+            return keyedChildren;
         }
     }
     
