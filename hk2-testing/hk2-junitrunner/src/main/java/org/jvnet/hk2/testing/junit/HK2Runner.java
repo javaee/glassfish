@@ -146,6 +146,30 @@ public class HK2Runner {
      * things coming from packages or from the hk2-locator/default file
      */
     protected void initialize(String name, List<String> packages, List<Class<?>> clazzes, Set<String> excludes) {
+        initialize(name, packages, clazzes, excludes, null);
+    }
+    
+    /**
+     * This method initializes the service locator with services from the given list
+     * of packages (in "." format) and with the set of classes given.
+     * 
+     * @param name The name of the service locator to create.  If there is already a
+     * service locator of this name then the remaining fields will be ignored and the existing
+     * locator with this name will be returned.  May not be null
+     * @param packages The list of packages (in "." format, i.e. "com.acme.test.services") that
+     * we should hunt through the classpath for in order to find services.  If null this is considered
+     * to be the empty set
+     * @param clazzes A set of classes that should be analyzed as services, whether they declare
+     * &#64;Service or not.  If null this is considered to be the empty set
+     * @param excludes A set of implementations that should be excluded from being added.  This list is
+     * NOT checked against the clazzes list (the explicit include wins), but instead against the set of
+     * things coming from packages or from the hk2-locator/default file
+     * @param locatorFiles A list of locator inhabitant files to search the classpath for to load.  If
+     * this value is null then only META-INF/hk2-locator/default files on the classpath will be searched.
+     * If this value is an empty set then no inhabitant files will be loaded.  If this value contains
+     * values those will be searched as resources from the jars in the classpath to load the registry with
+     */
+    protected void initialize(String name, List<String> packages, List<Class<?>> clazzes, Set<String> excludes, Set<String> locatorFiles) {
         if (name == null) throw new IllegalArgumentException();
         if (packages == null) packages = new LinkedList<String>();
         if (clazzes == null) clazzes = new LinkedList<Class<?>>();
@@ -166,7 +190,7 @@ public class HK2Runner {
         DynamicConfigurationService dcs = testLocator.getService(DynamicConfigurationService.class);
         DynamicConfiguration config = dcs.createDynamicConfiguration();
         
-        addServicesFromDefault(config, excludes);
+        addServicesFromDefault(config, excludes, locatorFiles);
         
         addServicesFromPackage(config, packages, excludes);
         
@@ -183,31 +207,19 @@ public class HK2Runner {
         this.verbose = verbose;
     }
     
-    private void addServicesFromDefault(final DynamicConfiguration config, final Set<String> excludes) {
+    private void addServicesFromDefault(final DynamicConfiguration config, final Set<String> excludes, final Set<String> locatorFiles) {
         AccessController.doPrivileged(new PrivilegedAction<Object>() {
 
             @Override
             public Object run() {
-                internalAddServicesFromDefault(config, excludes);
+                internalAddServicesFromDefault(config, excludes, locatorFiles);
                 return null;
             }
             
         });
     }
     
-    private void internalAddServicesFromDefault(DynamicConfiguration config, Set<String> excludes) {
-        ClassLoader loader = this.getClass().getClassLoader();
-        
-        Enumeration<URL> resources;
-        try {
-            resources = loader.getResources("META-INF/hk2-locator/default");
-        }
-        catch (IOException ioe) {
-            ioe.printStackTrace();
-            
-            return;
-        }
-        
+    private void readResources(Enumeration<URL> resources, Set<String> excludes, DynamicConfiguration config) {
         while (resources.hasMoreElements()) {
             URL url = resources.nextElement();
            
@@ -229,12 +241,37 @@ public class HK2Runner {
                 reader.close();
             }
             catch (IOException ioe) {
+                ioe.printStackTrace();
+                
                 continue;
             }
             
             
         }
         
+    }
+    
+    private void internalAddServicesFromDefault(DynamicConfiguration config, Set<String> excludes, Set<String> locatorFiles) {
+        ClassLoader loader = this.getClass().getClassLoader();
+        
+        if (locatorFiles == null) {
+            locatorFiles = new HashSet<String>();
+            locatorFiles.add("META-INF/hk2-locator/default");
+        }
+        
+        for (String locatorFile : locatorFiles) {
+            Enumeration<URL> resources;
+            try {
+                resources = loader.getResources(locatorFile);
+            }
+            catch (IOException ioe) {
+                ioe.printStackTrace();
+            
+                return;
+            }
+            
+            readResources(resources, excludes, config);
+        }
     }
     
     private void addServicesFromPackage(final DynamicConfiguration config, final List<String> packages, final Set<String> excludes) {

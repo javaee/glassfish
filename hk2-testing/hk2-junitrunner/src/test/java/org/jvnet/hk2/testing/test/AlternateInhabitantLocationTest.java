@@ -37,61 +37,38 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test.dynamic.removes;
+package org.jvnet.hk2.testing.test;
 
-import java.net.URL;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Set;
 
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.configuration.hub.api.Hub;
-import org.glassfish.hk2.xml.api.XmlRootHandle;
-import org.glassfish.hk2.xml.api.XmlService;
-import org.glassfish.hk2.xml.test.basic.Employee;
-import org.glassfish.hk2.xml.test.basic.Employees;
-import org.glassfish.hk2.xml.test.basic.UnmarshallTest;
-import org.glassfish.hk2.xml.test.utilities.Utilities;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.jvnet.hk2.testing.junit.HK2Runner;
 
 /**
- * Tests removal of stuff
- * 
  * @author jwells
  *
  */
-public class RemovesTest {
-    public final static String EMPLOYEE_TYPE = "/employees/employee";
-    public final static String BOB_EMPLOYEE_INSTANCE = "employees.Bob";
+public class AlternateInhabitantLocationTest extends HK2Runner {
+    @Before
+    public void before() {
+        LinkedList<String> packages = new LinkedList<String>();
+        packages.add(this.getClass().getPackage().getName());
+        
+        Set<String> alternateLocatorFiles = new HashSet<String>();
+        alternateLocatorFiles.add("alternate/hk2-locator/another");
+        alternateLocatorFiles.add("alternate/hk2-locator/alt");
+        
+        initialize(this.getClass().getName(), packages, null, null, alternateLocatorFiles);
+    }
     
-    /**
-     * Tests remove of a keyed child with no sub-children
-     * 
-     * @throws Exception
-     */
-    @Test // @org.junit.Ignore
-    public void testRemoveOfIndexedChild() throws Exception {
-        ServiceLocator locator = Utilities.createLocator();
-        XmlService xmlService = locator.getService(XmlService.class);
-        Hub hub = locator.getService(Hub.class);
-        
-        URL url = getClass().getClassLoader().getResource(UnmarshallTest.ACME1_FILE);
-        
-        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
-        Employees employees = rootHandle.getRoot();
-        
-        Employee bob = employees.lookupEmployees(UnmarshallTest.BOB);
-        
-        // Make sure it is truly there
-        Assert.assertNotNull(bob);  
-        Assert.assertNotNull(locator.getService(Employee.class, UnmarshallTest.BOB));
-        Assert.assertNotNull(hub.getCurrentDatabase().getInstance(EMPLOYEE_TYPE, BOB_EMPLOYEE_INSTANCE));
-        
-        employees.removeEmployees(UnmarshallTest.BOB);
-        
-        bob = employees.lookupEmployees(UnmarshallTest.BOB);
-        
-        Assert.assertNull(bob);
-        Assert.assertNull(locator.getService(Employee.class, UnmarshallTest.BOB));
-        Assert.assertNull(hub.getCurrentDatabase().getInstance(EMPLOYEE_TYPE, BOB_EMPLOYEE_INSTANCE));
+    @Test
+    public void testServicesCanComeFromAlternateFiles() {
+        Assert.assertNotNull(testLocator.getService(AlternateLocationService.class));
+        Assert.assertNotNull(testLocator.getService(AlternateLocationService2.class));
     }
 
 }

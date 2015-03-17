@@ -81,7 +81,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
             "org.jvnet.hk2.properties.xmlservice.jaxb.getsandsets", "false"));
     
     private final static String EMPTY = "";
-    private final static char XML_PATH_SEPARATOR = '/';
+    public final static char XML_PATH_SEPARATOR = '/';
     
     private final static Boolean DEFAULT_BOOLEAN = Boolean.FALSE;
     private final static Byte DEFAULT_BYTE = new Byte((byte) 0);
@@ -551,6 +551,12 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
     
     public Object _doRemove(String childProperty, String childKey, int index) {
         if (changeControl == null) {
+            Object retVal = Utilities.internalRemove(this, childProperty, childKey, index, null, null, null);
+            
+            if (retVal != null) {
+                keyedChildrenCache.remove(childProperty);
+            }
+            
             return Utilities.internalRemove(this, childProperty, childKey, index, null, null, null);
         }
         
@@ -563,12 +569,16 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
             
             Object retVal = Utilities.internalRemove(this, childProperty, childKey, index, changeControl, wbd, config);
             
-            if (config != null) {
-                config.commit();
-            }
+            if (retVal != null) {
+                if (config != null) {
+                    config.commit();
+                }
             
-            if (wbd != null) {
-                wbd.commit(new XmlHubCommitMessage() {});
+                if (wbd != null) {
+                    wbd.commit(new XmlHubCommitMessage() {});
+                }
+                
+                keyedChildrenCache.remove(childProperty);
             }
             
             return retVal;

@@ -44,8 +44,10 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Name;
@@ -58,10 +60,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.xml.internal.alt.AltClass;
@@ -572,6 +576,7 @@ public class Utilities {
      * @param dynamicService
      * @return
      */
+    @SuppressWarnings("unchecked")
     public static BaseHK2JAXBBean internalRemove(
             BaseHK2JAXBBean myParent,
             String childProperty,
@@ -582,16 +587,201 @@ public class Utilities {
             DynamicConfiguration dynamicService) {
         if (childProperty == null) return null;
         
-        // BaseHK2JAXBBean rootForDeletion = null;
-        if (childKey != null) {
-            // Map<String, Map<String, BaseHK2JAXBBean>> children = myParent.__getChildren();
-
-            // Map<String, BaseHK2JAXBBean> byKey = children.get(childProperty);
-            
-            // rootForDeletion = null;
+        if (childKey == null && index < 0) return null;
+        
+        ParentedNode removeMeParentedNode = myParent._getModel().getChild(childProperty);
+        UnparentedNode removeMeNode = removeMeParentedNode.getChild();
+        BaseHK2JAXBBean rootForDeletion = null;
+        
+        if (!ChildType.DIRECT.equals(removeMeParentedNode.getChildType())) {
+            if (ChildType.LIST.equals(removeMeParentedNode.getChildType())) {
+                List<BaseHK2JAXBBean> removeFromList = (List<BaseHK2JAXBBean>) myParent._getProperty(childProperty);
+                
+                if (removeFromList == null) return null;
+                
+                List<BaseHK2JAXBBean> listWithObjectRemoved = new ArrayList<BaseHK2JAXBBean>(removeFromList.size() - 1);
+                
+                if (childKey != null) {
+                    for (BaseHK2JAXBBean candidate : removeFromList) {
+                        String candidateKeyValue = candidate._getKeyValue();
+                        
+                        if (GeneralUtilities.safeEquals(candidateKeyValue, childKey)) {
+                            rootForDeletion = candidate;
+                        }
+                        else {
+                            listWithObjectRemoved.add(candidate);
+                        }
+                    }
+                }
+                else {
+                    // unkeyed, index >= 0
+                    if (index >= removeFromList.size()) {
+                        return null;
+                    }
+                    
+                    for (int lcv = 0; lcv < index; lcv++) {
+                        if (lcv == index) {
+                            rootForDeletion = removeFromList.get(lcv);
+                        }
+                        else {
+                            listWithObjectRemoved.add(removeFromList.get(lcv));
+                        }
+                    }
+                }
+                
+                if (rootForDeletion == null) return null;
+                
+                if (writeableDatabase != null) {
+                    myParent.changeInHub(childProperty, listWithObjectRemoved, writeableDatabase);
+                }
+                
+                myParent._setProperty(childProperty, listWithObjectRemoved, false);
+            }
+            else {
+                // array children
+                Object removeFromArray = myParent._getProperty(childProperty);
+                
+                if (removeFromArray == null) return null;
+                
+                int removeFromArrayLength = Array.getLength(removeFromArray);
+                if (removeFromArrayLength == 0) return null;
+                
+                Class<?> arrayType = removeMeNode.getOriginalInterface();
+                
+                Object arrayWithObjectRemoved = Array.newInstance(arrayType, removeFromArrayLength - 1);
+                
+                if (childKey != null) {
+                    int removeIndex = -1;
+                    for (int lcv = 0; lcv < removeFromArrayLength; lcv++) {
+                        BaseHK2JAXBBean candidate = (BaseHK2JAXBBean) Array.get(removeFromArray, lcv);
+                        
+                        String candidateKeyValue = candidate._getKeyValue();
+                        
+                        if (GeneralUtilities.safeEquals(candidateKeyValue, childKey)) {
+                            rootForDeletion = candidate;
+                            removeIndex = lcv;
+                            break;
+                        }
+                    }
+                    
+                    if (rootForDeletion == null) return null;
+                    
+                    int addIndex = 0;
+                    for (int lcv = 0; lcv < removeFromArrayLength; lcv++) {
+                        if (lcv == removeIndex) continue;
+                        
+                        Array.set(arrayWithObjectRemoved, addIndex++, Array.get(removeFromArray, lcv));
+                    }
+                }
+                else {
+                    // unkeyed, index >= 0
+                    if (index >= removeFromArrayLength) {
+                        return null;
+                    }
+                    
+                    rootForDeletion = (BaseHK2JAXBBean) Array.get(removeFromArray, index);
+                    
+                    int addIndex = 0;
+                    for (int lcv = 0; lcv < removeFromArrayLength; lcv++) {
+                        if (lcv == index) continue;
+                        
+                        Array.set(arrayWithObjectRemoved, addIndex++, Array.get(removeFromArray, lcv));
+                    }
+                }
+                
+                if (rootForDeletion == null) return null;
+                
+                if (writeableDatabase != null) {
+                    myParent.changeInHub(childProperty, arrayWithObjectRemoved, writeableDatabase);
+                }
+                
+                myParent._setProperty(childProperty, arrayWithObjectRemoved);
+            }
+        }
+        else {
+            throw new AssertionError("Remove of direct child not yet implemented");
         }
         
-        throw new AssertionError("Remove not yet implemented");
+        if (dynamicService != null) {
+            HashSet<ActiveDescriptor<?>> descriptorsToRemove = new HashSet<ActiveDescriptor<?>>();
+            
+            getDescriptorsToRemove(rootForDeletion, descriptorsToRemove);
+            
+            for (ActiveDescriptor<?> descriptorToRemove : descriptorsToRemove) {
+                dynamicService.addUnbindFilter(BuilderHelper.createSpecificDescriptorFilter(descriptorToRemove));
+            }
+        }
+        
+        if (writeableDatabase != null) {
+            String rootXmlPath = rootForDeletion._getXmlPath();
+            String rootInstanceName = rootForDeletion._getInstanceName();
+            
+            WriteableType rootType = writeableDatabase.getWriteableType(rootXmlPath);
+            if (rootType != null) {
+                rootType.removeInstance(rootInstanceName);
+            
+                String typeRemovalIndicator = rootXmlPath + BaseHK2JAXBBean.XML_PATH_SEPARATOR;
+            
+                Set<Type> allTypes = writeableDatabase.getAllTypes();
+                for (Type allType : allTypes) {
+                    if (allType.getName().startsWith(typeRemovalIndicator)) {
+                        writeableDatabase.removeType(allType.getName());
+                    }
+                }
+            }
+        }
+        
+        return rootForDeletion;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static void getDescriptorsToRemove(BaseHK2JAXBBean fromMe, HashSet<ActiveDescriptor<?>> descriptorsToRemove) {
+        ActiveDescriptor<?> fromMeDescriptor = fromMe._getSelfDescriptor();
+        if (fromMeDescriptor == null) return;
+        
+        descriptorsToRemove.add(fromMeDescriptor);
+        
+        UnparentedNode model = fromMe._getModel();
+        if (model == null) return;
+        
+        for (ParentedNode parentedChild : model.getAllChildren()) {
+            String childPropertyName = parentedChild.getChildName();
+            
+            switch (parentedChild.getChildType()) {
+            case LIST:
+                List<BaseHK2JAXBBean> listChildren = (List<BaseHK2JAXBBean>) fromMe._getProperty(childPropertyName);
+                if (listChildren != null) {
+                    for (BaseHK2JAXBBean listChild : listChildren) {
+                        getDescriptorsToRemove(listChild, descriptorsToRemove);
+                    }
+                }
+                break;
+            case ARRAY:
+                Object arrayChildren = fromMe._getProperty(childPropertyName);
+                if (arrayChildren != null) {
+                    int arrayLength = Array.getLength(arrayChildren);
+                    
+                    for (int lcv = 0; lcv < arrayLength; lcv++) {
+                        BaseHK2JAXBBean bean = (BaseHK2JAXBBean) Array.get(arrayChildren, lcv);
+                        getDescriptorsToRemove(bean, descriptorsToRemove);
+                    }
+                }
+                break;
+            case DIRECT:
+                BaseHK2JAXBBean bean = (BaseHK2JAXBBean) fromMe._getProperty(childPropertyName);
+                if (bean != null) {
+                    getDescriptorsToRemove(bean, descriptorsToRemove);
+                }
+                break;
+            default:
+                throw new AssertionError("Unknown child type " + parentedChild.getChildType());
+            }
+            
+        }
+        
+        
+        
+        
     }
     
 }

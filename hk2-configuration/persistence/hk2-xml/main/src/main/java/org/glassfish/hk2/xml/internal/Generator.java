@@ -853,7 +853,7 @@ public class Generator {
         else if (removeVariable != null) {
             // This is an remove
             methodType = MethodType.REMOVE;
-            variable = addVariable;
+            variable = removeVariable;
         }
         else {
             methodType = MethodType.CUSTOM;
