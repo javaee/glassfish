@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -58,7 +59,7 @@ public class ClasspathDescriptorFileFinder implements DescriptorFileFinder {
     private final static String DEFAULT_NAME = "default";
 
     private final ClassLoader classLoader;
-    private final String name;
+    private final String names[];
     
     /**
      * If this constructor is used then HK2 descriptor files will be found
@@ -70,7 +71,7 @@ public class ClasspathDescriptorFileFinder implements DescriptorFileFinder {
      * which all the JAR files are on a single classpath
      */
     public ClasspathDescriptorFileFinder() {
-        this(ClasspathDescriptorFileFinder.class.getClassLoader());
+        this(ClasspathDescriptorFileFinder.class.getClassLoader(), DEFAULT_NAME);
     }
     
     /**
@@ -95,12 +96,12 @@ public class ClasspathDescriptorFileFinder implements DescriptorFileFinder {
      *  
      * @param cl May not be null and must be the classloader to use when
      * searching for HK2 descriptor files
-     * @param name Maynot be null and must be the name of the files to
+     * @param names May not be null and must be the name of the files to
      * search for in the META-INF/hk2-locator directory
      */
-    public ClasspathDescriptorFileFinder (ClassLoader cl, String name) {
+    public ClasspathDescriptorFileFinder (ClassLoader cl, String... names) {
         this.classLoader = cl;
-        this.name = name;
+        this.names = names;
     }
 
     /**
@@ -111,16 +112,20 @@ public class ClasspathDescriptorFileFinder implements DescriptorFileFinder {
     @Override
     public List<InputStream> findDescriptorFiles() throws IOException {
         ArrayList<InputStream> returnList = new ArrayList<InputStream>();
-        Enumeration<URL> e = classLoader.getResources(RESOURCE_BASE+name);
+        
+        for (String name : names) {
+            Enumeration<URL> e = classLoader.getResources(RESOURCE_BASE+name);
 
-        for (; e.hasMoreElements();) {
-            URL url = e.nextElement();
-            returnList.add(url.openStream());
+            for (; e.hasMoreElements();) {
+                URL url = e.nextElement();
+                returnList.add(url.openStream());
+            }
         }
+        
         return returnList;
     }
     
     public String toString() {
-        return "ClasspathDescriptorFileFinder(" + classLoader + "," + name + "," + System.identityHashCode(this) + ")";
+        return "ClasspathDescriptorFileFinder(" + classLoader + "," + Arrays.toString(names) + "," + System.identityHashCode(this) + ")";
     }
 }
