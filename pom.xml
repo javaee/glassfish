@@ -223,6 +223,7 @@
         <module>hk2-maven</module>
         <module>osgiversion-maven-plugin</module>
         <module>hk2-inhabitant-generator</module>
+        <module>hk2-metadata-generator</module>
         <module>consolidatedbundle-maven-plugin</module>
         <!--<module>osgi-resource-locator</module>-->
         <module>hk2-runlevel</module>
@@ -578,6 +579,11 @@
                 <plugin>
                     <groupId>org.glassfish.hk2</groupId>
                     <artifactId>hk2-inhabitant-generator</artifactId>
+                    <version>${project.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.glassfish.hk2</groupId>
+                    <artifactId>hk2-metadata-generator</artifactId>
                     <version>${project.version}</version>
                 </plugin>
                 <plugin>
