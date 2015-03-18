@@ -39,10 +39,32 @@
  */
 package org.jvnet.hk2.testing.junit.annotations;
 
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
 /**
+ * A set of classes that should be analyzed as services, whether they declare
+ * &#64;Service or not.  This annotation must be placed on a class that
+ * extends {@link HK2Runner}
+ * 
  * @author jwells
  *
  */
+@Documented
+@Inherited
+@Retention(RUNTIME)
+@Target( TYPE )
 public @interface Classes {
-
+    /**
+     * A list of classes that should be added to
+     * testLocator as services
+     * 
+     * @return Classes to treat as HK2 services
+     */
+    public Class<?>[] value();
 }

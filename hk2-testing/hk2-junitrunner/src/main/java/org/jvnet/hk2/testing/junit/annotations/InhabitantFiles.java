@@ -39,10 +39,36 @@
  */
 package org.jvnet.hk2.testing.junit.annotations;
 
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
 /**
+ * A set of locator inhabitant files to search for in the classpath.  This
+ * annotation must be placed on a class that extends {@link HK2Runner}
+ *
  * @author jwells
  *
  */
+@Documented
+@Inherited
+@Retention(RUNTIME)
+@Target( TYPE )
 public @interface InhabitantFiles {
+    public static final String DEFAULT_INHABITANT_PATH = "META-INF/hk2-locator/default";
+    
+    /**
+     * The name of inhabitant files to find in the classpath of the test.
+     * If this value is an empty set then no inhabitant files will be loaded.
+     * The default for this is to search META-INF/hk2-locator/default
+     * 
+     * @return inhabitant file names to find in the classpath for loading
+     * into testLocator
+     */
+    public String[] value() default { DEFAULT_INHABITANT_PATH };
 
 }

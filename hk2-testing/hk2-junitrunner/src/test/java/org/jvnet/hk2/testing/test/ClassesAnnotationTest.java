@@ -39,40 +39,24 @@
  */
 package org.jvnet.hk2.testing.test;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
-
-import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.jvnet.hk2.testing.junit.HK2Runner;
+import org.jvnet.hk2.testing.junit.annotations.Classes;
 
 /**
  * @author jwells
  *
  */
-public class AlternateInhabitantLocationTest extends HK2Runner {
-    @Before
-    public void before() {
-        LinkedList<String> packages = new LinkedList<String>();
-        packages.add(this.getClass().getPackage().getName());
-        
-        Set<String> alternateLocatorFiles = new HashSet<String>();
-        alternateLocatorFiles.add("alternate/hk2-locator/another");
-        alternateLocatorFiles.add("alternate/hk2-locator/alt");
-        
-        initialize(this.getClass().getName(), packages, null, null, alternateLocatorFiles);
-    }
-    
+@Classes(UnmarkedAndNotInhabitantService.class)
+public class ClassesAnnotationTest extends HK2Runner {
     /**
-     * Makes sure inhabitants came from alternate locator file locations
+     * The unmarked and not in any inhabitant file
+     * service is available (and not via JIT either)
      */
     @Test
-    public void testServicesCanComeFromAlternateFiles() {
-        Assert.assertNotNull(testLocator.getBestDescriptor(BuilderHelper.createContractFilter(AlternateLocationService.class.getName())));
-        Assert.assertNotNull(testLocator.getBestDescriptor(BuilderHelper.createContractFilter(AlternateLocationService2.class.getName())));
+    public void testClassesWorks() {
+        Assert.assertNotNull(testLocator.getService(UnmarkedAndNotInhabitantContract.class));
     }
 
 }

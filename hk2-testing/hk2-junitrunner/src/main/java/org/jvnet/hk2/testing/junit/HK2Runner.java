@@ -53,7 +53,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -68,6 +67,9 @@ import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.junit.Before;
+import org.jvnet.hk2.testing.junit.annotations.Classes;
+import org.jvnet.hk2.testing.junit.annotations.Excludes;
+import org.jvnet.hk2.testing.junit.annotations.InhabitantFiles;
 import org.jvnet.hk2.testing.junit.annotations.Packages;
 import org.jvnet.hk2.testing.junit.internal.ClassVisitorImpl;
 import org.jvnet.hk2.testing.junit.internal.ErrorServiceImpl;
@@ -83,8 +85,23 @@ import org.glassfish.hk2.external.org.objectweb.asm.ClassReader;
  * failure to get rethrown up to the lookup call, since this can sometimes cause
  * confusion.
  * <p>
- * This behavior can be customized by overriding the before method and calling the super
- * of one of the other methods available for customization
+ * The behavior of HK2Runner can be customized by annotating the class extending
+ * HK2Runner with {@link org.jvnet.hk2.testing.junit.annotations.Packages},
+ * {@link org.jvnet.hk2.testing.junit.annotations.Classes}, {@link org.jvnet.hk2.testing.junit.annotations.Excludes}
+ * or {@link org.jvnet.hk2.testing.junit.annotations.InhabitantFiles}.
+ * <p>
+ * {@link org.jvnet.hk2.testing.junit.annotations.Packages} gives the names of packages
+ * that will automatically be scanned for classes that should be added to testLocator
+ * as services.  {@link org.jvnet.hk2.testing.junit.annotations.Classes} gives an
+ * explicit set of classes that should be added to testLocator as services.
+ * {@link org.jvnet.hk2.testing.junit.annotations.Excludes} gives a set of services
+ * that should not be automatically added to the testLocator.
+ * {@link org.jvnet.hk2.testing.junit.annotations.InhabitantFiles} gives a set of
+ * inhabitant files to load in the classpath of the test.
+ * <p>
+ * This behavior can be customized by overriding the before method of the test and calling one
+ * of the {@link #initialize(String, List, List)} methods.  The annotations listed above
+ * are overridden by any values passed to the initialize methods
  * 
  * @author jwells
  */
@@ -174,6 +191,45 @@ public class HK2Runner {
         return retVal;
     }
     
+    private List<Class<?>> getDefaultClazzes() {
+        Classes clazzes = getClass().getAnnotation(Classes.class);
+        if (clazzes == null) return Collections.emptyList();
+        
+        List<Class<?>> retVal = new ArrayList<Class<?>>(clazzes.value().length);
+        for (Class<?> clazz : clazzes.value()) {
+            retVal.add(clazz);
+        }
+        
+        return retVal;
+    }
+    
+    private Set<String> getDefaultExcludes() {
+        Excludes excludes = getClass().getAnnotation(Excludes.class);
+        if (excludes == null) return Collections.emptySet();
+        
+        Set<String> retVal = new HashSet<String>();
+        for (String exclude : excludes.value()) {
+            retVal.add(exclude);
+        }
+        
+        return retVal;
+    }
+    
+    private Set<String> getDefaultLocatorFiles() {
+        HashSet<String> retVal = new HashSet<String>();
+        InhabitantFiles iFiles = getClass().getAnnotation(InhabitantFiles.class);
+        if (iFiles == null) {
+            retVal.add("META-INF/hk2-locator/default");
+            return retVal;
+        }
+        
+        for (String iFile : iFiles.value()) {
+            retVal.add(iFile);
+        }
+        
+        return retVal;
+    }
+    
     /**
      * This method initializes the service locator with services from the given list
      * of packages (in "." format) and with the set of classes given.
@@ -189,7 +245,7 @@ public class HK2Runner {
      * @param excludes A set of implementations that should be excluded from being added.  This list is
      * NOT checked against the clazzes list (the explicit include wins), but instead against the set of
      * things coming from packages or from the hk2-locator/default file
-     * @param locatorFiles A list of locator inhabitant files to search the classpath for to load.  If
+     * @param locatorFiles A set of locator inhabitant files to search the classpath for to load.  If
      * this value is null then only META-INF/hk2-locator/default files on the classpath will be searched.
      * If this value is an empty set then no inhabitant files will be loaded.  If this value contains
      * values those will be searched as resources from the jars in the classpath to load the registry with
@@ -197,8 +253,9 @@ public class HK2Runner {
     protected void initialize(String name, List<String> packages, List<Class<?>> clazzes, Set<String> excludes, Set<String> locatorFiles) {
         if (name == null) throw new IllegalArgumentException();
         if (packages == null) packages = getDefaultPackages();
-        if (clazzes == null) clazzes = new LinkedList<Class<?>>();
-        if (excludes == null) excludes = new HashSet<String>();
+        if (clazzes == null) clazzes = getDefaultClazzes();
+        if (excludes == null) excludes = getDefaultExcludes();
+        if (locatorFiles == null) locatorFiles = getDefaultLocatorFiles();
         
         ServiceLocator found = ServiceLocatorFactory.getInstance().find(name);
         if (found != null) {
@@ -278,11 +335,6 @@ public class HK2Runner {
     
     private void internalAddServicesFromDefault(DynamicConfiguration config, Set<String> excludes, Set<String> locatorFiles) {
         ClassLoader loader = this.getClass().getClassLoader();
-        
-        if (locatorFiles == null) {
-            locatorFiles = new HashSet<String>();
-            locatorFiles.add("META-INF/hk2-locator/default");
-        }
         
         for (String locatorFile : locatorFiles) {
             Enumeration<URL> resources;

@@ -39,35 +39,21 @@
  */
 package org.jvnet.hk2.testing.test;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
-
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.jvnet.hk2.testing.junit.HK2Runner;
+import org.jvnet.hk2.testing.junit.annotations.InhabitantFiles;
 
 /**
  * @author jwells
  *
  */
-public class AlternateInhabitantLocationTest extends HK2Runner {
-    @Before
-    public void before() {
-        LinkedList<String> packages = new LinkedList<String>();
-        packages.add(this.getClass().getPackage().getName());
-        
-        Set<String> alternateLocatorFiles = new HashSet<String>();
-        alternateLocatorFiles.add("alternate/hk2-locator/another");
-        alternateLocatorFiles.add("alternate/hk2-locator/alt");
-        
-        initialize(this.getClass().getName(), packages, null, null, alternateLocatorFiles);
-    }
-    
+@InhabitantFiles({"alternate/hk2-locator/another", "alternate/hk2-locator/alt"})
+public class InhabitantFilesAnnotationTest extends HK2Runner {
     /**
-     * Makes sure inhabitants came from alternate locator file locations
+     * Makes sure inhabitants came from alternate locator file locations, but with
+     * no need for @Before
      */
     @Test
     public void testServicesCanComeFromAlternateFiles() {

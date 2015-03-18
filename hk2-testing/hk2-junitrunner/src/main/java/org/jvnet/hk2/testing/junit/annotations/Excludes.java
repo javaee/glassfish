@@ -39,10 +39,35 @@
  */
 package org.jvnet.hk2.testing.junit.annotations;
 
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Documented;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
 /**
+ * A set of implementations that should be excluded from being added to testLocator.  This list is
+ * NOT checked against the classes list (the explicit include wins), but instead against the set of
+ * things coming from packages or from the inhabitant files. This
+ * annotation must be placed on a class that extends {@link HK2Runner}
+ * 
  * @author jwells
  *
  */
+@Documented
+@Inherited
+@Retention(RUNTIME)
+@Target( TYPE )
 public @interface Excludes {
-
+    /**
+     * The fully qualified class names of any service implementations that
+     * should NOT automatically be added via package scanning or from
+     * inhabitant files read
+     * 
+     * @return A list of fully qualified class implementations that should
+     * not be added testLocator
+     */
+    public String[] value();
 }
