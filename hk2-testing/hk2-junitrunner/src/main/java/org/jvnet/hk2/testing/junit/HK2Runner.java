@@ -49,6 +49,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -67,6 +68,7 @@ import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.junit.Before;
+import org.jvnet.hk2.testing.junit.annotations.Packages;
 import org.jvnet.hk2.testing.junit.internal.ClassVisitorImpl;
 import org.jvnet.hk2.testing.junit.internal.ErrorServiceImpl;
 import org.jvnet.hk2.testing.junit.internal.JustInTimeInjectionResolverImpl;
@@ -107,9 +109,15 @@ public class HK2Runner {
      */
     @Before
     public void before() {
-        initialize(this.getClass().getName(), 
-                Collections.singletonList(this.getClass().getPackage().getName()),
-                null);
+        Packages packages = getClass().getAnnotation(Packages.class);
+        if (packages == null) {
+            initialize(getClass().getName(), 
+                Collections.singletonList(getClass().getPackage().getName()),
+                null, null, null);
+        }
+        else {
+            initialize(getClass().getName(), null, null, null, null);
+        }
     }
 
     /**
@@ -126,7 +134,7 @@ public class HK2Runner {
      * &#64;Service or not.  If null this is considered to be the empty set
      */
     protected void initialize(String name, List<String> packages, List<Class<?>> clazzes) {
-        initialize(name, packages, clazzes, null);
+        initialize(name, packages, clazzes, null, null);
     }
     
     /**
@@ -147,6 +155,23 @@ public class HK2Runner {
      */
     protected void initialize(String name, List<String> packages, List<Class<?>> clazzes, Set<String> excludes) {
         initialize(name, packages, clazzes, excludes, null);
+    }
+    
+    private List<String> getDefaultPackages() {
+        Packages packages = getClass().getAnnotation(Packages.class);
+        if (packages == null) return Collections.emptyList();
+        
+        List<String> retVal = new ArrayList<String>(packages.value().length);
+        for (String pack : packages.value()) {
+            if (Packages.THIS_PACKAGE.equals(pack)) {
+                retVal.add(getClass().getPackage().getName());
+            }
+            else {
+                retVal.add(pack);
+            }
+        }
+        
+        return retVal;
     }
     
     /**
@@ -171,7 +196,7 @@ public class HK2Runner {
      */
     protected void initialize(String name, List<String> packages, List<Class<?>> clazzes, Set<String> excludes, Set<String> locatorFiles) {
         if (name == null) throw new IllegalArgumentException();
-        if (packages == null) packages = new LinkedList<String>();
+        if (packages == null) packages = getDefaultPackages();
         if (clazzes == null) clazzes = new LinkedList<Class<?>>();
         if (excludes == null) excludes = new HashSet<String>();
         
