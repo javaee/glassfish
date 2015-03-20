@@ -61,7 +61,6 @@ import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.junit.Test;
-import org.jvnet.hk2.config.GenerateServiceFromMethod;
 
 /**
  * Tests for the inhabitant generator
@@ -74,58 +73,6 @@ public class InhabitantsGeneratorTest {
     private final static Map<DescriptorImpl, Integer> EXPECTED_DESCRIPTORS = new HashMap<DescriptorImpl, Integer>();
     
     static {
-        {
-            // This is the Factory that should be generated
-            DescriptorImpl envFactory = new DescriptorImpl();
-            envFactory.setImplementation("org.glassfish.examples.ctm.EnvironmentFactory");
-            envFactory.addAdvertisedContract("org.glassfish.examples.ctm.EnvironmentFactory");
-            envFactory.addAdvertisedContract("org.glassfish.hk2.api.Factory");
-            envFactory.setScope(Singleton.class.getName());
-        
-            EXPECTED_DESCRIPTORS.put(envFactory, 0);
-        }
-        
-        {
-            // This is the class that the Factory produces
-            DescriptorImpl envItself = new DescriptorImpl();
-            envItself.setImplementation("org.glassfish.examples.ctm.EnvironmentFactory");
-            envItself.addAdvertisedContract("org.glassfish.examples.ctm.Environment");
-            envItself.setScope("org.glassfish.examples.ctm.TenantScoped");
-            envItself.setDescriptorType(DescriptorType.PROVIDE_METHOD);
-        
-            EXPECTED_DESCRIPTORS.put(envItself, 0);
-        }
-        
-        {
-            // This is the class that implements the Context
-            DescriptorImpl di = new DescriptorImpl();
-            di.setImplementation("org.glassfish.examples.ctm.TenantScopedContext");
-            di.addAdvertisedContract("org.glassfish.examples.ctm.TenantScopedContext");
-            di.addAdvertisedContract("org.glassfish.hk2.api.Context");
-            di.setScope(Singleton.class.getName());
-        
-            EXPECTED_DESCRIPTORS.put(di, 0);
-        }
-        
-        {
-            // This is the service provider engine
-            DescriptorImpl di = new DescriptorImpl();
-            di.setImplementation("org.glassfish.examples.ctm.ServiceProviderEngine");
-            di.addAdvertisedContract("org.glassfish.examples.ctm.ServiceProviderEngine");
-            di.setScope(Singleton.class.getName());
-        
-            EXPECTED_DESCRIPTORS.put(di, 0);
-        }
-        
-        {
-            // This is the tenant manager
-            DescriptorImpl di = new DescriptorImpl();
-            di.setImplementation("org.glassfish.examples.ctm.TenantManager");
-            di.addAdvertisedContract("org.glassfish.examples.ctm.TenantManager");
-            di.setScope(Singleton.class.getName());
-        
-            EXPECTED_DESCRIPTORS.put(di, 0);
-        }
         
         {
             // This is a descriptor with a defaulted Name and a qualifier and metadata
@@ -270,96 +217,6 @@ public class InhabitantsGeneratorTest {
             envItself.addMetadata(Constants.KEY6, new Long(Constants.VALUE6_2).toString());
             envItself.addMetadata(Constants.KEY6, new Long(Constants.VALUE6_3).toString());
         
-            EXPECTED_DESCRIPTORS.put(envItself, 0);
-        }
-        
-        // All the following descriptors were generated from the GenerateServiceFromMethod
-        // annotations
-        {
-            // From the @CreateMe on getStreetAddress on AddressBean
-            DescriptorImpl envItself = new DescriptorImpl();
-            envItself.setImplementation(Constants.GENERATE_METHOD_CREATE_IMPL);
-            envItself.addAdvertisedContract(Constants.GENERATE_METHOD_CREATE_IMPL);
-            envItself.addAdvertisedContract(Constants.GENERATE_METHOD_CREATE_CONTRACT);
-            envItself.setScope(PerLookup.class.getName());
-            envItself.setName(Constants.GENERATE_METHOD_CREATE_NAME1);
-            envItself.addMetadata(GenerateServiceFromMethod.METHOD_ACTUAL, "org.jvnet.hk2.metadata.tests.StreetAddress");
-            envItself.addMetadata(GenerateServiceFromMethod.METHOD_NAME, "getStreetAddress");
-            envItself.addMetadata(GenerateServiceFromMethod.PARENT_CONFIGURED, AddressBean.class.getName());
-            
-            EXPECTED_DESCRIPTORS.put(envItself, 0);
-        }
-        
-        {
-            // From the @CreateMe on getSecondaryStreetAddress on AddressBean
-            DescriptorImpl envItself = new DescriptorImpl();
-            envItself.setImplementation(Constants.GENERATE_METHOD_CREATE_IMPL);
-            envItself.addAdvertisedContract(Constants.GENERATE_METHOD_CREATE_IMPL);
-            envItself.addAdvertisedContract(Constants.GENERATE_METHOD_CREATE_CONTRACT);
-            envItself.setScope(PerLookup.class.getName());
-            envItself.setName(Constants.GENERATE_METHOD_CREATE_NAME2);
-            envItself.addMetadata(GenerateServiceFromMethod.METHOD_ACTUAL, "org.jvnet.hk2.metadata.tests.StreetAddress");
-            envItself.addMetadata(GenerateServiceFromMethod.METHOD_NAME, "getSecondaryStreetAddress");
-            envItself.addMetadata(GenerateServiceFromMethod.PARENT_CONFIGURED, AddressBean.class.getName());
-            
-            EXPECTED_DESCRIPTORS.put(envItself, 0);
-        }
-        
-        {
-            // From the @DeleteMe on getStreetAddress on AddressBean
-            DescriptorImpl envItself = new DescriptorImpl();
-            envItself.setImplementation(Constants.GENERATE_METHOD_DELETE_IMPL);
-            envItself.addAdvertisedContract(Constants.GENERATE_METHOD_DELETE_CONTRACT);
-            envItself.setScope(Singleton.class.getName());
-            envItself.addMetadata(GenerateServiceFromMethod.METHOD_ACTUAL, "org.jvnet.hk2.metadata.tests.StreetAddress");
-            envItself.addMetadata(GenerateServiceFromMethod.METHOD_NAME, "getStreetAddress");
-            envItself.addMetadata(GenerateServiceFromMethod.PARENT_CONFIGURED, AddressBean.class.getName());
-            
-            EXPECTED_DESCRIPTORS.put(envItself, 0);
-        }
-        
-        {
-            // From the @CreateMe on the DecoratedTown class (using @Decorate)
-            DescriptorImpl envItself = new DescriptorImpl();
-            envItself.setImplementation(Constants.GENERATE_METHOD_CREATE_IMPL);
-            envItself.addAdvertisedContract(Constants.GENERATE_METHOD_CREATE_IMPL);
-            envItself.addAdvertisedContract(Constants.GENERATE_METHOD_CREATE_CONTRACT);
-            envItself.setScope(PerLookup.class.getName());
-            envItself.setName(Constants.GENERATE_METHOD_CREATE_NAME3);
-            envItself.addMetadata(GenerateServiceFromMethod.METHOD_ACTUAL, "org.jvnet.hk2.metadata.tests.DecoratedTown");
-            envItself.addMetadata(GenerateServiceFromMethod.METHOD_NAME, "getTown");
-            envItself.addMetadata(GenerateServiceFromMethod.PARENT_CONFIGURED, AddressBean.class.getName());
-            
-            EXPECTED_DESCRIPTORS.put(envItself, 0);
-        }
-        
-        {
-            // From the @CreateMe on the getZipCode method on the DecoratedTown class
-            DescriptorImpl envItself = new DescriptorImpl();
-            envItself.setImplementation(Constants.GENERATE_METHOD_CREATE_IMPL);
-            envItself.addAdvertisedContract(Constants.GENERATE_METHOD_CREATE_IMPL);
-            envItself.addAdvertisedContract(Constants.GENERATE_METHOD_CREATE_CONTRACT);
-            envItself.setScope(PerLookup.class.getName());
-            envItself.setName(Constants.GENERATE_METHOD_CREATE_NAME4);
-            envItself.addMetadata(GenerateServiceFromMethod.METHOD_ACTUAL, "org.jvnet.hk2.metadata.tests.ZipCode");
-            envItself.addMetadata(GenerateServiceFromMethod.METHOD_NAME, "getZipCodes");
-            envItself.addMetadata(GenerateServiceFromMethod.PARENT_CONFIGURED, DecoratedTown.class.getName());
-            
-            EXPECTED_DESCRIPTORS.put(envItself, 0);
-        }
-        
-        {
-            // From the @CreateMe on the getZipCode method on the DecoratedTown class
-            DescriptorImpl envItself = new DescriptorImpl();
-            envItself.setImplementation(Constants.GENERATE_METHOD_CREATE_IMPL);
-            envItself.addAdvertisedContract(Constants.GENERATE_METHOD_CREATE_IMPL);
-            envItself.addAdvertisedContract(Constants.GENERATE_METHOD_CREATE_CONTRACT);
-            envItself.setScope(PerLookup.class.getName());
-            envItself.setName(Constants.GENERATE_METHOD_CREATE_NAME5);
-            envItself.addMetadata(GenerateServiceFromMethod.METHOD_ACTUAL, "org.jvnet.hk2.metadata.tests.StreetAddress");
-            envItself.addMetadata(GenerateServiceFromMethod.METHOD_NAME, "setMyAddress");
-            envItself.addMetadata(GenerateServiceFromMethod.PARENT_CONFIGURED, AddressBean.class.getName());
-            
             EXPECTED_DESCRIPTORS.put(envItself, 0);
         }
         
@@ -526,7 +383,13 @@ public class InhabitantsGeneratorTest {
             Assert.assertEquals(expectedRank, di.getRanking());
         }
         
-        Assert.assertEquals("Expecting " + EXPECTED_DESCRIPTORS.size() + " descriptors, but only got " + dis.size(),
+        HashMap<DescriptorImpl, Integer> missing = new HashMap<DescriptorImpl, Integer>(EXPECTED_DESCRIPTORS);
+        for (DescriptorImpl disMe : dis) {
+            missing.remove(disMe);
+        }
+        
+        Assert.assertEquals("Expecting " + EXPECTED_DESCRIPTORS.size() + " descriptors, but only got " + dis.size() +
+                ".  The missing descriptors are " + missing,
                 EXPECTED_DESCRIPTORS.size(), dis.size());
     }
     

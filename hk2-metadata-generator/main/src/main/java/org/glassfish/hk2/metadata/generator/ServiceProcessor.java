@@ -60,6 +60,7 @@ import javax.tools.Diagnostic.Kind;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 
 /**
@@ -82,6 +83,8 @@ public class ServiceProcessor extends AbstractProcessor {
             RoundEnvironment roundEnv) {
         TreeSet<DescriptorImpl> allDescriptors = new TreeSet<DescriptorImpl>(new DescriptorComparitor());
         ArrayList<Element> originators = new ArrayList<Element>();
+        
+        MultiException collectedExceptions = null;
         for (TypeElement annotation : annotations) {
             Set<? extends Element> clazzes = roundEnv.getElementsAnnotatedWith(annotation);
             
@@ -90,12 +93,32 @@ public class ServiceProcessor extends AbstractProcessor {
                 
                 TypeElement clazz = (TypeElement) clazzElement;
                 
-                List<DescriptorImpl> descriptors = ServiceUtilities.getDescriptorsFromClass(clazz, processingEnv);
+                List<DescriptorImpl> descriptors;
+                try {
+                    descriptors = ServiceUtilities.getDescriptorsFromClass(clazz, processingEnv);
+                }
+                catch (Throwable th) {
+                    if (collectedExceptions == null) {
+                        collectedExceptions = new MultiException(th);
+                    }
+                    else {
+                        collectedExceptions.addError(th);
+                    }
+                    
+                    continue;
+                }
+                
                 allDescriptors.addAll(descriptors);
                 if (!descriptors.isEmpty()) {
                     originators.add(clazzElement);
                 }
             }
+        }
+        
+        if (collectedExceptions != null) {
+            processingEnv.getMessager().printMessage(Kind.ERROR, collectedExceptions.getMessage());
+            collectedExceptions.printStackTrace();
+            return true;
         }
         
         if (allDescriptors.isEmpty()) return true;

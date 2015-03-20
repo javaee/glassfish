@@ -226,7 +226,7 @@ public interface Descriptor {
      * descriptor must NOT be proxied (even if it is in an Unproxiable scope)
      * and null if this descriptor should take its proxiable status from
      * the scope it is in (i.e., it will only be proxied if the scope is
-     * marked {@linke Proxiable})
+     * marked {@link Proxiable})
      */
     public Boolean isProxiable();
     
