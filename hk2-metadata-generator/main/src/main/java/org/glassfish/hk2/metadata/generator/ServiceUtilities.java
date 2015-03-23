@@ -47,7 +47,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.inject.Named;
@@ -66,9 +65,11 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 
 import org.glassfish.hk2.api.ClassAnalyzer;
+import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.Metadata;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ProxyForSameScope;
 import org.glassfish.hk2.api.Rank;
 import org.glassfish.hk2.api.UseProxy;
@@ -102,7 +103,10 @@ public class ServiceUtilities {
             return getDescriptorFromFactoryClass(clazz, contracts, processingEnvironment);
         }
         
-        DescriptorImpl retVal = generateFromClass(clazz, contracts, processingEnvironment);
+        DescriptorImpl retVal = new DescriptorImpl();
+        retVal.setImplementation(nameToString(clazz.getQualifiedName()));
+        
+        generateFromClass(retVal, clazz, contracts, processingEnvironment);
         
         return Collections.singletonList(retVal);
     }
@@ -110,16 +114,50 @@ public class ServiceUtilities {
     private static List<DescriptorImpl> getDescriptorFromFactoryClass(TypeElement clazz, Set<String> contracts, ProcessingEnvironment processingEnvironment) {
         LinkedList<DescriptorImpl> retVal = new LinkedList<DescriptorImpl>();
         
-        DescriptorImpl factoryItself = generateFromClass(clazz, contracts, processingEnvironment);
+        DescriptorImpl factoryItself = new DescriptorImpl();
+        factoryItself.setImplementation(nameToString(clazz.getQualifiedName()));
+        
+        generateFromClass(factoryItself, clazz, contracts, processingEnvironment);
         retVal.add(factoryItself);
+        
+        // Now find the provideMethod
+        ExecutableElement provideMethodEE = null;
+        for(Element enclosedElement : processingEnvironment.getElementUtils().getAllMembers(clazz)) {
+            if (!ElementKind.METHOD.equals(enclosedElement.getKind())) continue;
+            
+            ExecutableElement executable = (ExecutableElement) enclosedElement;
+            if (!"provide".equals(nameToString(executable.getSimpleName()))) continue;
+            
+            provideMethodEE = executable;
+            break;
+        }
+        
+        if (provideMethodEE == null) return retVal;
+        
+        TypeMirror methodReturnMirror = provideMethodEE.getReturnType();
+        TypeElement methodReturnElement = (TypeElement) processingEnvironment.getTypeUtils().asElement(methodReturnMirror);
+        
+        DescriptorImpl provideDescriptor = new DescriptorImpl();
+        provideDescriptor.setDescriptorType(DescriptorType.PROVIDE_METHOD);
+        provideDescriptor.setImplementation(nameToString(clazz.getQualifiedName()));
+        
+        Set<String> methodContracts = getAllContracts(methodReturnElement, processingEnvironment);
+        for (String methodContract : methodContracts) {
+            provideDescriptor.addAdvertisedContract(methodContract);
+        }
+        
+        generateFromClass(provideDescriptor, provideMethodEE, methodContracts, processingEnvironment);
+        
+        retVal.add(provideDescriptor);
         
         return retVal;
     }
     
-    private static DescriptorImpl generateFromClass(TypeElement clazz, Set<String> contracts,
+    private static void generateFromClass(
+            DescriptorImpl retVal,
+            Element clazz,
+            Set<String> contracts,
             ProcessingEnvironment processingEnvironment) {
-        DescriptorImpl retVal = new DescriptorImpl();
-        retVal.setImplementation(nameToString(clazz.getQualifiedName()));
         for (String contract : contracts) {
             retVal.addAdvertisedContract(contract);
         }
@@ -149,11 +187,9 @@ public class ServiceUtilities {
         getServiceMetadata(clazz, metadata, processingEnvironment);
         
         retVal.setMetadata(metadata);
-        
-        return retVal;
     }
     
-    private static String getScope(TypeElement clazz, Map<String, List<String>> metadata, ProcessingEnvironment processingEnv) {
+    private static String getScope(Element clazz, Map<String, List<String>> metadata, ProcessingEnvironment processingEnv) {
         List<? extends AnnotationMirror> annotationMirrors = clazz.getAnnotationMirrors();
         
         String foundScope = null;
@@ -163,7 +199,11 @@ public class ServiceUtilities {
             
             if (annotationType.getAnnotation(Scope.class) != null) {
                 if (foundScope != null) {
-                    throw new AssertionError("A service with implementation " + clazz.getQualifiedName() +
+                    String qName = "provide";
+                    if (clazz instanceof TypeElement) {
+                        qName = nameToString(((TypeElement) clazz).getQualifiedName());
+                    }
+                    throw new AssertionError("A service with implementation " + qName +
                             " has at least two scopes: " +
                             foundScope + " and " + annotationType.getQualifiedName());
                 }
@@ -175,10 +215,14 @@ public class ServiceUtilities {
         
         if (foundScope != null) return foundScope;
         
+        if (clazz instanceof ExecutableElement) {
+            return PerLookup.class.getName();
+        }
+        
         return Singleton.class.getName();
     }
     
-    private static String getName(TypeElement clazz, ProcessingEnvironment processingEnvironment) {
+    private static String getName(Element clazz, ProcessingEnvironment processingEnvironment) {
         if (clazz.getAnnotation(Named.class) != null) {
             // Named wins
             AnnotationMirror namedMirror = getAnnotation(clazz, Named.class.getName());
@@ -186,6 +230,11 @@ public class ServiceUtilities {
             
             String value = (String) namedValue.getValue();
             if ("".equals(value)) {
+                if (clazz instanceof ExecutableElement) {
+                    throw new AssertionError("A provide method is annotated with @Named but in Factory "
+                        + clazz.getEnclosingElement());   
+                }
+                
                 return nameToString(clazz.getSimpleName());
             }
             
@@ -193,6 +242,8 @@ public class ServiceUtilities {
         }
         
         AnnotationMirror serviceMirror = getAnnotation(clazz, Service.class.getName());
+        if (serviceMirror == null) return null;
+        
         AnnotationValue serviceValue = getValueFromAnnotation(serviceMirror, "name", processingEnvironment);
         
         String value = (String) serviceValue.getValue();
@@ -200,8 +251,8 @@ public class ServiceUtilities {
         return value;
     }
     
-    private static Set<String> getAllQualifiers(TypeElement clazz, Map<String, List<String>> metadata, ProcessingEnvironment processingEnv) {
-        TreeSet<String> retVal = new TreeSet<String>();
+    private static Set<String> getAllQualifiers(Element clazz, Map<String, List<String>> metadata, ProcessingEnvironment processingEnv) {
+        LinkedHashSet<String> retVal = new LinkedHashSet<String>();
         
         List<? extends AnnotationMirror> annotations = clazz.getAnnotationMirrors();
         for (AnnotationMirror annoMirror : annotations) {
@@ -218,7 +269,7 @@ public class ServiceUtilities {
         return retVal;
     }
     
-    private static DescriptorVisibility getVisibility(TypeElement clazz, ProcessingEnvironment processingEnv) {
+    private static DescriptorVisibility getVisibility(Element clazz, ProcessingEnvironment processingEnv) {
         AnnotationMirror mirror = getAnnotation(clazz, Visibility.class.getName());
         if (mirror == null) return DescriptorVisibility.NORMAL;
         
@@ -233,7 +284,7 @@ public class ServiceUtilities {
         return DescriptorVisibility.NORMAL;
     }
     
-    private static int getRank(TypeElement clazz, ProcessingEnvironment processingEnv) {
+    private static int getRank(Element clazz, ProcessingEnvironment processingEnv) {
         AnnotationMirror mirror = getAnnotation(clazz, Rank.class.getName());
         if (mirror == null) return 0;
         
@@ -244,7 +295,7 @@ public class ServiceUtilities {
         return r;
     }
     
-    private static Boolean getUseProxy(TypeElement clazz, ProcessingEnvironment processingEnv) {
+    private static Boolean getUseProxy(Element clazz, ProcessingEnvironment processingEnv) {
         AnnotationMirror mirror = getAnnotation(clazz, UseProxy.class.getName());
         if (mirror == null) return null;
         
@@ -254,7 +305,7 @@ public class ServiceUtilities {
         return (Boolean) annoValue.getValue();
     }
     
-    private static Boolean getProxyForSameScope(TypeElement clazz, ProcessingEnvironment processingEnv) {
+    private static Boolean getProxyForSameScope(Element clazz, ProcessingEnvironment processingEnv) {
         AnnotationMirror mirror = getAnnotation(clazz, ProxyForSameScope.class.getName());
         if (mirror == null) return null;
         
@@ -264,7 +315,7 @@ public class ServiceUtilities {
         return (Boolean) annoValue.getValue();
     }
     
-    private static String getAnalyzer(TypeElement clazz, ProcessingEnvironment processingEnv) {
+    private static String getAnalyzer(Element clazz, ProcessingEnvironment processingEnv) {
         AnnotationMirror mirror = getAnnotation(clazz, Service.class.getName());
         if (mirror == null) return null;
         
@@ -277,7 +328,7 @@ public class ServiceUtilities {
         return retVal;
     }
     
-    private static void getServiceMetadata(TypeElement clazz, Map<String, List<String>> metadata, ProcessingEnvironment processingEnv) {
+    private static void getServiceMetadata(Element clazz, Map<String, List<String>> metadata, ProcessingEnvironment processingEnv) {
         AnnotationMirror mirror = getAnnotation(clazz, Service.class.getName());
         if (mirror == null) return;
         
@@ -319,8 +370,6 @@ public class ServiceUtilities {
         
         getAllSubContracts(clazz, processingEnvironment, retVal, new HashSet<String>());
         
-        
-        
         return retVal;
     }
     
@@ -329,17 +378,6 @@ public class ServiceUtilities {
         
         if (cycleDetector.contains(nameToString(clazz.getQualifiedName()))) return;
         cycleDetector.add(nameToString(clazz.getQualifiedName()));
-        
-        TypeMirror superClazzMirror = clazz.getSuperclass();
-        if (superClazzMirror != null) {
-            TypeElement superClass = (TypeElement) processingEnvironment.getTypeUtils().asElement(superClazzMirror);
-            
-            if (isAContract(superClass)) {
-                contracts.add(nameToString(superClass.getQualifiedName()));
-            }
-            
-            getAllSubContracts(superClass, processingEnvironment, contracts, cycleDetector);
-        }
         
         List<? extends TypeMirror> interfaceMirrors = clazz.getInterfaces();
         for (TypeMirror mirror : interfaceMirrors) {
@@ -352,6 +390,16 @@ public class ServiceUtilities {
             getAllSubContracts(iFace, processingEnvironment, contracts, cycleDetector);
         }
         
+        TypeMirror superClazzMirror = clazz.getSuperclass();
+        if (superClazzMirror != null) {
+            TypeElement superClass = (TypeElement) processingEnvironment.getTypeUtils().asElement(superClazzMirror);
+            
+            if (isAContract(superClass)) {
+                contracts.add(nameToString(superClass.getQualifiedName()));
+            }
+            
+            getAllSubContracts(superClass, processingEnvironment, contracts, cycleDetector);
+        }
     }
     
     @SuppressWarnings("unchecked")

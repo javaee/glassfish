@@ -129,10 +129,10 @@ public class InhabitantsGeneratorTest {
             DescriptorImpl di = new DescriptorImpl();
             di.setImplementation("org.jvnet.hk2.metadata.tests.ComplexFactory");
             di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.ComplexImpl");
-            di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.ComplexDImpl");
             di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.ComplexA");
             di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.ComplexC");
             di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.ComplexE");
+            di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.ComplexDImpl");
             di.setName(Constants.NON_DEFAULT_NAME);
             di.setScope(PerLookup.class.getName());
             di.setDescriptorType(DescriptorType.PROVIDE_METHOD);
@@ -398,7 +398,7 @@ public class InhabitantsGeneratorTest {
      * @throws IOException 
      * @throws FileNotFoundException 
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testDefaultDirectoryGeneration() throws IOException {
         URL defaultFile = getClass().getClassLoader().getResource(ZIP_FILE_INHABITANT_NAME);
         Assert.assertNotNull(defaultFile);
