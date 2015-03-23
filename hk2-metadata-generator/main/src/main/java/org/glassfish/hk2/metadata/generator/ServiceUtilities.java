@@ -58,8 +58,10 @@ import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
@@ -95,6 +97,12 @@ public class ServiceUtilities {
      */
     public static List<DescriptorImpl> getDescriptorsFromClass(TypeElement clazz, ProcessingEnvironment processingEnvironment) {
         if (clazz == null || !ElementKind.CLASS.equals(clazz.getKind())) return Collections.emptyList();
+        
+        Set<Modifier> modifiers = clazz.getModifiers();
+        if (modifiers.contains(Modifier.ABSTRACT)) {
+            throw new IllegalArgumentException("The class " + clazz.getQualifiedName() +
+                    " is abstract.  @Service may only be put on concrete classes");
+        }
         
         Set<String> contracts = getAllContracts(clazz, processingEnvironment);
         
@@ -135,7 +143,17 @@ public class ServiceUtilities {
         if (provideMethodEE == null) return retVal;
         
         TypeMirror methodReturnMirror = provideMethodEE.getReturnType();
-        TypeElement methodReturnElement = (TypeElement) processingEnvironment.getTypeUtils().asElement(methodReturnMirror);
+        Element methodReturnElementRaw = processingEnvironment.getTypeUtils().asElement(methodReturnMirror);
+        TypeElement methodReturnElement;
+        if (methodReturnElementRaw instanceof TypeElement) {
+            methodReturnElement = (TypeElement) methodReturnElementRaw;
+        }
+        else if (methodReturnElementRaw instanceof TypeParameterElement) {
+            methodReturnElement = findFactory(clazz, null, processingEnvironment);
+        }
+        else {
+            throw new AssertionError("Unknown type for provide method: " + methodReturnElementRaw);
+        }
         
         DescriptorImpl provideDescriptor = new DescriptorImpl();
         provideDescriptor.setDescriptorType(DescriptorType.PROVIDE_METHOD);
@@ -151,6 +169,70 @@ public class ServiceUtilities {
         retVal.add(provideDescriptor);
         
         return retVal;
+    }
+    
+    private static TypeElement findFactory(TypeElement clazz, List<? extends TypeMirror> declaredTypes, ProcessingEnvironment environment) {
+        for (TypeMirror iFace : clazz.getInterfaces()) {
+            TypeElement iFaceElement = (TypeElement) environment.getTypeUtils().asElement(iFace);
+            String iFaceQualifiedName = nameToString(iFaceElement.getQualifiedName());
+            if (!Factory.class.getName().equals(iFaceQualifiedName)) continue;
+            
+            DeclaredType dtIFace = (DeclaredType) iFace;
+            
+            for (TypeMirror paramElement : dtIFace.getTypeArguments()) {
+                Element retVal = environment.getTypeUtils().asElement(paramElement);
+                
+                if (retVal instanceof TypeElement) {
+                    // Hard-coded type in the superclass
+                    return (TypeElement) retVal;
+                }
+                
+                if (declaredTypes == null) {
+                    throw new AssertionError("Unspecified generic type of Factory in " + clazz + " interface " + iFace);
+                }
+                
+                if (!(retVal instanceof TypeParameterElement)) {
+                    throw new AssertionError("Unknown generic type of Factory: " + retVal.getKind() + " of element " + retVal);
+                }
+                
+                TypeParameterElement tpe = (TypeParameterElement) retVal;
+                
+                boolean found = false;
+                int count = 0;
+                for (TypeParameterElement candidate : clazz.getTypeParameters()) {
+                    if (tpe.equals(candidate)) {
+                        found = true;
+                        break;
+                    }
+                    count++;
+                }
+                
+                if (!found) {
+                    throw new AssertionError("Internal error: mismatch between candidates (" + clazz.getTypeParameters() + ") and superclass types (" +
+                      declaredTypes + ")");
+                }
+                
+                TypeMirror transposedMirror = declaredTypes.get(count);
+                Element transposedElement = environment.getTypeUtils().asElement(transposedMirror);
+                
+                if (!(transposedElement instanceof TypeElement)) {
+                    throw new AssertionError("Factory type not specified full, cannot analyze " + clazz + " interface " + iFace + " type " + transposedElement);
+                }
+                
+                return (TypeElement) transposedElement;
+            }
+        }
+        
+        // If we get here, Factory was not directly implemented by the class.  Must now check
+        // the superclass
+        
+        DeclaredType dt = (DeclaredType) clazz.getSuperclass();
+        List<? extends TypeMirror> dtTypeMirrors = dt.getTypeArguments();
+        TypeElement superClazz = (TypeElement) environment.getTypeUtils().asElement(dt);
+        
+        return findFactory(superClazz, dtTypeMirrors, environment);
+        
+       
     }
     
     private static void generateFromClass(

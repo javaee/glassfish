@@ -352,6 +352,29 @@ public class InhabitantsGeneratorTest {
             
             EXPECTED_DESCRIPTORS.put(envItself, 0);
         }
+        
+        {
+            // This is a descriptor with a defaulted Name and a qualifier and metadata
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation("org.jvnet.hk2.metadata.tests.ConcreteFactory");
+            di.addAdvertisedContract("java.lang.Integer");
+            di.addQualifier(Blue.class.getName());
+            di.setDescriptorType(DescriptorType.PROVIDE_METHOD);
+            di.setScope(Singleton.class.getName());
+        
+            EXPECTED_DESCRIPTORS.put(di, 0);
+        }
+        
+        {
+            // This is a descriptor with a defaulted Name and a qualifier and metadata
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation("org.jvnet.hk2.metadata.tests.ConcreteFactory");
+            di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.ConcreteFactory");
+            di.addAdvertisedContract(Factory.class.getName());
+            di.setScope(Singleton.class.getName());
+        
+            EXPECTED_DESCRIPTORS.put(di, 0);
+        }
     }
     
     private Set<DescriptorImpl> getAllDescriptorsFromInputStream(InputStream is) throws IOException {
