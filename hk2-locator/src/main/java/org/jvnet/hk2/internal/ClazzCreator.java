@@ -434,6 +434,10 @@ public class ClazzCreator<T> implements Creator<T> {
     /* package */ ActiveDescriptor<?> getUnderlyingDescriptor() {
         return selfDescriptor;
     }
+    
+    public String toString() {
+        return "ClazzCreator(" + locator + "," + implClass.getName() + "," + System.identityHashCode(this) + ")";
+    }
 
     private static class ResolutionInfo {
         private final AnnotatedElement baseElement;

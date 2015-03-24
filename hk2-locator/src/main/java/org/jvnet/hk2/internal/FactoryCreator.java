@@ -148,4 +148,8 @@ public class FactoryCreator<T> implements Creator<T> {
             throw new MultiException(th);
         }
     }
+    
+    public String toString() {
+        return "FactoryCreator(" + locator + "," + factoryDescriptor + "," + System.identityHashCode(this) + ")";
+    }
 }
