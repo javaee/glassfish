@@ -1,4 +1,70 @@
-<h2>HK2 Inhabitants Generator</h2>
+<h2>HK2 Metadata Generators</h2>
+
+There are two ways to generate hk2 metadata (called inhabitant files) that can be
+used by the runtime system to find hk2 services without having to classload those
+services.  The first is the <b>HK2 Metadata Generator</b>, which works with the javac build
+tool, and the second is the <b>HK2 Inhabitant Generator</b> which can be used at build time
+with any build system or even post build time with JARs or can be embedded in other
+tools.
+
+The HK2 Metadata Generator is easy to use, as all it requires is to be on the
+javac classpath.  The HK2 Inhabitant Generator is also easy to use
+but requires the user to specify lines in the build system files (besides just
+dependencies).  Users can choose whichever tool works for them in their
+build environment.
+
++ [HK2 Metadata Generator](inhabitant-generator.html#HK2_Metadata_Generator)
++ [HK2 Inhabitant Generator](inhabitant-generator.html#HK2_Inhabitant_Generator)
+
+<h3>HK2 Metadata Generator</h3>
+
+The HK2 Metadata Generator will generate hk2 inhabitant files during the compilation
+of your java files.  It is a JSR-269 annotation processor that handles the [@Service][service]
+annotation.  The only requirement for using it is to put the javax.inject, hk2-utils, hk2-api and
+hk2-metadata-generator libraries in the classpath of the javac process.
+
+In this example we use the HK2 Metadata Generator in a Maven based build system:
+
+```xml
+  <dependency>
+      <groupId>org.glassfish.hk2</groupId>
+      <artifactId>hk2-metadata-generator</artifactId>
+  </dependency>
+```xml
+
+Since Maven uses transitive dependencies this is all you need to add as a dependency during
+build.
+
+In the following example we use the HK2 Metadata Generator in a gradle based build system:
+
+```java
+dependencies {
+  compile group: 'javax.inject', name: 'javax.inject', version: '1.1'
+  compile group: 'org.glassfish.hk2', name: 'hk2-utils', version: '2.4.0-b14'
+  compile group: 'org.glassfish.hk2', name: 'hk2-api', version: '2.4.0-b14'
+  compile group: 'org.glassfish.hk2', name: 'hk2-metadata-generator', version: '2.4.0-b14'
+  
+  testCompile group: 'javax.inject', name: 'javax.inject', version: '1.1'
+  testCompile group: 'org.glassfish.hk2', name: 'hk2-utils', version: '2.4.0-b14'
+  testCompile group: 'org.glassfish.hk2', name: 'hk2-api', version: '2.4.0-b14'
+  testCompile group: 'org.glassfish.hk2', name: 'hk2-metadata-generator', version: '2.4.0-b14'
+}
+```java
+
+<h4>HK2 Metadata Generator Options</h4>
+
+By default the HK2 Metadata Generator places the output file in META-INF/hk2-locator/default. However
+this behavior can be modified by setting the option <i>org.glassfish.hk2.metadata.location</i> to
+the desired location.  This is done with the javac compiler using the -A option.  In gradle
+this looks something like this:
+
+```java
+compileJava {
+  options.compilerArgs << '-Aorg.glassfish.hk2.metadata.location=META-INF/hk2-locator/acme'
+}
+```java
+
+<h3>HK2 Inhabitant Generator</h3>
 
 The HK2 Inhabitants Generator is a utility that will generate inhabitants file during the
 build of your JAR file.  It works by analyzing the classes that have been built by javac and
