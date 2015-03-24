@@ -39,7 +39,9 @@
  */
 package org.glassfish.hk2.metadata.generator;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -149,7 +151,7 @@ public class ServiceUtilities {
             methodReturnElement = (TypeElement) methodReturnElementRaw;
         }
         else if (methodReturnElementRaw instanceof TypeParameterElement) {
-            methodReturnElement = findFactory(clazz, null, processingEnvironment);
+            methodReturnElement = findFactory(clazz, clazz, null, null, processingEnvironment);
         }
         else {
             throw new AssertionError("Unknown type for provide method: " + methodReturnElementRaw);
@@ -171,7 +173,12 @@ public class ServiceUtilities {
         return retVal;
     }
     
-    private static TypeElement findFactory(TypeElement clazz, List<? extends TypeMirror> declaredTypes, ProcessingEnvironment environment) {
+    private static TypeElement findFactory(
+            TypeElement originalClazz,
+            TypeElement clazz,
+            List<? extends TypeMirror> hardenedClassTypes,
+            Map<Name, TypeMirror> classTypeMap,
+            ProcessingEnvironment environment) {
         for (TypeMirror iFace : clazz.getInterfaces()) {
             TypeElement iFaceElement = (TypeElement) environment.getTypeUtils().asElement(iFace);
             String iFaceQualifiedName = nameToString(iFaceElement.getQualifiedName());
@@ -187,12 +194,14 @@ public class ServiceUtilities {
                     return (TypeElement) retVal;
                 }
                 
-                if (declaredTypes == null) {
-                    throw new AssertionError("Unspecified generic type of Factory in " + clazz + " interface " + iFace);
+                if (hardenedClassTypes == null) {
+                    throw new AssertionError("Error analyzing " + originalClazz +
+                            ": Unspecified generic type of Factory in " + clazz + " interface " + iFace);
                 }
                 
                 if (!(retVal instanceof TypeParameterElement)) {
-                    throw new AssertionError("Unknown generic type of Factory: " + retVal.getKind() + " of element " + retVal);
+                    throw new AssertionError("Error analyzing " + originalClazz +
+                            ": Unknown generic type of Factory: " + retVal.getKind() + " of element " + retVal);
                 }
                 
                 TypeParameterElement tpe = (TypeParameterElement) retVal;
@@ -208,15 +217,17 @@ public class ServiceUtilities {
                 }
                 
                 if (!found) {
-                    throw new AssertionError("Internal error: mismatch between candidates (" + clazz.getTypeParameters() + ") and superclass types (" +
-                      declaredTypes + ")");
+                    throw new AssertionError("Error analyzing " + originalClazz +
+                            ":  Internal error: mismatch between candidates (" + clazz.getTypeParameters() + ") and subclass (" +
+                            hardenedClassTypes + ")");
                 }
                 
-                TypeMirror transposedMirror = declaredTypes.get(count);
+                TypeMirror transposedMirror = hardenedClassTypes.get(count);
                 Element transposedElement = environment.getTypeUtils().asElement(transposedMirror);
                 
                 if (!(transposedElement instanceof TypeElement)) {
-                    throw new AssertionError("Factory type not specified full, cannot analyze " + clazz + " interface " + iFace + " type " + transposedElement);
+                    throw new AssertionError("Error analyzing " + originalClazz +
+                            ": Factory type not specified fully, cannot analyze " + clazz + " interface " + iFace + " type " + transposedElement);
                 }
                 
                 return (TypeElement) transposedElement;
@@ -226,13 +237,38 @@ public class ServiceUtilities {
         // If we get here, Factory was not directly implemented by the class.  Must now check
         // the superclass
         
-        DeclaredType dt = (DeclaredType) clazz.getSuperclass();
-        List<? extends TypeMirror> dtTypeMirrors = dt.getTypeArguments();
-        TypeElement superClazz = (TypeElement) environment.getTypeUtils().asElement(dt);
+        DeclaredType superClassDeclaredType = (DeclaredType) clazz.getSuperclass();
+        TypeElement superClazz = (TypeElement) environment.getTypeUtils().asElement(superClassDeclaredType);
         
-        return findFactory(superClazz, dtTypeMirrors, environment);
+        List<? extends TypeMirror> superClassDeclaredTypes = superClassDeclaredType.getTypeArguments();
         
+        List<? extends TypeMirror> hardenedList = superClassDeclaredTypes;
+        if (hardenedClassTypes != null) {
+            List<TypeMirror> translatedList = new ArrayList<TypeMirror>(superClassDeclaredTypes.size());
+            
+            for (TypeMirror scTPE : superClassDeclaredType.getTypeArguments()) {
+                Name scTPEName = environment.getTypeUtils().asElement(scTPE).getSimpleName();
+                TypeMirror replacement = classTypeMap.get(scTPEName);
+                if (replacement == null) {
+                    translatedList.add(scTPE);
+                }
+                else {
+                    translatedList.add(replacement);
+                }
+            }
+            
+            hardenedList = (List<? extends TypeMirror>) translatedList;
+        }
+        
+        Map<Name, TypeMirror> typeMap = new HashMap<Name, TypeMirror>();
        
+        int position = 0;
+        for (TypeParameterElement tpe : superClazz.getTypeParameters()) {
+            typeMap.put(tpe.getSimpleName(), hardenedList.get(position));
+            position++;
+        }
+        
+        return findFactory(originalClazz, superClazz, hardenedList, typeMap, environment);
     }
     
     private static void generateFromClass(

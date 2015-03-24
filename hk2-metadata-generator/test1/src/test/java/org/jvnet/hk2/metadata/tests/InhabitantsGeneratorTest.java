@@ -354,7 +354,7 @@ public class InhabitantsGeneratorTest {
         }
         
         {
-            // This is a descriptor with a defaulted Name and a qualifier and metadata
+            // This is a descriptor of an abstract factory resolved by parent
             DescriptorImpl di = new DescriptorImpl();
             di.setImplementation("org.jvnet.hk2.metadata.tests.ConcreteFactory");
             di.addAdvertisedContract("java.lang.Integer");
@@ -366,11 +366,34 @@ public class InhabitantsGeneratorTest {
         }
         
         {
-            // This is a descriptor with a defaulted Name and a qualifier and metadata
+            // This is a descriptor of an abstract factory resolved by parent
             DescriptorImpl di = new DescriptorImpl();
             di.setImplementation("org.jvnet.hk2.metadata.tests.ConcreteFactory");
             di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.ConcreteFactory");
             di.addAdvertisedContract(Factory.class.getName());
+            di.setScope(Singleton.class.getName());
+        
+            EXPECTED_DESCRIPTORS.put(di, 0);
+        }
+        
+        {
+            // This is a descriptor of an abstract factory resolved by parent in a complex hierarchy of Types
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation("org.jvnet.hk2.metadata.tests.complextypefactory.ConcreteComplexFactory");
+            di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.complextypefactory.SomeInterface");
+            di.setDescriptorType(DescriptorType.PROVIDE_METHOD);
+            di.setScope(PerLookup.class.getName());
+        
+            EXPECTED_DESCRIPTORS.put(di, 0);
+        }
+        
+        {
+            // This is a descriptor of an abstract factory resolved by parent in a complex hierarchy of Types
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation("org.jvnet.hk2.metadata.tests.complextypefactory.ConcreteComplexFactory");
+            di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.complextypefactory.ConcreteComplexFactory");
+            di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.complextypefactory.InterfaceWithTwoTypes");
+            di.addAdvertisedContract("org.glassfish.hk2.api.Factory");
             di.setScope(Singleton.class.getName());
         
             EXPECTED_DESCRIPTORS.put(di, 0);
