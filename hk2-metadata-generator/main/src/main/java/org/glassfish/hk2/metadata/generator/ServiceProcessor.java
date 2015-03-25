@@ -71,7 +71,7 @@ import org.glassfish.hk2.utilities.DescriptorImpl;
  *
  */
 @SupportedAnnotationTypes("org.jvnet.hk2.annotations.Service")
-@SupportedSourceVersion(SourceVersion.RELEASE_6)
+@SupportedSourceVersion(SourceVersion.RELEASE_7)
 @SupportedOptions("org.glassfish.hk2.metadata.location")
 public class ServiceProcessor extends AbstractProcessor {
     private static final String LOCATION_OPTION = "org.glassfish.hk2.metadata.location";
