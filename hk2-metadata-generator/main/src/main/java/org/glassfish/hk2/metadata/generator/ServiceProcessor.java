@@ -76,6 +76,9 @@ import org.glassfish.hk2.utilities.DescriptorImpl;
 public class ServiceProcessor extends AbstractProcessor {
     private static final String LOCATION_OPTION = "org.glassfish.hk2.metadata.location";
     private static final String LOCATION_DEFAULT = "META-INF/hk2-locator/default";
+    
+    private final TreeSet<DescriptorImpl> allDescriptors = new TreeSet<DescriptorImpl>(new DescriptorComparitor());
+    private final ArrayList<Element> originators = new ArrayList<Element>();
 
     /* (non-Javadoc)
      * @see javax.annotation.processing.AbstractProcessor#process(java.util.Set, javax.annotation.processing.RoundEnvironment)
@@ -83,9 +86,6 @@ public class ServiceProcessor extends AbstractProcessor {
     @Override
     public boolean process(Set<? extends TypeElement> annotations,
             RoundEnvironment roundEnv) {
-        TreeSet<DescriptorImpl> allDescriptors = new TreeSet<DescriptorImpl>(new DescriptorComparitor());
-        ArrayList<Element> originators = new ArrayList<Element>();
-        
         MultiException collectedExceptions = null;
         for (TypeElement annotation : annotations) {
             Set<? extends Element> clazzes = roundEnv.getElementsAnnotatedWith(annotation);
@@ -124,9 +124,10 @@ public class ServiceProcessor extends AbstractProcessor {
         }
         
         if (allDescriptors.isEmpty()) return true;
+        if (!roundEnv.processingOver()) return true;
         
         try {
-            createFile(allDescriptors, originators);
+            createFile();
         }
         catch (IOException e) {
             processingEnv.getMessager().printMessage(Kind.ERROR, e.getMessage());
@@ -136,7 +137,7 @@ public class ServiceProcessor extends AbstractProcessor {
         return true;
     }
     
-    private void createFile(TreeSet<DescriptorImpl> allDescriptors, ArrayList<Element> originators) throws IOException {
+    private void createFile() throws IOException {
         String location = processingEnv.getOptions().get(LOCATION_OPTION);
         if (location == null) location = LOCATION_DEFAULT;
         location = location.trim();

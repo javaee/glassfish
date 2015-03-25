@@ -398,6 +398,36 @@ public class InhabitantsGeneratorTest {
         
             EXPECTED_DESCRIPTORS.put(di, 0);
         }
+        
+        {
+            // This descriptor has embedded classes
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation(TripleTroubleService.class.getName());
+            di.addAdvertisedContract(TripleTroubleService.class.getName());
+            di.setScope(Singleton.class.getName());
+        
+            EXPECTED_DESCRIPTORS.put(di, 0);
+        }
+        
+        {
+            // This descriptor has embedded classes
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation(TripleTroubleService.DoubleTroubleService.class.getName());
+            di.addAdvertisedContract(TripleTroubleService.DoubleTroubleService.class.getName());
+            di.setScope(Singleton.class.getName());
+        
+            EXPECTED_DESCRIPTORS.put(di, 0);
+        }
+        
+        {
+            // This descriptor has embedded classes
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation(TripleTroubleService.DoubleTroubleService.SingleTroubleService.class.getName());
+            di.addAdvertisedContract(TripleTroubleService.DoubleTroubleService.SingleTroubleService.class.getName());
+            di.setScope(Singleton.class.getName());
+        
+            EXPECTED_DESCRIPTORS.put(di, 0);
+        }
     }
     
     private Set<DescriptorImpl> getAllDescriptorsFromInputStream(InputStream is) throws IOException {

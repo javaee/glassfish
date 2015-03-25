@@ -41,8 +41,6 @@ package org.glassfish.hk2.metadata.generator;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -67,6 +65,7 @@ import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Elements;
 
 import org.glassfish.hk2.api.ClassAnalyzer;
 import org.glassfish.hk2.api.DescriptorType;
@@ -100,9 +99,11 @@ public class ServiceUtilities {
     public static List<DescriptorImpl> getDescriptorsFromClass(TypeElement clazz, ProcessingEnvironment processingEnvironment) {
         if (clazz == null || !ElementKind.CLASS.equals(clazz.getKind())) return Collections.emptyList();
         
+        Elements elements = processingEnvironment.getElementUtils();
+        
         Set<Modifier> modifiers = clazz.getModifiers();
         if (modifiers.contains(Modifier.ABSTRACT)) {
-            throw new IllegalArgumentException("The class " + clazz.getQualifiedName() +
+            throw new IllegalArgumentException("The class " + elements.getBinaryName(clazz) +
                     " is abstract.  @Service may only be put on concrete classes");
         }
         
@@ -114,7 +115,7 @@ public class ServiceUtilities {
         }
         
         DescriptorImpl retVal = new DescriptorImpl();
-        retVal.setImplementation(nameToString(clazz.getQualifiedName()));
+        retVal.setImplementation(nameToString(elements.getBinaryName(clazz)));
         
         generateFromClass(retVal, clazz, contracts, processingEnvironment);
         
@@ -124,8 +125,10 @@ public class ServiceUtilities {
     private static List<DescriptorImpl> getDescriptorFromFactoryClass(TypeElement clazz, Set<String> contracts, ProcessingEnvironment processingEnvironment) {
         LinkedList<DescriptorImpl> retVal = new LinkedList<DescriptorImpl>();
         
+        Elements elements = processingEnvironment.getElementUtils();
+        
         DescriptorImpl factoryItself = new DescriptorImpl();
-        factoryItself.setImplementation(nameToString(clazz.getQualifiedName()));
+        factoryItself.setImplementation(nameToString(elements.getBinaryName(clazz)));
         
         generateFromClass(factoryItself, clazz, contracts, processingEnvironment);
         retVal.add(factoryItself);
@@ -159,7 +162,7 @@ public class ServiceUtilities {
         
         DescriptorImpl provideDescriptor = new DescriptorImpl();
         provideDescriptor.setDescriptorType(DescriptorType.PROVIDE_METHOD);
-        provideDescriptor.setImplementation(nameToString(clazz.getQualifiedName()));
+        provideDescriptor.setImplementation(nameToString(elements.getBinaryName(clazz)));
         
         Set<String> methodContracts = getAllContracts(methodReturnElement, processingEnvironment);
         for (String methodContract : methodContracts) {
@@ -179,9 +182,11 @@ public class ServiceUtilities {
             List<? extends TypeMirror> hardenedClassTypes,
             Map<Name, TypeMirror> classTypeMap,
             ProcessingEnvironment environment) {
+        Elements elements = environment.getElementUtils();
+        
         for (TypeMirror iFace : clazz.getInterfaces()) {
             TypeElement iFaceElement = (TypeElement) environment.getTypeUtils().asElement(iFace);
-            String iFaceQualifiedName = nameToString(iFaceElement.getQualifiedName());
+            String iFaceQualifiedName = nameToString(elements.getBinaryName(iFaceElement));
             if (!Factory.class.getName().equals(iFaceQualifiedName)) continue;
             
             DeclaredType dtIFace = (DeclaredType) iFace;
@@ -260,7 +265,7 @@ public class ServiceUtilities {
             hardenedList = (List<? extends TypeMirror>) translatedList;
         }
         
-        Map<Name, TypeMirror> typeMap = new HashMap<Name, TypeMirror>();
+        Map<Name, TypeMirror> typeMap = new LinkedHashMap<Name, TypeMirror>();
        
         int position = 0;
         for (TypeParameterElement tpe : superClazz.getTypeParameters()) {
@@ -280,7 +285,7 @@ public class ServiceUtilities {
             retVal.addAdvertisedContract(contract);
         }
         
-        Map<String, List<String>> metadata = new LinkedHashMap<String, List<String>>();
+        LinkedHashMap<String, List<String>> metadata = new LinkedHashMap<String, List<String>>();
         
         retVal.setScope(getScope(clazz, metadata, processingEnvironment));
         String name = getName(clazz, processingEnvironment);
@@ -307,8 +312,10 @@ public class ServiceUtilities {
         retVal.setMetadata(metadata);
     }
     
-    private static String getScope(Element clazz, Map<String, List<String>> metadata, ProcessingEnvironment processingEnv) {
+    private static String getScope(Element clazz, LinkedHashMap<String, List<String>> metadata, ProcessingEnvironment processingEnv) {
         List<? extends AnnotationMirror> annotationMirrors = clazz.getAnnotationMirrors();
+        
+        Elements elements = processingEnv.getElementUtils();
         
         String foundScope = null;
         for (AnnotationMirror annotationMirror : annotationMirrors) {
@@ -319,14 +326,14 @@ public class ServiceUtilities {
                 if (foundScope != null) {
                     String qName = "provide";
                     if (clazz instanceof TypeElement) {
-                        qName = nameToString(((TypeElement) clazz).getQualifiedName());
+                        qName = nameToString(elements.getBinaryName((TypeElement) clazz));
                     }
                     throw new AssertionError("A service with implementation " + qName +
                             " has at least two scopes: " +
-                            foundScope + " and " + annotationType.getQualifiedName());
+                            foundScope + " and " + elements.getBinaryName(annotationType));
                 }
                 
-                foundScope = nameToString(annotationType.getQualifiedName());
+                foundScope = nameToString(elements.getBinaryName(annotationType));
                 getMetadataFromAnnotation(annotationMirror, annotationType, metadata, processingEnv);
             }
         }
@@ -343,7 +350,7 @@ public class ServiceUtilities {
     private static String getName(Element clazz, ProcessingEnvironment processingEnvironment) {
         if (clazz.getAnnotation(Named.class) != null) {
             // Named wins
-            AnnotationMirror namedMirror = getAnnotation(clazz, Named.class.getName());
+            AnnotationMirror namedMirror = getAnnotation(clazz, Named.class.getName(), processingEnvironment);
             AnnotationValue namedValue = getValueFromAnnotation(namedMirror, processingEnvironment);
             
             String value = (String) namedValue.getValue();
@@ -359,7 +366,7 @@ public class ServiceUtilities {
             return value;
         }
         
-        AnnotationMirror serviceMirror = getAnnotation(clazz, Service.class.getName());
+        AnnotationMirror serviceMirror = getAnnotation(clazz, Service.class.getName(), processingEnvironment);
         if (serviceMirror == null) return null;
         
         AnnotationValue serviceValue = getValueFromAnnotation(serviceMirror, "name", processingEnvironment);
@@ -369,8 +376,10 @@ public class ServiceUtilities {
         return value;
     }
     
-    private static Set<String> getAllQualifiers(Element clazz, Map<String, List<String>> metadata, ProcessingEnvironment processingEnv) {
+    private static Set<String> getAllQualifiers(Element clazz, LinkedHashMap<String, List<String>> metadata, ProcessingEnvironment processingEnv) {
         LinkedHashSet<String> retVal = new LinkedHashSet<String>();
+        
+        Elements elements = processingEnv.getElementUtils();
         
         List<? extends AnnotationMirror> annotations = clazz.getAnnotationMirrors();
         for (AnnotationMirror annoMirror : annotations) {
@@ -378,7 +387,7 @@ public class ServiceUtilities {
             TypeElement dtElement = (TypeElement) dt.asElement();
             
             if (dtElement.getAnnotation(Qualifier.class) != null) {
-                retVal.add(nameToString(dtElement.getQualifiedName()));
+                retVal.add(nameToString(elements.getBinaryName(dtElement)));
                 
                 getMetadataFromAnnotation(annoMirror, dtElement, metadata, processingEnv);
             }
@@ -388,7 +397,7 @@ public class ServiceUtilities {
     }
     
     private static DescriptorVisibility getVisibility(Element clazz, ProcessingEnvironment processingEnv) {
-        AnnotationMirror mirror = getAnnotation(clazz, Visibility.class.getName());
+        AnnotationMirror mirror = getAnnotation(clazz, Visibility.class.getName(), processingEnv);
         if (mirror == null) return DescriptorVisibility.NORMAL;
         
         AnnotationValue annoValue = getValueFromAnnotation(mirror, processingEnv);
@@ -403,7 +412,7 @@ public class ServiceUtilities {
     }
     
     private static int getRank(Element clazz, ProcessingEnvironment processingEnv) {
-        AnnotationMirror mirror = getAnnotation(clazz, Rank.class.getName());
+        AnnotationMirror mirror = getAnnotation(clazz, Rank.class.getName(), processingEnv);
         if (mirror == null) return 0;
         
         AnnotationValue annoValue = getValueFromAnnotation(mirror, processingEnv);
@@ -414,7 +423,7 @@ public class ServiceUtilities {
     }
     
     private static Boolean getUseProxy(Element clazz, ProcessingEnvironment processingEnv) {
-        AnnotationMirror mirror = getAnnotation(clazz, UseProxy.class.getName());
+        AnnotationMirror mirror = getAnnotation(clazz, UseProxy.class.getName(), processingEnv);
         if (mirror == null) return null;
         
         AnnotationValue annoValue = getValueFromAnnotation(mirror, processingEnv);
@@ -424,7 +433,7 @@ public class ServiceUtilities {
     }
     
     private static Boolean getProxyForSameScope(Element clazz, ProcessingEnvironment processingEnv) {
-        AnnotationMirror mirror = getAnnotation(clazz, ProxyForSameScope.class.getName());
+        AnnotationMirror mirror = getAnnotation(clazz, ProxyForSameScope.class.getName(), processingEnv);
         if (mirror == null) return null;
         
         AnnotationValue annoValue = getValueFromAnnotation(mirror, processingEnv);
@@ -434,7 +443,7 @@ public class ServiceUtilities {
     }
     
     private static String getAnalyzer(Element clazz, ProcessingEnvironment processingEnv) {
-        AnnotationMirror mirror = getAnnotation(clazz, Service.class.getName());
+        AnnotationMirror mirror = getAnnotation(clazz, Service.class.getName(), processingEnv);
         if (mirror == null) return null;
         
         AnnotationValue annoValue = getValueFromAnnotation(mirror, "analyzer", processingEnv);
@@ -447,7 +456,7 @@ public class ServiceUtilities {
     }
     
     private static void getServiceMetadata(Element clazz, Map<String, List<String>> metadata, ProcessingEnvironment processingEnv) {
-        AnnotationMirror mirror = getAnnotation(clazz, Service.class.getName());
+        AnnotationMirror mirror = getAnnotation(clazz, Service.class.getName(), processingEnv);
         if (mirror == null) return;
         
         AnnotationValue annoValue = getValueFromAnnotation(mirror, "metadata", processingEnv);
@@ -463,11 +472,13 @@ public class ServiceUtilities {
     private static Set<String> getAllContracts(TypeElement clazz, ProcessingEnvironment processingEnvironment) {
         if (clazz == null) return Collections.emptySet();
         
+        Elements elements = processingEnvironment.getElementUtils();
+        
         ContractsProvided provided = clazz.getAnnotation(ContractsProvided.class);
         if (provided != null) {
             LinkedHashSet<String> retVal = new LinkedHashSet<String>();
             
-            AnnotationMirror contractsProvided = getAnnotation(clazz, ContractsProvided.class.getName());
+            AnnotationMirror contractsProvided = getAnnotation(clazz, ContractsProvided.class.getName(), processingEnvironment);
             AnnotationValue annoValue = getValueFromAnnotation(contractsProvided, processingEnvironment);
             
             List<? extends AnnotationValue> arrayValues = (List<? extends AnnotationValue>) annoValue.getValue();
@@ -476,7 +487,7 @@ public class ServiceUtilities {
                         
                 TypeElement providedElement = (TypeElement) processingEnvironment.getTypeUtils().asElement(providedMirror);
                          
-                retVal.add(nameToString(providedElement.getQualifiedName()));
+                retVal.add(nameToString(elements.getBinaryName(providedElement)));
             }
             
             return retVal;
@@ -484,25 +495,30 @@ public class ServiceUtilities {
         
         LinkedHashSet<String> retVal = new LinkedHashSet<String>();
         
-        retVal.add(nameToString(clazz.getQualifiedName()));
+        retVal.add(nameToString(elements.getBinaryName(clazz)));
         
-        getAllSubContracts(clazz, processingEnvironment, retVal, new HashSet<String>());
+        getAllSubContracts(clazz, processingEnvironment, retVal, new LinkedHashSet<String>());
         
         return retVal;
     }
     
-    private static void getAllSubContracts(TypeElement clazz, ProcessingEnvironment processingEnvironment, LinkedHashSet<String> contracts, HashSet<String> cycleDetector) {
-        if (clazz == null || nameToString(clazz.getQualifiedName()).equals(Object.class.getName())) return;
+    private static void getAllSubContracts(TypeElement clazz,
+            ProcessingEnvironment processingEnvironment,
+            LinkedHashSet<String> contracts,
+            LinkedHashSet<String> cycleDetector) {
+        Elements elements = processingEnvironment.getElementUtils();
         
-        if (cycleDetector.contains(nameToString(clazz.getQualifiedName()))) return;
-        cycleDetector.add(nameToString(clazz.getQualifiedName()));
+        if (clazz == null || nameToString(elements.getBinaryName(clazz)).equals(Object.class.getName())) return;
+        
+        if (cycleDetector.contains(nameToString(elements.getBinaryName(clazz)))) return;
+        cycleDetector.add(nameToString(elements.getBinaryName(clazz)));
         
         List<? extends TypeMirror> interfaceMirrors = clazz.getInterfaces();
         for (TypeMirror mirror : interfaceMirrors) {
             TypeElement iFace = (TypeElement) processingEnvironment.getTypeUtils().asElement(mirror);
             
             if (isAContract(iFace)) {
-                contracts.add(nameToString(iFace.getQualifiedName()));
+                contracts.add(nameToString(elements.getBinaryName(iFace)));
             }
             
             getAllSubContracts(iFace, processingEnvironment, contracts, cycleDetector);
@@ -513,7 +529,7 @@ public class ServiceUtilities {
             TypeElement superClass = (TypeElement) processingEnvironment.getTypeUtils().asElement(superClazzMirror);
             
             if (isAContract(superClass)) {
-                contracts.add(nameToString(superClass.getQualifiedName()));
+                contracts.add(nameToString(elements.getBinaryName(superClass)));
             }
             
             getAllSubContracts(superClass, processingEnvironment, contracts, cycleDetector);
@@ -523,13 +539,13 @@ public class ServiceUtilities {
     @SuppressWarnings("unchecked")
     private static void getMetadataFromAnnotation(AnnotationMirror annotation,
             TypeElement annotationType,
-            Map<String, List<String>> metadata,
+            LinkedHashMap<String, List<String>> metadata,
             ProcessingEnvironment processingEnvironment) {
         Map<? extends ExecutableElement, ? extends AnnotationValue> methods = annotation.getElementValues();
         
         for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : methods.entrySet()) {
             ExecutableElement ee = entry.getKey();
-            AnnotationMirror metadataMirror = getAnnotation(ee, Metadata.class.getName());
+            AnnotationMirror metadataMirror = getAnnotation(ee, Metadata.class.getName(), processingEnvironment);
             if (metadataMirror == null) continue;
             
             AnnotationValue metadataAnnotationKey = getValueFromAnnotation(metadataMirror, processingEnvironment);
@@ -580,13 +596,15 @@ public class ServiceUtilities {
         return name.toString();
     }
     
-    private static AnnotationMirror getAnnotation(Element clazz, String clazzName) {
+    private static AnnotationMirror getAnnotation(Element clazz, String clazzName, ProcessingEnvironment processingEnv) {
+        Elements elements = processingEnv.getElementUtils();
+        
         List<? extends AnnotationMirror> annotationMirrors = clazz.getAnnotationMirrors();
         for (AnnotationMirror annoMirror : annotationMirrors) {
             DeclaredType dt = annoMirror.getAnnotationType();
             TypeElement dtElement = (TypeElement) dt.asElement();
             
-            if (clazzName.equals(nameToString(dtElement.getQualifiedName()))) {
+            if (clazzName.equals(nameToString(elements.getBinaryName(dtElement)))) {
                 return annoMirror;
             }
         }
