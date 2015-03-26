@@ -88,7 +88,7 @@ public class ServiceLocatorHk2MainTest {
 				provision(mavenBundle().groupId(GROUP_ID).artifactId("hk2-utils").version(projectVersion).startLevel(4)),
 				provision(mavenBundle().groupId(GROUP_ID).artifactId("hk2-api").version(projectVersion).startLevel(4)),
                 provision(mavenBundle().groupId(GROUP_ID).artifactId("hk2-runlevel").version(projectVersion).startLevel(4)),
-                provision(mavenBundle().groupId(GROUP_ID).artifactId("core").version(projectVersion).startLevel(4)),
+                provision(mavenBundle().groupId(GROUP_ID).artifactId("hk2-core").version(projectVersion).startLevel(4)),
                 provision(mavenBundle().groupId(GROUP_ID).artifactId("hk2-config").version(projectVersion).startLevel(4)),
                 provision(mavenBundle().groupId(GROUP_ID).artifactId(
                         "hk2-locator").version(projectVersion).startLevel(4)),
