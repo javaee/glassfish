@@ -65,7 +65,7 @@ that is annotated with the custom injection annotation.  The actual type of the 
 the [InjectionResolver][injectionresolver] implementation must be
 the custom injection annotation.
 
-The annotation [InjectionPointResolver][injectionpointresolver] can
+The annotation [InjectionPointIndicator][injectionpointindicator] can
 optionally be placed on the custom annotation.  Using this annotation
 allows the automatic analysis of a class with custom injection
 annotations prior to the registration of the associated [InjectionResolver][injectionresolver].
