@@ -47,6 +47,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -54,7 +55,6 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.junit.Assert;
-
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.Factory;
@@ -425,6 +425,74 @@ public class InhabitantsGeneratorTest {
             di.setImplementation(TripleTroubleService.DoubleTroubleService.SingleTroubleService.class.getName());
             di.addAdvertisedContract(TripleTroubleService.DoubleTroubleService.SingleTroubleService.class.getName());
             di.setScope(Singleton.class.getName());
+        
+            EXPECTED_DESCRIPTORS.put(di, 0);
+        }
+        
+        {
+            // This descriptor has @ProxyForSameScope with no explicit value set (should be true)
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation(ServiceWithDefaultProxyForSameScope.class.getName());
+            di.addAdvertisedContract(ServiceWithDefaultProxyForSameScope.class.getName());
+            di.setScope(ProxiableScope.class.getName());
+            di.setProxyForSameScope(Boolean.TRUE);
+        
+            EXPECTED_DESCRIPTORS.put(di, 0);
+        }
+        
+        {
+            // This descriptor has @ProxyForSameScope set to false
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation(ServiceWithFalseProxyForSameScope.class.getName());
+            di.addAdvertisedContract(ServiceWithFalseProxyForSameScope.class.getName());
+            di.setScope(ProxiableScope.class.getName());
+            di.setProxyForSameScope(Boolean.FALSE);
+        
+            EXPECTED_DESCRIPTORS.put(di, 0);
+        }
+        
+        {
+            // This descriptor is a factory for a provide method with @ProxyForSameScope with no explicit value set (should be true)
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation(FactoryWithDefaultProxyForSameScope.class.getName());
+            di.addAdvertisedContract(FactoryWithDefaultProxyForSameScope.class.getName());
+            di.addAdvertisedContract(Factory.class.getName());
+            di.setScope(Singleton.class.getName());
+        
+            EXPECTED_DESCRIPTORS.put(di, 0);
+        }
+        
+        {
+            // This descriptor is the provide method for a factory with @ProxyForSameScope with no explicit value set (should be true)
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation(FactoryWithDefaultProxyForSameScope.class.getName());
+            di.addAdvertisedContract(List.class.getName());
+            di.setScope(ProxiableScope.class.getName());
+            di.setDescriptorType(DescriptorType.PROVIDE_METHOD);
+            di.setProxyForSameScope(Boolean.TRUE);
+        
+            EXPECTED_DESCRIPTORS.put(di, 0);
+        }
+        
+        {
+            // This descriptor is a factory for a provide method with @ProxyForSameScope with no explicit value set (should be true)
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation(FactoryWithFalseProxyForSameScope.class.getName());
+            di.addAdvertisedContract(FactoryWithFalseProxyForSameScope.class.getName());
+            di.addAdvertisedContract(Factory.class.getName());
+            di.setScope(Singleton.class.getName());
+        
+            EXPECTED_DESCRIPTORS.put(di, 0);
+        }
+        
+        {
+            // This descriptor is the provide method for a factory with @ProxyForSameScope with no explicit value set (should be true)
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation(FactoryWithFalseProxyForSameScope.class.getName());
+            di.addAdvertisedContract(Map.class.getName());
+            di.setScope(ProxiableScope.class.getName());
+            di.setDescriptorType(DescriptorType.PROVIDE_METHOD);
+            di.setProxyForSameScope(Boolean.FALSE);
         
             EXPECTED_DESCRIPTORS.put(di, 0);
         }
