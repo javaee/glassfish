@@ -93,7 +93,7 @@
             </dependency>
             <dependency>
                 <groupId>org.glassfish.hk2</groupId>
-                <artifactId>core</artifactId>
+                <artifactId>hk2-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

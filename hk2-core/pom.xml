@@ -48,7 +48,7 @@
         <artifactId>hk2-parent</artifactId>
         <version>2.4.0-b15-SNAPSHOT</version>
     </parent>
-    <artifactId>core</artifactId>
+    <artifactId>hk2-core</artifactId>
     <name>HK2 core module</name>
 
     <properties>

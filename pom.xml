@@ -229,7 +229,7 @@
         <module>hk2-runlevel</module>
         <module>hk2-locator</module>
         <module>class-model</module>
-        <module>core</module>
+        <module>hk2-core</module>
         <module>osgi</module>
         <module>dependency-verifier</module>
         <module>dependency-visualizer</module>
@@ -708,7 +708,7 @@
                         ${basedir}/hk2-locator/src/main/java;
                         ${basedir}/hk2-utils/src/main/java;
                         ${basedir}/hk2-runlevel/src/main/java;
-                        ${basedir}/core/src/main/java;
+                        ${basedir}/hk2-core/src/main/java;
                         ${basedir}/class-model/src/main/java;
                         ${basedir}/hk2-configuration/persistence/hk2-xml-dom/config-types/src/main/java;
                         ${basedir}/guice-bridge/src/main/java;
