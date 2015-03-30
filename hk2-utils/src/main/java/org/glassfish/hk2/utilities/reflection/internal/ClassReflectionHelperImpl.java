@@ -41,21 +41,13 @@ package org.glassfish.hk2.utilities.reflection.internal;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 
 import org.glassfish.hk2.utilities.cache.Computable;
 import org.glassfish.hk2.utilities.cache.HybridCacheEntry;
 import org.glassfish.hk2.utilities.cache.LRUHybridCache;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.MethodWrapper;
-import org.glassfish.hk2.utilities.reflection.Pretty;
 
 /**
  * @author jwells
@@ -63,12 +55,6 @@ import org.glassfish.hk2.utilities.reflection.Pretty;
  */
 public class ClassReflectionHelperImpl implements ClassReflectionHelper {
     private final int MAX_CACHE_SIZE = 200;
-    
-    private final static String CONVENTION_POST_CONSTRUCT = "postConstruct";
-    private final static String CONVENTION_PRE_DESTROY = "preDestroy";
-    
-    private final static Set<MethodWrapper> OBJECT_METHODS = getObjectMethods();
-    private final static Set<Field> OBJECT_FIELDS = getObjectFields();
     
     private final LRUHybridCache<LifecycleKey, Method> postConstructCache =
             new LRUHybridCache<LifecycleKey, Method>(MAX_CACHE_SIZE, new Computable<LifecycleKey, HybridCacheEntry<Method>>() {
@@ -95,7 +81,7 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
 
                 @Override
                 public HybridCacheEntry<Set<MethodWrapper>> compute(Class<?> key) {
-                    return methodCache.createCacheEntry(key, getAllMethodWrappers(key), false);
+                    return methodCache.createCacheEntry(key, ClassReflectionHelperUtilities.getAllMethodWrappers(key), false);
                 }
                 
             });
@@ -106,220 +92,14 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
 
                 @Override
                 public HybridCacheEntry<Set<Field>> compute(Class<?> key) {
-                    return fieldCache.createCacheEntry(key, getAllFieldWrappers(key), false);
+                    return fieldCache.createCacheEntry(key, ClassReflectionHelperUtilities.getAllFieldWrappers(key), false);
                 }
                 
             });
     
-    private static Set<MethodWrapper> getObjectMethods() {
-        return AccessController.doPrivileged(new PrivilegedAction<Set<MethodWrapper>>() {
-
-            @Override
-            public Set<MethodWrapper> run() {
-                Set<MethodWrapper> retVal = new HashSet<MethodWrapper>();
-                
-                for (Method method : Object.class.getDeclaredMethods()) {
-                    retVal.add(new MethodWrapperImpl(method));                   
-                }
-                
-                return retVal;
-            }
-            
-        });
-        
+    public ClassReflectionHelperImpl() {
     }
     
-    private static Set<Field> getObjectFields() {
-        return AccessController.doPrivileged(new PrivilegedAction<Set<Field>>() {
-
-            @Override
-            public Set<Field> run() {
-                Set<Field> retVal = new HashSet<Field>();
-                
-                for (Field field : Object.class.getDeclaredFields()) {
-                    retVal.add(field);                   
-                }
-                
-                return retVal;
-            }
-            
-        });
-        
-    }
-    
-    private static Method[] secureGetDeclaredMethods(final Class<?> clazz) {
-        return AccessController.doPrivileged(new PrivilegedAction<Method[]>() {
-
-            @Override
-            public Method[] run() {
-                return clazz.getDeclaredMethods();
-            }
-            
-        });
-    }
-    
-    private static Field[] secureGetDeclaredFields(final Class<?> clazz) {
-        return AccessController.doPrivileged(new PrivilegedAction<Field[]>() {
-
-            @Override
-            public Field[] run() {
-                return clazz.getDeclaredFields();
-            }
-            
-        });
-    }
-    
-    /**
-     * Gets the EXACT set of MethodWrappers on this class only.  No subclasses.  So
-     * this set should be considered RAW and has not taken into account any subclasses
-     * 
-     * @param clazz The class to examine
-     * @return
-     */
-    private static Set<MethodWrapper> getDeclaredMethodWrappers(final Class<?> clazz) {
-        Method declaredMethods[] = secureGetDeclaredMethods(clazz);
-        
-        Set<MethodWrapper> retVal = new HashSet<MethodWrapper>();
-        for (Method method : declaredMethods) {
-            retVal.add(new MethodWrapperImpl(method));
-        }
-        
-        return retVal;
-    }
-    
-    /**
-     * Gets the EXACT set of FieldWrappers on this class only.  No subclasses.  So
-     * this set should be considered RAW and has not taken into account any subclasses
-     * 
-     * @param clazz The class to examine
-     * @return
-     */
-    private static Set<Field> getDeclaredFieldWrappers(final Class<?> clazz) {
-        Field declaredFields[] = secureGetDeclaredFields(clazz);
-        
-        Set<Field> retVal = new HashSet<Field>();
-        for (Field field : declaredFields) {
-            retVal.add(field);
-        }
-        
-        return retVal;
-    }
-    
-    public static Set<Field> getAllFieldWrappers(Class<?> clazz) {
-        if (clazz == null) return Collections.emptySet();
-        if (Object.class.equals(clazz)) return OBJECT_FIELDS;
-        if (clazz.isInterface()) return Collections.emptySet();
-        
-        Set<Field> retVal = new HashSet<Field>();
-        
-        retVal.addAll(getDeclaredFieldWrappers(clazz));
-        retVal.addAll(getAllFieldWrappers(clazz.getSuperclass()));
-        
-        return retVal;
-    }
-    
-    public static Set<MethodWrapper> getAllMethodWrappers(Class<?> clazz) {
-        if (clazz == null) return Collections.emptySet();
-        if (Object.class.equals(clazz)) return OBJECT_METHODS;
-        
-        Set<MethodWrapper> retVal = new HashSet<MethodWrapper>();
-        
-        if (clazz.isInterface()) {
-            for (Method m : clazz.getDeclaredMethods()) {
-                MethodWrapper wrapper = new MethodWrapperImpl(m);
-                
-                retVal.add(wrapper);
-            }
-            
-            for (Class<?> extendee : clazz.getInterfaces()) {
-                retVal.addAll(getAllMethodWrappers(extendee));
-            }
-        }
-        else {
-            retVal.addAll(getDeclaredMethodWrappers(clazz));
-            retVal.addAll(getAllMethodWrappers(clazz.getSuperclass()));
-        }
-        
-        return retVal;
-    }
-    
-    private static boolean isPostConstruct(Method m) {
-        if (m.isAnnotationPresent(PostConstruct.class)) {
-            if (m.getParameterTypes().length != 0) {
-                throw new IllegalArgumentException("The method " + Pretty.method(m) +
-                        " annotated with @PostConstruct must not have any arguments");
-            }
-            return true;
-        }
-
-        if (m.getParameterTypes().length != 0) return false;
-        return CONVENTION_POST_CONSTRUCT.equals(m.getName());
-    }
-    
-    private static boolean isPreDestroy(Method m) {
-        if (m.isAnnotationPresent(PreDestroy.class)) {
-            if (m.getParameterTypes().length != 0) {
-                throw new IllegalArgumentException("The method " + Pretty.method(m) +
-                    " annotated with @PreDestroy must not have any arguments");
-            }
-            
-            return true;
-        }
-
-        if (m.getParameterTypes().length != 0) return false;
-        return CONVENTION_PRE_DESTROY.equals(m.getName());
-    }
-    
-    private Method getPostConstructMethod(Class<?> clazz, Class<?> matchingClass) {
-        if (clazz == null || Object.class.equals(clazz)) return null;
-        
-        if (matchingClass.isAssignableFrom(clazz)) {
-            // A little performance optimization
-            Method retVal;
-            
-            try {
-                retVal = clazz.getMethod(CONVENTION_POST_CONSTRUCT, new Class<?>[0]);
-            }
-            catch (NoSuchMethodException e) {
-                retVal = null;
-            }
-            
-            return retVal;
-        }
-        
-        for (MethodWrapper wrapper : getAllMethods(clazz)) {
-            Method m = wrapper.getMethod();
-            if (isPostConstruct(m)) return m;
-        }
-        
-        return null;
-    }
-    
-    private Method getPreDestroyMethod(Class<?> clazz, Class<?> matchingClass) {
-        if (clazz == null || Object.class.equals(clazz)) return null;
-        
-        if (matchingClass.isAssignableFrom(clazz)) {
-            // A little performance optimization
-            Method retVal;
-            
-            try {
-                retVal = clazz.getMethod(CONVENTION_PRE_DESTROY, new Class<?>[0]);
-            }
-            catch (NoSuchMethodException e) {
-                retVal = null;
-            }
-            
-            return retVal;
-        }
-        
-        for (MethodWrapper wrapper : getAllMethods(clazz)) {
-            Method m = wrapper.getMethod();
-            if (isPreDestroy(m)) return m;
-        }
-        
-        return null;
-    }
-
     /* (non-Javadoc)
      * @see org.glassfish.hk2.utilities.reflection.ClassReflectionHelper#getAllMethods(java.lang.Class)
      */
@@ -383,6 +163,58 @@ public class ClassReflectionHelperImpl implements ClassReflectionHelper {
                 methodCache.size() +
                 fieldCache.size();
     }
+    
+    private Method getPostConstructMethod(Class<?> clazz, Class<?> matchingClass) {
+        if (clazz == null || Object.class.equals(clazz)) return null;
+        
+        if (matchingClass.isAssignableFrom(clazz)) {
+            // A little performance optimization
+            Method retVal;
+            
+            try {
+                retVal = clazz.getMethod(ClassReflectionHelperUtilities.CONVENTION_POST_CONSTRUCT, new Class<?>[0]);
+            }
+            catch (NoSuchMethodException e) {
+                retVal = null;
+            }
+            
+            return retVal;
+        }
+        
+        for (MethodWrapper wrapper : getAllMethods(clazz)) {
+            Method m = wrapper.getMethod();
+            if (ClassReflectionHelperUtilities.isPostConstruct(m)) return m;
+        }
+        
+        return null;
+    }
+    
+    private Method getPreDestroyMethod(Class<?> clazz, Class<?> matchingClass) {
+        if (clazz == null || Object.class.equals(clazz)) return null;
+        
+        if (matchingClass.isAssignableFrom(clazz)) {
+            // A little performance optimization
+            Method retVal;
+            
+            try {
+                retVal = clazz.getMethod(ClassReflectionHelperUtilities.CONVENTION_PRE_DESTROY, new Class<?>[0]);
+            }
+            catch (NoSuchMethodException e) {
+                retVal = null;
+            }
+            
+            return retVal;
+        }
+        
+        for (MethodWrapper wrapper : getAllMethods(clazz)) {
+            Method m = wrapper.getMethod();
+            if (ClassReflectionHelperUtilities.isPreDestroy(m)) return m;
+        }
+        
+        return null;
+    }
+
+    
     
     @Override
     public String toString() {
