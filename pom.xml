@@ -53,8 +53,8 @@
     <artifactId>hk2-parent</artifactId>
     <packaging>pom</packaging>
 
-    <name>Modules Subsystem</name>
-    <description>Generic Modules subsystem</description>
+    <name>HK2</name>
+    <description>Dependency Injection Kernel</description>
     <inceptionYear>2009</inceptionYear>
 
     <organization>
