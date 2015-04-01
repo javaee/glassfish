@@ -181,7 +181,12 @@
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.framework</artifactId>
         </dependency>
-        
+       
+        <dependency>
+           <groupId>org.apache.geronimo.specs</groupId>
+           <artifactId>geronimo-atinject_1.0_spec</artifactId>
+        </dependency> 
+
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
