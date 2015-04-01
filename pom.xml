@@ -1065,7 +1065,6 @@
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>sonar-maven-plugin</artifactId>
                         <version>2.5</version>
-                        <type>maven-plugin</type>
                     </plugin>
                 </plugins>
             </build>
