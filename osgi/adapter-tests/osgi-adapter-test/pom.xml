@@ -168,6 +168,11 @@
         </dependency>
 
         <dependency>
+            <groupId>org.ops4j.base</groupId>
+            <artifactId>ops4j-base</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.ops4j.pax.url</groupId>
             <artifactId>pax-url-aether</artifactId>
         </dependency>
