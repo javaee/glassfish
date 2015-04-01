@@ -195,7 +195,7 @@
         <assertj.version>1.4.0</assertj.version>
         <pax-exam-version>3.5.0</pax-exam-version>
         <javax-inject.version>1</javax-inject.version>
-        <slf4j.version>1.7.12</slf4j.version>
+        <slf4j.version>1.5.11</slf4j.version>
         <org.jboss.logging.version>3.1.0.GA</org.jboss.logging.version>
         <javax.validation.osgi.version>1.1.0</javax.validation.osgi.version>
         <jtype.version>0.1.0</jtype.version>        
