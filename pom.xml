@@ -927,6 +927,11 @@
                 <version>1.0</version>
             </dependency>
             <dependency>
+                <groupId>org.ops4j.pax.tipi</groupId>
+                <artifactId>org.ops4j.pax.tipi.junit</artifactId>
+                <version>4.11.0.1</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.main</artifactId>
                 <version>3.2.2</version>

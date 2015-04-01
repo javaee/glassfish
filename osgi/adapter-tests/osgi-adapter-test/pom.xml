@@ -196,5 +196,11 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
         </dependency>
+  
+        <dependency>
+            <groupId>org.ops4j.pax.tipi</groupId>
+            <artifactId>org.ops4j.pax.tipi.junit</artifactId>
+        </dependency>
+
     </dependencies>
 </project>
