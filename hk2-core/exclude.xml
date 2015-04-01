@@ -56,7 +56,7 @@
         to maintain backward compatibility with Grizzly and others, this class
         remains, though it has been deprecated
        -->
-      <Class Name="org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder" />
+      <Class name="org.glassfish.hk2.bootstrap.impl.ClasspathDescriptorFileFinder" />
       <Bug pattern="NM_SAME_SIMPLE_NAME_AS_SUPERCLASS" />          
     </Match>
 </FindBugsFilter>
