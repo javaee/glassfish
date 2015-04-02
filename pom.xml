@@ -1054,6 +1054,12 @@
                                     <value>logging.properties</value>
                                 </property>
                             </systemProperties>
+                            <properties>
+                              <property>
+                                <name>listener</name>
+                                <value>org.sonar.java.jacoco.JUnitListener</value>
+                              </property>
+                            </properties>
                         </configuration>
                         <dependencies>
                             <dependency>
@@ -1107,6 +1113,14 @@
                     </plugin>
                 </plugins>
             </build>
+            <dependencies>
+               <dependency>
+                  <groupId>org.codehaus.sonar-plugins.java</groupId>
+                  <artifactId>sonar-jacoco-listeners</artifactId>
+                  <version>3.0</version>
+                  <scope>test</scope>
+               </dependency>
+            </dependencies>
         </profile>
     </profiles>
 </project>

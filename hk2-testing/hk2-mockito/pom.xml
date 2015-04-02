@@ -66,6 +66,19 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                        <properties>
+                                <property>
+                                        <name>listener</name>
+                                        <value>org.uncommons.reportng.JUnitXMLReporter</value>
+                                </property>
+                        </properties>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
     <dependencies>
@@ -105,6 +118,18 @@
             <artifactId>mockito-core</artifactId>
             <version>1.9.5</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.uncommons</groupId>
+            <artifactId>reportng</artifactId>
+            <version>1.1.2</version>
+            <scope>test</scope>
+            <exclusions>
+               <exclusion>
+                 <groupId>org.testng</groupId>
+                 <artifactId>testng</artifactId>
+               </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 </project>
