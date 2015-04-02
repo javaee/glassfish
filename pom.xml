@@ -195,7 +195,7 @@
         <assertj.version>1.4.0</assertj.version>
         <pax-exam-version>3.5.0</pax-exam-version>
         <javax-inject.version>1</javax-inject.version>
-        <slf4j.version>1.5.11</slf4j.version>
+        <slf4j.version>1.7.12</slf4j.version>
         <org.jboss.logging.version>3.1.0.GA</org.jboss.logging.version>
         <javax.validation.osgi.version>1.1.0</javax.validation.osgi.version>
         <jtype.version>0.1.0</jtype.version>        
@@ -1030,6 +1030,15 @@
 
     <profiles>
         <profile>
+          <id>noagent</id>
+          <activation>
+            <activeByDefault>true</activeByDefault>
+          </activation>
+          <properties>
+            <surefireArgLineExtra/>
+          </properties>
+        </profile>
+        <profile>
             <id>sonar</id>
             <build>
                 <plugins>
@@ -1037,9 +1046,8 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
-  		            <forkMode>always</forkMode>
                             <!-- <argLine>-enableassertions</argLine> -->
-                            <argLine>${surefireArgLine}</argLine>
+                            <argLine>${surefireArgLineExtra}</argLine>
                             <systemProperties>
                                 <property>
                                     <name>java.util.logging.config.file</name>
@@ -1072,7 +1080,7 @@
                                     <destFile>${project.build.directory}/jacoco.exec</destFile>
                                     <!-- Sets the name of the property containing the settings for JaCoCo
             runtime agent. -->
-                                    <propertyName>surefireArgLine</propertyName>
+                                    <propertyName>surefireArgLineExtra</propertyName>
                                 </configuration>
                             </execution>
                             <!-- Ensures that the code coverage report for unit tests is created

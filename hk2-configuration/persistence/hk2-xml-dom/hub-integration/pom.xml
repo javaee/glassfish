@@ -107,7 +107,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <!-- Turns on debug logging -->
-                    <argLine>-Dorg.jvnet.hk2.logger.debugToStdout=false</argLine>
+                    <argLine>-Dorg.jvnet.hk2.logger.debugToStdout=false ${surefireArgLineExtra}</argLine>
                 </configuration>
             </plugin>
         </plugins>

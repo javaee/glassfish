@@ -79,7 +79,7 @@
                     <!-- Turns on security manager and turns off the soft
                        cache in order to increase code coverage
                     -->
-                    <argLine>-Dlocal.repo=${settings.localRepository} -Dbuild.dir=${project.build.directory} -Djava.security.manager -Djava.security.policy=${project.build.directory}/test-classes/policy.txt -Dorg.jvnet.hk2.properties.useSoftReference=false</argLine>
+                    <argLine>-Dlocal.repo=${settings.localRepository} -Dbuild.dir=${project.build.directory} -Djava.security.manager -Djava.security.policy=${project.build.directory}/test-classes/policy.txt -Dorg.jvnet.hk2.properties.useSoftReference=false ${surefireArgLineExtra}</argLine>
                     <!-- -Djava.security.debug=access,failure,domain -->
                 </configuration>
             </plugin>
