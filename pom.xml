@@ -1012,6 +1012,11 @@
                 <artifactId>easymock</artifactId>
                 <version>3.0</version>
             </dependency>
+            <dependency>
+                <groupId>org.uncommons</groupId>
+                <artifactId>reportng</artifactId>
+                <version>1.1.2</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     
