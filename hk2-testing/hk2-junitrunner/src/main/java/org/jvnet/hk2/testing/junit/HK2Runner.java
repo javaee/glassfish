@@ -133,8 +133,18 @@ public class HK2Runner {
                 null, null, null);
         }
         else {
-            initialize(getClass().getName(), null, null, null, null);
+            initialize(null, null, null, null, null);
         }
+    }
+    
+    /**
+     * This method initializes the service locator with services.  The name
+     * of the locator will be the fully qualified name of the class.  All
+     * other values will either be empty or will come from the annotations
+     * {@link Packages}, {@link Classes}, {@link Excludes}, @{link InhabitantFiles}
+     */
+    public void initialize() {
+        initialize(null, null, null, null, null);
     }
 
     /**
@@ -251,7 +261,7 @@ public class HK2Runner {
      * values those will be searched as resources from the jars in the classpath to load the registry with
      */
     protected void initialize(String name, List<String> packages, List<Class<?>> clazzes, Set<String> excludes, Set<String> locatorFiles) {
-        if (name == null) throw new IllegalArgumentException();
+        if (name == null) name = getClass().getName();
         if (packages == null) packages = getDefaultPackages();
         if (clazzes == null) clazzes = getDefaultClazzes();
         if (excludes == null) excludes = getDefaultExcludes();
