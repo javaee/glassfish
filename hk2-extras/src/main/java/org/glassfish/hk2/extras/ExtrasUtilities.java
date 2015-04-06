@@ -80,6 +80,18 @@ public class ExtrasUtilities {
         }
     }
     
+    /**
+     * This method adds in the infrastructure necessary to enable HK2 Operations support.
+     * For more information see {@link org.glassfish.hk2.extras.operation.OperationManager}.
+     * This method is idempotent, if the service is already available it will not add it
+     * 
+     * @param locator The locator to add the infrastructure needed to use the HK2
+     * Operations support
+     */
+    public static void enableOperations(ServiceLocator locator) {
+        throw new AssertionError("enableOperations not yet implemented");
+    }
+    
     private final static String BRIDGE_NAME_PREFIX = "LocatorBridge(";
     private final static String COMMA = ",";
     private final static String BRIDGE_NAME_POSTFIX = ")";
