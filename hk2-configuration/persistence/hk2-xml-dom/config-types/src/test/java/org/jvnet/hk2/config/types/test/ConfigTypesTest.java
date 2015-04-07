@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,69 +37,47 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.utilities.general;
+package org.jvnet.hk2.config.types.test;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
+import java.util.List;
+
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.utilities.BuilderHelper;
+import org.junit.Assert;
+import org.junit.Test;
+import org.jvnet.hk2.config.ConfigInjector;
+import org.jvnet.hk2.config.types.HK2DomConfigTypesUtilities;
 
 /**
- * This class contains utilities useful for any code
+ * Tests for specialized config types
  * 
  * @author jwells
  *
  */
-public class GeneralUtilities {
+public class ConfigTypesTest {
+    
     /**
-     * Returns true if a is equals to b, or both
-     * and and b are null.  Is safe even if
-     * a or b is null.  If a or b is null but
-     * the other is not null, this returns false
-     * 
-     * @param a A possibly null object to compare
-     * @param b A possibly null object to compare
-     * @return true if equal, false if not
+     * Tests that the enable verb works
      */
-    public static boolean safeEquals(Object a, Object b) {
-        if (a == b) return true;
-        if (a == null) return false;
-        if (b == null) return false;
+    @Test
+    public void testConfigTypesUtilities() {
+        ServiceLocator locator = ServiceLocatorFactory.getInstance().create(null);
         
-        return a.equals(b);
+        Assert.assertNull(locator.getService(ConfigInjector.class));
+        
+        HK2DomConfigTypesUtilities.enableHK2DomConfigurationConfigTypes(locator);
+        
+        // Twice to test idempotence
+        HK2DomConfigTypesUtilities.enableHK2DomConfigurationConfigTypes(locator);
+        
+        List<ActiveDescriptor<?>> injectors = locator.getDescriptors(BuilderHelper.createContractFilter(ConfigInjector.class.getName()));
+        Assert.assertEquals(1, injectors.size());
+        
+        ActiveDescriptor<?> propInjectDesc = injectors.get(0);
+        
+        Assert.assertEquals("org.jvnet.hk2.config.types.PropertyInjector", propInjectDesc.getImplementation());
+        
     }
-    
-    public static String getSystemProperty(final String property, final String defaultValue) {
-        try {
-          String retVal = AccessController.doPrivileged(new PrivilegedAction<String>() {
-
-              @Override
-              public String run() {
-                  return System.getProperty(property, defaultValue);
-              }
-
-          });
-          
-          return retVal;
-        }
-        catch (Throwable th) {
-            return defaultValue;
-        }
-    }
-    
-    /**
-     * Loads the class from the given classloader or returns null (does not throw)
-     * 
-     * @param cl The non-null classloader to load the class from
-     * @param cName The fully qualified non-null name of the class to load
-     * @return The class if it could be loaded from the classloader, or
-     * null if it could not be found for any reason
-     */
-    public static Class<?> loadClass(ClassLoader cl, String cName) {
-        try {
-            return cl.loadClass(cName);
-        }
-        catch (Throwable th) {
-            return null;
-        }
-    }
-
 }

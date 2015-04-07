@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,69 +37,40 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.utilities.general;
+package org.jvnet.hk2.config.types;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.glassfish.hk2.utilities.general.GeneralUtilities;
+import org.jvnet.hk2.config.HK2DomConfigUtilities;
 
 /**
- * This class contains utilities useful for any code
- * 
  * @author jwells
  *
  */
-public class GeneralUtilities {
+public class HK2DomConfigTypesUtilities {
+    private final static String PROPERTY_GENERATED_INJECTOR_CLASS = "org.jvnet.hk2.config.types.PropertyInjector";
     /**
-     * Returns true if a is equals to b, or both
-     * and and b are null.  Is safe even if
-     * a or b is null.  If a or b is null but
-     * the other is not null, this returns false
+     * This method enables the HK2 Dom based XML configuration parsing for
+     * systems that do not use HK2 metadata files or use a non-default
+     * name for HK2 metadata files, along with support for the types
+     * provided in this module.  This method is idempotent, so that
+     * if the services already are available in the locator they will
+     * not get added again
      * 
-     * @param a A possibly null object to compare
-     * @param b A possibly null object to compare
-     * @return true if equal, false if not
+     * @param locator The non-null locator to add the hk2 dom based
+     * configuration services to
      */
-    public static boolean safeEquals(Object a, Object b) {
-        if (a == b) return true;
-        if (a == null) return false;
-        if (b == null) return false;
+    public static void enableHK2DomConfigurationConfigTypes(ServiceLocator locator) {
+        if (locator.getBestDescriptor(BuilderHelper.createContractFilter(PROPERTY_GENERATED_INJECTOR_CLASS)) != null) return;
         
-        return a.equals(b);
-    }
-    
-    public static String getSystemProperty(final String property, final String defaultValue) {
-        try {
-          String retVal = AccessController.doPrivileged(new PrivilegedAction<String>() {
-
-              @Override
-              public String run() {
-                  return System.getProperty(property, defaultValue);
-              }
-
-          });
-          
-          return retVal;
-        }
-        catch (Throwable th) {
-            return defaultValue;
-        }
-    }
-    
-    /**
-     * Loads the class from the given classloader or returns null (does not throw)
-     * 
-     * @param cl The non-null classloader to load the class from
-     * @param cName The fully qualified non-null name of the class to load
-     * @return The class if it could be loaded from the classloader, or
-     * null if it could not be found for any reason
-     */
-    public static Class<?> loadClass(ClassLoader cl, String cName) {
-        try {
-            return cl.loadClass(cName);
-        }
-        catch (Throwable th) {
-            return null;
-        }
+        HK2DomConfigUtilities.enableHK2DomConfiguration(locator);
+        
+        Class<?> propertyInjectorClass = GeneralUtilities.loadClass(HK2DomConfigTypesUtilities.class.getClassLoader(), PROPERTY_GENERATED_INJECTOR_CLASS);
+        if (propertyInjectorClass == null) return;
+        
+        ServiceLocatorUtilities.addClasses(locator, propertyInjectorClass);
     }
 
 }

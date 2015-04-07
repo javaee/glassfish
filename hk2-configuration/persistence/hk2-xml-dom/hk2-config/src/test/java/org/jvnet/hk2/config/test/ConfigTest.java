@@ -62,12 +62,15 @@ import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.ConfigurationPopulator;
 import org.jvnet.hk2.config.Dom;
 import org.jvnet.hk2.config.DomDocument;
+import org.jvnet.hk2.config.HK2DomConfigUtilities;
 import org.jvnet.hk2.config.InjectionTarget;
 import org.jvnet.hk2.config.ObservableBean;
 import org.jvnet.hk2.config.Populator;
 import org.jvnet.hk2.config.SingleConfigCode;
 import org.jvnet.hk2.config.TransactionFailure;
+import org.jvnet.hk2.config.Transactions;
 import org.jvnet.hk2.config.UnprocessedChangeEvents;
+import org.jvnet.hk2.config.provider.internal.ConfigInstanceListener;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
@@ -431,6 +434,26 @@ public class ConfigTest {
         
         Assert.assertNull(ServiceLocatorUtilities.getOneMetadataField(descriptor, "target"));
         
+    }
+    
+    @Test
+    public void testEnableConfigUtilities() {
+        ServiceLocator locator = ServiceLocatorFactory.getInstance().create(null);
+        
+        Assert.assertNull(locator.getService(ConfigSupport.class));
+        Assert.assertNull(locator.getService(ConfigurationPopulator.class));
+        Assert.assertNull(locator.getService(Transactions.class));
+        Assert.assertNull(locator.getService(ConfigInstanceListener.class));
+        
+        HK2DomConfigUtilities.enableHK2DomConfiguration(locator);
+        
+        // Twice to check idempotence
+        HK2DomConfigUtilities.enableHK2DomConfiguration(locator);
+        
+        Assert.assertEquals(1, locator.getAllServices(ConfigSupport.class).size());
+        Assert.assertEquals(1, locator.getAllServices(ConfigurationPopulator.class).size());
+        Assert.assertEquals(1, locator.getAllServices(Transactions.class).size());
+        Assert.assertEquals(1, locator.getAllServices(ConfigInstanceListener.class).size());
     }
 
     private static void printEjb(String message, EjbContainerAvailability ejb) {
