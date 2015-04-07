@@ -37,34 +37,50 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.extras.operation;
+package org.glassfish.hk2.extras.operation.internal;
 
 import java.lang.annotation.Annotation;
 
+import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.extras.operation.OperationHandle;
+import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
+
 /**
- * Unique identifier for an Operation.  The equals
- * and hashCode methods of the implementation
- * of this interface must be suitable for using
- * as a key in a HashMap
- * 
  * @author jwells
  *
  */
-public interface OperationIdentifier {
-    /**
-     * A uniquely generated name for an Operation identifier
-     * 
-     * @return A unique string that identifies an Operation
-     */
-    public String getOperationIdentifier();
+public class OperationDescriptor extends AbstractActiveDescriptor<OperationHandle> {
+    private final SingleOperationManager parent;
     
-    /**
-     * Returns the scope associated with this annotation
-     * type
-     * 
-     * @return The non-null scope that is associated
-     * with this operation
+    public OperationDescriptor(Annotation scope, SingleOperationManager parent) {
+        this.parent = parent;
+        
+        setImplementation(OperationHandleImpl.class.getName());
+        addContractType(OperationHandle.class);
+        
+        setScopeAsAnnotation(scope);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#getImplementationClass()
      */
-    public Annotation getOperationScope();
+    @Override
+    public Class<?> getImplementationClass() {
+        return OperationHandleImpl.class;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#create(org.glassfish.hk2.api.ServiceHandle)
+     */
+    @Override
+    public OperationHandle create(ServiceHandle<?> root) {
+        OperationHandleImpl retVal = parent.getCurrentOperationOnThisThread();
+        if (retVal == null) {
+            throw new IllegalStateException("There is no active operation in scope " +
+                getScopeAnnotation().getName() + " on thread " + Thread.currentThread().getId());
+        }
+        
+        return retVal;
+    }
 
 }

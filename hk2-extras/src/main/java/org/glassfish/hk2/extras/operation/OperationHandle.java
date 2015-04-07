@@ -40,6 +40,7 @@
 package org.glassfish.hk2.extras.operation;
 
 import java.util.List;
+import java.util.Set;
 
 import org.jvnet.hk2.annotations.Contract;
 
@@ -66,16 +67,16 @@ public interface OperationHandle {
     /**
      * Gets the current state of this operation
      * 
-     * @return
+     * @return The current state of this operation
      */
     public OperationState getState();
     
     /**
-     * Gets a list of threads upon which this Operation is active
+     * Gets a set of threads upon which this Operation is active
      * 
-     * @return
+     * @return The set of threads upon which this Operation is active
      */
-    public List<Long> getActiveThreads();
+    public Set<Long> getActiveThreads();
     
     /**
      * Suspends this operation on the given thread id.  If this Operation

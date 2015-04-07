@@ -37,34 +37,15 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.extras.operation;
+package org.glassfish.hk2.tests.operation.basic;
 
-import java.lang.annotation.Annotation;
+import org.glassfish.hk2.api.AnnotationLiteral;
 
 /**
- * Unique identifier for an Operation.  The equals
- * and hashCode methods of the implementation
- * of this interface must be suitable for using
- * as a key in a HashMap
- * 
  * @author jwells
  *
  */
-public interface OperationIdentifier {
-    /**
-     * A uniquely generated name for an Operation identifier
-     * 
-     * @return A unique string that identifies an Operation
-     */
-    public String getOperationIdentifier();
-    
-    /**
-     * Returns the scope associated with this annotation
-     * type
-     * 
-     * @return The non-null scope that is associated
-     * with this operation
-     */
-    public Annotation getOperationScope();
-
+public class BasicOperationScopeImpl extends
+        AnnotationLiteral<BasicOperationScope> implements BasicOperationScope {
+    private static final long serialVersionUID = -1979860368978370717L;
 }

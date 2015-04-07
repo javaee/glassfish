@@ -37,34 +37,76 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.extras.operation;
+package org.glassfish.hk2.extras.operation.internal;
 
 import java.lang.annotation.Annotation;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.extras.operation.OperationHandle;
+import org.glassfish.hk2.extras.operation.OperationManager;
 
 /**
- * Unique identifier for an Operation.  The equals
- * and hashCode methods of the implementation
- * of this interface must be suitable for using
- * as a key in a HashMap
- * 
  * @author jwells
  *
  */
-public interface OperationIdentifier {
-    /**
-     * A uniquely generated name for an Operation identifier
-     * 
-     * @return A unique string that identifies an Operation
-     */
-    public String getOperationIdentifier();
+@Singleton
+public class OperationManagerImpl implements OperationManager {
+    private final HashMap<Class<? extends Annotation>, SingleOperationManager> children =
+            new HashMap<Class<? extends Annotation>, SingleOperationManager>();
     
-    /**
-     * Returns the scope associated with this annotation
-     * type
-     * 
-     * @return The non-null scope that is associated
-     * with this operation
+    @Inject
+    private ServiceLocator locator;
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.extras.operation.OperationManager#createOperation()
      */
-    public Annotation getOperationScope();
+    @Override
+    public OperationHandle createOperation(Annotation scope) {
+        SingleOperationManager manager;
+        synchronized (this) {
+            manager = children.get(scope.annotationType());
+        
+            if (manager == null) {
+                manager = new SingleOperationManager(this, scope, locator);
+                children.put(scope.annotationType(), manager);
+            }
+        }
+        
+        return manager.createOperation();
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.extras.operation.OperationManager#createAndStartOperation()
+     */
+    @Override
+    public OperationHandle createAndStartOperation(Annotation scope) {
+        OperationHandle retVal = createOperation(scope);
+        retVal.resume();
+        
+        return retVal;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.extras.operation.OperationManager#getCurrentOperations()
+     */
+    @Override
+    public List<OperationHandle> getCurrentOperations(Annotation scope) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.extras.operation.OperationManager#shutdownAllOperations()
+     */
+    @Override
+    public void shutdownAllOperations(Annotation scope) {
+        // TODO Auto-generated method stub
+        
+    }
 
 }

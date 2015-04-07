@@ -37,34 +37,58 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.extras.operation;
+package org.glassfish.hk2.extras.operation.internal;
 
 import java.lang.annotation.Annotation;
 
+import org.glassfish.hk2.extras.operation.OperationIdentifier;
+
 /**
- * Unique identifier for an Operation.  The equals
- * and hashCode methods of the implementation
- * of this interface must be suitable for using
- * as a key in a HashMap
- * 
  * @author jwells
  *
  */
-public interface OperationIdentifier {
-    /**
-     * A uniquely generated name for an Operation identifier
-     * 
-     * @return A unique string that identifies an Operation
-     */
-    public String getOperationIdentifier();
+public class OperationIdentifierImpl implements OperationIdentifier {
+    private final String identifier;
+    private final Annotation scope;
+    private final int hashCode;
     
-    /**
-     * Returns the scope associated with this annotation
-     * type
-     * 
-     * @return The non-null scope that is associated
-     * with this operation
-     */
-    public Annotation getOperationScope();
+    /* package */ OperationIdentifierImpl(String identifier, Annotation scope) {
+        this.identifier = identifier;
+        this.scope = scope;
+        this.hashCode = identifier.hashCode();
+    }
 
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.extras.operation.OperationIdentifier#getOperationIdentifier()
+     */
+    @Override
+    public String getOperationIdentifier() {
+        return identifier;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.extras.operation.OperationIdentifier#getOperationScope()
+     */
+    @Override
+    public Annotation getOperationScope() {
+        return scope;
+    }
+    
+    @Override
+    public int hashCode() {
+        return hashCode;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        if (!(o instanceof OperationIdentifierImpl)) return false;
+        
+        return identifier.equals(((OperationIdentifierImpl) o).identifier);
+    }
+
+    @Override
+    public String toString() {
+        return identifier;
+    }
 }

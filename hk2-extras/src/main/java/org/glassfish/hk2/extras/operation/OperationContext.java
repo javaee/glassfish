@@ -39,9 +39,15 @@
  */
 package org.glassfish.hk2.extras.operation;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.extras.operation.internal.OperationHandleImpl;
+import org.glassfish.hk2.extras.operation.internal.SingleOperationManager;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -73,15 +79,83 @@ import org.jvnet.hk2.annotations.Contract;
  */
 @Contract
 public abstract class OperationContext<T> implements Context<T> {
+    private SingleOperationManager manager;
+    private final HashMap<OperationIdentifier, HashMap<ActiveDescriptor<?>, Object>> operationMap =
+            new HashMap<OperationIdentifier, HashMap<ActiveDescriptor<?>, Object>>();
+    private final HashSet<ActiveDescriptor<?>> creating = new HashSet<ActiveDescriptor<?>>();
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Context#findOrCreate(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.ServiceHandle)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor,
             ServiceHandle<?> root) {
-        // TODO Auto-generated method stub
-        return null;
+        OperationHandleImpl operation = manager.getCurrentOperationOnThisThread();
+        if (operation == null) {
+            throw new IllegalStateException("There is no current operation of type " +
+                getScope().getName() + " on thread " + Thread.currentThread().getId());
+        }
+        
+        HashMap<ActiveDescriptor<?>, Object> serviceMap;
+        synchronized (this) {
+            serviceMap = operationMap.get(operation.getIdentifier());
+            if (serviceMap == null) {
+                serviceMap = new HashMap<ActiveDescriptor<?>, Object>();
+                operationMap.put(operation.getIdentifier(), serviceMap);
+            }
+            
+            Object retVal = serviceMap.get(activeDescriptor);
+            if (retVal != null) return (U) retVal;
+            
+            if (supportsNullCreation() && serviceMap.containsKey(activeDescriptor)) {
+                return null;
+            }
+            
+            // retVal is null, and this is not an explicit null, so must actually do the creation
+            while (creating.contains(activeDescriptor)) {
+                try {
+                    this.wait();
+                }
+                catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            
+            retVal = serviceMap.get(activeDescriptor);
+            if (retVal != null) return (U) retVal;
+            
+            if (supportsNullCreation() && serviceMap.containsKey(activeDescriptor)) {
+                return null;
+            }
+            
+            // Not in creating, and not created.  Create it ourselves
+            creating.add(activeDescriptor);
+        }
+        
+        Object retVal = null;
+        boolean success = false;
+        try {
+            retVal = activeDescriptor.create(root);
+            if (retVal == null && !supportsNullCreation()) {
+                throw new IllegalArgumentException("The operation for context " + getScope().getName() +
+                        " does not support null creation, but descriptor " + activeDescriptor + " returned null");
+            }
+            
+            success = true;
+        }
+        finally {
+            synchronized (this) {
+                if (success) {
+                    serviceMap.put(activeDescriptor, retVal);
+                }
+                
+                creating.remove(activeDescriptor);
+                this.notifyAll();
+            }
+        }
+        
+        return (U) retVal;
     }
 
     /* (non-Javadoc)
@@ -89,16 +163,55 @@ public abstract class OperationContext<T> implements Context<T> {
      */
     @Override
     public boolean containsKey(ActiveDescriptor<?> descriptor) {
-        // TODO Auto-generated method stub
-        return false;
+        OperationHandleImpl operation = manager.getCurrentOperationOnThisThread();
+        if (operation == null) return false;
+        
+        synchronized (this) {
+            HashMap<ActiveDescriptor<?>, Object> serviceMap;
+            
+            serviceMap = operationMap.get(operation.getIdentifier());
+            if (serviceMap == null) return false;
+            
+            return serviceMap.containsKey(descriptor);
+        }
+        
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Context#destroyOne(org.glassfish.hk2.api.ActiveDescriptor)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void destroyOne(ActiveDescriptor<?> descriptor) {
-        // TODO Auto-generated method stub
+        synchronized (this) {
+            for (HashMap<ActiveDescriptor<?>, Object> serviceMap : operationMap.values()) {
+                Object killMe = serviceMap.remove(descriptor);
+                if (killMe == null) continue;
+                
+                ((ActiveDescriptor<Object>) descriptor).dispose(killMe);
+            }
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#shutdown()
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public void shutdown() {
+        synchronized (this) {
+            for (HashMap<ActiveDescriptor<?>, Object> serviceMap : operationMap.values()) {
+                for (Map.Entry<ActiveDescriptor<?>, Object> entry : serviceMap.entrySet()) {
+                    ActiveDescriptor<?> descriptor = entry.getKey();
+                    Object killMe = entry.getValue();
+                    if (killMe == null) continue;
+                    
+                    ((ActiveDescriptor<Object>) descriptor).dispose(killMe);
+                }
+            }
+            
+            operationMap.clear();
+        }
         
     }
 
@@ -118,13 +231,12 @@ public abstract class OperationContext<T> implements Context<T> {
         return true;
     }
 
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#shutdown()
-     */
-    @Override
-    public void shutdown() {
-        // TODO Auto-generated method stub
-        
+    public void setOperationManager(SingleOperationManager manager) {
+        this.manager = manager;
     }
-
+    
+    @Override
+    public String toString() {
+        return "OperationContext(" + getScope().getName() + "," + System.identityHashCode(this) + ")";
+    }
 }

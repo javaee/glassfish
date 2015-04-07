@@ -43,6 +43,7 @@ import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.extras.hk2bridge.internal.Hk2BridgeImpl;
 import org.glassfish.hk2.extras.interception.internal.DefaultInterceptionService;
+import org.glassfish.hk2.extras.operation.internal.OperationManagerImpl;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
@@ -89,7 +90,9 @@ public class ExtrasUtilities {
      * Operations support
      */
     public static void enableOperations(ServiceLocator locator) {
-        throw new AssertionError("enableOperations not yet implemented");
+        if (locator.getBestDescriptor(BuilderHelper.createContractFilter(OperationManagerImpl.class.getName())) != null) return;
+        
+        ServiceLocatorUtilities.addClasses(locator, OperationManagerImpl.class);
     }
     
     private final static String BRIDGE_NAME_PREFIX = "LocatorBridge(";

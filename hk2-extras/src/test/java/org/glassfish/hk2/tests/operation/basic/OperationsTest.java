@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.tests.operation.basic;
 
+import java.lang.annotation.Annotation;
+
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.extras.ExtrasUtilities;
 import org.glassfish.hk2.extras.operation.OperationHandle;
@@ -52,6 +54,8 @@ import org.junit.Test;
  *
  */
 public class OperationsTest {
+    private final static Annotation BASIC_OPERATION_ANNOTATION = new BasicOperationScopeImpl();
+    
     private final static String ALICE_NM = "Alice";
     private final static byte[] ALICE_PW = { 1, 2 };
     private final static String BOB_NM = "Bob";
@@ -95,17 +99,17 @@ public class OperationsTest {
     /**
      * Tests that operations can be properly swapped on a single thread
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testChangeOperationOnSameThread() {
         ServiceLocator locator = createLocator(BasicOperationScopeContext.class,
                 OperationUserFactory.class, SingletonThatUsesOperationService.class);
         
         OperationManager operationManager = locator.getService(OperationManager.class);
         
-        OperationHandle aliceOperation = operationManager.createOperation();
+        OperationHandle aliceOperation = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
         aliceOperation.setOperationData(ALICE);
         
-        OperationHandle bobOperation = operationManager.createOperation();
+        OperationHandle bobOperation = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
         bobOperation.setOperationData(BOB);
         
         SingletonThatUsesOperationService singleton = locator.getService(SingletonThatUsesOperationService.class);
@@ -113,13 +117,13 @@ public class OperationsTest {
         // Start ALICE operation
         aliceOperation.resume();
         
-        Assert.assertEquals(ALICE, singleton.getCurrentUser());
+        Assert.assertEquals(ALICE_NM, singleton.getCurrentUser().getName());
         
         // suspend ALICE and start BOB
         aliceOperation.suspend();
         bobOperation.resume();
         
-        Assert.assertEquals(BOB, singleton.getCurrentUser());
+        Assert.assertEquals(BOB_NM, singleton.getCurrentUser().getName());
         
         // Clean up
         aliceOperation.closeOperation();

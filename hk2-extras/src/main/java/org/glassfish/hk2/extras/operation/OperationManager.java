@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.extras.operation;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
 
 import org.jvnet.hk2.annotations.Contract;
@@ -51,39 +52,51 @@ import org.jvnet.hk2.annotations.Contract;
 public interface OperationManager {
     /**
      * Creates an OperationHandle.  The returned
-     * handle will not be associated with any threads
+     * handle will not be associated with any threads.
+     * The scope parameter is normally created with
+     * {@link org.glassfish.hk2.api.AnnotationLiteral}
      * 
+     * @param scope The scope annotation for this operation type
      * @return A non-null OperationHandle that can
      * be used to associate threads with the Operation
      */
-    public OperationHandle createOperation();
+    public OperationHandle createOperation(Annotation scope);
     
     /**
      * Creates an OperationHandle that will be associated
-     * with the thread calling this method
+     * with the thread calling this method.
+     * The scope parameter is normally created with
+     * {@link org.glassfish.hk2.api.AnnotationLiteral}
      * 
+     * @param scope The scope annotation for this operation type
      * @return A non-null OperationHandle that can
      * be used to associate threads with the Operation
      * @throws IllegalStateException  if the current thread is
      * associated with a different Operation of the same type
      */
-    public OperationHandle createAndStartOperation();
+    public OperationHandle createAndStartOperation(Annotation scope);
     
     /**
      * Gets the list of all Operations that are in state
      * {@link OperationState#ACTIVE} or {@link OperationState#SUSPENDED}.
      * Operations that are in the {@link OperationState#CLOSED} state
-     * are no longer tracked by the Manager
+     * are no longer tracked by the Manager.
+     * The scope parameter is normally created with
+     * {@link org.glassfish.hk2.api.AnnotationLiteral}
      * 
+     * @param scope The scope annotation for this operation type
      * @return A non-null but possibly empty list of OperationHandles
      * that have not been closed
      */
-    public List<OperationHandle> getCurrentOperations();
+    public List<OperationHandle> getCurrentOperations(Annotation scope);
     
     /**
      * This method will suspend all currently open operations on all threads and
-     * then close them
+     * then close them.
+     * The scope parameter is normally created with
+     * {@link org.glassfish.hk2.api.AnnotationLiteral}
+     * 
+     * @param scope The scope annotation for this operation type
      */
-    public void shutdownAllOperations();
-
+    public void shutdownAllOperations(Annotation scope);
 }
