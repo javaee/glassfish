@@ -117,17 +117,147 @@ public class OperationsTest {
         // Start ALICE operation
         aliceOperation.resume();
         
-        Assert.assertEquals(ALICE_NM, singleton.getCurrentUser().getName());
+        Assert.assertEquals(ALICE_NM, singleton.getCurrentUserName());
         
         // suspend ALICE and start BOB
         aliceOperation.suspend();
         bobOperation.resume();
         
-        Assert.assertEquals(BOB_NM, singleton.getCurrentUser().getName());
+        Assert.assertEquals(BOB_NM, singleton.getCurrentUserName());
         
         // Clean up
         aliceOperation.closeOperation();
         bobOperation.closeOperation();
+    }
+    
+    /**
+     * Tests that operations can be properly swapped on a single thread
+     * @throws InterruptedException 
+     */
+    @Test // @org.junit.Ignore
+    public void testOperationsActiveOnTwoThreads() throws InterruptedException {
+        ServiceLocator locator = createLocator(BasicOperationScopeContext.class,
+                OperationUserFactory.class, SingletonThatUsesOperationService.class);
+        
+        OperationManager operationManager = locator.getService(OperationManager.class);
+        
+        OperationHandle aliceOperation = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        aliceOperation.setOperationData(ALICE);
+        
+        OperationHandle bobOperation = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        bobOperation.setOperationData(BOB);
+        
+        SingletonThatUsesOperationService singleton = locator.getService(SingletonThatUsesOperationService.class);
+        
+        SimpleThreadedFetcher aliceFetcher = new SimpleThreadedFetcher(aliceOperation, singleton);
+        Thread aliceThread = new Thread(aliceFetcher);
+        
+        SimpleThreadedFetcher bobFetcher = new SimpleThreadedFetcher(bobOperation, singleton);
+        Thread bobThread = new Thread(bobFetcher);
+        
+        aliceThread.start();
+        bobThread.start();
+        
+        // Gives both threads time for both to get inside operation
+        Thread.sleep(100);
+        
+        aliceFetcher.go();
+        bobFetcher.go();
+        
+        Assert.assertEquals(ALICE_NM, aliceFetcher.waitForResult());
+        Assert.assertEquals(BOB_NM, bobFetcher.waitForResult());
+        
+        // Clean up
+        aliceOperation.closeOperation();
+        bobOperation.closeOperation();
+    }
+    
+    private static class SimpleThreadedFetcher implements Runnable {
+        private final OperationHandle operation;
+        private final SingletonThatUsesOperationService singleton;
+        private boolean go = false;
+        private String retVal;
+        
+        private SimpleThreadedFetcher(OperationHandle operation, SingletonThatUsesOperationService singleton) {
+            this.operation = operation;
+            this.singleton = singleton;
+        }
+        
+        private void go() {
+            synchronized (this) {
+                go = true;
+                this.notifyAll();
+            }
+        }
+        
+        private void waitForGo() {
+            synchronized (this) {
+                long waitTime = 20 * 1000;
+                while (waitTime > 0L && !go) {
+                    long elapsedTime = System.currentTimeMillis();
+                    try {
+                        this.wait(20 * 1000);
+                    }
+                    catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    elapsedTime = System.currentTimeMillis() - elapsedTime;
+                    waitTime -= elapsedTime;
+                }
+                
+                if (!go) {
+                    Assert.fail("Did not get go signal within 20 seconds");
+                }
+            }
+        }
+        
+        private String waitForResult() {
+            synchronized (this) {
+                long waitTime = 20 * 1000;
+                while (waitTime > 0L && retVal == null) {
+                    long elapsedTime = System.currentTimeMillis();
+                    try {
+                        this.wait(20 * 1000);
+                    }
+                    catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    elapsedTime = System.currentTimeMillis() - elapsedTime;
+                    waitTime -= elapsedTime;
+                }
+                
+                if (retVal == null) {
+                    Assert.fail("Did not get result signal within 20 seconds");
+                }
+                
+                return retVal;
+            }
+        }
+        
+        private void setResult(String result) {
+            synchronized (this) {
+                retVal = result;
+                this.notifyAll();
+            }
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Runnable#run()
+         */
+        @Override
+        public void run() {
+            operation.resume();
+            try {
+                waitForGo();
+                
+                setResult(singleton.getCurrentUserName());
+            }
+            finally {
+                operation.suspend();
+            }
+            
+        }
+        
     }
 
 }

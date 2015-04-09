@@ -117,7 +117,7 @@ public class OperationHandleImpl implements OperationHandle {
     @Override
     public void suspend(long threadId) {
         synchronized (operationLock) {
-            checkState();
+            if (OperationState.CLOSED.equals(state)) return;
             
             parent.disassociateThread(threadId);
             

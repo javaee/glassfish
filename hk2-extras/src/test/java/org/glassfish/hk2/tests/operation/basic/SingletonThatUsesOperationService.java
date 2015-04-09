@@ -51,8 +51,8 @@ public class SingletonThatUsesOperationService {
     @Inject
     private OperationUser user;
     
-    public OperationUser getCurrentUser() {
-        return user;
+    public synchronized String getCurrentUserName() {
+        return user.getName();
     }
 
 }
