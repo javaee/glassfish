@@ -43,10 +43,6 @@ import java.lang.annotation.Annotation;
 import java.util.HashMap;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Context;
-import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.IndexedFilter;
-import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.extras.operation.OperationContext;
 import org.glassfish.hk2.extras.operation.OperationIdentifier;

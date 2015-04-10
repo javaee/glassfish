@@ -40,6 +40,7 @@
 package org.glassfish.hk2.tests.operation.basic;
 
 import java.lang.annotation.Annotation;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.glassfish.hk2.api.ServiceLocator;
@@ -242,7 +243,6 @@ public class OperationsTest {
             Assert.fail("Should not have been able to resume a closed operation");
         }
         catch (IllegalStateException ise) {
-            // expected
         }
         
         // Should do nothing
@@ -252,6 +252,133 @@ public class OperationsTest {
         
         activeIds = operation.getActiveThreads();
         Assert.assertEquals(0, activeIds.size());
+    }
+    
+    /**
+     * Tests that operations can be properly swapped on a single thread
+     * @throws InterruptedException 
+     */
+    @Test // @org.junit.Ignore
+    public void testDoubleResume() throws InterruptedException {
+        ServiceLocator locator = createLocator(BasicOperationScopeContext.class,
+                OperationUserFactory.class, SingletonThatUsesOperationService.class);
+        
+        OperationManager operationManager = locator.getService(OperationManager.class);
+        
+        OperationHandle operation = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        
+        Assert.assertEquals(OperationState.SUSPENDED, operation.getState());
+        
+        operation.resume(Thread.currentThread().getId());
+        
+        Assert.assertEquals(OperationState.ACTIVE, operation.getState());
+        
+        operation.resume(Thread.currentThread().getId());
+        
+        Assert.assertEquals(OperationState.ACTIVE, operation.getState());
+        
+        operation.closeOperation();
+        
+        Assert.assertEquals(OperationState.CLOSED, operation.getState());
+    }
+    
+    /**
+     * Tests that operations can be properly swapped on a single thread
+     * @throws InterruptedException 
+     */
+    @Test // @org.junit.Ignore
+    public void testResumeOfSecondOperationSameThreadFails() throws InterruptedException {
+        ServiceLocator locator = createLocator(BasicOperationScopeContext.class,
+                OperationUserFactory.class, SingletonThatUsesOperationService.class);
+        
+        OperationManager operationManager = locator.getService(OperationManager.class);
+        
+        OperationHandle operation1 = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        OperationHandle operation2 = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        
+        operation1.resume();
+        
+        try {
+            operation2.resume();
+            Assert.fail("Should not have been able to resume second operation on thread first operation already had");
+        }
+        catch (IllegalStateException ise) {
+            // expected
+        }
+        
+        operation1.closeOperation();
+        
+        // Make sure we can do it later after the first operation has gone away
+        operation2.resume();
+        
+        operation2.closeOperation();
+    }
+    
+    /**
+     * Tests that operations can be properly swapped on a single thread
+     * @throws InterruptedException 
+     */
+    @Test // @org.junit.Ignore
+    public void testUseOperationsInHashSet() throws InterruptedException {
+        ServiceLocator locator = createLocator(BasicOperationScopeContext.class,
+                OperationUserFactory.class, SingletonThatUsesOperationService.class);
+        
+        OperationManager operationManager = locator.getService(OperationManager.class);
+        
+        OperationHandle operation1 = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        OperationHandle operation2 = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        
+        HashSet<OperationHandle> storage = new HashSet<OperationHandle>();
+        
+        storage.add(operation1);
+        storage.add(operation2);
+        
+        Assert.assertTrue(storage.contains(operation2));
+        Assert.assertTrue(storage.contains(operation1));
+        
+        Assert.assertFalse(operation1.equals(null));
+        Assert.assertFalse(operation1.equals(operationManager));
+        Assert.assertFalse(operation1.equals(operation2));
+        Assert.assertTrue(operation1.equals(operation1));
+    }
+    
+    /**
+     * Tests that a service in operation scope where there is
+     * no operation scope on the thread fails, and that we
+     * can put an operation on the thread and then it works ok
+     */
+    @Test // @org.junit.Ignore
+    public void testNoOperationOnThread() {
+        ServiceLocator locator = createLocator(BasicOperationScopeContext.class,
+                OperationUserFactory.class, SingletonThatUsesOperationService.class);
+        
+        OperationManager operationManager = locator.getService(OperationManager.class);
+        
+        OperationHandle aliceOperation = operationManager.createAndStartOperation(BASIC_OPERATION_ANNOTATION);
+        aliceOperation.setOperationData(ALICE);
+        
+        SingletonThatUsesOperationService singleton = locator.getService(SingletonThatUsesOperationService.class);
+        
+        Assert.assertEquals(ALICE_NM, singleton.getCurrentUserName());
+        
+        // suspend ALICE and start BOB
+        aliceOperation.suspend();
+        
+        try {
+            singleton.getCurrentUserName();
+            Assert.fail("Should not have been able to call method as there is no operation on the thread");
+        }
+        catch (IllegalStateException ise) {
+            // Expected
+        }
+        
+        aliceOperation.resume();
+        
+        Assert.assertEquals(ALICE_NM, singleton.getCurrentUserName());
+        
+        // Clean up
+        aliceOperation.closeOperation();
+        
     }
     
     private static class SimpleThreadedFetcher implements Runnable {
