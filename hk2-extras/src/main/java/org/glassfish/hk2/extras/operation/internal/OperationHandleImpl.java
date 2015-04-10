@@ -105,8 +105,6 @@ public class OperationHandleImpl implements OperationHandle {
     @Override
     public Set<Long> getActiveThreads() {
         synchronized (operationLock) {
-            checkState();
-            
             return Collections.unmodifiableSet(activeThreads);
         }
     }

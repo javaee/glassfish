@@ -40,11 +40,13 @@
 package org.glassfish.hk2.tests.operation.basic;
 
 import java.lang.annotation.Annotation;
+import java.util.Set;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.extras.ExtrasUtilities;
 import org.glassfish.hk2.extras.operation.OperationHandle;
 import org.glassfish.hk2.extras.operation.OperationManager;
+import org.glassfish.hk2.extras.operation.OperationState;
 import org.glassfish.hk2.tests.extras.internal.Utilities;
 import org.junit.Assert;
 import org.junit.Test;
@@ -170,6 +172,86 @@ public class OperationsTest {
         // Clean up
         aliceOperation.closeOperation();
         bobOperation.closeOperation();
+    }
+    
+    /**
+     * Tests that operations can be properly swapped on a single thread
+     * @throws InterruptedException 
+     */
+    @Test // @org.junit.Ignore
+    public void testCheckState() throws InterruptedException {
+        ServiceLocator locator = createLocator(BasicOperationScopeContext.class,
+                OperationUserFactory.class, SingletonThatUsesOperationService.class);
+        
+        OperationManager operationManager = locator.getService(OperationManager.class);
+        
+        OperationHandle operation = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        
+        Assert.assertEquals(OperationState.SUSPENDED, operation.getState());
+        
+        Thread t1 = new Thread();
+        Thread t2 = new Thread();
+        
+        operation.resume(t1.getId());
+        
+        Assert.assertEquals(OperationState.ACTIVE, operation.getState());
+        
+        operation.resume(t2.getId());
+        
+        Assert.assertEquals(OperationState.ACTIVE, operation.getState());
+        
+        Set<Long> activeIds = operation.getActiveThreads();
+        Assert.assertEquals(2, activeIds.size());
+        
+        Assert.assertTrue(activeIds.contains(new Long(t1.getId())));
+        Assert.assertTrue(activeIds.contains(new Long(t2.getId())));
+        
+        operation.suspend(t1.getId());
+        
+        Assert.assertEquals(OperationState.ACTIVE, operation.getState());
+        
+        activeIds = operation.getActiveThreads();
+        Assert.assertEquals(1, activeIds.size());
+        
+        Assert.assertTrue(activeIds.contains(new Long(t2.getId())));
+        
+        // suspend t1 again, make sure nothing bad happens
+        operation.suspend(t1.getId());
+        
+        Assert.assertEquals(OperationState.ACTIVE, operation.getState());
+        
+        activeIds = operation.getActiveThreads();
+        Assert.assertEquals(1, activeIds.size());
+        
+        Assert.assertTrue(activeIds.contains(new Long(t2.getId())));
+        
+        // Now suspend t2, make sure we go to SUSPENDED
+        operation.suspend(t2.getId());
+        
+        Assert.assertEquals(OperationState.SUSPENDED, operation.getState());
+        
+        activeIds = operation.getActiveThreads();
+        Assert.assertEquals(0, activeIds.size());
+        
+        operation.closeOperation();
+        
+        Assert.assertEquals(OperationState.CLOSED, operation.getState());
+        
+        try {
+            operation.resume(t1.getId());
+            Assert.fail("Should not have been able to resume a closed operation");
+        }
+        catch (IllegalStateException ise) {
+            // expected
+        }
+        
+        // Should do nothing
+        operation.suspend(t1.getId());
+        
+        Assert.assertEquals(OperationState.CLOSED, operation.getState());
+        
+        activeIds = operation.getActiveThreads();
+        Assert.assertEquals(0, activeIds.size());
     }
     
     private static class SimpleThreadedFetcher implements Runnable {
