@@ -58,6 +58,7 @@ import org.junit.Test;
  */
 public class OperationsTest {
     private final static Annotation BASIC_OPERATION_ANNOTATION = new BasicOperationScopeImpl();
+    private final static Annotation SECONDARY_OPERATION_ANNOTATION = new SecondaryOperationScopeImpl();
     
     private final static String ALICE_NM = "Alice";
     private final static byte[] ALICE_PW = { 1, 2 };
@@ -91,6 +92,9 @@ public class OperationsTest {
         }
         
     };
+    
+    private final static long FIRST_ID = 1;
+    private final static long SECOND_ID = 2;
     
     private static ServiceLocator createLocator(Class<?>... clazzes) {
         ServiceLocator locator = Utilities.getUniqueLocator(clazzes);
@@ -378,6 +382,67 @@ public class OperationsTest {
         
         // Clean up
         aliceOperation.closeOperation();
+        
+    }
+    
+    /**
+     * Tests that two operations of different types can be
+     * on the same thread
+     */
+    @Test // @org.junit.Ignore
+    public void testTwoOperationsDifferentTypesOnSameThread() {
+        ServiceLocator locator = createLocator(BasicOperationScopeContext.class,
+                OperationUserFactory.class,
+                SecondaryOperationScopeContext.class,
+                SingletonThatUsesBothOperationTypes.class,
+                SecondaryData.class);
+        
+        OperationManager operationManager = locator.getService(OperationManager.class);
+        
+        OperationHandle aliceOperation = operationManager.createAndStartOperation(BASIC_OPERATION_ANNOTATION);
+        aliceOperation.setOperationData(ALICE);
+        
+        OperationHandle bobOperation = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        bobOperation.setOperationData(BOB);
+        
+        OperationHandle firstOperation = operationManager.createOperation(SECONDARY_OPERATION_ANNOTATION);
+        OperationHandle secondOperation = operationManager.createOperation(SECONDARY_OPERATION_ANNOTATION);
+        
+        firstOperation.resume();
+        
+        SecondaryData firstData = locator.getService(SecondaryData.class);
+        firstData.setId(FIRST_ID);
+        
+        firstOperation.suspend();
+        secondOperation.resume();
+        
+        SecondaryData secondData = locator.getService(SecondaryData.class);
+        secondData.setId(SECOND_ID);
+        
+        SingletonThatUsesBothOperationTypes singleton = locator.getService(SingletonThatUsesBothOperationTypes.class);
+        
+        Assert.assertEquals(ALICE_NM, singleton.getCurrentUserName());
+        
+        secondOperation.suspend();
+        firstOperation.resume();
+        
+        Assert.assertEquals(FIRST_ID, singleton.getCurrentSecondaryId());
+        
+        aliceOperation.suspend();
+        bobOperation.resume();
+        
+        Assert.assertEquals(BOB_NM, singleton.getCurrentUserName());
+        
+        firstOperation.suspend();
+        secondOperation.resume();
+        
+        Assert.assertEquals(SECOND_ID, singleton.getCurrentSecondaryId());
+        
+        // Clean up
+        aliceOperation.closeOperation();
+        bobOperation.closeOperation();
+        firstOperation.closeOperation();
+        secondOperation.closeOperation();
         
     }
     
