@@ -48,6 +48,7 @@ import java.util.List;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DescriptorFileFinder;
+import org.glassfish.hk2.api.DescriptorFileFinderInformation;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.MultiException;
@@ -85,8 +86,14 @@ public class PopulatorImpl implements Populator {
         if (postProcessors == null) postProcessors = new PopulatorPostProcessor[0];
         
         List<InputStream> descriptorFileInputStreams;
+        List<String> descriptorInformation = null;
         try {
             descriptorFileInputStreams = fileFinder.findDescriptorFiles();
+            if (fileFinder instanceof DescriptorFileFinderInformation) {
+                DescriptorFileFinderInformation dffi = (DescriptorFileFinderInformation) fileFinder;
+                
+                descriptorInformation = dffi.getDescriptorFileInformation();
+            }
         }
         catch (IOException ioe) {
             throw ioe;
@@ -99,7 +106,10 @@ public class PopulatorImpl implements Populator {
 
         DynamicConfiguration config = dcs.createDynamicConfiguration();
 
+        int lcv = 0;
         for (InputStream is : descriptorFileInputStreams) {
+            String identifier = (descriptorInformation == null) ? null : descriptorInformation.get(lcv) ;
+            lcv++;
 
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
@@ -109,7 +119,17 @@ public class PopulatorImpl implements Populator {
                 do {
                     DescriptorImpl descriptorImpl = new DescriptorImpl();
 
-                    readOne = descriptorImpl.readObject(br);
+                    try {
+                        readOne = descriptorImpl.readObject(br);
+                    }
+                    catch (IOException ioe) {
+                        if (identifier != null) {
+                            collector.addThrowable(new IOException("InputStream with identifier \"" + identifier + "\" failed", ioe));
+                        }
+                        else {
+                            collector.addThrowable(ioe);
+                        }
+                    }
 
                     if (readOne) {
                             
@@ -118,7 +138,12 @@ public class PopulatorImpl implements Populator {
                                 descriptorImpl = pp.process(serviceLocator, descriptorImpl);
                             }
                             catch (Throwable th) {
-                                collector.addThrowable(th);
+                                if (identifier != null) {
+                                    collector.addThrowable(new IOException("InputStream with identifier \"" + identifier + "\" failed", th));
+                                }
+                                else {
+                                    collector.addThrowable(th);
+                                }
                                 descriptorImpl = null;
                             }
 

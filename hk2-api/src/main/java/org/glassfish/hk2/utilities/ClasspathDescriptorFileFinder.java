@@ -41,6 +41,7 @@ package org.glassfish.hk2.utilities;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,6 +49,7 @@ import java.util.Enumeration;
 import java.util.List;
 
 import org.glassfish.hk2.api.DescriptorFileFinder;
+import org.glassfish.hk2.api.DescriptorFileFinderInformation;
 
 /**
  * This is an implementation of {@link DescriptorFileFinder} that
@@ -55,11 +57,12 @@ import org.glassfish.hk2.api.DescriptorFileFinder;
  * @author jwells
  *
  */
-public class ClasspathDescriptorFileFinder implements DescriptorFileFinder {
+public class ClasspathDescriptorFileFinder implements DescriptorFileFinder, DescriptorFileFinderInformation {
     private final static String DEFAULT_NAME = "default";
 
     private final ClassLoader classLoader;
     private final String names[];
+    private final ArrayList<String> identifiers = new ArrayList<String>();
     
     /**
      * If this constructor is used then HK2 descriptor files will be found
@@ -111,6 +114,8 @@ public class ClasspathDescriptorFileFinder implements DescriptorFileFinder {
      */
     @Override
     public List<InputStream> findDescriptorFiles() throws IOException {
+        identifiers.clear();
+        
         ArrayList<InputStream> returnList = new ArrayList<InputStream>();
         
         for (String name : names) {
@@ -118,6 +123,14 @@ public class ClasspathDescriptorFileFinder implements DescriptorFileFinder {
 
             for (; e.hasMoreElements();) {
                 URL url = e.nextElement();
+                
+                try {
+                    identifiers.add(url.toURI().toString());
+                }
+                catch (URISyntaxException e1) {
+                    throw new IOException(e1);
+                }
+                
                 returnList.add(url.openStream());
             }
         }
@@ -125,7 +138,17 @@ public class ClasspathDescriptorFileFinder implements DescriptorFileFinder {
         return returnList;
     }
     
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.DescriptorFileFinderInformation#getDescriptorFileInformation()
+     */
+    @Override
+    public List<String> getDescriptorFileInformation() {
+        return identifiers;
+    }
+    
     public String toString() {
         return "ClasspathDescriptorFileFinder(" + classLoader + "," + Arrays.toString(names) + "," + System.identityHashCode(this) + ")";
     }
+
+    
 }

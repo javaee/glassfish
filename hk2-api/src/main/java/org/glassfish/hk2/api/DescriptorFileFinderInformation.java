@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,33 +39,34 @@
  */
 package org.glassfish.hk2.api;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.List;
 
-import org.jvnet.hk2.annotations.Contract;
-
 /**
- * Implementations of this interface allow the customization of
- * how hk2 inhabitant files are found.  Classes that implement
- * this interface should also implement {@link DescriptorFileFinderInformation}
- * for better information when a failure occurs
+ * Returns information about the {@link java.io.InputStream}
+ * returned by {@link DescriptorFileFinder#findDescriptorFiles()}
+ * that can be used to give better information when one of the
+ * streams fails.  Classes that implement {@link DescriptorFileFinder}
+ * should also implement this interface in order to provide better
+ * failure information
  * 
  * @author jwells
  *
  */
-@Contract
-public interface DescriptorFileFinder {
-    /** The name of the default location for hk2 inhabitant files */
-    public static final String RESOURCE_BASE="META-INF/hk2-locator/";
-    
+public interface DescriptorFileFinderInformation {
     /**
-     * Returns a list of input streams for hk2 locator files
+     * This list must have the same cardinality as
+     * {@link DescriptorFileFinder#findDescriptorFiles()}.
+     * The Strings returned from this list must give identifying
+     * information about the InputStream with the same index.
+     * For example, if the InputStream is from a {@link java.net.URL}
+     * then the toString of the URL would be appropriate.  If
+     * the InputStream is from a {@link java.io.File} then the
+     * Absolute path to that file might be appropriate
      * 
-     * @return A non-null (but possibly empty) list of InputStreams
-     * for hk2 inhabitant files
-     * @throws IOException If there was an error finding the hk2 inhabitant files
+     * @return Identifying information about the InputStream
+     * returned by {@link DescriptorFileFinder#findDescriptorFiles()}
+     * correlated by index
      */
-    List<InputStream> findDescriptorFiles() throws IOException;
+    List<String> getDescriptorFileInformation();
 
 }
