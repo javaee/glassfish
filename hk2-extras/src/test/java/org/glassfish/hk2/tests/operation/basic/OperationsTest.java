@@ -446,6 +446,30 @@ public class OperationsTest {
         
     }
     
+    /**
+     * SecondaryOperationScope allows null returns, so lets test it
+     */
+    @Test // @org.junit.Ignore
+    public void testOperationWhichAllowsNullAllowsNull() {
+        ServiceLocator locator = createLocator(
+                SecondaryOperationScopeContext.class,
+                PerLookupThatUsesNullMeService.class,
+                NullMeFactory.class);
+        
+        OperationManager operationManager = locator.getService(OperationManager.class);
+        
+        OperationHandle firstOperation = operationManager.createAndStartOperation(SECONDARY_OPERATION_ANNOTATION);
+        
+        firstOperation.resume();
+        
+        PerLookupThatUsesNullMeService usesNullMe = locator.getService(PerLookupThatUsesNullMeService.class);
+        
+        Assert.assertTrue(usesNullMe.isNullMeNull());
+        
+        // Clean up
+        firstOperation.closeOperation();
+    }
+    
     private static class SimpleThreadedFetcher implements Runnable {
         private final OperationHandle operation;
         private final SingletonThatUsesOperationService singleton;
