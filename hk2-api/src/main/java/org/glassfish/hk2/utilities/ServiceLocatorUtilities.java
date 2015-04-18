@@ -887,6 +887,8 @@ public abstract class ServiceLocatorUtilities {
      * will do nothing
      *
      * @param locator The service locator to enable topic distribution on.  May not be null
+     * @deprecated Use ExtrasUtilities.enableTopicDistribution.  This method WILL BE REMOVED
+     * in the next version of hk2
      */
     public static void enableTopicDistribution(ServiceLocator locator) {
         if (locator == null) throw new IllegalArgumentException();

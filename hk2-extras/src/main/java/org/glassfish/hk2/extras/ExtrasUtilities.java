@@ -172,5 +172,27 @@ public class ExtrasUtilities {
         ServiceLocatorUtilities.removeFilter(from, BuilderHelper.createNameAndContractFilter(
                 Hk2BridgeImpl.class.getName(),bridgeName));
     }
+    
+    /**
+     * This method will enable the default topic distribution service.
+     * <p>
+     * The default distribution service distributes messages on the
+     * same thread as the caller of {@link org.glassfish.hk2.api.messaging.Topic#publish(Object)}
+     * and (TBD security policy).  Objects to be distributed to will be
+     * held with SoftReferences, and hence if they go out of scope they
+     * will not be distributed to.  Only services created AFTER the topic
+     * distribution service is enabled will be distributed to.
+     * <p>
+     * This method is idempotent, so that if there is already a
+     * TopicDistributionService with the default name is available this method
+     * will do nothing
+     *
+     * @param locator The service locator to enable topic distribution on.  May not be null
+     */
+    @SuppressWarnings("deprecation")
+    public static void enableTopicDistribution(ServiceLocator locator) {
+        // This is here until we move the topic distribution to the extras jar
+        ServiceLocatorUtilities.enableTopicDistribution(locator);
+    }
 
 }
