@@ -37,57 +37,47 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.api.annotations;
+package org.glassfish.hk2.xml.test.defaultchild;
 
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.net.URL;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.xml.api.XmlRootHandle;
+import org.glassfish.hk2.xml.api.XmlService;
+import org.glassfish.hk2.xml.test.utilities.Utilities;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
- * This can be placed on XmlElements that represent
- * children properties of a bean.  If there is no child in
- * the unmarshalled XML corresponding to this XmlElement
- * then this annotation indicates that a single default
- * child should be added with values set either via
- * defaulting on the child bean or via the value property
- * of this annotation.  In particular required but not
- * defaulted properties must be set via the value field
- * of this annotation
- * <p>
- * When getting a read-only copy of the tree (see
- * {@link org.glassfish.hk2.xml.api.XmlRootHandle#getReadOnlyRoot(boolean)})
- * where defaults are not represented this default bean will NOT be returned.
- * If any value in this bean is modified then this will no longer be
- * considered the default child bean and hence will show up
- * when getting the read-only version of this bean
- * <p>
- * Cycles of Default children bean are not supported and will cause the system
- * to fail at runtime
- * 
  * @author jwells
  *
  */
-@Documented
-@Retention(RUNTIME)
-@Target(METHOD)
-public @interface DefaultChild {
+public class DefaultChildTest {
+    private final static String DEFAULT_CHILD_FILE = "defaultchild.xml";
+    private final static String ALICE = "Alice";
+    private final static String FOO = "foo";
+    
     /**
-     * Each string in this array must be of
-     * the form &quot;name[=value]&quot;
-     * where name is the xml name of the non-child element
-     * to set and value is the string representation (that will
-     * be transformed if necessary) of the value.  Null
-     * can be represented by not having an =.  These values
-     * will be explicitly set on the default child (as
-     * opposed to becoming the default value of the
-     * attribute or element)
-     * 
-     * @return Strings of form &quot;name[=value]&quot;
-     * that will be set in the Default child if one
-     * is created
+     * Tests that we can default values with JAXB 
+     * @throws Exception
      */
-    public String[] value() default {};
+    @Test @org.junit.Ignore
+    public void testDefaultedValues() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(DEFAULT_CHILD_FILE);
+        
+        XmlRootHandle<ParentWithDefaultedChild> rootHandle = xmlService.unmarshall(url.toURI(), ParentWithDefaultedChild.class);
+        ParentWithDefaultedChild db = rootHandle.getRoot();
+        
+        ChildWithNonDefaultableProperty children[] = db.getChildren();
+        Assert.assertNotNull(children);
+        Assert.assertEquals(1, children.length);
+        
+        ChildWithNonDefaultableProperty child = children[0];
+        Assert.assertEquals(ALICE, child.getName());
+        Assert.assertEquals(FOO, child.getDefaultedProperty());
+    }
+
 }
