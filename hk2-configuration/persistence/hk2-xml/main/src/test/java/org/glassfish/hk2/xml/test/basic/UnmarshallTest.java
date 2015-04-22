@@ -496,4 +496,44 @@ public class UnmarshallTest {
         Assert.assertEquals(0, Double.compare(13.00, bagel.doubleArrayValue()[0]));
         Assert.assertEquals(0, Double.compare(14.00, bagel.doubleArrayValue()[1]));
     }
+    
+    /**
+     * Tests that a list child with no elements returns an empty list (not null)
+     * 
+     * @throws Exception
+     */
+    @Test @org.junit.Ignore
+    public void testEmptyListChildReturnsEmptyList() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(ACME1_FILE);
+        
+        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
+        Employees employees = rootHandle.getRoot();
+        
+        List<OtherData> noChildrenList = employees.getNoChildList();
+        Assert.assertNotNull(noChildrenList);
+        Assert.assertTrue(noChildrenList.isEmpty());
+    }
+    
+    /**
+     * Tests that a list child with no elements returns an empty list (not null)
+     * 
+     * @throws Exception
+     */
+    @Test @org.junit.Ignore
+    public void testEmptyArrayChildReturnsEmptyList() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(ACME1_FILE);
+        
+        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
+        Employees employees = rootHandle.getRoot();
+        
+        OtherData[] noChildrenList = employees.getNoChildArray();
+        Assert.assertNotNull(noChildrenList);
+        Assert.assertEquals(0, noChildrenList);
+    }
 }

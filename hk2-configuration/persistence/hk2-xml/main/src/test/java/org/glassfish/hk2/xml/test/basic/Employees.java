@@ -107,4 +107,12 @@ public interface Employees {
         classArrayValue = { String.class, double.class })
     public void setBagelPreference(int bagelType);
     public int getBagelPreference();
+    
+    @XmlElement(name="no-child-list")
+    public void setNoChildList(List<OtherData> noChildren);
+    public List<OtherData> getNoChildList();
+    
+    @XmlElement(name="no-child-array")
+    public void setNoChildArray(OtherData noChildren[]);
+    public OtherData[] getNoChildArray();
 }
