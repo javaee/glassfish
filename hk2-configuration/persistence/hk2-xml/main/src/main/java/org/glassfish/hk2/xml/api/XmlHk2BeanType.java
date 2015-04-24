@@ -37,24 +37,21 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test.defaultchild;
-
-import javax.xml.bind.annotation.XmlElement;
-
-import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
+package org.glassfish.hk2.xml.api;
 
 /**
- * This bean has a property (name) that has no viable default
+ * Describes the type of bean represented
+ * 
  * @author jwells
  *
  */
-public interface ChildWithNonDefaultableProperty {
-    @XmlElement(nillable=false, required=true)
-    @XmlIdentifier
-    public String getName();
-    public void setName(String name);
+public enum XmlHk2BeanType {
+    /** A bean added via XML parsing or with one of the add methods on a bean */
+    NORMAL,
     
-    @XmlElement(name="defaulted-property", defaultValue="foo")
-    public String getDefaultedProperty();
-    public void setDefaultedProperty();
+    /**
+     * A bean added due to a {@link org.glassfish.hk2.xml.api.annotations.DefaultChild}
+     * annotation
+     */
+    DEFAULT_CHILD
 }

@@ -502,7 +502,7 @@ public class UnmarshallTest {
      * 
      * @throws Exception
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testEmptyListChildReturnsEmptyList() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -518,12 +518,12 @@ public class UnmarshallTest {
     }
     
     /**
-     * Tests that a list child with no elements returns an empty list (not null)
+     * Tests that a list child with no elements returns an empty array (not null)
      * 
      * @throws Exception
      */
-    @Test @org.junit.Ignore
-    public void testEmptyArrayChildReturnsEmptyList() throws Exception {
+    @Test // @org.junit.Ignore
+    public void testEmptyArrayChildReturnsEmptyArray() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
         
@@ -534,6 +534,6 @@ public class UnmarshallTest {
         
         OtherData[] noChildrenList = employees.getNoChildArray();
         Assert.assertNotNull(noChildrenList);
-        Assert.assertEquals(0, noChildrenList);
+        Assert.assertEquals(0, noChildrenList.length);
     }
 }

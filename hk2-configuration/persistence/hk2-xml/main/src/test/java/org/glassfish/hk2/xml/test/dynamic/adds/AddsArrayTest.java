@@ -94,7 +94,7 @@ public class AddsArrayTest {
         
         Assert.assertNotNull(root);
         Assert.assertNull(root.getFinancials());
-        Assert.assertNull(root.getEmployees());
+        Assert.assertEquals(0, root.getEmployees().length);
         Assert.assertNull(root.getCompanyName());
     }
     

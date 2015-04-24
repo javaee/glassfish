@@ -55,5 +55,7 @@ public interface ParentWithDefaultedChild {
     @DefaultChild("name=Alice")
     public ChildWithNonDefaultableProperty[] getChildren();
     public void setChildren(ChildWithNonDefaultableProperty[] children);
+    public void addChildren(ChildWithNonDefaultableProperty child);
+    public void removeChildren(String name);
 
 }

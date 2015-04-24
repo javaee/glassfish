@@ -130,9 +130,9 @@ public class UnparentedNode implements Serializable {
         this.rootName = rootName;
     }
     
-    public void addChild(String xmlTag, ChildType childType, UnparentedNode child) {
+    public void addChild(String xmlTag, ChildType childType, UnparentedNode child, Map<String, String> defaultChild) {
         synchronized (lock) {
-            ParentedNode pn = new ParentedNode(xmlTag, childType, child);
+            ParentedNode pn = new ParentedNode(xmlTag, childType, child, defaultChild);
             childrenByName.put(xmlTag, pn);
         }
     }
@@ -230,12 +230,21 @@ public class UnparentedNode implements Serializable {
         }
     }
     
-    public Class<?> getChildType(String propName) {
+    public Class<?> getNonChildType(String propName) {
         synchronized (lock) {
             ChildData cd = nonChildProperty.get(propName);
             if (cd == null) return null;
+            
             return cd.getChildType();
+            
+            
         }
+    }
+    
+    public boolean isChildProperty(String propName) {
+        if (nonChildProperty.containsKey(propName)) return false;
+        if (childrenByName.containsKey(propName)) return true;
+        throw new AssertionError("Unknwn property " + propName + " for " + this);
     }
 
     @Override

@@ -100,4 +100,23 @@ public interface XmlHk2ConfigurationBean {
      * @return The instance path/name for this object
      */
     public String _getKeyValue();
+    
+    /**
+     * Returns the type of this bean.<UL>
+     * <LI>{@link XmlHk2BeanType#NORMAL} - A bean created via add or by Xml parsing</LI>
+     * <LI>{@link XmlHk2BeanType#DEFAULT_CHILD} - A pseudo bean here due to a
+     * {@link org.glassfish.hk2.xml.api.annotation.DefaultChild} annotation in the parent</LI>
+     * </UL>
+     * 
+     * @return the type of this bean
+     */
+    public XmlHk2BeanType _getBeanType();
+    
+    /**
+     * If this bean has {@link XmlHk2BeanType#DEFAULT_CHILD} type then this method
+     * will change the type to {@link XmlHk2BeanType#NORMAL}.  No fields of the
+     * bean will be changed and there will be no transaction in the configuration Hub
+     * if the bean is registered in the hub
+     */
+    public void _normalizeBean();
 }

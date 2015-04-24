@@ -94,7 +94,7 @@ public class AddsTest {
         
         Assert.assertNotNull(root);
         Assert.assertNull(root.getFinancials());
-        Assert.assertNull(root.getEmployees());
+        Assert.assertEquals(0, root.getEmployees().size());
         Assert.assertNull(root.getCompanyName());
     }
     

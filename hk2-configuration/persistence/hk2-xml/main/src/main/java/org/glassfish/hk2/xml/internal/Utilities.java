@@ -778,10 +778,84 @@ public class Utilities {
             }
             
         }
+    }
+    
+    private final static Boolean DEFAULT_BOOLEAN = Boolean.FALSE;
+    private final static Byte DEFAULT_BYTE = new Byte((byte) 0);
+    private final static Character DEFAULT_CHARACTER = new Character((char) 0);
+    private final static Short DEFAULT_SHORT = new Short((short) 0);
+    private final static Integer DEFAULT_INTEGER = new Integer(0);
+    private final static Long DEFAULT_LONG = new Long(0L);
+    private final static Float DEFAULT_FLOAT = new Float(0);
+    private final static Double DEFAULT_DOUBLE = new Double((double) 0);
+    
+    /**
+     * Returns the default value given the string version of the default and
+     * the expected result (non-child properties)
+     * 
+     * @param givenStringDefault
+     * @param expectedClass
+     * @return
+     */
+    public static Object getDefaultValue(String givenStringDefault, Class<?> expectedClass) {
+        if (givenStringDefault == null || JAUtilities.JAXB_DEFAULT_DEFAULT.equals(givenStringDefault)) {
+            if (int.class.equals(expectedClass)) {
+                return DEFAULT_INTEGER;
+            }
+            if (long.class.equals(expectedClass)) {
+                return DEFAULT_LONG;
+            }
+            if (boolean.class.equals(expectedClass)) {
+                return DEFAULT_BOOLEAN;
+            }
+            if (short.class.equals(expectedClass)) {
+                return DEFAULT_SHORT;
+            }
+            if (byte.class.equals(expectedClass)) {
+                return DEFAULT_BYTE;
+            }
+            if (char.class.equals(expectedClass)) {
+                return DEFAULT_CHARACTER;
+            }
+            if (float.class.equals(expectedClass)) {
+                return DEFAULT_FLOAT;
+            }
+            if (double.class.equals(expectedClass)) {
+                return DEFAULT_DOUBLE;
+            }
+            
+            return null;
+        }
         
+        if (String.class.equals(expectedClass)) {
+            return givenStringDefault;
+        }
+        if (int.class.equals(expectedClass)) {
+            return Integer.parseInt(givenStringDefault);
+        }
+        if (long.class.equals(expectedClass)) {
+            return Long.parseLong(givenStringDefault);
+        }
+        if (boolean.class.equals(expectedClass)) {
+            return Boolean.parseBoolean(givenStringDefault);
+        }
+        if (short.class.equals(expectedClass)) {
+            return Short.parseShort(givenStringDefault);
+        }
+        if (byte.class.equals(expectedClass)) {
+            return Byte.parseByte(givenStringDefault);
+        }
+        if (char.class.equals(expectedClass)) {
+            return givenStringDefault.charAt(0);
+        }
+        if (float.class.equals(expectedClass)) {
+            return Float.parseFloat(givenStringDefault);
+        }
+        if (double.class.equals(expectedClass)) {
+            return Double.parseDouble(givenStringDefault);
+        }
         
-        
-        
+        throw new AssertionError("Default for type " + expectedClass.getName() + " not implemented");
     }
     
 }

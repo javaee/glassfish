@@ -109,6 +109,13 @@ public class AnnotationMirrorAltAnnotationImpl implements AltAnnotation {
         
         return (Boolean) values.get(methodName);
     }
+    
+    @Override
+    public synchronized String[] getStringArrayValue(String methodName) {
+        getAnnotationValues();
+        
+        return (String[]) values.get(methodName);
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.internal.alt.AltAnnotation#getAnnotationValues()

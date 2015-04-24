@@ -44,9 +44,11 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -61,6 +63,8 @@ import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
+import org.glassfish.hk2.xml.api.annotations.DefaultChild;
+import org.glassfish.hk2.xml.internal.alt.AltAnnotation;
 import org.glassfish.hk2.xml.internal.alt.AltClass;
 import org.glassfish.hk2.xml.internal.alt.AltMethod;
 import org.glassfish.hk2.xml.internal.alt.clazz.ClassAltClassImpl;
@@ -233,8 +237,16 @@ public class JAUtilities {
             if (getterOrSetter) {
                 if (childType != null) {
                     childTypes.put(childType.getOriginalInterface(), mi.getRepresentedProperty());
+                    
+                    Map<String, String> defaultChild = null;
+                    AltAnnotation defaultChildAnnotation= mi.getOriginalMethod().getAnnotation(DefaultChild.class.getName());
+                    if (defaultChildAnnotation != null) {
+                        String[] defaultStrings = defaultChildAnnotation.getStringArrayValue("value");
                         
-                    retVal.addChild(mi.getRepresentedProperty(), getChildType(mi.isList(), mi.isArray()), childType);
+                        defaultChild = convertDefaultChildValueArray(defaultStrings);
+                    }
+                        
+                    retVal.addChild(mi.getRepresentedProperty(), getChildType(mi.isList(), mi.isArray()), childType, defaultChild);
                 }
                 else {
                     Class<?> expectedType = null;
@@ -251,6 +263,38 @@ public class JAUtilities {
         retVal.setTranslatedClass(proxy);
         proxy2NodeCache.put(proxy, retVal);
             
+        return retVal;
+    }
+    
+    private static Map<String, String> convertDefaultChildValueArray(String[] values) {
+        LinkedHashMap<String, String> retVal = new LinkedHashMap<String, String>();
+        if (values == null) return retVal;
+        for (String value : values) {
+            value = value.trim();
+            if ("".equals(value)) continue;
+            if (value.charAt(0) == '=') {
+                throw new AssertionError("First character of " + value + " may not be an =");
+            }
+            
+            int indexOfEquals = value.indexOf('=');
+            if (indexOfEquals < 0) {
+                retVal.put(value, null);
+            }
+            else {
+                String key = value.substring(0, indexOfEquals);
+                
+                String attValue;
+                if (indexOfEquals >= (value.length() - 1)) {
+                    attValue = null;
+                }
+                else {
+                    attValue = value.substring(indexOfEquals + 1);
+                }
+                
+                retVal.put(key, attValue);
+            }
+        }
+        
         return retVal;
     }
     

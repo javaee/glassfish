@@ -41,6 +41,7 @@ package org.glassfish.hk2.xml.jaxb.internal;
 
 import java.beans.PropertyChangeEvent;
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,11 +63,12 @@ import org.glassfish.hk2.utilities.reflection.BeanReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
+import org.glassfish.hk2.xml.api.XmlHk2BeanType;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlHubCommitMessage;
 import org.glassfish.hk2.xml.api.annotations.Customizer;
 import org.glassfish.hk2.xml.internal.DynamicChangeInfo;
-import org.glassfish.hk2.xml.internal.JAUtilities;
+import org.glassfish.hk2.xml.internal.ParentedNode;
 import org.glassfish.hk2.xml.internal.UnparentedNode;
 import org.glassfish.hk2.xml.internal.Utilities;
 
@@ -83,14 +85,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
     private final static String EMPTY = "";
     public final static char XML_PATH_SEPARATOR = '/';
     
-    private final static Boolean DEFAULT_BOOLEAN = Boolean.FALSE;
-    private final static Byte DEFAULT_BYTE = new Byte((byte) 0);
-    private final static Character DEFAULT_CHARACTER = new Character((char) 0);
-    private final static Short DEFAULT_SHORT = new Short((short) 0);
-    private final static Integer DEFAULT_INTEGER = new Integer(0);
-    private final static Long DEFAULT_LONG = new Long(0L);
-    private final static Float DEFAULT_FLOAT = new Float(0);
-    private final static Double DEFAULT_DOUBLE = new Double((double) 0);
+    
     
     /**
      * All fields, including child lists and direct children
@@ -125,6 +120,9 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
     
     /** My own full xmlPath from root */
     private String xmlPath = EMPTY;
+    
+    /** The type of this bean */
+    private XmlHk2BeanType type = XmlHk2BeanType.NORMAL;
     
     /**
      * This object contains the tree locks
@@ -234,75 +232,15 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         _setProperty(propName, (Double) propValue);
     }
     
-    private Object getDefaultValue(String propName, Class<?> expectedClass) {
-        String givenStringDefault = model.getDefaultChildValue(propName);
-        if (givenStringDefault == null || JAUtilities.JAXB_DEFAULT_DEFAULT.equals(givenStringDefault)) {
-            if (int.class.equals(expectedClass)) {
-                return DEFAULT_INTEGER;
-            }
-            if (long.class.equals(expectedClass)) {
-                return DEFAULT_LONG;
-            }
-            if (boolean.class.equals(expectedClass)) {
-                return DEFAULT_BOOLEAN;
-            }
-            if (short.class.equals(expectedClass)) {
-                return DEFAULT_SHORT;
-            }
-            if (byte.class.equals(expectedClass)) {
-                return DEFAULT_BYTE;
-            }
-            if (char.class.equals(expectedClass)) {
-                return DEFAULT_CHARACTER;
-            }
-            if (float.class.equals(expectedClass)) {
-                return DEFAULT_FLOAT;
-            }
-            if (double.class.equals(expectedClass)) {
-                return DEFAULT_DOUBLE;
-            }
-            
-            return null;
-        }
-        
-        if (String.class.equals(expectedClass)) {
-            return givenStringDefault;
-        }
-        if (int.class.equals(expectedClass)) {
-            return Integer.parseInt(givenStringDefault);
-        }
-        if (long.class.equals(expectedClass)) {
-            return Long.parseLong(givenStringDefault);
-        }
-        if (boolean.class.equals(expectedClass)) {
-            return Boolean.parseBoolean(givenStringDefault);
-        }
-        if (short.class.equals(expectedClass)) {
-            return Short.parseShort(givenStringDefault);
-        }
-        if (byte.class.equals(expectedClass)) {
-            return Byte.parseByte(givenStringDefault);
-        }
-        if (char.class.equals(expectedClass)) {
-            return givenStringDefault.charAt(0);
-        }
-        if (float.class.equals(expectedClass)) {
-            return Float.parseFloat(givenStringDefault);
-        }
-        if (double.class.equals(expectedClass)) {
-            return Double.parseDouble(givenStringDefault);
-        }
-        
-        throw new AssertionError("Default for type " + expectedClass.getName() + " not implemented");
+    private Object _getProperty(String propName, Class<?> expectedClass) {
+        return _getProperty(propName, expectedClass, null);
     }
     
-    public Object _getProperty(String propName) {
-        return _getProperty(propName, ((model != null) ? model.getChildType(propName) : null));
-    }
-    
-    public Object _getProperty(String propName, Class<?> expectedClass) {
+    private Object _getProperty(String propName, Class<?> expectedClass, ParentedNode parentNode) {
         boolean isSet;
         Object retVal;
+        boolean doDefaulting = false;
+        
         if (changeControl == null) {
             isSet = beanLikeMap.containsKey(propName);
             retVal = beanLikeMap.get(propName);
@@ -310,6 +248,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         else {
             changeControl.getReadLock().lock();
             try {
+                doDefaulting = true;
                 isSet = beanLikeMap.containsKey(propName);
                 retVal = beanLikeMap.get(propName);
             }
@@ -318,8 +257,26 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
             }
         }
         
-        if (retVal == null && !isSet && expectedClass != null) {
-            retVal = getDefaultValue(propName, expectedClass);
+        if (doDefaulting && (retVal == null) && !isSet) {
+            if (expectedClass != null) {
+                retVal = Utilities.getDefaultValue(model.getDefaultChildValue(propName), expectedClass);
+            }
+            else if (parentNode != null) {
+                switch (parentNode.getChildType()) {
+                case LIST:
+                    retVal = Collections.EMPTY_LIST;
+                    break;
+                case ARRAY:
+                    Class<?> cType = parentNode.getChild().getOriginalInterface();
+                    retVal = Array.newInstance(cType, 0);
+                    break;
+                case DIRECT:
+                default:
+                    break;
+                
+                }
+                
+            }
         }
         
         if (DEBUG_GETS_AND_SETS) {
@@ -330,34 +287,98 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         return retVal;
     }
     
+    /**
+     * Called by proxy
+     * 
+     * @param propName Property of child or non-child element or attribute
+     * @return Value
+     */
+    public Object _getProperty(String propName) {
+        if (!model.isChildProperty(propName)) {
+            return _getProperty(propName, ((model != null) ? model.getNonChildType(propName) : null));
+            
+        }
+        
+        ParentedNode parent = model.getChild(propName);
+        return _getProperty(propName, null, parent);
+    }
+    
+    /**
+     * Called by proxy
+     * 
+     * @param propName
+     * @return
+     */
     public boolean _getPropertyZ(String propName) {
         return (Boolean) _getProperty(propName, boolean.class);
     }
     
+    /**
+     * Called by proxy
+     * 
+     * @param propName
+     * @return
+     */
     public byte _getPropertyB(String propName) {
         return (Byte) _getProperty(propName, byte.class);
     }
     
+    /**
+     * Called by proxy
+     * 
+     * @param propName
+     * @return
+     */
     public char _getPropertyC(String propName) {
         return (Character) _getProperty(propName, char.class);
     }
     
+    /**
+     * Called by proxy
+     * 
+     * @param propName
+     * @return
+     */
     public short _getPropertyS(String propName) {
         return (Short) _getProperty(propName, short.class);
     }
     
+    /**
+     * Called by proxy
+     * 
+     * @param propName
+     * @return
+     */
     public int _getPropertyI(String propName) {
         return (Integer) _getProperty(propName, int.class);
     }
     
+    /**
+     * Called by proxy
+     * 
+     * @param propName
+     * @return
+     */
     public float _getPropertyF(String propName) {
         return (Float) _getProperty(propName, float.class);
     }
     
+    /**
+     * Called by proxy
+     * 
+     * @param propName
+     * @return
+     */
     public long _getPropertyJ(String propName) {
         return (Long) _getProperty(propName, long.class);
     }
     
+    /**
+     * Called by proxy
+     * 
+     * @param propName
+     * @return
+     */
     public double _getPropertyD(String propName) {
         return (Double) _getProperty(propName, double.class);
     }
@@ -865,8 +886,30 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         return selfDescriptor;
     }
     
+    
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean#_isDefaultChild()
+     */
+    @Override
+    public XmlHk2BeanType _getBeanType() {
+        return type;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean#_normalizeBean()
+     */
+    @Override
+    public void _normalizeBean() {
+        throw new AssertionError("_normalizeBean not yet implemented");
+    }
+    
     @Override
     public String toString() {
-        return "BaseHK2JAXBBean(XmlPath=" + xmlPath + ",instanceName=" + instanceName + ",keyValue=" + keyValue + "," + System.identityHashCode(this) + ")";
+        return "BaseHK2JAXBBean(XmlPath=" + xmlPath +
+                ",instanceName=" + instanceName +
+                ",keyValue=" + keyValue + "," +
+                ",type=" + type + "," +
+                System.identityHashCode(this) + ")";
     }
 }

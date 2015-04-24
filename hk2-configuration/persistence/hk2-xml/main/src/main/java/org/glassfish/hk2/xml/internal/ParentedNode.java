@@ -40,6 +40,7 @@
 package org.glassfish.hk2.xml.internal;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * A node with information about the parent, which is therefor
@@ -54,14 +55,16 @@ public class ParentedNode implements Serializable {
     private String childName;
     private ChildType childType;
     private UnparentedNode child;
+    private Map<String, String> defaultChild;
     
     public ParentedNode() {
     }
     
-    public ParentedNode(String childName, ChildType childType, UnparentedNode child) {
+    public ParentedNode(String childName, ChildType childType, UnparentedNode child, Map<String, String> defaultChild) {
         this.childName = childName;
         this.childType = childType;
         this.child = child;
+        this.defaultChild = defaultChild;
     }
     
     public String getChildName() {
