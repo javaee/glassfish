@@ -39,73 +39,25 @@
  */
 package org.glassfish.examples.configuration.xml.webserver;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-
-import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
-import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * This bean defines a WebServer
- * 
  * @author jwells
  *
  */
-@Hk2XmlPreGenerate
-public interface WebServerBean {
+@XmlRootElement(name="application")
+public interface ApplicationBean {
     /**
-     * @return the name
+     * A list of web servers to start for this application
+     * 
+     * @return A list of web-servers to start for this application
      */
-    @XmlAttribute(required=true)
-    @XmlIdentifier
-    public String getName();
-    
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name);
-    
-    /**
-     * @return the address
-     */
-    @XmlElement
-    public String getAddress();
-    
-    /**
-     * @param address the address to set
-     */
-    public void setAddress(String address);
-    
-    /**
-     * @return the adminPort
-     */
-    @XmlElement(defaultValue="1007")
-    public int getAdminPort();
-    
-    /**
-     * @param adminPort the adminPort to set
-     */
-    public void setAdminPort(int adminPort);
-    
-    /**
-     * @return the sslPort
-     */
-    @XmlElement(name="SSLPort", defaultValue="81")
-    public int getSSLPort();
-    
-    /**
-     * @param sslPort the sslPort to set
-     */
-    public void setSSLPort(int sslPort);
-    
-    /**
-     * @return the port
-     */
-    @XmlElement(defaultValue="80")
-    public int getPort();
-    
-    /**
-     * @param sshPort the port to set
-     */
-    public void setPort(int port);
+    @XmlElement(name="web-server")
+    public WebServerBean[] getWebServers();
+    public void setWebServers(WebServerBean[] webServers);
+    public void addWebServers(WebServerBean addMe);
+    public void removeWebServers(String removeMe);
+    public WebServerBean lookupWebServers(String findMe);
+
 }
