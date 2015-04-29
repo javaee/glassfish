@@ -42,14 +42,17 @@ package org.jvnet.hk2.internal;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InstantiationData;
 import org.glassfish.hk2.api.InstantiationService;
+import org.glassfish.hk2.api.Visibility;
 
 /**
  * @author jwells
  *
  */
+@Visibility(DescriptorVisibility.LOCAL)
 public class InstantiationServiceImpl implements InstantiationService {
     private final HashMap<Long, LinkedList<Injectee>> injecteeStack = new HashMap<Long, LinkedList<Injectee>>();
 

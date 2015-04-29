@@ -58,6 +58,12 @@ import org.jvnet.hk2.annotations.Contract;
  * <p>
  * A factory is generally added with the {@link FactoryDescriptors} helper
  * class, though factories can also be registered independently.
+ * <p>
+ * A Factory implementation may inject a {@link InstantiationService}.  If
+ * it does so then the {@link InstantiationService#getInstantiationData()} method
+ * will return information about the caller of the provide method if that
+ * information is available.  This can be used to customize the returned object
+ * based on the Injection point of the parent.
  * 
  * @author jwells
  * @param <T> This must be the type of entity for which this is a factory.

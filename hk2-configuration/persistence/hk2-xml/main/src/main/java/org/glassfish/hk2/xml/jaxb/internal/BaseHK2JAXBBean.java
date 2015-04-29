@@ -294,9 +294,8 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
      * @return Value
      */
     public Object _getProperty(String propName) {
-        if (!model.isChildProperty(propName)) {
+        if (model == null || !model.isChildProperty(propName)) {
             return _getProperty(propName, ((model != null) ? model.getNonChildType(propName) : null));
-            
         }
         
         ParentedNode parent = model.getChild(propName);
