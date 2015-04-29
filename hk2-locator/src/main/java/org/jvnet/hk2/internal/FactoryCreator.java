@@ -48,6 +48,7 @@ import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InstanceLifecycleEventType;
+import org.glassfish.hk2.api.InstantiationService;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
@@ -65,10 +66,22 @@ public class FactoryCreator<T> implements Creator<T> {
     
     private final ServiceLocator locator;
     private final ActiveDescriptor<?> factoryDescriptor;
+    private final InstantiationServiceImpl instantiationService;
     
     /* package */ FactoryCreator(ServiceLocator locator, ActiveDescriptor<?> factoryDescriptor) {
         this.locator = locator;
         this.factoryDescriptor = factoryDescriptor;
+        
+        InstantiationServiceImpl found = null;
+        for (Injectee factoryInjectee : factoryDescriptor.getInjectees()) {
+            if (InstantiationService.class.equals(factoryInjectee.getRequiredType())) {
+                found = locator.getService(InstantiationServiceImpl.class);
+                break;
+            }
+        }
+        
+        // Will ONLY be non-null if the factory has injected the InstantiationService
+        instantiationService = found;
     }
 
     /* (non-Javadoc)
@@ -120,7 +133,25 @@ public class FactoryCreator<T> implements Creator<T> {
             cycleFinder.remove(tso);
         }
         
-        T retVal = retValFactory.provide();
+        if (instantiationService != null) {
+            Injectee parentInjectee = null;
+            if (root != null && (root instanceof ServiceHandleImpl)) {
+                parentInjectee = ((ServiceHandleImpl<?>) root).getOriginalRequest();
+            }
+            
+            // Even if it is null
+            instantiationService.pushInjecteeParent(parentInjectee);
+        }
+        
+        T retVal;
+        try {
+            retVal = retValFactory.provide();
+        }
+        finally {
+            if (instantiationService != null) {
+                instantiationService.popInjecteeParent();
+            }
+        }
         
         eventThrower.invokeInstanceListeners(new InstanceLifecycleEventImpl(
                 InstanceLifecycleEventType.POST_PRODUCTION, retVal, eventThrower));

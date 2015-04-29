@@ -48,6 +48,7 @@ import org.glassfish.hk2.utilities.BuilderHelper;
 import org.jvnet.hk2.internal.DefaultClassAnalyzer;
 import org.jvnet.hk2.internal.DynamicConfigurationImpl;
 import org.jvnet.hk2.internal.DynamicConfigurationServiceImpl;
+import org.jvnet.hk2.internal.InstantiationServiceImpl;
 import org.jvnet.hk2.internal.ServiceLocatorImpl;
 import org.jvnet.hk2.internal.ServiceLocatorRuntimeImpl;
 import org.jvnet.hk2.internal.Utilities;
@@ -84,6 +85,9 @@ public class ServiceLocatorGeneratorImpl implements ServiceLocatorGenerator {
                 new DefaultClassAnalyzer(sli)));
         
         dci.bind(BuilderHelper.createDescriptorFromClass(ServiceLocatorRuntimeImpl.class));
+        
+        dci.bind(BuilderHelper.createConstantDescriptor(
+                new InstantiationServiceImpl()));
         
         dci.commit();
         

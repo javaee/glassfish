@@ -37,46 +37,70 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.factory2;
+package org.jvnet.hk2.internal;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import java.util.HashMap;
+import java.util.LinkedList;
+
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.InstantiationData;
+import org.glassfish.hk2.api.InstantiationService;
 
 /**
  * @author jwells
  *
  */
-public class Factory2Test {
-    public static final String ALICE = "Alice";
-    public static final String BOB = "Bob";
-    public static final String CAROL = "Carol";
-    
-    /**
-     * Tests that a factory can generate new services
-     * based on the identity of the lookup
+public class InstantiationServiceImpl implements InstantiationService {
+    private final HashMap<Long, LinkedList<Injectee>> injecteeStack = new HashMap<Long, LinkedList<Injectee>>();
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.InstantiationService#getInstantiationData()
      */
-    @Test // @org.junit.Ignore
-    public void testFactoryCanCorrelate() {
-        ServiceLocator locator = LocatorHelper.getServiceLocator(CorrelatedServiceOne.class,
-                CorrelatedServiceTwo.class,
-                CorrelatedServiceThree.class,
-                CorrelationFactory.class);
+    @Override
+    public synchronized InstantiationData getInstantiationData() {
+        long tid = Thread.currentThread().getId();
         
-        CorrelatedServiceThree three = locator.getService(CorrelatedServiceThree.class);
-        Assert.assertEquals(CAROL, three.getName());
+        LinkedList<Injectee> threadStack = injecteeStack.get(tid);
+        if (threadStack == null) return null;
+        if (threadStack.isEmpty()) return null;
         
-        CorrelatedServiceOne one = locator.getService(CorrelatedServiceOne.class);
-        Assert.assertEquals(ALICE, one.getName());
+        final Injectee head = threadStack.getLast();
         
-        CorrelatedServiceTwo two = locator.getService(CorrelatedServiceTwo.class);
-        Assert.assertEquals(BOB, two.getName());
+        return new InstantiationData() {
+
+            @Override
+            public Injectee getParentInjectee() {
+                return head;
+            }
+            
+        };
+   
+    }
+    
+    public synchronized void pushInjecteeParent(Injectee injectee) {
+        long tid = Thread.currentThread().getId();
         
-        // Twice because it is per lookup
-        three = locator.getService(CorrelatedServiceThree.class);
-        Assert.assertEquals(CAROL, three.getName());
+        LinkedList<Injectee> threadStack = injecteeStack.get(tid);
+        if (threadStack == null) {
+            threadStack = new LinkedList<Injectee>();
+            injecteeStack.put(tid, threadStack);
+        }
+        
+        threadStack.addLast(injectee);
+    }
+    
+    public synchronized void popInjecteeParent() {
+        long tid = Thread.currentThread().getId();
+        
+        LinkedList<Injectee> threadStack = injecteeStack.get(tid);
+        if (threadStack == null) return;
+        
+        threadStack.removeLast();
+        
+        if (threadStack.isEmpty()) {
+            // prevents memory leaks for long dead threads
+            injecteeStack.remove(tid);
+        }
     }
 
 }
