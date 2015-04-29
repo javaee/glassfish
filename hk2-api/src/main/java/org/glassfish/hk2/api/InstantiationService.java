@@ -37,79 +37,40 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.factory2;
+package org.glassfish.hk2.api;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import org.glassfish.hk2.api.Factory;
-import org.glassfish.hk2.api.Injectee;
-import org.glassfish.hk2.api.InstantiationData;
-import org.glassfish.hk2.api.InstantiationService;
-import org.glassfish.hk2.api.PerLookup;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
+ * This service is used to get information about
+ * the creation of a service from an
+ * implementation of {@link Factory}.  The
+ * system creates this service, and while
+ * it can be injected into any service or
+ * even looked up, it only has data
+ * when called from inside the {@link Factory#provide()}
+ * method of a {@link Factory}.
+ * 
  * @author jwells
  *
  */
-@Singleton
-public class CorrelationFactory implements Factory<PerLookupServiceWithName> {
-    private final static PerLookupServiceWithName NULL_SERVICE = new PerLookupServiceWithName() {
-
-        @Override
-        public String getName() {
-            return null;
-        }
-        
-    };
-    
-    @Inject
-    private InstantiationService instantiationService;
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Factory#provide()
+@Contract
+public interface InstantiationService {
+    /**
+     * This method may be called from inside the
+     * implementation of {@link Factory#provide()}
+     * method to get more information about the
+     * reason for instantiation.  If this method
+     * is called outside the scope of a
+     * {@link Factory#provide()} method the results
+     * are indeterminate
+     * 
+     * @return A non-null InstantiationData object
+     * containing information about the caller of
+     * the {@link Factory#provide()} method. May
+     * return null if no information is known or
+     * if called from outside of a {@link Factory#provide()}
+     * method
      */
-    @Override @PerLookup
-    public PerLookupServiceWithName provide() {
-        InstantiationData data = instantiationService.getInstantiationData();
-        if (data == null) {
-            return NULL_SERVICE;
-        }
-        
-        Injectee parent = data.getParentInjectee();
-        
-        if (parent == null) {
-            return NULL_SERVICE;
-        }
-        
-        Class<?> parentClass = parent.getInjecteeClass();
-        if (parentClass == null) {
-            return NULL_SERVICE;
-        }
-        
-        Correlator correlator = parentClass.getAnnotation(Correlator.class);
-        if (correlator == null) {
-            return NULL_SERVICE;
-        }
-        
-        final String fName = correlator.value();
-        
-        return new PerLookupServiceWithName() {
-
-            @Override
-            public String getName() {
-                return fName;
-            }
-            
-        };
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Factory#dispose(java.lang.Object)
-     */
-    @Override
-    public void dispose(PerLookupServiceWithName instance) {
-        // DO nothing
-    }
-
+    public InstantiationData getInstantiationData();
 }
