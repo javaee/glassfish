@@ -455,15 +455,14 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T>, Closeable {
             T retVal;
             if (activeDescriptor != null) {
                 if (!(activeDescriptor instanceof AutoActiveDescriptor)) {
-                    // An auto-active descriptor will do the even in its create method
+                    // An auto-active descriptor will do the event in its create method
                     invokeInstanceListeners(new InstanceLifecycleEventImpl(InstanceLifecycleEventType.PRE_PRODUCTION, null, this));
                 }
-
 
                 retVal = activeDescriptor.create(root);
 
                 if (!(activeDescriptor instanceof AutoActiveDescriptor)) {
-                    // An auto-active descriptor will do the even in its create method
+                    // An auto-active descriptor will do the event in its create method
                     invokeInstanceListeners(new InstanceLifecycleEventImpl(InstanceLifecycleEventType.POST_PRODUCTION, retVal, this));
                 }
             }

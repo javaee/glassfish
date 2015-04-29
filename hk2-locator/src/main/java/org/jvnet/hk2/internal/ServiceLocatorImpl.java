@@ -633,7 +633,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
         Class<?> rawClass = ReflectionHelper.getRawClass(contractOrImpl);
 
         if (root == null) {
-            return Utilities.createService(activeDescriptor, originalRequest, this, null, rawClass);
+            ServiceHandleImpl<T> tmpRoot = new ServiceHandleImpl<T>(this, activeDescriptor, originalRequest);
+            return Utilities.createService(activeDescriptor, originalRequest, this, tmpRoot, rawClass);
         }
 
         ServiceHandleImpl<T> subHandle = internalGetServiceHandle(activeDescriptor, contractOrImpl);

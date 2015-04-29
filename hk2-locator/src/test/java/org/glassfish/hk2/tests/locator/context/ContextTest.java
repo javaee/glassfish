@@ -157,8 +157,11 @@ public class ContextTest {
         List<RootContext.Root> roots = rootContext.getRoots();
         Assert.assertEquals(2, roots.size());
         
+        // the first one is null since it is a basic lookup
         Assert.assertNull(roots.get(0).getRoot());
-        Assert.assertNull(roots.get(1).getRoot());
+        
+        // the second is non-null because it is from an injection point
+        Assert.assertNotNull(roots.get(1).getRoot());
     }
     
     /**
@@ -225,11 +228,13 @@ public class ContextTest {
         List<RootContext.Root> roots = gets.checkProvider();
         Assert.assertEquals(2, roots.size());
         
+        // the first get call is like a getService call, and hence has null root
         ServiceHandle<?> rootHandle0 = roots.get(0).getRoot();
         Assert.assertNull(rootHandle0);
         
+        // the second call is non-null, as it comes from an injection point
         ServiceHandle<?> rootHandle1 = roots.get(1).getRoot();
-        Assert.assertNull(rootHandle1);
+        Assert.assertNotNull(rootHandle1);
     }
     
     /**

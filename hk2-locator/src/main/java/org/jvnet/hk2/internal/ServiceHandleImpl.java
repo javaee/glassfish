@@ -205,11 +205,11 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
         subHandles.add(subHandle);
     }
     
+    public Injectee getOriginalRequest() {
+        return injectee;
+    }
+    
     public String toString() {
         return "ServiceHandle(" + root + "," + System.identityHashCode(this) + ")"; 
     }
-
-    
-	
-
 }
