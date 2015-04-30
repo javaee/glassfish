@@ -812,7 +812,7 @@ public class InhabitantsGeneratorTest {
     /**
      * Tests the in-flight generator
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testInFlightGenerator() throws IOException {
         ServiceLoader<InFlightGenerator> loader = ServiceLoader.load(InFlightGenerator.class);
         

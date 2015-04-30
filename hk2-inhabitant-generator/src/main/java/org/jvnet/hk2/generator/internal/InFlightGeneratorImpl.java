@@ -84,6 +84,8 @@ public class InFlightGeneratorImpl implements InFlightGenerator {
         for (DescriptorImpl di : retVal) {
             di.writeObject(writer);
         }
+        
+        writer.flush();
     }
 
 }
