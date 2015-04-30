@@ -40,16 +40,24 @@
 package org.jvnet.hk2.generator.tests;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.ServiceLoader;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
@@ -63,10 +71,12 @@ import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.utilities.DescriptorImpl;
+import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.junit.Before;
 import org.junit.Test;
 import org.jvnet.hk2.config.GenerateServiceFromMethod;
 import org.jvnet.hk2.generator.HabitatGenerator;
+import org.jvnet.hk2.generator.InFlightGenerator;
 
 /**
  * Tests for the inhabitant generator
@@ -74,6 +84,9 @@ import org.jvnet.hk2.generator.HabitatGenerator;
  * @author jwells
  */
 public class InhabitantsGeneratorTest {
+    private final static String CLASS_PATH_PROP = "java.class.path";
+    private final static String CLASSPATH = GeneralUtilities.getSystemProperty(CLASS_PATH_PROP, null);
+    
     private final static String FILE_ARGUMENT = "--file";
     private final static String OUTJAR_FILE_ARGUMENT = "--outjar";
     private final static String VERBOSE_ARGUMENT = "--verbose";
@@ -781,5 +794,52 @@ public class InhabitantsGeneratorTest {
             // The test should be clean
             defaultOutput.delete();
         }
+    }
+    
+    private static List<File> convertClasspathToFiles() {
+        StringTokenizer tokenizer = new StringTokenizer(CLASSPATH, File.pathSeparator);
+        
+        LinkedList<File> retVal = new LinkedList<File>();
+        while (tokenizer.hasMoreTokens()) {
+            String file = tokenizer.nextToken();
+            
+            retVal.add(new File(file));
+        }
+        
+        return retVal;
+    }
+    
+    /**
+     * Tests the in-flight generator
+     */
+    @Test @org.junit.Ignore
+    public void testInFlightGenerator() throws IOException {
+        ServiceLoader<InFlightGenerator> loader = ServiceLoader.load(InFlightGenerator.class);
+        
+        InFlightGenerator generator = null;
+        for (InFlightGenerator candidate : loader) {
+            generator = candidate;
+            break;
+        }
+        
+        Assert.assertNotNull(generator);
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        
+        generator.generateFromMultipleDirectories(Collections.singletonList(gendirDirectory),
+                convertClasspathToFiles(),
+                false,
+                baos);
+        
+        baos.close();
+        
+        byte[] data = baos.toByteArray();
+        
+        ByteArrayInputStream bais = new ByteArrayInputStream(data);
+        Set<DescriptorImpl> generatedImpls = getAllDescriptorsFromInputStream(bais);
+        
+        bais.close();
+        
+        checkDescriptors(generatedImpls);
     }
 }

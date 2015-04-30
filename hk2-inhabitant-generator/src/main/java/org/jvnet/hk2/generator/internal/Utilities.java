@@ -40,7 +40,9 @@
 package org.jvnet.hk2.generator.internal;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -57,6 +59,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
+import java.util.TreeSet;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
@@ -287,15 +290,11 @@ public class Utilities {
                 
     }
     
-    /* package */ Utilities(boolean verbose, String searchPath) {
+    /* package */ Utilities(boolean verbose, List<File> searchPath) {
         this.verbose = verbose;
         if (searchPath != null) {
-            StringTokenizer st = new StringTokenizer(searchPath, File.pathSeparator);
-            while (st.hasMoreTokens()) {
-                String pathElement = st.nextToken();
-            
-                File nextSearchGuy = new File(pathElement);
-                this.searchPath.add(nextSearchGuy);
+            for (File searchHere : searchPath) {
+                this.searchPath.add(searchHere);
             }
         }
         
@@ -311,16 +310,33 @@ public class Utilities {
         
         if (verbose && searchPath != null) {
             System.out.println("The elements of the path that will be searched is:");
-            StringTokenizer st = new StringTokenizer(searchPath, File.pathSeparator);
             int lcv = 1;
-            while (st.hasMoreTokens()) {
-                String pathElement = st.nextToken();
-                
-                System.out.println(" " + lcv++ + ". " + pathElement);
+            for (File pathElement : searchPath) {
+                System.out.println(" " + lcv++ + ". " + pathElement.getAbsolutePath());
             }
             System.out.println("Finished printing search path elements");
             
         }
+    }
+    
+    private static List<File> getFilesFromSearchPath(String searchPath) {
+        if (searchPath == null) return null;
+        
+        LinkedList<File> retVal = new LinkedList<File>();
+        
+        StringTokenizer st = new StringTokenizer(searchPath, File.pathSeparator);
+        while (st.hasMoreTokens()) {
+            String pathElement = st.nextToken();
+        
+            File nextSearchGuy = new File(pathElement);
+            retVal.add(nextSearchGuy);
+        }
+        
+        return retVal;
+    }
+    
+    /* package */ Utilities(boolean verbose, String searchPath) {
+        this(verbose, getFilesFromSearchPath(searchPath));
     }
     
     /**
@@ -1108,5 +1124,53 @@ public class Utilities {
         reader.accept(cvi, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
         
         return cvi.getGeneratedDescriptor();
+    }
+    
+    public List<DescriptorImpl> findAllServicesFromDirectory(File directory, List<File> parent) throws IOException {
+        TreeSet<DescriptorImpl> retVal = new TreeSet<DescriptorImpl>(new DescriptorComparitor());
+        
+        File subDirectories[] = directory.listFiles(new FileFilter() {
+
+            @Override
+            public boolean accept(File pathname) {
+                return pathname.isDirectory();
+            }
+            
+        });
+        
+        for (File subDirectory : subDirectories) {
+            retVal.addAll(findAllServicesFromDirectory(subDirectory, parent));
+        }
+        
+        // Now get all the class files from this directory itself
+        File candidates[] = directory.listFiles(new FilenameFilter() {
+
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith(DOT_CLASS);
+            }
+        });
+        
+        for (File candidate : candidates) {
+            FileInputStream fis = null;
+            try {
+                fis = new FileInputStream(candidate);
+                
+                List<DescriptorImpl> dis = createDescriptorIfService(fis, parent);
+                retVal.addAll(dis);
+            }
+            finally {
+                if (fis != null) {
+                    try {
+                        fis.close();
+                    }
+                    catch (IOException ioe) {
+                        // ignore
+                    }
+                }
+            }
+        }
+        
+        return new LinkedList<DescriptorImpl>(retVal);
     }
 }

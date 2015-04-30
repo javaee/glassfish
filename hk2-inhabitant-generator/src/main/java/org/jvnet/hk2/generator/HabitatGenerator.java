@@ -55,7 +55,7 @@ import org.jvnet.hk2.generator.internal.GeneratorRunner;
  */
 public class HabitatGenerator {
     private final static String CLASS_PATH_PROP = "java.class.path";
-    private final static String CLASSPATH = GeneralUtilities.getSystemProperty(CLASS_PATH_PROP, null);;
+    private final static String CLASSPATH = GeneralUtilities.getSystemProperty(CLASS_PATH_PROP, null);
     
     /** The flag for the location of the file */
     public final static String FILE_ARG = "--file";
