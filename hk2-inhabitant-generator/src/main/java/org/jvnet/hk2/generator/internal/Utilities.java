@@ -77,6 +77,7 @@ import org.jvnet.hk2.annotations.ContractsProvided;
 import org.glassfish.hk2.external.org.objectweb.asm.AnnotationVisitor;
 import org.glassfish.hk2.external.org.objectweb.asm.ClassReader;
 import org.glassfish.hk2.external.org.objectweb.asm.MethodVisitor;
+import org.glassfish.hk2.utilities.DescriptorImpl;
 
 /**
  * @author jwells
@@ -104,7 +105,7 @@ public class Utilities {
             new HashMap<String, Map<String, String>>();
     
     private final boolean verbose;
-    private final String searchPath;
+    private final List<File> searchPath = new LinkedList<File>();
     
     private final static String CONFIGURED_CONTRACT = "org.jvnet.hk2.config.Configured";
     
@@ -288,7 +289,15 @@ public class Utilities {
     
     /* package */ Utilities(boolean verbose, String searchPath) {
         this.verbose = verbose;
-        this.searchPath = searchPath;
+        if (searchPath != null) {
+            StringTokenizer st = new StringTokenizer(searchPath, File.pathSeparator);
+            while (st.hasMoreTokens()) {
+                String pathElement = st.nextToken();
+            
+                File nextSearchGuy = new File(pathElement);
+                this.searchPath.add(nextSearchGuy);
+            }
+        }
         
         // We can pre-load the cache with some obvious ones and thus reduce searching quite a bit
         for (KnownClassData kcd : KNOWN_DATA) {
@@ -324,52 +333,45 @@ public class Utilities {
      * @return an IOStream if the file could be located
      * @throws IOException
      */
-    private InputStream findClass(File searchHere, String dotDelimitedName, boolean searchClassPath, String calledFrom) throws IOException {
+    private InputStream findClass(List<File> searchHeres, String dotDelimitedName, boolean searchClassPath, String calledFrom) throws IOException {
         if (verbose && searchClassPath) {
             System.out.println("Looking for " + dotDelimitedName + " for discovery of " + calledFrom);
         }
         
-        if (searchHere.isDirectory()) {
-            String properPathName = dotDelimitedName.replace('.', File.separatorChar) + DOT_CLASS;
+        for (File searchHere : searchHeres) {
+            if (searchHere.isDirectory()) {
+                String properPathName = dotDelimitedName.replace('.', File.separatorChar) + DOT_CLASS;
             
-            File fullFile = new File(searchHere, properPathName);
+                File fullFile = new File(searchHere, properPathName);
             
-            if (fullFile.exists()) {
-                if (verbose) {
-                    System.out.println("Found " + dotDelimitedName + " in " + searchHere.getAbsolutePath() + " for " + calledFrom);
+                if (fullFile.exists()) {
+                    if (verbose) {
+                        System.out.println("Found " + dotDelimitedName + " in " + searchHere.getAbsolutePath() + " for " + calledFrom);
+                    }
+                    return new FileInputStream(fullFile);
                 }
-                return new FileInputStream(fullFile);
             }
-        }
-        else {
-            JarFile jar = new JarFile(searchHere);
+            else {
+                JarFile jar = new JarFile(searchHere);
             
-            String entryName = dotDelimitedName.replace('.', '/') + DOT_CLASS;
-            ZipEntry entry = jar.getEntry(entryName);
-            if (entry != null) {
-                if (verbose) {
-                    System.out.println("Found " + dotDelimitedName + " in jar " + searchHere.getAbsolutePath() + " for " + calledFrom);
-                }
+                String entryName = dotDelimitedName.replace('.', '/') + DOT_CLASS;
+                ZipEntry entry = jar.getEntry(entryName);
+                if (entry != null) {
+                    if (verbose) {
+                        System.out.println("Found " + dotDelimitedName + " in jar " + searchHere.getAbsolutePath() + " for " + calledFrom);
+                    }
                 
-                return jar.getInputStream(entry);
+                    return jar.getInputStream(entry);
+                }
             }
         }
         
         if (!searchClassPath) return null;
         
         // Handle classpath
-        String classpath = searchPath;
-        if (classpath == null) return null;
-        
-        StringTokenizer st = new StringTokenizer(classpath, File.pathSeparator);
-        while (st.hasMoreTokens()) {
-            String pathElement = st.nextToken();
-            
-            File nextSearchGuy = new File(pathElement);
-            InputStream is = findClass(nextSearchGuy, dotDelimitedName, false, calledFrom);
-            if (is != null) {
-                return is;
-            }
+        InputStream is = findClass(searchPath, dotDelimitedName, false, calledFrom);
+        if (is != null) {
+            return is;
         }
         
         if (verbose) {
@@ -393,14 +395,14 @@ public class Utilities {
      * @param dotDelimitedName The fully qualified class name to look for
      * @return true if this can determine that this is a contract
      */
-    private boolean isClassAContract(File searchHere, String dotDelimitedName) {
+    private boolean isClassAContract(List<File> searchHeres, String dotDelimitedName) {
         if (ISA_CONTRACT.containsKey(dotDelimitedName)) {
             return ISA_CONTRACT.get(dotDelimitedName);
         }
         
         InputStream is = null;
         try {
-            is = findClass(searchHere, dotDelimitedName, true, "isaContract");
+            is = findClass(searchHeres, dotDelimitedName, true, "isaContract");
             if (is == null) {
                 nullCaches(dotDelimitedName);
                 
@@ -409,7 +411,7 @@ public class Utilities {
             
             ClassReader reader = new ClassReader(is);
             
-            ContractClassVisitor ccv = new ContractClassVisitor(searchHere, CONTRACT_WITH_SLASHES, dotDelimitedName);
+            ContractClassVisitor ccv = new ContractClassVisitor(searchHeres, CONTRACT_WITH_SLASHES, dotDelimitedName);
             
             reader.accept(ccv, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
             
@@ -440,14 +442,14 @@ public class Utilities {
      * @return The dot-delimited superclass name or null if this is terminal (is
      *   an interface or extends java.lang.Object)
      */
-    private String getSuperclass(File searchHere, String dotDelimitedName) {
+    private String getSuperclass(List<File> searchHeres, String dotDelimitedName) {
         if (FOUND_SUPERCLASS.containsKey(dotDelimitedName)) {
             return FOUND_SUPERCLASS.get(dotDelimitedName);
         }
         
         InputStream is = null;
         try {
-            is = findClass(searchHere, dotDelimitedName, true, "superclass");
+            is = findClass(searchHeres, dotDelimitedName, true, "superclass");
             if (is == null) {
                 nullCaches(dotDelimitedName);
                 
@@ -456,7 +458,7 @@ public class Utilities {
             
             ClassReader reader = new ClassReader(is);
             
-            ContractClassVisitor ccv = new ContractClassVisitor(searchHere, null, dotDelimitedName);
+            ContractClassVisitor ccv = new ContractClassVisitor(searchHeres, null, dotDelimitedName);
             
             reader.accept(ccv, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
             
@@ -486,14 +488,14 @@ public class Utilities {
      * @param dotDelimitedName
      * @return true if this class is a scope
      */
-    public boolean isClassAScope(File searchHere, String dotDelimitedName) {
+    public boolean isClassAScope(List<File> searchHeres, String dotDelimitedName) {
         if (ISA_SCOPE.containsKey(dotDelimitedName)) {
             return ISA_SCOPE.get(dotDelimitedName);
         }
         
         InputStream is = null;
         try {
-            is = findClass(searchHere, dotDelimitedName, true, "isascope");
+            is = findClass(searchHeres, dotDelimitedName, true, "isascope");
             if (is == null) {
                 nullCaches(dotDelimitedName);
                 
@@ -502,7 +504,7 @@ public class Utilities {
             
             ClassReader reader = new ClassReader(is);
             
-            ContractClassVisitor ccv = new ContractClassVisitor(searchHere, SCOPE_WITH_SLASHES, dotDelimitedName);
+            ContractClassVisitor ccv = new ContractClassVisitor(searchHeres, SCOPE_WITH_SLASHES, dotDelimitedName);
             
             reader.accept(ccv, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
             
@@ -533,14 +535,14 @@ public class Utilities {
      * @param dotDelimitedName
      * @return true if this class is a qualifier
      */
-    public boolean isClassAQualifier(File searchHere, String dotDelimitedName) {
+    public boolean isClassAQualifier(List<File> searchHeres, String dotDelimitedName) {
         if (ISA_QUALIFIER.containsKey(dotDelimitedName)) {
             return ISA_QUALIFIER.get(dotDelimitedName);
         }
         
         InputStream is = null;
         try {
-            is = findClass(searchHere, dotDelimitedName, true, "isaQualifier");
+            is = findClass(searchHeres, dotDelimitedName, true, "isaQualifier");
             if (is == null) {
                 nullCaches(dotDelimitedName);
                 
@@ -549,7 +551,7 @@ public class Utilities {
             
             ClassReader reader = new ClassReader(is);
             
-            ContractClassVisitor ccv = new ContractClassVisitor(searchHere, QUALIFIER_WITH_SLASHES, dotDelimitedName);
+            ContractClassVisitor ccv = new ContractClassVisitor(searchHeres, QUALIFIER_WITH_SLASHES, dotDelimitedName);
             
             reader.accept(ccv, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
             
@@ -580,14 +582,14 @@ public class Utilities {
      * @param dotDelimitedName
      * @return true if this class is a qualifier
      */
-    public GenerateMethodAnnotationData isClassAGenerator(File searchHere, String dotDelimitedName) {
+    public GenerateMethodAnnotationData isClassAGenerator(List<File> searchHeres, String dotDelimitedName) {
         if (FOUND_GENERATORS.containsKey(dotDelimitedName)) {
             return FOUND_GENERATORS.get(dotDelimitedName);
         }
         
         InputStream is = null;
         try {
-            is = findClass(searchHere, dotDelimitedName, true, "isaMethodGenerator");
+            is = findClass(searchHeres, dotDelimitedName, true, "isaMethodGenerator");
             if (is == null) {
                 nullCaches(dotDelimitedName);
                 
@@ -620,14 +622,14 @@ public class Utilities {
         }
     }
     
-    private void getAssociatedSuperclassContracts(File searchHere, String dotDelimitedName, Set<String> addToMe) {
-        if (!addToMe.contains(dotDelimitedName) && isClassAContract(searchHere, dotDelimitedName)) {
+    private void getAssociatedSuperclassContracts(List<File> searchHeres, String dotDelimitedName, Set<String> addToMe) {
+        if (!addToMe.contains(dotDelimitedName) && isClassAContract(searchHeres, dotDelimitedName)) {
             addToMe.add(dotDelimitedName);
         }
         
-        String dotDelimitedSuperclass = getSuperclass(searchHere, dotDelimitedName);
+        String dotDelimitedSuperclass = getSuperclass(searchHeres, dotDelimitedName);
         if (dotDelimitedSuperclass != null) {
-            getAssociatedSuperclassContracts(searchHere, dotDelimitedSuperclass, addToMe);
+            getAssociatedSuperclassContracts(searchHeres, dotDelimitedSuperclass, addToMe);
         }
     }
     
@@ -637,52 +639,52 @@ public class Utilities {
      * @param dotDelimitedName
      * @return The set of contracts associated with this dotDelimited name (ordered iterator)
      */
-    public Set<String> getAssociatedContracts(File searchHere, String dotDelimitedName) {
+    public Set<String> getAssociatedContracts(List<File> searchHeres, String dotDelimitedName) {
         LinkedHashSet<String> retVal = new LinkedHashSet<String>();
         retVal.add(dotDelimitedName);
         
-        getAssociatedSuperclassContracts(searchHere, dotDelimitedName, retVal);
+        getAssociatedSuperclassContracts(searchHeres, dotDelimitedName, retVal);
         
         while (dotDelimitedName != null) {
             // getAssociatedSuperclassContracts is guaranteed to fill in the INTERFACES cache
             Set<String> allInterfaces = FOUND_INTERFACES.get(dotDelimitedName);
             if (allInterfaces == null) {
-                dotDelimitedName = getSuperclass(searchHere, dotDelimitedName);
+                dotDelimitedName = getSuperclass(searchHeres, dotDelimitedName);
                 
                 continue;
             }
             
             for (String dotDelimitedInterface : allInterfaces) {
-                if (isClassAContract(searchHere, dotDelimitedInterface)) {
+                if (isClassAContract(searchHeres, dotDelimitedInterface)) {
                     retVal.add(dotDelimitedInterface);  
                 }
                 
-                addSubInterface(searchHere, dotDelimitedInterface, retVal);
+                addSubInterface(searchHeres, dotDelimitedInterface, retVal);
             }
             
-            dotDelimitedName = getSuperclass(searchHere, dotDelimitedName);
+            dotDelimitedName = getSuperclass(searchHeres, dotDelimitedName);
         }
         
         return retVal;
     }
     
-    private void addSubInterface(File searchHere, String dotDelimitedInterface, LinkedHashSet<String> retVal) {
+    private void addSubInterface(List<File> searchHeres, String dotDelimitedInterface, LinkedHashSet<String> retVal) {
         Set<String> subInterfaces = FOUND_INTERFACES.get(dotDelimitedInterface);
         if (subInterfaces == null) return;
         
         for (String dotDelimitedSubInterface : subInterfaces) {
-            if (isClassAContract(searchHere, dotDelimitedSubInterface)) {
+            if (isClassAContract(searchHeres, dotDelimitedSubInterface)) {
                 retVal.add(dotDelimitedSubInterface);
             }
             
-            addSubInterface(searchHere, dotDelimitedSubInterface, retVal);
+            addSubInterface(searchHeres, dotDelimitedSubInterface, retVal);
         }
     }
     
     private class ContractClassVisitor extends AbstractClassVisitorImpl {
         private final String cacheKey;
         private final String lookForMe;
-        private final File searchHere;
+        private final List<File> searchHeres;
         
         private final Map<String, String> methodNameToMetadataKey =
                 new HashMap<String, String>();
@@ -695,8 +697,8 @@ public class Utilities {
         
         private String dotDelimitedSuperclass;
         
-        private ContractClassVisitor(File searchHere, String lookForMe, String cacheKey) {
-            this.searchHere = searchHere;
+        private ContractClassVisitor(List<File> searchHeres, String lookForMe, String cacheKey) {
+            this.searchHeres = searchHeres;
             this.lookForMe = lookForMe;
             this.cacheKey = cacheKey;
         }
@@ -719,7 +721,7 @@ public class Utilities {
                     iFaces.add(iWithDots);
                     
                     // Fill in the cache with all sub interfaces
-                    getSuperclass(searchHere, iWithDots);
+                    getSuperclass(searchHeres, iWithDots);
                 }
                 
                 FOUND_INTERFACES.put(cacheKey, iFaces);
@@ -1096,5 +1098,15 @@ public class Utilities {
         String postL = desc.substring(2, semiColonIndex);
         
         return postL.replace('/', '.');
+    }
+    
+    public List<DescriptorImpl> createDescriptorIfService(InputStream is, List<File> searchHeres) throws IOException {
+        ClassReader reader = new ClassReader(is);
+        
+        ClassVisitorImpl cvi = new ClassVisitorImpl(this, verbose, searchHeres);
+        
+        reader.accept(cvi, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+        
+        return cvi.getGeneratedDescriptor();
     }
 }

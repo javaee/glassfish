@@ -55,7 +55,6 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.glassfish.hk2.utilities.DescriptorImpl;
-import org.glassfish.hk2.external.org.objectweb.asm.ClassReader;
 
 /**
  * @author jwells
@@ -128,7 +127,7 @@ public class GeneratorRunner {
         
         List<DescriptorImpl> allDescriptors;
         if (toInspect.isDirectory()) {
-            allDescriptors = findAllServicesFromDirectory(toInspect, toInspect);
+            allDescriptors = findAllServicesFromDirectory(toInspect, Collections.singletonList(toInspect));
             if (allDescriptors.isEmpty()) return;
             writeToDirectory(allDescriptors);
         }
@@ -139,7 +138,7 @@ public class GeneratorRunner {
         
     }
     
-    private List<DescriptorImpl> findAllServicesFromDirectory(File directory, File parent) throws IOException {
+    private List<DescriptorImpl> findAllServicesFromDirectory(File directory, List<File> parent) throws IOException {
         TreeSet<DescriptorImpl> retVal = new TreeSet<DescriptorImpl>(new DescriptorComparitor());
         
         File subDirectories[] = directory.listFiles(new FileFilter() {
@@ -169,7 +168,7 @@ public class GeneratorRunner {
             try {
                 fis = new FileInputStream(candidate);
                 
-                List<DescriptorImpl> dis = createDescriptorIfService(fis, parent);
+                List<DescriptorImpl> dis = utilities.createDescriptorIfService(fis, parent);
                 retVal.addAll(dis);
             }
             finally {
@@ -399,7 +398,7 @@ public class GeneratorRunner {
                 try {
                     is = jarFile.getInputStream(entry);
                     
-                    List<DescriptorImpl> dis = createDescriptorIfService(is, jar);
+                    List<DescriptorImpl> dis = utilities.createDescriptorIfService(is, Collections.singletonList(jar));
                     retVal.addAll(dis);
                 }
                 finally {
@@ -420,16 +419,6 @@ public class GeneratorRunner {
         }
         
         return new LinkedList<DescriptorImpl>(retVal);
-    }
-    
-    private List<DescriptorImpl> createDescriptorIfService(InputStream is, File searchHere) throws IOException {
-        ClassReader reader = new ClassReader(is);
-        
-        ClassVisitorImpl cvi = new ClassVisitorImpl(utilities, verbose, searchHere);
-        
-        reader.accept(cvi, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
-        
-        return cvi.getGeneratedDescriptor();
     }
     
     /**

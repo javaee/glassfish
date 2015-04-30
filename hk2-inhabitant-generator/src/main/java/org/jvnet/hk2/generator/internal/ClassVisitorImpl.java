@@ -96,7 +96,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
     public final static String PARENT_CONFIGURED = "ParentConfigured";
     
     private final boolean verbose;
-    private final File searchHere;
+    private final List<File> searchHeres;
     private final Utilities utilities;
     
     private String implName;
@@ -128,10 +128,10 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
      * @param verbose true if we should print out any service we are binding
      * @param searchHere if we cannot classload something directly, search for it here
      */
-    public ClassVisitorImpl(Utilities utilities, boolean verbose, File searchHere) {
+    public ClassVisitorImpl(Utilities utilities, boolean verbose, List<File> searchHeres) {
         this.utilities = utilities;
         this.verbose = verbose;
-        this.searchHere = searchHere;
+        this.searchHeres = searchHeres;
     }
 
     /* (non-Javadoc)
@@ -146,7 +146,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
             String[] interfaces) {
         implName = name.replace("/", ".");
         
-        iFaces.addAll(utilities.getAssociatedContracts(searchHere, implName));
+        iFaces.addAll(utilities.getAssociatedContracts(searchHeres, implName));
         
         if (iFaces.contains(Factory.class.getName())) {
             isFactory = true;
@@ -195,7 +195,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
         if (!desc.startsWith("L")) return null;
             
         String loadQualifierName = desc.substring(1, desc.length() -1).replace("/", ".");
-        if (utilities.isClassAScope(searchHere, loadQualifierName)) {
+        if (utilities.isClassAScope(searchHeres, loadQualifierName)) {
             if (scopeClass != null) {
                 throw new AssertionError("A service with implementation " + implName + " has at least two scopes: " +
                   scopeClass + " and " + loadQualifierName);
@@ -205,7 +205,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
             return new MetadataAnnotationVisitor(loadQualifierName);
         }
         
-        if (utilities.isClassAQualifier(searchHere, loadQualifierName)) {
+        if (utilities.isClassAQualifier(searchHeres, loadQualifierName)) {
             qualifiers.add(loadQualifierName);
             
             if (Named.class.getName().equals(loadQualifierName)) {
@@ -216,7 +216,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
             return new MetadataAnnotationVisitor(loadQualifierName);
         }
         
-        GenerateMethodAnnotationData gmad = utilities.isClassAGenerator(searchHere, loadQualifierName);
+        GenerateMethodAnnotationData gmad = utilities.isClassAGenerator(searchHeres, loadQualifierName);
         if (gmad != null) {
             gmad = new GenerateMethodAnnotationData(gmad);
             classLevelGenerators.put(loadQualifierName, gmad);
@@ -406,7 +406,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
             trueFactoryClass = trueFactoryClass.replace('/', '.');
             
             Set<String> associatedContracts = utilities.getAssociatedContracts(
-                    searchHere, trueFactoryClass);
+                    searchHeres, trueFactoryClass);
             
             for (String contract : associatedContracts) {
                 asAFactory.addAdvertisedContract(contract);
@@ -488,10 +488,10 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
             if (!desc.startsWith("L")) return null;
             
             String loadQualifierName = desc.substring(1, desc.length() -1).replace("/", ".");
-            if (utilities.isClassAScope(searchHere, loadQualifierName)) {
+            if (utilities.isClassAScope(searchHeres, loadQualifierName)) {
                 asAFactoryDI.setScope(loadQualifierName);
             }
-            else if (utilities.isClassAQualifier(searchHere, loadQualifierName)) {
+            else if (utilities.isClassAQualifier(searchHeres, loadQualifierName)) {
                 asAFactoryDI.addQualifier(loadQualifierName);
                 
                 if (Named.class.getName().equals(loadQualifierName)) {
@@ -652,7 +652,7 @@ public class ClassVisitorImpl extends AbstractClassVisitorImpl {
         @Override
         public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
             String loadAnnotationName = desc.substring(1, desc.length() -1).replace("/", ".");
-            GenerateMethodAnnotationData generateData = utilities.isClassAGenerator(searchHere, loadAnnotationName);
+            GenerateMethodAnnotationData generateData = utilities.isClassAGenerator(searchHeres, loadAnnotationName);
             
             if (generateData == null) return null;
             
