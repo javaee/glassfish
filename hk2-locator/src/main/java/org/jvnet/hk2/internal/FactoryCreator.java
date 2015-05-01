@@ -72,6 +72,10 @@ public class FactoryCreator<T> implements Creator<T> {
         this.locator = locator;
         this.factoryDescriptor = factoryDescriptor;
         
+        if (!factoryDescriptor.isReified()) {
+            factoryDescriptor = locator.reifyDescriptor(factoryDescriptor);
+        }
+        
         InstantiationServiceImpl found = null;
         for (Injectee factoryInjectee : factoryDescriptor.getInjectees()) {
             if (InstantiationService.class.equals(factoryInjectee.getRequiredType())) {
