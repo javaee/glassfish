@@ -39,47 +39,42 @@
  */
 package org.glassfish.hk2.xml.test.precompile;
 
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.glassfish.hk2.xml.api.annotations.Customize;
-import org.glassfish.hk2.xml.api.annotations.Customizer;
-import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
+import javax.inject.Singleton;
 
 /**
  * @author jwells
  *
  */
-@Hk2XmlPreGenerate
-@XmlRootElement(name="root")
-@Customizer(MyCustomizer.class)
-public interface PreCompiledRoot {
-    @XmlElement(name="pre-compiled-multi-child")
-    public List<PreCompiledMultiChild> getPreCompiledMultiChild();
+@Singleton
+public class MyCustomizer {
+    private boolean getCustomizedReturnerCalled = false;
+    private boolean aCustomizedThingWithParameterCalled = false;
+    private boolean aCustomizedThingWithParametersCalled = false;
     
-    @XmlElement(name="multi-child")
-    public List<MultiChild> getMultiChild();
+    public CustomizedReturn[] getCustomizedReturner() {
+        getCustomizedReturnerCalled = true;
+        return new CustomizedReturn[6];
+    }
     
-    @XmlElement(name="pre-compiled-direct-child")
-    public PreCompiledDirectChild getPreCompiledDirectChild();
+    public CustomizedReturn[] aCustomizedThingWithParameter(CustomizedParameter hello) {
+        aCustomizedThingWithParameterCalled = true;
+        return null;
+    }
     
-    @XmlElement(name="direct-child")
-    public DirectChild getDirectChild();
+    public void aCustomizedThingWithParameters(double aScalar, CustomizedParameter[] anArray, CustomizedReturn anInterface) {
+        aCustomizedThingWithParametersCalled = true;
+    }
     
-    @XmlElement(name="pre-compiled-array-child")
-    public void setPreCompiledArrayChild(PreCompiledArrayChild children[]);
-    public PreCompiledArrayChild[] getPreCompiledArrayChild();
+    public boolean getGetCustomizedReturnerCalled() {
+        return getCustomizedReturnerCalled;
+    }
     
-    @XmlElement(name="array-child")
-    public ArrayChild[] getArrayChild();
-    public void setArrayChild(ArrayChild children[]);
+    public boolean getACustomizedThingWithParameterCalled() {
+        return aCustomizedThingWithParameterCalled;
+    }
     
-    @Customize
-    public CustomizedReturn[] getCustomizedReturner();
-    
-    public CustomizedReturn[] aCustomizedThingWithParameter(CustomizedParameter hello);
-    
-    public void aCustomizedThingWithParameters(double aScalar, CustomizedParameter[] anArray, CustomizedReturn anInterface);
+    public boolean getACustomizedThingWithParametersCalled() {
+        return aCustomizedThingWithParametersCalled;
+    }
+
 }

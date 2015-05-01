@@ -97,7 +97,7 @@ public class PreCompiledTest {
         Assert.assertNotNull(getAssociatedClass(PreCompiledArrayChild.class));
         Assert.assertNull(getAssociatedClass(ArrayChild.class));
         
-        ServiceLocator locator = Utilities.createLocator();
+        ServiceLocator locator = Utilities.createLocator(MyCustomizer.class);
         XmlService xmlService = locator.getService(XmlService.class);
         
         URL url = getClass().getClassLoader().getResource(PRE_COMPILED_FILE);
@@ -133,6 +133,23 @@ public class PreCompiledTest {
         
         Assert.assertEquals(1011L, arrayChildren[0].getTime());
         Assert.assertEquals(2022L, arrayChildren[1].getTime());
+        
+        MyCustomizer customizer = locator.getService(MyCustomizer.class);
+        
+        Assert.assertFalse(customizer.getACustomizedThingWithParametersCalled());
+        root.aCustomizedThingWithParameters(10.00, null, null);
+        Assert.assertTrue(customizer.getACustomizedThingWithParametersCalled());
+        
+        Assert.assertFalse(customizer.getACustomizedThingWithParameterCalled());
+        CustomizedReturn cra[] = root.aCustomizedThingWithParameter(null);
+        Assert.assertNull(cra);
+        Assert.assertTrue(customizer.getACustomizedThingWithParameterCalled());
+        
+        Assert.assertFalse(customizer.getGetCustomizedReturnerCalled());
+        cra = root.getCustomizedReturner();
+        Assert.assertNotNull(cra);
+        Assert.assertEquals(6, cra.length);
+        Assert.assertTrue(customizer.getGetCustomizedReturnerCalled());
     }
     
     /**

@@ -39,47 +39,10 @@
  */
 package org.glassfish.hk2.xml.test.precompile;
 
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.glassfish.hk2.xml.api.annotations.Customize;
-import org.glassfish.hk2.xml.api.annotations.Customizer;
-import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
-
 /**
  * @author jwells
  *
  */
-@Hk2XmlPreGenerate
-@XmlRootElement(name="root")
-@Customizer(MyCustomizer.class)
-public interface PreCompiledRoot {
-    @XmlElement(name="pre-compiled-multi-child")
-    public List<PreCompiledMultiChild> getPreCompiledMultiChild();
-    
-    @XmlElement(name="multi-child")
-    public List<MultiChild> getMultiChild();
-    
-    @XmlElement(name="pre-compiled-direct-child")
-    public PreCompiledDirectChild getPreCompiledDirectChild();
-    
-    @XmlElement(name="direct-child")
-    public DirectChild getDirectChild();
-    
-    @XmlElement(name="pre-compiled-array-child")
-    public void setPreCompiledArrayChild(PreCompiledArrayChild children[]);
-    public PreCompiledArrayChild[] getPreCompiledArrayChild();
-    
-    @XmlElement(name="array-child")
-    public ArrayChild[] getArrayChild();
-    public void setArrayChild(ArrayChild children[]);
-    
-    @Customize
-    public CustomizedReturn[] getCustomizedReturner();
-    
-    public CustomizedReturn[] aCustomizedThingWithParameter(CustomizedParameter hello);
-    
-    public void aCustomizedThingWithParameters(double aScalar, CustomizedParameter[] anArray, CustomizedReturn anInterface);
+public class CustomizedParameter {
+
 }

@@ -89,6 +89,7 @@ import org.glassfish.hk2.xml.internal.alt.AltClass;
 import org.glassfish.hk2.xml.internal.alt.AltEnum;
 import org.glassfish.hk2.xml.internal.alt.AltMethod;
 import org.glassfish.hk2.xml.internal.alt.clazz.AnnotationAltAnnotationImpl;
+import org.glassfish.hk2.xml.internal.alt.clazz.ClassAltClassImpl;
 import org.glassfish.hk2.xml.jaxb.internal.XmlElementImpl;
 import org.glassfish.hk2.xml.jaxb.internal.XmlRootElementImpl;
 import org.jvnet.hk2.annotations.Contract;
@@ -188,7 +189,22 @@ public class Generator {
         for (AltMethod wrapper : allMethods) {
             MethodInformation mi = getMethodInformation(wrapper, xmlNameMap);
             
-            createInterfaceForAltClassIfNeeded(mi.getGetterSetterType(), defaultClassPool);
+            if (!MethodType.CUSTOM.equals(mi.getMethodType())) {
+                createInterfaceForAltClassIfNeeded(mi.getGetterSetterType(), defaultClassPool);
+            }
+            else {
+                // Custom methods can have all sorts of missing types, need to do all return and param types
+                AltMethod original = mi.getOriginalMethod();
+                AltClass originalReturn = original.getReturnType();
+                if (!ClassAltClassImpl.VOID.equals(originalReturn)) {
+                    createInterfaceForAltClassIfNeeded(originalReturn, defaultClassPool);
+                }
+                
+                for (AltClass parameter : original.getParameterTypes()) {
+                    createInterfaceForAltClassIfNeeded(parameter, defaultClassPool);
+                }
+                
+            }
             
             if (DEBUG_METHODS) {
                 Logger.getLogger().debug("Analyzing method " + mi + " of " + convertMe.getSimpleName());
