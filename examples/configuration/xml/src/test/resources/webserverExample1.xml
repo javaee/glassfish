@@ -1,0 +1,17 @@
+<application>
+  <web-server name="Development Server">
+    <adminPort>8001</adminPort>
+    <port>8002</port>
+    <SSLPort>8003</SSLPort>
+  </web-server>
+  
+  <web-server name="QA Server">
+    <adminPort>9001</adminPort>
+    <port>9002</port>
+    <SSLPort>9003</SSLPort>
+  </web-server>
+  
+  <web-server name="External Server">
+    <adminPort>10001</adminPort>
+  </web-server>
+</application>

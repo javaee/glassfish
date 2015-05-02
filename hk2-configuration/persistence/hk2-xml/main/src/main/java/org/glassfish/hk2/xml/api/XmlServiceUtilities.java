@@ -45,11 +45,22 @@ import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.hk2.xml.internal.XmlServiceImpl;
 
 /**
+ * Useful utilities for initializing the HK2 XmlService
+ * 
  * @author jwells
- *
  */
 public class XmlServiceUtilities {
 
+    /**
+     * Enables the Hk2 XmlService in the given locator.  Will
+     * also enable the HK2 Configuration Hub if the hub has
+     * not already been started.  This operation is idempotent
+     * in that if the XmlService is already available in the
+     * given locator then this method does nothing
+     * 
+     * @param locator The non-null locator to which to add
+     * the {@link XmlService}
+     */
     public static void enableXmlService(ServiceLocator locator) {
         if (locator.getService(XmlService.class) != null) return;
         

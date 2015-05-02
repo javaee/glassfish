@@ -42,10 +42,13 @@ package org.glassfish.examples.configuration.xml.webserver;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.jvnet.hk2.annotations.Contract;
+
 /**
  * @author jwells
  *
  */
+@Contract
 @XmlRootElement(name="application")
 public interface ApplicationBean {
     /**

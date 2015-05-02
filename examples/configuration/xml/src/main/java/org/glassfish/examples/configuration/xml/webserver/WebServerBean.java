@@ -44,6 +44,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
 import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
  * This bean defines a WebServer
@@ -51,6 +52,7 @@ import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
  * @author jwells
  *
  */
+@Contract
 @Hk2XmlPreGenerate
 public interface WebServerBean {
     /**
