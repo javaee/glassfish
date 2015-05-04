@@ -46,6 +46,7 @@ import javax.inject.Provider;
 
 import org.glassfish.examples.configuration.xml.webserver.ApplicationBean;
 import org.glassfish.examples.configuration.xml.webserver.WebServerBean;
+import org.glassfish.examples.configuration.xml.webserver.internal.WebServerManager;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.api.XmlServiceUtilities;
@@ -55,11 +56,10 @@ import org.junit.Test;
 import org.jvnet.hk2.testing.junit.HK2Runner;
 
 /**
- * These are the test cases for the HK2 XML Example WebServer
- * 
  * @author jwells
+ *
  */
-public class WebServerXmlTest extends HK2Runner {
+public class WebServersAsHK2ServicesTest extends HK2Runner {
     private final static String EXAMPLE1_FILENAME = "webserverExample1.xml";
     
     @Inject
@@ -73,13 +73,14 @@ public class WebServerXmlTest extends HK2Runner {
     }
     
     /**
-     * Tests that a file can be read and used directly from
-     * the XmlService
+     * Tests that the XmlService puts the WebServerBeans into
+     * the HK2 service registry with names defined by the
+     * XmlIdentifier attribute (name)
      * 
      * @throws Exception
      */
     @Test
-    public void testParseWebServerXmlFile() throws Exception {
+    public void testWebServerBeansAreHK2Services() throws Exception {
         XmlService xmlService = xmlServiceProvider.get();
         
         URI webserverFile = getClass().getClassLoader().getResource(EXAMPLE1_FILENAME).toURI();
@@ -87,13 +88,11 @@ public class WebServerXmlTest extends HK2Runner {
         XmlRootHandle<ApplicationBean> applicationRootHandle =
                 xmlService.unmarshall(webserverFile, ApplicationBean.class);
         
-        ApplicationBean root = applicationRootHandle.getRoot();
-        WebServerBean webservers[] = root.getWebServers();
-        
-        Assert.assertEquals(3, webservers.length);
+        WebServerManager manager = testLocator.getService(WebServerManager.class);
+        Assert.assertNotNull(manager);
         
         {
-            WebServerBean developmentServer = webservers[0];
+            WebServerBean developmentServer = manager.getWebServer("Development Server");
             Assert.assertEquals("Development Server", developmentServer.getName());
             Assert.assertEquals(8001, developmentServer.getAdminPort());
             Assert.assertEquals(8002, developmentServer.getPort());
@@ -101,7 +100,7 @@ public class WebServerXmlTest extends HK2Runner {
         }
         
         {
-            WebServerBean qaServer = webservers[1];
+            WebServerBean qaServer = manager.getWebServer("QA Server");
             Assert.assertEquals("QA Server", qaServer.getName());
             Assert.assertEquals(9001, qaServer.getAdminPort());
             Assert.assertEquals(9002, qaServer.getPort());
@@ -109,13 +108,12 @@ public class WebServerXmlTest extends HK2Runner {
         }
         
         {
-            WebServerBean externalServer = webservers[2];
+            WebServerBean externalServer = manager.getWebServer("External Server");
             Assert.assertEquals("External Server", externalServer.getName());
             Assert.assertEquals(10001, externalServer.getAdminPort());
             Assert.assertEquals(80, externalServer.getPort());
             Assert.assertEquals(81, externalServer.getSSLPort());
         }
     }
-    
-    
+
 }

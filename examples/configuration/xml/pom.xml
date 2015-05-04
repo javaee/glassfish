@@ -59,23 +59,15 @@
                 <groupId>org.glassfish.hk2</groupId>
                 <artifactId>osgiversion-maven-plugin</artifactId>
             </plugin>
-            <plugin>
-                <groupId>org.glassfish.hk2</groupId>
-                <artifactId>hk2-inhabitant-generator</artifactId>
-                <version>${project.version}</version>
-                <executions>
-                    <execution>
-                        <id>generate-inhabitants</id>
-                        <goals>
-                            <goal>generate-inhabitants</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>             
         </plugins>
     </build>
     
     <dependencies>
+        <dependency>
+            <groupId>org.glassfish.hk2</groupId>
+            <artifactId>hk2-metadata-generator</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-configuration-integration</artifactId>

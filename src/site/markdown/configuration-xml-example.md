@@ -82,25 +82,25 @@ public interface WebServerBean {
 ```java
 
 XmlAttribute and XmlElement are standard JAXB annotations that would normally only go onto concrete classes.
-XmlIdentifier and Hk2XmlPreGenerate are HK2 extensions that will be explained later.  The HK2 XML service
-will generate a proxy for this interface, copying over all annotations (and in some cases making slight
-modifications to them in order to ensure JAXB can parse the XML properly).  Contract is the standard
-HK2 annotation that denotes that this interface should be included when doing automatic service
-analysis.
+[XmlIdentifier][xmlidentifier] and [Hk2XmlPreGenerate][hk2xmlpregenerate] are HK2 extensions that will be 
+explained later.  The HK2 XML service will generate a proxy for this interface, copying over all annotations
+(and in some cases making slight modifications to them in order to ensure JAXB can parse the XML properly).
+[Contract][contract] is the standard HK2 annotation that denotes that this interface should be included when
+doing automatic service analysis.
 
-XmlIdentifier is an HK2 XML Service annotation that tells the HK2 XML Service that the attribute represented
+[XmlIdentifier][xmlidentifier] is an HK2 XML Service annotation that tells the HK2 XML Service that the attribute represented
 by the getter or setter can be used as the key for this bean when the bean is a child of another bean.
 It is very much like the JAXB annotation XmlID except that in the case of the XmlID the key must be unique
 within the scope of the entire document, whereas with XmlIdentifier the scope of uniqueness only needs
 to be within the xpath of the stanza.
 
-Hk2XmlPreGenerate is an HK2 XML Service annotation that tells HK2 that the proxy for this bean should be
-generated at build time and placed within the JAR being built.  This uses the standard JSR-269 annotation
-processor and so should work with most build systems including ant, maven, gradle and others.  The only
-requirement is that the HK2 XML Service's jar be in the classpath of the compiler at compile time.  Note
-that if the Hk2XmlPreGenerate annotation is NOT put on the interface class then the proxy will be generated
-at runtime, so using the Hk2XmlPreGenerate annotation is mainly a matter of runtime performance, since
-proxy generation can be a heavy operation.
+[Hk2XmlPreGenerate][hk2xmlpregenerate] is an HK2 XML Service annotation that tells HK2 that the proxy
+for this bean should be generated at build time and placed within the JAR being built.  This uses the
+standard JSR-269 annotation processor and so should work with most build systems including ant, maven,
+gradle and others.  The only requirement is that the HK2 XML Service jar be in the classpath of the compiler.
+Note that if the [Hk2XmlPreGenerate][hk2xmlpregenerate] annotation is NOT put on the interface class then the
+proxy will be generated dynamically at runtime, so using the [Hk2XmlPreGenerate][hk2xmlpregenerate] annotation
+is mainly a matter of runtime performance, since proxy generation can be a heavy operation.
 
 Lets take a look at the ApplicationBean, which has the WebServer bean as a child:
 
@@ -230,9 +230,99 @@ into your application.  They are:
 The following two sections will explain each option.
 
 ### Unmarshalled Java Beans as HK2 services
+
+When you unmarshall XML with the [XmlService][xmlservice] unmarshall method and the interfaces
+in the Java Bean tree are marked with [Contract][contract] then those beans will be
+added to the HK2 service registry.  If the Java Bean has a field marked with either
+[XmlIdentifier][xmlidentifier] or the standard JAXB XmlID annotation then the service
+will be put into the HK2 service registry with that field as its name.  So in this
+example three services would be put into the Service registry with contract
+WebServerBean, each one with a different name (&quot;Development Server&quot;,
+&quot;QA Server&quot; and &quot;External Server&quot;).
+
+The following example has a WebServerManager that injects an [IterableProvider][iterableprovider]
+of WebServerBean.  The named method of the [IterableProvider][iterableprovider] allows
+the WebServerManager to find the correct WebServerBean given the desired name.
+Here is the code for the WebServerManager:
+
+```java
+@Service
+public class WebServerManager {
+    @Inject
+    private IterableProvider<WebServerBean> allWebServers;
+    
+    /**
+     * Gets the WebServer bean with the given name, or null if
+     * none can be found with that name
+     * 
+     * @param name The non-null name of the web server to find in
+     * the HK2 service registry
+     * @return the WebServerBean HK2 service with the given name
+     */
+    public WebServerBean getWebServer(String name) {
+        return allWebServers.named(name).get();
+    }
+}
+```java
+
+The test file for this use case is WebServersAsHK2ServicesTest and is mostly the
+same as the previous example.  In this case the test gets the WebServerManager
+service and uses that to query for WebServersBeans as HK2 services from
+the WebServerManager.  It then validates that the expected values for each
+WebServerBean are as expected:
+
+```java
+    @Test
+    public void testWebServerBeansAreHK2Services() throws Exception {
+        XmlService xmlService = xmlServiceProvider.get();
+        
+        URI webserverFile = getClass().getClassLoader().getResource(EXAMPLE1_FILENAME).toURI();
+        
+        XmlRootHandle<ApplicationBean> applicationRootHandle =
+                xmlService.unmarshall(webserverFile, ApplicationBean.class);
+        
+        WebServerManager manager = testLocator.getService(WebServerManager.class);
+        Assert.assertNotNull(manager);
+        
+        {
+            WebServerBean developmentServer = manager.getWebServer("Development Server");
+            Assert.assertEquals("Development Server", developmentServer.getName());
+            Assert.assertEquals(8001, developmentServer.getAdminPort());
+            Assert.assertEquals(8002, developmentServer.getPort());
+            Assert.assertEquals(8003, developmentServer.getSSLPort());
+        }
+        
+        {
+            WebServerBean qaServer = manager.getWebServer("QA Server");
+            Assert.assertEquals("QA Server", qaServer.getName());
+            Assert.assertEquals(9001, qaServer.getAdminPort());
+            Assert.assertEquals(9002, qaServer.getPort());
+            Assert.assertEquals(9003, qaServer.getSSLPort());
+        }
+        
+        {
+            WebServerBean externalServer = manager.getWebServer("External Server");
+            Assert.assertEquals("External Server", externalServer.getName());
+            Assert.assertEquals(10001, externalServer.getAdminPort());
+            Assert.assertEquals(80, externalServer.getPort());
+            Assert.assertEquals(81, externalServer.getSSLPort());
+        }
+    }
+```java
+
+Of course a service can always just use javax.inject.Named to inject a specific WebServerBean if
+wants to hard-code the name in the code.
+
+### An HK2 Service Per web-server XML stanza
+
+In the next example the system will generate a new WebServer for every web-server XML stanza
+in the file, and will inject that WebServer with the values found from that stanza.
  
 [xmlservice]: apidocs/org/glassfish/hk2/xml/api/XmlService.html
 [xmlserviceutilities]: apidocs/org/glassfish/hk2/xml/api/XmlServiceUtilities.html
 [hk2runner]: apidocs/org/jvnet/hk2/testing/junit/HK2Runner.html
 [xmlroothandle]: apidocs/org/glassfish/hk2/xml/api/XmlRootHandle.html
 [configuredby]:apidocs/org/glassfish/hk2/configuration/api/ConfiguredBy.html
+[contract]: apidocs/org/jvnet/hk2/annotations/Contract.html
+[xmlidentifier]: apidocs/org/glassfish/hk2/xml/api/annotations/XmlIdentifier.html
+[hk2xmlpregenerate]: apidocs/org/glassfish/hk2/xml/api/annotations/Hk2XmlPreGenerate.html
