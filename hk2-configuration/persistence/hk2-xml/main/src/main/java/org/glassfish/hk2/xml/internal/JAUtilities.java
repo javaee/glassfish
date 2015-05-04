@@ -78,6 +78,8 @@ import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 public class JAUtilities {
     private final static boolean DEBUG_METHODS = Boolean.parseBoolean(GeneralUtilities.getSystemProperty(
             "org.jvnet.hk2.properties.xmlservice.jaxb.methods", "false"));
+    private final static boolean DEBUG_PREGEN = Boolean.parseBoolean(GeneralUtilities.getSystemProperty(
+            "org.jvnet.hk2.properties.xmlservice.jaxb.pregenerated", "false"));
     
     public final static String GET = "get";
     public final static String SET = "set";
@@ -94,6 +96,8 @@ public class JAUtilities {
     private final HashMap<Class<?>, UnparentedNode> proxy2NodeCache = new HashMap<Class<?>, UnparentedNode>();
     private final ClassPool defaultClassPool = ClassPool.getDefault(); // TODO:  We probably need to be more sophisticated about this
     private final CtClass superClazz;
+    private int numGeneratedClasses = 0;
+    private int numFoundClasses = 0;
     
     /* package */ JAUtilities() {
         try {
@@ -117,7 +121,9 @@ public class JAUtilities {
         
         getAllToConvert(root, needsToBeConverted, new HashSet<Class<?>>(), helper);
         
+        long elapsedTime = 0L;
         if (DEBUG_METHODS) {
+            elapsedTime = System.currentTimeMillis();
             Logger.getLogger().debug("Converting " + needsToBeConverted.size() + " nodes for root " + root.getName());
         }
         
@@ -155,6 +161,13 @@ public class JAUtilities {
         }
         
         helper.dispose();
+        
+        if (DEBUG_METHODS) {
+            elapsedTime = System.currentTimeMillis() - elapsedTime;
+            Logger.getLogger().debug("Converted " + needsToBeConverted.size() + " nodes.  " +
+              "There were " + numFoundClasses + " pre-generated, and " + numGeneratedClasses +
+              " dynamically generated.  Analysis took " + elapsedTime + " milliseconds");
+        } 
         return interface2NodeCache.get(root);
     }
     
@@ -166,12 +179,30 @@ public class JAUtilities {
         CtClass foundClass = defaultClassPool.getOrNull(targetClassName);
         
         if (foundClass == null) {
+            numGeneratedClasses++;
+            
+            long elapsedTime = 0;
+            if (DEBUG_PREGEN) {
+                elapsedTime = System.nanoTime();
+                
+                Logger.getLogger().debug("Dynamically generating impl for " + targetClassName);
+            }
+            
             CtClass generated = Generator.generate(
                     new ClassAltClassImpl(convertMe, helper), superClazz, defaultClassPool);
             
             generated.toClass(convertMe.getClassLoader(), convertMe.getProtectionDomain());
             
+            if (DEBUG_PREGEN) {
+                elapsedTime = System.nanoTime() - elapsedTime;
+                
+                Logger.getLogger().debug("Generating impl for " + targetClassName + " took " + elapsedTime + " nanoseconds");
+            }
+            
             foundClass = defaultClassPool.getOrNull(targetClassName);
+        }
+        else {
+            numFoundClasses++;
         }
         
         Class<?> proxy = convertMe.getClassLoader().loadClass(targetClassName);
