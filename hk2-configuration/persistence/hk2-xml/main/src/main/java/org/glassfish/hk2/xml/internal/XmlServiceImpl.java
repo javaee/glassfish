@@ -56,6 +56,7 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
+import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
 import org.glassfish.hk2.xml.api.XmlHubCommitMessage;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
@@ -136,7 +137,17 @@ public class XmlServiceImpl implements XmlService {
         Unmarshaller unmarshaller = context.createUnmarshaller();
         unmarshaller.setListener(listener);
         
+        long jaxbUnmarshallElapsedTime = 0L;
+        if (JAUtilities.DEBUG_GENERATION_TIMING) {
+            jaxbUnmarshallElapsedTime = System.currentTimeMillis();
+        }
+        
         T root = (T) unmarshaller.unmarshal(uri.toURL());
+        
+        if (JAUtilities.DEBUG_GENERATION_TIMING) {
+            jaxbUnmarshallElapsedTime = System.currentTimeMillis() - jaxbUnmarshallElapsedTime;
+            Logger.getLogger().debug("Time in JAXB parsing " + uri + " is " + jaxbUnmarshallElapsedTime + " milliseconds");
+        }
         
         DynamicChangeInfo changeControl = new DynamicChangeInfo(jaUtilities,
                 ((advertiseInHub) ? hub : null),

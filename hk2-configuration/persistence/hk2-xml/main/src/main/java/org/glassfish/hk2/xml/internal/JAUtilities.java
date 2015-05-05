@@ -80,6 +80,8 @@ public class JAUtilities {
             "org.jvnet.hk2.properties.xmlservice.jaxb.methods", "false"));
     private final static boolean DEBUG_PREGEN = Boolean.parseBoolean(GeneralUtilities.getSystemProperty(
             "org.jvnet.hk2.properties.xmlservice.jaxb.pregenerated", "false"));
+    /* package */ final static boolean DEBUG_GENERATION_TIMING = Boolean.parseBoolean(GeneralUtilities.getSystemProperty(
+            "org.jvnet.hk2.properties.xmlservice.jaxb.generationtime", "false"));
     
     public final static String GET = "get";
     public final static String SET = "set";
@@ -122,7 +124,7 @@ public class JAUtilities {
         getAllToConvert(root, needsToBeConverted, new HashSet<Class<?>>(), helper);
         
         long elapsedTime = 0L;
-        if (DEBUG_METHODS) {
+        if (DEBUG_METHODS || DEBUG_GENERATION_TIMING) {
             elapsedTime = System.currentTimeMillis();
             Logger.getLogger().debug("Converting " + needsToBeConverted.size() + " nodes for root " + root.getName());
         }
@@ -162,7 +164,7 @@ public class JAUtilities {
         
         helper.dispose();
         
-        if (DEBUG_METHODS) {
+        if (DEBUG_METHODS || DEBUG_GENERATION_TIMING) {
             elapsedTime = System.currentTimeMillis() - elapsedTime;
             Logger.getLogger().debug("Converted " + needsToBeConverted.size() + " nodes.  " +
               "There were " + numFoundClasses + " pre-generated, and " + numGeneratedClasses +
