@@ -41,7 +41,7 @@ package org.glassfish.hk2.extras.operation.internal;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -96,7 +96,7 @@ public class OperationManagerImpl implements OperationManager {
      * @see org.glassfish.hk2.extras.operation.OperationManager#getCurrentOperations()
      */
     @Override
-    public <T extends Annotation> List<OperationHandle<T>> getCurrentOperations(T scope) {
+    public <T extends Annotation> Set<OperationHandle<T>> getCurrentOperations(T scope) {
         throw new AssertionError("getCurrentOperations not yet implemented");
     }
     

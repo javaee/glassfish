@@ -40,7 +40,7 @@
 package org.glassfish.hk2.extras.operation;
 
 import java.lang.annotation.Annotation;
-import java.util.List;
+import java.util.Set;
 
 import org.jvnet.hk2.annotations.Contract;
 
@@ -77,7 +77,7 @@ public interface OperationManager {
     public <T extends  Annotation> OperationHandle<T> createAndStartOperation(T scope);
     
     /**
-     * Gets the list of all Operations that are in state
+     * Gets a set of all Operations that are in state
      * {@link OperationState#ACTIVE} or {@link OperationState#SUSPENDED}.
      * Operations that are in the {@link OperationState#CLOSED} state
      * are no longer tracked by the Manager.
@@ -85,10 +85,10 @@ public interface OperationManager {
      * {@link org.glassfish.hk2.api.AnnotationLiteral}
      * 
      * @param scope The scope annotation for this operation type
-     * @return A non-null but possibly empty list of OperationHandles
+     * @return A non-null but possibly empty set of OperationHandles
      * that have not been closed
      */
-    public <T extends Annotation> List<OperationHandle<T>> getCurrentOperations(T scope);
+    public <T extends Annotation> Set<OperationHandle<T>> getCurrentOperations(T scope);
     
     /**
      * Gets the current operation of scope type on the current thread.

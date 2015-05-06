@@ -501,6 +501,78 @@ public class OperationsTest {
         firstOperation.closeOperation();
     }
     
+    /**
+     * Tests the getAllOperations method on OperationManager
+     */
+    @Test @org.junit.Ignore
+    public void testGetAllOperations() {
+        ServiceLocator locator = createLocator(
+                BasicOperationScopeContext.class,
+                SecondaryOperationScopeContext.class);
+        
+        OperationManager operationManager = locator.getService(OperationManager.class);
+        
+        OperationHandle<BasicOperationScope> firstOperation = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        OperationHandle<BasicOperationScope> secondOperation = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        OperationHandle<BasicOperationScope> thirdOperation = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        OperationHandle<BasicOperationScope> fourthOperation = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        
+        {
+            Set<OperationHandle<BasicOperationScope>> allHandles = operationManager.getCurrentOperations(BASIC_OPERATION_ANNOTATION);
+            
+            Assert.assertEquals(4, allHandles.size());
+            
+            Assert.assertTrue(allHandles.contains(firstOperation));
+            Assert.assertTrue(allHandles.contains(secondOperation));
+            Assert.assertTrue(allHandles.contains(thirdOperation));
+            Assert.assertTrue(allHandles.contains(fourthOperation));
+        }
+        
+        // Lets activate one and destroy one, make sure we still have the proper counts
+        secondOperation.resume();
+        thirdOperation.closeOperation();
+        
+        {
+            Set<OperationHandle<BasicOperationScope>> allHandles = operationManager.getCurrentOperations(BASIC_OPERATION_ANNOTATION);
+            
+            Assert.assertEquals(3, allHandles.size());
+            
+            Assert.assertTrue(allHandles.contains(firstOperation));
+            Assert.assertTrue(allHandles.contains(secondOperation));
+            Assert.assertFalse(allHandles.contains(thirdOperation));
+            Assert.assertTrue(allHandles.contains(fourthOperation));
+        }
+        
+        // Now deactive the one, activate another and add a fifth
+        secondOperation.suspend();
+        fourthOperation.resume();
+        OperationHandle<BasicOperationScope> fifthOperation = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        
+        {
+            Set<OperationHandle<BasicOperationScope>> allHandles = operationManager.getCurrentOperations(BASIC_OPERATION_ANNOTATION);
+            
+            Assert.assertEquals(4, allHandles.size());
+            
+            Assert.assertTrue(allHandles.contains(firstOperation));
+            Assert.assertTrue(allHandles.contains(secondOperation));
+            Assert.assertFalse(allHandles.contains(thirdOperation));
+            Assert.assertTrue(allHandles.contains(fourthOperation));
+            Assert.assertTrue(allHandles.contains(fifthOperation));
+        }
+        
+        {
+            Set<OperationHandle<SecondaryOperationScope>> allHandles = operationManager.getCurrentOperations(SECONDARY_OPERATION_ANNOTATION);
+            
+            Assert.assertEquals(0, allHandles.size());
+            
+            Assert.assertFalse(allHandles.contains(firstOperation));
+            Assert.assertFalse(allHandles.contains(secondOperation));
+            Assert.assertFalse(allHandles.contains(thirdOperation));
+            Assert.assertFalse(allHandles.contains(fourthOperation));
+            Assert.assertFalse(allHandles.contains(fifthOperation));
+        }
+    }
+    
     private static class SimpleThreadedFetcher<T extends Annotation> implements Runnable {
         private final OperationHandle<T> operation;
         private final SingletonThatUsesOperationService singleton;
