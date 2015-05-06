@@ -49,10 +49,10 @@ import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
  * @author jwells
  *
  */
-public class OperationDescriptor extends AbstractActiveDescriptor<OperationHandle> {
-    private final SingleOperationManager parent;
+public class OperationDescriptor<T extends Annotation> extends AbstractActiveDescriptor<OperationHandle<T>> {
+    private final SingleOperationManager<T> parent;
     
-    public OperationDescriptor(Annotation scope, SingleOperationManager parent) {
+    public OperationDescriptor(Annotation scope, SingleOperationManager<T> parent) {
         this.parent = parent;
         
         setImplementation(OperationHandleImpl.class.getName());
@@ -73,8 +73,8 @@ public class OperationDescriptor extends AbstractActiveDescriptor<OperationHandl
      * @see org.glassfish.hk2.api.ActiveDescriptor#create(org.glassfish.hk2.api.ServiceHandle)
      */
     @Override
-    public OperationHandle create(ServiceHandle<?> root) {
-        OperationHandleImpl retVal = parent.getCurrentOperationOnThisThread();
+    public OperationHandle<T> create(ServiceHandle<?> root) {
+        OperationHandleImpl<T> retVal = parent.getCurrentOperationOnThisThread();
         if (retVal == null) {
             throw new IllegalStateException("There is no active operation in scope " +
                 getScopeAnnotation().getName() + " on thread " + Thread.currentThread().getId());

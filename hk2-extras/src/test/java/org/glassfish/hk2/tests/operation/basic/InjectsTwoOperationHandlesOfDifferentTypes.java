@@ -37,59 +37,32 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.extras.operation.internal;
+package org.glassfish.hk2.tests.operation.basic;
 
-import java.lang.annotation.Annotation;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-import org.glassfish.hk2.extras.operation.OperationIdentifier;
+import org.glassfish.hk2.extras.operation.OperationHandle;
 
 /**
  * @author jwells
  *
  */
-public class OperationIdentifierImpl<T extends Annotation> implements OperationIdentifier<T> {
-    private final String identifier;
-    private final T scope;
-    private final int hashCode;
+@Singleton
+public class InjectsTwoOperationHandlesOfDifferentTypes {
+    @Inject
+    private OperationHandle<BasicOperationScope> basicHandle;
     
-    /* package */ OperationIdentifierImpl(String identifier, T scope) {
-        this.identifier = identifier;
-        this.scope = scope;
-        this.hashCode = identifier.hashCode();
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.extras.operation.OperationIdentifier#getOperationIdentifier()
-     */
-    @Override
-    public String getOperationIdentifier() {
-        return identifier;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.extras.operation.OperationIdentifier#getOperationScope()
-     */
-    @Override
-    public T getOperationScope() {
-        return scope;
+    @Inject
+    private OperationHandle<SecondaryOperationScope> secondaryHandle;
+    
+    
+    public OperationHandle<BasicOperationScope> getBasicHandle() {
+        return basicHandle;
     }
     
-    @Override
-    public int hashCode() {
-        return hashCode;
-    }
-    
-    @SuppressWarnings("unchecked")
-    @Override
-    public boolean equals(Object o) {
-        if (o == null) return false;
-        if (!(o instanceof OperationIdentifierImpl)) return false;
-        
-        return identifier.equals(((OperationIdentifierImpl<T>) o).identifier);
+    public OperationHandle<SecondaryOperationScope> getSecondaryHandle() {
+        return secondaryHandle;
     }
 
-    @Override
-    public String toString() {
-        return identifier;
-    }
 }

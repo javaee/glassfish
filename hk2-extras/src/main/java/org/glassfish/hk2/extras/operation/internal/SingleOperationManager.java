@@ -52,27 +52,28 @@ import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
  * @author jwells
  *
  */
-public class SingleOperationManager {
+public class SingleOperationManager<T extends Annotation> {
     private final static String ID_PREAMBLE = "OperationIdentifier(";
     
-    private final Object operationLock = new Object();
     private final OperationManagerImpl parent;
-    private final Annotation scope;
-    private final HashMap<OperationIdentifier, OperationHandleImpl> openScopes = new HashMap<OperationIdentifier, OperationHandleImpl>();
-    private final HashMap<Long, OperationHandleImpl> threadToHandleMap = new HashMap<Long, OperationHandleImpl>();
+    private final Object operationLock = new Object();
+    private final T scope;
+    private final HashMap<OperationIdentifier<T>, OperationHandleImpl<T>> openScopes = new HashMap<OperationIdentifier<T>, OperationHandleImpl<T>>();
+    private final HashMap<Long, OperationHandleImpl<T>> threadToHandleMap = new HashMap<Long, OperationHandleImpl<T>>();
     private final ServiceLocator locator;
     private long scopedIdentifier;
     private final ActiveDescriptor<?> operationDescriptor;
     
-    /* package */ SingleOperationManager(OperationManagerImpl parent,
-            Annotation scope,
+    /* package */ @SuppressWarnings("unchecked")
+    SingleOperationManager(OperationManagerImpl parent,
+            T scope,
             ServiceLocator locator) {
         this.parent = parent;
         this.scope = scope;
         this.locator = locator;
         
-        OperationContext<?> found = null;
-        for (OperationContext<?> context : locator.getAllServices(OperationContext.class)) {
+        OperationContext<T> found = null;
+        for (OperationContext<T> context : locator.getAllServices(OperationContext.class)) {
             if (context.getScope().equals(scope.annotationType())) {
                 found = context;
                 break;
@@ -85,22 +86,22 @@ public class SingleOperationManager {
         
         found.setOperationManager(this);
         
-        OperationDescriptor opDesc = new OperationDescriptor(scope, this);
+        OperationDescriptor<T> opDesc = new OperationDescriptor<T>(scope, this);
         
         operationDescriptor = ServiceLocatorUtilities.addOneDescriptor(locator, opDesc);
     }
     
-    private OperationIdentifierImpl allocateNewIdentifier() {
-        return new OperationIdentifierImpl(
+    private OperationIdentifierImpl<T> allocateNewIdentifier() {
+        return new OperationIdentifierImpl<T>(
                 ID_PREAMBLE + scopedIdentifier++ + "," + scope.annotationType().getName() + ")",
                 scope);
     }
     
-    public OperationHandleImpl createOperation() {
+    public OperationHandleImpl<T> createOperation() {
         
         synchronized (operationLock) {
-            OperationIdentifierImpl id = allocateNewIdentifier();
-            OperationHandleImpl created = new OperationHandleImpl(this, id, operationLock, locator);
+            OperationIdentifierImpl<T> id = allocateNewIdentifier();
+            OperationHandleImpl<T> created = new OperationHandleImpl<T>(this, id, operationLock, locator);
             
             openScopes.put(id, created);
             
@@ -113,7 +114,7 @@ public class SingleOperationManager {
      * 
      * @param closeMe The non-null operation to close
      */
-    /* package */ void closeOperation(OperationHandleImpl closeMe) {
+    /* package */ void closeOperation(OperationHandleImpl<T> closeMe) {
         openScopes.remove(closeMe.getIdentifier());
     }
     
@@ -123,7 +124,7 @@ public class SingleOperationManager {
      * @param threadId The threadId to associate with this handle
      * @param handle The handle to be associated with this thread
      */
-    /* package */ void associateWithThread(long threadId, OperationHandleImpl handle) {
+    /* package */ void associateWithThread(long threadId, OperationHandleImpl<T> handle) {
         threadToHandleMap.put(threadId, handle);
     }
     
@@ -132,7 +133,7 @@ public class SingleOperationManager {
      * 
      * @param threadId The threadId to disassociate with this handle
      */
-    /* package */ OperationHandleImpl disassociateThread(long threadId) {
+    /* package */ OperationHandleImpl<T> disassociateThread(long threadId) {
         return threadToHandleMap.remove(threadId);
     }
     
@@ -141,7 +142,7 @@ public class SingleOperationManager {
      * 
      * @return The operation associated with the given thread
      */
-    /* package */ OperationHandleImpl getCurrentOperationOnThisThread(long threadId) {
+    /* package */ OperationHandleImpl<T> getCurrentOperationOnThisThread(long threadId) {
         return threadToHandleMap.get(threadId);
     }
     
@@ -150,7 +151,7 @@ public class SingleOperationManager {
      * 
      * @return The operation associated with the current thread
      */
-    public OperationHandleImpl getCurrentOperationOnThisThread() {
+    public OperationHandleImpl<T> getCurrentOperationOnThisThread() {
         long threadId = Thread.currentThread().getId();
         
         synchronized (operationLock) {

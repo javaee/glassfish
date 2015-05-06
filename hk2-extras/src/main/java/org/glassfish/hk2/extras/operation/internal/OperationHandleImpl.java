@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.extras.operation.internal;
 
+import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -52,9 +53,9 @@ import org.glassfish.hk2.extras.operation.OperationState;
  * @author jwells
  *
  */
-public class OperationHandleImpl implements OperationHandle {
-    private final SingleOperationManager parent;
-    private final OperationIdentifier identifier;
+public class OperationHandleImpl<T extends Annotation> implements OperationHandle<T> {
+    private final SingleOperationManager<T> parent;
+    private final OperationIdentifier<T> identifier;
     private final Object operationLock;
     private OperationState state;
     private final HashSet<Long> activeThreads = new HashSet<Long>();
@@ -63,8 +64,8 @@ public class OperationHandleImpl implements OperationHandle {
     private Object userData;
     
     /* package */ OperationHandleImpl(
-            SingleOperationManager parent,
-            OperationIdentifier identifier,
+            SingleOperationManager<T> parent,
+            OperationIdentifier<T> identifier,
             Object operationLock,
             ServiceLocator locator) {
         this.parent = parent;
@@ -77,7 +78,7 @@ public class OperationHandleImpl implements OperationHandle {
      * @see org.glassfish.hk2.extras.operation.OperationHandle#getIdentifier()
      */
     @Override
-    public OperationIdentifier getIdentifier() {
+    public OperationIdentifier<T> getIdentifier() {
         return identifier;
     }
 
@@ -147,7 +148,7 @@ public class OperationHandleImpl implements OperationHandle {
             if (activeThreads.contains(threadId)) return;
             
             // Check parent
-            OperationHandleImpl existing = parent.getCurrentOperationOnThisThread(threadId);
+            OperationHandleImpl<T> existing = parent.getCurrentOperationOnThisThread(threadId);
             if (existing != null) {
                 throw new IllegalStateException("The operation " + existing + " is active on " + threadId);
             }
@@ -208,12 +209,13 @@ public class OperationHandleImpl implements OperationHandle {
         return identifier.hashCode();
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public boolean equals(Object o) {
         if (o == null) return false;
         if (!(o instanceof OperationHandleImpl)) return false;
         
-        return identifier.equals(((OperationHandleImpl) o).identifier);
+        return identifier.equals(((OperationHandleImpl<T>) o).identifier);
     }
     
     @Override

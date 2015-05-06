@@ -50,7 +50,7 @@ import java.lang.annotation.Annotation;
  * @author jwells
  *
  */
-public interface OperationIdentifier {
+public interface OperationIdentifier<T extends Annotation> {
     /**
      * A uniquely generated name for an Operation identifier
      * 
@@ -65,6 +65,6 @@ public interface OperationIdentifier {
      * @return The non-null scope that is associated
      * with this operation
      */
-    public Annotation getOperationScope();
+    public T getOperationScope();
 
 }
