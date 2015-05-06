@@ -85,7 +85,7 @@
     </target>
     
     <target name="run" depends="init-common">
-        <sleep seconds="10"/>
+        <sleep seconds="15"/>
         <java classname="WebTest">
           <arg value="${http.host}"/>
           <arg value="${http.port}"/>
