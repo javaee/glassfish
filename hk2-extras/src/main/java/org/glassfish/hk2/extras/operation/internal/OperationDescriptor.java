@@ -44,6 +44,7 @@ import java.lang.annotation.Annotation;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.extras.operation.OperationHandle;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
+import org.glassfish.hk2.utilities.reflection.ParameterizedTypeImpl;
 
 /**
  * @author jwells
@@ -52,11 +53,11 @@ import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 public class OperationDescriptor<T extends Annotation> extends AbstractActiveDescriptor<OperationHandle<T>> {
     private final SingleOperationManager<T> parent;
     
-    public OperationDescriptor(Annotation scope, SingleOperationManager<T> parent) {
+    public OperationDescriptor(T scope, SingleOperationManager<T> parent) {
         this.parent = parent;
         
         setImplementation(OperationHandleImpl.class.getName());
-        addContractType(OperationHandle.class);
+        addContractType(new ParameterizedTypeImpl(OperationHandle.class, scope.annotationType()));
         
         setScopeAsAnnotation(scope);
     }

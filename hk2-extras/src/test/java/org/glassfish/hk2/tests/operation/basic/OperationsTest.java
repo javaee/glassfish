@@ -450,7 +450,7 @@ public class OperationsTest {
      * Tests that we can differentiate injections of OperationHandle via
      * parameterized type
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testDifferentOperationHandleTypes() {
         ServiceLocator locator = createLocator(BasicOperationScopeContext.class,
                 SecondaryOperationScopeContext.class,
@@ -470,7 +470,7 @@ public class OperationsTest {
         InjectsTwoOperationHandlesOfDifferentTypes tdt = locator.getService(InjectsTwoOperationHandlesOfDifferentTypes.class);
         
         Assert.assertEquals(ALICE, tdt.getBasicHandle().getOperationData());
-        Assert.assertEquals(BOB, tdt.getBasicHandle().getOperationData());
+        Assert.assertEquals(BOB, tdt.getSecondaryHandle().getOperationData());
         
         // Clean up
         aliceOperation.closeOperation();
