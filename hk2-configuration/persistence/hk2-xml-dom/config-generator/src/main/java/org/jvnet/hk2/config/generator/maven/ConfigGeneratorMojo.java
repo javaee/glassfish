@@ -58,7 +58,7 @@ public class ConfigGeneratorMojo extends AbstractConfigGeneratorMojo {
      */
     private File sourceDirectory;
 
-    private static final String generatedDirectory;
+    private static String generatedDirectory;
     static {
         StringBuilder sb = new StringBuilder();
         sb.append(GENERATED_SOURCES).append(File.separatorChar).append(MAIN_NAME).append(File.separatorChar).append(JAVA_NAME);
