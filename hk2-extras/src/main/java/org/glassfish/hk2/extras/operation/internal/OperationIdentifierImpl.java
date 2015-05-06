@@ -47,12 +47,12 @@ import org.glassfish.hk2.extras.operation.OperationIdentifier;
  * @author jwells
  *
  */
-public class OperationIdentifierImpl implements OperationIdentifier {
+public class OperationIdentifierImpl<T extends Annotation> implements OperationIdentifier<T> {
     private final String identifier;
-    private final Annotation scope;
+    private final T scope;
     private final int hashCode;
     
-    /* package */ OperationIdentifierImpl(String identifier, Annotation scope) {
+    /* package */ OperationIdentifierImpl(String identifier, T scope) {
         this.identifier = identifier;
         this.scope = scope;
         this.hashCode = identifier.hashCode();
@@ -70,7 +70,7 @@ public class OperationIdentifierImpl implements OperationIdentifier {
      * @see org.glassfish.hk2.extras.operation.OperationIdentifier#getOperationScope()
      */
     @Override
-    public Annotation getOperationScope() {
+    public T getOperationScope() {
         return scope;
     }
     
@@ -79,12 +79,13 @@ public class OperationIdentifierImpl implements OperationIdentifier {
         return hashCode;
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public boolean equals(Object o) {
         if (o == null) return false;
         if (!(o instanceof OperationIdentifierImpl)) return false;
         
-        return identifier.equals(((OperationIdentifierImpl) o).identifier);
+        return identifier.equals(((OperationIdentifierImpl<T>) o).identifier);
     }
 
     @Override

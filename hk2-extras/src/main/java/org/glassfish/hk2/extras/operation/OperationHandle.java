@@ -39,7 +39,7 @@
  */
 package org.glassfish.hk2.extras.operation;
 
-import java.util.List;
+import java.lang.annotation.Annotation;
 import java.util.Set;
 
 import org.jvnet.hk2.annotations.Contract;
@@ -55,14 +55,14 @@ import org.jvnet.hk2.annotations.Contract;
  *
  */
 @Contract
-public interface OperationHandle {
+public interface OperationHandle<T extends Annotation> {
     /**
      * Returns a unique identifier for this operation
      * 
      * @return A non-null unique identifier for this
      * operation
      */
-    public OperationIdentifier getIdentifier();
+    public OperationIdentifier<T> getIdentifier();
     
     /**
      * Gets the current state of this operation

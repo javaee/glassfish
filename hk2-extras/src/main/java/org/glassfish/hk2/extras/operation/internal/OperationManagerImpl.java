@@ -56,8 +56,8 @@ import org.glassfish.hk2.extras.operation.OperationManager;
  */
 @Singleton
 public class OperationManagerImpl implements OperationManager {
-    private final HashMap<Class<? extends Annotation>, SingleOperationManager> children =
-            new HashMap<Class<? extends Annotation>, SingleOperationManager>();
+    private final HashMap<Class<? extends Annotation>, SingleOperationManager<?>> children =
+            new HashMap<Class<? extends Annotation>, SingleOperationManager<?>>();
     
     @Inject
     private ServiceLocator locator;
@@ -65,14 +65,15 @@ public class OperationManagerImpl implements OperationManager {
     /* (non-Javadoc)
      * @see org.glassfish.hk2.extras.operation.OperationManager#createOperation()
      */
+    @SuppressWarnings("unchecked")
     @Override
-    public OperationHandle createOperation(Annotation scope) {
-        SingleOperationManager manager;
+    public <T extends Annotation> OperationHandle<T> createOperation(T scope) {
+        SingleOperationManager<T> manager;
         synchronized (this) {
-            manager = children.get(scope.annotationType());
+            manager = (SingleOperationManager<T>) children.get(scope.annotationType());
         
             if (manager == null) {
-                manager = new SingleOperationManager(this, scope, locator);
+                manager = new SingleOperationManager<T>(this, scope, locator);
                 children.put(scope.annotationType(), manager);
             }
         }
@@ -84,8 +85,8 @@ public class OperationManagerImpl implements OperationManager {
      * @see org.glassfish.hk2.extras.operation.OperationManager#createAndStartOperation()
      */
     @Override
-    public OperationHandle createAndStartOperation(Annotation scope) {
-        OperationHandle retVal = createOperation(scope);
+    public <T extends Annotation> OperationHandle<T> createAndStartOperation(T scope) {
+        OperationHandle<T> retVal = createOperation(scope);
         retVal.resume();
         
         return retVal;
@@ -95,9 +96,16 @@ public class OperationManagerImpl implements OperationManager {
      * @see org.glassfish.hk2.extras.operation.OperationManager#getCurrentOperations()
      */
     @Override
-    public List<OperationHandle> getCurrentOperations(Annotation scope) {
-        // TODO Auto-generated method stub
-        return null;
+    public <T extends Annotation> List<OperationHandle<T>> getCurrentOperations(T scope) {
+        throw new AssertionError("getCurrentOperations not yet implemented");
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.extras.operation.OperationManager#getCurrentOperation(java.lang.annotation.Annotation)
+     */
+    @Override
+    public <T extends Annotation> OperationHandle<T> getCurrentOperation(T scope) {
+        throw new AssertionError("getCurrentOperation not yet implemented");
     }
 
     /* (non-Javadoc)
@@ -105,8 +113,10 @@ public class OperationManagerImpl implements OperationManager {
      */
     @Override
     public void shutdownAllOperations(Annotation scope) {
-        // TODO Auto-generated method stub
+        throw new AssertionError("shutdownAllOperations not yet implemented");
         
     }
+
+    
 
 }

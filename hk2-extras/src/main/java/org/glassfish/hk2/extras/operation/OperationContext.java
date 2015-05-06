@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.extras.operation;
 
+import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -78,10 +79,10 @@ import org.jvnet.hk2.annotations.Contract;
  * @author jwells
  */
 @Contract
-public abstract class OperationContext<T> implements Context<T> {
-    private SingleOperationManager manager;
-    private final HashMap<OperationIdentifier, HashMap<ActiveDescriptor<?>, Object>> operationMap =
-            new HashMap<OperationIdentifier, HashMap<ActiveDescriptor<?>, Object>>();
+public abstract class OperationContext<T extends Annotation> implements Context<T> {
+    private SingleOperationManager<T> manager;
+    private final HashMap<OperationIdentifier<T>, HashMap<ActiveDescriptor<?>, Object>> operationMap =
+            new HashMap<OperationIdentifier<T>, HashMap<ActiveDescriptor<?>, Object>>();
     private final HashSet<ActiveDescriptor<?>> creating = new HashSet<ActiveDescriptor<?>>();
 
     /* (non-Javadoc)
@@ -91,7 +92,7 @@ public abstract class OperationContext<T> implements Context<T> {
     @Override
     public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor,
             ServiceHandle<?> root) {
-        OperationHandleImpl operation = manager.getCurrentOperationOnThisThread();
+        OperationHandleImpl<T> operation = manager.getCurrentOperationOnThisThread();
         if (operation == null) {
             throw new IllegalStateException("There is no current operation of type " +
                 getScope().getName() + " on thread " + Thread.currentThread().getId());
@@ -163,7 +164,7 @@ public abstract class OperationContext<T> implements Context<T> {
      */
     @Override
     public boolean containsKey(ActiveDescriptor<?> descriptor) {
-        OperationHandleImpl operation = manager.getCurrentOperationOnThisThread();
+        OperationHandleImpl<T> operation = manager.getCurrentOperationOnThisThread();
         if (operation == null) return false;
         
         synchronized (this) {
@@ -231,7 +232,7 @@ public abstract class OperationContext<T> implements Context<T> {
         return true;
     }
 
-    public void setOperationManager(SingleOperationManager manager) {
+    public void setOperationManager(SingleOperationManager<T> manager) {
         this.manager = manager;
     }
     

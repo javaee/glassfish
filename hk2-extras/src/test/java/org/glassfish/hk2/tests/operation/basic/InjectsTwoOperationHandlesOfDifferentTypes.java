@@ -37,51 +37,32 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.extras.operation.internal;
+package org.glassfish.hk2.tests.operation.basic;
 
-import java.lang.annotation.Annotation;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.extras.operation.OperationHandle;
-import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
-import org.glassfish.hk2.utilities.reflection.ParameterizedTypeImpl;
 
 /**
  * @author jwells
  *
  */
-public class OperationDescriptor<T extends Annotation> extends AbstractActiveDescriptor<OperationHandle<T>> {
-    private final SingleOperationManager<T> parent;
+@Singleton
+public class InjectsTwoOperationHandlesOfDifferentTypes {
+    @Inject
+    private OperationHandle<BasicOperationScope> basicHandle;
     
-    public OperationDescriptor(T scope, SingleOperationManager<T> parent) {
-        this.parent = parent;
-        
-        setImplementation(OperationHandleImpl.class.getName());
-        addContractType(new ParameterizedTypeImpl(OperationHandle.class, scope.annotationType()));
-        
-        setScopeAsAnnotation(scope);
+    @Inject
+    private OperationHandle<SecondaryOperationScope> secondaryHandle;
+    
+    
+    public OperationHandle<BasicOperationScope> getBasicHandle() {
+        return basicHandle;
     }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.ActiveDescriptor#getImplementationClass()
-     */
-    @Override
-    public Class<?> getImplementationClass() {
-        return OperationHandleImpl.class;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.ActiveDescriptor#create(org.glassfish.hk2.api.ServiceHandle)
-     */
-    @Override
-    public OperationHandle<T> create(ServiceHandle<?> root) {
-        OperationHandleImpl<T> retVal = parent.getCurrentOperationOnThisThread();
-        if (retVal == null) {
-            throw new IllegalStateException("There is no active operation in scope " +
-                getScopeAnnotation().getName() + " on thread " + Thread.currentThread().getId());
-        }
-        
-        return retVal;
+    
+    public OperationHandle<SecondaryOperationScope> getSecondaryHandle() {
+        return secondaryHandle;
     }
 
 }

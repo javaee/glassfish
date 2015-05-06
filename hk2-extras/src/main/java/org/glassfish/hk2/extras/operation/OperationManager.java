@@ -60,7 +60,7 @@ public interface OperationManager {
      * @return A non-null OperationHandle that can
      * be used to associate threads with the Operation
      */
-    public OperationHandle createOperation(Annotation scope);
+    public <T extends Annotation> OperationHandle<T> createOperation(T scope);
     
     /**
      * Creates an OperationHandle that will be associated
@@ -74,7 +74,7 @@ public interface OperationManager {
      * @throws IllegalStateException  if the current thread is
      * associated with a different Operation of the same type
      */
-    public OperationHandle createAndStartOperation(Annotation scope);
+    public <T extends  Annotation> OperationHandle<T> createAndStartOperation(T scope);
     
     /**
      * Gets the list of all Operations that are in state
@@ -88,7 +88,19 @@ public interface OperationManager {
      * @return A non-null but possibly empty list of OperationHandles
      * that have not been closed
      */
-    public List<OperationHandle> getCurrentOperations(Annotation scope);
+    public <T extends Annotation> List<OperationHandle<T>> getCurrentOperations(T scope);
+    
+    /**
+     * Gets the current operation of scope type on the current thread.
+     * The scope parameter is normally created with 
+     * {@link org.glassfish.hk2.api.AnnotationLiteral}
+     * 
+     * @param scope The scope annotation for this operation type
+     * @return The current operation of the given type on this thread.
+     * May be null if there is no active operation on this thread of
+     * this type
+     */
+    public <T extends Annotation> OperationHandle<T> getCurrentOperation(T scope);
     
     /**
      * This method will suspend all currently open operations on all threads and

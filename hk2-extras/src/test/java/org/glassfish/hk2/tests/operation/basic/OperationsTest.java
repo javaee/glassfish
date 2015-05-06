@@ -57,8 +57,8 @@ import org.junit.Test;
  *
  */
 public class OperationsTest {
-    private final static Annotation BASIC_OPERATION_ANNOTATION = new BasicOperationScopeImpl();
-    private final static Annotation SECONDARY_OPERATION_ANNOTATION = new SecondaryOperationScopeImpl();
+    private final static BasicOperationScope BASIC_OPERATION_ANNOTATION = new BasicOperationScopeImpl();
+    private final static SecondaryOperationScope SECONDARY_OPERATION_ANNOTATION = new SecondaryOperationScopeImpl();
     
     private final static String ALICE_NM = "Alice";
     private final static byte[] ALICE_PW = { 1, 2 };
@@ -113,10 +113,10 @@ public class OperationsTest {
         
         OperationManager operationManager = locator.getService(OperationManager.class);
         
-        OperationHandle aliceOperation = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        OperationHandle<BasicOperationScope> aliceOperation = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
         aliceOperation.setOperationData(ALICE);
         
-        OperationHandle bobOperation = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        OperationHandle<BasicOperationScope> bobOperation = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
         bobOperation.setOperationData(BOB);
         
         SingletonThatUsesOperationService singleton = locator.getService(SingletonThatUsesOperationService.class);
@@ -148,18 +148,18 @@ public class OperationsTest {
         
         OperationManager operationManager = locator.getService(OperationManager.class);
         
-        OperationHandle aliceOperation = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        OperationHandle<BasicOperationScope> aliceOperation = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
         aliceOperation.setOperationData(ALICE);
         
-        OperationHandle bobOperation = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        OperationHandle<BasicOperationScope> bobOperation = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
         bobOperation.setOperationData(BOB);
         
         SingletonThatUsesOperationService singleton = locator.getService(SingletonThatUsesOperationService.class);
         
-        SimpleThreadedFetcher aliceFetcher = new SimpleThreadedFetcher(aliceOperation, singleton);
+        SimpleThreadedFetcher<BasicOperationScope> aliceFetcher = new SimpleThreadedFetcher<BasicOperationScope>(aliceOperation, singleton);
         Thread aliceThread = new Thread(aliceFetcher);
         
-        SimpleThreadedFetcher bobFetcher = new SimpleThreadedFetcher(bobOperation, singleton);
+        SimpleThreadedFetcher<BasicOperationScope> bobFetcher = new SimpleThreadedFetcher<BasicOperationScope>(bobOperation, singleton);
         Thread bobThread = new Thread(bobFetcher);
         
         aliceThread.start();
@@ -190,7 +190,7 @@ public class OperationsTest {
         
         OperationManager operationManager = locator.getService(OperationManager.class);
         
-        OperationHandle operation = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        OperationHandle<BasicOperationScope> operation = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
         
         Assert.assertEquals(OperationState.SUSPENDED, operation.getState());
         
@@ -269,7 +269,7 @@ public class OperationsTest {
         
         OperationManager operationManager = locator.getService(OperationManager.class);
         
-        OperationHandle operation = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        OperationHandle<BasicOperationScope> operation = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
         
         Assert.assertEquals(OperationState.SUSPENDED, operation.getState());
         
@@ -297,8 +297,8 @@ public class OperationsTest {
         
         OperationManager operationManager = locator.getService(OperationManager.class);
         
-        OperationHandle operation1 = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
-        OperationHandle operation2 = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        OperationHandle<BasicOperationScope> operation1 = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        OperationHandle<BasicOperationScope> operation2 = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
         
         operation1.resume();
         
@@ -329,10 +329,10 @@ public class OperationsTest {
         
         OperationManager operationManager = locator.getService(OperationManager.class);
         
-        OperationHandle operation1 = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
-        OperationHandle operation2 = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        OperationHandle<BasicOperationScope> operation1 = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        OperationHandle<BasicOperationScope> operation2 = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
         
-        HashSet<OperationHandle> storage = new HashSet<OperationHandle>();
+        HashSet<OperationHandle<BasicOperationScope>> storage = new HashSet<OperationHandle<BasicOperationScope>>();
         
         storage.add(operation1);
         storage.add(operation2);
@@ -358,7 +358,7 @@ public class OperationsTest {
         
         OperationManager operationManager = locator.getService(OperationManager.class);
         
-        OperationHandle aliceOperation = operationManager.createAndStartOperation(BASIC_OPERATION_ANNOTATION);
+        OperationHandle<BasicOperationScope> aliceOperation = operationManager.createAndStartOperation(BASIC_OPERATION_ANNOTATION);
         aliceOperation.setOperationData(ALICE);
         
         SingletonThatUsesOperationService singleton = locator.getService(SingletonThatUsesOperationService.class);
@@ -399,14 +399,14 @@ public class OperationsTest {
         
         OperationManager operationManager = locator.getService(OperationManager.class);
         
-        OperationHandle aliceOperation = operationManager.createAndStartOperation(BASIC_OPERATION_ANNOTATION);
+        OperationHandle<BasicOperationScope> aliceOperation = operationManager.createAndStartOperation(BASIC_OPERATION_ANNOTATION);
         aliceOperation.setOperationData(ALICE);
         
-        OperationHandle bobOperation = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        OperationHandle<BasicOperationScope> bobOperation = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
         bobOperation.setOperationData(BOB);
         
-        OperationHandle firstOperation = operationManager.createOperation(SECONDARY_OPERATION_ANNOTATION);
-        OperationHandle secondOperation = operationManager.createOperation(SECONDARY_OPERATION_ANNOTATION);
+        OperationHandle<SecondaryOperationScope> firstOperation = operationManager.createOperation(SECONDARY_OPERATION_ANNOTATION);
+        OperationHandle<SecondaryOperationScope> secondOperation = operationManager.createOperation(SECONDARY_OPERATION_ANNOTATION);
         
         firstOperation.resume();
         
@@ -447,6 +447,37 @@ public class OperationsTest {
     }
     
     /**
+     * Tests that we can differentiate injections of OperationHandle via
+     * parameterized type
+     */
+    @Test // @org.junit.Ignore
+    public void testDifferentOperationHandleTypes() {
+        ServiceLocator locator = createLocator(BasicOperationScopeContext.class,
+                SecondaryOperationScopeContext.class,
+                InjectsTwoOperationHandlesOfDifferentTypes.class);
+        
+        OperationManager operationManager = locator.getService(OperationManager.class);
+        
+        OperationHandle<BasicOperationScope> aliceOperation = operationManager.createAndStartOperation(BASIC_OPERATION_ANNOTATION);
+        aliceOperation.setOperationData(ALICE);
+        
+        OperationHandle<SecondaryOperationScope> firstOperation = operationManager.createOperation(SECONDARY_OPERATION_ANNOTATION);
+        firstOperation.setOperationData(BOB);
+        
+        aliceOperation.resume();
+        firstOperation.resume();
+        
+        InjectsTwoOperationHandlesOfDifferentTypes tdt = locator.getService(InjectsTwoOperationHandlesOfDifferentTypes.class);
+        
+        Assert.assertEquals(ALICE, tdt.getBasicHandle().getOperationData());
+        Assert.assertEquals(BOB, tdt.getSecondaryHandle().getOperationData());
+        
+        // Clean up
+        aliceOperation.closeOperation();
+        firstOperation.closeOperation();
+    }
+    
+    /**
      * SecondaryOperationScope allows null returns, so lets test it
      */
     @Test // @org.junit.Ignore
@@ -458,7 +489,7 @@ public class OperationsTest {
         
         OperationManager operationManager = locator.getService(OperationManager.class);
         
-        OperationHandle firstOperation = operationManager.createAndStartOperation(SECONDARY_OPERATION_ANNOTATION);
+        OperationHandle<SecondaryOperationScope> firstOperation = operationManager.createAndStartOperation(SECONDARY_OPERATION_ANNOTATION);
         
         firstOperation.resume();
         
@@ -470,13 +501,13 @@ public class OperationsTest {
         firstOperation.closeOperation();
     }
     
-    private static class SimpleThreadedFetcher implements Runnable {
-        private final OperationHandle operation;
+    private static class SimpleThreadedFetcher<T extends Annotation> implements Runnable {
+        private final OperationHandle<T> operation;
         private final SingletonThatUsesOperationService singleton;
         private boolean go = false;
         private String retVal;
         
-        private SimpleThreadedFetcher(OperationHandle operation, SingletonThatUsesOperationService singleton) {
+        private SimpleThreadedFetcher(OperationHandle<T> operation, SingletonThatUsesOperationService singleton) {
             this.operation = operation;
             this.singleton = singleton;
         }

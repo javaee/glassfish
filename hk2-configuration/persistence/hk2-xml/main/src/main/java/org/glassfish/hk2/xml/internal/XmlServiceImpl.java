@@ -131,6 +131,11 @@ public class XmlServiceImpl implements XmlService {
     @SuppressWarnings("unchecked")
     private <T> XmlRootHandle<T> unmarshallClass(URI uri, UnparentedNode node,
             boolean advertise, boolean advertiseInHub) throws Exception {
+        long elapsedUpToJAXB = 0;
+        if (JAUtilities.DEBUG_GENERATION_TIMING) {
+            elapsedUpToJAXB = System.currentTimeMillis();
+        }
+        
         JAXBContext context = JAXBContext.newInstance(node.getTranslatedClass());
         
         Listener listener = new Listener();
@@ -140,12 +145,16 @@ public class XmlServiceImpl implements XmlService {
         long jaxbUnmarshallElapsedTime = 0L;
         if (JAUtilities.DEBUG_GENERATION_TIMING) {
             jaxbUnmarshallElapsedTime = System.currentTimeMillis();
+            elapsedUpToJAXB = jaxbUnmarshallElapsedTime - elapsedUpToJAXB;
+            Logger.getLogger().debug("Time in up to JAXB parsing " + uri + " is " + elapsedUpToJAXB + " milliseconds");
         }
         
         T root = (T) unmarshaller.unmarshal(uri.toURL());
         
+        long elapsedJAXBToAdvertisement = 0;
         if (JAUtilities.DEBUG_GENERATION_TIMING) {
-            jaxbUnmarshallElapsedTime = System.currentTimeMillis() - jaxbUnmarshallElapsedTime;
+            elapsedJAXBToAdvertisement = System.currentTimeMillis();
+            jaxbUnmarshallElapsedTime = elapsedJAXBToAdvertisement - jaxbUnmarshallElapsedTime;
             Logger.getLogger().debug("Time in JAXB parsing " + uri + " is " + jaxbUnmarshallElapsedTime + " milliseconds");
         }
         
@@ -162,6 +171,13 @@ public class XmlServiceImpl implements XmlService {
             base._setDynamicChangeInfo(changeControl);
         }
         
+        long elapsedPreAdvertisement = 0L;
+        if (JAUtilities.DEBUG_GENERATION_TIMING) {
+            elapsedPreAdvertisement = System.currentTimeMillis();
+            elapsedJAXBToAdvertisement = elapsedPreAdvertisement - elapsedJAXBToAdvertisement;
+            Logger.getLogger().debug("Time from JAXB to PreAdvertisement " + uri + " is " + elapsedJAXBToAdvertisement + " milliseconds");
+        }
+        
         DynamicConfiguration config = (advertise) ? dynamicConfigurationService.createDynamicConfiguration() : null ;
         WriteableBeanDatabase wdb = (advertiseInHub) ? hub.getWriteableDatabaseCopy() : null ;
         
@@ -169,11 +185,31 @@ public class XmlServiceImpl implements XmlService {
             Utilities.advertise(wdb, config, bean);
         }
         
+        long elapsedHK2Advertisement = 0L;
+        if (JAUtilities.DEBUG_GENERATION_TIMING) {
+            elapsedHK2Advertisement = System.currentTimeMillis();
+            elapsedPreAdvertisement = elapsedHK2Advertisement - elapsedPreAdvertisement;
+            Logger.getLogger().debug("Time from JAXB to PreAdvertisement " + uri + " is " + elapsedPreAdvertisement + " milliseconds");
+        }
+        
         if (config != null) {
             config.commit();
         }
+        
+        long elapsedHubAdvertisement = 0L;
+        if (JAUtilities.DEBUG_GENERATION_TIMING) {
+            elapsedHubAdvertisement = System.currentTimeMillis();
+            elapsedHK2Advertisement = elapsedHubAdvertisement - elapsedHK2Advertisement;
+            Logger.getLogger().debug("Time to advertise " + uri + " in HK2 is " + elapsedHK2Advertisement + " milliseconds");
+        }
+        
         if (wdb != null) {
             wdb.commit(new XmlHubCommitMessage() {});
+        }
+        
+        if (JAUtilities.DEBUG_GENERATION_TIMING) {
+            elapsedHubAdvertisement = System.currentTimeMillis() - elapsedHubAdvertisement;
+            Logger.getLogger().debug("Time to advertise " + uri + " in Hub is " + elapsedHubAdvertisement + " milliseconds");
         }
         
         return new XmlRootHandleImpl<T>(this, hub, root, node, uri, advertise, advertiseInHub, changeControl);
