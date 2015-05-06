@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -58,7 +58,7 @@ public class ConfigGeneratorMojo extends AbstractConfigGeneratorMojo {
      */
     private File sourceDirectory;
 
-    private static String generatedDirectory;
+    private static final String generatedDirectory;
     static {
         StringBuilder sb = new StringBuilder();
         sb.append(GENERATED_SOURCES).append(File.separatorChar).append(MAIN_NAME).append(File.separatorChar).append(JAVA_NAME);

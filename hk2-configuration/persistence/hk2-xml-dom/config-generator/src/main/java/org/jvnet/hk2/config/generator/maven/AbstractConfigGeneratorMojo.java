@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -107,8 +107,11 @@ public abstract class AbstractConfigGeneratorMojo extends AbstractMojo {
                 || !getSourceDirectory().isDirectory()){
             return;
         }
-        
-        getGeneratedDirectory().mkdirs();
+
+        if(!getGeneratedDirectory().mkdirs()){
+          throw new MojoExecutionException(
+            "Unable to create directory "+getGeneratedDirectory().getAbsolutePath());
+        }        
         String outputPath = getGeneratedDirectory().getAbsolutePath();
 
         // prepare command line arguments
