@@ -39,10 +39,15 @@
  */
 package org.jvnet.hk2.config;
 
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.IndexedFilter;
+import org.glassfish.hk2.api.InstanceLifecycleListener;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.BuilderHelper;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
-import org.jvnet.hk2.config.provider.internal.ConfigInstanceListener;
 
 /**
  * Utilities for working with HK2 config
@@ -51,6 +56,8 @@ import org.jvnet.hk2.config.provider.internal.ConfigInstanceListener;
  *
  */
 public class HK2DomConfigUtilities {
+    
+    
     /**
      * This method enables HK2 Dom based XML configuration parsing for
      * systems that do not use HK2 metadata files or use a non-default
@@ -62,13 +69,64 @@ public class HK2DomConfigUtilities {
      * configuration services to
      */
     public static void enableHK2DomConfiguration(ServiceLocator locator) {
-        if (locator.getBestDescriptor(BuilderHelper.createContractFilter(ConfigSupport.class.getName())) != null) return;
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration config = dcs.createDynamicConfiguration();
         
-        ServiceLocatorUtilities.addClasses(locator,
-                ConfigSupport.class,
-                ConfigurationPopulator.class,
-                Transactions.class,
-                ConfigInstanceListener.class);  
+        boolean dirty = false;
+        boolean operationDirty;
+        
+        operationDirty = addIfNotThere(locator, config, getConfigSupport());
+        dirty = dirty || operationDirty;
+        
+        operationDirty = addIfNotThere(locator, config, getConfigurationPopulator());
+        dirty = dirty || operationDirty;
+        
+        operationDirty = addIfNotThere(locator, config, getTransactions());
+        dirty = dirty || operationDirty;
+        
+        operationDirty = addIfNotThere(locator, config, getConfigInstanceListener());
+        dirty = dirty || operationDirty;
+        
+        if (dirty) {
+            config.commit();
+        }
+    }
+    
+    private final static String CONFIG_SUPPORT_IMPL = "org.jvnet.hk2.config.ConfigSupport";
+    private final static String CONFIGURATION_UTILITIES = "org.jvnet.hk2.config.api.ConfigurationUtilities";
+    private static Descriptor getConfigSupport() {
+        return BuilderHelper.link(CONFIG_SUPPORT_IMPL). 
+            to(CONFIGURATION_UTILITIES).
+            in(Singleton.class.getName()).build();
+    }
+    
+    private final static String CONFIGURATION_POPULATOR_IMPL = "org.jvnet.hk2.config.ConfigurationPopulator";
+    private final static String CONFIG_POPULATOR = "org.glassfish.hk2.bootstrap.ConfigPopulator";
+    private static Descriptor getConfigurationPopulator() {
+        return BuilderHelper.link(CONFIGURATION_POPULATOR_IMPL). 
+            to(CONFIG_POPULATOR).
+            in(Singleton.class.getName()).build();
+    }
+    
+    private final static String TRANSACTIONS_IMPL = "org.jvnet.hk2.config.Transactions";
+    private static Descriptor getTransactions() {
+        return BuilderHelper.link(TRANSACTIONS_IMPL).
+            in(Singleton.class.getName()).build();
+    }
+    
+    private final static String CONFIG_INSTANCE_LISTENER_IMPL = "org.jvnet.hk2.config.provider.internal.ConfigInstanceListener";
+    private static Descriptor getConfigInstanceListener() {
+        return BuilderHelper.link(CONFIG_INSTANCE_LISTENER_IMPL). 
+            to(InstanceLifecycleListener.class.getName()).
+            in(Singleton.class.getName()).build();
+    }
+    
+    private static boolean addIfNotThere(ServiceLocator locator, DynamicConfiguration config, Descriptor desc) {
+        IndexedFilter filter = BuilderHelper.createContractFilter(desc.getImplementation());
+        if (locator.getBestDescriptor(filter) != null) return false;
+        
+        config.bind(desc);
+        return true;
     }
 
 }

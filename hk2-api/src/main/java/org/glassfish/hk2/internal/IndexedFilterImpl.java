@@ -86,5 +86,10 @@ public class IndexedFilterImpl implements IndexedFilter {
     public String getName() {
         return name;
     }
+    
+    @Override
+    public String toString() {
+        return "IndexedFilterImpl(" + contract + "," + name + "," + System.identityHashCode(this) + ")";
+    }
 
 }

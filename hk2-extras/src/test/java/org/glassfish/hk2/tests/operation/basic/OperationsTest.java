@@ -504,7 +504,7 @@ public class OperationsTest {
     /**
      * Tests the getAllOperations method on OperationManager
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testGetAllOperations() {
         ServiceLocator locator = createLocator(
                 BasicOperationScopeContext.class,

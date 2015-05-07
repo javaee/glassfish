@@ -40,6 +40,7 @@
 package org.glassfish.hk2.extras.operation.internal;
 
 import java.lang.annotation.Annotation;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -97,7 +98,12 @@ public class OperationManagerImpl implements OperationManager {
      */
     @Override
     public <T extends Annotation> Set<OperationHandle<T>> getCurrentOperations(T scope) {
-        throw new AssertionError("getCurrentOperations not yet implemented");
+        synchronized (this) {
+            SingleOperationManager<T> manager = (SingleOperationManager<T>) children.get(scope.annotationType());
+            if (manager == null) return Collections.emptySet();
+            
+            return manager.getAllOperations();
+        }
     }
     
     /* (non-Javadoc)

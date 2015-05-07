@@ -40,11 +40,15 @@
 package org.glassfish.hk2.extras.operation.internal;
 
 import java.lang.annotation.Annotation;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.extras.operation.OperationContext;
+import org.glassfish.hk2.extras.operation.OperationHandle;
 import org.glassfish.hk2.extras.operation.OperationIdentifier;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 
@@ -157,5 +161,16 @@ public class SingleOperationManager<T extends Annotation> {
         synchronized (operationLock) {
             return getCurrentOperationOnThisThread(threadId);
         }
+    }
+    
+    /* package */ Set<OperationHandle<T>> getAllOperations() {
+        HashSet<OperationHandle<T>> retVal = new HashSet<OperationHandle<T>>();
+        
+        synchronized (operationLock) {
+            retVal.addAll(openScopes.values());
+            
+            return Collections.unmodifiableSet(retVal);
+        }
+        
     }
 }
