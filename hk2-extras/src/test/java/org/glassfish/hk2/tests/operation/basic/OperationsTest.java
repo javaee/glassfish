@@ -573,6 +573,109 @@ public class OperationsTest {
         }
     }
     
+    /**
+     * Tests the getCurrentOperation method on OperationManager
+     */
+    @Test @org.junit.Ignore
+    public void testGetCurrentOperation() {
+        ServiceLocator locator = createLocator(
+                BasicOperationScopeContext.class,
+                SecondaryOperationScopeContext.class);
+        
+        OperationManager operationManager = locator.getService(OperationManager.class);
+        
+        OperationHandle<BasicOperationScope> firstOperation = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        OperationHandle<BasicOperationScope> secondOperation = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        OperationHandle<SecondaryOperationScope> thirdOperation = operationManager.createOperation(SECONDARY_OPERATION_ANNOTATION);
+        
+        Assert.assertNull(operationManager.getCurrentOperation(BASIC_OPERATION_ANNOTATION));
+        Assert.assertNull(operationManager.getCurrentOperation(SECONDARY_OPERATION_ANNOTATION));
+        
+        secondOperation.resume();
+        
+        Assert.assertEquals(secondOperation, operationManager.getCurrentOperation(BASIC_OPERATION_ANNOTATION));
+        Assert.assertNull(operationManager.getCurrentOperation(SECONDARY_OPERATION_ANNOTATION));
+        
+        thirdOperation.resume();
+        
+        Assert.assertEquals(secondOperation, operationManager.getCurrentOperation(BASIC_OPERATION_ANNOTATION));
+        Assert.assertEquals(thirdOperation, operationManager.getCurrentOperation(SECONDARY_OPERATION_ANNOTATION));
+        
+        secondOperation.suspend();
+        
+        Assert.assertNull(operationManager.getCurrentOperation(BASIC_OPERATION_ANNOTATION));
+        Assert.assertEquals(thirdOperation, operationManager.getCurrentOperation(SECONDARY_OPERATION_ANNOTATION));
+        
+        firstOperation.resume();
+        thirdOperation.suspend();
+        secondOperation.suspend();
+        
+        Assert.assertEquals(firstOperation, operationManager.getCurrentOperation(BASIC_OPERATION_ANNOTATION));
+        Assert.assertNull(operationManager.getCurrentOperation(SECONDARY_OPERATION_ANNOTATION));
+        
+        firstOperation.closeOperation();
+        
+        Assert.assertNull(operationManager.getCurrentOperation(BASIC_OPERATION_ANNOTATION));
+        Assert.assertNull(operationManager.getCurrentOperation(SECONDARY_OPERATION_ANNOTATION));
+        
+        secondOperation.closeOperation();
+        thirdOperation.closeOperation();
+    }
+    
+    /**
+     * Tests the shutdownAllOperations method on OperationManager
+     */
+    @Test @org.junit.Ignore
+    public void testShutdownAllOperations() {
+        ServiceLocator locator = createLocator(
+                BasicOperationScopeContext.class,
+                SecondaryOperationScopeContext.class);
+        
+        OperationManager operationManager = locator.getService(OperationManager.class);
+        
+        OperationHandle<BasicOperationScope> basic1Operation = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        OperationHandle<BasicOperationScope> basic2Operation = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        OperationHandle<BasicOperationScope> basic3Operation = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        
+        OperationHandle<SecondaryOperationScope> second1Operation = operationManager.createOperation(SECONDARY_OPERATION_ANNOTATION);
+        OperationHandle<SecondaryOperationScope> second2Operation = operationManager.createOperation(SECONDARY_OPERATION_ANNOTATION);
+        OperationHandle<SecondaryOperationScope> second3Operation = operationManager.createOperation(SECONDARY_OPERATION_ANNOTATION);
+        
+        basic2Operation.resume();
+        basic3Operation.closeOperation();
+        
+        second2Operation.resume();
+        second3Operation.closeOperation();
+        
+        Assert.assertEquals(OperationState.SUSPENDED, basic1Operation.getState());
+        Assert.assertEquals(OperationState.ACTIVE, basic2Operation.getState());
+        Assert.assertEquals(OperationState.CLOSED, basic3Operation.getState());
+        
+        Assert.assertEquals(OperationState.SUSPENDED, second1Operation.getState());
+        Assert.assertEquals(OperationState.ACTIVE, second2Operation.getState());
+        Assert.assertEquals(OperationState.CLOSED, second3Operation.getState());
+        
+        operationManager.shutdownAllOperations(BASIC_OPERATION_ANNOTATION);
+        
+        Assert.assertEquals(OperationState.CLOSED, basic1Operation.getState());
+        Assert.assertEquals(OperationState.CLOSED, basic2Operation.getState());
+        Assert.assertEquals(OperationState.CLOSED, basic3Operation.getState());
+        
+        Assert.assertEquals(OperationState.SUSPENDED, second1Operation.getState());
+        Assert.assertEquals(OperationState.ACTIVE, second2Operation.getState());
+        Assert.assertEquals(OperationState.CLOSED, second3Operation.getState());
+        
+        operationManager.shutdownAllOperations(SECONDARY_OPERATION_ANNOTATION);
+        
+        Assert.assertEquals(OperationState.CLOSED, basic1Operation.getState());
+        Assert.assertEquals(OperationState.CLOSED, basic2Operation.getState());
+        Assert.assertEquals(OperationState.CLOSED, basic3Operation.getState());
+        
+        Assert.assertEquals(OperationState.CLOSED, second1Operation.getState());
+        Assert.assertEquals(OperationState.CLOSED, second2Operation.getState());
+        Assert.assertEquals(OperationState.CLOSED, second3Operation.getState());
+    }
+    
     private static class SimpleThreadedFetcher<T extends Annotation> implements Runnable {
         private final OperationHandle<T> operation;
         private final SingletonThatUsesOperationService singleton;
