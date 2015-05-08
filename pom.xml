@@ -47,7 +47,7 @@
     <parent>
         <groupId>org.glassfish.hk2</groupId>
         <artifactId>hk2-bom</artifactId>
-        <version>2.4.0-b20</version>
+        <version>2.4.0-b21-SNAPSHOT</version>
         <relativePath>bom/pom.xml</relativePath>
     </parent>
     <artifactId>hk2-parent</artifactId>
@@ -150,7 +150,7 @@
         <connection>scm:git:git://java.net/hk2~git</connection>
         <developerConnection>scm:git:ssh://${user.name}@git.java.net/hk2~git</developerConnection>
         <url>https://java.net/projects/hk2/sources/git/show</url>
-        <tag>hk2-parent-2.4.0-b20</tag>
+        <tag>hk2-parent-2.3.0-b05</tag>
     </scm>
     
     <repositories>
