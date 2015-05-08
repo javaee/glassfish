@@ -92,7 +92,17 @@ public abstract class OperationContext<T extends Annotation> implements Context<
     @Override
     public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor,
             ServiceHandle<?> root) {
-        OperationHandleImpl<T> operation = manager.getCurrentOperationOnThisThread();
+        SingleOperationManager<T> localManager;
+        synchronized (this) {
+            localManager = manager;
+        }
+        
+        if (localManager == null) {
+            throw new IllegalStateException("There is no operation of type " +
+                getScope().getName() + " on thread " + Thread.currentThread().getId());
+        }
+        
+        OperationHandleImpl<T> operation = localManager.getCurrentOperationOnThisThread();
         if (operation == null) {
             throw new IllegalStateException("There is no current operation of type " +
                 getScope().getName() + " on thread " + Thread.currentThread().getId());
@@ -164,7 +174,13 @@ public abstract class OperationContext<T extends Annotation> implements Context<
      */
     @Override
     public boolean containsKey(ActiveDescriptor<?> descriptor) {
-        OperationHandleImpl<T> operation = manager.getCurrentOperationOnThisThread();
+        SingleOperationManager<T> localManager;
+        synchronized (this) {
+            localManager = manager;
+        }
+        if (localManager == null) return false;
+        
+        OperationHandleImpl<T> operation = localManager.getCurrentOperationOnThisThread();
         if (operation == null) return false;
         
         synchronized (this) {
@@ -232,7 +248,7 @@ public abstract class OperationContext<T extends Annotation> implements Context<
         return true;
     }
 
-    public void setOperationManager(SingleOperationManager<T> manager) {
+    public synchronized void setOperationManager(SingleOperationManager<T> manager) {
         this.manager = manager;
     }
     

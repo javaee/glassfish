@@ -92,6 +92,13 @@ public class OperationHandleImpl<T extends Annotation> implements OperationHandl
         }
     }
     
+    /**
+     * operationLock must be held
+     */
+    /* package */ void shutdownByFiat() {
+        state = OperationState.CLOSED;
+    }
+    
     private void checkState() {
         synchronized (operationLock) {
             if (OperationState.CLOSED.equals(state)) {
@@ -118,7 +125,7 @@ public class OperationHandleImpl<T extends Annotation> implements OperationHandl
         synchronized (operationLock) {
             if (OperationState.CLOSED.equals(state)) return;
             
-            parent.disassociateThread(threadId);
+            parent.disassociateThread(threadId, this);
             
             if (activeThreads.remove(threadId)) {
                 if (activeThreads.isEmpty()) {
@@ -178,7 +185,7 @@ public class OperationHandleImpl<T extends Annotation> implements OperationHandl
     public void closeOperation() {
         synchronized (operationLock) {
             for (long threadId : activeThreads) {
-                parent.disassociateThread(threadId);
+                parent.disassociateThread(threadId, this);
             }
             
             activeThreads.clear();

@@ -74,7 +74,7 @@ public class OperationManagerImpl implements OperationManager {
             manager = (SingleOperationManager<T>) children.get(scope.annotationType());
         
             if (manager == null) {
-                manager = new SingleOperationManager<T>(this, scope, locator);
+                manager = new SingleOperationManager<T>(scope, locator);
                 children.put(scope.annotationType(), manager);
             }
         }
@@ -96,22 +96,31 @@ public class OperationManagerImpl implements OperationManager {
     /* (non-Javadoc)
      * @see org.glassfish.hk2.extras.operation.OperationManager#getCurrentOperations()
      */
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Annotation> Set<OperationHandle<T>> getCurrentOperations(T scope) {
+        SingleOperationManager<T> manager;
         synchronized (this) {
-            SingleOperationManager<T> manager = (SingleOperationManager<T>) children.get(scope.annotationType());
+            manager = (SingleOperationManager<T>) children.get(scope.annotationType());
             if (manager == null) return Collections.emptySet();
-            
-            return manager.getAllOperations();
         }
+        
+        return manager.getAllOperations();
     }
     
     /* (non-Javadoc)
      * @see org.glassfish.hk2.extras.operation.OperationManager#getCurrentOperation(java.lang.annotation.Annotation)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends Annotation> OperationHandle<T> getCurrentOperation(T scope) {
-        throw new AssertionError("getCurrentOperation not yet implemented");
+        SingleOperationManager<T> manager;
+        synchronized (this) {
+            manager = (SingleOperationManager<T>) children.get(scope.annotationType());
+            if (manager == null) return null;  
+        }
+        
+        return manager.getCurrentOperationOnThisThread();
     }
 
     /* (non-Javadoc)
@@ -119,7 +128,13 @@ public class OperationManagerImpl implements OperationManager {
      */
     @Override
     public void shutdownAllOperations(Annotation scope) {
-        throw new AssertionError("shutdownAllOperations not yet implemented");
+        SingleOperationManager<?> manager;
+        synchronized (this) {
+            manager = children.remove(scope.annotationType());
+            if (manager == null) return;
+            
+            manager.shutdown();
+        }
         
     }
 

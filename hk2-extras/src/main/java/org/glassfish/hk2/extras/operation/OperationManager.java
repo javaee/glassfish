@@ -104,7 +104,13 @@ public interface OperationManager {
     
     /**
      * This method will suspend all currently open operations on all threads and
-     * then close them.
+     * then close them.  This will also remove all entities associated with
+     * this operation type, including the OperationHandle associated with
+     * this scope from the HK2 locator service registry.  Therefore this
+     * mechanism of shutting down the operations should be used with care,
+     * and would normally only be used when the Operation type can never
+     * be used again.
+     * <p>
      * The scope parameter is normally created with
      * {@link org.glassfish.hk2.api.AnnotationLiteral}
      * 

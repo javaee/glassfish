@@ -43,7 +43,9 @@ import java.lang.annotation.Annotation;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.glassfish.hk2.api.ProxyCtl;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.extras.ExtrasUtilities;
 import org.glassfish.hk2.extras.operation.OperationHandle;
 import org.glassfish.hk2.extras.operation.OperationManager;
@@ -576,7 +578,7 @@ public class OperationsTest {
     /**
      * Tests the getCurrentOperation method on OperationManager
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testGetCurrentOperation() {
         ServiceLocator locator = createLocator(
                 BasicOperationScopeContext.class,
@@ -625,7 +627,7 @@ public class OperationsTest {
     /**
      * Tests the shutdownAllOperations method on OperationManager
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testShutdownAllOperations() {
         ServiceLocator locator = createLocator(
                 BasicOperationScopeContext.class,
@@ -674,6 +676,58 @@ public class OperationsTest {
         Assert.assertEquals(OperationState.CLOSED, second1Operation.getState());
         Assert.assertEquals(OperationState.CLOSED, second2Operation.getState());
         Assert.assertEquals(OperationState.CLOSED, second3Operation.getState());
+    }
+    
+    /**
+     * Tests the shutdownAllOperations method on OperationManager
+     */
+    @Test // @org.junit.Ignore
+    public void testCreateShutdownCreateShutdown() {
+        ServiceLocator locator = createLocator(
+                BasicOperationScopeContext.class,
+                BasicOperationSimpleService.class);
+        
+        OperationManager operationManager = locator.getService(OperationManager.class);
+        
+        BasicOperationSimpleService proxy = locator.getService(BasicOperationSimpleService.class);
+        try {
+            ((ProxyCtl) proxy).__make();
+            Assert.fail("Should not have worked, there is no operation yet");
+        }
+        catch (IllegalStateException ise) {
+            // expected
+        }
+        
+        OperationHandle<BasicOperationScope> basicOperation = operationManager.createAndStartOperation(BASIC_OPERATION_ANNOTATION);
+        
+        Assert.assertNotNull(locator.getService(BasicOperationSimpleService.class).callMe());
+        
+        basicOperation.suspend();
+        
+        proxy = locator.getService(BasicOperationSimpleService.class);
+        try {
+            ((ProxyCtl) proxy).__make();
+            Assert.fail("Should not have worked, there is no operation yet");
+        }
+        catch (IllegalStateException ise) {
+            // expected
+        }
+        
+        basicOperation.resume();
+        
+        Assert.assertNotNull(locator.getService(BasicOperationSimpleService.class).callMe());
+        
+        operationManager.shutdownAllOperations(BASIC_OPERATION_ANNOTATION);
+        
+        proxy = locator.getService(BasicOperationSimpleService.class);
+        try {
+            ((ProxyCtl) proxy).__make();
+            Assert.fail("Should not have worked, there is no operation yet");
+        }
+        catch (IllegalStateException ise) {
+            // expected
+        }
+        
     }
     
     private static class SimpleThreadedFetcher<T extends Annotation> implements Runnable {

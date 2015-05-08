@@ -59,20 +59,19 @@ import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 public class SingleOperationManager<T extends Annotation> {
     private final static String ID_PREAMBLE = "OperationIdentifier(";
     
-    private final OperationManagerImpl parent;
     private final Object operationLock = new Object();
     private final T scope;
     private final HashMap<OperationIdentifier<T>, OperationHandleImpl<T>> openScopes = new HashMap<OperationIdentifier<T>, OperationHandleImpl<T>>();
     private final HashMap<Long, OperationHandleImpl<T>> threadToHandleMap = new HashMap<Long, OperationHandleImpl<T>>();
     private final ServiceLocator locator;
+    private final OperationContext<T> context;
     private long scopedIdentifier;
     private final ActiveDescriptor<?> operationDescriptor;
+    private boolean closed = false;
     
     /* package */ @SuppressWarnings("unchecked")
-    SingleOperationManager(OperationManagerImpl parent,
-            T scope,
+    SingleOperationManager(T scope,
             ServiceLocator locator) {
-        this.parent = parent;
         this.scope = scope;
         this.locator = locator;
         
@@ -87,8 +86,9 @@ public class SingleOperationManager<T extends Annotation> {
         if (found == null) {
             throw new IllegalStateException("Could not find the OperationContext for scope " + scope);
         }
+        context = found;
         
-        found.setOperationManager(this);
+        context.setOperationManager(this);
         
         OperationDescriptor<T> opDesc = new OperationDescriptor<T>(scope, this);
         
@@ -104,6 +104,10 @@ public class SingleOperationManager<T extends Annotation> {
     public OperationHandleImpl<T> createOperation() {
         
         synchronized (operationLock) {
+            if (closed) {
+                throw new IllegalStateException("This manager has been closed");
+            }
+            
             OperationIdentifierImpl<T> id = allocateNewIdentifier();
             OperationHandleImpl<T> created = new OperationHandleImpl<T>(this, id, operationLock, locator);
             
@@ -137,8 +141,11 @@ public class SingleOperationManager<T extends Annotation> {
      * 
      * @param threadId The threadId to disassociate with this handle
      */
-    /* package */ OperationHandleImpl<T> disassociateThread(long threadId) {
-        return threadToHandleMap.remove(threadId);
+    /* package */ void disassociateThread(long threadId, OperationHandleImpl<T> toRemove) {
+        OperationHandleImpl<T> activeOnThread = threadToHandleMap.get(threadId);
+        if (activeOnThread == null || !activeOnThread.equals(toRemove)) return;
+        
+        threadToHandleMap.remove(threadId);
     }
     
     /**
@@ -159,6 +166,7 @@ public class SingleOperationManager<T extends Annotation> {
         long threadId = Thread.currentThread().getId();
         
         synchronized (operationLock) {
+            if (closed) return null;
             return getCurrentOperationOnThisThread(threadId);
         }
     }
@@ -167,10 +175,32 @@ public class SingleOperationManager<T extends Annotation> {
         HashSet<OperationHandle<T>> retVal = new HashSet<OperationHandle<T>>();
         
         synchronized (operationLock) {
+            if (closed) return Collections.emptySet();
+            
             retVal.addAll(openScopes.values());
             
             return Collections.unmodifiableSet(retVal);
         }
-        
+    }
+    
+    /* package */ void shutdown() {
+        synchronized (operationLock) {
+            if (closed) return;
+            closed = true;
+            
+            for (OperationHandleImpl<T> closeMe : openScopes.values()) {
+                closeMe.shutdownByFiat();
+            }
+            
+            openScopes.clear();
+            threadToHandleMap.clear();
+            
+            ServiceLocatorUtilities.removeOneDescriptor(locator, operationDescriptor);
+        }
+    }
+    
+    @Override
+    public String toString() {
+        return "SingleOperationManager(" + scope.annotationType().getName() + ",closed=" + closed + "," + System.identityHashCode(this) + ")";
     }
 }
