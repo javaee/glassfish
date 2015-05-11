@@ -57,5 +57,12 @@ public class Utilities {
         ServiceLocatorUtilities.addClasses(retVal, classes);
         return retVal;
     }
+    
+    public static ServiceLocator getLocatorWithTopics(Class<?>...classes) {
+        ServiceLocator retVal = FACTORY.create(null);
+        ExtrasUtilities.enableTopicDistribution(retVal);
+        ServiceLocatorUtilities.addClasses(retVal, classes);
+        return retVal;
+    }
 
 }

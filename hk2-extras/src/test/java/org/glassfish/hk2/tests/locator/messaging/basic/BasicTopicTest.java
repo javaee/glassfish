@@ -48,11 +48,11 @@ import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.glassfish.hk2.extras.events.internal.TopicDistributionModule;
+import org.glassfish.hk2.tests.extras.internal.Utilities;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ImmediateScopeModule;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
-import org.glassfish.hk2.utilities.TopicDistributionModule;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -88,9 +88,8 @@ public class BasicTopicTest {
      */
     @Test
     public void testEventDistributedToAllSubscribers() {
-        ServiceLocator locator = LocatorHelper.getServiceLocator();
+        ServiceLocator locator = Utilities.getLocatorWithTopics();
         
-        ServiceLocatorUtilities.enableTopicDistribution(locator);
         ServiceLocatorUtilities.enableImmediateScope(locator);
         
         ServiceLocatorUtilities.addClasses(locator, FooPublisher.class,
@@ -127,7 +126,7 @@ public class BasicTopicTest {
      */
     @Test
     public void testEventDistributedToAllSubscribersViaModules() {
-        ServiceLocator locator = LocatorHelper.getServiceLocator();
+        ServiceLocator locator = Utilities.getUniqueLocator();
         
         ServiceLocatorUtilities.bind(locator, new TopicDistributionModule(),
                 new ImmediateScopeModule());
@@ -165,9 +164,7 @@ public class BasicTopicTest {
      */
     @Test
     public void testEventDistributedToAllSubscribersOnOneService() {
-        ServiceLocator locator = LocatorHelper.getServiceLocator();
-        
-        ServiceLocatorUtilities.enableTopicDistribution(locator);
+        ServiceLocator locator = Utilities.getLocatorWithTopics();
         
         ServiceLocatorUtilities.addClasses(locator, FooPublisher.class,
                 PerLookupService.class,
@@ -189,9 +186,7 @@ public class BasicTopicTest {
      */
     @Test
     public void testEventDistributionByType() {
-        ServiceLocator locator = LocatorHelper.getServiceLocator();
-        
-        ServiceLocatorUtilities.enableTopicDistribution(locator);
+        ServiceLocator locator = Utilities.getLocatorWithTopics();
         
         ServiceLocatorUtilities.addClasses(locator, FooPublisher.class,
                 ColorPublisher.class,
@@ -229,9 +224,7 @@ public class BasicTopicTest {
      */
     @Test
     public void testEventDistributionByQualifier() {
-        ServiceLocator locator = LocatorHelper.getServiceLocator();
-        
-        ServiceLocatorUtilities.enableTopicDistribution(locator);
+        ServiceLocator locator = Utilities.getLocatorWithTopics();
         
         ServiceLocatorUtilities.addClasses(locator,
                 ColorPublisher.class,
@@ -269,9 +262,7 @@ public class BasicTopicTest {
      */
     @Test
     public void testDifferentClassFactory() {
-        ServiceLocator locator = LocatorHelper.getServiceLocator();
-        
-        ServiceLocatorUtilities.enableTopicDistribution(locator);
+        ServiceLocator locator = Utilities.getLocatorWithTopics();
         
         ServiceLocatorUtilities.addClasses(locator,
                 FooPublisher.class);
@@ -307,9 +298,8 @@ public class BasicTopicTest {
      */
     @Test @org.junit.Ignore
     public void testUnboundServiceNoLongerGetsNotified() {
-        ServiceLocator locator = LocatorHelper.getServiceLocator();
+        ServiceLocator locator = Utilities.getLocatorWithTopics();
         
-        ServiceLocatorUtilities.enableTopicDistribution(locator);
         ServiceLocatorUtilities.enableImmediateScope(locator);
         
         List<ActiveDescriptor<?>> added = ServiceLocatorUtilities.addClasses(locator, FooPublisher.class,
@@ -354,9 +344,7 @@ public class BasicTopicTest {
      */
     @Test
     public void testDestroyedServiceNoLongerGetsNotified() {
-        ServiceLocator locator = LocatorHelper.getServiceLocator();
-        
-        ServiceLocatorUtilities.enableTopicDistribution(locator);
+        ServiceLocator locator = Utilities.getLocatorWithTopics();
         
         ServiceLocatorUtilities.addClasses(locator, FooPublisher.class,
                 PerLookupSubscriber.class,
@@ -391,9 +379,7 @@ public class BasicTopicTest {
      */
     @Test
     public void testPerLookupDestroyedAfterPassedToSubscriptionMethod() {
-        ServiceLocator locator = LocatorHelper.getServiceLocator();
-        
-        ServiceLocatorUtilities.enableTopicDistribution(locator);
+        ServiceLocator locator = Utilities.getLocatorWithTopics();
         
         ServiceLocatorUtilities.addClasses(locator, FooPublisher.class,
                 PerLookupService.class,
@@ -412,9 +398,7 @@ public class BasicTopicTest {
      */
     @Test
     public void testNeverAnySubscibers() {
-        ServiceLocator locator = LocatorHelper.getServiceLocator();
-        
-        ServiceLocatorUtilities.enableTopicDistribution(locator);
+        ServiceLocator locator = Utilities.getLocatorWithTopics();
         
         ServiceLocatorUtilities.addClasses(locator, ZeroPublisher.class);
         

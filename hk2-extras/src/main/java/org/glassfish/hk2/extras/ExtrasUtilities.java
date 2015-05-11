@@ -41,6 +41,8 @@ package org.glassfish.hk2.extras;
 
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.messaging.TopicDistributionService;
+import org.glassfish.hk2.extras.events.internal.DefaultTopicDistributionService;
 import org.glassfish.hk2.extras.hk2bridge.internal.Hk2BridgeImpl;
 import org.glassfish.hk2.extras.interception.internal.DefaultInterceptionService;
 import org.glassfish.hk2.extras.operation.internal.OperationManagerImpl;
@@ -189,10 +191,16 @@ public class ExtrasUtilities {
      *
      * @param locator The service locator to enable topic distribution on.  May not be null
      */
-    @SuppressWarnings("deprecation")
     public static void enableTopicDistribution(ServiceLocator locator) {
         // This is here until we move the topic distribution to the extras jar
-        ServiceLocatorUtilities.enableTopicDistribution(locator);
+        if (locator == null) throw new IllegalArgumentException();
+
+        if (locator.getService(TopicDistributionService.class, TopicDistributionService.HK2_DEFAULT_TOPIC_DISTRIBUTOR) != null) {
+            // Will not add it a second time
+            return;
+        }
+
+        ServiceLocatorUtilities.addClasses(locator, DefaultTopicDistributionService.class);
     }
 
 }

@@ -41,8 +41,10 @@ package org.jvnet.testing.hk2testng;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.extras.ExtrasUtilities;
 import org.glassfish.hk2.utilities.Binder;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.testng.IConfigurable;
@@ -119,7 +121,7 @@ public class HK2TestListenerAdapter implements IExecutionListener, IHookable, IC
       }
 
       if (hk2.enableEvents()) {
-          ServiceLocatorUtilities.enableTopicDistribution(locator);
+          ExtrasUtilities.enableTopicDistribution(locator);
         }
 
     }

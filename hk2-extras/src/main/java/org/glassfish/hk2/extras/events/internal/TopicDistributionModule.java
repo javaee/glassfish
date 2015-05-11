@@ -37,9 +37,8 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.utilities;
+package org.glassfish.hk2.extras.events.internal;
 
-import org.glassfish.hk2.internal.DefaultTopicDistributionService;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 
 /**

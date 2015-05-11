@@ -44,6 +44,7 @@ import junit.framework.Assert;
 import org.glassfish.examples.events.threaded.ThreadedEventDistributor;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.extras.ExtrasUtilities;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Test;
 
@@ -67,7 +68,7 @@ public class ThreadedTest {
     @Test
     public void testEventDeliveredOnADifferentThread() throws InterruptedException {
         // Adds in the default event implementation
-        ServiceLocatorUtilities.enableTopicDistribution(locator);
+        ExtrasUtilities.enableTopicDistribution(locator);
         
         ServiceLocatorUtilities.addClasses(locator,
                 EventPublisherService.class,

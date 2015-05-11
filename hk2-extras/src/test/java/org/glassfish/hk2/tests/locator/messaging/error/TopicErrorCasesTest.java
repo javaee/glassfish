@@ -44,11 +44,10 @@ import javax.inject.Singleton;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.messaging.Topic;
-import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.glassfish.hk2.tests.extras.internal.Utilities;
 import org.glassfish.hk2.utilities.DefaultTopicDistributionErrorService;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -65,9 +64,7 @@ public class TopicErrorCasesTest {
      */
     @Test
     public void testSubscriberThrows() {
-        ServiceLocator locator = LocatorHelper.getServiceLocator();
-        
-        ServiceLocatorUtilities.enableTopicDistribution(locator);
+        ServiceLocator locator = Utilities.getLocatorWithTopics();
         
         ServiceLocatorUtilities.addClasses(locator, SubscriberThrowsException.class,
                 Subscriber.class,

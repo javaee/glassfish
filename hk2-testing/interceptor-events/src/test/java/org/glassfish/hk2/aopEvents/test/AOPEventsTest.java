@@ -48,6 +48,7 @@ import org.glassfish.hk2.aopEvents.MethodInterceptorImpl;
 import org.glassfish.hk2.aopEvents.PackageEventSubscriberService;
 import org.glassfish.hk2.aopEvents.PrivateEventSubscriberService;
 import org.glassfish.hk2.aopEvents.ProtectedEventSubscriberService;
+import org.glassfish.hk2.extras.ExtrasUtilities;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Before;
@@ -65,7 +66,7 @@ public class AOPEventsTest extends HK2Runner {
     public void before() {
         super.before();
         
-        ServiceLocatorUtilities.enableTopicDistribution(testLocator);
+        ExtrasUtilities.enableTopicDistribution(testLocator);
     }
     
     /**
