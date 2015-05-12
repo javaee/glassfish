@@ -423,7 +423,8 @@ public class ConfigTest {
     
     /**
      * Ensures that even the non-standard format of metadata from the hk2-config subsystem can
-     * be not-read from the service in addClasses
+     * be read from the service in addClasses.  addClasses will now read both forms, if the
+     * documented form fails, it'll try the hk2-config form
      */
     @Test
     public void testAddClassOfInjector() {
@@ -432,7 +433,7 @@ public class ConfigTest {
         List<ActiveDescriptor<?>> added = ServiceLocatorUtilities.addClasses(locator, EjbContainerAvailabilityInjector.class);
         ActiveDescriptor<?> descriptor = added.get(0);
         
-        Assert.assertNull(ServiceLocatorUtilities.getOneMetadataField(descriptor, "target"));
+        Assert.assertEquals("org.jvnet.hk2.config.test.EjbContainerAvailability", ServiceLocatorUtilities.getOneMetadataField(descriptor, "target"));
         
     }
     

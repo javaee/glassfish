@@ -77,7 +77,11 @@ public interface JustInTimeInjectionResolver {
      * in failedInjectionPoint.
      * <p>
      * If this method throws an exception that exception will be added to the set of
-     * exceptions in the MultiException that may be thrown from the injection resolver
+     * exceptions in the MultiException that may be thrown from the injection resolver.
+     * <p>
+     * This method can be called on multiple threads with different or the same
+     * {@link Injectee}.  Therefore care must be taken in this method to not add
+     * the same descriptor more than once
      *
      * @param failedInjectionPoint The injection point that failed to resolve
      * @return true if this method has added a descriptor to the {@link ServiceLocator}

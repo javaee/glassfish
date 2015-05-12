@@ -691,6 +691,8 @@ public class Utilities {
                 // If we can not read it, someone else may have
                 // a different metadata parser
                 metadata.clear();
+                
+                ReflectionHelper.parseServiceMetadataString(serviceMetadata, metadata);
             }
         }
         
