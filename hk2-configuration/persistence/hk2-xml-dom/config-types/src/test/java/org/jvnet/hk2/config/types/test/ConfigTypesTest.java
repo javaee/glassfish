@@ -67,10 +67,10 @@ public class ConfigTypesTest {
         
         Assert.assertNull(locator.getService(ConfigInjector.class));
         
-        HK2DomConfigTypesUtilities.enableHK2DomConfigurationConfigTypes(locator);
+        HK2DomConfigTypesUtilities.enableHK2DomConfigurationConfigTypes(locator, null);
         
         // Twice to test idempotence
-        HK2DomConfigTypesUtilities.enableHK2DomConfigurationConfigTypes(locator);
+        HK2DomConfigTypesUtilities.enableHK2DomConfigurationConfigTypes(locator, null);
         
         List<ActiveDescriptor<?>> injectors = locator.getDescriptors(BuilderHelper.createContractFilter(ConfigInjector.class.getName()));
         Assert.assertEquals(1, injectors.size());
@@ -78,6 +78,5 @@ public class ConfigTypesTest {
         ActiveDescriptor<?> propInjectDesc = injectors.get(0);
         
         Assert.assertEquals("org.jvnet.hk2.config.types.PropertyInjector", propInjectDesc.getImplementation());
-        
     }
 }
