@@ -49,6 +49,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.nio.file.spi.FileSystemProvider;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -96,7 +103,7 @@ public class InhabitantsGeneratorTest {
     private final static String NEGATIVE_CLASS_DIRECTORY = "negative";
     private final static String JAR_FILE = "gendir.jar";
     private final static File OUTJAR_FILE = new File("outgendir.jar");
-    private final static File COPIED_INPUT_JAR = new File("gendirCopy.jar");
+    private final static String COPIED_INPUT_JAR_NAME = "gendirCopy.jar";
     
     private final static String META_INF_NAME = "META-INF";
     private final static String INHABITANTS = "hk2-locator";
@@ -579,6 +586,7 @@ public class InhabitantsGeneratorTest {
     private File gendirDirectory;
     private File negativeDirectory;
     private File gendirJar;
+    private File gendirCopyJar;
     private File inhabitantsDirectory;
     
     private static void copyFile(File to, File from) throws IOException {
@@ -611,12 +619,13 @@ public class InhabitantsGeneratorTest {
             gendirDirectory = new File(mavenClassesDir, CLASS_DIRECTORY);
             negativeDirectory = new File(mavenClassesDir, NEGATIVE_CLASS_DIRECTORY);
             gendirJar = new File(mavenClassesDir, JAR_FILE);
-            
+            gendirCopyJar = new File(mavenClassesDir, COPIED_INPUT_JAR_NAME);
         }
         else {
             gendirDirectory = new File(CLASS_DIRECTORY);
             negativeDirectory = new File(NEGATIVE_CLASS_DIRECTORY);
             gendirJar = new File(JAR_FILE);
+            gendirCopyJar = new File(COPIED_INPUT_JAR_NAME);
         }
         
         File metaInfFile = new File(gendirDirectory, META_INF_NAME);
@@ -785,15 +794,21 @@ public class InhabitantsGeneratorTest {
     /**
      * Tests generating into a jar file
      * @throws IOException On failure
+     * @throws InterruptedException 
      */
     @Test
-    public void testNoSwapJarGeneration() throws IOException {
-        copyFile(COPIED_INPUT_JAR, gendirJar);
+    public void testNoSwapNonDefaultJarGeneration() throws IOException, InterruptedException {
+        if (gendirCopyJar.exists()) {
+            // Start with a clean plate
+            Assert.assertTrue(gendirCopyJar.delete());
+        }
+        
+        copyFile(gendirCopyJar, gendirJar);
         
         String argv[] = new String[5];
         
         argv[0] = FILE_ARGUMENT;
-        argv[1] = COPIED_INPUT_JAR.getAbsolutePath();
+        argv[1] = gendirCopyJar.getAbsolutePath();
         
         argv[2] = NOSWAP_ARGUMENT;
         
@@ -803,39 +818,34 @@ public class InhabitantsGeneratorTest {
         Assert.assertTrue("Could not find file " + gendirJar.getAbsolutePath(),
                 gendirJar.exists());
         
-        if (OUTJAR_FILE.exists()) {
-            // Start with a clean plate
-            Assert.assertTrue(OUTJAR_FILE.delete());
-        }
-        
-        JarFile jar = null;
+        int result = HabitatGenerator.embeddedMain(argv);
+        Assert.assertEquals("Got error code: " + result, 0, result);
+            
+        Assert.assertTrue("did not generate JAR " + gendirCopyJar.getAbsolutePath(),
+                gendirCopyJar.exists());
+            
+        URI jarURI = URI.create("jar:" + gendirCopyJar.toURI());
+            
+        InputStream is = null;
+        FileSystem fileSystem = FileSystems.newFileSystem(jarURI, new HashMap<String, Object>());
         try {
-            int result = HabitatGenerator.embeddedMain(argv);
-            Assert.assertEquals("Got error code: " + result, 0, result);
-            
-            Assert.assertTrue("did not generate JAR " + COPIED_INPUT_JAR.getAbsolutePath(),
-                    COPIED_INPUT_JAR.exists());
-            
-            jar = new JarFile(COPIED_INPUT_JAR);
-            ZipEntry entry = jar.getEntry(NON_DEFAULT_INHABITANT_NAME);
-            Assert.assertNotNull(entry);
-            
-            InputStream is = jar.getInputStream(entry);
-            
+            Path path = fileSystem.getPath("/" + META_INF_NAME, INHABITANTS, NON_DEFAULT_NAME);
+                
+            Assert.assertTrue(Files.isReadable(path));
+                
+            is = Files.newInputStream(path, StandardOpenOption.READ);
+                
             Set<DescriptorImpl> generatedImpls = getAllDescriptorsFromInputStream(is);
-            
+                
             checkDescriptors(generatedImpls);
+                
         }
         finally {
-            if (jar != null) {
-                jar.close();
-            }
-            
-            if (COPIED_INPUT_JAR.exists()) {
-                // Clean up after test
-                COPIED_INPUT_JAR.delete();
-            }
+            if (is != null) is.close();
+                
+            fileSystem.close();
         }
+        
     }
     
     /**
