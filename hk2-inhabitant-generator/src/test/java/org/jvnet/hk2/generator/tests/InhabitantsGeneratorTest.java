@@ -96,6 +96,7 @@ public class InhabitantsGeneratorTest {
     private final static String NEGATIVE_CLASS_DIRECTORY = "negative";
     private final static String JAR_FILE = "gendir.jar";
     private final static File OUTJAR_FILE = new File("outgendir.jar");
+    private final static File COPIED_INPUT_JAR = new File("gendirCopy.jar");
     
     private final static String META_INF_NAME = "META-INF";
     private final static String INHABITANTS = "hk2-locator";
@@ -103,6 +104,7 @@ public class InhabitantsGeneratorTest {
     private final static String OTHER = "other";
     
     private final static String ZIP_FILE_INHABITANT_NAME = "META-INF/hk2-locator/default";
+    private final static String NON_DEFAULT_INHABITANT_NAME = "META-INF/hk2-locator/non-default-name";
     
     private final static String MAVEN_CLASSES_DIR = "test-classes";
     
@@ -579,6 +581,22 @@ public class InhabitantsGeneratorTest {
     private File gendirJar;
     private File inhabitantsDirectory;
     
+    private static void copyFile(File to, File from) throws IOException {
+        FileInputStream fis = new FileInputStream(from);
+        FileOutputStream fos = new FileOutputStream(to);
+        
+        byte buffer[] = new byte[2000];
+        int read;
+        while ((read = fis.read(buffer)) >= 0) {
+            if (read > 0) {
+                fos.write(buffer, 0, read);
+            }
+        }
+        
+        fos.close();
+        fis.close();
+    }
+    
     /**
      * Setup before every test
      */
@@ -761,6 +779,62 @@ public class InhabitantsGeneratorTest {
             
             // The test should be clean
             OUTJAR_FILE.delete();
+        }
+    }
+    
+    /**
+     * Tests generating into a jar file
+     * @throws IOException On failure
+     */
+    @Test
+    public void testNoSwapJarGeneration() throws IOException {
+        copyFile(COPIED_INPUT_JAR, gendirJar);
+        
+        String argv[] = new String[5];
+        
+        argv[0] = FILE_ARGUMENT;
+        argv[1] = COPIED_INPUT_JAR.getAbsolutePath();
+        
+        argv[2] = NOSWAP_ARGUMENT;
+        
+        argv[3] = LOCATOR_ARGUMENT;
+        argv[4] = NON_DEFAULT_NAME;
+        
+        Assert.assertTrue("Could not find file " + gendirJar.getAbsolutePath(),
+                gendirJar.exists());
+        
+        if (OUTJAR_FILE.exists()) {
+            // Start with a clean plate
+            Assert.assertTrue(OUTJAR_FILE.delete());
+        }
+        
+        JarFile jar = null;
+        try {
+            int result = HabitatGenerator.embeddedMain(argv);
+            Assert.assertEquals("Got error code: " + result, 0, result);
+            
+            Assert.assertTrue("did not generate JAR " + COPIED_INPUT_JAR.getAbsolutePath(),
+                    COPIED_INPUT_JAR.exists());
+            
+            jar = new JarFile(COPIED_INPUT_JAR);
+            ZipEntry entry = jar.getEntry(NON_DEFAULT_INHABITANT_NAME);
+            Assert.assertNotNull(entry);
+            
+            InputStream is = jar.getInputStream(entry);
+            
+            Set<DescriptorImpl> generatedImpls = getAllDescriptorsFromInputStream(is);
+            
+            checkDescriptors(generatedImpls);
+        }
+        finally {
+            if (jar != null) {
+                jar.close();
+            }
+            
+            if (COPIED_INPUT_JAR.exists()) {
+                // Clean up after test
+                COPIED_INPUT_JAR.delete();
+            }
         }
     }
     
