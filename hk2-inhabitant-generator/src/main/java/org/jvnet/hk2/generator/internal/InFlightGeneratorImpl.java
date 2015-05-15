@@ -78,6 +78,8 @@ public class InFlightGeneratorImpl implements InFlightGenerator {
             }
         }
         
+        utilities.close();
+        
         if (retVal.isEmpty()) return;
         
         PrintWriter writer = new PrintWriter(inhabitantFile);
