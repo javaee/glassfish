@@ -89,6 +89,7 @@ public class GeneratorRunner {
     private final boolean noSwap;
     private final String outputDirectory;  // Not used in the JAR case
     private final boolean includeDate;
+    private final boolean outJarIsInJar;
 
     /**
      * This initializes the GeneratorRunner with the values needed to run
@@ -119,6 +120,7 @@ public class GeneratorRunner {
         this.outputDirectory = outputDirectory;
         utilities = new Utilities(verbose, searchPath);
         this.includeDate = includeDate;
+        outJarIsInJar = fileOrDirectory.equals(outjarName);
         
         if (verbose) {
             System.out.println("HabitatGenerator: inputFile=" + fileOrDirectory + " outjarName=" + outjarName +
@@ -148,7 +150,7 @@ public class GeneratorRunner {
         }
         else {
             allDescriptors = findAllServicesFromJar(toInspect);
-            if (noSwap) {
+            if (noSwap && outJarIsInJar) {
                 writeToJarNoSwap(toInspect, allDescriptors);
             }
             else {
