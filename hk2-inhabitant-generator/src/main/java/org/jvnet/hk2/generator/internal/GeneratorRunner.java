@@ -150,6 +150,10 @@ public class GeneratorRunner {
         }
         else {
             allDescriptors = findAllServicesFromJar(toInspect);
+            
+            // Do this here to close all FDs so that on Windows we can rewrite the file
+            utilities.close();
+            
             if (noSwap && outJarIsInJar) {
                 writeToJarNoSwap(toInspect, allDescriptors);
             }
@@ -158,6 +162,7 @@ public class GeneratorRunner {
             }
         }
         
+        utilities.close();
     }
     
     private void writeToDirectory(List<DescriptorImpl> allDescriptors) throws IOException {

@@ -109,6 +109,7 @@ public class Utilities {
     
     private final boolean verbose;
     private final List<File> searchPath = new LinkedList<File>();
+    private final Map<File, JarFile> openedJarFiles = new HashMap<File, JarFile>();
     
     private final static String CONFIGURED_CONTRACT = "org.jvnet.hk2.config.Configured";
     
@@ -368,7 +369,11 @@ public class Utilities {
                 }
             }
             else {
-                JarFile jar = new JarFile(searchHere);
+                JarFile jar = openedJarFiles.get(searchHere);
+                if (jar == null) {
+                    jar = new JarFile(searchHere);
+                    openedJarFiles.put(searchHere, jar);
+                }
             
                 String entryName = dotDelimitedName.replace('.', '/') + DOT_CLASS;
                 ZipEntry entry = jar.getEntry(entryName);
@@ -1172,5 +1177,18 @@ public class Utilities {
         }
         
         return new LinkedList<DescriptorImpl>(retVal);
+    }
+    
+    public void close() {
+        for (JarFile closeMe : openedJarFiles.values()) {
+            try {
+                closeMe.close();
+            }
+            catch (IOException ioe) {
+                // keep on truckin
+            }
+        }
+        
+        openedJarFiles.clear();
     }
 }
