@@ -71,6 +71,7 @@ public class HK2DomConfigTypesUtilities {
     private final static String DESCRIPTION_FIELD = "@description";
     private final static String KEYED_AS = "keyed-as";
     private final static String TARGET = "target";
+    private final static String KEY = "key";
     
     /**
      * This method enables the HK2 Dom based XML configuration parsing for
@@ -132,13 +133,16 @@ public class HK2DomConfigTypesUtilities {
                 in(Singleton.class.getName()).
                 named(NAME).
                 qualifiedBy(INJECTION_TARGET_QUALIFIER).
-                qualifiedBy(Named.class.getName()).
                 has(NAME_FIELD, namedList).
                 has(VALUE_FIELD, valueList).
                 has(KEYED_AS, keyedAsList).
                 has(TARGET, targetList).
                 has(DESCRIPTION_FIELD, descriptionList).
+                has(KEY, NAME_FIELD).
                 build();
+        
+        // A strangeness of using name from @Service
+        injectorDescriptor.removeQualifier(Named.class.getName());
        
         if (loader != null) {
             injectorDescriptor.setLoader(loader);
