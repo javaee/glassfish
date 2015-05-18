@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.glassfish.hk2</groupId>
         <artifactId>caching-aop-example</artifactId>
-        <version>2.4.0-b24</version>
+        <version>2.4.0-b25-SNAPSHOT</version>
     </parent>
 
     <artifactId>caching-aop-example-system</artifactId>
