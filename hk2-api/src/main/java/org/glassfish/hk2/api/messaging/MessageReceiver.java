@@ -53,10 +53,10 @@ import org.glassfish.hk2.api.Metadata;
 
 /**
  * This qualifier must be placed on any hk2 descriptor that can
- * receive events.  This includes event receiver classes automatically
+ * receive messages.  This includes message receiver classes automatically
  * analyzed by hk2, or any {@link org.glassfish.hk2.api.Factory#provide()}
  * methods automatically analyzed by hk2 or any user-defined
- * {@link org.glassfish.hk2.api.Descriptor} who can receive events
+ * {@link org.glassfish.hk2.api.Descriptor} who can receive messages
  * 
  * @author jwells
  *
@@ -65,12 +65,12 @@ import org.glassfish.hk2.api.Metadata;
 @Retention(RUNTIME)
 @Qualifier
 @Target({TYPE, METHOD})
-public @interface EventReceiver {
-    public static final String EVENT_RECEIVER_TYPES = "org.glassfish.hk2.messaging.eventReceiverTypes";
+public @interface MessageReceiver {
+    public static final String EVENT_RECEIVER_TYPES = "org.glassfish.hk2.messaging.messageReceiverTypes";
     
     /**
-     * A list of event types that this service may receive.  The
-     * default value of an empty array represents any event type.
+     * A list of message types that this service may receive.  The
+     * default value of an empty array represents any message type.
      * Be warned that if the default value is used that any event
      * being fired will cause the descriptor with this qualifier
      * to get reified (classloaded) which may be expensive.  In order
@@ -79,7 +79,7 @@ public @interface EventReceiver {
      * receive
      * 
      * @return A list of the classes that might be received as
-     * topic events.  If the empty set then this class might
+     * topic messages.  If the empty set then this class might
      * receive any topic event
      */
     @Metadata(EVENT_RECEIVER_TYPES)

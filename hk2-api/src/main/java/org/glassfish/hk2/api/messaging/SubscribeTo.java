@@ -47,8 +47,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * This annotation is put onto one parameter of a method to indicated that
- * this method should be called whenever a Topic sends a message.
+ * This annotation is put onto one parameter of a method to indicate that
+ * this method should be called whenever a Topic sends a message.  Any
+ * class that is to receive topic messages must have the
+ * {@link MessageReceiver} qualifier on it as well as use this annotation
+ * to mark the specific method to be injected into
  * <p>
  * There may be only one parameter of the method annotated with this
  * annotation.  All of the other parameters of the method are normal
