@@ -45,7 +45,7 @@
     <parent>
         <groupId>org.glassfish.hk2</groupId>
         <artifactId>hk2-xml-dom</artifactId>
-        <version>2.4.0-b24-SNAPSHOT</version>
+        <version>2.4.0-b24</version>
     </parent>
 
     <artifactId>config-types</artifactId>
