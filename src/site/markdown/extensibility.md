@@ -12,14 +12,15 @@ from version 1.x of HK2 has been replaced with a new interface called
 HK2 has many features for customizing the system.  This page is intended to give an
 overview of each feature.  Among the set of HK2 features are:
 
-+ [Events](extensibility.html#Events)
 + [Adding a Scope and Context to the system](extensibility.html#Adding_a_Scope_and_Context_to_the_system)
 + [PerThread Scope](extensibility.html#PerThread_Scope)
 + [InheritableThread Scope](extensibility.html#InheritableThread_Scope)
++ [Security](extensibility.html#Security)
 + [Proxies](extensibility.html#Proxies)
-+ [Dealing with ClassLoading issues](extensibility.html#)
-+ [Custom Injection Resolvers](extensibility.html#aCustom_Injection_Resolvers)
-+ [Validation](extensibility.html#Validation)
++ [ClassLoading](extensibility.html#ClassLoading)
++ [Custom Injection Resolvers](extensibility.html#Custom_Injection_Resolvers)
++ [Just in Time Injection Resolver](extensibility.html#Just_in_Time_Injection_Resolver)
++ [Events](extensibility.html#Events)
 + [Instance Lifecycle](extensibility.html#Instance_Lifecycle)
 + [Interception](extensibility.html#Interception)
 + [Dynamic Configuration Listeners](extensibility.html#Dynamic_Configuration_Listeners)
@@ -168,7 +169,7 @@ public class AnotherService {
 }
 ```java
 
-### Proxying within the same scope
+#### Proxying within the same scope
 
 By default if a service is proxiable then it will be proxied even when being injected into other services within the same scope.
 This allows for the lazy use case.  However, it is sometimes the case that it is counter-productive to proxy services when
@@ -197,7 +198,7 @@ public class ExpensiveRequestService {
 }
 ```java
 
-### Dealing with ClassLoading issues
+### ClassLoading
 
 Classloading is an interesting challenge in any Java environment.  HK2 defers classloading as long as possible, but at some
 point, it must get access to the true class in order to create and inject instances.  At that moment, HK2 will attempt
@@ -234,7 +235,18 @@ allows automatic analysis of classes using the custom [InjectionResolver][inject
 
 This [example][custom-resolver-example] adds a custom injection resolver that customizes the default JSR-330 injection resolver.
 
-### Validation
+### Just in Time Injection Resolver
+
+There are times when the set of services to be injected is not completely known before the system is booted.  In
+these cases it may be useful to use a [Just In Time Injection Resolver][justintimeinjectionresolver].  The
+[Just In Time Injection Resolver][justintimeinjectionresolver] is an hk2 service that is called whenever the
+system cannot find a suitable service for a given [Injection Point][injectee].  If the
+[Just In Time Injection Resolver][justintimeinjectionresolver] service knows how to find the service then
+it can add the service to the ServiceLocator and tell hk2 to look again for the service.  A good example
+of using this would be when retrieving services from a remote system, or from some other service oriented
+system such as OSGi, Spring or Guice.
+
+### Security
 
 Certain operations that are performed by the users of HK2 can be validated.  Validation can either
 allow or deny the operation in question.  The operations that can be validated are adding a
@@ -321,10 +333,10 @@ public abstract class GenericService {
 
 ### ServiceLocator to ServiceLocator Bridge
 
-It is possible to import all the [NORMAL] (non-[LOCAL]) services from one ServiceLocator into
+It is possible to import all the [NORMAL] services from one ServiceLocator into
 another ServiceLocator as long as the locators do not have a parent/child relationship.  You do
 this be creating a ServiceLocator bridge between the two ServiceLocators.  This is done using
-the [ExtrasUtilities.bridgeServiceLocator][bridgeservicelocator] method in the optional hk2-extras module.
+the [bridgeServiceLocator][bridgeservicelocator] method in the optional hk2-extras module.
 
 Bridges are one-way and dynamic.  Suppose you have a ServiceLocator named Foo and have bridged
 its services into the Bar ServiceLocator.  If you add a service to the Foo ServiceLocator that service
@@ -337,7 +349,7 @@ service locators have bridges going in both directions then it will appear that 
 have the same set of [NORMAL] services.
 
 A bridge between two service locators is torn down by using the method
-[ExtrasUtilities.unbridgeServiceLocator][unbridgeservicelocator] or by shutting down the ServiceLocator
+[unbridgeServiceLocator][unbridgeservicelocator] or by shutting down the ServiceLocator
 supplying the services.
 
 ### Error Handling
@@ -396,8 +408,9 @@ Using the [ErrorService][errorservice] can be a convenient place to standardize 
 [aopdefault]: aop-default.html
 [events]: events.html
 [threaded-events-example]: threaded-events-example.html
+[bridgeservicelocator]: apidocs/org/glassfish/hk2/extras/ExtrasUtilities.html#bridgeServiceLocator(org.glassfish.hk2.api.ServiceLocator,org.glassfish.hk2.api.ServiceLocator)
 [errorservice]: apidocs/org/glassfish/hk2/api/ErrorService.html
-[bridgeservicelocator]: apidocs/org/glassfish/hk2/extras/ExtrasUtilities.html#bridgeServiceLocator(org.glassfish.hk2.api.ServiceLocator, org.glassfish.hk2.api.ServiceLocator)
-[unbridgeservicelocator]: apidocs/org/glassfish/hk2/extras/ExtrasUtilities.html#unbridgeServiceLocator(org.glassfish.hk2.api.ServiceLocator, org.glassfish.hk2.api.ServiceLocator)
+[unbridgeservicelocator]: apidocs/org/glassfish/hk2/extras/ExtrasUtilities.html#unbridgeServiceLocator(org.glassfish.hk2.api.ServiceLocator,org.glassfish.hk2.api.ServiceLocator)
 [NORMAL]: apidocs/org/glassfish/hk2/api/DescriptorVisibility.html#NORMAL
-[LOCAL]: apidocs/org/glassfish/hk2/api/DescriptorVisibility.html#LOCAL
+[justintimeinjectionresolver]: apidocs/org/glassfish/hk2/api/JustInTimeInjectionResolver.html
+[injectee]: apidocs/org/glassfish/hk2/api/Injectee.html
