@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,54 +37,50 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.api;
+package org.glassfish.hk2.xml.test.basicdom;
 
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.configuration.hub.api.ManagerUtilities;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
-import org.glassfish.hk2.xml.internal.DomXmlServiceImpl;
-import org.glassfish.hk2.xml.internal.XmlServiceImpl;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import javax.inject.Qualifier;
 
 /**
- * Useful utilities for initializing the HK2 XmlService
+ * This annotation has one of everything
  * 
  * @author jwells
+ *
  */
-public class XmlServiceUtilities {
-
-    /**
-     * Enables the Hk2 XmlService in the given locator.  Will
-     * also enable the HK2 Configuration Hub if the hub has
-     * not already been started.  This operation is idempotent
-     * in that if the XmlService is already available in the
-     * given locator then this method does nothing
-     * 
-     * @param locator The non-null locator to which to add
-     * the {@link XmlService}
-     */
-    public static void enableXmlService(ServiceLocator locator) {
-        if (locator.getService(XmlService.class) != null) return;
-        
-        ManagerUtilities.enableConfigurationHub(locator);
-        
-        ServiceLocatorUtilities.addClasses(locator, XmlServiceImpl.class);
-    }
+@Qualifier
+@Retention(RUNTIME)
+@Target( { TYPE, METHOD, FIELD, PARAMETER })
+public @interface EverythingBagel {
+    public byte byteValue();
+    public boolean booleanValue();
+    public char charValue();
+    public short shortValue();
+    public int intValue();
+    public long longValue();
+    public float floatValue();
+    public double doubleValue();
+    public GreekEnum enumValue();
+    public String stringValue();
+    public Class<?> classValue();
     
-    /**
-     * Enables the Hk2 XmlService in the given locator.  Will
-     * also enable the HK2 Configuration Hub if the hub has
-     * not already been started.  This operation is idempotent
-     * in that if the XmlService is already available in the
-     * given locator then this method does nothing
-     * 
-     * @param locator The non-null locator to which to add
-     * the {@link XmlService}
-     */
-    public static void enableDomXmlService(ServiceLocator locator) {
-        if (locator.getService(XmlService.class) != null) return;
-        
-        ManagerUtilities.enableConfigurationHub(locator);
-        
-        ServiceLocatorUtilities.addClasses(locator, DomXmlServiceImpl.class);
-    }
+    public byte[] byteArrayValue();
+    public boolean[] booleanArrayValue();
+    public char[] charArrayValue();
+    public short[] shortArrayValue();
+    public int[] intArrayValue();
+    public long[] longArrayValue();
+    public float[] floatArrayValue();
+    public double[] doubleArrayValue();
+    public GreekEnum[] enumArrayValue();
+    public String[] stringArrayValue();
+    public Class<?>[] classArrayValue();
 }
