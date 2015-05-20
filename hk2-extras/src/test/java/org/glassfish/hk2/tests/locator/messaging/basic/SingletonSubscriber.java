@@ -41,13 +41,14 @@ package org.glassfish.hk2.tests.locator.messaging.basic;
 
 import javax.inject.Inject;
 
+import org.glassfish.hk2.api.messaging.MessageReceiver;
 import org.glassfish.hk2.api.messaging.SubscribeTo;
 import org.jvnet.hk2.annotations.Service;
 
 /**
  * @author jwells
  */
-@Service
+@Service @MessageReceiver
 public class SingletonSubscriber {
     @Inject
     private PerLookupSubscriber dependent;

@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.aopEvents;
 
+import org.glassfish.hk2.api.messaging.MessageReceiver;
 import org.glassfish.hk2.api.messaging.SubscribeTo;
 import org.jvnet.hk2.annotations.Service;
 
@@ -46,7 +47,7 @@ import org.jvnet.hk2.annotations.Service;
  * @author jwells
  *
  */
-@Service
+@Service @MessageReceiver
 public class PrivateEventSubscriberService {
     private Event lastEvent;
     

@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.tests.locator.messaging.basic;
 
+import org.glassfish.hk2.api.messaging.MessageReceiver;
 import org.glassfish.hk2.api.messaging.SubscribeTo;
 
 /**
@@ -46,6 +47,7 @@ import org.glassfish.hk2.api.messaging.SubscribeTo;
  * @author jwells
  *
  */
+@MessageReceiver
 public class DifferentTypesSubscriber {
     private int fooValue;
     private int barValue;

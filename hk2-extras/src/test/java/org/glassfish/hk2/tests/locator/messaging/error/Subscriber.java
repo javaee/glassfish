@@ -41,13 +41,14 @@ package org.glassfish.hk2.tests.locator.messaging.error;
 
 import javax.inject.Singleton;
 
+import org.glassfish.hk2.api.messaging.MessageReceiver;
 import org.glassfish.hk2.api.messaging.SubscribeTo;
 
 /**
  * @author jwells
  *
  */
-@Singleton
+@Singleton @MessageReceiver
 public class Subscriber {
     private int numEvents;
     

@@ -44,6 +44,7 @@ import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Self;
+import org.glassfish.hk2.api.messaging.MessageReceiver;
 import org.glassfish.hk2.api.messaging.SubscribeTo;
 import org.junit.Assert;
 import org.jvnet.hk2.annotations.Optional;
@@ -53,7 +54,7 @@ import org.jvnet.hk2.annotations.Optional;
  * 
  * @author jwells
  */
-@Singleton
+@Singleton @MessageReceiver
 public class SubscriberWithInjectionPoints {
     private boolean singletonInjectionPointCalled = false;
     private boolean perLookupInjectionPointCalled = false;

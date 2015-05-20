@@ -39,6 +39,7 @@
  */
 package org.jvnet.testing.hk2testng.service.impl;
 
+import org.glassfish.hk2.api.messaging.MessageReceiver;
 import org.glassfish.hk2.api.messaging.SubscribeTo;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.testing.hk2testng.service.Event;
@@ -48,7 +49,7 @@ import org.jvnet.testing.hk2testng.service.EventReceiverService;
  * @author jwells
  *
  */
-@Service
+@Service @MessageReceiver
 public class EventReceiverServiceImpl implements EventReceiverService {
     private Event lastEvent;
 

@@ -41,6 +41,7 @@ package org.glassfish.examples.events.threaded.tests;
 
 import javax.inject.Singleton;
 
+import org.glassfish.hk2.api.messaging.MessageReceiver;
 import org.glassfish.hk2.api.messaging.SubscribeTo;
 import org.jvnet.hk2.annotations.Service;
 
@@ -51,7 +52,7 @@ import org.jvnet.hk2.annotations.Service;
  * @author jwells
  *
  */
-@Service @Singleton
+@Service @Singleton @MessageReceiver
 public class EventSubscriberService {
     private final Object lock = new Object();
     private Long eventThreadId = null;

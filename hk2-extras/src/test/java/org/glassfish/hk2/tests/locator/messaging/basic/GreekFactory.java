@@ -43,6 +43,7 @@ import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.messaging.MessageReceiver;
 
 /**
  * @author jwells
@@ -57,7 +58,7 @@ public class GreekFactory implements Factory<Greek> {
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Factory#provide()
      */
-    @Override @PerLookup
+    @Override @PerLookup @MessageReceiver
     public Greek provide() {
         cycler = ((cycler + 1) % MAX);
         

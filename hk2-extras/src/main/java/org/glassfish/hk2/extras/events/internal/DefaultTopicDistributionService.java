@@ -62,6 +62,7 @@ import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.AOPProxyCtl;
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfigurationListener;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.InstanceLifecycleEvent;
@@ -73,11 +74,11 @@ import org.glassfish.hk2.api.Self;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.Unqualified;
+import org.glassfish.hk2.api.messaging.MessageReceiver;
 import org.glassfish.hk2.api.messaging.SubscribeTo;
 import org.glassfish.hk2.api.messaging.Topic;
 import org.glassfish.hk2.api.messaging.TopicDistributionService;
 import org.glassfish.hk2.extras.events.DefaultTopicDistributionErrorService;
-import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.InjecteeImpl;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.MethodWrapper;
@@ -98,6 +99,15 @@ import org.jvnet.hk2.annotations.Optional;
 @ContractsProvided({TopicDistributionService.class, InstanceLifecycleListener.class, DynamicConfigurationListener.class})
 public class DefaultTopicDistributionService implements
         TopicDistributionService, InstanceLifecycleListener, DynamicConfigurationListener {
+    private final static Filter SUBSCRIBER_FILTER = new Filter() {
+
+        @Override
+        public boolean matches(Descriptor d) {
+            return d.getQualifiers().contains(MessageReceiver.class.getName());
+        }
+        
+    };
+    
     @Inject
     private ServiceLocator locator;
     
@@ -302,7 +312,7 @@ public class DefaultTopicDistributionService implements
 
     @Override
     public Filter getFilter() {
-        return BuilderHelper.allFilter();
+        return SUBSCRIBER_FILTER;
     }
     
     private void postProduction(InstanceLifecycleEvent lifecycleEvent) {
@@ -557,7 +567,7 @@ public class DefaultTopicDistributionService implements
     
     @Override
     public void configurationChanged() {
-        List<ActiveDescriptor<?>> allDescriptors = locator.getDescriptors(BuilderHelper.allFilter());
+        List<ActiveDescriptor<?>> allDescriptors = locator.getDescriptors(SUBSCRIBER_FILTER);
         
         wLock.lock();
         try {

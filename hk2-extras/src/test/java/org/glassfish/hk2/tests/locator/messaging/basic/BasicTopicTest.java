@@ -48,6 +48,7 @@ import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.messaging.MessageReceiver;
 import org.glassfish.hk2.extras.events.internal.TopicDistributionModule;
 import org.glassfish.hk2.tests.extras.internal.Utilities;
 import org.glassfish.hk2.utilities.BuilderHelper;
@@ -270,6 +271,7 @@ public class BasicTopicTest {
         FactoryDescriptors factoryDescriptors = BuilderHelper.link(GreekFactory.class).
             to(Greek.class.getName()).
             in(PerLookup.class.getName()).
+            qualifiedBy(MessageReceiver.class.getName()).
             buildFactory(Singleton.class.getName());
         
         ServiceLocatorUtilities.addFactoryDescriptors(locator, false, factoryDescriptors);

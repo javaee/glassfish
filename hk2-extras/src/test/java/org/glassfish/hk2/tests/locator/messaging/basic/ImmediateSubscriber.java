@@ -42,6 +42,7 @@ package org.glassfish.hk2.tests.locator.messaging.basic;
 import javax.inject.Inject;
 
 import org.glassfish.hk2.api.Immediate;
+import org.glassfish.hk2.api.messaging.MessageReceiver;
 import org.glassfish.hk2.api.messaging.SubscribeTo;
 import org.jvnet.hk2.annotations.Service;
 
@@ -49,7 +50,7 @@ import org.jvnet.hk2.annotations.Service;
  * @author jwells
  *
  */
-@Service @Immediate
+@Service @Immediate @MessageReceiver
 public class ImmediateSubscriber {
     @Inject
     private PerLookupSubscriber dependent;
