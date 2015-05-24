@@ -50,6 +50,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -76,6 +77,8 @@ import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
  *
  */
 public class JAUtilities {
+    private final static String ID_PREFIX = "XmlServiceUID-";
+    
     private final static boolean DEBUG_METHODS = Boolean.parseBoolean(GeneralUtilities.getSystemProperty(
             "org.jvnet.hk2.properties.xmlservice.jaxb.methods", "false"));
     private final static boolean DEBUG_PREGEN = Boolean.parseBoolean(GeneralUtilities.getSystemProperty(
@@ -101,6 +104,8 @@ public class JAUtilities {
     private int numGeneratedClasses = 0;
     private int numFoundClasses = 0;
     
+    private final AtomicLong idGenerator = new AtomicLong();
+    
     /* package */ JAUtilities() {
         try {
             superClazz = defaultClassPool.get(BaseHK2JAXBBean.class.getName());
@@ -109,6 +114,14 @@ public class JAUtilities {
             throw new MultiException(e);
         }
         
+    }
+    
+    /**
+     * Gets the XmlService wide unique identifier
+     * @return A unique identifier for unkeyed multi-children
+     */
+    public String getUniqueId() {
+        return ID_PREFIX + idGenerator.getAndAdd(1L);
     }
     
     public synchronized UnparentedNode getNode(Class<?> type) {
@@ -217,13 +230,11 @@ public class JAUtilities {
         
         ClassAltClassImpl altConvertMe = new ClassAltClassImpl(convertMe, helper);
         NameInformation xmlNameMap = Generator.getXmlNameMap(altConvertMe);
-            
-        HashMap<Class<?>, String> childTypes = new HashMap<Class<?>, String>();
+
         MethodInformation foundKey = null;
         for (AltMethod altMethodRaw : altConvertMe.getMethods()) {
             MethodAltMethodImpl altMethod = (MethodAltMethodImpl) altMethodRaw;
             
-            Method originalMethod = altMethod.getOriginalMethod();
             MethodInformation mi = Generator.getMethodInformation(altMethod, xmlNameMap);
                 
             if (DEBUG_METHODS) {
@@ -232,7 +243,7 @@ public class JAUtilities {
                 
             if (mi.isKey()) {
                 if (foundKey != null) {
-                    throw new RuntimeException("Class " + convertMe.getName() + " has multiple key properties (" + originalMethod.getName() +
+                    throw new RuntimeException("Class " + convertMe.getName() + " has multiple key properties (" + altMethodRaw.getName() +
                             " and " + foundKey.getOriginalMethod().getName());
                 }
                 foundKey = mi;
@@ -244,6 +255,7 @@ public class JAUtilities {
             UnparentedNode childType = null;
             if (MethodType.SETTER.equals(mi.getMethodType())) {
                 getterOrSetter = true;
+                
                 if (mi.getBaseChildType() != null) {
                     if (!interface2NodeCache.containsKey(((ClassAltClassImpl) mi.getBaseChildType()).getOriginalClass())) {
                         // Must use a placeholder
@@ -256,6 +268,7 @@ public class JAUtilities {
             }
             else if (MethodType.GETTER.equals(mi.getMethodType())) {
                 getterOrSetter = true;
+                
                 if (mi.getBaseChildType() != null) {
                     if (!interface2NodeCache.containsKey(((ClassAltClassImpl) mi.getBaseChildType()).getOriginalClass())) {
                         // Must use a placeholder
@@ -269,8 +282,6 @@ public class JAUtilities {
                 
             if (getterOrSetter) {
                 if (childType != null) {
-                    childTypes.put(childType.getOriginalInterface(), mi.getRepresentedProperty());
-                    
                     Map<String, String> defaultChild = null;
                     AltAnnotation defaultChildAnnotation= mi.getOriginalMethod().getAnnotation(DefaultChild.class.getName());
                     if (defaultChildAnnotation != null) {

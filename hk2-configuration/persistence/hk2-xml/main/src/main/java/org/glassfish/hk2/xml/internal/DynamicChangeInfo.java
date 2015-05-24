@@ -115,7 +115,7 @@ public class DynamicChangeInfo {
     }
     
     public String getGeneratedId() {
-        return idGenerator.getUniqueId();
+        return jaUtilities.getUniqueId();
     }
     
     public XmlServiceImpl getIdGenerator() {

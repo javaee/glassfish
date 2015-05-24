@@ -49,8 +49,11 @@ import java.io.Serializable;
 public class ChildData implements Serializable {
     private static final long serialVersionUID = -2690787310154109720L;
     
-    private final String defaultAsString;
-    private final Class<?> childType;
+    private String defaultAsString;
+    private Class<?> childType;
+    
+    public ChildData() {
+    }
     
     public ChildData(String defaultAsString, Class<?> childType) {
         this.defaultAsString = defaultAsString;

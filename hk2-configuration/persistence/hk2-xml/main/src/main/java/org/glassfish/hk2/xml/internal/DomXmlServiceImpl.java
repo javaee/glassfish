@@ -39,13 +39,30 @@
  */
 package org.glassfish.hk2.xml.internal;
 
+import java.io.InputStream;
 import java.net.URI;
 
+import javax.inject.Inject;
 import javax.inject.Named;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
+import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.Rank;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
+import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
+import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 
 /**
  * @author jwells
@@ -54,6 +71,24 @@ import org.glassfish.hk2.xml.api.XmlService;
 @Named("DomXmlService")
 @Rank(-1000)
 public class DomXmlServiceImpl implements XmlService {
+    private final JAUtilities jaUtilities = new JAUtilities();
+    
+    @Inject
+    private ServiceLocator serviceLocator;
+    
+    @Inject
+    private DynamicConfigurationService dynamicConfigurationService;
+    
+    @Inject
+    private Hub hub;
+    
+    private final ClassReflectionHelper classReflectionHelper = new ClassReflectionHelperImpl();
+    
+    private final DocumentBuilder documentBuilder;
+    
+    private DomXmlServiceImpl() throws ParserConfigurationException {
+        documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.api.XmlService#unmarshall(java.net.URI, java.lang.Class)
@@ -71,7 +106,98 @@ public class DomXmlServiceImpl implements XmlService {
     public <T> XmlRootHandle<T> unmarshall(URI uri,
             Class<T> jaxbAnnotatedInterface, boolean advertiseInRegistry,
             boolean advertiseInHub) {
-        throw new AssertionError("unmarshall not yet implemented in DomXmlServiceImpl");
+        if (uri == null || jaxbAnnotatedInterface == null) throw new IllegalArgumentException();
+        if (!jaxbAnnotatedInterface.isInterface()) {
+            throw new IllegalArgumentException("Only an interface can be given to unmarshall: " + jaxbAnnotatedInterface.getName());
+        }
+        
+        try {
+            UnparentedNode parent = jaUtilities.convertRootAndLeaves(jaxbAnnotatedInterface);
+                
+            return unmarshallClass(uri, parent, advertiseInRegistry, advertiseInHub);
+        }
+        catch (RuntimeException re) {
+            throw re;
+        }
+        catch (Throwable e) {
+            throw new MultiException(e);
+        }
+    }
+    
+    private <T> XmlRootHandle<T> unmarshallClass(URI uri, UnparentedNode node,
+            boolean advertise, boolean advertiseInHub) throws Exception {
+        
+        Hk2JAXBUnmarshallerListener listener = new Hk2JAXBUnmarshallerListener(jaUtilities, classReflectionHelper);
+        
+        BaseHK2JAXBBean hk2Root = Utilities.createBean(node.getTranslatedClass());
+        hk2Root._setModel(node, classReflectionHelper);
+         
+        InputStream urlStream = uri.toURL().openStream();
+        Document document;
+        try {
+            document = documentBuilder.parse(urlStream);
+        }
+        finally {
+            urlStream.close();
+        }
+            
+        Element docElement = document.getDocumentElement();
+        handleElement(hk2Root, null, docElement, listener);
+        
+        DynamicChangeInfo changeControl = new DynamicChangeInfo(jaUtilities,
+                ((advertiseInHub) ? hub : null),
+                null,
+                ((advertise) ? dynamicConfigurationService : null),
+                serviceLocator);
+        
+        throw new AssertionError("unmarshallClass not yet implemented in DomXmlServiceImpl"); 
+        
+    }
+    
+    private <T> void handleElement(BaseHK2JAXBBean target, BaseHK2JAXBBean parent,
+            Element element, Hk2JAXBUnmarshallerListener listener) {
+        listener.beforeUnmarshal(target, parent);
+        
+        NodeList beanChildren = element.getChildNodes();
+        int length = beanChildren.getLength();
+        
+        UnparentedNode model = target._getModel();
+        
+        for (int lcv = 0; lcv < length; lcv++) {
+            Node childNode = beanChildren.item(lcv);
+            if (childNode instanceof Element) {
+                Element childElement = (Element) childNode;
+                String tagName = childElement.getTagName();
+                
+                if (model.getNonChildProperties().contains(tagName)) {
+                    NodeList childNodeChildren = childElement.getChildNodes();
+                    
+                    for (int lcv1 = 0; lcv1 < childNodeChildren.getLength(); lcv1++) {
+                        Node childNodeChild = childNodeChildren.item(lcv1);
+                        if (childNodeChild instanceof Text) {
+                            Text childText = (Text) childNodeChild;
+                            
+                            String valueString = childText.getTextContent().trim();
+                            
+                        }
+                    }
+                }
+                else if (model.getKeyedChildren().contains(tagName)) {
+                    // TODO: Keyed child
+                }
+                else if (model.getUnKeyedChildren().contains(tagName)) {
+                    // TODO: Non-keyed child
+                }
+                else {
+                    // Probably just ignore it
+                }
+                
+                
+                
+            }
+        }
+        
+        
     }
 
     /* (non-Javadoc)

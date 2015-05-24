@@ -60,7 +60,10 @@ public class ParentedNode implements Serializable {
     public ParentedNode() {
     }
     
-    public ParentedNode(String childName, ChildType childType, UnparentedNode child, Map<String, String> defaultChild) {
+    public ParentedNode(String childName,
+            ChildType childType,
+            UnparentedNode child,
+            Map<String, String> defaultChild) {
         this.childName = childName;
         this.childType = childType;
         this.child = child;
