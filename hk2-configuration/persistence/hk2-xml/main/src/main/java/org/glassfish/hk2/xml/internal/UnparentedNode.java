@@ -236,8 +236,6 @@ public class UnparentedNode implements Serializable {
             if (cd == null) return null;
             
             return cd.getChildType();
-            
-            
         }
     }
     

@@ -48,18 +48,24 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.Rank;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
+import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
+import org.glassfish.hk2.xml.api.XmlHubCommitMessage;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
+import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Text;
@@ -124,13 +130,25 @@ public class DomXmlServiceImpl implements XmlService {
         }
     }
     
+    @SuppressWarnings("unchecked")
     private <T> XmlRootHandle<T> unmarshallClass(URI uri, UnparentedNode node,
             boolean advertise, boolean advertiseInHub) throws Exception {
+        long elapsedUpToJAXB = 0;
+        if (JAUtilities.DEBUG_GENERATION_TIMING) {
+            elapsedUpToJAXB = System.currentTimeMillis();
+        }
         
         Hk2JAXBUnmarshallerListener listener = new Hk2JAXBUnmarshallerListener(jaUtilities, classReflectionHelper);
         
         BaseHK2JAXBBean hk2Root = Utilities.createBean(node.getTranslatedClass());
         hk2Root._setModel(node, classReflectionHelper);
+        
+        long jaxbUnmarshallElapsedTime = 0L;
+        if (JAUtilities.DEBUG_GENERATION_TIMING) {
+            jaxbUnmarshallElapsedTime = System.currentTimeMillis();
+            elapsedUpToJAXB = jaxbUnmarshallElapsedTime - elapsedUpToJAXB;
+            Logger.getLogger().debug("Time in up to JAXB parsing " + uri + " is " + elapsedUpToJAXB + " milliseconds");
+        }
          
         InputStream urlStream = uri.toURL().openStream();
         Document document;
@@ -140,9 +158,16 @@ public class DomXmlServiceImpl implements XmlService {
         finally {
             urlStream.close();
         }
-            
+         
         Element docElement = document.getDocumentElement();
         handleElement(hk2Root, null, docElement, listener);
+        
+        long elapsedJAXBToAdvertisement = 0;
+        if (JAUtilities.DEBUG_GENERATION_TIMING) {
+            elapsedJAXBToAdvertisement = System.currentTimeMillis();
+            jaxbUnmarshallElapsedTime = elapsedJAXBToAdvertisement - jaxbUnmarshallElapsedTime;
+            Logger.getLogger().debug("Time in JAXB parsing " + uri + " is " + jaxbUnmarshallElapsedTime + " milliseconds");
+        }
         
         DynamicChangeInfo changeControl = new DynamicChangeInfo(jaUtilities,
                 ((advertiseInHub) ? hub : null),
@@ -150,54 +175,134 @@ public class DomXmlServiceImpl implements XmlService {
                 ((advertise) ? dynamicConfigurationService : null),
                 serviceLocator);
         
-        throw new AssertionError("unmarshallClass not yet implemented in DomXmlServiceImpl"); 
+        for (BaseHK2JAXBBean base : listener.getAllBeans()) {
+            String instanceName = Utilities.createInstanceName(base);
+            base._setInstanceName(instanceName);
+            
+            base._setDynamicChangeInfo(changeControl);
+        }
         
+        long elapsedPreAdvertisement = 0L;
+        if (JAUtilities.DEBUG_GENERATION_TIMING) {
+            elapsedPreAdvertisement = System.currentTimeMillis();
+            elapsedJAXBToAdvertisement = elapsedPreAdvertisement - elapsedJAXBToAdvertisement;
+            Logger.getLogger().debug("Time from JAXB to PreAdvertisement " + uri + " is " + elapsedJAXBToAdvertisement + " milliseconds");
+        }
+        
+        DynamicConfiguration config = (advertise) ? dynamicConfigurationService.createDynamicConfiguration() : null ;
+        WriteableBeanDatabase wdb = (advertiseInHub) ? hub.getWriteableDatabaseCopy() : null ;
+        
+        for (BaseHK2JAXBBean bean : listener.getAllBeans()) {
+            Utilities.advertise(wdb, config, bean);
+        }
+        
+        long elapsedHK2Advertisement = 0L;
+        if (JAUtilities.DEBUG_GENERATION_TIMING) {
+            elapsedHK2Advertisement = System.currentTimeMillis();
+            elapsedPreAdvertisement = elapsedHK2Advertisement - elapsedPreAdvertisement;
+            Logger.getLogger().debug("Time from JAXB to PreAdvertisement " + uri + " is " + elapsedPreAdvertisement + " milliseconds");
+        }
+        
+        if (config != null) {
+            config.commit();
+        }
+        
+        long elapsedHubAdvertisement = 0L;
+        if (JAUtilities.DEBUG_GENERATION_TIMING) {
+            elapsedHubAdvertisement = System.currentTimeMillis();
+            elapsedHK2Advertisement = elapsedHubAdvertisement - elapsedHK2Advertisement;
+            Logger.getLogger().debug("Time to advertise " + uri + " in HK2 is " + elapsedHK2Advertisement + " milliseconds");
+        }
+        
+        if (wdb != null) {
+            wdb.commit(new XmlHubCommitMessage() {});
+        }
+        
+        if (JAUtilities.DEBUG_GENERATION_TIMING) {
+            elapsedHubAdvertisement = System.currentTimeMillis() - elapsedHubAdvertisement;
+            Logger.getLogger().debug("Time to advertise " + uri + " in Hub is " + elapsedHubAdvertisement + " milliseconds");
+        }
+        
+        return new XmlRootHandleImpl<T>(null, hub, (T) hk2Root, node, uri, advertise, advertiseInHub, changeControl);
+        
+    }
+    
+    private static void handleNode(Node childNode, UnparentedNode model, BaseHK2JAXBBean target) {
+        if (childNode instanceof Element) {
+        
+            Element childElement = (Element) childNode;
+            String tagName = childElement.getTagName();
+            
+            if (model.getNonChildProperties().contains(tagName)) {
+                Class<?> childType = model.getNonChildType(tagName);
+                
+                NodeList childNodeChildren = childElement.getChildNodes();
+                
+                String valueString = null;
+                for (int lcv1 = 0; lcv1 < childNodeChildren.getLength(); lcv1++) {
+                    Node childNodeChild = childNodeChildren.item(lcv1);
+                    if (childNodeChild instanceof Text) {
+                        Text childText = (Text) childNodeChild;
+                        
+                        valueString = childText.getTextContent().trim();
+                        
+                        break;
+                    }
+                }
+                
+                Object convertedValue = Utilities.getDefaultValue(valueString, childType);
+                target._setProperty(tagName, convertedValue);
+            }
+            else if (model.getKeyedChildren().contains(tagName)) {
+                // TODO: Keyed child
+                throw new AssertionError("keyed children not yet implemented");
+            }
+            else if (model.getUnKeyedChildren().contains(tagName)) {
+                // TODO: Non-keyed child
+                throw new AssertionError("un-keyed children not yet implemented");
+            }
+            else {
+                // Probably just ignore it
+            }
+        }
+        else if (childNode instanceof Attr) {
+            Attr childAttr = (Attr) childNode;
+            String tagName = childAttr.getName();
+            
+            if (model.getNonChildProperties().contains(tagName)) {
+                Class<?> childType = model.getNonChildType(tagName);
+                String sValue = childAttr.getValue();
+                
+                Object convertedValue = Utilities.getDefaultValue(sValue, childType);
+                target._setProperty(tagName, convertedValue);
+            }
+            
+        }
     }
     
     private <T> void handleElement(BaseHK2JAXBBean target, BaseHK2JAXBBean parent,
             Element element, Hk2JAXBUnmarshallerListener listener) {
         listener.beforeUnmarshal(target, parent);
         
+        UnparentedNode model = target._getModel();
+        
+        NamedNodeMap attributeMap = element.getAttributes();
+        for (int lcv = 0; lcv < attributeMap.getLength(); lcv++) {
+            Node childNode = attributeMap.item(lcv);
+            
+            handleNode(childNode, model, target);
+        }
+        
         NodeList beanChildren = element.getChildNodes();
         int length = beanChildren.getLength();
         
-        UnparentedNode model = target._getModel();
-        
         for (int lcv = 0; lcv < length; lcv++) {
             Node childNode = beanChildren.item(lcv);
-            if (childNode instanceof Element) {
-                Element childElement = (Element) childNode;
-                String tagName = childElement.getTagName();
-                
-                if (model.getNonChildProperties().contains(tagName)) {
-                    NodeList childNodeChildren = childElement.getChildNodes();
-                    
-                    for (int lcv1 = 0; lcv1 < childNodeChildren.getLength(); lcv1++) {
-                        Node childNodeChild = childNodeChildren.item(lcv1);
-                        if (childNodeChild instanceof Text) {
-                            Text childText = (Text) childNodeChild;
-                            
-                            String valueString = childText.getTextContent().trim();
-                            
-                        }
-                    }
-                }
-                else if (model.getKeyedChildren().contains(tagName)) {
-                    // TODO: Keyed child
-                }
-                else if (model.getUnKeyedChildren().contains(tagName)) {
-                    // TODO: Non-keyed child
-                }
-                else {
-                    // Probably just ignore it
-                }
-                
-                
-                
-            }
+            
+            handleNode(childNode, model, target);
         }
         
-        
+        listener.afterUnmarshal(target, parent);
     }
 
     /* (non-Javadoc)
