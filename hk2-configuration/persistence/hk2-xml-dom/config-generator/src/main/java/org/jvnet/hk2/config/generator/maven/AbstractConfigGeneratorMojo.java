@@ -108,9 +108,12 @@ public abstract class AbstractConfigGeneratorMojo extends AbstractMojo {
             return;
         }
         
-        if(!getGeneratedDirectory().mkdirs()){
-          throw new MojoExecutionException(
-            "Unable to create directory "+getGeneratedDirectory().getAbsolutePath());
+        if (!getOutputDirectory().exists()) {
+            if (!getOutputDirectory().mkdirs()) {
+                getLog().info("Could not create output directory " +
+                        getOutputDirectory().getAbsolutePath());
+                return;
+            }
         }
         String outputPath = getGeneratedDirectory().getAbsolutePath();
 
