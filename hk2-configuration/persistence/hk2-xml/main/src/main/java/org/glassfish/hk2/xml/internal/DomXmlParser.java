@@ -49,25 +49,16 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.inject.Named;
+import javax.inject.Provider;
+import javax.inject.Singleton;
+import javax.xml.bind.Unmarshaller.Listener;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.DynamicConfigurationService;
-import org.glassfish.hk2.api.MultiException;
-import org.glassfish.hk2.api.Rank;
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.configuration.hub.api.Hub;
-import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
-import org.glassfish.hk2.utilities.reflection.Logger;
-import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
-import org.glassfish.hk2.xml.api.XmlHubCommitMessage;
-import org.glassfish.hk2.xml.api.XmlRootHandle;
-import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
+import org.glassfish.hk2.xml.spi.XmlServiceParser;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -80,83 +71,33 @@ import org.w3c.dom.Text;
  * @author jwells
  *
  */
-@Named("DomXmlService")
-@Rank(-1000)
-public class DomXmlServiceImpl implements XmlService {
-    private final JAUtilities jaUtilities = new JAUtilities();
-    
+@Singleton
+public class DomXmlParser implements XmlServiceParser {
     @Inject
-    private ServiceLocator serviceLocator;
-    
-    @Inject
-    private DynamicConfigurationService dynamicConfigurationService;
-    
-    @Inject
-    private Hub hub;
-    
-    private final ClassReflectionHelper classReflectionHelper = new ClassReflectionHelperImpl();
+    private Provider<XmlServiceImpl> xmlService;
     
     private final DocumentBuilder documentBuilder;
     
-    private DomXmlServiceImpl() throws ParserConfigurationException {
+    private DomXmlParser() throws ParserConfigurationException {
         documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
     }
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.xml.api.XmlService#unmarshall(java.net.URI, java.lang.Class)
+     * @see org.glassfish.hk2.xml.spi.XmlServiceParser#parseRoot(java.lang.Class, java.net.URI, javax.xml.bind.Unmarshaller.Listener)
      */
-    @Override
-    public <T> XmlRootHandle<T> unmarshall(URI uri,
-            Class<T> jaxbAnnotatedInterface) {
-        return unmarshall(uri, jaxbAnnotatedInterface, true, true);
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.xml.api.XmlService#unmarshall(java.net.URI, java.lang.Class, boolean, boolean)
-     */
-    @Override
-    public <T> XmlRootHandle<T> unmarshall(URI uri,
-            Class<T> jaxbAnnotatedInterface, boolean advertiseInRegistry,
-            boolean advertiseInHub) {
-        if (uri == null || jaxbAnnotatedInterface == null) throw new IllegalArgumentException();
-        if (!jaxbAnnotatedInterface.isInterface()) {
-            throw new IllegalArgumentException("Only an interface can be given to unmarshall: " + jaxbAnnotatedInterface.getName());
-        }
-        
-        try {
-            UnparentedNode parent = jaUtilities.convertRootAndLeaves(jaxbAnnotatedInterface);
-                
-            return unmarshallClass(uri, parent, advertiseInRegistry, advertiseInHub);
-        }
-        catch (RuntimeException re) {
-            throw re;
-        }
-        catch (Throwable e) {
-            throw new MultiException(e);
-        }
-    }
-    
     @SuppressWarnings("unchecked")
-    private <T> XmlRootHandle<T> unmarshallClass(URI uri, UnparentedNode node,
-            boolean advertise, boolean advertiseInHub) throws Exception {
-        long elapsedUpToJAXB = 0;
-        if (JAUtilities.DEBUG_GENERATION_TIMING) {
-            elapsedUpToJAXB = System.currentTimeMillis();
-        }
+    @Override
+    public <T> T parseRoot(Class<T> clazz, URI location, Listener listener)
+            throws Exception {
+        JAUtilities jaUtilities = xmlService.get().getJAUtilities();
+        ClassReflectionHelper classReflectionHelper = xmlService.get().getClassReflectionHelper();
         
-        Hk2JAXBUnmarshallerListener listener = new Hk2JAXBUnmarshallerListener(jaUtilities, classReflectionHelper);
+        UnparentedNode node = jaUtilities.getNode(clazz);
         
-        BaseHK2JAXBBean hk2Root = Utilities.createBean(node.getTranslatedClass());
+        BaseHK2JAXBBean hk2Root = Utilities.createBean(clazz);
         hk2Root._setModel(node, classReflectionHelper);
         
-        long jaxbUnmarshallElapsedTime = 0L;
-        if (JAUtilities.DEBUG_GENERATION_TIMING) {
-            jaxbUnmarshallElapsedTime = System.currentTimeMillis();
-            elapsedUpToJAXB = jaxbUnmarshallElapsedTime - elapsedUpToJAXB;
-            Logger.getLogger().debug("Time in up to JAXB parsing " + uri + " is " + elapsedUpToJAXB + " milliseconds");
-        }
-         
-        InputStream urlStream = uri.toURL().openStream();
+        InputStream urlStream = location.toURL().openStream();
         Document document;
         try {
             document = documentBuilder.parse(urlStream);
@@ -166,77 +107,18 @@ public class DomXmlServiceImpl implements XmlService {
         }
          
         Element docElement = document.getDocumentElement();
-        handleElement(hk2Root, null, docElement, listener);
         
-        long elapsedJAXBToAdvertisement = 0;
-        if (JAUtilities.DEBUG_GENERATION_TIMING) {
-            elapsedJAXBToAdvertisement = System.currentTimeMillis();
-            jaxbUnmarshallElapsedTime = elapsedJAXBToAdvertisement - jaxbUnmarshallElapsedTime;
-            Logger.getLogger().debug("Time in JAXB parsing " + uri + " is " + jaxbUnmarshallElapsedTime + " milliseconds");
-        }
+        handleElement(hk2Root, null,
+                docElement, classReflectionHelper, listener);
         
-        DynamicChangeInfo changeControl = new DynamicChangeInfo(jaUtilities,
-                ((advertiseInHub) ? hub : null),
-                null,
-                ((advertise) ? dynamicConfigurationService : null),
-                serviceLocator);
-        
-        for (BaseHK2JAXBBean base : listener.getAllBeans()) {
-            String instanceName = Utilities.createInstanceName(base);
-            base._setInstanceName(instanceName);
-            
-            base._setDynamicChangeInfo(changeControl);
-        }
-        
-        long elapsedPreAdvertisement = 0L;
-        if (JAUtilities.DEBUG_GENERATION_TIMING) {
-            elapsedPreAdvertisement = System.currentTimeMillis();
-            elapsedJAXBToAdvertisement = elapsedPreAdvertisement - elapsedJAXBToAdvertisement;
-            Logger.getLogger().debug("Time from JAXB to PreAdvertisement " + uri + " is " + elapsedJAXBToAdvertisement + " milliseconds");
-        }
-        
-        DynamicConfiguration config = (advertise) ? dynamicConfigurationService.createDynamicConfiguration() : null ;
-        WriteableBeanDatabase wdb = (advertiseInHub) ? hub.getWriteableDatabaseCopy() : null ;
-        
-        for (BaseHK2JAXBBean bean : listener.getAllBeans()) {
-            Utilities.advertise(wdb, config, bean);
-        }
-        
-        long elapsedHK2Advertisement = 0L;
-        if (JAUtilities.DEBUG_GENERATION_TIMING) {
-            elapsedHK2Advertisement = System.currentTimeMillis();
-            elapsedPreAdvertisement = elapsedHK2Advertisement - elapsedPreAdvertisement;
-            Logger.getLogger().debug("Time from JAXB to PreAdvertisement " + uri + " is " + elapsedPreAdvertisement + " milliseconds");
-        }
-        
-        if (config != null) {
-            config.commit();
-        }
-        
-        long elapsedHubAdvertisement = 0L;
-        if (JAUtilities.DEBUG_GENERATION_TIMING) {
-            elapsedHubAdvertisement = System.currentTimeMillis();
-            elapsedHK2Advertisement = elapsedHubAdvertisement - elapsedHK2Advertisement;
-            Logger.getLogger().debug("Time to advertise " + uri + " in HK2 is " + elapsedHK2Advertisement + " milliseconds");
-        }
-        
-        if (wdb != null) {
-            wdb.commit(new XmlHubCommitMessage() {});
-        }
-        
-        if (JAUtilities.DEBUG_GENERATION_TIMING) {
-            elapsedHubAdvertisement = System.currentTimeMillis() - elapsedHubAdvertisement;
-            Logger.getLogger().debug("Time to advertise " + uri + " in Hub is " + elapsedHubAdvertisement + " milliseconds");
-        }
-        
-        return new XmlRootHandleImpl<T>(null, hub, (T) hk2Root, node, uri, advertise, advertiseInHub, changeControl);
-        
+        return (T) hk2Root;
     }
     
     private void handleNode(Node childNode,
             UnparentedNode model,
             BaseHK2JAXBBean target,
-            Hk2JAXBUnmarshallerListener listener,
+            Listener listener,
+            ClassReflectionHelper classReflectionHelper,
             Map<String, List<BaseHK2JAXBBean>> listChildren,
             Map<String, List<BaseHK2JAXBBean>> arrayChildren) {
         if (childNode instanceof Element) {
@@ -272,7 +154,7 @@ public class DomXmlServiceImpl implements XmlService {
                 BaseHK2JAXBBean hk2Root = Utilities.createBean(grandChild.getTranslatedClass());
                 hk2Root._setModel(grandChild, classReflectionHelper);
                 
-                handleElement(hk2Root, target, childElement, listener);
+                handleElement(hk2Root, target, childElement, classReflectionHelper, listener);
                 
                 if (informedChild.getChildType().equals(ChildType.DIRECT)) {
                     target._setProperty(tagName, hk2Root);
@@ -314,7 +196,7 @@ public class DomXmlServiceImpl implements XmlService {
     }
     
     private <T> void handleElement(BaseHK2JAXBBean target, BaseHK2JAXBBean parent,
-            Element element, Hk2JAXBUnmarshallerListener listener) {
+            Element element, ClassReflectionHelper classReflectionHelper, Listener listener) {
         listener.beforeUnmarshal(target, parent);
         
         Map<String, List<BaseHK2JAXBBean>> listChildren = new HashMap<String, List<BaseHK2JAXBBean>>();
@@ -326,7 +208,7 @@ public class DomXmlServiceImpl implements XmlService {
         for (int lcv = 0; lcv < attributeMap.getLength(); lcv++) {
             Node childNode = attributeMap.item(lcv);
             
-            handleNode(childNode, model, target, listener, listChildren, arrayChildren);
+            handleNode(childNode, model, target, listener, classReflectionHelper, listChildren, arrayChildren);
         }
         
         NodeList beanChildren = element.getChildNodes();
@@ -335,7 +217,7 @@ public class DomXmlServiceImpl implements XmlService {
         for (int lcv = 0; lcv < length; lcv++) {
             Node childNode = beanChildren.item(lcv);
             
-            handleNode(childNode, model, target, listener, listChildren, arrayChildren);
+            handleNode(childNode, model, target, listener, classReflectionHelper, listChildren, arrayChildren);
         }
         
         for (Map.Entry<String, List<BaseHK2JAXBBean>> entry : listChildren.entrySet()) {
@@ -362,33 +244,6 @@ public class DomXmlServiceImpl implements XmlService {
         }
         
         listener.afterUnmarshal(target, parent);
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.xml.api.XmlService#createEmptyHandle(java.lang.Class, boolean, boolean)
-     */
-    @Override
-    public <T> XmlRootHandle<T> createEmptyHandle(
-            Class<T> jaxbAnnotationInterface, boolean advertiseInRegistry,
-            boolean advertiseInHub) {
-        throw new AssertionError("createEmptyHandle not yet implemented in DomXmlServiceImpl");
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.xml.api.XmlService#createEmptyHandle(java.lang.Class)
-     */
-    @Override
-    public <T> XmlRootHandle<T> createEmptyHandle(
-            Class<T> jaxbAnnotationInterface) {
-        return createEmptyHandle(jaxbAnnotationInterface, true, true);
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.xml.api.XmlService#createBean(java.lang.Class)
-     */
-    @Override
-    public <T> T createBean(Class<T> beanInterface) {
-        throw new AssertionError("createBean not yet implemented in DomXmlServiceImpl");
     }
 
 }

@@ -42,6 +42,7 @@ package org.glassfish.hk2.xml.internal;
 import java.net.URI;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
@@ -59,6 +60,7 @@ import org.glassfish.hk2.xml.api.XmlHubCommitMessage;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
+import org.glassfish.hk2.xml.spi.XmlServiceParser;
 
 /**
  * @author jwells
@@ -76,6 +78,9 @@ public class XmlServiceImpl implements XmlService {
     
     @Inject
     private Hub hub;
+    
+    @Inject
+    private Provider<XmlServiceParser> parser;
     
     private final ClassReflectionHelper classReflectionHelper = new ClassReflectionHelperImpl();
     
@@ -121,11 +126,8 @@ public class XmlServiceImpl implements XmlService {
             elapsedUpToJAXB = System.currentTimeMillis();
         }
         
-        JAXBContext context = JAXBContext.newInstance(node.getTranslatedClass());
-        
+        XmlServiceParser localParser = parser.get();
         Hk2JAXBUnmarshallerListener listener = new Hk2JAXBUnmarshallerListener(jaUtilities, classReflectionHelper);
-        Unmarshaller unmarshaller = context.createUnmarshaller();
-        unmarshaller.setListener(listener);
         
         long jaxbUnmarshallElapsedTime = 0L;
         if (JAUtilities.DEBUG_GENERATION_TIMING) {
@@ -134,7 +136,7 @@ public class XmlServiceImpl implements XmlService {
             Logger.getLogger().debug("Time in up to JAXB parsing " + uri + " is " + elapsedUpToJAXB + " milliseconds");
         }
         
-        T root = (T) unmarshaller.unmarshal(uri.toURL());
+        T root = localParser.parseRoot((Class<T>) node.getTranslatedClass(), uri, listener);
         
         long elapsedJAXBToAdvertisement = 0;
         if (JAUtilities.DEBUG_GENERATION_TIMING) {
@@ -258,12 +260,16 @@ public class XmlServiceImpl implements XmlService {
         return retVal;
     }
 
-    /* package */ ClassReflectionHelper getClassReflectionHelper() {
+    public ClassReflectionHelper getClassReflectionHelper() {
         return classReflectionHelper;
     }
     
     /* package */ DynamicConfigurationService getDynamicConfigurationService() {
         return dynamicConfigurationService;
+    }
+    
+    public JAUtilities getJAUtilities() {
+        return jaUtilities;
     }
    
 }

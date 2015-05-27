@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,55 +37,37 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.api;
+package org.glassfish.hk2.xml.spi;
 
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.configuration.hub.api.ManagerUtilities;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
-import org.glassfish.hk2.xml.internal.DomXmlParser;
-import org.glassfish.hk2.xml.internal.XmlServiceImpl;
-import org.glassfish.hk2.xml.jaxb.internal.JAXBXmlParser;
+import java.net.URI;
+
+import javax.xml.bind.Unmarshaller;
+
+import org.jvnet.hk2.annotations.Contract;
 
 /**
- * Useful utilities for initializing the HK2 XmlService
+ * If an implementation of this exists it will be used to parse the XML file rather
+ * than the default implementation which uses JAXB
  * 
  * @author jwells
  */
-public class XmlServiceUtilities {
-
+@Contract
+public interface XmlServiceParser {
     /**
-     * Enables the Hk2 XmlService in the given locator.  Will
-     * also enable the HK2 Configuration Hub if the hub has
-     * not already been started.  This operation is idempotent
-     * in that if the XmlService is already available in the
-     * given locator then this method does nothing
-     * 
-     * @param locator The non-null locator to which to add
-     * the {@link XmlService}
+     * The default Xml parsing service will have this name
      */
-    public static void enableXmlService(ServiceLocator locator) {
-        if (locator.getService(XmlService.class) != null) return;
-        
-        ManagerUtilities.enableConfigurationHub(locator);
-        
-        ServiceLocatorUtilities.addClasses(locator, JAXBXmlParser.class, XmlServiceImpl.class);
-    }
+    public static final String DEFAULT_PARSING_SERVICE = "DefaultJAXBXmlParsingService";
     
     /**
-     * Enables the Hk2 XmlService in the given locator.  Will
-     * also enable the HK2 Configuration Hub if the hub has
-     * not already been started.  This operation is idempotent
-     * in that if the XmlService is already available in the
-     * given locator then this method does nothing
+     * This method must return an instance of the given class as the root of
+     * an XML graph
      * 
-     * @param locator The non-null locator to which to add
-     * the {@link XmlService}
+     * @param clazz The class that can be used to set and get values.  This class
+     * will extend {@link org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean}
+     * @param location The location of the file to parse
+     * @param listener A listener that must be called via the contract of Unmarshaller.Listener
+     * @return The root object with all fields filled in from the given document
      */
-    public static void enableDomXmlService(ServiceLocator locator) {
-        if (locator.getService(XmlService.class) != null) return;
-        
-        ManagerUtilities.enableConfigurationHub(locator);
-        
-        ServiceLocatorUtilities.addClasses(locator, DomXmlParser.class, XmlServiceImpl.class);
-    }
+    public <T> T parseRoot(Class<T> clazz, URI location, Unmarshaller.Listener listener) throws Exception;
+
 }
