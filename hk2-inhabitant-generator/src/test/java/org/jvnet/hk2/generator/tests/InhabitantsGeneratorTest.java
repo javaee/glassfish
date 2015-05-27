@@ -55,7 +55,6 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.nio.file.spi.FileSystemProvider;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -111,7 +110,6 @@ public class InhabitantsGeneratorTest {
     private final static String OTHER = "other";
     
     private final static String ZIP_FILE_INHABITANT_NAME = "META-INF/hk2-locator/default";
-    private final static String NON_DEFAULT_INHABITANT_NAME = "META-INF/hk2-locator/non-default-name";
     
     private final static String MAVEN_CLASSES_DIR = "test-classes";
     
