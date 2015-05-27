@@ -107,10 +107,18 @@ public abstract class AbstractConfigGeneratorMojo extends AbstractMojo {
                 || !getSourceDirectory().isDirectory()){
             return;
         }
-        
-        if(!getGeneratedDirectory().mkdirs()){
-          throw new MojoExecutionException(
-            "Unable to create directory "+getGeneratedDirectory().getAbsolutePath());
+        getLog().info(getGeneratedDirectory().getAbsolutePath());
+        if (!getGeneratedDirectory().exists()) {
+            if (!getGeneratedDirectory().mkdirs()) {
+                getLog().info("Could not create output directory " +
+                        getOutputDirectory().getAbsolutePath());
+                return;
+            }
+        }
+        if (!getGeneratedDirectory().exists()) {
+            getLog().info("Exiting hk2-config-generator because could not find generated directory " +
+                  getGeneratedDirectory().getAbsolutePath());
+            return;
         }
         String outputPath = getGeneratedDirectory().getAbsolutePath();
 
