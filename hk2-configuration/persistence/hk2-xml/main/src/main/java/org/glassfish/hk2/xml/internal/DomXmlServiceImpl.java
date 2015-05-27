@@ -40,7 +40,13 @@
 package org.glassfish.hk2.xml.internal;
 
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -227,7 +233,12 @@ public class DomXmlServiceImpl implements XmlService {
         
     }
     
-    private static void handleNode(Node childNode, UnparentedNode model, BaseHK2JAXBBean target) {
+    private void handleNode(Node childNode,
+            UnparentedNode model,
+            BaseHK2JAXBBean target,
+            Hk2JAXBUnmarshallerListener listener,
+            Map<String, List<BaseHK2JAXBBean>> listChildren,
+            Map<String, List<BaseHK2JAXBBean>> arrayChildren) {
         if (childNode instanceof Element) {
         
             Element childElement = (Element) childNode;
@@ -253,13 +264,35 @@ public class DomXmlServiceImpl implements XmlService {
                 Object convertedValue = Utilities.getDefaultValue(valueString, childType);
                 target._setProperty(tagName, convertedValue);
             }
-            else if (model.getKeyedChildren().contains(tagName)) {
-                // TODO: Keyed child
-                throw new AssertionError("keyed children not yet implemented");
-            }
-            else if (model.getUnKeyedChildren().contains(tagName)) {
-                // TODO: Non-keyed child
-                throw new AssertionError("un-keyed children not yet implemented");
+            else if (model.getKeyedChildren().contains(tagName) ||
+                     model.getUnKeyedChildren().contains(tagName)) {
+                ParentedNode informedChild = model.getChild(tagName);
+                UnparentedNode grandChild = informedChild.getChild();
+                
+                BaseHK2JAXBBean hk2Root = Utilities.createBean(grandChild.getTranslatedClass());
+                hk2Root._setModel(grandChild, classReflectionHelper);
+                
+                handleElement(hk2Root, target, childElement, listener);
+                
+                if (informedChild.getChildType().equals(ChildType.DIRECT)) {
+                    target._setProperty(tagName, hk2Root);
+                }
+                else if (informedChild.getChildType().equals(ChildType.LIST)) {
+                    List<BaseHK2JAXBBean> cList = listChildren.get(tagName);
+                    if (cList == null) {
+                        cList = new ArrayList<BaseHK2JAXBBean>();
+                        listChildren.put(tagName, cList);
+                    }
+                    cList.add(hk2Root);
+                }
+                else if (informedChild.getChildType().equals(ChildType.ARRAY)) {
+                    List<BaseHK2JAXBBean> cList = arrayChildren.get(tagName);
+                    if (cList == null) {
+                        cList = new LinkedList<BaseHK2JAXBBean>();
+                        arrayChildren.put(tagName, cList);
+                    }
+                    cList.add(hk2Root);
+                }
             }
             else {
                 // Probably just ignore it
@@ -284,13 +317,16 @@ public class DomXmlServiceImpl implements XmlService {
             Element element, Hk2JAXBUnmarshallerListener listener) {
         listener.beforeUnmarshal(target, parent);
         
+        Map<String, List<BaseHK2JAXBBean>> listChildren = new HashMap<String, List<BaseHK2JAXBBean>>();
+        Map<String, List<BaseHK2JAXBBean>> arrayChildren = new HashMap<String, List<BaseHK2JAXBBean>>();
+        
         UnparentedNode model = target._getModel();
         
         NamedNodeMap attributeMap = element.getAttributes();
         for (int lcv = 0; lcv < attributeMap.getLength(); lcv++) {
             Node childNode = attributeMap.item(lcv);
             
-            handleNode(childNode, model, target);
+            handleNode(childNode, model, target, listener, listChildren, arrayChildren);
         }
         
         NodeList beanChildren = element.getChildNodes();
@@ -299,7 +335,30 @@ public class DomXmlServiceImpl implements XmlService {
         for (int lcv = 0; lcv < length; lcv++) {
             Node childNode = beanChildren.item(lcv);
             
-            handleNode(childNode, model, target);
+            handleNode(childNode, model, target, listener, listChildren, arrayChildren);
+        }
+        
+        for (Map.Entry<String, List<BaseHK2JAXBBean>> entry : listChildren.entrySet()) {
+            // Kind of cheating with the erasure, but hey, it works!
+            target._setProperty(entry.getKey(), entry.getValue());
+        }
+        
+        for (Map.Entry<String, List<BaseHK2JAXBBean>> entry : arrayChildren.entrySet()) {
+            String childTag = entry.getKey();
+            ParentedNode pn = model.getChild(childTag);
+            Class<?> childType = pn.getChild().getOriginalInterface();
+            
+            List<BaseHK2JAXBBean> individuals = entry.getValue();
+            
+            Object actualArray = Array.newInstance(childType, individuals.size());
+            
+            int index = 0;
+            for (BaseHK2JAXBBean individual : individuals) {
+                Array.set(actualArray, index++, individual);
+            }
+            
+            target._setProperty(childTag, actualArray);
+            
         }
         
         listener.afterUnmarshal(target, parent);
