@@ -429,7 +429,7 @@ public class UnmarshallDomTest {
      * 
      * @throws Exception
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testEveryType() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -443,7 +443,7 @@ public class UnmarshallDomTest {
         Assert.assertEquals(13, types.getIType());
         Assert.assertEquals(-13L, types.getJType());
         Assert.assertEquals(true, types.getZType());
-        Assert.assertEquals((byte) 165, types.getBType());
+        Assert.assertEquals((byte) 120, types.getBType());
         Assert.assertEquals((short) 161, types.getSType());
         Assert.assertEquals(0, Float.compare((float) 3.14, types.getFType()));
         Assert.assertEquals(0, Double.compare(2.71828, types.getDType()));
