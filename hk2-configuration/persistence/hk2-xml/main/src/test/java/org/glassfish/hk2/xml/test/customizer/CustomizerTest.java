@@ -120,5 +120,34 @@ public class CustomizerTest {
         Assert.assertEquals("EAGLES", uppers[1]);
         Assert.assertEquals(2, uppers.length);
     }
+    
+    private final static String TEST_STRING = "TestString for ";
+    
+    /**
+     * Tests that a customizer method can take a method with the bean
+     * itself as the first argument
+     * 
+     * @throws Exception
+     */
+    @Test @org.junit.Ignore
+    public void testCustomizerWithBeanAsFirstArgument() throws Exception {
+        ServiceLocator locator = Utilities.createLocator(SpecializedEmployeeCustomizer.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(UnmarshallTest.ACME1_FILE);
+        
+        XmlRootHandle<EmployeesBean> rootHandle = xmlService.unmarshall(url.toURI(), EmployeesBean.class);
+        EmployeesBean employees = rootHandle.getRoot();
+        Assert.assertNotNull(employees);
+        
+        EmployeeBean bob = locator.getService(EmployeeBean.class, UnmarshallTest.BOB);
+        EmployeeBean carol = locator.getService(EmployeeBean.class, UnmarshallTest.CAROL);
+        
+        Assert.assertNotNull(bob);
+        Assert.assertNotNull(carol);
+        
+        Assert.assertEquals(TEST_STRING + UnmarshallTest.BOB, bob.doACustomThing(TEST_STRING));
+        Assert.assertEquals(TEST_STRING + UnmarshallTest.CAROL, carol.doACustomThing(TEST_STRING));
+    }
 
 }
