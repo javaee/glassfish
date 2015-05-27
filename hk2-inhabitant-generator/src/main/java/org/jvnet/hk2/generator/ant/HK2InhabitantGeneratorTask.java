@@ -111,7 +111,7 @@ public class HK2InhabitantGeneratorTask extends Task {
         }
         
         if (locator != null) {
-            args.add(HabitatGenerator.HK2_LOCATOR);
+            args.add(HabitatGenerator.LOCATOR_ARG);
             args.add(locator);
         }
         

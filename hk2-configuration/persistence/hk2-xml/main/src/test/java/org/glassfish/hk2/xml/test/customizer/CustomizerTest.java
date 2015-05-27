@@ -129,7 +129,7 @@ public class CustomizerTest {
      * 
      * @throws Exception
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testCustomizerWithBeanAsFirstArgument() throws Exception {
         ServiceLocator locator = Utilities.createLocator(SpecializedEmployeeCustomizer.class);
         XmlService xmlService = locator.getService(XmlService.class);

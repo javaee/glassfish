@@ -514,16 +514,49 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
             return null;
         }
         
+        boolean useAlt = false;
         Method cMethod;
         try {
             cMethod = cClass.getMethod(methodName, params);
         }
         catch (NoSuchMethodException nsme) {
-            if (customizer.failWhenMethodNotFound()) {
-                throw new RuntimeException(nsme);
+            if (model != null) {
+                Class<?> altParams[] = new Class<?>[params.length + 1];
+                altParams[0] = model.getOriginalInterface();
+                for (int lcv = 0; lcv < params.length; lcv++) {
+                    altParams[lcv+1] = params[lcv];
+                }
+            
+                try {
+                    cMethod = cClass.getMethod(methodName, altParams);
+                    useAlt = true;
+                }
+                catch (NoSuchMethodException nsme2) {
+                    if (customizer.failWhenMethodNotFound()) {
+                        throw new RuntimeException(nsme2);
+                    }
+            
+                    return null;
+                }
+            }
+            else {
+                if (customizer.failWhenMethodNotFound()) {
+                    throw new RuntimeException(nsme);
+                }
+        
+                return null;
+                
+            }
+        }
+        
+        if (useAlt) {
+            Object altValues[] = new Object[values.length + 1];
+            altValues[0] = this;
+            for (int lcv = 0; lcv < values.length; lcv++) {
+                altValues[lcv + 1] = values[lcv];
             }
             
-            return null;
+            values = altValues;
         }
         
         try {
