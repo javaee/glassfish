@@ -39,8 +39,13 @@
  */
 package org.glassfish.hk2.tests.hk2bridge;
 
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.extras.ExtrasUtilities;
 import org.glassfish.hk2.tests.extras.internal.Utilities;
@@ -377,6 +382,64 @@ public class BridgeTest {
         from.shutdown();
         
         Assert.assertNull(into.getService(SimpleService.class));
+    }
+    
+    /**
+     * Tests bridge with un-reified descriptors
+     */
+    @Test // @org.junit.Ignore
+    public void testBridgeUnreifiedDescriptor() {
+        ServiceLocator into = Utilities.getUniqueLocator();
+        ServiceLocator from = Utilities.getUniqueLocator();
+        
+        Descriptor d = BuilderHelper.link(SimpleService.class.getName()).build();
+        ActiveDescriptor<?> fromD = ServiceLocatorUtilities.addOneDescriptor(from, d);
+        
+        Descriptor perLookupD = BuilderHelper.link(PerLookupService.class.getName()).
+                in(PerLookup.class.getName()).
+                build();
+        ActiveDescriptor<?> fromPerLookupD = ServiceLocatorUtilities.addOneDescriptor(from, perLookupD);
+        
+        Descriptor singletonD = BuilderHelper.link(SingletonService.class.getName()).
+                in(Singleton.class.getName()).
+                build();
+        ActiveDescriptor<?> fromSingletonD = ServiceLocatorUtilities.addOneDescriptor(from, singletonD);
+        
+        Assert.assertNull(into.getService(SimpleService.class));
+        ExtrasUtilities.bridgeServiceLocator(into, from);
+        
+        {
+            ActiveDescriptor<?> intoD = into.getBestDescriptor(BuilderHelper.createContractFilter(SimpleService.class.getName()));
+        
+            Assert.assertFalse(fromD.isReified());
+            Assert.assertTrue(intoD.isReified());
+        
+            Assert.assertNull(intoD.getScope());
+        }
+        
+        {
+            ActiveDescriptor<?> intoPerLookupD = into.getBestDescriptor(BuilderHelper.createContractFilter(PerLookupService.class.getName()));
+            
+            Assert.assertFalse(fromPerLookupD.isReified());
+            Assert.assertTrue(intoPerLookupD.isReified());
+        
+            Assert.assertEquals(PerLookup.class.getName(), intoPerLookupD.getScope());
+            
+        }
+        
+        {
+            ActiveDescriptor<?> intoSingletonD = into.getBestDescriptor(BuilderHelper.createContractFilter(SingletonService.class.getName()));
+            
+            Assert.assertFalse(fromSingletonD.isReified());
+            Assert.assertTrue(intoSingletonD.isReified());
+        
+            Assert.assertEquals(Singleton.class.getName(), intoSingletonD.getScope());
+        }
+        
+        
+        Assert.assertNotNull(into.getService(SimpleService.class));
+        Assert.assertNotNull(into.getService(PerLookupService.class));
+        Assert.assertNotNull(into.getService(SingletonService.class));
     }
 
 }
