@@ -193,6 +193,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     private final HashMap<String, ClassAnalyzer> classAnalyzers =
             new HashMap<String, ClassAnalyzer>();
     private String defaultClassAnalyzer = ClassAnalyzer.DEFAULT_IMPLEMENTATION_NAME;
+    private Unqualified defaultUnqualified = null;
 
     private ConcurrentHashMap<Class<? extends Annotation>, InjectionResolver<?>> allResolvers =
             new ConcurrentHashMap<Class<? extends Annotation>, InjectionResolver<?>>();
@@ -2271,12 +2272,24 @@ public class ServiceLocatorImpl implements ServiceLocator {
     
     @Override
     public Unqualified getDefaultUnqualified() {
-        throw new AssertionError("getDefaultUnqualified not yet implemented");
+        rLock.lock();
+        try {
+            return defaultUnqualified;
+        }
+        finally {
+            rLock.unlock();
+        }
     }
     
     @Override
     public void setDefaultUnqualified(Unqualified unqualified) {
-        throw new AssertionError("setDefaultUnqualified not yet implemented");
+        wLock.lock();
+        try {
+            defaultUnqualified = unqualified;
+        }
+        finally {
+            wLock.unlock();
+        }
         
     }
 
