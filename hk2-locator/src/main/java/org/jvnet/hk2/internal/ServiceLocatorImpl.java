@@ -2268,6 +2268,17 @@ public class ServiceLocatorImpl implements ServiceLocator {
             }
         }
     }
+    
+    @Override
+    public Unqualified getDefaultUnqualified() {
+        throw new AssertionError("getDefaultUnqualified not yet implemented");
+    }
+    
+    @Override
+    public void setDefaultUnqualified(Unqualified unqualified) {
+        throw new AssertionError("setDefaultUnqualified not yet implemented");
+        
+    }
 
     /* package */ ClassAnalyzer getAnalyzer(String name, Collector collector) {
         ClassAnalyzer retVal;
@@ -2487,6 +2498,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
     }
 
+    @Override
     public String toString() {
         return "ServiceLocatorImpl(" + locatorName + "," + id + "," + System.identityHashCode(this) + ")";
     }

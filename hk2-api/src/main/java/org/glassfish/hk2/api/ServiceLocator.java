@@ -470,6 +470,42 @@ public interface ServiceLocator {
      * explicitly set the name of its class analyzer)
      */
     public void setDefaultClassAnalyzerName(String defaultClassAnalyzer);
+    
+    /**
+     * This returns the default {@link Unqualified} annotation that will be
+     * put on all injection points that do not have any qualifiers.  This
+     * {@link Unqualified} will not be returned by the {@link Injectee#getUnqualified()}
+     * method as it is considered to be the systems default {@link Unqualified}
+     * annotation.  If an injection point has its own {@link Unqualified}
+     * annotation returned from {@link Injectee#getUnqualified()} then that
+     * one takes precedence over this one
+     * 
+     * @return The {@link Unqualified} annotation that will be (virtually) put
+     * on injection points that have no qualifiers and no other {@link Unqualified}
+     * annotation.  If null then this ServiceLocator has no default {@link Unqualified}
+     * annotation to be applied
+     */
+    public Unqualified getDefaultUnqualified();
+    
+    /**
+     * This sets the default {@link Unqualified} annotation that will be
+     * put on all injection points that do not have any qualifiers.  This
+     * {@link Unqualified} will not be returned by the {@link Injectee#getUnqualified()}
+     * method as it is considered to be the systems default {@link Unqualified}
+     * annotation.  If an injection point has its own {@link Unqualified}
+     * annotation returned from {@link Injectee#getUnqualified()} then that
+     * one takes precedence over this one
+     * <p>
+     * This method may be called at any time, but will only affect lookups and
+     * injections that have not yet occurred
+     * 
+     * @param unqualified The {@link Unqualified} annotation that will be (virtually) put
+     * on injection points that have no qualifiers and no other {@link Unqualified}
+     * annotation.  If null then this ServiceLocator has no default {@link Unqualified}
+     * annotation to be applied
+     * @see {@link org.glassfish.hk2.utilities.UnqualifiedImpl}
+     */
+    public void setDefaultUnqualified(Unqualified unqualified);
   
     /**
      * Returns the name of this ServiceLocator

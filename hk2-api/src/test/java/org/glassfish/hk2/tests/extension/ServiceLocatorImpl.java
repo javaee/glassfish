@@ -51,6 +51,7 @@ import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorState;
+import org.glassfish.hk2.api.Unqualified;
 
 /**
  * @author jwells
@@ -428,6 +429,24 @@ public class ServiceLocatorImpl implements ServiceLocator {
 
     @Override
     public void setNeutralContextClassLoader(boolean neutralContextClassLoader) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#getDefaultUnqualified()
+     */
+    @Override
+    public Unqualified getDefaultUnqualified() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ServiceLocator#setDefaultUnqualified(org.glassfish.hk2.api.Unqualified)
+     */
+    @Override
+    public void setDefaultUnqualified(Unqualified unqualified) {
         // TODO Auto-generated method stub
         
     }
