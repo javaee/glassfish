@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.tests.locator.defaultunqualified;
 
+import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.UnqualifiedImpl;
@@ -73,6 +74,25 @@ public class DefaultUnqualifiedTest {
         
         // The real test:
         Assert.assertEquals(DollImpl.class, childsRoom.getDoll().getClass());
+    }
+    
+    /**
+     * Tests that injection of IterableProvider does NOT have the
+     * default Unqualified applied to it
+     */
+    @Test // @org.junit.Ignore
+    public void testIterableProviderReturnsAllEvenIfUnqualified() {
+        ServiceLocator locator = LocatorHelper.getServiceLocator(BoardGameImpl.class,
+                DollImpl.class,
+                TrainImpl.class,
+                ChildsRoom.class);
+        
+        locator.setDefaultUnqualified(new UnqualifiedImpl());
+        
+        ChildsRoom childsRoom = locator.getService(ChildsRoom.class);
+        
+        IterableProvider<Toy> allToys = childsRoom.getAllToys();
+        Assert.assertEquals(3, allToys.getSize());
         
         
     }

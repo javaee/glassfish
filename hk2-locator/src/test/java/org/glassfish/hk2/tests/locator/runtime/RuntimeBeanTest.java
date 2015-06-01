@@ -135,7 +135,7 @@ public class RuntimeBeanTest {
         
         int postLookupCacheSize = bean.getServiceCacheSize();
         
-        Assert.assertTrue(postLookupCacheSize > cacheSize);
+        Assert.assertTrue("postLookupCacheSize=" + postLookupCacheSize + " cacheSize=" + cacheSize, postLookupCacheSize > cacheSize);
         
         // Lets see if the cache is working
         Assert.assertNotNull(locator.getService(SimpleService.class));

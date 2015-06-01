@@ -1029,7 +1029,13 @@ public class ServiceLocatorImpl implements ServiceLocator {
 
         private final int hashCode;
 
-        IgdCacheKey(CacheKey key, String name, Injectee onBehalfOf, Type contractOrImpl, Class<?> rawClass, Annotation[] qualifiers, Filter filter) {
+        IgdCacheKey(CacheKey key,
+                String name,
+                Injectee onBehalfOf,
+                Type contractOrImpl,
+                Class<?> rawClass,
+                Annotation[] qualifiers,
+                Filter filter) {
             this.cacheKey = key;
             this.name = name;
             this.onBehalfOf = onBehalfOf;
@@ -1082,27 +1088,31 @@ public class ServiceLocatorImpl implements ServiceLocator {
             new LRUHybridCache<IgdCacheKey, IgdValue>(CACHE_SIZE, new Computable<IgdCacheKey, HybridCacheEntry<IgdValue>>() {
         @Override
         public HybridCacheEntry<IgdValue> compute(final IgdCacheKey key) {
-
-            final List<SystemDescriptor<?>> candidates = getDescriptors(key.filter, key.onBehalfOf, true, false, true);
-            final ImmediateResults immediate = narrow(ServiceLocatorImpl.this,
-                    candidates,
-                    key.contractOrImpl,
-                    key.name,
-                    key.onBehalfOf,
-                    true,
-                    true,
-                    null,
-                    key.filter,
-                    key.qualifiers);
-            final NarrowResults results = immediate.getTimelessResults();
-            if (!results.getErrors().isEmpty()) {
-                Utilities.handleErrors(results, new LinkedList<ErrorService>(errorHandlers));
-                return igdCache.createCacheEntry(key, new IgdValue(results, immediate), true);
-            }
-            
-            return igdCache.createCacheEntry(key, new IgdValue(results, immediate), false);
+            return igdCacheCompute(key);
         }
     });
+    
+    private HybridCacheEntry<IgdValue> igdCacheCompute(final IgdCacheKey key) {
+        final List<SystemDescriptor<?>> candidates = getDescriptors(key.filter, key.onBehalfOf, true, false, true);
+        final ImmediateResults immediate = narrow(ServiceLocatorImpl.this, // locator
+                candidates, // candidates
+                key.contractOrImpl, // requiredType
+                key.name, // name
+                key.onBehalfOf, // injectee
+                true,  // onlyOne
+                true, // doValidation
+                null, // cachedResults
+                key.filter, // filter
+                key.qualifiers); // qualifiers
+        
+        final NarrowResults results = immediate.getTimelessResults();
+        if (!results.getErrors().isEmpty()) {
+            Utilities.handleErrors(results, new LinkedList<ErrorService>(errorHandlers));
+            return igdCache.createCacheEntry(key, new IgdValue(results, immediate), true);
+        }
+        
+        return igdCache.createCacheEntry(key, new IgdValue(results, immediate), false);
+    }
 
 
     @SuppressWarnings("unchecked")
@@ -1121,50 +1131,20 @@ public class ServiceLocatorImpl implements ServiceLocator {
 
         name = getName(name, qualifiers);
 
-        final boolean useCache = unqualified == null;
-
         NarrowResults results = null;
         LinkedList<ErrorService> currentErrorHandlers = null;
 
         ImmediateResults immediate = null;
 
-        if (!useCache) {
-            final Filter filter = new UnqualifiedIndexedFilter(rawClass.getName(), name, unqualified);
-            rLock.lock();
-            try {
-                List<SystemDescriptor<?>> candidates = getDescriptors(filter, onBehalfOf, true, false, true);
-                immediate = narrow(this,
-                        candidates,
-                        contractOrImpl,
-                        name,
-                        onBehalfOf,
-                        true,
-                        true,
-                        null,
-                        filter,
-                        qualifiers);
-                results = immediate.getTimelessResults();
-                if (!results.getErrors().isEmpty()) {
-                    currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
-                    // was outside of the lock:
-                    Utilities.handleErrors(results, currentErrorHandlers);
-                }
-            } finally {
-                rLock.unlock();
-            }
-
-            // Must do validation here in order to allow for caching
-            ActiveDescriptor<T> postValidateResult = immediate.getImmediateResults().isEmpty() ? null
-                    : (ActiveDescriptor<T>) immediate.getImmediateResults().get(0);
-
-            return postValidateResult;
-        }
-        
-        // USE CACHE!
-
-        final CacheKey cacheKey = new CacheKey(contractOrImpl, name, qualifiers);
-        final Filter filter = BuilderHelper.createNameAndContractFilter(rawClass.getName(), name);
-        final IgdCacheKey igdCacheKey = new IgdCacheKey(cacheKey, name, onBehalfOf, contractOrImpl, rawClass, qualifiers, filter);
+        final CacheKey cacheKey = new CacheKey(contractOrImpl, name, unqualified, qualifiers);
+        final Filter filter =  new UnqualifiedIndexedFilter(rawClass.getName(), name, unqualified);
+        final IgdCacheKey igdCacheKey = new IgdCacheKey(cacheKey,
+                name,
+                onBehalfOf,
+                contractOrImpl,
+                rawClass,
+                qualifiers,
+                filter);
 
         rLock.lock();
         try {
@@ -1172,16 +1152,16 @@ public class ServiceLocatorImpl implements ServiceLocator {
             final IgdValue value = entry.getValue();
             final boolean freshOne = value.freshnessKeeper.compareAndSet(1, 2);
             if (!freshOne) {
-                immediate = narrow(this,
-                            null,
-                            contractOrImpl,
-                            name,
-                            onBehalfOf,
-                            true,
-                            true,
-                            value.results,
-                            filter,
-                            qualifiers);
+                immediate = narrow(this,  // locator
+                            null, // candidates
+                            contractOrImpl, // requiredType
+                            name,  // name
+                            onBehalfOf,  // onBehalfOf
+                            true, // onlyOne
+                            true, // doValidation
+                            value.results, // cachedResults
+                            filter, // filter
+                            qualifiers); // qualifiers
                 results = immediate.getTimelessResults();
             } else {
                 results = value.results;
@@ -1316,7 +1296,6 @@ public class ServiceLocatorImpl implements ServiceLocator {
             throw new MultiException(new IllegalArgumentException("Type must be a class or parameterized type, it was " + contractOrImpl));
         }
 
-        final boolean useCache = unqualified == null;
         final String name = rawClass.getName();
 
         NarrowResults results = null;
@@ -1324,62 +1303,45 @@ public class ServiceLocatorImpl implements ServiceLocator {
 
         ImmediateResults immediate = null;
 
-        if (!useCache) {
-            final Filter filter = new UnqualifiedIndexedFilter(name, null, unqualified);
-            rLock.lock();
-            try {
-              List<SystemDescriptor<?>> candidates = getDescriptors(filter, null, true, false, true);
-              immediate = narrow(this,
-                      candidates,
-                      contractOrImpl,
-                      null,
-                      null,
-                      false,
-                      true,
-                      null,
-                      filter,
-                      qualifiers);
-              results = immediate.getTimelessResults();
+        final CacheKey cacheKey = new CacheKey(contractOrImpl, null, unqualified, qualifiers);
+        final Filter filter = new UnqualifiedIndexedFilter(name, null, unqualified);
+        final IgdCacheKey igdCacheKey = new IgdCacheKey(cacheKey,
+                name,
+                null,
+                contractOrImpl,
+                rawClass,
+                qualifiers,
+                filter);
+
+        rLock.lock();
+        try {
+            final HybridCacheEntry<IgdValue> entry = igashCache.compute(igdCacheKey);
+            final IgdValue value = entry.getValue();
+            final boolean freshOne = value.freshnessKeeper.compareAndSet(1, 2);
+            if (!freshOne) {
+                immediate = narrow(this,
+                        null,
+                        contractOrImpl,
+                        null,
+                        null,
+                        false,
+                        true,
+                        value.results,
+                        filter,
+                        qualifiers);
+                results = immediate.getTimelessResults();
+            }
+            else {
+                results = value.results;
+                immediate = value.immediate;
+            }
+
             if (!results.getErrors().isEmpty()) {
                 currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
             }
-            } finally {
-                rLock.unlock();
-            }
-        } else { // USE CACHE!
-
-            final CacheKey cacheKey = new CacheKey(contractOrImpl, null, qualifiers);
-            final Filter filter = BuilderHelper.createContractFilter(name);
-            final IgdCacheKey igdCacheKey = new IgdCacheKey(cacheKey, name, null, contractOrImpl, rawClass, qualifiers, filter);
-
-            rLock.lock();
-            try {
-                final HybridCacheEntry<IgdValue> entry = igashCache.compute(igdCacheKey);
-                final IgdValue value = entry.getValue();
-                final boolean freshOne = value.freshnessKeeper.compareAndSet(1, 2);
-                if (!freshOne) {
-                    immediate = narrow(this,
-                            null,
-                            contractOrImpl,
-                            null,
-                            null,
-                            false,
-                            true,
-                            value.results,
-                            filter,
-                            qualifiers);
-                    results = immediate.getTimelessResults();
-                } else {
-                    results = value.results;
-                    immediate = value.immediate;
-                }
-
-                if (!results.getErrors().isEmpty()) {
-                    currentErrorHandlers = new LinkedList<ErrorService>(errorHandlers);
-                }
-            } finally {
-                rLock.unlock();
-            }
+        }
+        finally {
+            rLock.unlock();
         }
 
         if (currentErrorHandlers != null) {
@@ -2387,6 +2349,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
 
         @Override
         public boolean matches(Descriptor d) {
+            if (unqualified == null) return true;
+            
             Class<? extends Annotation> unqualifiedAnnos[] = unqualified.value();
 
             if (unqualifiedAnnos.length <= 0) {

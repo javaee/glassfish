@@ -41,6 +41,8 @@ package org.glassfish.hk2.tests.locator.defaultunqualified;
 
 import javax.inject.Inject;
 
+import org.glassfish.hk2.api.IterableProvider;
+
 /**
  * @author jwells
  *
@@ -55,8 +57,12 @@ public class ChildsRoom {
     @Inject // No qualifier!
     private Toy doll;
     
+    @Inject
+    private IterableProvider<Toy> allToys;
+    
     public Toy getTrain() { return train; }
     public Toy getBoardGame() { return boardGame; }
     public Toy getDoll() { return doll; }
+    public IterableProvider<Toy> getAllToys() { return allToys; }
 
 }

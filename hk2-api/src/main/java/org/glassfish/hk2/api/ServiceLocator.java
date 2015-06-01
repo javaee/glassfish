@@ -478,7 +478,9 @@ public interface ServiceLocator {
      * method as it is considered to be the systems default {@link Unqualified}
      * annotation.  If an injection point has its own {@link Unqualified}
      * annotation returned from {@link Injectee#getUnqualified()} then that
-     * one takes precedence over this one
+     * one takes precedence over this one.  Further any injection point that
+     * is a {@link javax.inject.IterableProvider} will not have the default
+     * unqualified applied to it
      * 
      * @return The {@link Unqualified} annotation that will be (virtually) put
      * on injection points that have no qualifiers and no other {@link Unqualified}
@@ -494,7 +496,9 @@ public interface ServiceLocator {
      * method as it is considered to be the systems default {@link Unqualified}
      * annotation.  If an injection point has its own {@link Unqualified}
      * annotation returned from {@link Injectee#getUnqualified()} then that
-     * one takes precedence over this one
+     * one takes precedence over this one.  Further any injection point that
+     * is a {@link javax.inject.IterableProvider} will not have the default
+     * unqualified applied to it
      * <p>
      * This method may be called at any time, but will only affect lookups and
      * injections that have not yet occurred

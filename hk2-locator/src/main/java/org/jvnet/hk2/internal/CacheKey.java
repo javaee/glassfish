@@ -44,6 +44,7 @@ import java.lang.reflect.Type;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
+import org.glassfish.hk2.api.Unqualified;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.Pretty;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
@@ -61,6 +62,7 @@ public class CacheKey {
     private final Type lookupType;
     private final String name;
     private final Annotation qualifiers[];
+    private final Unqualified unqualified;
 
     /** Pre-calculated in order to improve hashMap lookups */
     private final int hashCode;
@@ -72,7 +74,7 @@ public class CacheKey {
      * @param name The name in the lookup call
      * @param qualifiers The set of qualifiers being looked up
      */
-    public CacheKey(Type lookupType, String name, Annotation... qualifiers) {
+    public CacheKey(Type lookupType, String name, Unqualified unqualified, Annotation... qualifiers) {
         this.lookupType = lookupType;
         
         Class<?> rawClass = ReflectionHelper.getRawClass(lookupType);
@@ -90,6 +92,8 @@ public class CacheKey {
         else {
             this.qualifiers = null;
         }
+        
+        this.unqualified = unqualified;
 
         int retVal = 0;
 
@@ -103,6 +107,14 @@ public class CacheKey {
 
         for (Annotation anno : qualifiers) {
             retVal ^= anno.hashCode();
+        }
+        
+        if (unqualified != null) {
+            retVal ^= 0xffffffff;
+            
+            for (Class<?> clazz : unqualified.value()) {
+                retVal ^= clazz.hashCode();
+            }
         }
 
         hashCode = retVal;
@@ -146,6 +158,20 @@ public class CacheKey {
 
         }
         else if (other.qualifiers != null) return false;
+        
+        if (unqualified != null) {
+            if (other.unqualified == null) return false;
+            
+            Class<?> myClazzes[] = unqualified.value();
+            Class<?> otherClazzes[] = other.unqualified.value();
+            
+            if (myClazzes.length != otherClazzes.length) return false;
+            
+            for (int lcv = 0; lcv < myClazzes.length; lcv++) {
+                if (!GeneralUtilities.safeEquals(myClazzes[lcv], otherClazzes[lcv])) return false;
+            }
+        }
+        else if (other.unqualified != null) return false;
 
         return true;
     }
