@@ -58,7 +58,7 @@ public class DefaultUnqualifiedTest {
      * hence would NOT be picked for the doll injection
      * point if the DefaultUnqualified were not set
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testGetsUnqualifiedService() {
         ServiceLocator locator = LocatorHelper.getServiceLocator(BoardGameImpl.class,
                 DollImpl.class,
@@ -74,6 +74,7 @@ public class DefaultUnqualifiedTest {
         
         // The real test:
         Assert.assertEquals(DollImpl.class, childsRoom.getDoll().getClass());
+        Assert.assertEquals(DollImpl.class, childsRoom.getDollProvider().get().getClass());
     }
     
     /**
@@ -93,6 +94,25 @@ public class DefaultUnqualifiedTest {
         
         IterableProvider<Toy> allToys = childsRoom.getAllToys();
         Assert.assertEquals(3, allToys.getSize());
+        
+        int lcv = 0;
+        for (Toy toy : allToys) {
+            switch (lcv) {
+            case 0:
+                Assert.assertEquals(BoardGameImpl.class, toy.getClass());
+                break;
+            case 1:
+                Assert.assertEquals(TrainImpl.class, toy.getClass());
+                break;
+            case 2:
+                Assert.assertEquals(DollImpl.class, toy.getClass());
+                break;
+            default:
+                Assert.fail("Should not get here");
+            }
+            
+            lcv++;
+        }
         
         
     }

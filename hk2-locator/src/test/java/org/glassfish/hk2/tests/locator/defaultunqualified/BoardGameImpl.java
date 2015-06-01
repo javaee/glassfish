@@ -39,11 +39,14 @@
  */
 package org.glassfish.hk2.tests.locator.defaultunqualified;
 
+import org.glassfish.hk2.api.Rank;
+
 /**
  * @author jwells
  *
  */
 @BoardGame
+@Rank(100)
 public class BoardGameImpl implements Toy {
 
 }

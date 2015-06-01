@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -193,7 +193,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     private final HashMap<String, ClassAnalyzer> classAnalyzers =
             new HashMap<String, ClassAnalyzer>();
     private String defaultClassAnalyzer = ClassAnalyzer.DEFAULT_IMPLEMENTATION_NAME;
-    private Unqualified defaultUnqualified = null;
+    private volatile Unqualified defaultUnqualified = null;
 
     private ConcurrentHashMap<Class<? extends Annotation>, InjectionResolver<?>> allResolvers =
             new ConcurrentHashMap<Class<? extends Annotation>, InjectionResolver<?>>();
@@ -506,11 +506,14 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
 
         if (Provider.class.equals(rawType) || IterableProvider.class.equals(rawType) ) {
+            boolean isIterable = (IterableProvider.class.equals(rawType));
+            
             IterableProviderImpl<?> value = new IterableProviderImpl<Object>(this,
                     (ReflectionHelper.getFirstTypeArgument(requiredType)),
                     injectee.getRequiredQualifiers(),
                     injectee.getUnqualified(),
-                    injectee);
+                    injectee,
+                    isIterable);
 
             return new ConstantActiveDescriptor<Object>(value, this);
         }
@@ -528,7 +531,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
 
         Annotation qualifiers[] = qualifiersAsSet.toArray(new Annotation[qualifiersAsSet.size()]);
 
-        ActiveDescriptor<?> retVal = internalGetDescriptor(injectee, requiredType, name, injectee.getUnqualified(), qualifiers);
+        ActiveDescriptor<?> retVal = internalGetDescriptor(injectee, requiredType, name, injectee.getUnqualified(), false, qualifiers);
         if (retVal == null && firstTime) {
             return secondChanceResolve(injectee);
         }
@@ -688,6 +691,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
         Class<?> rawType = ReflectionHelper.getRawClass(contractOrImpl);
         if (rawType != null &&
                 (Provider.class.equals(rawType) || IterableProvider.class.equals(rawType)) ) {
+            boolean isIterable = IterableProvider.class.equals(rawType);
+            
             Type requiredType = ReflectionHelper.getFirstTypeArgument(contractOrImpl);
             HashSet<Annotation> requiredQualifiers = new HashSet<Annotation>();
             for (Annotation qualifier : qualifiers) {
@@ -702,12 +707,13 @@ public class ServiceLocatorImpl implements ServiceLocator {
                     requiredType,
                     requiredQualifiers,
                     unqualified,
-                    injectee);
+                    injectee,
+                    isIterable);
             
             return (T) retVal;
         }
 
-        ActiveDescriptor<T> ad = internalGetDescriptor(null, contractOrImpl, name, unqualified, qualifiers);
+        ActiveDescriptor<T> ad = internalGetDescriptor(null, contractOrImpl, name, unqualified, false, qualifiers);
         if (ad == null) return null;
 
         T retVal = Utilities.createService(ad, null, this, null, rawType);
@@ -716,7 +722,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
 
     }
 
-    /* package */ <T> T getUnqualifiedService(Type contractOrImpl, Unqualified unqualified, Annotation... qualifiers) throws MultiException {
+    /* package */ <T> T getUnqualifiedService(Type contractOrImpl, Unqualified unqualified, boolean isIterable, Annotation... qualifiers) throws MultiException {
         return internalGetService(contractOrImpl, null, unqualified, qualifiers);
     }
 
@@ -749,6 +755,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         List<T> retVal = (List<T>) internalGetAllServiceHandles(
                 contractOrImpl,
                 null,
+                false,
                 false,
                 qualifiers
                 );
@@ -1113,12 +1120,21 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
         return igdCache.createCacheEntry(key, new IgdValue(results, immediate), false);
     }
-
+    
+    private Unqualified getEffectiveUnqualified(Unqualified givenUnqualified, boolean isIterable, Annotation qualifiers[]) {
+        if (givenUnqualified != null) return givenUnqualified;
+        if (qualifiers.length > 0) return null;
+        if (isIterable) return null;
+        
+        // Given unqualified is null and there are no qualifiers
+        return defaultUnqualified;
+    }
 
     @SuppressWarnings("unchecked")
     private <T> ActiveDescriptor<T> internalGetDescriptor(Injectee onBehalfOf, Type contractOrImpl,
             String name,
             Unqualified unqualified,
+            boolean isIterable,
             Annotation... qualifiers) throws MultiException {
         if (contractOrImpl == null) throw new IllegalArgumentException();
 
@@ -1135,6 +1151,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
         LinkedList<ErrorService> currentErrorHandlers = null;
 
         ImmediateResults immediate = null;
+        
+        unqualified = getEffectiveUnqualified(unqualified, isIterable, qualifiers);
 
         final CacheKey cacheKey = new CacheKey(contractOrImpl, name, unqualified, qualifiers);
         final Filter filter =  new UnqualifiedIndexedFilter(rawClass.getName(), name, unqualified);
@@ -1201,16 +1219,17 @@ public class ServiceLocatorImpl implements ServiceLocator {
             Annotation... qualifiers) throws MultiException {
         checkState();
 
-        ActiveDescriptor<T> ad = internalGetDescriptor(null, contractOrImpl, null, null, qualifiers);
+        ActiveDescriptor<T> ad = internalGetDescriptor(null, contractOrImpl, null, null, false, qualifiers);
         if (ad == null) return null;
 
         return getServiceHandle(ad, new InjecteeImpl(contractOrImpl));
     }
 
-    /* package */ <T> ServiceHandle<T> getUnqualifiedServiceHandle(Type contractOrImpl, Unqualified unqualified, Annotation... qualifiers) throws MultiException {
+    /* package */ <T> ServiceHandle<T> getUnqualifiedServiceHandle(Type contractOrImpl, Unqualified unqualified, boolean isIterable,
+            Annotation... qualifiers) throws MultiException {
         checkState();
 
-        ActiveDescriptor<T> ad = internalGetDescriptor(null, contractOrImpl, null, unqualified, qualifiers);
+        ActiveDescriptor<T> ad = internalGetDescriptor(null, contractOrImpl, null, unqualified, isIterable, qualifiers);
         if (ad == null) return null;
 
         return getServiceHandle(ad, new InjecteeImpl(contractOrImpl));
@@ -1244,15 +1263,15 @@ public class ServiceLocatorImpl implements ServiceLocator {
             Type contractOrImpl, Annotation... qualifiers)
             throws MultiException {
         return (List<ServiceHandle<?>>)
-                internalGetAllServiceHandles(contractOrImpl, null, true, qualifiers);
+                internalGetAllServiceHandles(contractOrImpl, null, true, false, qualifiers);
     }
 
     /* package */ @SuppressWarnings("unchecked")
     List<ServiceHandle<?>> getAllUnqualifiedServiceHandles(
-            Type contractOrImpl, Unqualified unqualified, Annotation... qualifiers)
+            Type contractOrImpl, Unqualified unqualified, boolean isIterable, Annotation... qualifiers)
             throws MultiException {
         return (List<ServiceHandle<?>>)
-                internalGetAllServiceHandles(contractOrImpl, unqualified, true, qualifiers);
+                internalGetAllServiceHandles(contractOrImpl, unqualified, true, isIterable, qualifiers);
     }
 
     final private LRUHybridCache<IgdCacheKey, IgdValue> igashCache =
@@ -1285,6 +1304,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             Type contractOrImpl,
             Unqualified unqualified,
             boolean getHandles,
+            boolean isIterable,
             Annotation... qualifiers)
             throws MultiException {
 
@@ -1302,6 +1322,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
         LinkedList<ErrorService> currentErrorHandlers = null;
 
         ImmediateResults immediate = null;
+        
+        unqualified = getEffectiveUnqualified(unqualified, isIterable, qualifiers);
 
         final CacheKey cacheKey = new CacheKey(contractOrImpl, null, unqualified, qualifiers);
         final Filter filter = new UnqualifiedIndexedFilter(name, null, unqualified);
@@ -1378,7 +1400,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             String name, Annotation... qualifiers) throws MultiException {
         checkState();
 
-        ActiveDescriptor<T> ad = internalGetDescriptor(null, contractOrImpl, name, null, qualifiers);
+        ActiveDescriptor<T> ad = internalGetDescriptor(null, contractOrImpl, name, null, false, qualifiers);
         if (ad == null) return null;
 
         return internalGetServiceHandle(ad, contractOrImpl);

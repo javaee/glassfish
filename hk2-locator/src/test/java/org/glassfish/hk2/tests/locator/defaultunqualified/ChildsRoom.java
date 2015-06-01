@@ -40,6 +40,7 @@
 package org.glassfish.hk2.tests.locator.defaultunqualified;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import org.glassfish.hk2.api.IterableProvider;
 
@@ -60,9 +61,13 @@ public class ChildsRoom {
     @Inject
     private IterableProvider<Toy> allToys;
     
+    @Inject // No qualifier, should return doll
+    private Provider<Toy> dollProvider;
+    
     public Toy getTrain() { return train; }
     public Toy getBoardGame() { return boardGame; }
     public Toy getDoll() { return doll; }
     public IterableProvider<Toy> getAllToys() { return allToys; }
+    public Provider<Toy> getDollProvider() { return dollProvider; }
 
 }
