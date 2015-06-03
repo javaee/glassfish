@@ -56,6 +56,7 @@ public interface ErrorInformation {
      * <LI>{@link ErrorType#DYNAMIC_CONFIGURATION_FAILURE}</LI>
      * <LI>{@link ErrorType#SERVICE_CREATION_FAILURE}</LI>
      * <LI>{@link ErrorType#SERVICE_DESTRUCTION_FAILURE}</LI>
+     * <LI>{@link ErrorType#VALIDATE_FAILURE}</LI>
      * </UL>
      */
     public ErrorType getErrorType();
@@ -67,7 +68,8 @@ public interface ErrorInformation {
      * DYNAMIC_CONFIGURATION_FAILURE case this will return null.
      * In SERVICE_CREATION_FAILURE and SERVICE_DESTRUCTION_FAILURE
      * it will contain the descriptor whose create or destroy methods
-     * failed
+     * failed.  In the case of VALIDATE_FAILURE it will contain
+     * the descriptor that failed the security check
      * 
      * @return The descriptor associated with this failure
      */
@@ -80,6 +82,10 @@ public interface ErrorInformation {
      * In the case of FAILURE_TO_REIFY this will be the injectee that was
      * being looked up to satisfy the injection point, or null if this lookup
      * was due to an API call.
+     * <p>
+     * In the case of VALIDATE_FAILURE this will contain the injectee that
+     * was being looked up when the failure occurred or null if this was a
+     * lookup operation or the injectee is unknown for some other reason
      * <p>
      * In the cases of DYNAMIC_CONFIGURATION_FAILURE, SERVICE_CREATION_FAILURE and
      * SERVICE_DESTRUCTION_FAILURE this will return null.
@@ -103,6 +109,9 @@ public interface ErrorInformation {
      * <p>
      * In the case of SERVICE_DESTRUCTION_FAILURE this will contain the exception
      * that was thrown during service destruction
+     * <p>
+     * In the case of VALIDATE_FAILURE this will contain the exception that was
+     * thrown from the {@link Validator#validate(ValidationInformation)} method
      * 
      * @return The exception associated with this failure
      */

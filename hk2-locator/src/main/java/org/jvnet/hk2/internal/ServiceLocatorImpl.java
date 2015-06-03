@@ -98,6 +98,7 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.api.ServiceLocatorState;
 import org.glassfish.hk2.api.Unqualified;
+import org.glassfish.hk2.api.ValidationInformation;
 import org.glassfish.hk2.api.ValidationService;
 import org.glassfish.hk2.api.Validator;
 import org.glassfish.hk2.api.messaging.Topic;
@@ -231,6 +232,17 @@ public class ServiceLocatorImpl implements ServiceLocator {
         id = getAndIncrementLocatorId();
 
         Logger.getLogger().debug("Created ServiceLocator " + this);
+    }
+    
+    /**
+     * Must have read lock held
+     * 
+     * @param vi The non-null validation
+     * @return
+     */
+    private boolean callValidate(ValidationInformation vi) {
+        throw new AssertionError("not yet implemented");
+        
     }
 
     /**

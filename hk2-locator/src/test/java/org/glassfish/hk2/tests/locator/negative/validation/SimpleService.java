@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,39 +37,12 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api;
+package org.glassfish.hk2.tests.locator.negative.validation;
 
 /**
- * This enumeration describes the types of errors that might
- * occur
- * 
  * @author jwells
  *
  */
-public enum ErrorType {
-    /**
-     * This type is set if an ActiveDescriptor fails to reify during a lookup operation
-     */
-    FAILURE_TO_REIFY,
-    
-    /**
-     * This type is set if a dynamic configuration operation fails
-     */
-    DYNAMIC_CONFIGURATION_FAILURE,
-    
-    /**
-     * A service threw an error upon creation
-     */
-    SERVICE_CREATION_FAILURE,
-    
-    /**
-     * A service threw an error upon destruction
-     */
-    SERVICE_DESTRUCTION_FAILURE,
-    
-    /**
-     * The {@link Validator#validate(ValidationInformation)} method failed
-     */
-    VALIDATE_FAILURE
+public class SimpleService {
 
 }

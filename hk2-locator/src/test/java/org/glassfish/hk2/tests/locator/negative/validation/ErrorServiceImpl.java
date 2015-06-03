@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,39 +37,45 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api;
+package org.glassfish.hk2.tests.locator.negative.validation;
+
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.api.ErrorInformation;
+import org.glassfish.hk2.api.ErrorService;
+import org.glassfish.hk2.api.MultiException;
 
 /**
- * This enumeration describes the types of errors that might
- * occur
- * 
  * @author jwells
  *
  */
-public enum ErrorType {
-    /**
-     * This type is set if an ActiveDescriptor fails to reify during a lookup operation
-     */
-    FAILURE_TO_REIFY,
+@Singleton
+public class ErrorServiceImpl implements ErrorService {
+    private ErrorInformation lastError;
+    private boolean throwInOnFailure = false;
     
-    /**
-     * This type is set if a dynamic configuration operation fails
-     */
-    DYNAMIC_CONFIGURATION_FAILURE,
+    public ErrorInformation getLastError() {
+        return lastError;
+    }
     
-    /**
-     * A service threw an error upon creation
+    public void setThrowInOnFailure(boolean throwInOnFailure) {
+        this.throwInOnFailure = throwInOnFailure;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ErrorService#onFailure(org.glassfish.hk2.api.ErrorInformation)
      */
-    SERVICE_CREATION_FAILURE,
-    
-    /**
-     * A service threw an error upon destruction
-     */
-    SERVICE_DESTRUCTION_FAILURE,
-    
-    /**
-     * The {@link Validator#validate(ValidationInformation)} method failed
-     */
-    VALIDATE_FAILURE
+    @Override
+    public void onFailure(ErrorInformation errorInformation)
+            throws MultiException {
+        lastError = errorInformation;
+        if (throwInOnFailure) {
+            if (errorInformation.getAssociatedException() != null) {
+                throw errorInformation.getAssociatedException();
+            }
+            
+            throw new AssertionError();
+        }
+    }
 
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,39 +37,69 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api;
+package org.glassfish.hk2.tests.locator.negative.validation;
+
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.api.Filter;
+import org.glassfish.hk2.api.ValidationInformation;
+import org.glassfish.hk2.api.ValidationService;
+import org.glassfish.hk2.api.Validator;
+import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
- * This enumeration describes the types of errors that might
- * occur
- * 
  * @author jwells
  *
  */
-public enum ErrorType {
-    /**
-     * This type is set if an ActiveDescriptor fails to reify during a lookup operation
-     */
-    FAILURE_TO_REIFY,
+@Singleton
+public class ValidationServiceImpl implements ValidationService {
+    private final Validator VALIDATOR = new ValidatorImpl(this);
     
-    /**
-     * This type is set if a dynamic configuration operation fails
+    private boolean throwFromValidate = false;
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ValidationService#getLookupFilter()
      */
-    DYNAMIC_CONFIGURATION_FAILURE,
+    @Override
+    public Filter getLookupFilter() {
+        return BuilderHelper.allFilter();
+    }
     
-    /**
-     * A service threw an error upon creation
-     */
-    SERVICE_CREATION_FAILURE,
+    public void setThrowFromValidate(boolean throwFromValidate) {
+        this.throwFromValidate = throwFromValidate;
+    }
     
-    /**
-     * A service threw an error upon destruction
+    private boolean getThrowFromValidate() {
+        return throwFromValidate;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ValidationService#getValidator()
      */
-    SERVICE_DESTRUCTION_FAILURE,
+    @Override
+    public Validator getValidator() {
+        return VALIDATOR;
+    }
     
-    /**
-     * The {@link Validator#validate(ValidationInformation)} method failed
-     */
-    VALIDATE_FAILURE
+    private static class ValidatorImpl implements Validator {
+        private final ValidationServiceImpl parent;
+        
+        private ValidatorImpl(ValidationServiceImpl parent) {
+            this.parent = parent;
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.api.Validator#validate(org.glassfish.hk2.api.ValidationInformation)
+         */
+        @Override
+        public boolean validate(ValidationInformation info) {
+            if (parent.getThrowFromValidate()) {
+                throw new AssertionError(ValidateThrowsTest.EXPECTED_EXCEPTION);
+            }
+            
+            return true;
+        }
+        
+    }
 
 }

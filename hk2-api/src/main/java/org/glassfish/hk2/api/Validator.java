@@ -69,9 +69,11 @@ public interface Validator {
      * @param info Information about the operation being performed
      * @return true if this injection should succeed, false if this candidate should not
      * be returned
-     * @throws RuntimeException Any exception from this method will also cause the candidate
-     * to not be available.  However, the preferred method of indicating an validation failure
-     * is to return false
+     * @throws RuntimeException This method should not throw an exception.  If it
+     * does the {@link ErrorService} will be called with the {@link ErrorType#VALIDATE_FAILURE}.
+     * Even if the {@link ErrorService#onFailure(ErrorInformation)} rethrows the exception
+     * that exception will not be thrown up the stack, instead the system will always
+     * behave as if false had been returned from this method
      */
     public boolean validate(ValidationInformation info);
 }
