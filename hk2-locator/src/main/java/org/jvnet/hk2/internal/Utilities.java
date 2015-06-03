@@ -87,7 +87,6 @@ import org.glassfish.hk2.api.ErrorType;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.HK2Loader;
-import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionPointIndicator;
 import org.glassfish.hk2.api.InjectionResolver;
@@ -2134,21 +2133,7 @@ public class Utilities {
         
         for (InterceptionService interceptionService : interceptionServices) {
             Filter filter = interceptionService.getDescriptorFilter();
-            if (filter instanceof IndexedFilter) {
-                IndexedFilter indexedFilter = (IndexedFilter) filter;
-                
-                String indexedContract = indexedFilter.getAdvertisedContract();
-                if (indexedContract != null) {
-                    if (!descriptor.getAdvertisedContracts().contains(indexedContract)) continue;
-                }
-                String name = indexedFilter.getName();
-                if (name != null) {
-                    if (descriptor.getName() == null) continue;
-                    if (!descriptor.getName().equals(name)) continue;
-                }
-            }
-            
-            if (filter.matches(descriptor)) {
+            if (BuilderHelper.filterMatches(descriptor, filter)) {
                 for (MethodWrapper methodWrapper : crh.getAllMethods(clazz)) {
                     Method method = methodWrapper.getMethod();
                     

@@ -661,4 +661,43 @@ public class BuilderHelper {
 	    };
 	    
 	}
+	
+	/**
+	 * Determines if the given descriptor matches the given filter.  A null
+	 * filter matches every descriptor.  Takes into account if the {@link Filter}
+	 * implements {@link IndexedFilter}.
+	 * 
+	 * @param baseDescriptor The non-null descriptor to match the filter against
+	 * @param filter The filter to match.  If null will return true
+	 * @return true if baseDescriptor matches, false otherwise
+	 */
+	public static boolean filterMatches(final Descriptor baseDescriptor, final Filter filter) {
+	    if (baseDescriptor == null) throw new IllegalArgumentException();
+	    
+        if (filter == null) return true;
+
+        if (filter instanceof IndexedFilter) {
+            IndexedFilter indexedFilter = (IndexedFilter) filter;
+
+            String indexContract = indexedFilter.getAdvertisedContract();
+            if (indexContract != null) {
+                if (!baseDescriptor.getAdvertisedContracts().contains(indexContract)) {
+                    return false;
+                }
+            }
+
+            String indexName = indexedFilter.getName();
+            if (indexName != null) {
+                if (baseDescriptor.getName() == null) return false;
+
+                if (!indexName.equals(baseDescriptor.getName())) {
+                    return false;
+                }
+            }
+
+            // After all that we can run the match method!
+        }
+
+        return filter.matches(baseDescriptor);
+    }
 }

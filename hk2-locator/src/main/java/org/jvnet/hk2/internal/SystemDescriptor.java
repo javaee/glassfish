@@ -860,7 +860,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T>, Closeable {
 
         boolean decision = true;
         try {
-            decision = service.getLookupFilter().matches(this);
+            decision = BuilderHelper.filterMatches(this, service.getLookupFilter());
         }
         catch (Throwable th) {
             // If the filter fails we assume the decision is true
@@ -876,40 +876,12 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T>, Closeable {
         return decision;
     }
 
-    private boolean filterMatches(Filter filter) {
-        if (filter == null) return true;
-
-        if (filter instanceof IndexedFilter) {
-            IndexedFilter indexedFilter = (IndexedFilter) filter;
-
-            String indexContract = indexedFilter.getAdvertisedContract();
-            if (indexContract != null) {
-                if (!baseDescriptor.getAdvertisedContracts().contains(indexContract)) {
-                    return false;
-                }
-            }
-
-            String indexName = indexedFilter.getName();
-            if (indexName != null) {
-                if (baseDescriptor.getName() == null) return false;
-
-                if (!indexName.equals(baseDescriptor.getName())) {
-                    return false;
-                }
-            }
-
-            // After all that we can run the match method!
-        }
-
-        return filter.matches(this);
-    }
-
     /* package */ void reupInstanceListeners(List<InstanceLifecycleListener> listeners) {
         instanceListeners.clear();
 
         for (InstanceLifecycleListener listener : listeners) {
             Filter filter = listener.getFilter();
-            if (filterMatches(filter)) {
+            if (BuilderHelper.filterMatches(this, filter)) {
                 instanceListeners.add(listener);
             }
         }

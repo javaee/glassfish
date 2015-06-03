@@ -62,7 +62,7 @@ public class ValidationServiceImpl implements ValidationService {
      */
     @Override
     public Filter getLookupFilter() {
-        return BuilderHelper.allFilter();
+        return BuilderHelper.createContractFilter(SimpleService.class.getName());
     }
     
     public void setThrowFromValidate(boolean throwFromValidate) {

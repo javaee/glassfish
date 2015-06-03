@@ -240,9 +240,39 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * @param vi The non-null validation
      * @return
      */
-    private boolean callValidate(ValidationInformation vi) {
-        throw new AssertionError("not yet implemented");
+    private boolean callValidate(ValidationService vs, ValidationInformation vi) {
+        List<ErrorService> localErrorServices = new LinkedList<ErrorService>(errorHandlers);
         
+        try {
+            return vs.getValidator().validate(vi);
+        }
+        catch (Throwable th) {
+            MultiException useException;
+            if (th instanceof MultiException) {
+                useException = (MultiException) th;
+            }
+            else {
+                useException = new MultiException(th);
+            }
+            
+            ErrorInformationImpl ei = new ErrorInformationImpl(
+                    ErrorType.VALIDATE_FAILURE,
+                    vi.getCandidate(),
+                    vi.getInjectee(),
+                    useException);
+            
+            for (ErrorService errorService : localErrorServices) {
+                try {
+                    errorService.onFailure(ei);
+                }
+                catch (Throwable th2) {
+                    Logger.getLogger().debug("ServiceLocatorImpl", "callValidate", th2);
+                }
+            }
+            
+        }
+        
+        return false;
     }
 
     /**
@@ -256,7 +286,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         for (ValidationService vs : getAllValidators()) {
             if (!descriptor.isValidating(vs)) continue;
 
-            if (!vs.getValidator().validate(new ValidationInformationImpl(
+            if (!callValidate(vs, new ValidationInformationImpl(
                     Operation.LOOKUP, descriptor, onBehalfOf, filter))) {
                 return false;
             }
@@ -1525,7 +1555,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 if (retVal.contains(candidate)) continue;
 
                 for (ValidationService vs : getAllValidators()) {
-                    if (!vs.getValidator().validate(new ValidationInformationImpl(
+                    if (!callValidate(vs, new ValidationInformationImpl(
                             Operation.UNBIND, candidate))) {
                         throw new MultiException(new IllegalArgumentException("Descriptor " +
                             candidate + " did not pass the UNBIND validation"));
@@ -1627,7 +1657,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
                     throw new MultiException(new IllegalArgumentException("Validator was null from validation service" + vs));
                 }
 
-                if (!vs.getValidator().validate(new ValidationInformationImpl(
+                if (!callValidate(vs, new ValidationInformationImpl(
                         Operation.BIND, sd))) {
                     throw new MultiException(new IllegalArgumentException("Descriptor " + sd + " did not pass the BIND validation"));
                 }
