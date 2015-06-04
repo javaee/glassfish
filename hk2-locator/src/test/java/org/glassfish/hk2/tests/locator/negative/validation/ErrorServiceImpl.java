@@ -43,6 +43,7 @@ import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ErrorInformation;
 import org.glassfish.hk2.api.ErrorService;
+import org.glassfish.hk2.api.ErrorType;
 import org.glassfish.hk2.api.MultiException;
 
 /**
@@ -68,7 +69,10 @@ public class ErrorServiceImpl implements ErrorService {
     @Override
     public void onFailure(ErrorInformation errorInformation)
             throws MultiException {
-        lastError = errorInformation;
+        if (ErrorType.VALIDATE_FAILURE.equals(errorInformation.getErrorType())) {
+            lastError = errorInformation;
+        }
+        
         if (throwInOnFailure) {
             if (errorInformation.getAssociatedException() != null) {
                 throw errorInformation.getAssociatedException();

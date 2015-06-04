@@ -104,5 +104,37 @@ public class DefaultingTest {
         Assert.assertEquals(0, Double.compare(0.00, db.getDefaultDoubleProp()));
         Assert.assertEquals(null, db.getDefaultStringProp());
     }
+    
+    /**
+     * Tests that defaults work in a dynamically created bean
+     */
+    @Test @org.junit.Ignore
+    public void testCanGetValuesFromDynamicallyCreatedBean() {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        DefaultedBean db = xmlService.createBean(DefaultedBean.class);
+        
+        Assert.assertEquals(13, db.getIntProp());
+        Assert.assertEquals(13L, db.getLongProp());
+        Assert.assertEquals((byte) 13, db.getByteProp());
+        Assert.assertEquals(true, db.isBooleanProp());
+        Assert.assertEquals((short) 13, db.getShortProp());
+        Assert.assertEquals('f', db.getCharProp());
+        Assert.assertEquals(0, Float.compare((float) 13.00, db.getFloatProp()));
+        Assert.assertEquals(0, Double.compare(13.00, db.getDoubleProp()));
+        Assert.assertEquals("13", db.getStringProp());
+        
+        Assert.assertEquals(0, db.getDefaultIntProp());
+        Assert.assertEquals(0L, db.getDefaultLongProp());
+        Assert.assertEquals((byte) 0, db.getDefaultByteProp());
+        Assert.assertEquals(false, db.isDefaultBooleanProp());
+        Assert.assertEquals((short) 0, db.getDefaultShortProp());
+        Assert.assertEquals((char) 0, db.getDefaultCharProp());
+        Assert.assertEquals(0, Float.compare((float) 0.00, db.getDefaultFloatProp()));
+        Assert.assertEquals(0, Double.compare(0.00, db.getDefaultDoubleProp()));
+        Assert.assertEquals(null, db.getDefaultStringProp());
+        
+    }
 
 }
