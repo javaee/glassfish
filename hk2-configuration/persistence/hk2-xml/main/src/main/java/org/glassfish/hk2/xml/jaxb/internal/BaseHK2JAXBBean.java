@@ -133,6 +133,14 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
     private volatile transient DynamicChangeInfo changeControl;
     
     /**
+     * If true this bean has been given to the user to
+     * add/remove or call getters or setters.  This can
+     * happen in two ways, the first being via being parsed
+     * from an XML file, the other is via dynamic creation
+     */
+    private boolean active = false;
+    
+    /**
      * The descriptor that this bean is advertised with
      */
     private transient ActiveDescriptor<?> selfDescriptor;
@@ -239,7 +247,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
     private Object _getProperty(String propName, Class<?> expectedClass, ParentedNode parentNode) {
         boolean isSet;
         Object retVal;
-        boolean doDefaulting = false;
+        boolean doDefaulting = active ? true : false;
         
         if (changeControl == null) {
             isSet = beanLikeMap.containsKey(propName);
@@ -766,6 +774,15 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         xmlPath = calculateXmlPath(this);
         
         changeControl = change;
+        if (changeControl != null) active = true;
+    }
+    
+    /**
+     * Once this has been set the bean is considered active, and
+     * so defaulting can happen on the bean
+     */
+    public void _setActive() {
+        active = true;
     }
     
     /**

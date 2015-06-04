@@ -44,8 +44,6 @@ import java.net.URI;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Unmarshaller;
 
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
@@ -255,7 +253,11 @@ public class XmlServiceImpl implements XmlService {
         
         T retVal = (T) Utilities.createBean(node.getTranslatedClass());
         
-        ((BaseHK2JAXBBean) retVal)._setModel(node, classReflectionHelper);
+        BaseHK2JAXBBean base = (BaseHK2JAXBBean) retVal;
+        
+        base._setModel(node, classReflectionHelper);
+        base._setActive();
+        
         
         return retVal;
     }

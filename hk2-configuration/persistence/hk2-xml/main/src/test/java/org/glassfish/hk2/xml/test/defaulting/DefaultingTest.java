@@ -108,7 +108,7 @@ public class DefaultingTest {
     /**
      * Tests that defaults work in a dynamically created bean
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testCanGetValuesFromDynamicallyCreatedBean() {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
