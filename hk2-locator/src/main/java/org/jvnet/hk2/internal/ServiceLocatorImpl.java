@@ -241,12 +241,12 @@ public class ServiceLocatorImpl implements ServiceLocator {
      * @return
      */
     private boolean callValidate(ValidationService vs, ValidationInformation vi) {
-        List<ErrorService> localErrorServices = new LinkedList<ErrorService>(errorHandlers);
-        
         try {
             return vs.getValidator().validate(vi);
         }
         catch (Throwable th) {
+            List<ErrorService> localErrorServices = new LinkedList<ErrorService>(errorHandlers);
+            
             MultiException useException;
             if (th instanceof MultiException) {
                 useException = (MultiException) th;
