@@ -74,7 +74,7 @@
 
     <body>
         <head>
-            <link href="./css/font-awesome.css" rel="stylesheet" />
+            <link href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet" />
             <link href="./css/solarized_dark.min.css" rel="stylesheet" />
             <script src="./js/highlight.min.js"></script>
         </head>

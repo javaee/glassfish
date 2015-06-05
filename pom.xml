@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010-2014 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2015 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -61,7 +61,7 @@
         <name>Oracle Corporation</name>
         <url>http://www.oracle.com</url>
     </organization>
-    
+
     <url>https://hk2.java.net</url>
 
     <licenses>
@@ -94,7 +94,7 @@
             <name>Jeff Trent</name>
         </contributor>
     </contributors>
-    
+
     <developers>
         <developer>
             <id>jwells</id>
@@ -140,19 +140,19 @@
             <archive>http://java.net/projects/hk2/lists/commits/archive</archive>
         </mailingList>
     </mailingLists>
-    
+
     <issueManagement>
         <system>JIRA</system>
         <url>http://java.net/jira/browse/HK2</url>
     </issueManagement>
-    
+
     <scm>
         <connection>scm:git:git://java.net/hk2~git</connection>
         <developerConnection>scm:git:ssh://${user.name}@git.java.net/hk2~git</developerConnection>
         <url>https://java.net/projects/hk2/sources/git/show</url>
         <tag>hk2-parent-2.4.0-b23</tag>
     </scm>
-    
+
     <repositories>
         <repository>
             <id>spring-external</id>
@@ -174,7 +174,7 @@
             </snapshots>
         </pluginRepository>
     </pluginRepositories>
-    
+
     <distributionManagement>
         <site>
             <id>website.java.net</id>
@@ -202,11 +202,11 @@
         <javax.el.version>2.2.5</javax.el.version>
         <findbugs.exclude />
         <findbugs.threshold>High</findbugs.threshold>
-        
+
         <!-- site is generated under target/site/${project.version} -->
         <site.dir>${project.build.directory}/site</site.dir>
         <site.outputDir>${site.dir}/${project.version}</site.outputDir>
-        
+
         <!-- properties for site resources -->
         <cdn.bootstrap>http://netdna.bootstrapcdn.com</cdn.bootstrap>
         <cdn.google>http://ajax.googleapis.com/ajax/libs</cdn.google>
@@ -218,7 +218,7 @@
         <jdk.version>1.6.0</jdk.version>
         <mvn.version>3.0.3</mvn.version>
     </properties>
-    
+
     <modules>
         <module>hk2-maven</module>
         <module>osgiversion-maven-plugin</module>
@@ -245,7 +245,7 @@
         <module>hk2-api</module>
         <module>hk2-configuration</module>
         <module>hk2-extras</module>
-    </modules>                  
+    </modules>
 
     <build>
         <defaultGoal>install</defaultGoal>
@@ -339,8 +339,8 @@
                                     <directory>src/main/resources</directory>
                                     <filtering>true</filtering>
                                 </resource>
-                            </resources>              
-                        </configuration>            
+                            </resources>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -374,18 +374,6 @@
                             <url>${cdn.bootstrap}/twitter-bootstrap/${bootstrap.version}/js/bootstrap.min.js</url>
                             <outputDirectory>${site.outputDir}/js</outputDirectory>
                             <md5>be1c5898c4332c8e7f9906011e005bb0</md5>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>get-font-awesome</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>wget</goal>
-                        </goals>
-                        <configuration>
-                            <url>${cdn.bootstrap}/font-awesome/${fontawesome.version}/css/font-awesome.css</url>
-                            <outputDirectory>${site.outputDir}/css</outputDirectory>
-                            <md5>2d53b06f292dcb355b5e1a39ec065054</md5>
                         </configuration>
                     </execution>
                     <execution>
@@ -452,7 +440,7 @@
                         <artifactId>velocity</artifactId>
                         <version>1.7</version>
                     </dependency>
-                </dependencies>                 
+                </dependencies>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -484,7 +472,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>            
+            </plugin>
         </plugins>
         <pluginManagement>
             <plugins>
@@ -493,7 +481,7 @@
                     <artifactId>maven-javadoc-plugin</artifactId>
                     <version>2.9.1</version>
 <!--
-  Enable for jdk 1.8.0
+                  Enable for jdk 1.8.0
                     <configuration>
                       <additionalparam>-Xdoclint:none</additionalparam>
                     </configuration>
@@ -513,7 +501,7 @@
                     <groupId>com.googlecode.maven-download-plugin</groupId>
                     <artifactId>maven-download-plugin</artifactId>
                     <version>1.1.0</version>
-                </plugin>                
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-release-plugin</artifactId>
@@ -550,11 +538,11 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>2.3.2</version>
-                </plugin>                
+                </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>2.4</version>                 
+                    <version>2.4</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.felix</groupId>
@@ -594,7 +582,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-dependency-plugin</artifactId>
-                    <version>2.2</version>                    
+                    <version>2.2</version>
                 </plugin>
                 <plugin>
                     <groupId>org.glassfish.hk2</groupId>
@@ -618,7 +606,7 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
                     <version>2.2</version>
-                </plugin>                
+                </plugin>
             </plugins>
         </pluginManagement>
         <extensions>
@@ -639,7 +627,7 @@
                 <configuration>
                     <customBundle>${project.basedir}/src/site/custom/project-info-report.properties</customBundle>
                     <developerConnection>scm:git:ssh://[jvnet_id]@git.java.net/hk2~git/</developerConnection>
-                </configuration>               
+                </configuration>
                 <reportSets>
                     <reportSet>
                         <reports>
@@ -701,7 +689,7 @@
                 <version>2.3</version>
                 <configuration>
                     <linkJavadoc>true</linkJavadoc>
-                    <javadocDir>${site.outputDir}/apidocs</javadocDir>                    
+                    <javadocDir>${site.outputDir}/apidocs</javadocDir>
                     <sourcePath>
                         ;${basedir}/hk2-api/src/main/java;
                         ${basedir}/hk2-configuration/persistence/hk2-xml-dom/hk2-config/src/main/java;
@@ -793,7 +781,7 @@
             <dependency>
                 <groupId>org.glassfish.hk2</groupId>
                 <artifactId>osgi-resource-locator</artifactId>
-                <version>1.0.1</version>                
+                <version>1.0.1</version>
             </dependency>
             <dependency>
                 <groupId>ant</groupId>
@@ -835,7 +823,7 @@
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.osgi.core</artifactId>
                 <version>1.4.0</version>
-            </dependency>            
+            </dependency>
             <dependency>
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.compendium</artifactId>
@@ -850,7 +838,7 @@
                 <groupId>org.osgi</groupId>
                 <artifactId>org.osgi.enterprise</artifactId>
                 <version>4.2.0</version>
-            </dependency>            
+            </dependency>
             <dependency>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>org.apache.felix.bundlerepository</artifactId>
@@ -899,11 +887,6 @@
             <dependency>
                 <groupId>org.ops4j.pax.exam</groupId>
                 <artifactId>pax-exam-link-assembly</artifactId>
-                <version>${pax-exam-version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.ops4j.pax.exam</groupId>
-                <artifactId>pax-exam-extender-service</artifactId>
                 <version>${pax-exam-version}</version>
             </dependency>
             <dependency>
@@ -1005,7 +988,7 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>${junit.version}</version>                
+                <version>${junit.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.easymock</groupId>
@@ -1019,7 +1002,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-    
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -1030,7 +1013,7 @@
             <groupId>org.easymock</groupId>
             <artifactId>easymock</artifactId>
             <scope>test</scope>
-        </dependency>       
+        </dependency>
     </dependencies>
 
     <profiles>
