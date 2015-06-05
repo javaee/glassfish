@@ -51,7 +51,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
@@ -85,12 +84,10 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
     private final static String EMPTY = "";
     public final static char XML_PATH_SEPARATOR = '/';
     
-    
-    
     /**
      * All fields, including child lists and direct children
      */
-    private final ConcurrentHashMap<String, Object> beanLikeMap = new ConcurrentHashMap<String, Object>();
+    private final HashMap<String, Object> beanLikeMap = new HashMap<String, Object>();
     
     /**
      * All children whose type has an identifier.  First key is the xml parameter name, second
@@ -175,7 +172,14 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         }
         
         if (changeControl == null) {
-            beanLikeMap.put(propName, propValue);
+            if (active) {
+                synchronized (this) {
+                    beanLikeMap.put(propName, propValue);
+                }
+            }
+            else {
+                beanLikeMap.put(propName, propValue);
+            }
         }
         else {
             changeControl.getWriteLock().lock();
@@ -250,8 +254,16 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         boolean doDefaulting = active ? true : false;
         
         if (changeControl == null) {
-            isSet = beanLikeMap.containsKey(propName);
-            retVal = beanLikeMap.get(propName);
+            if (active) {
+                synchronized (this) {
+                    isSet = beanLikeMap.containsKey(propName);
+                    retVal = beanLikeMap.get(propName);
+                }
+            }
+            else {
+                isSet = beanLikeMap.containsKey(propName);
+                retVal = beanLikeMap.get(propName);
+            }
         }
         else {
             changeControl.getReadLock().lock();
@@ -656,6 +668,12 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
 
     public boolean _hasProperty(String propName) {
         if (changeControl == null) {
+            if (active) {
+                synchronized (this) {
+                    return beanLikeMap.containsKey(propName);
+                }
+            }
+            
             return beanLikeMap.containsKey(propName);
         }
         
@@ -674,6 +692,11 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
     @Override
     public Map<String, Object> _getBeanLikeMap() {
         if (changeControl == null) {
+            if (active) {
+                synchronized (this) {
+                    return Collections.unmodifiableMap(beanLikeMap);
+                }
+            }
             return Collections.unmodifiableMap(beanLikeMap);
         }
         
@@ -814,7 +837,9 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         keyValue = copyMe.keyValue;
         xmlPath = copyMe.xmlPath;
         
-        for (Map.Entry<String, Object> entrySet : copyMe.beanLikeMap.entrySet()) {
+        Map<String, Object> copyBeanLikeMap = copyMe._getBeanLikeMap();
+        
+        for (Map.Entry<String, Object> entrySet : copyBeanLikeMap.entrySet()) {
             String xmlTag = entrySet.getKey();
             
             if (copyMe.keyedChildrenCache.containsKey(xmlTag) || copyMe.model.getUnKeyedChildren().contains(xmlTag)) continue;
@@ -825,6 +850,12 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
     
     private PropertyChangeEvent changes[] = null;
     
+    /**
+     * Called with writeLock held
+     * 
+     * @param other
+     * @param writeableDatabase
+     */
     public void _merge(BaseHK2JAXBBean other, WriteableBeanDatabase writeableDatabase) {
         if (changes != null) throw new IllegalStateException("Bean " + this + " has a merge on-going");
         

@@ -102,6 +102,7 @@ public class AddsTest {
         Employees employees = rootHandle.getRoot();
         
         employees.addEmployees(DAVE);
+        employees.setAStringThatWillBeSetToNull(null);
         
         Employee daveDirect = employees.lookupEmployees(DAVE);
         Assert.assertNotNull(daveDirect);

@@ -526,6 +526,16 @@ public class Utilities {
         }
     }
     
+    /**
+     * Called with write lock held
+     * @param rootNode
+     * @param rawRoot
+     * @param changeInfo
+     * @param helper
+     * @param writeableDatabase
+     * @param dynamicService
+     * @return
+     */
     public static BaseHK2JAXBBean _addRoot(UnparentedNode rootNode,
             Object rawRoot,
             DynamicChangeInfo changeInfo,

@@ -115,4 +115,8 @@ public interface Employees {
     @XmlElement(name="no-child-array")
     public void setNoChildArray(OtherData noChildren[]);
     public OtherData[] getNoChildArray();
+    
+    @XmlElement(name="set-to-null-string")
+    public void setAStringThatWillBeSetToNull(String setMe);
+    public String getAStringThatWillBeSetToNull();
 }
