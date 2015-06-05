@@ -408,7 +408,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-gpg-plugin</artifactId>
-                    <version>1.4</version>                     
+                    <version>1.4</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -416,12 +416,12 @@
                     <version>2.7</version>
                     <configuration>
                         <retryFailedDeploymentCount>10</retryFailedDeploymentCount>
-                    </configuration>                    
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>2.9</version>                     
+                    <version>2.9</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -444,12 +444,30 @@
                         <skip>true</skip>
                         <skipDeploy>true</skipDeploy>
                     </configuration>
-                </plugin>                
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-release-plugin</artifactId>
+                    <version>2.3.2</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.apache.maven.scm</groupId>
+                            <artifactId>maven-scm-provider-gitexe</artifactId>
+                            <version>1.8.1</version>
+                        </dependency>
+                     </dependencies>
+                </plugin>
+                <plugin>
+                    <groupId>org.glassfish.copyright</groupId>
+                    <artifactId>glassfish-copyright-maven-plugin</artifactId>
+                    <version>1.39</version>
+                    <configuration>
+                        <scm>git</scm>
+                        <scmOnly>true</scmOnly>
+                        <exclude></exclude>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
     </build>
-
-  <scm>
-    <tag>hk2-parent-2.4.0-b23</tag>
-  </scm>
 </project>
