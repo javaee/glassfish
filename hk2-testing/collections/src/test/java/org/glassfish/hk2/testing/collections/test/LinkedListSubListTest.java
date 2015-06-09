@@ -50,8 +50,6 @@ import org.glassfish.hk2.testing.collections.AbstractListTest;
  * 
  * This is mainly a demonstration of how to get higher code coverage of
  * Lists by testing their subList
- *
- * @author Copyright 2011 Oracle
  */
 @SuppressWarnings({"rawtypes","unchecked"})
 public class LinkedListSubListTest extends AbstractListTest {

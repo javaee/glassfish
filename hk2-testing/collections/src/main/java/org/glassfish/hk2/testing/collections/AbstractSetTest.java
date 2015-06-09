@@ -54,8 +54,6 @@ import java.util.Set;
  * In general, sets do not allow for duplicate entries, but
  * this may not be true of all sets.  All of the same questions
  * about Collections can also be overriden for Sets
- *
- * @author Copyright 2011 Oracle
  */
 @SuppressWarnings({"rawtypes"})
 public abstract class AbstractSetTest extends AbstractCollectionTest {

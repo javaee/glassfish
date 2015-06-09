@@ -69,9 +69,6 @@ import org.junit.Test;
  * Other protected methods in this class control
  * whether or not the Map implementation implements
  * some of the optional features of the Map interface.
- * 
- *
- * @author Copyright 2011 Oracle
  */
 @SuppressWarnings({"unchecked","rawtypes"})
 public abstract class AbstractMapTest {

@@ -76,8 +76,6 @@ import org.junit.Test;
  * "isCollectionArgumentConstructorSupported" methods if the list does
  * not support one of the constructors.
  * <p>
- *
- * @author Copyright 2011 Oracle
  */
 @SuppressWarnings({"rawtypes","unchecked"})
 public abstract class AbstractListTest extends AbstractCollectionTest {

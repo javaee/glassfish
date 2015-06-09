@@ -46,9 +46,6 @@ import org.glassfish.hk2.testing.collections.AbstractCollectionTest;
 
 /**
  * Tests a HashSet as a Collection
- * 
- *
- * @author Copyright 2011 Oracle
  */
 @SuppressWarnings({"rawtypes","unchecked"})
 public class HashSetAsCollectionTest extends AbstractCollectionTest {

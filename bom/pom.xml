@@ -464,7 +464,17 @@
                     <configuration>
                         <scm>git</scm>
                         <scmOnly>true</scmOnly>
-                        <exclude></exclude>
+                        <exclude>
+                          <exclude>.md</exclude>
+                          <exclude>.md.vm</exclude>
+                          <exclude>MANIFEST.MF</exclude>
+                          <exclude>hk2-locator/</exclude>
+                          <exclude>META-INF/services/</exclude>
+                          <exclude>META-INF/inhabitants/</exclude>
+                          <exclude>resources/gendir</exclude>
+                          <exclude>.png</exclude>
+                          <exclude>.class</exclude>
+                        </exclude>
                     </configuration>
                 </plugin>
             </plugins>

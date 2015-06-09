@@ -44,8 +44,6 @@ package org.glassfish.hk2.testing.collections;
  * Items to be added to the collection under test
  * must implement this interface in order to
  * be tested.
- *
- * @author Copyright 2011 Oracle
  */
 public interface TestCollectionElement {
   

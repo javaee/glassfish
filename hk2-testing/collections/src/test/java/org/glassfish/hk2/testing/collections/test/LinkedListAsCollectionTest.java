@@ -46,8 +46,6 @@ import org.glassfish.hk2.testing.collections.AbstractCollectionTest;
 
 /**
  * Tests a LinkedList as a Collection
- *
- * @author Copyright 2011 Oracle
  */
 @SuppressWarnings({"rawtypes","unchecked"})
 public class LinkedListAsCollectionTest extends AbstractCollectionTest {

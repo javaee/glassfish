@@ -46,9 +46,6 @@ import org.glassfish.hk2.testing.collections.AbstractMapTest;
 
 /**
  * Tests HashMap with the test framework
- * 
- *
- * @author Copyright 2011 Oracle
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
 public class HashMapTest extends AbstractMapTest {

@@ -50,8 +50,6 @@ import org.glassfish.hk2.testing.collections.AbstractListTest;
  * passes for a java.util.LinkedList.  If LinkedList
  * could not pass the AbstractListTest, what would
  * be the point, eh?
- *
- * @author Copyright 2011 Oracle
  */
 @SuppressWarnings({"rawtypes","unchecked"})
 public class LinkedListTest extends AbstractListTest {

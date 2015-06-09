@@ -43,8 +43,6 @@ package org.glassfish.hk2.testing.collections;
  * This is the default implementation of TestCollectionElement
  * that will be used in tests if the getElement
  * method is not overridden
- *
- * @author Copyright 2011 Oracle
  */
 public class DefaultTestCollectionElement implements TestCollectionElement,
     Comparable<TestCollectionElement> {

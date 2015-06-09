@@ -72,9 +72,6 @@ import org.junit.Test;
  * are the zero argument constructor and a constructor
  * that takes another Collection.  Subclasses of this
  * class must implement the methods that create these
- * 
- *
- * @author Copyright 2011 Oracle
  */
 @SuppressWarnings({"rawtypes", "unchecked"})
 public abstract class AbstractCollectionTest {

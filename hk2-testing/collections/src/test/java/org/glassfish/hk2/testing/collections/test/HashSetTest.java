@@ -47,8 +47,6 @@ import org.glassfish.hk2.testing.collections.AbstractSetTest;
 
 /**
  * Tests a HashSet as a Set.
- *
- * @author Copyright 2011 Oracle
  */
 @SuppressWarnings({"rawtypes","unchecked"})
 public class HashSetTest extends AbstractSetTest {
