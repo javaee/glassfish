@@ -127,6 +127,16 @@ public class SingleOperationManager<T extends Annotation> {
     }
     
     /**
+     * Explicitly called WITHOUT the operationLock held to avoid any deadlock
+     * with the context lock
+     * 
+     * @param closeMe The non-null operation to close
+     */
+    /* package */ void disposeAllOperationServices(OperationHandleImpl<T> closeMe) {
+        context.closeOperation(closeMe.getIdentifier());
+    }
+    
+    /**
      * OperationLock must be held
      * 
      * @param threadId The threadId to associate with this handle

@@ -732,7 +732,7 @@ public class OperationsTest {
     /**
      * Tests that operation services are disposed when the operation is closed
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testOperationServiceDisposedWhenOperationIsClosed() {
         ServiceLocator locator = createLocator(BasicOperationScopeContext.class,
                 BasicOperationLifecycleMethods.class);

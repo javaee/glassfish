@@ -42,6 +42,8 @@ package org.glassfish.hk2.extras.operation;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
@@ -81,8 +83,8 @@ import org.jvnet.hk2.annotations.Contract;
 @Contract
 public abstract class OperationContext<T extends Annotation> implements Context<T> {
     private SingleOperationManager<T> manager;
-    private final HashMap<OperationIdentifier<T>, HashMap<ActiveDescriptor<?>, Object>> operationMap =
-            new HashMap<OperationIdentifier<T>, HashMap<ActiveDescriptor<?>, Object>>();
+    private final HashMap<OperationIdentifier<T>, LinkedHashMap<ActiveDescriptor<?>, Object>> operationMap =
+            new HashMap<OperationIdentifier<T>, LinkedHashMap<ActiveDescriptor<?>, Object>>();
     private final HashSet<ActiveDescriptor<?>> creating = new HashSet<ActiveDescriptor<?>>();
 
     /* (non-Javadoc)
@@ -108,11 +110,11 @@ public abstract class OperationContext<T extends Annotation> implements Context<
                 getScope().getName() + " on thread " + Thread.currentThread().getId());
         }
         
-        HashMap<ActiveDescriptor<?>, Object> serviceMap;
+        LinkedHashMap<ActiveDescriptor<?>, Object> serviceMap;
         synchronized (this) {
             serviceMap = operationMap.get(operation.getIdentifier());
             if (serviceMap == null) {
-                serviceMap = new HashMap<ActiveDescriptor<?>, Object>();
+                serviceMap = new LinkedHashMap<ActiveDescriptor<?>, Object>();
                 operationMap.put(operation.getIdentifier(), serviceMap);
             }
             
@@ -210,6 +212,30 @@ public abstract class OperationContext<T extends Annotation> implements Context<
         }
     }
     
+    @SuppressWarnings("unchecked")
+    public void closeOperation(OperationIdentifier<T> operation) {
+        HashMap<ActiveDescriptor<?>, Object> serviceMap;
+        synchronized (this) {
+            serviceMap = operationMap.remove(operation);
+        }
+        
+        // The rest can be done outside of the lock
+        if (serviceMap == null) return;
+        
+        // Reverses creation order
+        LinkedList<Map.Entry<ActiveDescriptor<?>, Object>> destructionList = new LinkedList<Map.Entry<ActiveDescriptor<?>, Object>>();
+        for (Map.Entry<ActiveDescriptor<?>, Object> entry : serviceMap.entrySet()) {
+            destructionList.addFirst(entry);
+        }
+            
+        for (Map.Entry<ActiveDescriptor<?>, Object> entry : destructionList) {
+            ActiveDescriptor<Object> desc = (ActiveDescriptor<Object>) entry.getKey();
+            Object value = entry.getValue();
+            
+            desc.dispose(value);   
+        }
+    }
+    
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Context#shutdown()
      */
@@ -218,7 +244,13 @@ public abstract class OperationContext<T extends Annotation> implements Context<
     public void shutdown() {
         synchronized (this) {
             for (HashMap<ActiveDescriptor<?>, Object> serviceMap : operationMap.values()) {
+                // Reverses creation order
+                LinkedList<Map.Entry<ActiveDescriptor<?>, Object>> destructionList = new LinkedList<Map.Entry<ActiveDescriptor<?>, Object>>();
                 for (Map.Entry<ActiveDescriptor<?>, Object> entry : serviceMap.entrySet()) {
+                    destructionList.addFirst(entry);
+                }
+                
+                for (Map.Entry<ActiveDescriptor<?>, Object> entry : destructionList) {
                     ActiveDescriptor<?> descriptor = entry.getKey();
                     Object killMe = entry.getValue();
                     if (killMe == null) continue;

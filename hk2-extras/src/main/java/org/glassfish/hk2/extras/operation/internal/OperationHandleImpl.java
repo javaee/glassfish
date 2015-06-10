@@ -193,6 +193,9 @@ public class OperationHandleImpl<T extends Annotation> implements OperationHandl
             parent.closeOperation(this);
         }
         
+        // outside the lock
+        parent.disposeAllOperationServices(this);
+        
     }
 
     /* (non-Javadoc)
