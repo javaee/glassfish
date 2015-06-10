@@ -460,13 +460,11 @@
                 <plugin>
                     <groupId>org.glassfish.copyright</groupId>
                     <artifactId>glassfish-copyright-maven-plugin</artifactId>
-                    <version>1.39</version>
+                    <version>1.40</version>
                     <configuration>
                         <scm>git</scm>
                         <scmOnly>true</scmOnly>
                         <exclude>
-                          <exclude>.md</exclude>
-                          <exclude>.md.vm</exclude>
                           <exclude>MANIFEST.MF</exclude>
                           <exclude>hk2-locator/</exclude>
                           <exclude>META-INF/services/</exclude>
