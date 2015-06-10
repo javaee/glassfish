@@ -40,6 +40,8 @@
 
 package org.glassfish.hk2.tests.locator.proxiable;
 
+import javax.annotation.PostConstruct;
+
 /**
  * This class has methods of different access to ensure that all the methods
  * can be called by the proxy
@@ -48,7 +50,14 @@ package org.glassfish.hk2.tests.locator.proxiable;
  */
 @SeasonScope
 public class NorthernHemisphere {
-	/* package */ void iAmAPackageMethod() {}
-	protected void iAmAProtectedMethod() {}
-	public void iAmAPublicMethod() {}
+    private Object id;
+    
+    @PostConstruct
+    private void postConstruct() {
+        id = new Object();
+    }
+    
+	/* package */ Object iAmAPackageMethod() { return id; }
+	protected Object iAmAProtectedMethod() { return id; }
+	public Object iAmAPublicMethod() { return id; }
 }

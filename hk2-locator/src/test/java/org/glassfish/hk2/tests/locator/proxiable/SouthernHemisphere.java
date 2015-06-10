@@ -43,6 +43,9 @@ package org.glassfish.hk2.tests.locator.proxiable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.glassfish.hk2.api.ProxyCtl;
+import org.junit.Assert;
+
 /**
  * This class does nothing more than call the methods on the proxiable
  * NorthernHemisphere, to ensure that they can be called properly
@@ -56,9 +59,16 @@ public class SouthernHemisphere {
 	private NorthernHemisphere north;
 	
 	public void check() {
-		north.iAmAPackageMethod();
-		north.iAmAProtectedMethod();
-		north.iAmAPublicMethod();
+	    Assert.assertTrue(north instanceof ProxyCtl);
+	    
+	    Object id = north.iAmAPublicMethod();
+	    Assert.assertNotNull(id);
+	    
+		Object pId = north.iAmAPackageMethod();
+		Assert.assertEquals(id, pId);
+		
+		Object prId = north.iAmAProtectedMethod();
+		Assert.assertEquals(id, prId);
 	}
 
 }
