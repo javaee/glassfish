@@ -45,7 +45,6 @@ import java.util.Set;
 
 import org.glassfish.hk2.api.ProxyCtl;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.extras.ExtrasUtilities;
 import org.glassfish.hk2.extras.operation.OperationHandle;
 import org.glassfish.hk2.extras.operation.OperationManager;
@@ -728,6 +727,50 @@ public class OperationsTest {
             // expected
         }
         
+    }
+    
+    /**
+     * Tests that operation services are disposed when the operation is closed
+     */
+    @Test @org.junit.Ignore
+    public void testOperationServiceDisposedWhenOperationIsClosed() {
+        ServiceLocator locator = createLocator(BasicOperationScopeContext.class,
+                BasicOperationLifecycleMethods.class);
+        
+        OperationManager operationManager = locator.getService(OperationManager.class);
+        
+        OperationHandle<BasicOperationScope> operation1 = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        OperationHandle<BasicOperationScope> operation2 = operationManager.createOperation(BASIC_OPERATION_ANNOTATION);
+        
+        // Start operation1
+        operation1.resume();
+        
+        BasicOperationLifecycleMethods bolm = locator.getService(BasicOperationLifecycleMethods.class);
+        Object id1 = bolm.getId();
+        Assert.assertNotNull(id1);
+        Assert.assertFalse(BasicOperationLifecycleMethods.isClosed(id1));
+        
+        operation1.suspend();
+        
+        // Do the same with operation2, ensure it has switched and created a second
+        operation2.resume();
+        
+        Object id2 = bolm.getId();
+        Assert.assertNotNull(id2);
+        Assert.assertFalse(BasicOperationLifecycleMethods.isClosed(id2));
+        
+        Assert.assertNotEquals(id1, id2);
+        
+        // Now lets close operation 2, make sure preDestroy is called
+        operation2.closeOperation();
+        
+        Assert.assertTrue(BasicOperationLifecycleMethods.isClosed(id2));
+        Assert.assertFalse(BasicOperationLifecycleMethods.isClosed(id1));
+        
+        // Now close first operation (which is not currently active)
+        operation1.closeOperation();
+        
+        Assert.assertTrue(BasicOperationLifecycleMethods.isClosed(id1));
     }
     
     private static class SimpleThreadedFetcher<T extends Annotation> implements Runnable {
