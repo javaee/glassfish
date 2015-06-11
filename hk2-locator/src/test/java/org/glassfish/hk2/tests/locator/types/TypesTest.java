@@ -96,5 +96,43 @@ public class TypesTest {
         Assert.assertNotNull(is);
         Assert.assertNotNull(is.getInjectedService());
     }
+    
+    /**
+     * InjectedBaseClass has injected types that are fully specified as classes by the subclass
+     */
+    @Test @org.junit.Ignore
+    public void testSuperclassHasTypeInjectees() {
+        ServiceLocator locator = LocatorHelper.getServiceLocator(AlphaService.class,
+                BetaService.class,
+                AlphaInjectedService.class,
+                BetaInjectedService.class);
+        
+        {
+            AlphaInjectedService ais = locator.getService(AlphaInjectedService.class);
+        
+            Assert.assertNotNull(ais.getFromConstructor());
+            Assert.assertTrue(ais.getFromConstructor() instanceof AlphaService);
+        
+            Assert.assertNotNull(ais.getFromField());
+            Assert.assertTrue(ais.getFromField() instanceof AlphaService);
+            
+            Assert.assertNotNull(ais.getFromMethod());
+            Assert.assertTrue(ais.getFromMethod() instanceof AlphaService);
+        }
+        
+        {
+            BetaInjectedService bis = locator.getService(BetaInjectedService.class);
+        
+            Assert.assertNotNull(bis.getFromConstructor());
+            Assert.assertTrue(bis.getFromConstructor() instanceof BetaService);
+        
+            Assert.assertNotNull(bis.getFromField());
+            Assert.assertTrue(bis.getFromField() instanceof BetaService);
+            
+            Assert.assertNotNull(bis.getFromMethod());
+            Assert.assertTrue(bis.getFromMethod() instanceof BetaService);
+        }
+        
+    }
 
 }

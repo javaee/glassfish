@@ -118,7 +118,7 @@ public class ProxiableTest {
     /**
      * Tests method access levels in proxies
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testMethodAccessInAProxy() {
     	SouthernHemisphere sh = locator.getService(SouthernHemisphere.class);
     	

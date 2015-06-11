@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,40 +37,22 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-package org.glassfish.hk2.tests.locator.proxiable;
+package org.glassfish.hk2.tests.locator.types;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import org.glassfish.hk2.api.ProxyCtl;
-import org.junit.Assert;
 
 /**
- * This class does nothing more than call the methods on the proxiable
- * NorthernHemisphere, to ensure that they can be called properly
- * 
  * @author jwells
  *
  */
-@Singleton
-public class SouthernHemisphere {
-	@Inject
-	private NorthernHemisphere north;
-	
-	public void check() {
-	    Assert.assertTrue(north instanceof ProxyCtl);
-	    
-	    Object id = north.iAmAPublicMethod();
-	    Assert.assertNotNull(id);
-	    
-	    // There is a bug such that package methods are not being intercepted properly
-	    // See https://java.net/jira/browse/HK2-257
-		// Object pId = north.iAmAPackageMethod();
-		// Assert.assertEquals(id, pId);
-		
-		Object prId = north.iAmAProtectedMethod();
-		Assert.assertEquals(id, prId);
-	}
+public class AlphaInjectedService extends InjectedBaseClass<AlphaService> {
+
+    /**
+     * @param c
+     */
+    @Inject
+    public AlphaInjectedService(AlphaService c) {
+        super(c);
+    }
 
 }
