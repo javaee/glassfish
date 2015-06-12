@@ -39,6 +39,9 @@
  */
 package org.glassfish.hk2.tests.locator.types;
 
+import java.util.List;
+import java.util.Map;
+
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
@@ -55,6 +58,12 @@ import org.junit.Test;
  *
  */
 public class TypesTest {
+    public static final int INTEGER_FACTORY_VALUE = 13;
+    public static final float FLOAT_KEY = (float) 14.00;
+    public static final Double DOUBLE_VALUE = new Double(15.00);
+    public static final String BEST_TEAM = "Eagles";
+    public static final long LONG_FACTORY_VALUE = 16L;
+    
     /**
      * FullService extends a typed abstract class, but is itself a
      * fully qualified version of that interface (String, String).
@@ -133,6 +142,59 @@ public class TypesTest {
             Assert.assertTrue(bis.getFromMethod() instanceof BetaService);
         }
         
+    }
+    
+    /**
+     * Tests that services can have parameterized types all filled in
+     * by the subclasses
+     */
+    @Test @org.junit.Ignore
+    public void testHardenedParameterizedTypes() {
+        ServiceLocator locator = LocatorHelper.getServiceLocator(
+                ListMapServiceIntIntLong.class,
+                ListMapServiceStringFloatDouble.class,
+                IntLongMapFactory.class,
+                FloatDoubleMapFactory.class,
+                ListIntFactory.class,
+                ListStringFactory.class);
+        
+        {
+            ListMapServiceIntIntLong iil = locator.getService(ListMapServiceIntIntLong.class);
+        
+            List<Integer> aList = iil.getAList();
+            Assert.assertNotNull(aList);
+            
+            Map<Integer, Long> aMap = iil.getAMap();
+            Assert.assertNotNull(aMap);
+            
+            Assert.assertEquals(aList, iil.getIList());
+            Assert.assertEquals(aMap, iil.getIMap());
+            
+            int fromList = aList.get(0);
+            Assert.assertEquals(INTEGER_FACTORY_VALUE, fromList);
+            
+            long fromMap = aMap.get(INTEGER_FACTORY_VALUE);
+            Assert.assertEquals(LONG_FACTORY_VALUE, fromMap);
+        }
+        
+        {
+            ListMapServiceStringFloatDouble sfd = locator.getService(ListMapServiceStringFloatDouble.class);
+        
+            List<String> aList = sfd.getAList();
+            Assert.assertNotNull(aList);
+            
+            Map<Float, Double> aMap = sfd.getAMap();
+            Assert.assertNotNull(aMap);
+            
+            Assert.assertEquals(aList, sfd.getIList());
+            Assert.assertEquals(aMap, sfd.getIMap());
+            
+            String fromList = aList.get(0);
+            Assert.assertEquals(BEST_TEAM, fromList);
+            
+            Double fromMap = aMap.get(FLOAT_KEY);
+            Assert.assertEquals(DOUBLE_VALUE, fromMap);
+        }
     }
 
 }
