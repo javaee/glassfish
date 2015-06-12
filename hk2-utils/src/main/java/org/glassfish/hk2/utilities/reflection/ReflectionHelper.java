@@ -140,6 +140,53 @@ public final class ReflectionHelper {
         return null;
     }
     
+    public static Type resolveField(Class<?> topclass, Field field) {
+        Type lookingForType = field.getGenericType();
+        Class<?> rawLooking = getRawClass(lookingForType);
+        if (rawLooking != null) return rawLooking;
+        
+        Class<?> declaringClass = field.getDeclaringClass();
+        if (!(lookingForType instanceof TypeVariable)) {
+            throw new AssertionError("Have not yet implemented Field type of " + lookingForType.getClass().getName());
+        }
+        
+        TypeVariable<?> tv = (TypeVariable<?>) lookingForType;
+        String typeVariableName = tv.getName();
+        
+        Type superType = topclass.getGenericSuperclass();
+        Class<?> superClass = getRawClass(superType);
+        
+        while (superType != null && superClass != null) {
+            if (!(superType instanceof ParameterizedType)) return null;
+            
+            ParameterizedType superPT = (ParameterizedType) superType;
+            
+            Map<String, Type> typeArguments = getTypeArguments(superClass, superPT);
+            
+            if (superClass.equals(declaringClass)) {
+                Type retVal = typeArguments.get(typeVariableName);
+                if (retVal == null) return null;
+                
+                if (retVal instanceof Class || retVal instanceof ParameterizedType) {
+                    return retVal;
+                }
+                
+                return null;
+            }
+            
+            superType = superClass.getGenericSuperclass();
+            if (superType != null) {
+                superClass = ReflectionHelper.getRawClass(superType);
+
+                if (typeArguments != null && (superType instanceof ParameterizedType)) {
+                    superType = fixTypeVariables((ParameterizedType) superType, typeArguments);
+                }
+            }
+        }
+        
+        return null;
+    }
+    
     /**
      * Gets the first type argument if this is a parameterized
      * type, otherwise it returns Object.class

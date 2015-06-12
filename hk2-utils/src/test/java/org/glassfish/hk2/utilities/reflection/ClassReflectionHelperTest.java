@@ -42,8 +42,6 @@ package org.glassfish.hk2.utilities.reflection;
 import java.util.Set;
 
 import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
-import org.glassfish.hk2.utilities.reflection.types2.BaseInterface;
-import org.glassfish.hk2.utilities.reflection.types2.ServiceInterface;
 import org.glassfish.hk2.utilities.reflection.types2.ServiceInterface2;
 import org.junit.Assert;
 import org.junit.Test;
@@ -112,5 +110,4 @@ public class ClassReflectionHelperTest {
         Assert.assertTrue(foundService);
         Assert.assertTrue(foundService2);
     }
-
 }

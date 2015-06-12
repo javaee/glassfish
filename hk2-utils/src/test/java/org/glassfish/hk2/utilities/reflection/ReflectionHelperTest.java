@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.utilities.reflection;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -47,6 +48,7 @@ import java.util.Set;
 
 import junit.framework.Assert;
 
+import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
 import org.glassfish.hk2.utilities.reflection.types.AbstractServiceOne;
 import org.glassfish.hk2.utilities.reflection.types.AbstractServiceTwo;
 import org.glassfish.hk2.utilities.reflection.types.ConcreteServiceOne;
@@ -303,6 +305,90 @@ public class ReflectionHelperTest {
             lcv++;
         }
         
+    }
+    
+    /**
+     * Tests that a field that is a generic type is returned as the hard type
+     * that it is when subclassed
+     */
+    @Test
+    public void testFieldWithGenericTypeIsSpecifiedWhenSubclassed() {
+        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
+        
+        Set<Field> fields = helper.getAllFields(FieldAsInteger.class);
+        Assert.assertEquals(1, fields.size());
+        
+        Field field = null;
+        for (Field f : fields) {
+            field = f;
+        }
+        
+        Type fType = ReflectionHelper.resolveField(FieldAsInteger.class, field);
+        Assert.assertEquals(Integer.class, fType);
+    }
+    
+    /**
+     * Tests that a field that is a generic type is returned as the hard ParameterizedType
+     * that it is when subclassed
+     */
+    @Test
+    public void testFieldWithGenericTypeIsSpecifiedWhenSubclassedPT() {
+        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
+        
+        Set<Field> fields = helper.getAllFields(FieldAsListOfLong.class);
+        Assert.assertEquals(1, fields.size());
+        
+        Field field = null;
+        for (Field f : fields) {
+            field = f;
+        }
+        
+        Type fType = ReflectionHelper.resolveField(FieldAsListOfLong.class, field);
+        Assert.assertTrue(fType instanceof ParameterizedType);
+        
+        ParameterizedType pt = (ParameterizedType) fType;
+        Assert.assertEquals(List.class, pt.getRawType());
+        Assert.assertEquals(Long.class, pt.getActualTypeArguments()[0]);
+    }
+    
+    /**
+     * Tests that a field that is a generic type can have intermediate types
+     * (one intermediate class)
+     */
+    @Test
+    public void testFieldWithIntermediateTypedSubclass() {
+        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
+        
+        Set<Field> fields = helper.getAllFields(FieldAsDouble.class);
+        Assert.assertEquals(1, fields.size());
+        
+        Field field = null;
+        for (Field f : fields) {
+            field = f;
+        }
+        
+        Type fType = ReflectionHelper.resolveField(FieldAsDouble.class, field);
+        Assert.assertEquals(Double.class, fType);
+    }
+    
+    /**
+     * Tests that a field that is a generic type can have intermediate types
+     * (two intermediate classes)
+     */
+    @Test
+    public void testFieldWithIntermediate2TypedSubclass() {
+        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
+        
+        Set<Field> fields = helper.getAllFields(FieldAsFloat.class);
+        Assert.assertEquals(1, fields.size());
+        
+        Field field = null;
+        for (Field f : fields) {
+            field = f;
+        }
+        
+        Type fType = ReflectionHelper.resolveField(FieldAsFloat.class, field);
+        Assert.assertEquals(Float.class, fType);
     }
 
 }
