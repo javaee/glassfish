@@ -955,7 +955,7 @@ public class Utilities {
         }
 
         for (Method method : methods) {
-            List<SystemInjecteeImpl> injectees = Utilities.getMethodInjectees(method, null);
+            List<SystemInjecteeImpl> injectees = Utilities.getMethodInjectees(baseClass, method, null);
 
             validateSelfInjectees(null, injectees, collector);
             collector.throwIfErrors();
@@ -1857,16 +1857,23 @@ public class Utilities {
      * @param injecteeDescriptor The descriptor of the injectee
      * @return the list (in order) of parameters to the constructor
      */
-    public static List<SystemInjecteeImpl> getMethodInjectees(Method c, ActiveDescriptor<?> injecteeDescriptor) {
+    public static List<SystemInjecteeImpl> getMethodInjectees(Class<?> actualClass, Method c, ActiveDescriptor<?> injecteeDescriptor) {
         Type genericTypeParams[] = c.getGenericParameterTypes();
         Annotation paramAnnotations[][] = c.getParameterAnnotations();
 
         List<SystemInjecteeImpl> retVal = new LinkedList<SystemInjecteeImpl>();
+        Class<?> declaringClass = c.getDeclaringClass();
 
         for (int lcv = 0; lcv < genericTypeParams.length; lcv++) {
             AnnotationInformation ai = getParamInformation(paramAnnotations[lcv]);
             
-            retVal.add(new SystemInjecteeImpl(genericTypeParams[lcv],
+            Type adjustedType = ReflectionHelper.resolveMember(actualClass,
+                    genericTypeParams[lcv], declaringClass);
+            if (adjustedType == null) {
+                adjustedType = genericTypeParams[lcv];
+            }
+            
+            retVal.add(new SystemInjecteeImpl(adjustedType,
                     ai.qualifiers,
                     lcv,
                     c,

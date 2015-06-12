@@ -145,7 +145,7 @@ public class ClazzCreator<T> implements Creator<T> {
         for (Method initMethod : initMethods) {
             element = initMethod;
 
-            injectees = Utilities.getMethodInjectees(initMethod, selfDescriptor);
+            injectees = Utilities.getMethodInjectees(implClass, initMethod, selfDescriptor);
             if (injectees == null) return;
 
             baseAllInjectees.addAll(injectees);

@@ -100,7 +100,7 @@ public class TypesTest {
     /**
      * InjectedBaseClass has injected types that are fully specified as classes by the subclass
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testSuperclassHasTypeInjectees() {
         ServiceLocator locator = LocatorHelper.getServiceLocator(AlphaService.class,
                 BetaService.class,
