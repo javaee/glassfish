@@ -71,8 +71,6 @@ import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
  *
  */
 public class ClazzCreator<T> implements Creator<T> {
-    
-    
     private final ServiceLocatorImpl locator;
     private final Class<?> implClass;
     private final Set<ResolutionInfo> myInitializers = new LinkedHashSet<ResolutionInfo>();
@@ -159,7 +157,7 @@ public class ClazzCreator<T> implements Creator<T> {
         for (Field field : fields) {
             element = field;
 
-            injectees = Utilities.getFieldInjectees(field, selfDescriptor);
+            injectees = Utilities.getFieldInjectees(implClass, field, selfDescriptor);
             if (injectees == null) return;
 
             baseAllInjectees.addAll(injectees);
@@ -173,8 +171,6 @@ public class ClazzCreator<T> implements Creator<T> {
         allInjectees = Collections.unmodifiableList(baseAllInjectees);
 
         Utilities.validateSelfInjectees(selfDescriptor, allInjectees, collector);
-        
-        
     }
 
     /* package */ void initialize(

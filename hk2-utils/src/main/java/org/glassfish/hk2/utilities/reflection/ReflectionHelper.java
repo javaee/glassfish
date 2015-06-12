@@ -140,12 +140,31 @@ public final class ReflectionHelper {
         return null;
     }
     
+    /**
+     * Resolves the generic type of a field given the actual class being instantiated
+     * 
+     * @param topclass The instantiation class.  Must not be null
+     * @param field The field whose type to resolve
+     * @return The resolved field type by way of its subclasses.  May return null if the
+     * original type could not be converted into a Class or a ParameterizedType
+     */
     public static Type resolveField(Class<?> topclass, Field field) {
-        Type lookingForType = field.getGenericType();
+        return resolveMember(topclass, field.getGenericType(), field.getDeclaringClass());
+    }
+    
+    /**
+     * Resolves the generic type of a type and declaring class given the actual class being instantiated
+     * 
+     * @param topclass The instantiation class.  Must not be null
+     * @param lookingForType The type to resolve.  Must not be null
+     * @param declaringClass The class of the entity declaring the lookingForType. Must not be null
+     * @return The resolved type by way of its subclasses.  May return null if the
+     * original type could not be converted into a Class or a ParameterizedType
+     */
+    public static Type resolveMember(Class<?> topclass, Type lookingForType, Class<?> declaringClass) {
         Class<?> rawLooking = getRawClass(lookingForType);
-        if (rawLooking != null) return rawLooking;
+        if (rawLooking != null) return lookingForType;
         
-        Class<?> declaringClass = field.getDeclaringClass();
         if (!(lookingForType instanceof TypeVariable)) {
             throw new AssertionError("Have not yet implemented Field type of " + lookingForType.getClass().getName());
         }

@@ -294,7 +294,7 @@ public class MockitoService {
             if (sc != null) {
                 //if we are dealing with spy collaborator then we create an injectee 
                 //for it and resolve that injectee
-                List<SystemInjecteeImpl> injectees = getFieldInjectees(field, null);
+                List<SystemInjecteeImpl> injectees = getFieldInjectees(type, field, null);
 
                 Object service = resolve(injectees.get(0), null);
 

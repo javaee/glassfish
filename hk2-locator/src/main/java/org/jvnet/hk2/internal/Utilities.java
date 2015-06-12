@@ -937,7 +937,7 @@ public class Utilities {
         for (Field field : fields) {
             InjectionResolver<?> resolver = locator.getPerLocatorUtilities().getInjectionResolver(locator, field);
 
-            List<SystemInjecteeImpl> injecteeFields = Utilities.getFieldInjectees(field, null);
+            List<SystemInjecteeImpl> injecteeFields = Utilities.getFieldInjectees(baseClass, field, null);
 
             validateSelfInjectees(null, injecteeFields, collector);
             collector.throwIfErrors();
@@ -1901,11 +1901,16 @@ public class Utilities {
      * @param injecteeDescriptor The descriptor of the injectee
      * @return the list (in order) of parameters to the constructor
      */
-    public static List<SystemInjecteeImpl> getFieldInjectees(Field f, ActiveDescriptor<?> injecteeDescriptor) {
+    public static List<SystemInjecteeImpl> getFieldInjectees(Class<?> actualClass, Field f, ActiveDescriptor<?> injecteeDescriptor) {
         List<SystemInjecteeImpl> retVal = new LinkedList<SystemInjecteeImpl>();
         AnnotationInformation ai = getParamInformation(f.getAnnotations());
+        
+        Type adjustedType = ReflectionHelper.resolveField(actualClass, f);
+        if (adjustedType == null) {
+            adjustedType = f.getGenericType();
+        }
 
-        retVal.add(new SystemInjecteeImpl(f.getGenericType(),
+        retVal.add(new SystemInjecteeImpl(adjustedType,
                 getFieldAdjustedQualifierAnnotations(f),
                 -1,
                 f,
