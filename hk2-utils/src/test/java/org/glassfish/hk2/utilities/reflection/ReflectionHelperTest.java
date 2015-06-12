@@ -44,6 +44,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import junit.framework.Assert;
@@ -389,6 +390,31 @@ public class ReflectionHelperTest {
         
         Type fType = ReflectionHelper.resolveField(FieldAsFloat.class, field);
         Assert.assertEquals(Float.class, fType);
+    }
+    
+    /**
+     * Tests that a parameterized type field (Map<A,B>) can be
+     * filled in
+     */
+    @Test @org.junit.Ignore
+    public void testParameterizedField() {
+        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
+        
+        Set<Field> fields = helper.getAllFields(MapStringString.class);
+        Assert.assertEquals(1, fields.size());
+        
+        Field field = null;
+        for (Field f : fields) {
+            field = f;
+        }
+        
+        Type fType = ReflectionHelper.resolveField(MapStringString.class, field);
+        Assert.assertTrue(fType instanceof ParameterizedType);
+        
+        ParameterizedType pType = (ParameterizedType) fType;
+        Assert.assertEquals(Map.class, pType.getRawType());
+        Assert.assertEquals(String.class, pType.getActualTypeArguments()[0]);
+        Assert.assertEquals(String.class, pType.getActualTypeArguments()[1]);
     }
 
 }
