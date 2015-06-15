@@ -43,7 +43,6 @@ package org.glassfish.hk2.utilities.reflection;
  * @author jwells
  *
  */
-public class FieldAsType<T> {
-    @SuppressWarnings("unused")
-    private T field;
+public class FieldAsCharacterWithUnrelatedPT<B> extends FieldAsType<Character> {
+
 }

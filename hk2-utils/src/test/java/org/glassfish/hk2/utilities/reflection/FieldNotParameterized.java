@@ -43,7 +43,7 @@ package org.glassfish.hk2.utilities.reflection;
  * @author jwells
  *
  */
-public class FieldAsType<T> {
-    @SuppressWarnings("unused")
-    private T field;
+@SuppressWarnings("rawtypes")
+public class FieldNotParameterized extends FieldAsType {
+
 }

@@ -39,11 +39,12 @@
  */
 package org.glassfish.hk2.utilities.reflection;
 
+import java.util.List;
+
 /**
  * @author jwells
  *
  */
-public class FieldAsType<T> {
-    @SuppressWarnings("unused")
-    private T field;
+public class FieldAsListOfWildcard extends FieldAsType<List<List<?>>> {
+
 }

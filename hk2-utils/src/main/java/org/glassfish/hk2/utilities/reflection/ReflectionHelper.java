@@ -352,7 +352,8 @@ public final class ReflectionHelper {
                 else {
                     newTypeArguments[i++] = argType;
                 }
-            } else {
+            }
+            else {
                 newTypeArguments[i++] = argType;
             }
         }

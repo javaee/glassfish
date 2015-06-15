@@ -43,6 +43,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
+import java.lang.reflect.WildcardType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -318,12 +319,15 @@ public class ReflectionHelperTest {
         ClassReflectionHelper helper = new ClassReflectionHelperImpl();
         
         Set<Field> fields = helper.getAllFields(FieldAsInteger.class);
-        Assert.assertEquals(1, fields.size());
         
         Field field = null;
         for (Field f : fields) {
-            field = f;
+            if (f.getName().equals("field")) {
+                field = f;
+                break;
+            }
         }
+        Assert.assertNotNull(field);
         
         Type fType = ReflectionHelper.resolveField(FieldAsInteger.class, field);
         Assert.assertEquals(Integer.class, fType);
@@ -338,12 +342,15 @@ public class ReflectionHelperTest {
         ClassReflectionHelper helper = new ClassReflectionHelperImpl();
         
         Set<Field> fields = helper.getAllFields(FieldAsListOfLong.class);
-        Assert.assertEquals(1, fields.size());
-        
+
         Field field = null;
         for (Field f : fields) {
-            field = f;
+            if (f.getName().equals("field")) {
+                field = f;
+                break;
+            }
         }
+        Assert.assertNotNull(field);
         
         Type fType = ReflectionHelper.resolveField(FieldAsListOfLong.class, field);
         Assert.assertTrue(fType instanceof ParameterizedType);
@@ -362,12 +369,15 @@ public class ReflectionHelperTest {
         ClassReflectionHelper helper = new ClassReflectionHelperImpl();
         
         Set<Field> fields = helper.getAllFields(FieldAsDouble.class);
-        Assert.assertEquals(1, fields.size());
-        
+
         Field field = null;
         for (Field f : fields) {
-            field = f;
+            if (f.getName().equals("field")) {
+                field = f;
+                break;
+            }
         }
+        Assert.assertNotNull(field);
         
         Type fType = ReflectionHelper.resolveField(FieldAsDouble.class, field);
         Assert.assertEquals(Double.class, fType);
@@ -382,15 +392,121 @@ public class ReflectionHelperTest {
         ClassReflectionHelper helper = new ClassReflectionHelperImpl();
         
         Set<Field> fields = helper.getAllFields(FieldAsFloat.class);
-        Assert.assertEquals(1, fields.size());
         
         Field field = null;
         for (Field f : fields) {
-            field = f;
+            if (f.getName().equals("field")) {
+                field = f;
+                break;
+            }
         }
+        Assert.assertNotNull(field);
         
         Type fType = ReflectionHelper.resolveField(FieldAsFloat.class, field);
         Assert.assertEquals(Float.class, fType);
+    }
+    
+    /**
+     * Tests that a field that is a generic type is subclassed by a
+     * non parameterized type
+     */
+    @Test
+    public void testFieldWithNotParameterizedReturnsNull() {
+        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
+        
+        Set<Field> fields = helper.getAllFields(FieldNotParameterized.class);
+        
+        Field field = null;
+        for (Field f : fields) {
+            if (f.getName().equals("field")) {
+                field = f;
+                break;
+            }
+        }
+        Assert.assertNotNull(field);
+        
+        Type fType = ReflectionHelper.resolveField(FieldNotParameterized.class, field);
+        Assert.assertNull(fType);
+    }
+    
+    /**
+     * Tests that a field that is a generic type is subclassed by a
+     * non parameterized type
+     */
+    @Test
+    public void testMemberNotSubclassed() {
+        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
+        
+        Set<Field> fields = helper.getAllFields(FieldAsType.class);
+        
+        Field field = null;
+        for (Field f : fields) {
+            if (f.getName().equals("field")) {
+                field = f;
+                break;
+            }
+        }
+        Assert.assertNotNull(field);
+        
+        Type fType = ReflectionHelper.resolveMember(FieldAsType.class, field.getGenericType(), FieldAsType.class);
+        Assert.assertNull(fType);
+    }
+    
+    /**
+     * Tests that a field that is a generic type can have subclasses that are
+     * NOT parameterized types but which are still specified further down in
+     * the hierarchy
+     */
+    @Test
+    public void testFieldWithNonPTSubclassesButWhichIsSpecified() {
+        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
+        
+        Set<Field> fields = helper.getAllFields(FieldAsCharacterWithUnspecifiedSuperclass.class);
+        
+        Field field = null;
+        for (Field f : fields) {
+            if (f.getName().equals("field")) {
+                field = f;
+                break;
+            }
+        }
+        Assert.assertNotNull(field);
+        
+        Type fType = ReflectionHelper.resolveField(FieldAsCharacterWithUnspecifiedSuperclass.class, field);
+        Assert.assertEquals(Character.class, fType);
+    }
+    
+    /**
+     * Tests that a field that is a generic type can have subclasses that contains
+     * a parameterized type with a wildcard (non PT, non Class) type
+     */
+    @Test
+    public void testFieldWithParameterizedTypeNotFullySpecified() {
+        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
+        
+        Set<Field> fields = helper.getAllFields(FieldAsListOfWildcard.class);
+        
+        Field field = null;
+        for (Field f : fields) {
+            if (f.getName().equals("field")) {
+                field = f;
+                break;
+            }
+        }
+        Assert.assertNotNull(field);
+        
+        Type fType = ReflectionHelper.resolveField(FieldAsListOfWildcard.class, field);
+        Assert.assertTrue(fType instanceof ParameterizedType);
+        
+        ParameterizedType ptType = (ParameterizedType) fType;
+        Assert.assertEquals(List.class, ptType.getRawType());
+        
+        Assert.assertTrue(ptType.getActualTypeArguments()[0] instanceof ParameterizedType);
+        
+        ptType = (ParameterizedType) ptType.getActualTypeArguments()[0];
+        Assert.assertEquals(List.class, ptType.getRawType());
+        Assert.assertTrue(ptType.getActualTypeArguments()[0] instanceof WildcardType);
+        
     }
     
     /**
@@ -402,12 +518,15 @@ public class ReflectionHelperTest {
         ClassReflectionHelper helper = new ClassReflectionHelperImpl();
         
         Set<Field> fields = helper.getAllFields(MapStringString.class);
-        Assert.assertEquals(1, fields.size());
         
         Field field = null;
         for (Field f : fields) {
-            field = f;
+            if (f.getName().equals("map")) {
+                field = f;
+                break;
+            }
         }
+        Assert.assertNotNull(field);
         
         Type fType = ReflectionHelper.resolveField(MapStringString.class, field);
         Assert.assertTrue(fType instanceof ParameterizedType);
@@ -428,12 +547,15 @@ public class ReflectionHelperTest {
         ClassReflectionHelper helper = new ClassReflectionHelperImpl();
         
         Set<Field> fields = helper.getAllFields(MapLongLong.class);
-        Assert.assertEquals(1, fields.size());
         
         Field field = null;
         for (Field f : fields) {
-            field = f;
+            if (f.getName().equals("map")) {
+                field = f;
+                break;
+            }
         }
+        Assert.assertNotNull(field);
         
         Type fType = ReflectionHelper.resolveField(MapLongLong.class, field);
         Assert.assertTrue(fType instanceof ParameterizedType);
@@ -454,12 +576,15 @@ public class ReflectionHelperTest {
         ClassReflectionHelper helper = new ClassReflectionHelperImpl();
         
         Set<Field> fields = helper.getAllFields(MapTypedLong.class);
-        Assert.assertEquals(1, fields.size());
         
         Field field = null;
         for (Field f : fields) {
-            field = f;
+            if (f.getName().equals("map")) {
+                field = f;
+                break;
+            }
         }
+        Assert.assertNotNull(field);
         
         Type fType = ReflectionHelper.resolveField(MapTypedLong.class, field);
         Assert.assertTrue(fType instanceof ParameterizedType);
@@ -480,12 +605,15 @@ public class ReflectionHelperTest {
         ClassReflectionHelper helper = new ClassReflectionHelperImpl();
         
         Set<Field> fields = helper.getAllFields(MapLongListOfString.class);
-        Assert.assertEquals(1, fields.size());
         
         Field field = null;
         for (Field f : fields) {
-            field = f;
+            if (f.getName().equals("map")) {
+                field = f;
+                break;
+            }
         }
+        Assert.assertNotNull(field);
         
         Type fType = ReflectionHelper.resolveField(MapLongListOfString.class, field);
         Assert.assertTrue(fType instanceof ParameterizedType);
@@ -510,12 +638,15 @@ public class ReflectionHelperTest {
         ClassReflectionHelper helper = new ClassReflectionHelperImpl();
         
         Set<Field> fields = helper.getAllFields(MapIntegerListOfDouble.class);
-        Assert.assertEquals(1, fields.size());
         
         Field field = null;
         for (Field f : fields) {
-            field = f;
+            if (f.getName().equals("map")) {
+                field = f;
+                break;
+            }
         }
+        Assert.assertNotNull(field);
         
         Type fType = ReflectionHelper.resolveField(MapIntegerListOfDouble.class, field);
         Assert.assertTrue(fType instanceof ParameterizedType);
