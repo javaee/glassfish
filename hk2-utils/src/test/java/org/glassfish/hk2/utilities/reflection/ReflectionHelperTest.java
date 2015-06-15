@@ -40,6 +40,7 @@
 package org.glassfish.hk2.utilities.reflection;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -686,6 +687,35 @@ public class ReflectionHelperTest {
                 method.getGenericParameterTypes()[0],
                 method.getDeclaringClass());
         Assert.assertEquals(Integer.class, fType);
+    }
+    
+    /**
+     * Tests that a field that is a generic array type can have subclasses that
+     * specifies the type of array
+     */
+    @Test @org.junit.Ignore
+    public void testFieldWithArrayTypeSpecifiedInSubclass() {
+        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
+        
+        Set<Field> fields = helper.getAllFields(FieldAsIntegerArray.class);
+        
+        Field field = null;
+        for (Field f : fields) {
+            if (f.getName().equals("field")) {
+                field = f;
+                break;
+            }
+        }
+        Assert.assertNotNull(field);
+        
+        Type fType = ReflectionHelper.resolveField(FieldAsIntegerArray.class, field);
+        Assert.assertTrue(fType instanceof GenericArrayType);
+        
+        GenericArrayType gat = (GenericArrayType) fType;
+        Type aType = gat.getGenericComponentType();
+        
+        Assert.assertEquals(Integer.class, aType);
+        
     }
 
 }
