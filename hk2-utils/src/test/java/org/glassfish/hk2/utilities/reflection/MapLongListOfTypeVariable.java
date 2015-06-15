@@ -39,9 +39,12 @@
  */
 package org.glassfish.hk2.utilities.reflection;
 
+import java.util.List;
+
 /**
  * @author jwells
  *
  */
-public class MapStringString extends SimpleMapWithTypeVariables<String, String> {
+public class MapLongListOfTypeVariable<K, V> extends SimpleMapWithTypeVariables<K, List<V>> {
+
 }

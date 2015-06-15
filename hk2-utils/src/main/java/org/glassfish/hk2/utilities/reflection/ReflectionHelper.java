@@ -162,44 +162,64 @@ public final class ReflectionHelper {
      * original type could not be converted into a Class or a ParameterizedType
      */
     public static Type resolveMember(Class<?> topclass, Type lookingForType, Class<?> declaringClass) {
-        Class<?> rawLooking = getRawClass(lookingForType);
-        if (rawLooking != null) return lookingForType;
+        Map<String, Type> typeArguments = typesFromSubClassToDeclaringClass(topclass, declaringClass);
+        if (typeArguments == null) return null;
+        
+        if (lookingForType instanceof ParameterizedType) {
+            return fixTypeVariables((ParameterizedType) lookingForType, typeArguments);
+        }
         
         if (!(lookingForType instanceof TypeVariable)) {
-            throw new AssertionError("Have not yet implemented Field type of " + lookingForType.getClass().getName());
+            return null;
         }
         
         TypeVariable<?> tv = (TypeVariable<?>) lookingForType;
         String typeVariableName = tv.getName();
         
-        Type superType = topclass.getGenericSuperclass();
+        Type retVal = typeArguments.get(typeVariableName);
+        if (retVal == null) return null;
+        
+        if (retVal instanceof Class) return retVal;
+        
+        if (retVal instanceof ParameterizedType) {
+            return fixTypeVariables((ParameterizedType) retVal, typeArguments);
+        }
+        
+        return null;
+    }
+    
+    private static Map<String, Type> typesFromSubClassToDeclaringClass(Class<?> topClass, Class<?> declaringClass) {
+        if (topClass.equals(declaringClass)) {
+            return null;
+        }
+        
+        Type superType = topClass.getGenericSuperclass();
         Class<?> superClass = getRawClass(superType);
         
         while (superType != null && superClass != null) {
-            if (!(superType instanceof ParameterizedType)) return null;
+            if (!(superType instanceof ParameterizedType)) {
+                // superType MUST be a Class in this case
+                if (superClass.equals(declaringClass)) return null;
+                
+                superType = superClass.getGenericSuperclass();
+                superClass = ReflectionHelper.getRawClass(superType);
+                
+                continue;
+            }
             
             ParameterizedType superPT = (ParameterizedType) superType;
             
             Map<String, Type> typeArguments = getTypeArguments(superClass, superPT);
             
             if (superClass.equals(declaringClass)) {
-                Type retVal = typeArguments.get(typeVariableName);
-                if (retVal == null) return null;
-                
-                if (retVal instanceof Class || retVal instanceof ParameterizedType) {
-                    return retVal;
-                }
-                
-                return null;
+                return typeArguments;
             }
             
             superType = superClass.getGenericSuperclass();
-            if (superType != null) {
-                superClass = ReflectionHelper.getRawClass(superType);
+            superClass = ReflectionHelper.getRawClass(superType);
 
-                if (typeArguments != null && (superType instanceof ParameterizedType)) {
-                    superType = fixTypeVariables((ParameterizedType) superType, typeArguments);
-                }
+            if (superType instanceof ParameterizedType) {
+                superType = fixTypeVariables((ParameterizedType) superType, typeArguments);
             }
         }
         

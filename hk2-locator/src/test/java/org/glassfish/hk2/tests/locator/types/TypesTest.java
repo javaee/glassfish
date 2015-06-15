@@ -148,7 +148,7 @@ public class TypesTest {
      * Tests that services can have parameterized types all filled in
      * by the subclasses
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testHardenedParameterizedTypes() {
         ServiceLocator locator = LocatorHelper.getServiceLocator(
                 ListMapServiceIntIntLong.class,

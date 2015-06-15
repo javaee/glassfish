@@ -42,6 +42,7 @@ package org.glassfish.hk2.utilities.reflection;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -396,7 +397,7 @@ public class ReflectionHelperTest {
      * Tests that a parameterized type field (Map<A,B>) can be
      * filled in
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testParameterizedField() {
         ClassReflectionHelper helper = new ClassReflectionHelperImpl();
         
@@ -415,6 +416,119 @@ public class ReflectionHelperTest {
         Assert.assertEquals(Map.class, pType.getRawType());
         Assert.assertEquals(String.class, pType.getActualTypeArguments()[0]);
         Assert.assertEquals(String.class, pType.getActualTypeArguments()[1]);
+    }
+    
+    /**
+     * Tests that a parameterized type field (Map<A,B>) can be
+     * filled in with both an intermediate class and not an intermediate
+     * class
+     */
+    @Test // @org.junit.Ignore
+    public void testParameterizedFieldWithIntermediateSubClass() {
+        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
+        
+        Set<Field> fields = helper.getAllFields(MapLongLong.class);
+        Assert.assertEquals(1, fields.size());
+        
+        Field field = null;
+        for (Field f : fields) {
+            field = f;
+        }
+        
+        Type fType = ReflectionHelper.resolveField(MapLongLong.class, field);
+        Assert.assertTrue(fType instanceof ParameterizedType);
+        
+        ParameterizedType pType = (ParameterizedType) fType;
+        Assert.assertEquals(Map.class, pType.getRawType());
+        Assert.assertEquals(Long.class, pType.getActualTypeArguments()[0]);
+        Assert.assertEquals(Long.class, pType.getActualTypeArguments()[1]);
+    }
+    
+    /**
+     * Tests that a parameterized type field (Map<A,B>) can be
+     * filled in with even if one of the parameterized type
+     * arguments is NOT filled in
+     */
+    @Test // @org.junit.Ignore
+    public void testParameterizedFieldWithIncompleteSubClass() {
+        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
+        
+        Set<Field> fields = helper.getAllFields(MapTypedLong.class);
+        Assert.assertEquals(1, fields.size());
+        
+        Field field = null;
+        for (Field f : fields) {
+            field = f;
+        }
+        
+        Type fType = ReflectionHelper.resolveField(MapTypedLong.class, field);
+        Assert.assertTrue(fType instanceof ParameterizedType);
+        
+        ParameterizedType pType = (ParameterizedType) fType;
+        Assert.assertEquals(Map.class, pType.getRawType());
+        Assert.assertTrue(pType.getActualTypeArguments()[0] instanceof TypeVariable);
+        Assert.assertEquals("Q", ((TypeVariable<?>) pType.getActualTypeArguments()[0]).getName());
+        Assert.assertEquals(Long.class, pType.getActualTypeArguments()[1]);
+    }
+    
+    /**
+     * Tests that a parameterized type field (Map<A,B>) can be
+     * filled in with a field that is itself parameterized
+     */
+    @Test // @org.junit.Ignore
+    public void testParameterizedFieldWithCompleteParameterizedFinalResult() {
+        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
+        
+        Set<Field> fields = helper.getAllFields(MapLongListOfString.class);
+        Assert.assertEquals(1, fields.size());
+        
+        Field field = null;
+        for (Field f : fields) {
+            field = f;
+        }
+        
+        Type fType = ReflectionHelper.resolveField(MapLongListOfString.class, field);
+        Assert.assertTrue(fType instanceof ParameterizedType);
+        
+        ParameterizedType pType = (ParameterizedType) fType;
+        Assert.assertEquals(Map.class, pType.getRawType());
+        Assert.assertEquals(Long.class, pType.getActualTypeArguments()[0]);
+        
+        Assert.assertTrue(pType.getActualTypeArguments()[1] instanceof ParameterizedType);
+        ParameterizedType arg1 = (ParameterizedType) pType.getActualTypeArguments()[1];
+        
+        Assert.assertEquals(List.class, arg1.getRawType());
+        Assert.assertEquals(String.class, arg1.getActualTypeArguments()[0]);
+    }
+    
+    /**
+     * Tests that a parameterized type field (Map<A,B>) can be
+     * filled in with a field that is itself parameterized
+     */
+    @Test @org.junit.Ignore
+    public void testParameterizedFieldWithParameterizedFinalResult() {
+        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
+        
+        Set<Field> fields = helper.getAllFields(MapIntegerListOfDouble.class);
+        Assert.assertEquals(1, fields.size());
+        
+        Field field = null;
+        for (Field f : fields) {
+            field = f;
+        }
+        
+        Type fType = ReflectionHelper.resolveField(MapIntegerListOfDouble.class, field);
+        Assert.assertTrue(fType instanceof ParameterizedType);
+        
+        ParameterizedType pType = (ParameterizedType) fType;
+        Assert.assertEquals(Map.class, pType.getRawType());
+        Assert.assertEquals(Integer.class, pType.getActualTypeArguments()[0]);
+        
+        Assert.assertTrue(pType.getActualTypeArguments()[1] instanceof ParameterizedType);
+        ParameterizedType arg1 = (ParameterizedType) pType.getActualTypeArguments()[1];
+        
+        Assert.assertEquals(List.class, arg1.getRawType());
+        Assert.assertEquals(Double.class, arg1.getActualTypeArguments()[0]);
     }
 
 }

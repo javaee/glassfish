@@ -43,5 +43,6 @@ package org.glassfish.hk2.utilities.reflection;
  * @author jwells
  *
  */
-public class MapStringString extends SimpleMapWithTypeVariables<String, String> {
+public class MapIntegerListOfDouble extends MapLongListOfTypeVariable<Integer, Double> {
+
 }
