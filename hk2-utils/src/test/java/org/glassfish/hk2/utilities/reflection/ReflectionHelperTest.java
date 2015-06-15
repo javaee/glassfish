@@ -693,7 +693,7 @@ public class ReflectionHelperTest {
      * Tests that a field that is a generic array type can have subclasses that
      * specifies the type of array
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testFieldWithArrayTypeSpecifiedInSubclass() {
         ClassReflectionHelper helper = new ClassReflectionHelperImpl();
         
@@ -715,7 +715,6 @@ public class ReflectionHelperTest {
         Type aType = gat.getGenericComponentType();
         
         Assert.assertEquals(Integer.class, aType);
-        
     }
 
 }

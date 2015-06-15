@@ -169,6 +169,10 @@ public final class ReflectionHelper {
             return fixTypeVariables((ParameterizedType) lookingForType, typeArguments);
         }
         
+        if (lookingForType instanceof GenericArrayType) {
+            return fixGenericArrayTypeVariables((GenericArrayType) lookingForType, typeArguments);
+        }
+        
         if (!(lookingForType instanceof TypeVariable)) {
             return null;
         }
@@ -322,6 +326,23 @@ public final class ReflectionHelper {
         }
         return type;
     }
+    
+    /**
+     * Replace any TypeVariables in the given type's arguments with
+     * the actual argument types.  Return the given type if no replacing
+     * is required.
+     */
+    private static Type fixGenericArrayTypeVariables(GenericArrayType type,
+                                         Map<String, Type> typeArgumentsMap) {
+
+        Type newTypeArgument = getNewTypeArrayArguments(type, typeArgumentsMap);
+
+        if (newTypeArgument != null) {
+            type = new GenericArrayTypeImpl(newTypeArgument);
+        }
+        
+        return type;
+    }
 
     /**
      * Get a new array of type arguments for the given ParameterizedType, replacing any TypeVariables with
@@ -353,11 +374,63 @@ public final class ReflectionHelper {
                     newTypeArguments[i++] = argType;
                 }
             }
+            else if (argType instanceof GenericArrayType) {
+                GenericArrayType gat = (GenericArrayType) argType;
+                
+                Type internalTypeArg = getNewTypeArrayArguments(gat, typeArgumentsMap);
+                if (internalTypeArg != null) {
+                    newTypeArguments[i++] = new GenericArrayTypeImpl(internalTypeArg);
+                    newArgsNeeded = true;
+                }
+                else {
+                    newTypeArguments[i++] = argType;
+                }
+            }
             else {
                 newTypeArguments[i++] = argType;
             }
         }
+        
         return newArgsNeeded ? newTypeArguments : null;
+    }
+    
+    /**
+     * Get a new Type for a GenericArrayType, replacing any TypeVariables with
+     * actual types.  The types should be found in the given arguments map, keyed by variable name.  Return
+     * null if no arguments needed to be replaced.
+     */
+    private static Type getNewTypeArrayArguments(final GenericArrayType gat,
+                                              final Map<String, Type> typeArgumentsMap) {
+
+        Type  typeArgument    = gat.getGenericComponentType();
+
+        if (typeArgument instanceof TypeVariable) {
+            return typeArgumentsMap.get(((TypeVariable<?>) typeArgument).getName());
+        }
+        
+        if (typeArgument instanceof ParameterizedType) {
+            ParameterizedType original = (ParameterizedType) typeArgument;
+                
+            Type[] internalTypeArgs = getNewTypeArguments(original, typeArgumentsMap);
+            if (internalTypeArgs != null) {
+                return new ParameterizedTypeImpl(original.getRawType(), internalTypeArgs);
+            }
+            
+            return null;
+        }
+        
+        if (typeArgument instanceof GenericArrayType) {
+            GenericArrayType original = (GenericArrayType) typeArgument;
+                
+            Type internalTypeArg = getNewTypeArrayArguments(original, typeArgumentsMap);
+            if (internalTypeArg != null) {
+                return new GenericArrayTypeImpl(internalTypeArg);
+            }
+            
+            return null;
+        }
+        
+        return null;
     }
 
     /**
