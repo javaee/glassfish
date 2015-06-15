@@ -340,6 +340,18 @@ public final class ReflectionHelper {
             if (argType instanceof TypeVariable) {
                 newTypeArguments[i++] = typeArgumentsMap.get(((TypeVariable<?>) argType).getName());
                 newArgsNeeded = true;
+            }
+            else if (argType instanceof ParameterizedType) {
+                ParameterizedType original = (ParameterizedType) argType;
+                
+                Type[] internalTypeArgs = getNewTypeArguments(original, typeArgumentsMap);
+                if (internalTypeArgs != null) {
+                    newTypeArguments[i++] = new ParameterizedTypeImpl(original.getRawType(), internalTypeArgs);
+                    newArgsNeeded = true;
+                }
+                else {
+                    newTypeArguments[i++] = argType;
+                }
             } else {
                 newTypeArguments[i++] = argType;
             }

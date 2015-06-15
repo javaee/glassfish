@@ -505,7 +505,7 @@ public class ReflectionHelperTest {
      * Tests that a parameterized type field (Map<A,B>) can be
      * filled in with a field that is itself parameterized
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testParameterizedFieldWithParameterizedFinalResult() {
         ClassReflectionHelper helper = new ClassReflectionHelperImpl();
         
