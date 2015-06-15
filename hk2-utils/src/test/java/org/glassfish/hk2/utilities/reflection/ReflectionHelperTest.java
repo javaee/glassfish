@@ -40,6 +40,7 @@
 package org.glassfish.hk2.utilities.reflection;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -660,6 +661,31 @@ public class ReflectionHelperTest {
         
         Assert.assertEquals(List.class, arg1.getRawType());
         Assert.assertEquals(Double.class, arg1.getActualTypeArguments()[0]);
+    }
+    
+    /**
+     * Tests that a parameterized method parameter specified in
+     * an interface can be properly resolved
+     */
+    @Test // @org.junit.Ignore
+    public void testMethodAsInteger() {
+        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
+        
+        Set<MethodWrapper> methods = helper.getAllMethods(MethodAsInteger.class);
+        
+        Method method = null;
+        for (MethodWrapper m : methods) {
+            if (m.getMethod().getName().equals("method")) {
+                method = m.getMethod();
+                break;
+            }
+        }
+        Assert.assertNotNull(method);
+        
+        Type fType = ReflectionHelper.resolveMember(MethodAsInteger.class,
+                method.getGenericParameterTypes()[0],
+                method.getDeclaringClass());
+        Assert.assertEquals(Integer.class, fType);
     }
 
 }
