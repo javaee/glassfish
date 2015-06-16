@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.GenericArrayType;
@@ -187,6 +188,10 @@ public final class ReflectionHelper {
         
         if (retVal instanceof ParameterizedType) {
             return fixTypeVariables((ParameterizedType) retVal, typeArguments);
+        }
+        
+        if (retVal instanceof GenericArrayType) {
+            return fixGenericArrayTypeVariables((GenericArrayType) retVal, typeArguments);
         }
         
         return null;
@@ -335,13 +340,22 @@ public final class ReflectionHelper {
     private static Type fixGenericArrayTypeVariables(GenericArrayType type,
                                          Map<String, Type> typeArgumentsMap) {
 
+        
         Type newTypeArgument = getNewTypeArrayArguments(type, typeArgumentsMap);
 
         if (newTypeArgument != null) {
-            type = new GenericArrayTypeImpl(newTypeArgument);
+            if (newTypeArgument instanceof Class<?>) {
+                return getArrayOfType((Class<?>) newTypeArgument);
+            }
+            
+            return new GenericArrayTypeImpl(newTypeArgument);
         }
         
         return type;
+    }
+    
+    private static Class<?> getArrayOfType(Class<?> type) {
+        return Array.newInstance(type, 0).getClass();
     }
 
     /**
@@ -359,7 +373,7 @@ public final class ReflectionHelper {
         int i = 0;
         for (Type argType : typeArguments) {
             if (argType instanceof TypeVariable) {
-                newTypeArguments[i++] = typeArgumentsMap.get(((TypeVariable<?>) argType).getName());
+                newTypeArguments[i] = typeArgumentsMap.get(((TypeVariable<?>) argType).getName());
                 newArgsNeeded = true;
             }
             else if (argType instanceof ParameterizedType) {
@@ -367,11 +381,11 @@ public final class ReflectionHelper {
                 
                 Type[] internalTypeArgs = getNewTypeArguments(original, typeArgumentsMap);
                 if (internalTypeArgs != null) {
-                    newTypeArguments[i++] = new ParameterizedTypeImpl(original.getRawType(), internalTypeArgs);
+                    newTypeArguments[i] = new ParameterizedTypeImpl(original.getRawType(), internalTypeArgs);
                     newArgsNeeded = true;
                 }
                 else {
-                    newTypeArguments[i++] = argType;
+                    newTypeArguments[i] = argType;
                 }
             }
             else if (argType instanceof GenericArrayType) {
@@ -379,16 +393,24 @@ public final class ReflectionHelper {
                 
                 Type internalTypeArg = getNewTypeArrayArguments(gat, typeArgumentsMap);
                 if (internalTypeArg != null) {
-                    newTypeArguments[i++] = new GenericArrayTypeImpl(internalTypeArg);
-                    newArgsNeeded = true;
+                    if (internalTypeArg instanceof Class<?>) {
+                        newTypeArguments[i] = getArrayOfType((Class<?>) internalTypeArg);
+                        newArgsNeeded = true;
+                    }
+                    else {
+                        newTypeArguments[i] = new GenericArrayTypeImpl(internalTypeArg);
+                        newArgsNeeded = true;
+                    }
                 }
                 else {
-                    newTypeArguments[i++] = argType;
+                    newTypeArguments[i] = argType;
                 }
             }
             else {
-                newTypeArguments[i++] = argType;
+                newTypeArguments[i] = argType;
             }
+            
+            i++;
         }
         
         return newArgsNeeded ? newTypeArguments : null;
@@ -424,6 +446,10 @@ public final class ReflectionHelper {
                 
             Type internalTypeArg = getNewTypeArrayArguments(original, typeArgumentsMap);
             if (internalTypeArg != null) {
+                if (internalTypeArg instanceof Class<?>) {
+                    return getArrayOfType((Class<?>) internalTypeArg);
+                }
+                
                 return new GenericArrayTypeImpl(internalTypeArg);
             }
             

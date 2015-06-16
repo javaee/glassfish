@@ -37,58 +37,19 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.utilities.reflection;
-
-import java.lang.reflect.GenericArrayType;
-import java.lang.reflect.Type;
-import java.util.Arrays;
-
-import org.glassfish.hk2.utilities.general.GeneralUtilities;
+package org.glassfish.hk2.tests.locator.types;
 
 /**
- * An implementation of GenericArrayType for those times we need to create
- * this on the fly
- * 
  * @author jwells
  *
  */
-public class GenericArrayTypeImpl implements GenericArrayType {
-    private final Type genericComponentType;
-    
-    /**
-     * Creates the GenericArrayType with the given array type
-     * 
-     * @param gct the non-null type for this GenericArrayType
-     */
-    public GenericArrayTypeImpl(Type gct) {
-        genericComponentType = gct;
-    }
+public class MakeItAnArrayInjectedService<T> extends InjectedBaseClass<T[]> {
 
-    /* (non-Javadoc)
-     * @see java.lang.reflect.GenericArrayType#getGenericComponentType()
+    /**
+     * @param c
      */
-    @Override
-    public Type getGenericComponentType() {
-        return genericComponentType;
-    }
-    
-    @Override
-    public int hashCode() {
-        return genericComponentType.hashCode();
-    }
-    
-    @Override
-    public boolean equals(Object o) {
-        if (o == null) return false;
-        if (!(o instanceof GenericArrayType)) return false;
-        
-        GenericArrayType other = (GenericArrayType) o;
-        
-        return GeneralUtilities.safeEquals(genericComponentType, other.getGenericComponentType());
-    }
-    
-    public String toString() {
-        return "GenericArrayTypeImpl(" + genericComponentType + ")";
+    protected MakeItAnArrayInjectedService(T[] c) {
+        super(c);
     }
 
 }

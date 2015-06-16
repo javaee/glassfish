@@ -196,5 +196,44 @@ public class TypesTest {
             Assert.assertEquals(DOUBLE_VALUE, fromMap);
         }
     }
+    
+    /**
+     * Tests that services can have parameterized types all filled in
+     * by the subclasses
+     */
+    @Test // @org.junit.Ignore
+    public void testHardenedArrayTypes() {
+        ServiceLocator locator = LocatorHelper.getServiceLocator(
+                AlphaArrayFactory.class,
+                BetaArrayFactory.class,
+                BetaArrayInjectedService.class,
+                AlphaArrayInjectedService.class);
+        
+        {
+            AlphaArrayInjectedService aais = locator.getService(AlphaArrayInjectedService.class);
+            
+            AlphaService as[] = aais.getFromField();
+            Assert.assertNotNull(as);
+            Assert.assertEquals(0, as.length);
+        
+            as = aais.getFromMethod();
+            Assert.assertNotNull(as);
+            Assert.assertEquals(0, as.length);
+        }
+        
+        {
+            BetaArrayInjectedService bais = locator.getService(BetaArrayInjectedService.class);
+            
+            BetaService bs[] = bais.getFromField();
+            Assert.assertNotNull(bs);
+            Assert.assertEquals(0, bs.length);
+        
+            bs = bais.getFromMethod();
+            Assert.assertNotNull(bs);
+            Assert.assertEquals(0, bs.length);
+        }
+        
+        
+    }
 
 }

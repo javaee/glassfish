@@ -40,7 +40,6 @@
 package org.glassfish.hk2.utilities.reflection;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -512,6 +511,33 @@ public class ReflectionHelperTest {
     }
     
     /**
+     * Tests that a field that is a generic type can have subclasses that contains
+     * a GenericArrayType type
+     */
+    @Test
+    public void testFieldWithArray() {
+        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
+        
+        Set<Field> fields = helper.getAllFields(FieldAsArrayOfFloat.class);
+        
+        Field field = null;
+        for (Field f : fields) {
+            if (f.getName().equals("field")) {
+                field = f;
+                break;
+            }
+        }
+        Assert.assertNotNull(field);
+        
+        Type fType = ReflectionHelper.resolveField(FieldAsArrayOfFloat.class, field);
+        Assert.assertTrue(fType instanceof Class<?>);
+        
+        Class<?> cType = (Class<?>) fType;
+        Assert.assertTrue(cType.isArray());
+        Assert.assertEquals(Float.class, cType.getComponentType());
+    }
+    
+    /**
      * Tests that a parameterized type field (Map<A,B>) can be
      * filled in
      */
@@ -709,12 +735,11 @@ public class ReflectionHelperTest {
         Assert.assertNotNull(field);
         
         Type fType = ReflectionHelper.resolveField(FieldAsIntegerArray.class, field);
-        Assert.assertTrue(fType instanceof GenericArrayType);
+        Assert.assertTrue(fType instanceof Class<?>);
         
-        GenericArrayType gat = (GenericArrayType) fType;
-        Type aType = gat.getGenericComponentType();
-        
-        Assert.assertEquals(Integer.class, aType);
+        Class<?> cType = (Class<?>) fType;
+        Assert.assertTrue(cType.isArray());
+        Assert.assertEquals(Integer.class, cType.getComponentType());
     }
 
 }
