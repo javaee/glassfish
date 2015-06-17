@@ -39,11 +39,13 @@
  */
 package org.glassfish.hk2.utilities.reflection;
 
+import java.util.List;
+
 /**
  * @author jwells
  *
  */
-public class FieldAsArrayType<T> {
-    public T[] field;
-    
+public class FieldAsParameterizedArrayType<A> {
+    public List<A>[] field;
+
 }

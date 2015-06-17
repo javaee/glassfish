@@ -145,9 +145,9 @@ public final class ReflectionHelper {
      * Resolves the generic type of a field given the actual class being instantiated
      * 
      * @param topclass The instantiation class.  Must not be null
-     * @param field The field whose type to resolve
-     * @return The resolved field type by way of its subclasses.  May return null if the
-     * original type could not be converted into a Class or a ParameterizedType
+     * @param field The non-null field whose type to resolve
+     * @return The resolved field type by way of its subclasses.  Will not return
+     * null, but may return the original fields generic type
      */
     public static Type resolveField(Class<?> topclass, Field field) {
         return resolveMember(topclass, field.getGenericType(), field.getDeclaringClass());
@@ -159,12 +159,12 @@ public final class ReflectionHelper {
      * @param topclass The instantiation class.  Must not be null
      * @param lookingForType The type to resolve.  Must not be null
      * @param declaringClass The class of the entity declaring the lookingForType. Must not be null
-     * @return The resolved type by way of its subclasses.  May return null if the
-     * original type could not be converted into a Class or a ParameterizedType
+     * @return The resolved type by way of its subclasses.  Will not return null but may
+     * return lookingForType if it could not be further resolved
      */
     public static Type resolveMember(Class<?> topclass, Type lookingForType, Class<?> declaringClass) {
         Map<String, Type> typeArguments = typesFromSubClassToDeclaringClass(topclass, declaringClass);
-        if (typeArguments == null) return null;
+        if (typeArguments == null) return lookingForType;
         
         if (lookingForType instanceof ParameterizedType) {
             return fixTypeVariables((ParameterizedType) lookingForType, typeArguments);
@@ -175,14 +175,14 @@ public final class ReflectionHelper {
         }
         
         if (!(lookingForType instanceof TypeVariable)) {
-            return null;
+            return lookingForType;
         }
         
         TypeVariable<?> tv = (TypeVariable<?>) lookingForType;
         String typeVariableName = tv.getName();
         
         Type retVal = typeArguments.get(typeVariableName);
-        if (retVal == null) return null;
+        if (retVal == null) return lookingForType;
         
         if (retVal instanceof Class) return retVal;
         
@@ -194,7 +194,7 @@ public final class ReflectionHelper {
             return fixGenericArrayTypeVariables((GenericArrayType) retVal, typeArguments);
         }
         
-        return null;
+        return retVal;
     }
     
     private static Map<String, Type> typesFromSubClassToDeclaringClass(Class<?> topClass, Class<?> declaringClass) {
@@ -327,8 +327,9 @@ public final class ReflectionHelper {
         Type[] newTypeArguments = getNewTypeArguments(type, typeArgumentsMap);
 
         if (newTypeArguments != null) {
-            type = new ParameterizedTypeImpl(type.getRawType(), newTypeArguments);
+            return new ParameterizedTypeImpl(type.getRawType(), newTypeArguments);
         }
+        
         return type;
     }
     
@@ -346,6 +347,13 @@ public final class ReflectionHelper {
         if (newTypeArgument != null) {
             if (newTypeArgument instanceof Class<?>) {
                 return getArrayOfType((Class<?>) newTypeArgument);
+            }
+            
+            if (newTypeArgument instanceof ParameterizedType) {
+                ParameterizedType pt = (ParameterizedType) newTypeArgument;
+                if (pt.getRawType() instanceof Class<?>) {
+                    return getArrayOfType((Class<?>) pt.getRawType());
+                }
             }
             
             return new GenericArrayTypeImpl(newTypeArgument);
@@ -395,6 +403,13 @@ public final class ReflectionHelper {
                 if (internalTypeArg != null) {
                     if (internalTypeArg instanceof Class<?>) {
                         newTypeArguments[i] = getArrayOfType((Class<?>) internalTypeArg);
+                        newArgsNeeded = true;
+                    }
+                    else if ((internalTypeArg instanceof ParameterizedType) &&
+                            (((ParameterizedType) internalTypeArg).getRawType() instanceof Class<?>)) {
+                        ParameterizedType pt = (ParameterizedType) internalTypeArg;
+                        
+                        newTypeArguments[i] = getArrayOfType((Class<?>) pt.getRawType());
                         newArgsNeeded = true;
                     }
                     else {
@@ -448,6 +463,14 @@ public final class ReflectionHelper {
             if (internalTypeArg != null) {
                 if (internalTypeArg instanceof Class<?>) {
                     return getArrayOfType((Class<?>) internalTypeArg);
+                }
+                
+                if (internalTypeArg instanceof ParameterizedType) {
+                    ParameterizedType pt = (ParameterizedType) internalTypeArg;
+                    
+                    if (pt.getRawType() instanceof Class<?>) {
+                        return getArrayOfType((Class<?>) pt.getRawType());
+                    }
                 }
                 
                 return new GenericArrayTypeImpl(internalTypeArg);

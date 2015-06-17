@@ -1869,9 +1869,6 @@ public class Utilities {
             
             Type adjustedType = ReflectionHelper.resolveMember(actualClass,
                     genericTypeParams[lcv], declaringClass);
-            if (adjustedType == null) {
-                adjustedType = genericTypeParams[lcv];
-            }
             
             retVal.add(new SystemInjecteeImpl(adjustedType,
                     ai.qualifiers,
@@ -1913,9 +1910,6 @@ public class Utilities {
         AnnotationInformation ai = getParamInformation(f.getAnnotations());
         
         Type adjustedType = ReflectionHelper.resolveField(actualClass, f);
-        if (adjustedType == null) {
-            adjustedType = f.getGenericType();
-        }
 
         retVal.add(new SystemInjecteeImpl(adjustedType,
                 getFieldAdjustedQualifierAnnotations(f),

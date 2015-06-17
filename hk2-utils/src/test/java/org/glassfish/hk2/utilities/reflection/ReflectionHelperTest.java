@@ -40,6 +40,7 @@
 package org.glassfish.hk2.utilities.reflection;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -412,7 +413,7 @@ public class ReflectionHelperTest {
      * non parameterized type
      */
     @Test
-    public void testFieldWithNotParameterizedReturnsNull() {
+    public void testFieldWithNotParameterizedReturnsOriginal() {
         ClassReflectionHelper helper = new ClassReflectionHelperImpl();
         
         Set<Field> fields = helper.getAllFields(FieldNotParameterized.class);
@@ -427,7 +428,9 @@ public class ReflectionHelperTest {
         Assert.assertNotNull(field);
         
         Type fType = ReflectionHelper.resolveField(FieldNotParameterized.class, field);
-        Assert.assertNull(fType);
+        Assert.assertTrue(fType instanceof TypeVariable<?>);
+        
+        Assert.assertEquals("T", ((TypeVariable<?>) fType).getName());
     }
     
     /**
@@ -450,7 +453,9 @@ public class ReflectionHelperTest {
         Assert.assertNotNull(field);
         
         Type fType = ReflectionHelper.resolveMember(FieldAsType.class, field.getGenericType(), FieldAsType.class);
-        Assert.assertNull(fType);
+        Assert.assertTrue(fType instanceof TypeVariable<?>);
+        
+        Assert.assertEquals("T", ((TypeVariable<?>) fType).getName());
     }
     
     /**
@@ -740,6 +745,86 @@ public class ReflectionHelperTest {
         Class<?> cType = (Class<?>) fType;
         Assert.assertTrue(cType.isArray());
         Assert.assertEquals(Integer.class, cType.getComponentType());
+    }
+    
+    /**
+     * Tests that a field that is a generic array type can have subclasses that
+     * specifies the type of array
+     */
+    @Test // @org.junit.Ignore
+    public void testFieldWithArrayParameterizedTypeSpecifiedInSubclass() {
+        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
+        
+        Set<Field> fields = helper.getAllFields(FieldAsArrayOfListOfInteger.class);
+        
+        Field field = null;
+        for (Field f : fields) {
+            if (f.getName().equals("field")) {
+                field = f;
+                break;
+            }
+        }
+        Assert.assertNotNull(field);
+        
+        Type fType = ReflectionHelper.resolveField(FieldAsArrayOfListOfInteger.class, field);
+        Assert.assertTrue(fType instanceof Class<?>);
+        
+        Class<?> cType = (Class<?>) fType;
+        Assert.assertTrue(cType.isArray());
+        Assert.assertEquals(List.class, cType.getComponentType());
+    }
+    
+    /**
+     * Tests that a field that is specified as a generic array in 
+     * the subclass
+     */
+    @Test // @org.junit.Ignore
+    public void testFieldWithGenericArraySubclass() {
+        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
+        
+        Set<Field> fields = helper.getAllFields(FieldAsGenericArray.class);
+        
+        Field field = null;
+        for (Field f : fields) {
+            if (f.getName().equals("field")) {
+                field = f;
+                break;
+            }
+        }
+        Assert.assertNotNull(field);
+        
+        Type fType = ReflectionHelper.resolveField(FieldAsGenericArray.class, field);
+        Assert.assertTrue(fType instanceof GenericArrayType);
+        
+        GenericArrayType gat = (GenericArrayType) fType;
+        Assert.assertTrue(gat.getGenericComponentType() instanceof TypeVariable);
+        
+        Assert.assertEquals("M", ((TypeVariable<?>) gat.getGenericComponentType()).getName());
+    }
+    
+    /**
+     * Tests that a field that is specified as a generic array in 
+     * the subclass
+     */
+    @Test // @org.junit.Ignore
+    public void testFieldWithTypeVariableSubclass() {
+        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
+        
+        Set<Field> fields = helper.getAllFields(IntermediateTyped.class);
+        
+        Field field = null;
+        for (Field f : fields) {
+            if (f.getName().equals("field")) {
+                field = f;
+                break;
+            }
+        }
+        Assert.assertNotNull(field);
+        
+        Type fType = ReflectionHelper.resolveField(IntermediateTyped.class, field);
+        Assert.assertTrue(fType instanceof TypeVariable<?>);
+        
+        Assert.assertEquals("B", ((TypeVariable<?>) fType).getName());
     }
 
 }

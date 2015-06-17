@@ -43,7 +43,6 @@ package org.glassfish.hk2.utilities.reflection;
  * @author jwells
  *
  */
-public class FieldAsArrayType<T> {
-    public T[] field;
-    
+public class FieldAsArrayOfListOfInteger extends FieldAsParameterizedArrayType<Integer> {
+
 }
