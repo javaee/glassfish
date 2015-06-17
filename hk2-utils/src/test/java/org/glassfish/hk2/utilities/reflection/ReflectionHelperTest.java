@@ -826,5 +826,238 @@ public class ReflectionHelperTest {
         
         Assert.assertEquals("B", ((TypeVariable<?>) fType).getName());
     }
+    
+    /**
+     * Tests that a field that is changed to an array and then
+     * to a type variable works with a parameterized type
+     */
+    @Test // @org.junit.Ignore
+    public void testFieldSuperclassArrayToTypeVariable() {
+        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
+        
+        Set<Field> fields = helper.getAllFields(FieldAsArrayOfParameterizedType.class);
+        
+        Field field = null;
+        for (Field f : fields) {
+            if (f.getName().equals("field")) {
+                field = f;
+                break;
+            }
+        }
+        Assert.assertNotNull(field);
+        
+        Type fType = ReflectionHelper.resolveField(FieldAsArrayOfParameterizedType.class, field);
+        Assert.assertTrue(fType instanceof Class<?>);
+        
+        Class<?> cType = (Class<?>) fType;
+        Assert.assertTrue(cType.isArray());
+        
+        Assert.assertEquals(List.class, cType.getComponentType());
+    }
+    
+    /**
+     * Tests that a field that is changed to an array and then
+     * to a type variable works with a parameterized type with
+     * a wildcard
+     */
+    @Test // @org.junit.Ignore
+    public void testFieldSuperclassArrayWithWildcardToTypeVariable() {
+        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
+        
+        Set<Field> fields = helper.getAllFields(FieldAsArrayOfParameterizedWildcard.class);
+        
+        Field field = null;
+        for (Field f : fields) {
+            if (f.getName().equals("field")) {
+                field = f;
+                break;
+            }
+        }
+        Assert.assertNotNull(field);
+        
+        Type fType = ReflectionHelper.resolveField(FieldAsArrayOfParameterizedWildcard.class, field);
+        Assert.assertTrue(fType instanceof Class<?>);
+        
+        Class<?> cType = (Class<?>) fType;
+        Assert.assertTrue(cType.isArray());
+        
+        Assert.assertEquals(List.class, cType.getComponentType());
+    }
+    
+    /**
+     * Tests that a field that is a double array type can be specified
+     * by subclass
+     */
+    @Test // @org.junit.Ignore
+    public void testFieldDoubleArrayTypeVariableSpecifiedInSubClass() {
+        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
+        
+        Set<Field> fields = helper.getAllFields(DoubleArrayOfInteger.class);
+        
+        Field field = null;
+        for (Field f : fields) {
+            if (f.getName().equals("field")) {
+                field = f;
+                break;
+            }
+        }
+        Assert.assertNotNull(field);
+        
+        Type fType = ReflectionHelper.resolveField(DoubleArrayOfInteger.class, field);
+        Assert.assertTrue(fType instanceof Class<?>);
+        
+        Class<?> cType = (Class<?>) fType;
+        Assert.assertTrue(cType.isArray());
+        
+        Class<?> innerCType = cType.getComponentType();
+        Assert.assertTrue(innerCType.isArray());
+        
+        Assert.assertEquals(Integer.class, innerCType.getComponentType());
+    }
+    
+    /**
+     * Tests that a field that is a double array can be specified in
+     * subclass that has a parameterized type that itself has a type
+     * variable specified in its subclass
+     */
+    @Test // @org.junit.Ignore
+    public void testFieldDoubleArrayParameterizedTypeWithTypeVariableSpecifiedInSubClass() {
+        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
+        
+        Set<Field> fields = helper.getAllFields(DoubleArrayOfParameterizedTypeAsLong.class);
+        
+        Field field = null;
+        for (Field f : fields) {
+            if (f.getName().equals("field")) {
+                field = f;
+                break;
+            }
+        }
+        Assert.assertNotNull(field);
+        
+        Type fType = ReflectionHelper.resolveField(DoubleArrayOfParameterizedTypeAsLong.class, field);
+        Assert.assertTrue(fType instanceof Class<?>);
+        
+        Class<?> cType = (Class<?>) fType;
+        Assert.assertTrue(cType.isArray());
+        
+        Class<?> innerCType = cType.getComponentType();
+        Assert.assertTrue(innerCType.isArray());
+        
+        Assert.assertEquals(List.class, innerCType.getComponentType());
+    }
+    
+    /**
+     * Tests that a field that is a double array can be not specified
+     * by the subclass (subclass not parameterized)
+     */
+    @Test // @org.junit.Ignore
+    public void testFieldDoubleArrayNotSpecifiedInSubClass() {
+        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
+        
+        Set<Field> fields = helper.getAllFields(DoubleArrayUnspecified.class);
+        
+        Field field = null;
+        for (Field f : fields) {
+            if (f.getName().equals("field")) {
+                field = f;
+                break;
+            }
+        }
+        Assert.assertNotNull(field);
+        
+        Type fType = ReflectionHelper.resolveField(DoubleArrayUnspecified.class, field);
+        Assert.assertTrue(fType instanceof GenericArrayType);
+        
+        GenericArrayType gat = (GenericArrayType) fType;
+        Assert.assertTrue(gat.getGenericComponentType() instanceof GenericArrayType);
+        
+        gat = (GenericArrayType) gat.getGenericComponentType();
+        Assert.assertTrue(gat.getGenericComponentType() instanceof TypeVariable<?>);
+        
+        TypeVariable<?> tv = (TypeVariable<?>) gat.getGenericComponentType();
+        Assert.assertEquals("D", tv.getName());
+    }
+    
+    /**
+     * Ensures the proper assertion error is thrown
+     */
+    @Test(expected=AssertionError.class) // @org.junit.Ignore
+    public void testInvalidClassesGivenToResolveMember() {
+        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
+        
+        Set<Field> fields = helper.getAllFields(DoubleArrayUnspecified.class);
+        
+        Field field = null;
+        for (Field f : fields) {
+            if (f.getName().equals("field")) {
+                field = f;
+                break;
+            }
+        }
+        Assert.assertNotNull(field);
+        
+        ReflectionHelper.resolveMember(ReflectionHelperTest.class, field.getGenericType(), field.getDeclaringClass());
+    }
+    
+    /**
+     * Tests that a field that is a generic type that has fully qualified
+     * parameterized type in subclass works
+     */
+    @Test
+    public void testFieldWithParameterizedType() {
+        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
+        
+        Set<Field> fields = helper.getAllFields(FieldAsArrayOfFullySpecifiedParameterizedType.class);
+
+        Field field = null;
+        for (Field f : fields) {
+            if (f.getName().equals("field")) {
+                field = f;
+                break;
+            }
+        }
+        Assert.assertNotNull(field);
+        
+        Type fType = ReflectionHelper.resolveField(FieldAsArrayOfFullySpecifiedParameterizedType.class, field);
+        Assert.assertTrue(fType instanceof Class<?>);
+        
+        Class<?> cType = (Class<?>) fType;
+        
+        Assert.assertTrue(cType.isArray());
+        Assert.assertEquals(List.class, cType.getComponentType());
+    }
+    
+    /**
+     * Tests that a field that is an array can have a subclass
+     * of a generic array, making it an array of an array
+     */
+    @Test
+    public void testFieldArrayOfArrayViaSubclassing() {
+        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
+        
+        Set<Field> fields = helper.getAllFields(ArrayOfArrayViaSubclassing.class);
+
+        Field field = null;
+        for (Field f : fields) {
+            if (f.getName().equals("field")) {
+                field = f;
+                break;
+            }
+        }
+        Assert.assertNotNull(field);
+        
+        Type fType = ReflectionHelper.resolveField(ArrayOfArrayViaSubclassing.class, field);
+        Assert.assertTrue(fType instanceof GenericArrayType);
+        
+        GenericArrayType gat = (GenericArrayType) fType;
+        Assert.assertTrue(gat.getGenericComponentType() instanceof GenericArrayType);
+        
+        gat = (GenericArrayType) gat.getGenericComponentType();
+        Assert.assertTrue(gat.getGenericComponentType() instanceof TypeVariable);
+        
+        TypeVariable<?> tv = (TypeVariable<?>) gat.getGenericComponentType();
+        Assert.assertEquals("X", tv.getName());
+    }
 
 }

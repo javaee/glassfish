@@ -232,7 +232,7 @@ public final class ReflectionHelper {
             }
         }
         
-        return null;
+        throw new AssertionError(topClass.getName() + " is not the same as or a subclass of " + declaringClass.getName());
     }
     
     /**
