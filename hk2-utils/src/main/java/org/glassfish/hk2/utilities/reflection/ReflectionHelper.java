@@ -453,7 +453,7 @@ public final class ReflectionHelper {
                 return new ParameterizedTypeImpl(original.getRawType(), internalTypeArgs);
             }
             
-            return null;
+            return original;
         }
         
         if (typeArgument instanceof GenericArrayType) {

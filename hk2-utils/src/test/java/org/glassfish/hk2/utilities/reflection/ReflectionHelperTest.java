@@ -1059,5 +1059,69 @@ public class ReflectionHelperTest {
         TypeVariable<?> tv = (TypeVariable<?>) gat.getGenericComponentType();
         Assert.assertEquals("X", tv.getName());
     }
+    
+    /**
+     * Tests that a field that is an not an array can have a subclass
+     * of a generic array and then another one, making it an array
+     * of an array
+     */
+    @Test
+    public void testFieldArrayOfArrayOfTypeVariableSubclassingPartWayDown() {
+        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
+        
+        Set<Field> fields = helper.getAllFields(FieldAsArrayOfArrayOfAType.class);
+
+        Field field = null;
+        for (Field f : fields) {
+            if (f.getName().equals("field")) {
+                field = f;
+                break;
+            }
+        }
+        Assert.assertNotNull(field);
+        
+        Type fType = ReflectionHelper.resolveField(FieldAsArrayOfArrayOfAType.class, field);
+        Assert.assertTrue(fType instanceof GenericArrayType);
+        
+        GenericArrayType gat = (GenericArrayType) fType;
+        Assert.assertTrue(gat.getGenericComponentType() instanceof GenericArrayType);
+        
+        gat = (GenericArrayType) gat.getGenericComponentType();
+        Assert.assertTrue(gat.getGenericComponentType() instanceof TypeVariable);
+        
+        TypeVariable<?> tv = (TypeVariable<?>) gat.getGenericComponentType();
+        Assert.assertEquals("Z", tv.getName());
+    }
+    
+    /**
+     * Tests that a field that is an not an array can have a subclass
+     * of a generic array and then another array of a parameterized type,
+     * making it an array of an array of the class of the parameterized type
+     */
+    @Test
+    public void testFieldArrayOfArrayOfParameterizedTypeSubclassingPartWayDown() {
+        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
+        
+        Set<Field> fields = helper.getAllFields(FieldAsArrayOfArrayOfParameterizedType.class);
+
+        Field field = null;
+        for (Field f : fields) {
+            if (f.getName().equals("field")) {
+                field = f;
+                break;
+            }
+        }
+        Assert.assertNotNull(field);
+        
+        Type fType = ReflectionHelper.resolveField(FieldAsArrayOfArrayOfParameterizedType.class, field);
+        Assert.assertTrue(fType instanceof Class<?>);
+        
+        Class<?> cType0 = (Class<?>) fType;
+        Assert.assertTrue(cType0.isArray());
+        
+        Class<?> cType1 = cType0.getComponentType();
+        Assert.assertTrue(cType1.isArray());
+        Assert.assertEquals(List.class, cType1.getComponentType());
+    }
 
 }
