@@ -53,7 +53,6 @@ import javax.annotation.processing.Filer;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
-import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
@@ -72,7 +71,6 @@ import org.glassfish.hk2.utilities.DescriptorImpl;
  */
 @SupportedAnnotationTypes("org.jvnet.hk2.annotations.Service")
 @SupportedOptions("org.glassfish.hk2.metadata.location")
-@SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class ServiceProcessor extends AbstractProcessor {
     private static final String LOCATION_OPTION = "org.glassfish.hk2.metadata.location";
     private static final String LOCATION_DEFAULT = "META-INF/hk2-locator/default";
@@ -135,6 +133,13 @@ public class ServiceProcessor extends AbstractProcessor {
         }
         
         return true;
+    }
+    
+    /**
+     * Gets rid of warnings and this code should work with all source versions
+     */
+    public SourceVersion getSupportedSourceVersion() {
+        return SourceVersion.latest();
     }
     
     private void createFile() throws IOException {

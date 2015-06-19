@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.tests.locator.messaging.operation;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -113,6 +114,56 @@ public class MessagingOperationTest {
         Assert.assertEquals(0, firstEvents.get(0).intValue());
         
         List<Integer> secondEvents = eventMap.get(id1);
+        Assert.assertEquals(1, secondEvents.size());
+        
+        Assert.assertEquals(1, secondEvents.get(0).intValue());
+    }
+    
+    /**
+     * Tests that events are not sent to closed operation
+     * services
+     */
+    @Test @org.junit.Ignore
+    public void testEventsNotSentToClosedOperationWithFactory() {
+        ServiceLocator locator = createLocator(
+                EventReceivingOperationContext.class,
+                EventReceivingFactory.class,
+                Publisher.class);
+        
+        OperationManager manager = locator.getService(OperationManager.class);
+        Publisher publisher = locator.getService(Publisher.class);
+        
+        OperationHandle<EventReceivingOperation> opHandle = manager.createAndStartOperation(OPERATION);
+        
+        // Causes factory to get invoked
+        File firstFile = locator.getService(File.class);  
+        
+        publisher.publish(0);
+        
+        opHandle.closeOperation();
+        
+        // Second instance
+        opHandle = manager.createAndStartOperation(OPERATION);
+        
+        // Causes different factory to get invoked
+        File secondFile = locator.getService(File.class); 
+        
+        publisher.publish(1);
+        
+        opHandle.closeOperation();
+        
+        publisher.publish(2);
+        
+        Map<Integer, List<Integer>> eventMap = EventReceivingService.getEventMap();
+        
+        Assert.assertEquals(2, eventMap.size());
+        
+        List<Integer> firstEvents = eventMap.get(0);
+        Assert.assertEquals(1, firstEvents.size());
+        
+        Assert.assertEquals(0, firstEvents.get(0).intValue());
+        
+        List<Integer> secondEvents = eventMap.get(1);
         Assert.assertEquals(1, secondEvents.size());
         
         Assert.assertEquals(1, secondEvents.get(0).intValue());
