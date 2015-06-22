@@ -55,7 +55,6 @@ public class ConfigurationPopulator
     
     public void populateConfig(ServiceLocator serviceLocator) {
         for (Populator p : serviceLocator.<Populator>getAllServices(Populator.class)) {
-            System.out.println("Found populator: " + p.getClass().getName());
             p.run(new ConfigParser(serviceLocator));
         }
     }

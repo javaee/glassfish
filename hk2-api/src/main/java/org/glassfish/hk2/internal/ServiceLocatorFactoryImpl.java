@@ -46,14 +46,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.ServiceConfigurationError;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.api.ServiceLocatorListener;
 import org.glassfish.hk2.extension.ServiceLocatorGenerator;
 import org.glassfish.hk2.osgiresourcelocator.ServiceLoader;
+import org.glassfish.hk2.utilities.reflection.Logger;
 
 /**
  * The implementation of the {@link ServiceLocatorFactory} that looks
@@ -72,9 +71,6 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
   private final Object lock = new Object();
   private final HashMap<String, ServiceLocator> serviceLocators = new HashMap<String, ServiceLocator>();
   private final HashSet<ServiceLocatorListener> listeners = new HashSet<ServiceLocatorListener>();
-  
-
-  private static Logger logger = Logger.getLogger(ServiceLocatorFactoryImpl.class.getPackage().getName());
 
     /**
    * This will create a new set of name to locator mappings
@@ -88,7 +84,7 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
                 return getGenerator();
             }
             catch (Throwable th) {
-                Logger.getLogger(ServiceLocatorFactoryImpl.class.getName()).warning("Error finding implementation of hk2: " + th.getMessage());
+                Logger.getLogger().warning("Error finding implementation of hk2: " + th.getMessage());
                 // th.printStackTrace();
                 // Thread.dumpStack();
                 return null;
@@ -130,13 +126,12 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
               return providers.next();
           } catch (ServiceConfigurationError sce) {
               // This can happen. See the exception javadoc for more details.
-              logger.logp(Level.FINE, "ServiceLocatorFactoryImpl", "getGenerator",
-                      "Exception while looking up service locator generator", sce);
+              Logger.getLogger().debug("ServiceLocatorFactoryImpl", "getGenerator", sce);
                   // We will try the next one
           }
       }
       
-      logger.warning("Cannot find a default implementation of the HK2 ServiceLocatorGenerator");
+      Logger.getLogger().warning("Cannot find a default implementation of the HK2 ServiceLocatorGenerator");
       return null;
   }
 
@@ -174,7 +169,7 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
                       listener.listenerDestroyed(killMe);
                   }
                   catch (Throwable th) {
-                      logger.log(Level.FINE, "Exception thrown from listenerDestroyed method of " + listener, th);
+                      Logger.getLogger().debug(getClass().getName(), "destroy " + listener, th);
                   }
               }
           }
@@ -252,7 +247,7 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
                     listener.listenerAdded(retVal);
                 }
                 catch (Throwable th) {
-                    logger.log(Level.FINE, "Exception thrown from listenerAdded method of " + listener, th);
+                    Logger.getLogger().debug(getClass().getName(), "create " + listener, th);
                 }
             }
 
@@ -283,7 +278,7 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
             }
             catch (Throwable th) {
                 // Not added to the set of listeners
-                logger.log(Level.FINE, "Exception thrown from init method of " + listener, th);
+                Logger.getLogger().debug(getClass().getName(), "addListener " + listener, th);
                 return;
             }
             
