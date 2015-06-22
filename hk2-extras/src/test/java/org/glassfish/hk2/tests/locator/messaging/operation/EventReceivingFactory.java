@@ -39,12 +39,16 @@
  */
 package org.glassfish.hk2.tests.locator.messaging.operation;
 
-import java.io.File;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.annotation.PreDestroy;
 
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.UseProxy;
@@ -56,8 +60,11 @@ import org.glassfish.hk2.api.messaging.SubscribeTo;
  *
  */
 @EventReceivingOperation @MessageReceiver
-public class EventReceivingFactory implements Factory<File> {
+public class EventReceivingFactory implements Factory<Integer> {
     private final static Map<Integer, List<Integer>> EVENT_MAP = new HashMap<Integer, List<Integer>>();
+    private final static Map<Integer, List<Integer>> DISPOSED_MAP = new HashMap<Integer, List<Integer>>();
+    private final static List<Integer> DISPOSED_FACTORIES = new LinkedList<Integer>();
+    
     private final static AtomicInteger ID_GENERATOR = new AtomicInteger();
     
     private final int id;
@@ -79,7 +86,7 @@ public class EventReceivingFactory implements Factory<File> {
     }
     
     public static Map<Integer, List<Integer>> getEventMap() {
-        synchronized (EventReceivingService.class) {
+        synchronized (EventReceivingFactory.class) {
             HashMap<Integer, List<Integer>> retVal = new HashMap<Integer, List<Integer>>();
             
             for (Map.Entry<Integer, List<Integer>> entry : EVENT_MAP.entrySet()) {
@@ -91,21 +98,56 @@ public class EventReceivingFactory implements Factory<File> {
             return retVal;
         }
     }
+    
+    public static Map<Integer, List<Integer>> getDisposedMap() {
+        synchronized (EventReceivingFactory.class) {
+            HashMap<Integer, List<Integer>> retVal = new HashMap<Integer, List<Integer>>();
+            
+            for (Map.Entry<Integer, List<Integer>> entry : DISPOSED_MAP.entrySet()) {
+                List<Integer> valueCopy = new LinkedList<Integer>(entry.getValue());
+                
+                retVal.put(entry.getKey(), valueCopy);
+            }
+            
+            return retVal;
+        }
+    }
+    
+    public static List<Integer> getDisposedFactories() {
+        synchronized (EventReceivingFactory.class) {
+            return Collections.unmodifiableList(new LinkedList<Integer>(DISPOSED_FACTORIES));
+        }
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Factory#provide()
      */
     @Override @EventReceivingOperation @UseProxy(false)
-    public File provide() {
-        return new File(".");
+    public Integer provide() {
+        return id;
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Factory#dispose(java.lang.Object)
      */
     @Override
-    public void dispose(File instance) {
-        
+    public void dispose(Integer instance) {
+        synchronized (EventReceivingFactory.class) {
+            List<Integer> events = DISPOSED_MAP.get(id);
+            if (events == null) {
+                events = new LinkedList<Integer>();
+                DISPOSED_MAP.put(id, events);
+            }
+            
+            events.add(instance);
+        }
+    }
+    
+    @PreDestroy
+    private void preDestroy() {
+        synchronized (EventReceivingFactory.class) {
+            DISPOSED_FACTORIES.add(id);
+        }
     }
 
 }

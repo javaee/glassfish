@@ -183,6 +183,9 @@ public class OperationHandleImpl<T extends Annotation> implements OperationHandl
      */
     @Override
     public void closeOperation() {
+        // outside the lock
+        parent.disposeAllOperationServices(this);
+        
         synchronized (operationLock) {
             for (long threadId : activeThreads) {
                 parent.disassociateThread(threadId, this);
@@ -193,8 +196,6 @@ public class OperationHandleImpl<T extends Annotation> implements OperationHandl
             parent.closeOperation(this);
         }
         
-        // outside the lock
-        parent.disposeAllOperationServices(this);
         
     }
 

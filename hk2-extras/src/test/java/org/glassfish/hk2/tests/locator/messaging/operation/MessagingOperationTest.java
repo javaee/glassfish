@@ -123,7 +123,7 @@ public class MessagingOperationTest {
      * Tests that events are not sent to closed operation
      * services
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testEventsNotSentToClosedOperationWithFactory() {
         ServiceLocator locator = createLocator(
                 EventReceivingOperationContext.class,
@@ -136,17 +136,33 @@ public class MessagingOperationTest {
         OperationHandle<EventReceivingOperation> opHandle = manager.createAndStartOperation(OPERATION);
         
         // Causes factory to get invoked
-        File firstFile = locator.getService(File.class);  
+        int firstFactoryId = locator.getService(Integer.class);
+        
+        // Ensures factory production was not disposed yet
+        List<Integer> firstDisposalList = EventReceivingFactory.getDisposedMap().get(firstFactoryId);
+        Assert.assertNull(firstDisposalList);
+        
+        // Ensures factory itself was not destroyed
+        Assert.assertEquals(0, EventReceivingFactory.getDisposedFactories().size());
         
         publisher.publish(0);
         
         opHandle.closeOperation();
         
+        // Ensures the factory production was disposed
+        firstDisposalList = EventReceivingFactory.getDisposedMap().get(firstFactoryId);
+        Assert.assertEquals(1, firstDisposalList.size()); 
+        Assert.assertEquals(firstFactoryId, firstDisposalList.get(0).intValue());
+        
+        // Ensures factory was itself destroyed
+        Assert.assertEquals(1, EventReceivingFactory.getDisposedFactories().size());
+        Assert.assertEquals(firstFactoryId, EventReceivingFactory.getDisposedFactories().get(0).intValue());
+        
         // Second instance
         opHandle = manager.createAndStartOperation(OPERATION);
         
         // Causes different factory to get invoked
-        File secondFile = locator.getService(File.class); 
+        int secondFactoryId = locator.getService(Integer.class); 
         
         publisher.publish(1);
         
@@ -154,19 +170,35 @@ public class MessagingOperationTest {
         
         publisher.publish(2);
         
-        Map<Integer, List<Integer>> eventMap = EventReceivingService.getEventMap();
+        Map<Integer, List<Integer>> eventMap = EventReceivingFactory.getEventMap();
         
         Assert.assertEquals(2, eventMap.size());
         
-        List<Integer> firstEvents = eventMap.get(0);
+        List<Integer> firstEvents = eventMap.get(firstFactoryId);
         Assert.assertEquals(1, firstEvents.size());
         
         Assert.assertEquals(0, firstEvents.get(0).intValue());
         
-        List<Integer> secondEvents = eventMap.get(1);
+        List<Integer> secondEvents = eventMap.get(secondFactoryId);
         Assert.assertEquals(1, secondEvents.size());
         
         Assert.assertEquals(1, secondEvents.get(0).intValue());
+        
+        // Now check the disposals
+        Map<Integer, List<Integer>> disposalMap = EventReceivingFactory.getDisposedMap();
+        Assert.assertEquals(2, disposalMap.size());
+        
+        firstDisposalList = disposalMap.get(firstFactoryId);
+        Assert.assertEquals(1, firstDisposalList.size()); 
+        Assert.assertEquals(firstFactoryId, firstDisposalList.get(0).intValue());
+        
+        List<Integer> secondDisposalList = disposalMap.get(secondFactoryId);
+        Assert.assertEquals(1, secondDisposalList.size());
+        Assert.assertEquals(secondFactoryId, secondDisposalList.get(0).intValue());
+        
+        Assert.assertEquals(2, EventReceivingFactory.getDisposedFactories().size());
+        Assert.assertEquals(firstFactoryId, EventReceivingFactory.getDisposedFactories().get(0).intValue());
+        Assert.assertEquals(secondFactoryId, EventReceivingFactory.getDisposedFactories().get(1).intValue());
     }
     
     private static class EventReceivingOperationImpl extends AnnotationLiteral<EventReceivingOperation> implements EventReceivingOperation {

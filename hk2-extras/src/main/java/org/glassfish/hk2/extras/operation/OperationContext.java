@@ -86,6 +86,7 @@ public abstract class OperationContext<T extends Annotation> implements Context<
     private final HashMap<OperationIdentifier<T>, LinkedHashMap<ActiveDescriptor<?>, Object>> operationMap =
             new HashMap<OperationIdentifier<T>, LinkedHashMap<ActiveDescriptor<?>, Object>>();
     private final HashSet<ActiveDescriptor<?>> creating = new HashSet<ActiveDescriptor<?>>();
+    private final HashMap<Long, LinkedList<OperationHandleImpl<T>>> closingOperations = new HashMap<Long, LinkedList<OperationHandleImpl<T>>>();
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Context#findOrCreate(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.ServiceHandle)
@@ -100,20 +101,35 @@ public abstract class OperationContext<T extends Annotation> implements Context<
         }
         
         if (localManager == null) {
-            throw new IllegalStateException("There is no operation of type " +
+            throw new IllegalStateException("There is no manager for " +
                 getScope().getName() + " on thread " + Thread.currentThread().getId());
         }
         
+        boolean closingOperation = false;
         OperationHandleImpl<T> operation = localManager.getCurrentOperationOnThisThread();
         if (operation == null) {
-            throw new IllegalStateException("There is no current operation of type " +
-                getScope().getName() + " on thread " + Thread.currentThread().getId());
+            synchronized (this) {
+                LinkedList<OperationHandleImpl<T>> closingOperationStack = closingOperations.get(Thread.currentThread().getId());
+                if (closingOperationStack == null || closingOperationStack.isEmpty()) {
+                    throw new IllegalStateException("There is no current operation of type " +
+                            getScope().getName() + " on thread " + Thread.currentThread().getId());
+                }
+                
+                operation = closingOperationStack.get(0);
+                closingOperation = true;
+            }
         }
         
         LinkedHashMap<ActiveDescriptor<?>, Object> serviceMap;
         synchronized (this) {
             serviceMap = operationMap.get(operation.getIdentifier());
             if (serviceMap == null) {
+                if (closingOperation) {
+                    throw new IllegalStateException("The operation " + operation.getIdentifier() +
+                            " is closing.  A new instance of " + activeDescriptor +
+                            " cannot be created");
+                }
+                
                 serviceMap = new LinkedHashMap<ActiveDescriptor<?>, Object>();
                 operationMap.put(operation.getIdentifier(), serviceMap);
             }
@@ -123,6 +139,12 @@ public abstract class OperationContext<T extends Annotation> implements Context<
             
             if (supportsNullCreation() && serviceMap.containsKey(activeDescriptor)) {
                 return null;
+            }
+            
+            if (closingOperation) {
+                throw new IllegalStateException("The operation " + operation.getIdentifier() +
+                        " is closing.  A new instance of " + activeDescriptor +
+                        " cannot be created after searching existing descriptors");
             }
             
             // retVal is null, and this is not an explicit null, so must actually do the creation
@@ -213,26 +235,50 @@ public abstract class OperationContext<T extends Annotation> implements Context<
     }
     
     @SuppressWarnings("unchecked")
-    public void closeOperation(OperationIdentifier<T> operation) {
+    public void closeOperation(OperationHandleImpl<T> operation) {
+        long tid = Thread.currentThread().getId();
         HashMap<ActiveDescriptor<?>, Object> serviceMap;
+        LinkedList<OperationHandleImpl<T>> stack;
+        
         synchronized (this) {
-            serviceMap = operationMap.remove(operation);
+            stack = closingOperations.get(tid);
+            if (stack == null) {
+                stack = new LinkedList<OperationHandleImpl<T>>();
+                closingOperations.put(tid, stack);
+            }
+            
+            stack.addFirst(operation);
+            
+            serviceMap = operationMap.get(operation.getIdentifier());
         }
         
-        // The rest can be done outside of the lock
-        if (serviceMap == null) return;
+        try {
+            // Must be done outside of the lock
+            
+            if (serviceMap == null) return;
         
-        // Reverses creation order
-        LinkedList<Map.Entry<ActiveDescriptor<?>, Object>> destructionList = new LinkedList<Map.Entry<ActiveDescriptor<?>, Object>>();
-        for (Map.Entry<ActiveDescriptor<?>, Object> entry : serviceMap.entrySet()) {
-            destructionList.addFirst(entry);
+            // Reverses creation order
+            LinkedList<Map.Entry<ActiveDescriptor<?>, Object>> destructionList = new LinkedList<Map.Entry<ActiveDescriptor<?>, Object>>();
+            for (Map.Entry<ActiveDescriptor<?>, Object> entry : serviceMap.entrySet()) {
+                destructionList.addFirst(entry);
+            }
+            
+            for (Map.Entry<ActiveDescriptor<?>, Object> entry : destructionList) {
+                ActiveDescriptor<Object> desc = (ActiveDescriptor<Object>) entry.getKey();
+                Object value = entry.getValue();
+            
+                desc.dispose(value);   
+            }
         }
+        finally {
+            synchronized (this) {
+                operationMap.remove(operation.getIdentifier());
             
-        for (Map.Entry<ActiveDescriptor<?>, Object> entry : destructionList) {
-            ActiveDescriptor<Object> desc = (ActiveDescriptor<Object>) entry.getKey();
-            Object value = entry.getValue();
-            
-            desc.dispose(value);   
+                stack.removeFirst();
+                if (stack.isEmpty()) {
+                    closingOperations.remove(tid);
+                }
+            }
         }
     }
     
@@ -242,6 +288,7 @@ public abstract class OperationContext<T extends Annotation> implements Context<
     @SuppressWarnings("unchecked")
     @Override
     public void shutdown() {
+        
         synchronized (this) {
             for (HashMap<ActiveDescriptor<?>, Object> serviceMap : operationMap.values()) {
                 // Reverses creation order

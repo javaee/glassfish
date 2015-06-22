@@ -133,7 +133,7 @@ public class SingleOperationManager<T extends Annotation> {
      * @param closeMe The non-null operation to close
      */
     /* package */ void disposeAllOperationServices(OperationHandleImpl<T> closeMe) {
-        context.closeOperation(closeMe.getIdentifier());
+        context.closeOperation(closeMe);
     }
     
     /**

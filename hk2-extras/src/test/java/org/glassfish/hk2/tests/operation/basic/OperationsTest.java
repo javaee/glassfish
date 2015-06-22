@@ -773,6 +773,64 @@ public class OperationsTest {
         Assert.assertTrue(BasicOperationLifecycleMethods.isClosed(id1));
     }
     
+    /**
+     * Tests that operation services are disposed when the operation is closed even from a different thread
+     * @throws InterruptedException 
+     */
+    @Test // @org.junit.Ignore
+    public void testOperationServiceDisposedWhenOperationIsClosedFromDifferentThread() throws InterruptedException {
+        ServiceLocator locator = createLocator(BasicOperationScopeContext.class,
+                BasicOperationLifecycleMethods.class);
+        
+        OperationManager operationManager = locator.getService(OperationManager.class);
+        
+        OperationHandle<BasicOperationScope> operation1 = operationManager.createAndStartOperation(BASIC_OPERATION_ANNOTATION);
+        
+        BasicOperationLifecycleMethods bolm = locator.getService(BasicOperationLifecycleMethods.class);
+        Object id1 = bolm.getId();
+        Assert.assertNotNull(id1);
+        Assert.assertFalse(BasicOperationLifecycleMethods.isClosed(id1));
+        
+        // Now close operation from a separate thread
+        Object lock = new Object();
+        Closer closer = new Closer(operation1, lock);
+        
+        Thread t = new Thread(closer);
+        t.start();
+        
+        synchronized (lock) {
+            while (!OperationState.CLOSED.equals(operation1.getState())) {
+                lock.wait();
+            }
+        }
+        
+        Assert.assertTrue(BasicOperationLifecycleMethods.isClosed(id1));
+    }
+    
+    private static class Closer implements Runnable {
+        private final Object notifier;
+        private final OperationHandle<BasicOperationScope> closeMe;
+        
+        private Closer(OperationHandle<BasicOperationScope> closeMe, Object notifier) {
+            this.notifier = notifier;
+            this.closeMe = closeMe;
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Runnable#run()
+         */
+        @Override
+        public void run() {
+            closeMe.closeOperation();
+            
+            synchronized (notifier) {
+                notifier.notifyAll();
+            }
+            
+        }
+        
+    }
+    
     private static class SimpleThreadedFetcher<T extends Annotation> implements Runnable {
         private final OperationHandle<T> operation;
         private final SingletonThatUsesOperationService singleton;
