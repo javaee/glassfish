@@ -955,6 +955,74 @@ public class OperationsTest {
         Assert.assertFalse(BasicOperationUsesServiceInPreDispose.getDisposeSuccess());
     }
     
+    /**
+     * Tests that a service used in the preDestroy of another service in the
+     * same operation scope where the used service is created in the
+     * preDestroy should fail since the operation is closing with the close
+     * occuring on the same thread.  In this case the close is due to the
+     * locator shutting down
+     */
+    @Test // @org.junit.Ignore
+    public void testNewServiceCannotBeCreatedInClosingServiceWithShutdown() throws InterruptedException {
+        ServiceLocator locator = createLocator(BasicOperationScopeContext.class,
+                BasicOperationSimpleService.class,
+                BasicOperationUsesServiceInPreDispose.class);
+        
+        OperationManager operationManager = locator.getService(OperationManager.class);
+        
+        operationManager.createAndStartOperation(BASIC_OPERATION_ANNOTATION);
+        
+        BasicOperationUsesServiceInPreDispose.clean();
+        
+        BasicOperationUsesServiceInPreDispose bousipd = locator.getService(BasicOperationUsesServiceInPreDispose.class);
+        bousipd.instantiateMe();
+        
+        Assert.assertFalse(BasicOperationUsesServiceInPreDispose.getDisposeSuccess());
+        
+        locator.shutdown();
+        
+        Assert.assertFalse(BasicOperationUsesServiceInPreDispose.getDisposeSuccess());
+    }
+    
+    /**
+     * Tests that a service used in the preDestroy of another service in the
+     * same operation scope where the used service is created in the
+     * preDestroy should fail since the operation is closing with shutdown on
+     * separate thread
+     */
+    @Test // @org.junit.Ignore
+    public void testNewServiceCannotBeCreatedInClosingServiceShutdownOnSeparateThread() throws InterruptedException {
+        ServiceLocator locator = createLocator(BasicOperationScopeContext.class,
+                BasicOperationSimpleService.class,
+                BasicOperationUsesServiceInPreDispose.class);
+        
+        OperationManager operationManager = locator.getService(OperationManager.class);
+        
+        OperationHandle<BasicOperationScope> operation1 = operationManager.createAndStartOperation(BASIC_OPERATION_ANNOTATION);
+        
+        BasicOperationUsesServiceInPreDispose.clean();
+        
+        BasicOperationUsesServiceInPreDispose bousipd = locator.getService(BasicOperationUsesServiceInPreDispose.class);
+        bousipd.instantiateMe();
+        
+        Assert.assertFalse(BasicOperationUsesServiceInPreDispose.getDisposeSuccess());
+        
+        // Now close operation from a separate thread
+        Object lock = new Object();
+        Downer closer = new Downer(locator, lock);
+        
+        Thread t = new Thread(closer);
+        t.start();
+        
+        synchronized (lock) {
+            while (!OperationState.CLOSED.equals(operation1.getState())) {
+                lock.wait();
+            }
+        }
+        
+        Assert.assertFalse(BasicOperationUsesServiceInPreDispose.getDisposeSuccess());
+    }
+    
     private static class Closer implements Runnable {
         private final Object notifier;
         private final OperationHandle<BasicOperationScope> closeMe;
@@ -970,6 +1038,30 @@ public class OperationsTest {
         @Override
         public void run() {
             closeMe.closeOperation();
+            
+            synchronized (notifier) {
+                notifier.notifyAll();
+            }
+            
+        }
+        
+    }
+    
+    private static class Downer implements Runnable {
+        private final Object notifier;
+        private final ServiceLocator closeMe;
+        
+        private Downer(ServiceLocator closeMe, Object notifier) {
+            this.notifier = notifier;
+            this.closeMe = closeMe;
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Runnable#run()
+         */
+        @Override
+        public void run() {
+            closeMe.shutdown();
             
             synchronized (notifier) {
                 notifier.notifyAll();

@@ -45,6 +45,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
@@ -88,6 +89,7 @@ public abstract class OperationContext<T extends Annotation> implements Context<
             new HashMap<OperationHandleImpl<T>, LinkedHashMap<ActiveDescriptor<?>, Object>>();
     private final HashSet<ActiveDescriptor<?>> creating = new HashSet<ActiveDescriptor<?>>();
     private final HashMap<Long, LinkedList<OperationHandleImpl<T>>> closingOperations = new HashMap<Long, LinkedList<OperationHandleImpl<T>>>();
+    private boolean shuttingDown = false;
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Context#findOrCreate(org.glassfish.hk2.api.ActiveDescriptor, org.glassfish.hk2.api.ServiceHandle)
@@ -127,7 +129,7 @@ public abstract class OperationContext<T extends Annotation> implements Context<
         synchronized (this) {
             serviceMap = operationMap.get(operation);
             if (serviceMap == null) {
-                if (closingOperation) {
+                if (closingOperation || shuttingDown) {
                     throw new IllegalStateException("The operation " + operation.getIdentifier() +
                             " is closing.  A new instance of " + activeDescriptor +
                             " cannot be created");
@@ -144,7 +146,7 @@ public abstract class OperationContext<T extends Annotation> implements Context<
                 return null;
             }
             
-            if (closingOperation) {
+            if (closingOperation || shuttingDown) {
                 throw new IllegalStateException("The operation " + operation.getIdentifier() +
                         " is closing.  A new instance of " + activeDescriptor +
                         " cannot be created after searching existing descriptors");
@@ -293,28 +295,23 @@ public abstract class OperationContext<T extends Annotation> implements Context<
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Context#shutdown()
      */
-    @SuppressWarnings("unchecked")
     @Override
     public void shutdown() {
-        
+        Set<OperationHandleImpl<T>> toShutDown;
         synchronized (this) {
-            for (HashMap<ActiveDescriptor<?>, Object> serviceMap : operationMap.values()) {
-                // Reverses creation order
-                LinkedList<Map.Entry<ActiveDescriptor<?>, Object>> destructionList = new LinkedList<Map.Entry<ActiveDescriptor<?>, Object>>();
-                for (Map.Entry<ActiveDescriptor<?>, Object> entry : serviceMap.entrySet()) {
-                    destructionList.addFirst(entry);
-                }
-                
-                for (Map.Entry<ActiveDescriptor<?>, Object> entry : destructionList) {
-                    ActiveDescriptor<?> descriptor = entry.getKey();
-                    Object killMe = entry.getValue();
-                    if (killMe == null) continue;
-                    
-                    ((ActiveDescriptor<Object>) descriptor).dispose(killMe);
-                }
+            shuttingDown = true;
+            toShutDown = operationMap.keySet();
+        }
+        
+        try {
+            for (OperationHandleImpl<T> shutDown : toShutDown) {
+                shutDown.closeOperation();
             }
-            
-            operationMap.clear();
+        }
+        finally {
+            synchronized (this) {
+                operationMap.clear();
+            }
         }
         
     }
