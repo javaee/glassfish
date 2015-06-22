@@ -84,8 +84,8 @@ import org.jvnet.hk2.annotations.Contract;
 @Contract
 public abstract class OperationContext<T extends Annotation> implements Context<T> {
     private SingleOperationManager<T> manager;
-    private final HashMap<OperationIdentifier<T>, LinkedHashMap<ActiveDescriptor<?>, Object>> operationMap =
-            new HashMap<OperationIdentifier<T>, LinkedHashMap<ActiveDescriptor<?>, Object>>();
+    private final HashMap<OperationHandleImpl<T>, LinkedHashMap<ActiveDescriptor<?>, Object>> operationMap =
+            new HashMap<OperationHandleImpl<T>, LinkedHashMap<ActiveDescriptor<?>, Object>>();
     private final HashSet<ActiveDescriptor<?>> creating = new HashSet<ActiveDescriptor<?>>();
     private final HashMap<Long, LinkedList<OperationHandleImpl<T>>> closingOperations = new HashMap<Long, LinkedList<OperationHandleImpl<T>>>();
 
@@ -125,7 +125,7 @@ public abstract class OperationContext<T extends Annotation> implements Context<
         
         LinkedHashMap<ActiveDescriptor<?>, Object> serviceMap;
         synchronized (this) {
-            serviceMap = operationMap.get(operation.getIdentifier());
+            serviceMap = operationMap.get(operation);
             if (serviceMap == null) {
                 if (closingOperation) {
                     throw new IllegalStateException("The operation " + operation.getIdentifier() +
@@ -134,7 +134,7 @@ public abstract class OperationContext<T extends Annotation> implements Context<
                 }
                 
                 serviceMap = new LinkedHashMap<ActiveDescriptor<?>, Object>();
-                operationMap.put(operation.getIdentifier(), serviceMap);
+                operationMap.put(operation, serviceMap);
             }
             
             Object retVal = serviceMap.get(activeDescriptor);
@@ -213,7 +213,7 @@ public abstract class OperationContext<T extends Annotation> implements Context<
         synchronized (this) {
             HashMap<ActiveDescriptor<?>, Object> serviceMap;
             
-            serviceMap = operationMap.get(operation.getIdentifier());
+            serviceMap = operationMap.get(operation);
             if (serviceMap == null) return false;
             
             return serviceMap.containsKey(descriptor);
@@ -252,7 +252,7 @@ public abstract class OperationContext<T extends Annotation> implements Context<
             
             stack.addFirst(operation);
             
-            serviceMap = operationMap.get(operation.getIdentifier());
+            serviceMap = operationMap.get(operation);
         }
         
         try {
@@ -280,7 +280,7 @@ public abstract class OperationContext<T extends Annotation> implements Context<
         }
         finally {
             synchronized (this) {
-                operationMap.remove(operation.getIdentifier());
+                operationMap.remove(operation);
             
                 stack.removeFirst();
                 if (stack.isEmpty()) {
