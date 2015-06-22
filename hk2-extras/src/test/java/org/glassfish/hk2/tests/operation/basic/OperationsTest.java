@@ -807,6 +807,154 @@ public class OperationsTest {
         Assert.assertTrue(BasicOperationLifecycleMethods.isClosed(id1));
     }
     
+    /**
+     * Tests that a service used in the preDestroy of another service in the
+     * same operation scope where the used service is created FIRST
+     */
+    @Test // @org.junit.Ignore
+    public void testServiceUsedInPreDestroyWorks() throws InterruptedException {
+        ServiceLocator locator = createLocator(BasicOperationScopeContext.class,
+                BasicOperationSimpleService.class,
+                BasicOperationUsesServiceInPreDispose.class);
+        
+        OperationManager operationManager = locator.getService(OperationManager.class);
+        
+        OperationHandle<BasicOperationScope> operation1 = operationManager.createAndStartOperation(BASIC_OPERATION_ANNOTATION);
+        
+        // Create the used service FIRST
+        BasicOperationSimpleService bass = locator.getService(BasicOperationSimpleService.class);
+        bass.callMe();  // Ensures it is truly created
+        
+        BasicOperationUsesServiceInPreDispose.clean();
+        
+        BasicOperationUsesServiceInPreDispose bousipd = locator.getService(BasicOperationUsesServiceInPreDispose.class);
+        bousipd.instantiateMe();
+        
+        Assert.assertFalse(BasicOperationUsesServiceInPreDispose.getDisposeSuccess());
+        
+        // Now close operation from a separate thread
+        Object lock = new Object();
+        Closer closer = new Closer(operation1, lock);
+        
+        Thread t = new Thread(closer);
+        t.start();
+        
+        synchronized (lock) {
+            while (!OperationState.CLOSED.equals(operation1.getState())) {
+                lock.wait();
+            }
+        }
+        
+        Assert.assertTrue(BasicOperationUsesServiceInPreDispose.getDisposeSuccess());
+    }
+    
+    /**
+     * Tests that a service used in the preDestroy of another service in the
+     * same operation scope where the used service is created SECOND
+     */
+    @Test // @org.junit.Ignore
+    public void testServiceUsedInPreDestroyWorksSecond() throws InterruptedException {
+        ServiceLocator locator = createLocator(BasicOperationScopeContext.class,
+                BasicOperationSimpleService.class,
+                BasicOperationUsesServiceInPreDispose.class);
+        
+        OperationManager operationManager = locator.getService(OperationManager.class);
+        
+        OperationHandle<BasicOperationScope> operation1 = operationManager.createAndStartOperation(BASIC_OPERATION_ANNOTATION);
+        
+        BasicOperationUsesServiceInPreDispose.clean();
+        
+        BasicOperationUsesServiceInPreDispose bousipd = locator.getService(BasicOperationUsesServiceInPreDispose.class);
+        bousipd.instantiateMe();
+        
+        // Create the used service SECOND
+        BasicOperationSimpleService bass = locator.getService(BasicOperationSimpleService.class);
+        bass.callMe();  // Ensures it is truly created
+        
+        Assert.assertFalse(BasicOperationUsesServiceInPreDispose.getDisposeSuccess());
+        
+        // Now close operation from a separate thread
+        Object lock = new Object();
+        Closer closer = new Closer(operation1, lock);
+        
+        Thread t = new Thread(closer);
+        t.start();
+        
+        synchronized (lock) {
+            while (!OperationState.CLOSED.equals(operation1.getState())) {
+                lock.wait();
+            }
+        }
+        
+        Assert.assertTrue(BasicOperationUsesServiceInPreDispose.getDisposeSuccess());
+    }
+    
+    /**
+     * Tests that a service used in the preDestroy of another service in the
+     * same operation scope where the used service is created in the
+     * preDestroy should fail since the operation is closgin
+     */
+    @Test // @org.junit.Ignore
+    public void testNewServiceCannotBeCreatedInClosingService() throws InterruptedException {
+        ServiceLocator locator = createLocator(BasicOperationScopeContext.class,
+                BasicOperationSimpleService.class,
+                BasicOperationUsesServiceInPreDispose.class);
+        
+        OperationManager operationManager = locator.getService(OperationManager.class);
+        
+        OperationHandle<BasicOperationScope> operation1 = operationManager.createAndStartOperation(BASIC_OPERATION_ANNOTATION);
+        
+        BasicOperationUsesServiceInPreDispose.clean();
+        
+        BasicOperationUsesServiceInPreDispose bousipd = locator.getService(BasicOperationUsesServiceInPreDispose.class);
+        bousipd.instantiateMe();
+        
+        Assert.assertFalse(BasicOperationUsesServiceInPreDispose.getDisposeSuccess());
+        
+        // Now close operation from a separate thread
+        Object lock = new Object();
+        Closer closer = new Closer(operation1, lock);
+        
+        Thread t = new Thread(closer);
+        t.start();
+        
+        synchronized (lock) {
+            while (!OperationState.CLOSED.equals(operation1.getState())) {
+                lock.wait();
+            }
+        }
+        
+        Assert.assertFalse(BasicOperationUsesServiceInPreDispose.getDisposeSuccess());
+    }
+    
+    /**
+     * Tests that a service used in the preDestroy of another service in the
+     * same operation scope where the used service is created in the
+     * preDestroy should fail since the operation is closing with the close
+     * occuring on the same thread
+     */
+    @Test // @org.junit.Ignore
+    public void testNewServiceCannotBeCreatedInClosingServiceCloseOnSameThread() throws InterruptedException {
+        ServiceLocator locator = createLocator(BasicOperationScopeContext.class,
+                BasicOperationSimpleService.class,
+                BasicOperationUsesServiceInPreDispose.class);
+        
+        OperationManager operationManager = locator.getService(OperationManager.class);
+        
+        OperationHandle<BasicOperationScope> operation1 = operationManager.createAndStartOperation(BASIC_OPERATION_ANNOTATION);
+        
+        BasicOperationUsesServiceInPreDispose.clean();
+        
+        BasicOperationUsesServiceInPreDispose bousipd = locator.getService(BasicOperationUsesServiceInPreDispose.class);
+        bousipd.instantiateMe();
+        
+        Assert.assertFalse(BasicOperationUsesServiceInPreDispose.getDisposeSuccess());
+        
+        operation1.closeOperation();
+        
+        Assert.assertFalse(BasicOperationUsesServiceInPreDispose.getDisposeSuccess());
+    }
+    
     private static class Closer implements Runnable {
         private final Object notifier;
         private final OperationHandle<BasicOperationScope> closeMe;

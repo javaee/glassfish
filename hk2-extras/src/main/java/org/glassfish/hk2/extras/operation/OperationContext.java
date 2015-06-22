@@ -51,6 +51,7 @@ import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.extras.operation.internal.OperationHandleImpl;
 import org.glassfish.hk2.extras.operation.internal.SingleOperationManager;
+import org.glassfish.hk2.utilities.reflection.Logger;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -96,8 +97,13 @@ public abstract class OperationContext<T extends Annotation> implements Context<
     public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor,
             ServiceHandle<?> root) {
         SingleOperationManager<T> localManager;
+        LinkedList<OperationHandleImpl<T>> closingOperationStack;
+        boolean closingOperation;
+        
         synchronized (this) {
             localManager = manager;
+            closingOperationStack = closingOperations.get(Thread.currentThread().getId());
+            closingOperation = (closingOperationStack != null && !closingOperationStack.isEmpty());
         }
         
         if (localManager == null) {
@@ -105,18 +111,15 @@ public abstract class OperationContext<T extends Annotation> implements Context<
                 getScope().getName() + " on thread " + Thread.currentThread().getId());
         }
         
-        boolean closingOperation = false;
         OperationHandleImpl<T> operation = localManager.getCurrentOperationOnThisThread();
         if (operation == null) {
             synchronized (this) {
-                LinkedList<OperationHandleImpl<T>> closingOperationStack = closingOperations.get(Thread.currentThread().getId());
-                if (closingOperationStack == null || closingOperationStack.isEmpty()) {
+                if (!closingOperation) {
                     throw new IllegalStateException("There is no current operation of type " +
                             getScope().getName() + " on thread " + Thread.currentThread().getId());
                 }
                 
                 operation = closingOperationStack.get(0);
-                closingOperation = true;
             }
         }
         
@@ -267,7 +270,12 @@ public abstract class OperationContext<T extends Annotation> implements Context<
                 ActiveDescriptor<Object> desc = (ActiveDescriptor<Object>) entry.getKey();
                 Object value = entry.getValue();
             
-                desc.dispose(value);   
+                try {
+                    desc.dispose(value);
+                }
+                catch (Throwable th) {
+                    Logger.getLogger().debug(getClass().getName(), "closeOperation", th);
+                }
             }
         }
         finally {
