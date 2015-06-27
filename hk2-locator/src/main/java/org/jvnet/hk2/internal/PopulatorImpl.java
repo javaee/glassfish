@@ -94,6 +94,14 @@ public class PopulatorImpl implements Populator {
                 DescriptorFileFinderInformation dffi = (DescriptorFileFinderInformation) fileFinder;
                 
                 descriptorInformation = dffi.getDescriptorFileInformation();
+                if (descriptorInformation != null && 
+                        (descriptorInformation.size() != descriptorFileInputStreams.size())) {
+                    throw new IOException("The DescriptorFileFinder implementation " +
+                            fileFinder.getClass().getName() + " also implements DescriptorFileFinderInformation, " +
+                            "however the cardinality of the list returned from getDescriptorFileInformation (" +
+                            descriptorInformation.size() + ") does not equal the cardinality of the list " +
+                            "returned from findDescriptorFiles (" + descriptorFileInputStreams.size() + ")");
+                }
             }
         }
         catch (IOException ioe) {
