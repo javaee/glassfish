@@ -57,6 +57,7 @@ import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
@@ -864,6 +865,9 @@ public class Utilities {
         }
         if (double.class.equals(expectedClass)) {
             return Double.parseDouble(givenStringDefault);
+        }
+        if (expectedClass.isArray() && byte.class.equals(expectedClass.getComponentType())) {
+            return DatatypeConverter.parseHexBinary(givenStringDefault);
         }
         
         throw new AssertionError("Default for type " + expectedClass.getName() + " not implemented");
