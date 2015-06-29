@@ -78,11 +78,13 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.glassfish.hk2.api.AnnotationLiteral;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.xml.api.annotations.Customize;
 import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
+import org.glassfish.hk2.xml.api.annotations.PluralOf;
 import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
 import org.glassfish.hk2.xml.internal.alt.AltAnnotation;
 import org.glassfish.hk2.xml.internal.alt.AltClass;
@@ -719,9 +721,67 @@ public class Generator {
         retVal.addAnnotation(annotation);
     }
     
+    private static String getMethodName(MethodType methodType, String unDecapitalizedVariable, AltAnnotation instructions) {
+        String retVal;
+        
+        switch (methodType) {
+            case ADD:
+                retVal = instructions.getStringValue("add");
+                break;
+            case REMOVE:
+                retVal = instructions.getStringValue("remove");
+                break;
+            case LOOKUP:
+                retVal = instructions.getStringValue("lookup");
+                break;
+            default:
+                throw new AssertionError("Only ADD, REMOVE and LOOKUP supported");
+        }
+        
+        if (!PluralOf.USE_NORMAL_PLURAL_PATTERN.equals(retVal)) {
+            // We got the specific name for the method, overrides any algorithm
+            return retVal;
+        }
+        
+        String pluralOf = instructions.getStringValue("value");
+        if (!PluralOf.USE_NORMAL_PLURAL_PATTERN.equals(pluralOf)) {
+            // We got a specific name for the singular, use it
+            switch (methodType) {
+            case ADD:
+                return JAUtilities.ADD + pluralOf;
+            case REMOVE:
+                return JAUtilities.REMOVE + pluralOf;
+            case LOOKUP:
+                return JAUtilities.LOOKUP + pluralOf;
+            default:
+                throw new AssertionError("Only add, remove and lookup supported");
+            }
+        }
+        
+        // Do the algorithm
+        if (unDecapitalizedVariable.endsWith("s")) {
+            unDecapitalizedVariable = unDecapitalizedVariable.substring(0, unDecapitalizedVariable.length() - 1);
+        }
+        
+        switch (methodType) {
+        case ADD:
+            return JAUtilities.ADD + unDecapitalizedVariable;
+        case REMOVE:
+            return JAUtilities.REMOVE + unDecapitalizedVariable;
+        case LOOKUP:
+            return JAUtilities.LOOKUP + unDecapitalizedVariable;
+        default:
+            throw new AssertionError("Only add, remove and lookup supported");
+        }
+        
+    }
+    
     /* package */ static NameInformation getXmlNameMap(AltClass convertMe) {
         Map<String, XmlElementData> xmlNameMap = new HashMap<String, XmlElementData>();
         HashSet<String> unmappedNames = new HashSet<String>();
+        Map<String, String> addMethodToVariableMap = new HashMap<String, String>();
+        Map<String, String> removeMethodToVariableMap = new HashMap<String, String>();
+        Map<String, String> lookupMethodToVariableMap = new HashMap<String, String>();
         
         for (AltMethod originalMethod : convertMe.getMethods()) {
             String setterVariable = isSetter(originalMethod);
@@ -730,8 +790,12 @@ public class Generator {
                 if (setterVariable == null) continue;
             }
             
+            AltAnnotation pluralOf = null;
             AltAnnotation xmlElement = originalMethod.getAnnotation(XmlElement.class.getName());
             if (xmlElement != null) {
+                // Get the pluralOf from the method
+                pluralOf = originalMethod.getAnnotation(PluralOf.class.getName());
+                
                 String defaultValue = xmlElement.getStringValue("defaultValue");
                 
                 if (JAXB_DEFAULT_STRING.equals(xmlElement.getStringValue("name"))) {
@@ -755,6 +819,14 @@ public class Generator {
                     unmappedNames.add(setterVariable);
                 }
             }
+            
+            if (pluralOf == null) pluralOf = new AnnotationAltAnnotationImpl(new PluralOfDefault(), null);
+            
+            String unDecapitalizedVariable = originalMethod.getName().substring(3);
+            
+            addMethodToVariableMap.put(getMethodName(MethodType.ADD, unDecapitalizedVariable, pluralOf), setterVariable);
+            removeMethodToVariableMap.put(getMethodName(MethodType.REMOVE, unDecapitalizedVariable, pluralOf), setterVariable);
+            lookupMethodToVariableMap.put(getMethodName(MethodType.LOOKUP, unDecapitalizedVariable, pluralOf), setterVariable);
         }
         
         Set<String> noXmlElementNames = new HashSet<String>();
@@ -764,7 +836,10 @@ public class Generator {
             }
         }
         
-        return new NameInformation(xmlNameMap, noXmlElementNames);
+        return new NameInformation(xmlNameMap, noXmlElementNames,
+                addMethodToVariableMap,
+                removeMethodToVariableMap,
+                lookupMethodToVariableMap);
     }
     
     /* package */ static MethodInformation getMethodInformation(AltMethod m, NameInformation xmlNameMap) {
@@ -780,11 +855,11 @@ public class Generator {
             if (setterVariable == null) {
                 getterVariable = isGetter(m);
                 if (getterVariable == null) {
-                    lookupVariable = isLookup(m);
+                    lookupVariable = isLookup(m, xmlNameMap);
                     if (lookupVariable == null) {
-                        addVariable = isAdd(m);
+                        addVariable = isAdd(m, xmlNameMap);
                         if (addVariable == null) {
-                            removeVariable = isRemove(m);
+                            removeVariable = isRemove(m, xmlNameMap);
                         }
                     }
                 }
@@ -993,33 +1068,28 @@ public class Generator {
         return null;
     }
     
-    private static String isLookup(AltMethod method) {
+    private static String isLookup(AltMethod method, NameInformation nameInformation) {
         String name = method.getName();
         
-        if (!name.startsWith(JAUtilities.LOOKUP)) return null;
+        String retVal = nameInformation.getLookupVariableName(name);
+        if (retVal == null) return null;
         
-        if (name.length() <= JAUtilities.LOOKUP.length()) return null;
         List<AltClass> parameterTypes = method.getParameterTypes();
         if (parameterTypes.size() != 1) return null;
         if (!String.class.getName().equals(parameterTypes.get(0).getName())) return null;
             
         if (method.getReturnType() == null || void.class.getName().equals(method.getReturnType().getName())) return null;
-            
-        String variableName = name.substring(JAUtilities.LOOKUP.length());
-                
-        return Introspector.decapitalize(variableName);
+        
+        return retVal;
     }
     
-    private static String isAdd(AltMethod method) {
+    private static String isAdd(AltMethod method, NameInformation nameInformation) {
         String name = method.getName();
         
-        if (!name.startsWith(JAUtilities.ADD)) return null;
+        String retVal = nameInformation.getAddVariableName(name);
+        if (retVal == null) return null;
         
-        if (name.length() <= JAUtilities.ADD.length()) return null;
         if (!void.class.getName().equals(method.getReturnType().getName())) return null;
-        
-        String variableName = name.substring(JAUtilities.ADD.length());
-        String retVal = Introspector.decapitalize(variableName);
         
         List<AltClass> parameterTypes = method.getParameterTypes();
         if (parameterTypes.size() > 2) return null;
@@ -1057,19 +1127,16 @@ public class Generator {
         return null;
     }
     
-    private static String isRemove(AltMethod method) {
+    private static String isRemove(AltMethod method, NameInformation nameInformation) {
         String name = method.getName();
         
-        if (!name.startsWith(JAUtilities.REMOVE)) return null;
+        String retVal = nameInformation.getRemoveVariableName(name);
+        if (retVal == null) return null;
         
-        if (name.length() <= JAUtilities.REMOVE.length()) return null;
         if (method.getReturnType() == null || void.class.getName().equals(method.getReturnType().getName())) return null;
         
         AltClass returnType = method.getReturnType();
         if (!boolean.class.getName().equals(returnType.getName()) && !returnType.isInterface()) return null;
-        
-        String variableName = name.substring(JAUtilities.REMOVE.length());
-        String retVal = Introspector.decapitalize(variableName);
         
         List<AltClass> parameterTypes = method.getParameterTypes();
         if (parameterTypes.size() > 1) return null;
@@ -1116,6 +1183,43 @@ public class Generator {
         if (defaultClassPool.getOrNull(fixerClass) == null) {
             defaultClassPool.makeInterface(fixerClass);
         }
+    }
+    
+    private static final class PluralOfDefault extends AnnotationLiteral<PluralOf> implements PluralOf {
+        private static final long serialVersionUID = 4358923840720264176L;
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.xml.api.annotations.PluralOf#value()
+         */
+        @Override
+        public String value() {
+            return PluralOf.USE_NORMAL_PLURAL_PATTERN;
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.xml.api.annotations.PluralOf#add()
+         */
+        @Override
+        public String add() {
+            return PluralOf.USE_NORMAL_PLURAL_PATTERN;
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.xml.api.annotations.PluralOf#remove()
+         */
+        @Override
+        public String remove() {
+            return PluralOf.USE_NORMAL_PLURAL_PATTERN;
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.xml.api.annotations.PluralOf#lookup()
+         */
+        @Override
+        public String lookup() {
+            return PluralOf.USE_NORMAL_PLURAL_PATTERN;
+        }
+        
     }
 
 }

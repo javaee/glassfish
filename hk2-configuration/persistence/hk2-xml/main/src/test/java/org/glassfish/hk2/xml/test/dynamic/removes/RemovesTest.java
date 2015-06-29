@@ -78,16 +78,16 @@ public class RemovesTest {
         XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
         Employees employees = rootHandle.getRoot();
         
-        Employee bob = employees.lookupEmployees(UnmarshallTest.BOB);
+        Employee bob = employees.lookupEmployee(UnmarshallTest.BOB);
         
         // Make sure it is truly there
         Assert.assertNotNull(bob);  
         Assert.assertNotNull(locator.getService(Employee.class, UnmarshallTest.BOB));
         Assert.assertNotNull(hub.getCurrentDatabase().getInstance(EMPLOYEE_TYPE, BOB_EMPLOYEE_INSTANCE));
         
-        employees.removeEmployees(UnmarshallTest.BOB);
+        employees.removeEmployee(UnmarshallTest.BOB);
         
-        bob = employees.lookupEmployees(UnmarshallTest.BOB);
+        bob = employees.lookupEmployee(UnmarshallTest.BOB);
         
         Assert.assertNull(bob);
         Assert.assertNull(locator.getService(Employee.class, UnmarshallTest.BOB));

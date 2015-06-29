@@ -45,6 +45,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.glassfish.hk2.xml.api.annotations.PluralOf;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -58,7 +59,7 @@ public interface Employees {
     @XmlElement(name="company-name")
     public void setCompanyName(String name);
     
-    @XmlElement
+    @XmlElement @PluralOf("Financials")
     public void setFinancials(Financials finances);
     public Financials getFinancials();
     public void addFinancials();
@@ -67,12 +68,12 @@ public interface Employees {
     @XmlElement(name="employee")
     public void setEmployees(List<Employee> employees);
     public List<Employee> getEmployees();
-    public Employee lookupEmployees(String employeeName);
-    public void addEmployees(String employeeName);
-    public void addEmployees(String employeeName, int index);
-    public void addEmployees(Employee employee);
-    public void addEmployees(Employee employee, int index);
-    public Employee removeEmployees(String employeeName);
+    public Employee lookupEmployee(String employeeName);
+    public void addEmployee(String employeeName);
+    public void addEmployee(String employeeName, int index);
+    public void addEmployee(Employee employee);
+    public void addEmployee(Employee employee, int index);
+    public Employee removeEmployee(String employeeName);
     
     @XmlElement(name="other-data")
     public void setOtherData(List<OtherData> otherData);
