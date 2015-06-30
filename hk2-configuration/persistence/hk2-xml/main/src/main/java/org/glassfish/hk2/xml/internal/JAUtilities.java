@@ -218,6 +218,10 @@ public class JAUtilities {
             foundClass = defaultClassPool.getOrNull(targetClassName);
         }
         else {
+            if (DEBUG_PREGEN) {
+                Logger.getLogger().debug("Found pregenerated impl for " + targetClassName);   
+            }
+            
             numFoundClasses++;
         }
         
