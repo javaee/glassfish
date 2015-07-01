@@ -923,7 +923,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             igashCache.clear();
             classReflectionHelper.dispose();
             contextCache.clear();
-            perLocatorUtilities.releaseCaches();
+            perLocatorUtilities.shutdown();
             
             synchronized (children) {
                 children.clear();
