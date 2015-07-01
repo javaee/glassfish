@@ -477,10 +477,9 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         }
     }
     
-    public void _doAdd(String childProperty, Object rawChild, String childKey, int index) {
+    public Object _doAdd(String childProperty, Object rawChild, String childKey, int index) {
         if (changeControl == null) {
-            Utilities.internalAdd(this, childProperty, rawChild, childKey, index, null, null, null);
-            return;
+            return Utilities.internalAdd(this, childProperty, rawChild, childKey, index, null, null, null);
         }
         
         changeControl.getWriteLock().lock();
@@ -490,7 +489,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
             DynamicConfiguration config = (changeControl.getDynamicConfigurationService() == null) ? null :
                 changeControl.getDynamicConfigurationService().createDynamicConfiguration();
             
-            Utilities.internalAdd(this, childProperty, rawChild, childKey, index, changeControl, wbd, config);
+            Object retVal = Utilities.internalAdd(this, childProperty, rawChild, childKey, index, changeControl, wbd, config);
             
             if (config != null) {
                 config.commit();
@@ -500,7 +499,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
                 wbd.commit(new XmlHubCommitMessage() {});
             }
             
-            return;
+            return retVal;
         }
         finally {
             changeControl.getWriteLock().unlock();

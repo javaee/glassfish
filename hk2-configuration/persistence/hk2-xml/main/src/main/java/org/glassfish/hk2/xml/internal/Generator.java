@@ -283,12 +283,17 @@ public class Generator {
                 
             }
             else if (MethodType.ADD.equals(mi.getMethodType())) {
+                String returnClause = "";
+                if (!isVoid) {
+                    returnClause = "return (" + getCompilableClass(originalRetType) + ") ";
+                }
+                
                 List<AltClass> paramTypes = wrapper.getParameterTypes();
                 if (paramTypes.size() == 0) {
-                    sb.append(") { super._doAdd(\"" + mi.getRepresentedProperty() + "\", null, null, -1); }");
+                    sb.append(") { " + returnClause + "super._doAdd(\"" + mi.getRepresentedProperty() + "\", null, null, -1); }");
                 }
                 else if (paramTypes.size() == 1) {
-                    sb.append(paramTypes.get(0).getName() + " arg0) { super._doAdd(\"" + mi.getRepresentedProperty() + "\",");
+                    sb.append(paramTypes.get(0).getName() + " arg0) { " + returnClause + "super._doAdd(\"" + mi.getRepresentedProperty() + "\",");
                     
                     if (paramTypes.get(0).isInterface()) {
                         sb.append("arg0, null, -1); }");
@@ -301,7 +306,7 @@ public class Generator {
                     }
                 }
                 else {
-                    sb.append(paramTypes.get(0).getName() + " arg0, int arg1) { super._doAdd(\"" + mi.getRepresentedProperty() + "\",");
+                    sb.append(paramTypes.get(0).getName() + " arg0, int arg1) { " + returnClause + "super._doAdd(\"" + mi.getRepresentedProperty() + "\",");
                     
                     if (paramTypes.get(0).isInterface()) {
                         sb.append("arg0, null, arg1); }");
@@ -1089,7 +1094,8 @@ public class Generator {
         String retVal = nameInformation.getAddVariableName(name);
         if (retVal == null) return null;
         
-        if (!void.class.getName().equals(method.getReturnType().getName())) return null;
+        if (!void.class.getName().equals(method.getReturnType().getName()) &&
+                !method.getReturnType().isInterface()) return null;
         
         List<AltClass> parameterTypes = method.getParameterTypes();
         if (parameterTypes.size() > 2) return null;

@@ -378,7 +378,7 @@ public class AddsTest {
      * Tests that we can add to an existing tree with just a basic add where the
      * add methods return the item added
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testAddsThatReturnValues() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
