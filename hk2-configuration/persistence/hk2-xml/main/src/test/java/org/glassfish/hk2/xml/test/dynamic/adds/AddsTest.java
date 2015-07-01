@@ -50,6 +50,7 @@ import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.basic.Employee;
 import org.glassfish.hk2.xml.test.basic.Employees;
 import org.glassfish.hk2.xml.test.basic.Financials;
+import org.glassfish.hk2.xml.test.basic.NamedBean;
 import org.glassfish.hk2.xml.test.basic.OtherData;
 import org.glassfish.hk2.xml.test.basic.UnmarshallTest;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
@@ -366,5 +367,61 @@ public class AddsTest {
         Assert.assertEquals(2, lcv);
         
         checkFinancials(locator.getService(Financials.class), NASDAQ, ATT_SYMBOL);
+    }
+    
+    private final static String UNO = "uno";
+    private final static String DOS = "dos";
+    private final static String TRES = "tres";
+    private final static String QUATRO = "quatro";
+    
+    /**
+     * Tests that we can add to an existing tree with just a basic add where the
+     * add methods return the item added
+     */
+    @Test @org.junit.Ignore
+    public void testAddsThatReturnValues() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(UnmarshallTest.ACME1_FILE);
+        
+        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class, false, false);
+        
+        Employees employees = rootHandle.getRoot();
+        
+        NamedBean tresBean = employees.addName(TRES);
+        Assert.assertNotNull(tresBean);
+        Assert.assertEquals(TRES, tresBean.getName());
+        
+        NamedBean quatro = xmlService.createBean(NamedBean.class);
+        quatro.setName(QUATRO);
+        
+        NamedBean quatroBean = employees.addName(quatro);
+        Assert.assertNotNull(quatroBean);
+        Assert.assertEquals(QUATRO, quatroBean.getName());
+        
+        NamedBean uno = xmlService.createBean(NamedBean.class);
+        uno.setName(UNO);
+        
+        NamedBean unoBean = employees.addName(uno, 0);
+        Assert.assertNotNull(unoBean);
+        Assert.assertEquals(UNO, unoBean.getName());
+        
+        NamedBean dosBean = employees.addName(DOS, 1);
+        Assert.assertNotNull(dosBean);
+        Assert.assertEquals(DOS, dosBean.getName());
+        
+        NamedBean[] allBeans = employees.getNames();
+        
+        Assert.assertEquals(4, allBeans.length);
+        
+        Assert.assertEquals(unoBean, allBeans[0]);
+        Assert.assertEquals(dosBean, allBeans[1]);
+        Assert.assertEquals(tresBean, allBeans[2]);
+        Assert.assertEquals(quatroBean, allBeans[3]);
+        
+        
+        
+        
     }
 }

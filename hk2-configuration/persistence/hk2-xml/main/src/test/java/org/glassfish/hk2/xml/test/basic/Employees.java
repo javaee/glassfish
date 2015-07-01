@@ -83,6 +83,14 @@ public interface Employees {
     public void addOtherData(OtherData otherData, int position);
     public boolean removeOtherData(int position);
     
+    @XmlElement(name="company-names")
+    public void setNames(NamedBean[] named);
+    public NamedBean[] getNames();
+    public NamedBean addName(String name);
+    public NamedBean addName(String name, int index);
+    public NamedBean addName(NamedBean namedBean);
+    public NamedBean addName(NamedBean namedBean, int index);
+    
     @XmlElement(name="bagel-type")
     @EverythingBagel(byteValue = 13,
         booleanValue=true,
