@@ -285,6 +285,8 @@ public class Generator {
             else if (MethodType.ADD.equals(mi.getMethodType())) {
                 String returnClause = "";
                 if (!isVoid) {
+                    createInterfaceForAltClassIfNeeded(originalRetType, defaultClassPool);
+                    
                     returnClause = "return (" + getCompilableClass(originalRetType) + ") ";
                 }
                 
