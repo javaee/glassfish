@@ -39,61 +39,43 @@
  */
 package org.glassfish.hk2.xml.internal;
 
-import java.util.Map;
-import java.util.Set;
+import java.io.Serializable;
 
 /**
- * Information about the name to XmlElement mappings and
- * about children with no XmlElement at all
+ * This contains the model for children who have a specific
+ * parent, containing information such as the xml tag
+ * name and type.  These are all strings or other simple
+ * types so it can be hard-coded into the proxy at build
+ * time
  * 
  * @author jwells
  *
  */
-public class NameInformation {
-    private final Map<String, XmlElementData> nameMapping;
-    private final Set<String> noXmlElement;
-    private final Map<String, String> addMethodToVariableName;
-    private final Map<String, String> removeMethodToVariableName;
-    private final Map<String, String> lookupMethodToVariableName;
+public class ParentedModel implements Serializable {
+    private static final long serialVersionUID = -2480798409414987937L;
     
-    NameInformation(Map<String, XmlElementData> nameMapping,
-            Set<String> unmappedNames,
-            Map<String, String> addMethodToVariableName,
-            Map<String, String> removeMethodToVariableName,
-            Map<String, String> lookupMethodToVariableName) {
-        this.nameMapping = nameMapping;
-        this.noXmlElement = unmappedNames;
-        this.addMethodToVariableName = addMethodToVariableName;
-        this.removeMethodToVariableName = removeMethodToVariableName;
-        this.lookupMethodToVariableName = lookupMethodToVariableName;
+    private String childXmlTag;
+    private ChildType childType;
+    private String givenDefault;
+    
+    public ParentedModel() {
     }
     
-    String getNameMap(String mapMe) {
-        if (mapMe == null) return null;
-        if (!nameMapping.containsKey(mapMe)) return mapMe;
-        return nameMapping.get(mapMe).getName();
+    public ParentedModel(String childXmlTag, ChildType childType, String givenDefault) {
+        this.childXmlTag = childXmlTag;
+        this.childType = childType;
+        this.givenDefault = givenDefault;
     }
     
-    String getDefaultNameMap(String mapMe) {
-        if (mapMe == null) return Generator.JAXB_DEFAULT_DEFAULT;
-        if (!nameMapping.containsKey(mapMe)) return Generator.JAXB_DEFAULT_DEFAULT;
-        return nameMapping.get(mapMe).getDefaultValue();
+    public String getChildXmlTag() {
+        return childXmlTag;
     }
     
-    boolean hasNoXmlElement(String variableName) {
-        if (variableName == null) return true;
-        return noXmlElement.contains(variableName);
+    public ChildType getChildType() {
+        return childType;
     }
     
-    String getAddVariableName(String methodName) {
-        return addMethodToVariableName.get(methodName);
-    }
-    
-    String getRemoveVariableName(String methodName) {
-        return removeMethodToVariableName.get(methodName);
-    }
-    
-    String getLookupVariableName(String methodName) {
-        return lookupMethodToVariableName.get(methodName);
+    public String getGivenDefault() {
+        return givenDefault;
     }
 }

@@ -39,61 +39,32 @@
  */
 package org.glassfish.hk2.xml.internal;
 
-import java.util.Map;
-import java.util.Set;
+import java.io.Serializable;
 
 /**
- * Information about the name to XmlElement mappings and
- * about children with no XmlElement at all
- * 
  * @author jwells
  *
  */
-public class NameInformation {
-    private final Map<String, XmlElementData> nameMapping;
-    private final Set<String> noXmlElement;
-    private final Map<String, String> addMethodToVariableName;
-    private final Map<String, String> removeMethodToVariableName;
-    private final Map<String, String> lookupMethodToVariableName;
+public class ChildDataModel implements Serializable {
+    private static final long serialVersionUID = 208423310453044595L;
     
-    NameInformation(Map<String, XmlElementData> nameMapping,
-            Set<String> unmappedNames,
-            Map<String, String> addMethodToVariableName,
-            Map<String, String> removeMethodToVariableName,
-            Map<String, String> lookupMethodToVariableName) {
-        this.nameMapping = nameMapping;
-        this.noXmlElement = unmappedNames;
-        this.addMethodToVariableName = addMethodToVariableName;
-        this.removeMethodToVariableName = removeMethodToVariableName;
-        this.lookupMethodToVariableName = lookupMethodToVariableName;
+    private String childType;
+    private String defaultAsString;
+    
+    public ChildDataModel() {
     }
     
-    String getNameMap(String mapMe) {
-        if (mapMe == null) return null;
-        if (!nameMapping.containsKey(mapMe)) return mapMe;
-        return nameMapping.get(mapMe).getName();
+    public ChildDataModel(String childType, String defaultAsString) {
+        this.childType = childType;
+        this.defaultAsString = defaultAsString;
     }
     
-    String getDefaultNameMap(String mapMe) {
-        if (mapMe == null) return Generator.JAXB_DEFAULT_DEFAULT;
-        if (!nameMapping.containsKey(mapMe)) return Generator.JAXB_DEFAULT_DEFAULT;
-        return nameMapping.get(mapMe).getDefaultValue();
+    public String getChildType() {
+        return childType;
     }
     
-    boolean hasNoXmlElement(String variableName) {
-        if (variableName == null) return true;
-        return noXmlElement.contains(variableName);
+    public String getDefaultAsString() {
+        return defaultAsString;
     }
-    
-    String getAddVariableName(String methodName) {
-        return addMethodToVariableName.get(methodName);
-    }
-    
-    String getRemoveVariableName(String methodName) {
-        return removeMethodToVariableName.get(methodName);
-    }
-    
-    String getLookupVariableName(String methodName) {
-        return lookupMethodToVariableName.get(methodName);
-    }
+
 }

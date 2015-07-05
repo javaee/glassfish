@@ -202,7 +202,7 @@ public class DomXmlParser implements XmlServiceParser {
         Map<String, List<BaseHK2JAXBBean>> listChildren = new HashMap<String, List<BaseHK2JAXBBean>>();
         Map<String, List<BaseHK2JAXBBean>> arrayChildren = new HashMap<String, List<BaseHK2JAXBBean>>();
         
-        UnparentedNode model = target._getModel();
+        UnparentedNode model = target._getLiveModel();
         
         NamedNodeMap attributeMap = element.getAttributes();
         for (int lcv = 0; lcv < attributeMap.getLength(); lcv++) {

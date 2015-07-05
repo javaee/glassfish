@@ -50,9 +50,11 @@ import java.util.Set;
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
+import javassist.CtField;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.Modifier;
+import javassist.NotFoundException;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.ConstPool;
@@ -127,16 +129,19 @@ public class Generator {
     public static CtClass generate(AltClass convertMe,
             CtClass superClazz,
             ClassPool defaultClassPool) throws Throwable {
-        String targetClassName = convertMe.getName() + CLASS_ADD_ON_NAME;
+        String modelOriginalInterface = convertMe.getName();
+        
+        String modelTranslatedClass = modelOriginalInterface + CLASS_ADD_ON_NAME;
         if (DEBUG_METHODS) {
-            Logger.getLogger().debug("Converting " + convertMe.getName() + " to " + targetClassName);
+            Logger.getLogger().debug("Converting " + convertMe.getName() + " to " + modelTranslatedClass);
         }
         
-        CtClass targetCtClass = defaultClassPool.makeClass(targetClassName);
+        CtClass targetCtClass = defaultClassPool.makeClass(modelTranslatedClass);
         ClassFile targetClassFile = targetCtClass.getClassFile();
         targetClassFile.setVersionToJava5();
         ConstPool targetConstPool = targetClassFile.getConstPool();
         
+        Model compiledModel = new Model(modelOriginalInterface, modelTranslatedClass);
         AnnotationsAttribute ctAnnotations = null;
         for (AltAnnotation convertMeAnnotation : convertMe.getAnnotations()) {
             if (NO_COPY_ANNOTATIONS.contains(convertMeAnnotation.annotationType())) {
@@ -154,9 +159,10 @@ public class Generator {
             }
             
             if (XmlRootElement.class.getName().equals(convertMeAnnotation.annotationType())) {
-                String rootName = convertXmlRootElementName(convertMeAnnotation, convertMe);
+                String modelRootName = convertXmlRootElementName(convertMeAnnotation, convertMe);
+                compiledModel.setRootName(modelRootName);
                 
-                XmlRootElement replacement = new XmlRootElementImpl(convertMeAnnotation.getStringValue("namespace"), rootName);
+                XmlRootElement replacement = new XmlRootElementImpl(convertMeAnnotation.getStringValue("namespace"), modelRootName);
                
                 createAnnotationCopy(targetConstPool, replacement, ctAnnotations);
             }
@@ -179,8 +185,6 @@ public class Generator {
         NameInformation xmlNameMap = getXmlNameMap(convertMe);
         HashSet<String> alreadyAddedNaked = new HashSet<String>();
         
-        HashMap<AltClass, String> childTypes = new HashMap<AltClass, String>();
-        
         List<AltMethod> allMethods = convertMe.getMethods();
         if (DEBUG_METHODS) {
             Logger.getLogger().debug("Analyzing " + allMethods.size() + " methods of " + convertMe.getName());
@@ -190,6 +194,9 @@ public class Generator {
         HashMap<String, MethodInformation> getters = new HashMap<String, MethodInformation>();
         for (AltMethod wrapper : allMethods) {
             MethodInformation mi = getMethodInformation(wrapper, xmlNameMap);
+            if (mi.isKey()) {
+                compiledModel.setKeyProperty(mi.getRepresentedProperty());
+            }
             
             if (!MethodType.CUSTOM.equals(mi.getMethodType())) {
                 createInterfaceForAltClassIfNeeded(mi.getGetterSetterType(), defaultClassPool);
@@ -431,12 +438,6 @@ public class Generator {
                 sb.append("super." + superMethodName + "(\"" + name + "\", mParams, mVars);}");
             }
             
-            if (getterOrSetter && 
-                    (childType != null) &&
-                    !childTypes.containsKey(childType)) {
-                childTypes.put(childType, mi.getRepresentedProperty());
-            }
-            
             if (DEBUG_METHODS) {
                 // Hidden behind static because of potential expensive toString costs
                 Logger.getLogger().debug("Adding method for " + convertMe.getSimpleName() + " with implementation " + sb);
@@ -478,6 +479,19 @@ public class Generator {
                 }
                 else {  
                     createAnnotationCopy(methodConstPool, convertMeAnnotation, ctAnnotations);
+                }
+            }
+            
+            if (getterOrSetter) {
+                if (childType != null) {
+                    compiledModel.addChild(mi.getDecapitalizedMethodProperty(),
+                            mi.getRepresentedProperty(),
+                            getChildType(mi.isList(), mi.isArray()),
+                            mi.getDefaultValue());
+                }
+                else {
+                    compiledModel.addNonChild(mi.getRepresentedProperty(), mi.getDefaultValue(),
+                            mi.getGetterSetterType().getName());
                 }
             }
             
@@ -526,8 +540,87 @@ public class Generator {
             targetCtClass.addMethod(addMeCtMethod);
         }
         
+        generateStaticModelFieldAndAbstractMethodImpl(targetCtClass,
+                compiledModel,
+                defaultClassPool);
+        
         return targetCtClass;
-        // targetCtClass.toClass(convertMe.getClassLoader(), convertMe.getProtectionDomain());
+    }
+    
+    /* package */ static ChildType getChildType(boolean isList, boolean isArray) {
+        if (isList) return ChildType.LIST;
+        if (isArray) return ChildType.ARRAY;
+        return ChildType.DIRECT;
+    }
+    
+    private static void generateStaticModelFieldAndAbstractMethodImpl(CtClass targetCtClass,
+            Model model,
+            ClassPool defaultClassPool) throws CannotCompileException, NotFoundException {
+        StringBuffer sb = new StringBuffer();
+        
+        sb.append("private static final org.glassfish.hk2.xml.internal.Model INIT_MODEL() {\n");
+        sb.append("org.glassfish.hk2.xml.internal.Model retVal = new org.glassfish.hk2.xml.internal.Model(\"");
+        
+        sb.append(model.getOriginalInterface() + "\",\"" + model.getTranslatedClass() + "\");\n");
+        
+        if (model.getRootName() != null) {
+            sb.append("retVal.setRootName(\"" + model.getRootName() + "\");\n");
+        }
+        
+        if (model.getKeyProperty() != null) {
+            sb.append("retVal.setKeyProperty(\"" + model.getKeyProperty() + "\");\n");
+        }
+        
+        Map<String, ParentedModel> childrenByName = model.getChildrenByName();
+        for (Map.Entry<String, ParentedModel> entry : childrenByName.entrySet()) {
+            sb.append("retVal.addChild(" +
+              asParameter(entry.getKey()) + "," +
+              asParameter(entry.getValue().getChildXmlTag()) + "," +
+              asParameter(entry.getValue().getChildType()) + "," +
+              asParameter(entry.getValue().getGivenDefault()) + ");\n");
+        }
+        
+        Map<String, ChildDataModel> nonChildProperties = model.getNonChildProperties();
+        for (Map.Entry<String, ChildDataModel> entry : nonChildProperties.entrySet()) {
+            sb.append("retVal.addNonChild(" +
+              asParameter(entry.getKey()) + "," +
+              asParameter(entry.getValue().getDefaultAsString()) + "," +
+              asParameter(entry.getValue().getChildType()) + ");\n");
+        }
+        
+        sb.append("return retVal; }");
+        
+        targetCtClass.addMethod(CtNewMethod.make(sb.toString(), targetCtClass));
+        
+        CtClass modelCt = defaultClassPool.get(Model.class.getName());
+        
+        CtField sField = new CtField(modelCt, "MODEL", targetCtClass);
+        sField.setModifiers(Modifier.STATIC | Modifier.FINAL);
+        
+        targetCtClass.addField(sField, CtField.Initializer.byCall(targetCtClass, "INIT_MODEL"));
+        
+        CtMethod aMethod = CtNewMethod.make(
+                "public org.glassfish.hk2.xml.internal.Model _getModel() { return MODEL; }" , targetCtClass);
+        
+        targetCtClass.addMethod(aMethod);
+    }
+    
+    private static String asParameter(String me) {
+        if (me == null) return "null";
+        return "\"" + me + "\"";
+    }
+    
+    private static String asParameter(ChildType ct) {
+        switch(ct) {
+        case DIRECT:
+            return ChildType.class.getName() + ".DIRECT";
+        case LIST:
+            return ChildType.class.getName() + ".LIST";
+        case ARRAY:
+            return ChildType.class.getName() + ".ARRAY";
+        default:
+            throw new AssertionError("unknown ChildType " + ct);
+        }
     }
     
     private static void createAnnotationCopy(ConstPool parent, java.lang.annotation.Annotation javaAnnotation,
@@ -969,6 +1062,7 @@ public class Generator {
         
         return new MethodInformation(m,
                 methodType,
+                variable,
                 representedProperty,
                 defaultValue,
                 baseChildType,

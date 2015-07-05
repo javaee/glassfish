@@ -42,6 +42,7 @@ package org.glassfish.hk2.xml.api;
 
 import java.util.Map;
 
+import org.glassfish.hk2.xml.internal.Model;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -120,4 +121,6 @@ public interface XmlHk2ConfigurationBean {
      * if the bean is registered in the hub
      */
     public void _normalizeBean();
+    
+    public Model _getModel();
 }
