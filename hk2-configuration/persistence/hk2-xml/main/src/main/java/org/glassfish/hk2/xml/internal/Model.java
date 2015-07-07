@@ -41,7 +41,9 @@ package org.glassfish.hk2.xml.internal;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This model is a description of the children and non-children nodes
@@ -54,6 +56,9 @@ import java.util.Map;
  */
 public class Model implements Serializable {
     private static final long serialVersionUID = 752816761552710497L;
+    
+    /** For thread safety on the computed fields */
+    private final static Object lock = new Object();
 
     /** The interface from which the JAXB proxy was created, fully qualified */
     private String originalInterface;
@@ -73,6 +78,12 @@ public class Model implements Serializable {
     /** If this node has a key, this is the property name of the key */
     private String keyProperty;
     
+    /**
+     * These are calculated values and only filled in when asked for
+     */
+    private Set<String> unKeyedChildren = null;
+    private Set<String> keyedChildren = null;
+    
     public Model() {
     }
     
@@ -90,11 +101,14 @@ public class Model implements Serializable {
         this.keyProperty = keyProperty;
     }
     
-    public void addChild(String methodDecaptializedName,
+    public void addChild(
+            String methodDecaptializedName,
+            String childInterface,
             String xmlTag,
             ChildType childType,
-            String givenDefault) {
-        ParentedModel pm = new ParentedModel(xmlTag, childType, givenDefault);
+            String givenDefault,
+            Map<String, String> childDefault) {
+        ParentedModel pm = new ParentedModel(childInterface, xmlTag, childType, givenDefault, childDefault);
         childrenByName.put(methodDecaptializedName, pm);
     }
     
@@ -137,7 +151,51 @@ public class Model implements Serializable {
     public Map<String, ChildDataModel> getNonChildProperties() {
         return nonChildProperty;
     }
-
+    
+    public Set<String> getUnKeyedChildren() {
+        synchronized (lock) {
+            if (unKeyedChildren != null) return unKeyedChildren;
+            
+            unKeyedChildren = new HashSet<String>();
+            
+            for (Map.Entry<String, ParentedModel> entry : childrenByName.entrySet()) {
+                if (entry.getValue().getChildModel().getKeyProperty() != null) continue;
+                unKeyedChildren.add(entry.getKey());
+            }
+            
+            return unKeyedChildren;
+        }
+    }
+    
+    public Set<String> getKeyedChildren() {
+        synchronized (lock) {
+            if (keyedChildren != null) return keyedChildren;
+            
+            keyedChildren = new HashSet<String>();
+            
+            for (Map.Entry<String, ParentedModel> entry : childrenByName.entrySet()) {
+                if (entry.getValue().getChildModel().getKeyProperty() == null) continue;
+                keyedChildren.add(entry.getKey());
+            }
+            
+            return keyedChildren;
+        }
+    }
+    
+    @Override
+    public int hashCode() {
+        return translatedClass.hashCode();
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        if (!(o instanceof Model)) return false;
+        
+        return translatedClass.equals(((Model) o).getTranslatedClass());
+    }
+    
+    @Override
     public String toString() {
         return "Model(" + originalInterface + "," + translatedClass + "," + rootName + "," + keyProperty + ")";
     }

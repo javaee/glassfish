@@ -298,7 +298,8 @@ public class JAUtilities {
                     retVal.addChild(mi.getRepresentedProperty(),
                             Generator.getChildType(mi.isList(), mi.isArray()),
                             childType,
-                            defaultChild);
+                            defaultChild,
+                            mi.getDefaultValue());
                 }
                 else {
                     Class<?> expectedType = null;

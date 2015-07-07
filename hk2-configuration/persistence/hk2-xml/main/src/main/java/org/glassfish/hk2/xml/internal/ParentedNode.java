@@ -41,10 +41,9 @@
 package org.glassfish.hk2.xml.internal;
 
 import java.io.Serializable;
-import java.util.Map;
 
 /**
- * A node with information about the parent, which is therefor
+ * A node with information about the parent, which is therefore
  * specific to a place in a tree
  * 
  * @author jwells
@@ -53,26 +52,20 @@ import java.util.Map;
 public class ParentedNode implements Serializable {
     private static final long serialVersionUID = 7004413497291650707L;
     
-    private String childName;
-    private ChildType childType;
+    private ParentedModel childModel;
     private UnparentedNode child;
-    private Map<String, String> defaultChild;
     
     public ParentedNode() {
     }
     
-    public ParentedNode(String childName,
-            ChildType childType,
-            UnparentedNode child,
-            Map<String, String> defaultChild) {
-        this.childName = childName;
-        this.childType = childType;
+    public ParentedNode(ParentedModel childModel,
+            UnparentedNode child) {
+        this.childModel = childModel;
         this.child = child;
-        this.defaultChild = defaultChild;
     }
     
     public String getChildName() {
-        return childName;
+        return childModel.getChildXmlTag();
     }
     
     public UnparentedNode getChild() {
@@ -80,7 +73,7 @@ public class ParentedNode implements Serializable {
     }
     
     public ChildType getChildType() {
-        return childType;
+        return childModel.getChildType();
     }
     
     /**
@@ -97,7 +90,7 @@ public class ParentedNode implements Serializable {
     
     @Override
     public String toString() {
-        return "ParentedNode(" + childName + "," + child + "," + System.identityHashCode(this) + ")";
+        return "ParentedNode(" + childModel + "," + child + "," + System.identityHashCode(this) + ")";
     }
 
 }

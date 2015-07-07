@@ -40,6 +40,7 @@
 package org.glassfish.hk2.xml.internal;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * This contains the model for children who have a specific
@@ -54,17 +55,28 @@ import java.io.Serializable;
 public class ParentedModel implements Serializable {
     private static final long serialVersionUID = -2480798409414987937L;
     
+    private String childInterface;
     private String childXmlTag;
     private ChildType childType;
     private String givenDefault;
+    private Map<String, String> defaultChild;
+    
+    /** Set at runtime */
+    private Model childModel;
     
     public ParentedModel() {
     }
     
-    public ParentedModel(String childXmlTag, ChildType childType, String givenDefault) {
+    public ParentedModel(String childInterface, String childXmlTag, ChildType childType, String givenDefault, Map<String, String> defaultChild) {
+        this.childInterface = childInterface;
         this.childXmlTag = childXmlTag;
         this.childType = childType;
         this.givenDefault = givenDefault;
+        this.defaultChild = defaultChild;
+    }
+    
+    public String getChildInterface() {
+        return childInterface;
     }
     
     public String getChildXmlTag() {
@@ -77,5 +89,22 @@ public class ParentedModel implements Serializable {
     
     public String getGivenDefault() {
         return givenDefault;
+    }
+    
+    public Map<String, String> getDefaultChild() {
+        return defaultChild;
+    }
+    
+    public void setChildModel(Model childModel) {
+        this.childModel = childModel;
+    }
+    
+    public Model getChildModel() {
+        return childModel;
+    }
+    
+    @Override
+    public String toString() {
+        return "ParentedModel(" + childInterface + "," + childXmlTag + "," + childType + "," + givenDefault + ")";
     }
 }

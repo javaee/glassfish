@@ -43,6 +43,7 @@ import java.beans.Introspector;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -85,6 +86,7 @@ import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.xml.api.annotations.Customize;
+import org.glassfish.hk2.xml.api.annotations.DefaultChild;
 import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
 import org.glassfish.hk2.xml.api.annotations.PluralOf;
 import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
@@ -484,10 +486,20 @@ public class Generator {
             
             if (getterOrSetter) {
                 if (childType != null) {
+                    Map<String, String> defaultChild = null;
+                    AltAnnotation defaultChildAnnotation= mi.getOriginalMethod().getAnnotation(DefaultChild.class.getName());
+                    if (defaultChildAnnotation != null) {
+                        String[] defaultStrings = defaultChildAnnotation.getStringArrayValue("value");
+                        
+                        defaultChild = convertDefaultChildValueArray(defaultStrings);
+                    }
+                    
                     compiledModel.addChild(mi.getDecapitalizedMethodProperty(),
+                            childType.getName(),
                             mi.getRepresentedProperty(),
                             getChildType(mi.isList(), mi.isArray()),
-                            mi.getDefaultValue());
+                            mi.getDefaultValue(),
+                            defaultChild);
                 }
                 else {
                     compiledModel.addNonChild(mi.getRepresentedProperty(), mi.getDefaultValue(),
@@ -573,11 +585,15 @@ public class Generator {
         
         Map<String, ParentedModel> childrenByName = model.getChildrenByName();
         for (Map.Entry<String, ParentedModel> entry : childrenByName.entrySet()) {
+            // TODO: Generate a Map for defaultChild strings
+            
             sb.append("retVal.addChild(" +
               asParameter(entry.getKey()) + "," +
+              asParameter(entry.getValue().getChildInterface()) + "," +
               asParameter(entry.getValue().getChildXmlTag()) + "," +
               asParameter(entry.getValue().getChildType()) + "," +
-              asParameter(entry.getValue().getGivenDefault()) + ");\n");
+              asParameter(entry.getValue().getGivenDefault()) + "," +
+              asParameter((String) null) + ");\n");
         }
         
         Map<String, ChildDataModel> nonChildProperties = model.getNonChildProperties();
@@ -595,7 +611,7 @@ public class Generator {
         CtClass modelCt = defaultClassPool.get(Model.class.getName());
         
         CtField sField = new CtField(modelCt, "MODEL", targetCtClass);
-        sField.setModifiers(Modifier.STATIC | Modifier.FINAL);
+        sField.setModifiers(Modifier.STATIC | Modifier.FINAL | Modifier.PRIVATE);
         
         targetCtClass.addField(sField, CtField.Initializer.byCall(targetCtClass, "INIT_MODEL"));
         
@@ -603,6 +619,11 @@ public class Generator {
                 "public org.glassfish.hk2.xml.internal.Model _getModel() { return MODEL; }" , targetCtClass);
         
         targetCtClass.addMethod(aMethod);
+        
+        CtMethod sMethod = CtNewMethod.make(
+                "public static final org.glassfish.hk2.xml.internal.Model __getModel() { return MODEL; }" , targetCtClass);
+        
+        targetCtClass.addMethod(sMethod);
     }
     
     private static String asParameter(String me) {
@@ -1285,6 +1306,38 @@ public class Generator {
         if (defaultClassPool.getOrNull(fixerClass) == null) {
             defaultClassPool.makeInterface(fixerClass);
         }
+    }
+    
+    private static Map<String, String> convertDefaultChildValueArray(String[] values) {
+        LinkedHashMap<String, String> retVal = new LinkedHashMap<String, String>();
+        if (values == null) return retVal;
+        for (String value : values) {
+            value = value.trim();
+            if ("".equals(value)) continue;
+            if (value.charAt(0) == '=') {
+                throw new AssertionError("First character of " + value + " may not be an =");
+            }
+            
+            int indexOfEquals = value.indexOf('=');
+            if (indexOfEquals < 0) {
+                retVal.put(value, null);
+            }
+            else {
+                String key = value.substring(0, indexOfEquals);
+                
+                String attValue;
+                if (indexOfEquals >= (value.length() - 1)) {
+                    attValue = null;
+                }
+                else {
+                    attValue = value.substring(indexOfEquals + 1);
+                }
+                
+                retVal.put(key, attValue);
+            }
+        }
+        
+        return retVal;
     }
     
     private static final class PluralOfDefault extends AnnotationLiteral<PluralOf> implements PluralOf {

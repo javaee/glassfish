@@ -131,9 +131,9 @@ public class UnparentedNode implements Serializable {
         this.rootName = rootName;
     }
     
-    public void addChild(String xmlTag, ChildType childType, UnparentedNode child, Map<String, String> defaultChild) {
+    public void addChild(String xmlTag, ChildType childType, UnparentedNode child, Map<String, String> defaultChild, String givenDefault) {
         synchronized (lock) {
-            ParentedNode pn = new ParentedNode(xmlTag, childType, child, defaultChild);
+            ParentedNode pn = new ParentedNode(new ParentedModel(child.getOriginalInterface().getName(), xmlTag, childType, givenDefault, defaultChild), child);
             childrenByName.put(xmlTag, pn);
         }
     }
