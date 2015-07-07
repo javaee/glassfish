@@ -40,24 +40,18 @@
 
 package org.jvnet.hk2.guice.bridge.test;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.jvnet.hk2.testing.junit.HK2TestModule;
+import javax.inject.Singleton;
 
-/**
- * @author jwells
- *
- */
-public class GuiceBridgeTestModule implements HK2TestModule {
+@Singleton
+public class GuiceService4 {
 
-    /* (non-Javadoc)
-     * @see org.jvnet.hk2.testing.junit.HK2TestModule#configure(org.glassfish.hk2.api.DynamicConfiguration)
-     */
-    @Override
-    public void configure(DynamicConfiguration config) {
-        config.addActiveDescriptor(HK2Service1.class);
-        config.addActiveDescriptor(HK2Service2Impl.class);
-        config.addActiveDescriptor(HK2Service3.class);
-        config.addActiveDescriptor(HK2Service4.class);
+    private boolean wasCalled = false;
+
+    public void callMe() {
+        wasCalled = true;
     }
 
+    public boolean wasCalled() {
+        return wasCalled;
+    }
 }

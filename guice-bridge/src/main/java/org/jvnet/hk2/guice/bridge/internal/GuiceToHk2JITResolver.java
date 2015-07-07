@@ -54,6 +54,7 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 
 import com.google.inject.Binding;
+import com.google.inject.ConfigurationException;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 
@@ -65,13 +66,13 @@ import com.google.inject.Key;
 public class GuiceToHk2JITResolver implements JustInTimeInjectionResolver {
     private final ServiceLocator locator;
     private final Injector guiceInjector;
-    
+
     /* package */ GuiceToHk2JITResolver(ServiceLocator locator,
             Injector guiceInjector) {
         this.locator = locator;
         this.guiceInjector = guiceInjector;
     }
-    
+
     /**
      * This tries every qualifier in the injectee
      * @param injectee The injectee to look for a binding for
@@ -80,27 +81,37 @@ public class GuiceToHk2JITResolver implements JustInTimeInjectionResolver {
     private Binding<?> findBinding(Injectee injectee) {
         if (injectee.getRequiredQualifiers().isEmpty()) {
             Key<?> key = Key.get(injectee.getRequiredType());
-            
-            return guiceInjector.getExistingBinding(key);
+
+            try {
+                return guiceInjector.getBinding(key);
+            } catch (ConfigurationException ce) {
+                return null;
+            }
         }
-        
+
         if (injectee.getRequiredQualifiers().size() > 1) {
             return null;
         }
-        
+
         for (Annotation annotation : injectee.getRequiredQualifiers()) {
             Key<?> key = Key.get(injectee.getRequiredType(), annotation);
-            
-            Binding<?> retVal = guiceInjector.getExistingBinding(key);
+
+            Binding<?> retVal = null;
+            try {
+                retVal = guiceInjector.getBinding(key);
+            } catch (ConfigurationException ce) {
+                return null;
+            }
+
             if (retVal != null) return retVal;
         }
-        
+
         return null;
     }
-    
+
     /**
      * Gets the class from the given type
-     * 
+     *
      * @param type The type to find the class from
      * @return The class associated with this type, or null
      * if the class cannot be found
@@ -109,10 +120,10 @@ public class GuiceToHk2JITResolver implements JustInTimeInjectionResolver {
         if (type instanceof Class) return (Class<?>) type;
         if (type instanceof ParameterizedType) {
             ParameterizedType pt = (ParameterizedType) type;
-            
+
             return (Class<?>) pt.getRawType();
         }
-        
+
         return null;
     }
 
@@ -122,22 +133,22 @@ public class GuiceToHk2JITResolver implements JustInTimeInjectionResolver {
     @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
     public boolean justInTimeResolution(Injectee failedInjectionPoint) {
-        
+
         Class<?> implClass = getClassFromType(failedInjectionPoint.getRequiredType());
         if (implClass == null) return false;
-        
+
         Binding<?> binding = findBinding(failedInjectionPoint);
         if (binding == null) return false;
-        
+
         HashSet<Type> contracts = new HashSet<Type>();
         contracts.add(failedInjectionPoint.getRequiredType());
-        
+
         Set<Annotation> qualifiers = new HashSet<Annotation>(failedInjectionPoint.getRequiredQualifiers());
-        
+
         GuiceServiceHk2Bean guiceBean = new GuiceServiceHk2Bean(contracts, qualifiers, implClass, binding);
-        
+
         ServiceLocatorUtilities.addOneDescriptor(locator, guiceBean);
-        
+
         return true;
     }
 
