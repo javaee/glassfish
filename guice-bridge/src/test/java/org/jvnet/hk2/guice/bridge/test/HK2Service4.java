@@ -52,7 +52,7 @@ public class HK2Service4 {
     private GuiceService4 guiceService;
 
     public void verifyGuiceService() {
-	    Assert.assertFalse(guiceService.wasCalled());
+        Assert.assertFalse(guiceService.wasCalled());
 
         guiceService.callMe();
 
