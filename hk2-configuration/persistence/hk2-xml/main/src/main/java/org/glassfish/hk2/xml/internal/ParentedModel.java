@@ -37,49 +37,74 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test.arrays;
+package org.glassfish.hk2.xml.internal;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.glassfish.hk2.xml.api.annotations.PluralOf;
-import org.glassfish.hk2.xml.test.basic.Employee;
-import org.glassfish.hk2.xml.test.basic.Financials;
-import org.glassfish.hk2.xml.test.basic.OtherData;
-import org.jvnet.hk2.annotations.Contract;
+import java.io.Serializable;
+import java.util.Map;
 
 /**
+ * This contains the model for children who have a specific
+ * parent, containing information such as the xml tag
+ * name and type.  These are all strings or other simple
+ * types so it can be hard-coded into the proxy at build
+ * time
+ * 
  * @author jwells
  *
  */
-@XmlRootElement @Contract
-public interface Employees {
-    public String getCompanyName();
+public class ParentedModel implements Serializable {
+    private static final long serialVersionUID = -2480798409414987937L;
     
-    @XmlElement(name="company-name")
-    public void setCompanyName(String name);
+    private String childInterface;
+    private String childXmlTag;
+    private ChildType childType;
+    private String givenDefault;
+    private Map<String, String> defaultChild;
     
-    @XmlElement @PluralOf("Financials")
-    public void setFinancials(Financials finances);
-    public Financials getFinancials();
-    public void addFinancials();
-    public Financials removeFinancials();
+    /** Set at runtime */
+    private Model childModel;
     
-    @XmlElement(name="employee")
-    public void setEmployees(Employee[] employees);
-    public Employee[] getEmployees();
-    public Employee lookupEmployee(String employeeName);
-    public void addEmployee(String employeeName);
-    public void addEmployee(String employeeName, int index);
-    public void addEmployee(Employee employee);
-    public void addEmployee(Employee employee, int index);
-    public Employee removeEmployee(String employeeName);
+    public ParentedModel() {
+    }
     
-    @XmlElement(name="other-data")
-    public void setOtherData(OtherData[] otherData);
-    public OtherData[] getOtherData();
-    public void addOtherData(int position);
-    public void addOtherData(OtherData otherData);
-    public void addOtherData(OtherData otherData, int position);
-    public OtherData removeOtherData(int position);
+    public ParentedModel(String childInterface, String childXmlTag, ChildType childType, String givenDefault, Map<String, String> defaultChild) {
+        this.childInterface = childInterface;
+        this.childXmlTag = childXmlTag;
+        this.childType = childType;
+        this.givenDefault = givenDefault;
+        this.defaultChild = defaultChild;
+    }
+    
+    public String getChildInterface() {
+        return childInterface;
+    }
+    
+    public String getChildXmlTag() {
+        return childXmlTag;
+    }
+    
+    public ChildType getChildType() {
+        return childType;
+    }
+    
+    public String getGivenDefault() {
+        return givenDefault;
+    }
+    
+    public Map<String, String> getDefaultChild() {
+        return defaultChild;
+    }
+    
+    public void setChildModel(Model childModel) {
+        this.childModel = childModel;
+    }
+    
+    public Model getChildModel() {
+        return childModel;
+    }
+    
+    @Override
+    public String toString() {
+        return "ParentedModel(" + childInterface + "," + childXmlTag + "," + childType + "," + givenDefault + ")";
+    }
 }

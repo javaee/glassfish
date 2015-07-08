@@ -218,6 +218,10 @@ public class JAUtilities {
             foundClass = defaultClassPool.getOrNull(targetClassName);
         }
         else {
+            if (DEBUG_PREGEN) {
+                Logger.getLogger().debug("Found pregenerated impl for " + targetClassName);   
+            }
+            
             numFoundClasses++;
         }
         
@@ -291,7 +295,11 @@ public class JAUtilities {
                         defaultChild = convertDefaultChildValueArray(defaultStrings);
                     }
                         
-                    retVal.addChild(mi.getRepresentedProperty(), getChildType(mi.isList(), mi.isArray()), childType, defaultChild);
+                    retVal.addChild(mi.getRepresentedProperty(),
+                            Generator.getChildType(mi.isList(), mi.isArray()),
+                            childType,
+                            defaultChild,
+                            mi.getDefaultValue());
                 }
                 else {
                     Class<?> expectedType = null;
@@ -341,12 +349,6 @@ public class JAUtilities {
         }
         
         return retVal;
-    }
-    
-    private static ChildType getChildType(boolean isList, boolean isArray) {
-        if (isList) return ChildType.LIST;
-        if (isArray) return ChildType.ARRAY;
-        return ChildType.DIRECT;
     }
     
     private static void getAllToConvert(Class<?> toBeConverted,

@@ -101,9 +101,9 @@ public class AddsArrayTest {
     private void addToExistingTree(ServiceLocator locator, Hub hub, XmlRootHandle<Employees> rootHandle, boolean inRegistry, boolean inHub) {
         Employees employees = rootHandle.getRoot();
         
-        employees.addEmployees(DAVE);
+        employees.addEmployee(DAVE);
         
-        Employee daveDirect = employees.lookupEmployees(DAVE);
+        Employee daveDirect = employees.lookupEmployee(DAVE);
         Assert.assertNotNull(daveDirect);
         
         if (inRegistry) {
@@ -319,9 +319,9 @@ public class AddsArrayTest {
         Employee bob = createEmployee(xmlService, UnmarshallTest.BOB, BOB_ID);
         Employee carol = createEmployee(xmlService, UnmarshallTest.CAROL, CAROL_ID);
         
-        employees.addEmployees(alice);
-        employees.addEmployees(carol);
-        employees.addEmployees(bob, 1);
+        employees.addEmployee(alice);
+        employees.addEmployee(carol);
+        employees.addEmployee(bob, 1);
         
         OtherData data1 = createOtherData(xmlService, DATA1);
         OtherData data2 = createOtherData(xmlService, DATA2);

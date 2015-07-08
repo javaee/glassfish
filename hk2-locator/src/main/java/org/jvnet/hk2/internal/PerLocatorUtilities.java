@@ -60,7 +60,7 @@ import org.jvnet.hk2.annotations.Service;
  */
 public class PerLocatorUtilities {
     /** Must not be static, otherwise it can leak when using thread pools */
-    private final ThreadLocal<WeakHashMap<Class<?>, String>> threadLocalAutoAnalyzerNameCache =
+    private ThreadLocal<WeakHashMap<Class<?>, String>> threadLocalAutoAnalyzerNameCache =
             new ThreadLocal<WeakHashMap<Class<?>, String>>() {
                 @Override
                 protected WeakHashMap<Class<?>, String> initialValue() {
@@ -69,7 +69,7 @@ public class PerLocatorUtilities {
             };
 
     /** Must not be static, otherwise it can leak when using thread pools */
-    private final ThreadLocal<WeakHashMap<AnnotatedElement, SoftAnnotatedElementAnnotationInfo>>
+    private ThreadLocal<WeakHashMap<AnnotatedElement, SoftAnnotatedElementAnnotationInfo>>
         threadLocalAnnotationCache =
             new ThreadLocal<WeakHashMap<AnnotatedElement, SoftAnnotatedElementAnnotationInfo>>() {
                 @Override
@@ -206,6 +206,13 @@ public class PerLocatorUtilities {
         if (proxyUtilities != null) {
             proxyUtilities.releaseCache();
         }
+    }
+    
+    public void shutdown() {
+        releaseCaches();
+        
+        threadLocalAutoAnalyzerNameCache = null;
+        threadLocalAnnotationCache = null;
     }
     
     public ProxyUtilities getProxyUtilities() {

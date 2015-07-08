@@ -297,6 +297,8 @@ public class HabitatGenerator {
             System.exit(embeddedMain(argv));
         }
         catch (Throwable th) {
+            th.printStackTrace();
+            
             System.exit(-1);
         }
     }

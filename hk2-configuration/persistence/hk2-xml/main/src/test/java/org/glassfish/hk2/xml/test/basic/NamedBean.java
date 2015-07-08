@@ -37,49 +37,19 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test.arrays;
+package org.glassfish.hk2.xml.test.basic;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlAttribute;
 
-import org.glassfish.hk2.xml.api.annotations.PluralOf;
-import org.glassfish.hk2.xml.test.basic.Employee;
-import org.glassfish.hk2.xml.test.basic.Financials;
-import org.glassfish.hk2.xml.test.basic.OtherData;
-import org.jvnet.hk2.annotations.Contract;
+import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
 
 /**
  * @author jwells
  *
  */
-@XmlRootElement @Contract
-public interface Employees {
-    public String getCompanyName();
-    
-    @XmlElement(name="company-name")
-    public void setCompanyName(String name);
-    
-    @XmlElement @PluralOf("Financials")
-    public void setFinancials(Financials finances);
-    public Financials getFinancials();
-    public void addFinancials();
-    public Financials removeFinancials();
-    
-    @XmlElement(name="employee")
-    public void setEmployees(Employee[] employees);
-    public Employee[] getEmployees();
-    public Employee lookupEmployee(String employeeName);
-    public void addEmployee(String employeeName);
-    public void addEmployee(String employeeName, int index);
-    public void addEmployee(Employee employee);
-    public void addEmployee(Employee employee, int index);
-    public Employee removeEmployee(String employeeName);
-    
-    @XmlElement(name="other-data")
-    public void setOtherData(OtherData[] otherData);
-    public OtherData[] getOtherData();
-    public void addOtherData(int position);
-    public void addOtherData(OtherData otherData);
-    public void addOtherData(OtherData otherData, int position);
-    public OtherData removeOtherData(int position);
+public interface NamedBean {
+    @XmlAttribute @XmlIdentifier
+    public String getName();
+    public void setName(String name);
+
 }

@@ -282,7 +282,7 @@ public class Utilities {
             throw new IllegalArgumentException("The child added must be from XmlService.createBean");
         }
         
-        ParentedNode childNode = myParent._getModel().getChild(childProperty);
+        ParentedNode childNode = myParent._getLiveModel().getChild(childProperty);
         if (childNode == null) {
             throw new IllegalArgumentException("There is no child with xmlTag " + childProperty + " of " + myParent);
         }
@@ -320,7 +320,7 @@ public class Utilities {
         if (rawChild != null) {
             // Handling of children will be handled once the real child is better setup
             BaseHK2JAXBBean childToCopy = (BaseHK2JAXBBean) rawChild;
-            for (String nonChildProperty : childToCopy._getModel().getNonChildProperties()) {
+            for (String nonChildProperty : childToCopy._getLiveModel().getNonChildProperties()) {
                 Object value = childToCopy._getProperty(nonChildProperty);
                 if (value == null) continue;
                 
@@ -419,7 +419,7 @@ public class Utilities {
     
     @SuppressWarnings("unchecked")
     private static void handleChildren(BaseHK2JAXBBean child, BaseHK2JAXBBean childToCopy, DynamicChangeInfo changeInformation) {
-        Map<String, ParentedNode> childrenMap = childToCopy._getModel().getChildrenProperties();
+        Map<String, ParentedNode> childrenMap = childToCopy._getLiveModel().getChildrenProperties();
         
         for (Map.Entry<String, ParentedNode> childsChildrenEntry : childrenMap.entrySet()) {
             String childsChildProperty = childsChildrenEntry.getKey();
@@ -480,7 +480,7 @@ public class Utilities {
         
         Utilities.advertise(writeableDatabase, config, root);
         
-        for (String keyedChildProperty : root._getModel().getKeyedChildren()) {
+        for (String keyedChildProperty : root._getLiveModel().getKeyedChildren()) {
             Object keyedRawChild = root._getProperty(keyedChildProperty);
             if (keyedRawChild == null) continue;
             
@@ -503,7 +503,7 @@ public class Utilities {
             }
         }
         
-        for (String unkeyedChildProperty : root._getModel().getUnKeyedChildren()) {
+        for (String unkeyedChildProperty : root._getLiveModel().getUnKeyedChildren()) {
             Object unkeyedRawChild = root._getProperty(unkeyedChildProperty);
             if (unkeyedRawChild == null) continue;
             
@@ -552,7 +552,7 @@ public class Utilities {
         
         // Handling of children will be handled once the real child is better setup
         BaseHK2JAXBBean childToCopy = (BaseHK2JAXBBean) rawRoot;
-        for (String nonChildProperty : childToCopy._getModel().getNonChildProperties()) {
+        for (String nonChildProperty : childToCopy._getLiveModel().getNonChildProperties()) {
             Object value = childToCopy._getProperty(nonChildProperty);
             if (value == null) continue;
             
@@ -600,7 +600,7 @@ public class Utilities {
         
         if (childKey == null && index < 0) return null;
         
-        ParentedNode removeMeParentedNode = myParent._getModel().getChild(childProperty);
+        ParentedNode removeMeParentedNode = myParent._getLiveModel().getChild(childProperty);
         UnparentedNode removeMeNode = removeMeParentedNode.getChild();
         BaseHK2JAXBBean rootForDeletion = null;
         
@@ -752,7 +752,7 @@ public class Utilities {
         
         descriptorsToRemove.add(fromMeDescriptor);
         
-        UnparentedNode model = fromMe._getModel();
+        UnparentedNode model = fromMe._getLiveModel();
         if (model == null) return;
         
         for (ParentedNode parentedChild : model.getAllChildren()) {
@@ -864,6 +864,10 @@ public class Utilities {
         }
         if (double.class.equals(expectedClass)) {
             return Double.parseDouble(givenStringDefault);
+        }
+        if (expectedClass.isArray() && byte.class.equals(expectedClass.getComponentType())) {
+            return givenStringDefault.getBytes();
+            // return DatatypeConverter.parseHexBinary(givenStringDefault);
         }
         
         throw new AssertionError("Default for type " + expectedClass.getName() + " not implemented");

@@ -132,7 +132,7 @@ public class XmlServiceImpl implements XmlService {
         if (JAUtilities.DEBUG_GENERATION_TIMING) {
             jaxbUnmarshallElapsedTime = System.currentTimeMillis();
             elapsedUpToJAXB = jaxbUnmarshallElapsedTime - elapsedUpToJAXB;
-            Logger.getLogger().debug("Time in up to JAXB parsing " + uri + " is " + elapsedUpToJAXB + " milliseconds");
+            Logger.getLogger().debug("Time up to parsing " + uri + " is " + elapsedUpToJAXB + " milliseconds");
         }
         
         T root = localParser.parseRoot((Class<T>) node.getTranslatedClass(), uri, listener);
@@ -141,7 +141,7 @@ public class XmlServiceImpl implements XmlService {
         if (JAUtilities.DEBUG_GENERATION_TIMING) {
             elapsedJAXBToAdvertisement = System.currentTimeMillis();
             jaxbUnmarshallElapsedTime = elapsedJAXBToAdvertisement - jaxbUnmarshallElapsedTime;
-            Logger.getLogger().debug("Time in JAXB parsing " + uri + " is " + jaxbUnmarshallElapsedTime + " milliseconds");
+            Logger.getLogger().debug("Time parsing " + uri + " is " + jaxbUnmarshallElapsedTime + " milliseconds");
         }
         
         DynamicChangeInfo changeControl = new DynamicChangeInfo(jaUtilities,
@@ -161,7 +161,7 @@ public class XmlServiceImpl implements XmlService {
         if (JAUtilities.DEBUG_GENERATION_TIMING) {
             elapsedPreAdvertisement = System.currentTimeMillis();
             elapsedJAXBToAdvertisement = elapsedPreAdvertisement - elapsedJAXBToAdvertisement;
-            Logger.getLogger().debug("Time from JAXB to PreAdvertisement " + uri + " is " + elapsedJAXBToAdvertisement + " milliseconds");
+            Logger.getLogger().debug("Time from parsing to PreAdvertisement " + uri + " is " + elapsedJAXBToAdvertisement + " milliseconds");
         }
         
         DynamicConfiguration config = (advertise) ? dynamicConfigurationService.createDynamicConfiguration() : null ;

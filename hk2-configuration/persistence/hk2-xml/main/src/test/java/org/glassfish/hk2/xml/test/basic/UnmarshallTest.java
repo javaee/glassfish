@@ -272,7 +272,7 @@ public class UnmarshallTest {
         Tenant tenant = locator.getService(Tenant.class, COKE_TENANT);
         Assert.assertNotNull(tenant);
         
-        Service hrProdService = tenant.lookupServices(HRPROD_SERVICE);
+        Service hrProdService = tenant.lookupService(HRPROD_SERVICE);
         Assert.assertNotNull(hrProdService);
         Assert.assertEquals(HRPROD_SERVICE, hrProdService.getName());
     }

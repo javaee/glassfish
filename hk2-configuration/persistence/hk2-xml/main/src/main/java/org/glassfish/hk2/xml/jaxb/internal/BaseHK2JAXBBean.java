@@ -68,6 +68,7 @@ import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlHubCommitMessage;
 import org.glassfish.hk2.xml.api.annotations.Customizer;
 import org.glassfish.hk2.xml.internal.DynamicChangeInfo;
+import org.glassfish.hk2.xml.internal.Model;
 import org.glassfish.hk2.xml.internal.ParentedNode;
 import org.glassfish.hk2.xml.internal.UnparentedNode;
 import org.glassfish.hk2.xml.internal.Utilities;
@@ -76,7 +77,7 @@ import org.glassfish.hk2.xml.internal.Utilities;
  * @author jwells
  *
  */
-public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
+public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
     private static final long serialVersionUID = 8149986319033910297L;
 
     private final static boolean DEBUG_GETS_AND_SETS = Boolean.parseBoolean(GeneralUtilities.getSystemProperty(
@@ -477,10 +478,9 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
         }
     }
     
-    public void _doAdd(String childProperty, Object rawChild, String childKey, int index) {
+    public Object _doAdd(String childProperty, Object rawChild, String childKey, int index) {
         if (changeControl == null) {
-            Utilities.internalAdd(this, childProperty, rawChild, childKey, index, null, null, null);
-            return;
+            return Utilities.internalAdd(this, childProperty, rawChild, childKey, index, null, null, null);
         }
         
         changeControl.getWriteLock().lock();
@@ -490,7 +490,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
             DynamicConfiguration config = (changeControl.getDynamicConfigurationService() == null) ? null :
                 changeControl.getDynamicConfigurationService().createDynamicConfiguration();
             
-            Utilities.internalAdd(this, childProperty, rawChild, childKey, index, changeControl, wbd, config);
+            Object retVal = Utilities.internalAdd(this, childProperty, rawChild, childKey, index, changeControl, wbd, config);
             
             if (config != null) {
                 config.commit();
@@ -500,7 +500,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
                 wbd.commit(new XmlHubCommitMessage() {});
             }
             
-            return;
+            return retVal;
         }
         finally {
             changeControl.getWriteLock().unlock();
@@ -937,7 +937,7 @@ public class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
      * 
      * @return The model for this bean
      */
-    public UnparentedNode _getModel() {
+    public UnparentedNode _getLiveModel() {
         return model;
     }
     

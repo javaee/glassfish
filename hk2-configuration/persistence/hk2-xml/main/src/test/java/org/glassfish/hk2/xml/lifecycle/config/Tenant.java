@@ -63,7 +63,7 @@ public interface Tenant extends Named, Payload, Auditable {
   @XmlElement(name="service")
   List<Service> getServices();
   void setServices(List<Service> services);
-  Service lookupServices(String name);
+  Service lookupService(String name);
 
   /*
   @DuckTyped

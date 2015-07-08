@@ -43,6 +43,7 @@ import java.beans.Introspector;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,9 +51,11 @@ import java.util.Set;
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtClass;
+import javassist.CtField;
 import javassist.CtMethod;
 import javassist.CtNewMethod;
 import javassist.Modifier;
+import javassist.NotFoundException;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.ConstPool;
@@ -78,11 +81,14 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.glassfish.hk2.api.AnnotationLiteral;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.xml.api.annotations.Customize;
+import org.glassfish.hk2.xml.api.annotations.DefaultChild;
 import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
+import org.glassfish.hk2.xml.api.annotations.PluralOf;
 import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
 import org.glassfish.hk2.xml.internal.alt.AltAnnotation;
 import org.glassfish.hk2.xml.internal.alt.AltClass;
@@ -125,16 +131,19 @@ public class Generator {
     public static CtClass generate(AltClass convertMe,
             CtClass superClazz,
             ClassPool defaultClassPool) throws Throwable {
-        String targetClassName = convertMe.getName() + CLASS_ADD_ON_NAME;
+        String modelOriginalInterface = convertMe.getName();
+        
+        String modelTranslatedClass = modelOriginalInterface + CLASS_ADD_ON_NAME;
         if (DEBUG_METHODS) {
-            Logger.getLogger().debug("Converting " + convertMe.getName() + " to " + targetClassName);
+            Logger.getLogger().debug("Converting " + convertMe.getName() + " to " + modelTranslatedClass);
         }
         
-        CtClass targetCtClass = defaultClassPool.makeClass(targetClassName);
+        CtClass targetCtClass = defaultClassPool.makeClass(modelTranslatedClass);
         ClassFile targetClassFile = targetCtClass.getClassFile();
         targetClassFile.setVersionToJava5();
         ConstPool targetConstPool = targetClassFile.getConstPool();
         
+        Model compiledModel = new Model(modelOriginalInterface, modelTranslatedClass);
         AnnotationsAttribute ctAnnotations = null;
         for (AltAnnotation convertMeAnnotation : convertMe.getAnnotations()) {
             if (NO_COPY_ANNOTATIONS.contains(convertMeAnnotation.annotationType())) {
@@ -152,9 +161,10 @@ public class Generator {
             }
             
             if (XmlRootElement.class.getName().equals(convertMeAnnotation.annotationType())) {
-                String rootName = convertXmlRootElementName(convertMeAnnotation, convertMe);
+                String modelRootName = convertXmlRootElementName(convertMeAnnotation, convertMe);
+                compiledModel.setRootName(modelRootName);
                 
-                XmlRootElement replacement = new XmlRootElementImpl(convertMeAnnotation.getStringValue("namespace"), rootName);
+                XmlRootElement replacement = new XmlRootElementImpl(convertMeAnnotation.getStringValue("namespace"), modelRootName);
                
                 createAnnotationCopy(targetConstPool, replacement, ctAnnotations);
             }
@@ -177,8 +187,6 @@ public class Generator {
         NameInformation xmlNameMap = getXmlNameMap(convertMe);
         HashSet<String> alreadyAddedNaked = new HashSet<String>();
         
-        HashMap<AltClass, String> childTypes = new HashMap<AltClass, String>();
-        
         List<AltMethod> allMethods = convertMe.getMethods();
         if (DEBUG_METHODS) {
             Logger.getLogger().debug("Analyzing " + allMethods.size() + " methods of " + convertMe.getName());
@@ -188,6 +196,9 @@ public class Generator {
         HashMap<String, MethodInformation> getters = new HashMap<String, MethodInformation>();
         for (AltMethod wrapper : allMethods) {
             MethodInformation mi = getMethodInformation(wrapper, xmlNameMap);
+            if (mi.isKey()) {
+                compiledModel.setKeyProperty(mi.getRepresentedProperty());
+            }
             
             if (!MethodType.CUSTOM.equals(mi.getMethodType())) {
                 createInterfaceForAltClassIfNeeded(mi.getGetterSetterType(), defaultClassPool);
@@ -281,12 +292,19 @@ public class Generator {
                 
             }
             else if (MethodType.ADD.equals(mi.getMethodType())) {
+                String returnClause = "";
+                if (!isVoid) {
+                    createInterfaceForAltClassIfNeeded(originalRetType, defaultClassPool);
+                    
+                    returnClause = "return (" + getCompilableClass(originalRetType) + ") ";
+                }
+                
                 List<AltClass> paramTypes = wrapper.getParameterTypes();
                 if (paramTypes.size() == 0) {
-                    sb.append(") { super._doAdd(\"" + mi.getRepresentedProperty() + "\", null, null, -1); }");
+                    sb.append(") { " + returnClause + "super._doAdd(\"" + mi.getRepresentedProperty() + "\", null, null, -1); }");
                 }
                 else if (paramTypes.size() == 1) {
-                    sb.append(paramTypes.get(0).getName() + " arg0) { super._doAdd(\"" + mi.getRepresentedProperty() + "\",");
+                    sb.append(paramTypes.get(0).getName() + " arg0) { " + returnClause + "super._doAdd(\"" + mi.getRepresentedProperty() + "\",");
                     
                     if (paramTypes.get(0).isInterface()) {
                         sb.append("arg0, null, -1); }");
@@ -299,7 +317,7 @@ public class Generator {
                     }
                 }
                 else {
-                    sb.append(paramTypes.get(0).getName() + " arg0, int arg1) { super._doAdd(\"" + mi.getRepresentedProperty() + "\",");
+                    sb.append(paramTypes.get(0).getName() + " arg0, int arg1) { " + returnClause + "super._doAdd(\"" + mi.getRepresentedProperty() + "\",");
                     
                     if (paramTypes.get(0).isInterface()) {
                         sb.append("arg0, null, arg1); }");
@@ -422,12 +440,6 @@ public class Generator {
                 sb.append("super." + superMethodName + "(\"" + name + "\", mParams, mVars);}");
             }
             
-            if (getterOrSetter && 
-                    (childType != null) &&
-                    !childTypes.containsKey(childType)) {
-                childTypes.put(childType, mi.getRepresentedProperty());
-            }
-            
             if (DEBUG_METHODS) {
                 // Hidden behind static because of potential expensive toString costs
                 Logger.getLogger().debug("Adding method for " + convertMe.getSimpleName() + " with implementation " + sb);
@@ -469,6 +481,29 @@ public class Generator {
                 }
                 else {  
                     createAnnotationCopy(methodConstPool, convertMeAnnotation, ctAnnotations);
+                }
+            }
+            
+            if (getterOrSetter) {
+                if (childType != null) {
+                    Map<String, String> defaultChild = null;
+                    AltAnnotation defaultChildAnnotation= mi.getOriginalMethod().getAnnotation(DefaultChild.class.getName());
+                    if (defaultChildAnnotation != null) {
+                        String[] defaultStrings = defaultChildAnnotation.getStringArrayValue("value");
+                        
+                        defaultChild = convertDefaultChildValueArray(defaultStrings);
+                    }
+                    
+                    compiledModel.addChild(mi.getDecapitalizedMethodProperty(),
+                            childType.getName(),
+                            mi.getRepresentedProperty(),
+                            getChildType(mi.isList(), mi.isArray()),
+                            mi.getDefaultValue(),
+                            defaultChild);
+                }
+                else {
+                    compiledModel.addNonChild(mi.getRepresentedProperty(), mi.getDefaultValue(),
+                            mi.getGetterSetterType().getName());
                 }
             }
             
@@ -517,8 +552,96 @@ public class Generator {
             targetCtClass.addMethod(addMeCtMethod);
         }
         
+        generateStaticModelFieldAndAbstractMethodImpl(targetCtClass,
+                compiledModel,
+                defaultClassPool);
+        
         return targetCtClass;
-        // targetCtClass.toClass(convertMe.getClassLoader(), convertMe.getProtectionDomain());
+    }
+    
+    /* package */ static ChildType getChildType(boolean isList, boolean isArray) {
+        if (isList) return ChildType.LIST;
+        if (isArray) return ChildType.ARRAY;
+        return ChildType.DIRECT;
+    }
+    
+    private static void generateStaticModelFieldAndAbstractMethodImpl(CtClass targetCtClass,
+            Model model,
+            ClassPool defaultClassPool) throws CannotCompileException, NotFoundException {
+        StringBuffer sb = new StringBuffer();
+        
+        sb.append("private static final org.glassfish.hk2.xml.internal.Model INIT_MODEL() {\n");
+        sb.append("org.glassfish.hk2.xml.internal.Model retVal = new org.glassfish.hk2.xml.internal.Model(\"");
+        
+        sb.append(model.getOriginalInterface() + "\",\"" + model.getTranslatedClass() + "\");\n");
+        
+        if (model.getRootName() != null) {
+            sb.append("retVal.setRootName(\"" + model.getRootName() + "\");\n");
+        }
+        
+        if (model.getKeyProperty() != null) {
+            sb.append("retVal.setKeyProperty(\"" + model.getKeyProperty() + "\");\n");
+        }
+        
+        Map<String, ParentedModel> childrenByName = model.getChildrenByName();
+        for (Map.Entry<String, ParentedModel> entry : childrenByName.entrySet()) {
+            // TODO: Generate a Map for defaultChild strings
+            
+            sb.append("retVal.addChild(" +
+              asParameter(entry.getKey()) + "," +
+              asParameter(entry.getValue().getChildInterface()) + "," +
+              asParameter(entry.getValue().getChildXmlTag()) + "," +
+              asParameter(entry.getValue().getChildType()) + "," +
+              asParameter(entry.getValue().getGivenDefault()) + "," +
+              asParameter((String) null) + ");\n");
+        }
+        
+        Map<String, ChildDataModel> nonChildProperties = model.getNonChildProperties();
+        for (Map.Entry<String, ChildDataModel> entry : nonChildProperties.entrySet()) {
+            sb.append("retVal.addNonChild(" +
+              asParameter(entry.getKey()) + "," +
+              asParameter(entry.getValue().getDefaultAsString()) + "," +
+              asParameter(entry.getValue().getChildType()) + ");\n");
+        }
+        
+        sb.append("return retVal; }");
+        
+        targetCtClass.addMethod(CtNewMethod.make(sb.toString(), targetCtClass));
+        
+        CtClass modelCt = defaultClassPool.get(Model.class.getName());
+        
+        CtField sField = new CtField(modelCt, "MODEL", targetCtClass);
+        sField.setModifiers(Modifier.STATIC | Modifier.FINAL | Modifier.PRIVATE);
+        
+        targetCtClass.addField(sField, CtField.Initializer.byCall(targetCtClass, "INIT_MODEL"));
+        
+        CtMethod aMethod = CtNewMethod.make(
+                "public org.glassfish.hk2.xml.internal.Model _getModel() { return MODEL; }" , targetCtClass);
+        
+        targetCtClass.addMethod(aMethod);
+        
+        CtMethod sMethod = CtNewMethod.make(
+                "public static final org.glassfish.hk2.xml.internal.Model __getModel() { return MODEL; }" , targetCtClass);
+        
+        targetCtClass.addMethod(sMethod);
+    }
+    
+    private static String asParameter(String me) {
+        if (me == null) return "null";
+        return "\"" + me + "\"";
+    }
+    
+    private static String asParameter(ChildType ct) {
+        switch(ct) {
+        case DIRECT:
+            return ChildType.class.getName() + ".DIRECT";
+        case LIST:
+            return ChildType.class.getName() + ".LIST";
+        case ARRAY:
+            return ChildType.class.getName() + ".ARRAY";
+        default:
+            throw new AssertionError("unknown ChildType " + ct);
+        }
     }
     
     private static void createAnnotationCopy(ConstPool parent, java.lang.annotation.Annotation javaAnnotation,
@@ -719,9 +842,67 @@ public class Generator {
         retVal.addAnnotation(annotation);
     }
     
+    private static String getMethodName(MethodType methodType, String unDecapitalizedVariable, AltAnnotation instructions) {
+        String retVal;
+        
+        switch (methodType) {
+            case ADD:
+                retVal = instructions.getStringValue("add");
+                break;
+            case REMOVE:
+                retVal = instructions.getStringValue("remove");
+                break;
+            case LOOKUP:
+                retVal = instructions.getStringValue("lookup");
+                break;
+            default:
+                throw new AssertionError("Only ADD, REMOVE and LOOKUP supported");
+        }
+        
+        if (!PluralOf.USE_NORMAL_PLURAL_PATTERN.equals(retVal)) {
+            // We got the specific name for the method, overrides any algorithm
+            return retVal;
+        }
+        
+        String pluralOf = instructions.getStringValue("value");
+        if (!PluralOf.USE_NORMAL_PLURAL_PATTERN.equals(pluralOf)) {
+            // We got a specific name for the singular, use it
+            switch (methodType) {
+            case ADD:
+                return JAUtilities.ADD + pluralOf;
+            case REMOVE:
+                return JAUtilities.REMOVE + pluralOf;
+            case LOOKUP:
+                return JAUtilities.LOOKUP + pluralOf;
+            default:
+                throw new AssertionError("Only add, remove and lookup supported");
+            }
+        }
+        
+        // Do the algorithm
+        if (unDecapitalizedVariable.endsWith("s")) {
+            unDecapitalizedVariable = unDecapitalizedVariable.substring(0, unDecapitalizedVariable.length() - 1);
+        }
+        
+        switch (methodType) {
+        case ADD:
+            return JAUtilities.ADD + unDecapitalizedVariable;
+        case REMOVE:
+            return JAUtilities.REMOVE + unDecapitalizedVariable;
+        case LOOKUP:
+            return JAUtilities.LOOKUP + unDecapitalizedVariable;
+        default:
+            throw new AssertionError("Only add, remove and lookup supported");
+        }
+        
+    }
+    
     /* package */ static NameInformation getXmlNameMap(AltClass convertMe) {
         Map<String, XmlElementData> xmlNameMap = new HashMap<String, XmlElementData>();
         HashSet<String> unmappedNames = new HashSet<String>();
+        Map<String, String> addMethodToVariableMap = new HashMap<String, String>();
+        Map<String, String> removeMethodToVariableMap = new HashMap<String, String>();
+        Map<String, String> lookupMethodToVariableMap = new HashMap<String, String>();
         
         for (AltMethod originalMethod : convertMe.getMethods()) {
             String setterVariable = isSetter(originalMethod);
@@ -730,8 +911,12 @@ public class Generator {
                 if (setterVariable == null) continue;
             }
             
+            AltAnnotation pluralOf = null;
             AltAnnotation xmlElement = originalMethod.getAnnotation(XmlElement.class.getName());
             if (xmlElement != null) {
+                // Get the pluralOf from the method
+                pluralOf = originalMethod.getAnnotation(PluralOf.class.getName());
+                
                 String defaultValue = xmlElement.getStringValue("defaultValue");
                 
                 if (JAXB_DEFAULT_STRING.equals(xmlElement.getStringValue("name"))) {
@@ -755,6 +940,14 @@ public class Generator {
                     unmappedNames.add(setterVariable);
                 }
             }
+            
+            if (pluralOf == null) pluralOf = new AnnotationAltAnnotationImpl(new PluralOfDefault(), null);
+            
+            String unDecapitalizedVariable = originalMethod.getName().substring(3);
+            
+            addMethodToVariableMap.put(getMethodName(MethodType.ADD, unDecapitalizedVariable, pluralOf), setterVariable);
+            removeMethodToVariableMap.put(getMethodName(MethodType.REMOVE, unDecapitalizedVariable, pluralOf), setterVariable);
+            lookupMethodToVariableMap.put(getMethodName(MethodType.LOOKUP, unDecapitalizedVariable, pluralOf), setterVariable);
         }
         
         Set<String> noXmlElementNames = new HashSet<String>();
@@ -764,7 +957,10 @@ public class Generator {
             }
         }
         
-        return new NameInformation(xmlNameMap, noXmlElementNames);
+        return new NameInformation(xmlNameMap, noXmlElementNames,
+                addMethodToVariableMap,
+                removeMethodToVariableMap,
+                lookupMethodToVariableMap);
     }
     
     /* package */ static MethodInformation getMethodInformation(AltMethod m, NameInformation xmlNameMap) {
@@ -780,11 +976,11 @@ public class Generator {
             if (setterVariable == null) {
                 getterVariable = isGetter(m);
                 if (getterVariable == null) {
-                    lookupVariable = isLookup(m);
+                    lookupVariable = isLookup(m, xmlNameMap);
                     if (lookupVariable == null) {
-                        addVariable = isAdd(m);
+                        addVariable = isAdd(m, xmlNameMap);
                         if (addVariable == null) {
-                            removeVariable = isRemove(m);
+                            removeVariable = isRemove(m, xmlNameMap);
                         }
                     }
                 }
@@ -887,6 +1083,7 @@ public class Generator {
         
         return new MethodInformation(m,
                 methodType,
+                variable,
                 representedProperty,
                 defaultValue,
                 baseChildType,
@@ -993,33 +1190,29 @@ public class Generator {
         return null;
     }
     
-    private static String isLookup(AltMethod method) {
+    private static String isLookup(AltMethod method, NameInformation nameInformation) {
         String name = method.getName();
         
-        if (!name.startsWith(JAUtilities.LOOKUP)) return null;
+        String retVal = nameInformation.getLookupVariableName(name);
+        if (retVal == null) return null;
         
-        if (name.length() <= JAUtilities.LOOKUP.length()) return null;
         List<AltClass> parameterTypes = method.getParameterTypes();
         if (parameterTypes.size() != 1) return null;
         if (!String.class.getName().equals(parameterTypes.get(0).getName())) return null;
             
         if (method.getReturnType() == null || void.class.getName().equals(method.getReturnType().getName())) return null;
-            
-        String variableName = name.substring(JAUtilities.LOOKUP.length());
-                
-        return Introspector.decapitalize(variableName);
+        
+        return retVal;
     }
     
-    private static String isAdd(AltMethod method) {
+    private static String isAdd(AltMethod method, NameInformation nameInformation) {
         String name = method.getName();
         
-        if (!name.startsWith(JAUtilities.ADD)) return null;
+        String retVal = nameInformation.getAddVariableName(name);
+        if (retVal == null) return null;
         
-        if (name.length() <= JAUtilities.ADD.length()) return null;
-        if (!void.class.getName().equals(method.getReturnType().getName())) return null;
-        
-        String variableName = name.substring(JAUtilities.ADD.length());
-        String retVal = Introspector.decapitalize(variableName);
+        if (!void.class.getName().equals(method.getReturnType().getName()) &&
+                !method.getReturnType().isInterface()) return null;
         
         List<AltClass> parameterTypes = method.getParameterTypes();
         if (parameterTypes.size() > 2) return null;
@@ -1057,19 +1250,16 @@ public class Generator {
         return null;
     }
     
-    private static String isRemove(AltMethod method) {
+    private static String isRemove(AltMethod method, NameInformation nameInformation) {
         String name = method.getName();
         
-        if (!name.startsWith(JAUtilities.REMOVE)) return null;
+        String retVal = nameInformation.getRemoveVariableName(name);
+        if (retVal == null) return null;
         
-        if (name.length() <= JAUtilities.REMOVE.length()) return null;
         if (method.getReturnType() == null || void.class.getName().equals(method.getReturnType().getName())) return null;
         
         AltClass returnType = method.getReturnType();
         if (!boolean.class.getName().equals(returnType.getName()) && !returnType.isInterface()) return null;
-        
-        String variableName = name.substring(JAUtilities.REMOVE.length());
-        String retVal = Introspector.decapitalize(variableName);
         
         List<AltClass> parameterTypes = method.getParameterTypes();
         if (parameterTypes.size() > 1) return null;
@@ -1116,6 +1306,75 @@ public class Generator {
         if (defaultClassPool.getOrNull(fixerClass) == null) {
             defaultClassPool.makeInterface(fixerClass);
         }
+    }
+    
+    private static Map<String, String> convertDefaultChildValueArray(String[] values) {
+        LinkedHashMap<String, String> retVal = new LinkedHashMap<String, String>();
+        if (values == null) return retVal;
+        for (String value : values) {
+            value = value.trim();
+            if ("".equals(value)) continue;
+            if (value.charAt(0) == '=') {
+                throw new AssertionError("First character of " + value + " may not be an =");
+            }
+            
+            int indexOfEquals = value.indexOf('=');
+            if (indexOfEquals < 0) {
+                retVal.put(value, null);
+            }
+            else {
+                String key = value.substring(0, indexOfEquals);
+                
+                String attValue;
+                if (indexOfEquals >= (value.length() - 1)) {
+                    attValue = null;
+                }
+                else {
+                    attValue = value.substring(indexOfEquals + 1);
+                }
+                
+                retVal.put(key, attValue);
+            }
+        }
+        
+        return retVal;
+    }
+    
+    private static final class PluralOfDefault extends AnnotationLiteral<PluralOf> implements PluralOf {
+        private static final long serialVersionUID = 4358923840720264176L;
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.xml.api.annotations.PluralOf#value()
+         */
+        @Override
+        public String value() {
+            return PluralOf.USE_NORMAL_PLURAL_PATTERN;
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.xml.api.annotations.PluralOf#add()
+         */
+        @Override
+        public String add() {
+            return PluralOf.USE_NORMAL_PLURAL_PATTERN;
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.xml.api.annotations.PluralOf#remove()
+         */
+        @Override
+        public String remove() {
+            return PluralOf.USE_NORMAL_PLURAL_PATTERN;
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.xml.api.annotations.PluralOf#lookup()
+         */
+        @Override
+        public String lookup() {
+            return PluralOf.USE_NORMAL_PLURAL_PATTERN;
+        }
+        
     }
 
 }

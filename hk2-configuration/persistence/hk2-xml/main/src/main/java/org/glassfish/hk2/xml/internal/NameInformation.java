@@ -52,10 +52,20 @@ import java.util.Set;
 public class NameInformation {
     private final Map<String, XmlElementData> nameMapping;
     private final Set<String> noXmlElement;
+    private final Map<String, String> addMethodToVariableName;
+    private final Map<String, String> removeMethodToVariableName;
+    private final Map<String, String> lookupMethodToVariableName;
     
-    NameInformation(Map<String, XmlElementData> nameMapping, Set<String> unmappedNames) {
+    NameInformation(Map<String, XmlElementData> nameMapping,
+            Set<String> unmappedNames,
+            Map<String, String> addMethodToVariableName,
+            Map<String, String> removeMethodToVariableName,
+            Map<String, String> lookupMethodToVariableName) {
         this.nameMapping = nameMapping;
         this.noXmlElement = unmappedNames;
+        this.addMethodToVariableName = addMethodToVariableName;
+        this.removeMethodToVariableName = removeMethodToVariableName;
+        this.lookupMethodToVariableName = lookupMethodToVariableName;
     }
     
     String getNameMap(String mapMe) {
@@ -73,5 +83,17 @@ public class NameInformation {
     boolean hasNoXmlElement(String variableName) {
         if (variableName == null) return true;
         return noXmlElement.contains(variableName);
+    }
+    
+    String getAddVariableName(String methodName) {
+        return addMethodToVariableName.get(methodName);
+    }
+    
+    String getRemoveVariableName(String methodName) {
+        return removeMethodToVariableName.get(methodName);
+    }
+    
+    String getLookupVariableName(String methodName) {
+        return lookupMethodToVariableName.get(methodName);
     }
 }

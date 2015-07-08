@@ -49,18 +49,59 @@ import org.glassfish.hk2.xml.internal.alt.AltMethod;
  *
  */
 public class MethodInformation {
+    /** The actual method */
     private final AltMethod originalMethod;
+    
+    /** The type of method, GETTER, SETTER et al */
     private final MethodType methodType;
+    
+    /**
+     * If this is a getter or setter, the type of thing being set,
+     * which might be a List or array, it is the true thing the
+     * getter or setter of the method is setting
+     */
     private final AltClass getterSetterType;
+    
+    /**
+     * The original variable name if this is a getter or setter
+     * before being translated to the representedProperty by the
+     * XmlElement or XmlAttribute annotation
+     */
+    private final String decapitalizedMethodProperty;
+    
+    /** The xml tag for this method */
     private final String representedProperty;
+    
+    /** The default value specified for this method */
     private final String defaultValue;
+    
+    /**
+     * This is the type of thing being set.  For example
+     * if this method is returning a List or Array
+     * it'll be the first parameterized Type of the List
+     * and if it an Array it'll be the Component type
+     * of the Array
+     */
     private final AltClass baseChildType;
+    
+    /**
+     * True if this is a key property
+     */
     private final boolean key;
+    
+    /**
+     * True if this is a List child method
+     */
     private final boolean isList;
+    
+    /**
+     * True if this is an array child method
+     */
     private final boolean isArray;
     
     public MethodInformation(AltMethod originalMethod,
             MethodType methodType,
+            String decapitalizedMethodProperty,
             String representedProperty,
             String defaultValue,
             AltClass baseChildType,
@@ -70,6 +111,7 @@ public class MethodInformation {
             boolean isArray) {
         this.originalMethod = originalMethod;
         this.methodType = methodType;
+        this.decapitalizedMethodProperty = decapitalizedMethodProperty;
         this.representedProperty = representedProperty;
         this.defaultValue = defaultValue;
         this.baseChildType = baseChildType;
@@ -142,11 +184,16 @@ public class MethodInformation {
         return isArray;
     }
     
+    public String getDecapitalizedMethodProperty() {
+        return decapitalizedMethodProperty;
+    }
+    
     @Override
     public String toString() {
         return "MethodInformation(name=" + originalMethod.getName() + "," +
           "type=" + methodType + "," +
           "getterType=" + getterSetterType + "," +
+          "decapitalizedMethodProperty=" + decapitalizedMethodProperty + "," +
           "representedProperty=" + representedProperty + "," +
           "defaultValue=" + ((Generator.JAXB_DEFAULT_DEFAULT.equals(defaultValue)) ? "" : defaultValue) + "," +
           "baseChildType=" + baseChildType + "," +
