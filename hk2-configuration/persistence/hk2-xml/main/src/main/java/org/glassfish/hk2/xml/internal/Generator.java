@@ -108,10 +108,11 @@ public class Generator {
     private final static boolean DEBUG_METHODS = Boolean.parseBoolean(GeneralUtilities.getSystemProperty(
             "org.jvnet.hk2.properties.xmlservice.jaxb.methods", "false"));
     
-    public final static String CLASS_ADD_ON_NAME = "_Hk2_Jaxb";
+    
     private final static String JAXB_DEFAULT_STRING = "##default";
     public final static String JAXB_DEFAULT_DEFAULT = "\u0000";
     private final static String NO_CHILD_PACKAGE = "java.";
+    public final static String STATIC_GET_MODEL_METHOD_NAME = "__getModel";
     
     private final static Set<String> NO_COPY_ANNOTATIONS = new HashSet<String>(Arrays.asList(new String[] {
             Contract.class.getName(),
@@ -133,7 +134,7 @@ public class Generator {
             ClassPool defaultClassPool) throws Throwable {
         String modelOriginalInterface = convertMe.getName();
         
-        String modelTranslatedClass = modelOriginalInterface + CLASS_ADD_ON_NAME;
+        String modelTranslatedClass = Utilities.getProxyNameFromInterfaceName(modelOriginalInterface);
         if (DEBUG_METHODS) {
             Logger.getLogger().debug("Converting " + convertMe.getName() + " to " + modelTranslatedClass);
         }
@@ -468,7 +469,7 @@ public class Generator {
                 
                 if ((childType != null) && XmlElement.class.getName().equals(convertMeAnnotation.annotationType())) {
                         
-                    String translatedClassName = childType.getName() + CLASS_ADD_ON_NAME;
+                    String translatedClassName = Utilities.getProxyNameFromInterfaceName(childType.getName());
                     java.lang.annotation.Annotation anno = new XmlElementImpl(
                             convertMeAnnotation.getStringValue("name"),
                             convertMeAnnotation.getBooleanValue("nillable"),
@@ -516,7 +517,7 @@ public class Generator {
                 }
                 
                 java.lang.annotation.Annotation convertMeAnnotation;
-                String translatedClassName = childType.getName() + CLASS_ADD_ON_NAME;
+                String translatedClassName = Utilities.getProxyNameFromInterfaceName(childType.getName());
                 convertMeAnnotation = new XmlElementImpl(
                         JAXB_DEFAULT_STRING,
                         false,

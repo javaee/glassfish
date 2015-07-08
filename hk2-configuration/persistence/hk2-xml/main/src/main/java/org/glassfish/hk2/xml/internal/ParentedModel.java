@@ -42,6 +42,8 @@ package org.glassfish.hk2.xml.internal;
 import java.io.Serializable;
 import java.util.Map;
 
+import org.glassfish.hk2.utilities.general.GeneralUtilities;
+
 /**
  * This contains the model for children who have a specific
  * parent, containing information such as the xml tag
@@ -55,6 +57,9 @@ import java.util.Map;
 public class ParentedModel implements Serializable {
     private static final long serialVersionUID = -2480798409414987937L;
     
+    private final Object lock = new Object();
+    
+    /** The interface of the child for which this is a parent */
     private String childInterface;
     private String childXmlTag;
     private ChildType childType;
@@ -62,6 +67,10 @@ public class ParentedModel implements Serializable {
     private Map<String, String> defaultChild;
     
     /** Set at runtime */
+    private ClassLoader myLoader;
+    private JAUtilities jaUtilities;
+    
+    /** Calculated lazily */
     private Model childModel;
     
     public ParentedModel() {
@@ -95,12 +104,30 @@ public class ParentedModel implements Serializable {
         return defaultChild;
     }
     
-    public void setChildModel(Model childModel) {
-        this.childModel = childModel;
+    public Model getChildModel() {
+        synchronized (lock) {
+            if (myLoader == null) {
+                throw new IllegalStateException("Cannot call getChildModel before the classloader has been determined");
+            }
+            
+            if (childModel != null) return childModel;
+            
+            Class<?> beanClass = GeneralUtilities.loadClass(myLoader, childInterface);
+            if (beanClass == null) {
+                throw new IllegalStateException("Interface " + childInterface + " could not be loaded by " + myLoader);
+            }
+            
+            childModel = jaUtilities.getModel(beanClass);
+            
+            return childModel;
+        }
     }
     
-    public Model getChildModel() {
-        return childModel;
+    public void setRuntimeInformation(JAUtilities jaUtilities, ClassLoader myLoader) {
+        synchronized (lock) {
+            this.jaUtilities = jaUtilities;
+            this.myLoader = myLoader;
+        }
     }
     
     @Override

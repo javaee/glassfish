@@ -60,6 +60,9 @@ import javassist.CtClass;
 import javassist.NotFoundException;
 
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.utilities.cache.Computable;
+import org.glassfish.hk2.utilities.cache.HybridCacheEntry;
+import org.glassfish.hk2.utilities.cache.LRUHybridCache;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.Logger;
@@ -105,6 +108,8 @@ public class JAUtilities {
     private int numGeneratedClasses = 0;
     private int numFoundClasses = 0;
     
+    private final LRUHybridCache<Class<?>, Model> interface2ModelCache;
+    
     private final AtomicLong idGenerator = new AtomicLong();
     
     /* package */ JAUtilities() {
@@ -115,6 +120,7 @@ public class JAUtilities {
             throw new MultiException(e);
         }
         
+        interface2ModelCache = new LRUHybridCache<Class<?>, Model>(Integer.MAX_VALUE - 1, new Computer(this));
     }
     
     /**
@@ -129,6 +135,17 @@ public class JAUtilities {
         UnparentedNode retVal = proxy2NodeCache.get(type);
         if (retVal == null) return interface2NodeCache.get(type);
         return retVal;
+    }
+    
+    /**
+     * Goes from interface name (fully qualified) to the associated Model
+     * 
+     * @param iFace Fully qualified interface name (not proxy)
+     * @return The Model for the interface
+     */
+    public Model getModel(Class<?> iFace) {
+        HybridCacheEntry<Model> entry = interface2ModelCache.compute(iFace);
+        return entry.getValue();
     }
     
     public synchronized UnparentedNode convertRootAndLeaves(Class<?> root) {
@@ -191,7 +208,7 @@ public class JAUtilities {
         Logger.getLogger().debug("XmlService converting " + convertMe.getName());
         UnparentedNode retVal = new UnparentedNode(convertMe);
         
-        String targetClassName = convertMe.getName() + Generator.CLASS_ADD_ON_NAME;
+        String targetClassName = Utilities.getProxyNameFromInterfaceName(convertMe.getName());
         CtClass foundClass = defaultClassPool.getOrNull(targetClassName);
         
         if (foundClass == null) {
@@ -405,5 +422,76 @@ public class JAUtilities {
         finally {
             cycleDetector.remove(toBeConverted);
         }
+    }
+    
+    private CtClass getBaseClass() {
+        return superClazz;
+    }
+    
+    private ClassPool getClassPool() {
+        return defaultClassPool;
+    }
+    
+    private final class Computer implements Computable<Class<?>, HybridCacheEntry<Model>> {
+        private final JAUtilities jaUtilities;
+        
+        private Computer(JAUtilities jaUtilities) {
+            this.jaUtilities = jaUtilities;
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.utilities.cache.Computable#compute(java.lang.Object)
+         */
+        @Override
+        public HybridCacheEntry<Model> compute(Class<?> key) {
+            String iFaceName = key.getName();
+            String proxyName = Utilities.getProxyNameFromInterfaceName(iFaceName);
+            
+            Class<?> proxyClass = GeneralUtilities.loadClass(key.getClassLoader(), proxyName);
+            if (proxyClass == null) {
+                // Generate the proxy
+                try {
+                  CtClass generated = Generator.generate(new ClassAltClassImpl(key, null),
+                        jaUtilities.getBaseClass(),
+                        jaUtilities.getClassPool());
+                  
+                  proxyClass = generated.toClass(key.getClassLoader(), key.getProtectionDomain());
+                  
+                  
+                }
+                catch (RuntimeException re) {
+                    throw re;
+                }
+                catch (Throwable th) {
+                    throw new RuntimeException(th);
+                }
+            }
+            
+            Method getModelMethod;
+            try {
+                getModelMethod = proxyClass.getMethod(Generator.STATIC_GET_MODEL_METHOD_NAME, new Class<?>[0]);
+            }
+            catch (NoSuchMethodException e) {
+                throw new AssertionError("This proxy must have been generated with an old generator, it has no __getModel method");
+            }
+            
+            Model retVal;
+            try {
+                retVal = (Model) ReflectionHelper.invoke(null, getModelMethod, new Object[0], false);
+            }
+            catch (RuntimeException re) {
+                throw re;
+            }
+            catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+            
+            if (retVal == null) {
+                throw new AssertionError("The __getModel method on " + proxyClass.getName() + " returned null");
+            }
+            
+            return interface2ModelCache.createCacheEntry(key, retVal, false);
+        }
+        
     }
 }

@@ -83,6 +83,8 @@ public class Model implements Serializable {
      */
     private Set<String> unKeyedChildren = null;
     private Set<String> keyedChildren = null;
+    private JAUtilities jaUtilities = null;
+    private ClassLoader myLoader = null;
     
     public Model() {
     }
@@ -179,6 +181,18 @@ public class Model implements Serializable {
             }
             
             return keyedChildren;
+        }
+    }
+    
+    public void setJAUtilities(JAUtilities jaUtilities, ClassLoader myLoader) {
+        synchronized (lock) {
+            if (this.jaUtilities != null) return;
+            this.jaUtilities = jaUtilities;
+            this.myLoader = myLoader;
+            
+            for (ParentedModel pm : childrenByName.values()) {
+                pm.setRuntimeInformation(jaUtilities, myLoader);
+            }
         }
     }
     

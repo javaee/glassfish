@@ -83,6 +83,8 @@ public class Utilities {
     /** Separator for instance names */
     public final static char INSTANCE_PATH_SEPARATOR = '.';
     
+    private final static String CLASS_ADD_ON_NAME = "_Hk2_Jaxb";
+    
     private final static String NOT_UNIQUE_UNIQUE_ID = "not-unique";
     
     /* package */ static String convertXmlRootElementName(XmlRootElement root, Class<?> clazz) {
@@ -415,6 +417,17 @@ public class Utilities {
         }
         
         return child;
+    }
+    
+    /**
+     * Given the fully qualified class name of the interface representing a bean,
+     * returns the class name of the proxy
+     * 
+     * @param iFaceName the never null fully qualified class name of the bean interface
+     * @return the class name of the proxy
+     */
+    public static String getProxyNameFromInterfaceName(String iFaceName) {
+        return iFaceName + CLASS_ADD_ON_NAME;
     }
     
     @SuppressWarnings("unchecked")
