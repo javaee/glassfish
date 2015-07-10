@@ -107,9 +107,11 @@ public class XmlServiceImpl implements XmlService {
         }
         
         try {
-            UnparentedNode parent = jaUtilities.convertRootAndLeaves(jaxbAnnotatedInterface);
+            jaUtilities.convertRootAndLeavesDuex(jaxbAnnotatedInterface, true);
+            
+            Model model = jaUtilities.getModel(jaxbAnnotatedInterface);
                 
-            return unmarshallClass(uri, parent, advertiseInRegistry, advertiseInHub);
+            return unmarshallClass(uri, model, advertiseInRegistry, advertiseInHub);
         }
         catch (RuntimeException re) {
             throw re;
@@ -120,7 +122,7 @@ public class XmlServiceImpl implements XmlService {
     }
     
     @SuppressWarnings("unchecked")
-    private <T> XmlRootHandle<T> unmarshallClass(URI uri, UnparentedNode node,
+    private <T> XmlRootHandle<T> unmarshallClass(URI uri, Model model,
             boolean advertise, boolean advertiseInHub) throws Exception {
         long elapsedUpToJAXB = 0;
         if (JAUtilities.DEBUG_GENERATION_TIMING) {
@@ -137,7 +139,7 @@ public class XmlServiceImpl implements XmlService {
             Logger.getLogger().debug("Time up to parsing " + uri + " is " + elapsedUpToJAXB + " milliseconds");
         }
         
-        T root = localParser.parseRoot((Class<T>) node.getTranslatedClass(), uri, listener);
+        T root = localParser.parseRoot((Class<T>) model.getProxyAsClass(), uri, listener);
         
         long elapsedJAXBToAdvertisement = 0;
         if (JAUtilities.DEBUG_GENERATION_TIMING) {
@@ -200,7 +202,7 @@ public class XmlServiceImpl implements XmlService {
             Logger.getLogger().debug("Time to advertise " + uri + " in Hub is " + elapsedHubAdvertisement + " milliseconds");
         }
         
-        return new XmlRootHandleImpl<T>(this, hub, root, node, uri, advertise, advertiseInHub, changeControl);
+        return new XmlRootHandleImpl<T>(this, hub, root, model, uri, advertise, advertiseInHub, changeControl);
     }
     
     
@@ -216,9 +218,11 @@ public class XmlServiceImpl implements XmlService {
             throw new IllegalArgumentException("Only an interface can be given to unmarshall: " + jaxbAnnotatedInterface.getName());
         }
         try {
-            UnparentedNode node = jaUtilities.convertRootAndLeaves(jaxbAnnotatedInterface);
+            jaUtilities.convertRootAndLeavesDuex(jaxbAnnotatedInterface, true);
+            
+            Model model = jaUtilities.getModel(jaxbAnnotatedInterface);
         
-            return new XmlRootHandleImpl<T>(this, hub, null, node, null, advertiseInRegistry, advertiseInHub,
+            return new XmlRootHandleImpl<T>(this, hub, null, model, null, advertiseInRegistry, advertiseInHub,
                     new DynamicChangeInfo(jaUtilities,
                             hub,
                             this,
@@ -252,9 +256,11 @@ public class XmlServiceImpl implements XmlService {
             throw new IllegalArgumentException("Only an interface can be given to unmarshall: " + beanInterface.getName());
         }
         
-        UnparentedNode node = jaUtilities.convertRootAndLeaves(beanInterface);
+        jaUtilities.convertRootAndLeavesDuex(beanInterface, true);
         
-        T retVal = (T) Utilities.createBean(node.getTranslatedClass());
+        Model model = jaUtilities.getModel(beanInterface);
+        
+        T retVal = (T) Utilities.createBean(model.getProxyAsClass());
         
         BaseHK2JAXBBean base = (BaseHK2JAXBBean) retVal;
         

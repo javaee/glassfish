@@ -61,7 +61,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
     private final XmlServiceImpl parent;
     private final Hub hub;
     private T root;
-    private final UnparentedNode rootNode;
+    private final Model rootNode;
     private URI rootURI;
     private final boolean advertised;
     private final boolean advertisedInHub;
@@ -71,7 +71,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
             XmlServiceImpl parent,
             Hub hub,
             T root,
-            UnparentedNode rootNode,
+            Model rootNode,
             URI rootURI,
             boolean advertised,
             boolean inHub,
@@ -100,7 +100,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
     @SuppressWarnings("unchecked")
     @Override
     public Class<T> getRootClass() {
-        return (Class<T>) rootNode.getOriginalInterface();
+        return (Class<T>) rootNode.getOriginalInterfaceAsClass();
     }
 
     /* (non-Javadoc)
@@ -274,7 +274,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
     @SuppressWarnings("unchecked")
     @Override
     public void addRoot() {
-        addRoot(parent.createBean((Class<T>) rootNode.getOriginalInterface()));
+        addRoot(parent.createBean((Class<T>) rootNode.getOriginalInterfaceAsClass()));
     }
 
     /* (non-Javadoc)

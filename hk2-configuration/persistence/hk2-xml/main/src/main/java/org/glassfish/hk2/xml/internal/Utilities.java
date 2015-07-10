@@ -550,7 +550,7 @@ public class Utilities {
      * @param dynamicService
      * @return
      */
-    public static BaseHK2JAXBBean _addRoot(UnparentedNode rootNode,
+    public static BaseHK2JAXBBean _addRoot(Model rootNode,
             Object rawRoot,
             DynamicChangeInfo changeInfo,
             ClassReflectionHelper helper,
@@ -560,7 +560,7 @@ public class Utilities {
             throw new IllegalArgumentException("The root added must be from XmlService.createBean");
         }
         
-        BaseHK2JAXBBean child = Utilities.createBean(rootNode.getTranslatedClass());
+        BaseHK2JAXBBean child = Utilities.createBean(rootNode.getProxyAsClass());
         child._setClassReflectionHelper(helper);
         
         // Handling of children will be handled once the real child is better setup

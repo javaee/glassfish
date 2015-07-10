@@ -41,19 +41,10 @@
 package org.glassfish.hk2.xml.internal;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
-
-import javax.xml.bind.annotation.XmlRootElement;
 
 import javassist.ClassPool;
 import javassist.CtClass;
@@ -65,15 +56,8 @@ import org.glassfish.hk2.utilities.cache.HybridCacheEntry;
 import org.glassfish.hk2.utilities.cache.LRUHybridCache;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
-import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
-import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
-import org.glassfish.hk2.xml.api.annotations.DefaultChild;
-import org.glassfish.hk2.xml.internal.alt.AltAnnotation;
-import org.glassfish.hk2.xml.internal.alt.AltClass;
-import org.glassfish.hk2.xml.internal.alt.AltMethod;
 import org.glassfish.hk2.xml.internal.alt.clazz.ClassAltClassImpl;
-import org.glassfish.hk2.xml.internal.alt.clazz.MethodAltMethodImpl;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 
 /**
@@ -99,15 +83,9 @@ public class JAUtilities {
     public final static String JAXB_DEFAULT_STRING = "##default";
     public final static String JAXB_DEFAULT_DEFAULT = "\u0000";
     
-    private final static String NO_CHILD_PACKAGE = "java.";
-    
     private final ClassReflectionHelper classReflectionHelper;
-    private final HashMap<Class<?>, UnparentedNode> interface2NodeCache = new HashMap<Class<?>, UnparentedNode>();
-    private final HashMap<Class<?>, UnparentedNode> proxy2NodeCache = new HashMap<Class<?>, UnparentedNode>();
     private final ClassPool defaultClassPool = ClassPool.getDefault(); // TODO:  We probably need to be more sophisticated about this
     private final CtClass superClazz;
-    private int numGeneratedClasses = 0;
-    private int numFoundClasses = 0;
     
     private final LRUHybridCache<Class<?>, Model> interface2ModelCache;
     
@@ -133,12 +111,6 @@ public class JAUtilities {
         return ID_PREFIX + idGenerator.getAndAdd(1L);
     }
     
-    public synchronized UnparentedNode getNode(Class<?> type) {
-        UnparentedNode retVal = proxy2NodeCache.get(type);
-        if (retVal == null) return interface2NodeCache.get(type);
-        return retVal;
-    }
-    
     /**
      * Goes from interface name (fully qualified) to the associated Model
      * 
@@ -150,197 +122,28 @@ public class JAUtilities {
         return entry.getValue();
     }
     
-    public synchronized UnparentedNode convertRootAndLeaves(Class<?> root) {
-        ClassReflectionHelper helper = new ClassReflectionHelperImpl();
-        LinkedHashSet<Class<?>> needsToBeConverted = new LinkedHashSet<Class<?>>();
+    public synchronized void convertRootAndLeavesDuex(Class<?> root, boolean mustConvertAll) {
+        Model rootModel = interface2ModelCache.compute(root).getValue();
+        if (!mustConvertAll) return;
         
-        getAllToConvert(root, needsToBeConverted, new HashSet<Class<?>>(), helper);
+        HashSet<Class<?>> cycles = new HashSet<Class<?>>();
+        cycles.add(root);
         
-        // Just for fun, lets fill in the model cache here, to flush out any errors
-        for (Class<?> needsToBeConvertedClass : needsToBeConverted) {
-            interface2ModelCache.compute(needsToBeConvertedClass);
-        }
-        
-        long elapsedTime = 0L;
-        if (DEBUG_METHODS || DEBUG_GENERATION_TIMING) {
-            elapsedTime = System.currentTimeMillis();
-            Logger.getLogger().debug("Converting " + needsToBeConverted.size() + " nodes for root " + root.getName());
-        }
-        
-        needsToBeConverted.removeAll(interface2NodeCache.keySet());
-        
-        LinkedList<UnparentedNode> contributions = new LinkedList<UnparentedNode>();
-        for (Class<?> convertMe : needsToBeConverted) {
-            UnparentedNode converted;
-            try {
-                converted = convert(convertMe, helper);
-            }
-            catch (RuntimeException re) {
-                throw re;
-            }
-            catch (Throwable e) {
-                throw new MultiException(e);
-            }
-            
-            interface2NodeCache.put(convertMe, converted);
-            contributions.add(converted);
-        }
-        
-        for (UnparentedNode node : contributions) {
-            for (ParentedNode child : node.getAllChildren()) {
-                if (child.getChild().isPlaceholder()) {
-                    UnparentedNode nonPlaceholder = interface2NodeCache.get(child.getChild().getOriginalInterface());
-                    if (nonPlaceholder == null) {
-                        throw new RuntimeException("The child of type " + child.getChild().getOriginalInterface().getName() +
-                                " is unknown for " + node);  
-                    }
-                    
-                    child.setChild(nonPlaceholder);
-                }
-            }
-        }
-        
-        helper.dispose();
-        
-        if (DEBUG_METHODS || DEBUG_GENERATION_TIMING) {
-            elapsedTime = System.currentTimeMillis() - elapsedTime;
-            Logger.getLogger().debug("Converted " + needsToBeConverted.size() + " nodes.  " +
-              "There were " + numFoundClasses + " pre-generated, and " + numGeneratedClasses +
-              " dynamically generated.  Analysis took " + elapsedTime + " milliseconds");
-        } 
-        return interface2NodeCache.get(root);
+        convertAllRootAndLeaves(rootModel, cycles);
     }
     
-    private UnparentedNode convert(Class<?> convertMe, ClassReflectionHelper helper) throws Throwable {
-        Logger.getLogger().debug("XmlService converting " + convertMe.getName());
-        UnparentedNode retVal = new UnparentedNode(convertMe);
-        
-        String targetClassName = Utilities.getProxyNameFromInterfaceName(convertMe.getName());
-        CtClass foundClass = defaultClassPool.getOrNull(targetClassName);
-        
-        if (foundClass == null) {
-            numGeneratedClasses++;
+    private void convertAllRootAndLeaves(Model rootModel, HashSet<Class<?>> cycles) {
+        for (ParentedModel parentModel : rootModel.getAllChildren()) {
+            Class<?> convertMe = parentModel.getChildModel().getOriginalInterfaceAsClass();
             
-            long elapsedTime = 0;
-            if (DEBUG_PREGEN) {
-                elapsedTime = System.nanoTime();
-                
-                Logger.getLogger().debug("Dynamically generating impl for " + targetClassName);
-            }
+            // Remove cycles
+            if (cycles.contains(convertMe)) continue;
+            cycles.add(convertMe);
             
-            CtClass generated = Generator.generate(
-                    new ClassAltClassImpl(convertMe, helper), superClazz, defaultClassPool);
+            Model childModel = interface2ModelCache.compute(convertMe).getValue();
             
-            generated.toClass(convertMe.getClassLoader(), convertMe.getProtectionDomain());
-            
-            if (DEBUG_PREGEN) {
-                elapsedTime = System.nanoTime() - elapsedTime;
-                
-                Logger.getLogger().debug("Generating impl for " + targetClassName + " took " + elapsedTime + " nanoseconds");
-            }
-            
-            foundClass = defaultClassPool.getOrNull(targetClassName);
+            convertAllRootAndLeaves(childModel, cycles);
         }
-        else {
-            if (DEBUG_PREGEN) {
-                Logger.getLogger().debug("Found pregenerated impl for " + targetClassName);   
-            }
-            
-            numFoundClasses++;
-        }
-        
-        Class<?> proxy = convertMe.getClassLoader().loadClass(targetClassName);
-         
-        XmlRootElement xre = convertMe.getAnnotation(XmlRootElement.class);
-        if (xre != null) {        
-            String rootName = Utilities.convertXmlRootElementName(xre, convertMe);
-            retVal.setRootName(rootName);
-        }
-        
-        ClassAltClassImpl altConvertMe = new ClassAltClassImpl(convertMe, helper);
-        NameInformation xmlNameMap = Generator.getXmlNameMap(altConvertMe);
-
-        MethodInformation foundKey = null;
-        for (AltMethod altMethodRaw : altConvertMe.getMethods()) {
-            MethodAltMethodImpl altMethod = (MethodAltMethodImpl) altMethodRaw;
-            
-            MethodInformation mi = Generator.getMethodInformation(altMethod, xmlNameMap);
-                
-            if (DEBUG_METHODS) {
-                Logger.getLogger().debug("Analyzing method " + mi + " of " + convertMe.getSimpleName());
-            }
-                
-            if (mi.isKey()) {
-                if (foundKey != null) {
-                    throw new RuntimeException("Class " + convertMe.getName() + " has multiple key properties (" + altMethodRaw.getName() +
-                            " and " + foundKey.getOriginalMethod().getName());
-                }
-                foundKey = mi;
-                    
-                retVal.setKeyProperty(mi.getRepresentedProperty());
-            }
-                
-            boolean getterOrSetter = false;
-            UnparentedNode childType = null;
-            if (MethodType.SETTER.equals(mi.getMethodType())) {
-                getterOrSetter = true;
-                
-                if (mi.getBaseChildType() != null) {
-                    if (!interface2NodeCache.containsKey(((ClassAltClassImpl) mi.getBaseChildType()).getOriginalClass())) {
-                        // Must use a placeholder
-                        childType = new UnparentedNode(((ClassAltClassImpl) mi.getBaseChildType()).getOriginalClass(), true);
-                    }
-                    else {
-                        childType = interface2NodeCache.get(((ClassAltClassImpl) mi.getBaseChildType()).getOriginalClass());
-                    }
-                }
-            }
-            else if (MethodType.GETTER.equals(mi.getMethodType())) {
-                getterOrSetter = true;
-                
-                if (mi.getBaseChildType() != null) {
-                    if (!interface2NodeCache.containsKey(((ClassAltClassImpl) mi.getBaseChildType()).getOriginalClass())) {
-                        // Must use a placeholder
-                        childType = new UnparentedNode(((ClassAltClassImpl) mi.getBaseChildType()).getOriginalClass(), true);
-                    }
-                    else {
-                        childType = interface2NodeCache.get(((ClassAltClassImpl) mi.getBaseChildType()).getOriginalClass());
-                    }
-                }
-            }
-                
-            if (getterOrSetter) {
-                if (childType != null) {
-                    Map<String, String> defaultChild = null;
-                    AltAnnotation defaultChildAnnotation= mi.getOriginalMethod().getAnnotation(DefaultChild.class.getName());
-                    if (defaultChildAnnotation != null) {
-                        String[] defaultStrings = defaultChildAnnotation.getStringArrayValue("value");
-                        
-                        defaultChild = convertDefaultChildValueArray(defaultStrings);
-                    }
-                        
-                    retVal.addChild(mi.getRepresentedProperty(),
-                            Generator.getChildType(mi.isList(), mi.isArray()),
-                            childType,
-                            defaultChild,
-                            mi.getDefaultValue());
-                }
-                else {
-                    Class<?> expectedType = null;
-                    AltClass gsType = mi.getGetterSetterType();
-                    if (gsType instanceof ClassAltClassImpl) {
-                        expectedType = ((ClassAltClassImpl) gsType).getOriginalClass();
-                    }
-                    
-                    retVal.addNonChildProperty(mi.getRepresentedProperty(), mi.getDefaultValue(), expectedType);
-                }
-            }
-        }
-            
-        retVal.setTranslatedClass(proxy);
-        proxy2NodeCache.put(proxy, retVal);
-            
-        return retVal;
     }
     
     private static Map<String, String> convertDefaultChildValueArray(String[] values) {
@@ -373,62 +176,6 @@ public class JAUtilities {
         }
         
         return retVal;
-    }
-    
-    private static void getAllToConvert(Class<?> toBeConverted,
-            LinkedHashSet<Class<?>> needsToBeConverted,
-            Set<Class<?>> cycleDetector,
-            ClassReflectionHelper helper) {
-        if (needsToBeConverted.contains(toBeConverted)) return;
-        
-        if (cycleDetector.contains(toBeConverted)) return;
-        cycleDetector.add(toBeConverted);
-        
-        try {
-            // Find all the children
-            for (Method method : toBeConverted.getMethods()) {
-                if (Generator.isGetter(new MethodAltMethodImpl(method, helper)) == null) continue;
-                
-                Class<?> returnClass = method.getReturnType();
-                if (returnClass.isInterface() && !(List.class.equals(returnClass))) {
-                    // The assumption is that this is a non-instanced child
-                    if (returnClass.getName().startsWith(NO_CHILD_PACKAGE)) continue;
-                    
-                    getAllToConvert(returnClass, needsToBeConverted, cycleDetector, helper);
-                    
-                    continue;
-                }
-                
-                if (returnClass.isArray()) {
-                    Class<?> aType = returnClass.getComponentType();
-                    
-                    if (aType.isInterface()) {
-                        getAllToConvert(aType, needsToBeConverted, cycleDetector, helper);
-                        
-                        continue;
-                    }
-                }
-                
-                Type retType = method.getGenericReturnType();
-                if (retType == null || !(retType instanceof ParameterizedType)) continue;
-                
-                Class<?> returnRawClass = ReflectionHelper.getRawClass(retType);
-                if (returnRawClass == null || !List.class.equals(returnRawClass)) continue;
-                
-                Type listReturnType = ReflectionHelper.getFirstTypeArgument(retType);
-                if (Object.class.equals(listReturnType)) continue;
-                
-                Class<?> childClass = ReflectionHelper.getRawClass(listReturnType);
-                if (childClass == null || Object.class.equals(childClass)) continue;
-                
-                getAllToConvert(childClass, needsToBeConverted, cycleDetector, helper);
-            }
-            
-            needsToBeConverted.add(toBeConverted);
-        }
-        finally {
-            cycleDetector.remove(toBeConverted);
-        }
     }
     
     private CtClass getBaseClass() {

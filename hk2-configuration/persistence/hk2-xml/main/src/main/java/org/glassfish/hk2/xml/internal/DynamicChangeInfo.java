@@ -107,10 +107,6 @@ public class DynamicChangeInfo {
         }
     }
     
-    public UnparentedNode getNode(Class<?> iface) {
-        return jaUtilities.getNode(iface);
-    }
-    
     public JAUtilities getJAUtilities() {
         return jaUtilities;
     }
