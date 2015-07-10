@@ -68,9 +68,7 @@ import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlHubCommitMessage;
 import org.glassfish.hk2.xml.api.annotations.Customizer;
 import org.glassfish.hk2.xml.internal.DynamicChangeInfo;
-import org.glassfish.hk2.xml.internal.Model;
-import org.glassfish.hk2.xml.internal.ParentedNode;
-import org.glassfish.hk2.xml.internal.UnparentedNode;
+import org.glassfish.hk2.xml.internal.ParentedModel;
 import org.glassfish.hk2.xml.internal.Utilities;
 
 /**
@@ -100,7 +98,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
     private final Map<String, Map<String, BaseHK2JAXBBean>> keyedChildrenCache = new HashMap<String, Map<String, BaseHK2JAXBBean>>();
     
     /** The model for this, including lists of all children property names */
-    private UnparentedNode model;
+    // private UnparentedNode model;
     
     /** The parent of this instance, or null if this is a root (or has not been fully initialized yet) */
     private Object parent;
@@ -250,7 +248,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         return _getProperty(propName, expectedClass, null);
     }
     
-    private Object _getProperty(String propName, Class<?> expectedClass, ParentedNode parentNode) {
+    private Object _getProperty(String propName, Class<?> expectedClass, ParentedModel parentNode) {
         boolean isSet;
         Object retVal;
         boolean doDefaulting = active ? true : false;
@@ -281,7 +279,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         
         if (doDefaulting && (retVal == null) && !isSet) {
             if (expectedClass != null) {
-                retVal = Utilities.getDefaultValue(model.getDefaultChildValue(propName), expectedClass);
+                retVal = Utilities.getDefaultValue(_getModel().getDefaultChildValue(propName), expectedClass);
             }
             else if (parentNode != null) {
                 switch (parentNode.getChildType()) {
@@ -289,7 +287,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
                     retVal = Collections.EMPTY_LIST;
                     break;
                 case ARRAY:
-                    Class<?> cType = parentNode.getChild().getOriginalInterface();
+                    Class<?> cType = parentNode.getChildModel().getOriginalInterfaceAsClass();
                     retVal = Array.newInstance(cType, 0);
                     break;
                 case DIRECT:
@@ -316,11 +314,11 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * @return Value
      */
     public Object _getProperty(String propName) {
-        if (model == null || !model.isChildProperty(propName)) {
-            return _getProperty(propName, ((model != null) ? model.getNonChildType(propName) : null));
+        if (!_getModel().isChildProperty(propName)) {
+            return _getProperty(propName, _getModel().getNonChildType(propName));
         }
         
-        ParentedNode parent = model.getChild(propName);
+        ParentedModel parent = _getModel().getChild(propName);
         return _getProperty(propName, null, parent);
     }
     
@@ -541,9 +539,9 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
             cMethod = cClass.getMethod(methodName, params);
         }
         catch (NoSuchMethodException nsme) {
-            if (model != null) {
+            if (_getModel() != null) {
                 Class<?> altParams[] = new Class<?>[params.length + 1];
-                altParams[0] = model.getOriginalInterface();
+                altParams[0] = _getModel().getOriginalInterfaceAsClass();
                 for (int lcv = 0; lcv < params.length; lcv++) {
                     altParams[lcv+1] = params[lcv];
                 }
@@ -759,11 +757,10 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      */
     @Override
     public String _getKeyPropertyName() {
-        return model.getKeyProperty();
+        return _getModel().getKeyProperty();
     }
     
-    public void _setModel(UnparentedNode model, ClassReflectionHelper helper) {
-        this.model = model;
+    public void _setClassReflectionHelper(ClassReflectionHelper helper) {
         this.classReflectionHelper = helper;
     }
     
@@ -816,7 +813,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      */
     public Set<String> _getChildrenXmlTags() {
         HashSet<String> retVal = new HashSet<String>(keyedChildrenCache.keySet());
-        retVal.addAll(model.getUnKeyedChildren());
+        retVal.addAll(_getModel().getUnKeyedChildren());
         
         return retVal;
     }
@@ -834,7 +831,6 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
     public void _shallowCopyFrom(BaseHK2JAXBBean copyMe) {
         selfXmlTag = copyMe.selfXmlTag;
         instanceName = copyMe.instanceName;
-        model = copyMe.model;
         keyValue = copyMe.keyValue;
         xmlPath = copyMe.xmlPath;
         
@@ -843,7 +839,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         for (Map.Entry<String, Object> entrySet : copyBeanLikeMap.entrySet()) {
             String xmlTag = entrySet.getKey();
             
-            if (copyMe.keyedChildrenCache.containsKey(xmlTag) || copyMe.model.getUnKeyedChildren().contains(xmlTag)) continue;
+            if (copyMe.keyedChildrenCache.containsKey(xmlTag) || copyMe._getModel().getUnKeyedChildren().contains(xmlTag)) continue;
             
             beanLikeMap.put(entrySet.getKey(), entrySet.getValue());
         }
@@ -930,15 +926,6 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         
             changeControl.incrementChangeNumber();
         }
-    }
-    
-    /**
-     * Returns the raw model for this bean
-     * 
-     * @return The model for this bean
-     */
-    public UnparentedNode _getLiveModel() {
-        return model;
     }
     
     /**

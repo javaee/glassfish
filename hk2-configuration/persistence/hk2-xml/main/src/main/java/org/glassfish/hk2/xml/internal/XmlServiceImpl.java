@@ -67,7 +67,7 @@ import org.glassfish.hk2.xml.spi.XmlServiceParser;
  */
 @Singleton
 public class XmlServiceImpl implements XmlService {
-    private final JAUtilities jaUtilities = new JAUtilities();
+    
     
     @Inject
     private ServiceLocator serviceLocator;
@@ -82,6 +82,8 @@ public class XmlServiceImpl implements XmlService {
     private Provider<XmlServiceParser> parser;
     
     private final ClassReflectionHelper classReflectionHelper = new ClassReflectionHelperImpl();
+    
+    private final JAUtilities jaUtilities = new JAUtilities(classReflectionHelper);
     
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.api.XmlService#unmarshall(java.net.URI, java.lang.Class, boolean, boolean)
@@ -256,7 +258,7 @@ public class XmlServiceImpl implements XmlService {
         
         BaseHK2JAXBBean base = (BaseHK2JAXBBean) retVal;
         
-        base._setModel(node, classReflectionHelper);
+        base._setClassReflectionHelper(classReflectionHelper);
         base._setActive();
         
         

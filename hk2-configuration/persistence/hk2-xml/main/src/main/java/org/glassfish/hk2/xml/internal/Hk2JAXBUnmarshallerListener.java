@@ -69,7 +69,7 @@ public class Hk2JAXBUnmarshallerListener extends Unmarshaller.Listener {
     private final LinkedList<BaseHK2JAXBBean> allBeans = new LinkedList<BaseHK2JAXBBean>();
     
     private void setUserKey(BaseHK2JAXBBean bean, boolean listOrArray) {
-        UnparentedNode model = bean._getLiveModel();
+        Model model = bean._getModel();
         
         String keyProperty = model.getKeyProperty();
         if (keyProperty == null && listOrArray) {
@@ -88,17 +88,17 @@ public class Hk2JAXBUnmarshallerListener extends Unmarshaller.Listener {
     
     @SuppressWarnings("unchecked")
     private void setSelfXmlTagInAllChildren(BaseHK2JAXBBean targetBean) {
-        UnparentedNode model = targetBean._getLiveModel();
+        Model model = targetBean._getModel();
         
-        for (ParentedNode parentedNode : model.getAllChildren()) {
-            Object children = targetBean._getProperty(parentedNode.getChildName());
+        for (ParentedModel parentedNode : model.getAllChildren()) {
+            Object children = targetBean._getProperty(parentedNode.getChildXmlTag());
             if (children == null) continue;
             
             if (children instanceof List) {
                 for (Object child : (List<Object>) children) {
                     BaseHK2JAXBBean childBean = (BaseHK2JAXBBean) child;
                     
-                    childBean._setSelfXmlTag(parentedNode.getChildName());
+                    childBean._setSelfXmlTag(parentedNode.getChildXmlTag());
                     
                     setUserKey(childBean, true);
                 }
@@ -108,7 +108,7 @@ public class Hk2JAXBUnmarshallerListener extends Unmarshaller.Listener {
                 for (Object child : (Object[]) children) {
                     BaseHK2JAXBBean childBean = (BaseHK2JAXBBean) child;
                     
-                    childBean._setSelfXmlTag(parentedNode.getChildName());
+                    childBean._setSelfXmlTag(parentedNode.getChildXmlTag());
                     
                     setUserKey(childBean, true);
                 }
@@ -116,7 +116,7 @@ public class Hk2JAXBUnmarshallerListener extends Unmarshaller.Listener {
             else {
                 BaseHK2JAXBBean childBean = (BaseHK2JAXBBean) children;
                 
-                childBean._setSelfXmlTag(parentedNode.getChildName());
+                childBean._setSelfXmlTag(parentedNode.getChildXmlTag());
                 
                 setUserKey(childBean, false);
             }
@@ -129,7 +129,7 @@ public class Hk2JAXBUnmarshallerListener extends Unmarshaller.Listener {
         
         BaseHK2JAXBBean targetBean = (BaseHK2JAXBBean) target;
         BaseHK2JAXBBean parentBean = (BaseHK2JAXBBean) parent;
-        UnparentedNode targetNode = targetBean._getLiveModel();
+        Model targetNode = targetBean._getModel();
         
         allBeans.add(targetBean);
         
@@ -144,9 +144,8 @@ public class Hk2JAXBUnmarshallerListener extends Unmarshaller.Listener {
         if (!(target instanceof BaseHK2JAXBBean)) return;
         
         BaseHK2JAXBBean targetBean = (BaseHK2JAXBBean) target;
-        UnparentedNode targetNode = jaUtilities.getNode(target.getClass());
         
-        targetBean._setModel(targetNode, classReflectionHelper);
+        targetBean._setClassReflectionHelper(classReflectionHelper);
         targetBean._setParent(parent);
     }
     

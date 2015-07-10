@@ -101,6 +101,7 @@ public class JAUtilities {
     
     private final static String NO_CHILD_PACKAGE = "java.";
     
+    private final ClassReflectionHelper classReflectionHelper;
     private final HashMap<Class<?>, UnparentedNode> interface2NodeCache = new HashMap<Class<?>, UnparentedNode>();
     private final HashMap<Class<?>, UnparentedNode> proxy2NodeCache = new HashMap<Class<?>, UnparentedNode>();
     private final ClassPool defaultClassPool = ClassPool.getDefault(); // TODO:  We probably need to be more sophisticated about this
@@ -112,7 +113,8 @@ public class JAUtilities {
     
     private final AtomicLong idGenerator = new AtomicLong();
     
-    /* package */ JAUtilities() {
+    /* package */ JAUtilities(ClassReflectionHelper classReflectionHelper) {
+        this.classReflectionHelper = classReflectionHelper;
         try {
             superClazz = defaultClassPool.get(BaseHK2JAXBBean.class.getName());
         }
@@ -153,6 +155,11 @@ public class JAUtilities {
         LinkedHashSet<Class<?>> needsToBeConverted = new LinkedHashSet<Class<?>>();
         
         getAllToConvert(root, needsToBeConverted, new HashSet<Class<?>>(), helper);
+        
+        // Just for fun, lets fill in the model cache here, to flush out any errors
+        for (Class<?> needsToBeConvertedClass : needsToBeConverted) {
+            interface2ModelCache.compute(needsToBeConvertedClass);
+        }
         
         long elapsedTime = 0L;
         if (DEBUG_METHODS || DEBUG_GENERATION_TIMING) {
@@ -451,7 +458,7 @@ public class JAUtilities {
             if (proxyClass == null) {
                 // Generate the proxy
                 try {
-                  CtClass generated = Generator.generate(new ClassAltClassImpl(key, null),
+                  CtClass generated = Generator.generate(new ClassAltClassImpl(key, classReflectionHelper),
                         jaUtilities.getBaseClass(),
                         jaUtilities.getClassPool());
                   
@@ -489,6 +496,8 @@ public class JAUtilities {
             if (retVal == null) {
                 throw new AssertionError("The __getModel method on " + proxyClass.getName() + " returned null");
             }
+            
+            retVal.setJAUtilities(jaUtilities, key.getClassLoader());
             
             return interface2ModelCache.createCacheEntry(key, retVal, false);
         }

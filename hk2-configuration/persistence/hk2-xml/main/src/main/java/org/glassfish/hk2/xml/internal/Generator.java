@@ -108,11 +108,11 @@ public class Generator {
     private final static boolean DEBUG_METHODS = Boolean.parseBoolean(GeneralUtilities.getSystemProperty(
             "org.jvnet.hk2.properties.xmlservice.jaxb.methods", "false"));
     
-    
     private final static String JAXB_DEFAULT_STRING = "##default";
     public final static String JAXB_DEFAULT_DEFAULT = "\u0000";
     private final static String NO_CHILD_PACKAGE = "java.";
     public final static String STATIC_GET_MODEL_METHOD_NAME = "__getModel";
+    private final static String QUOTE = "\"";
     
     private final static Set<String> NO_COPY_ANNOTATIONS = new HashSet<String>(Arrays.asList(new String[] {
             Contract.class.getName(),
@@ -495,7 +495,7 @@ public class Generator {
                         defaultChild = convertDefaultChildValueArray(defaultStrings);
                     }
                     
-                    compiledModel.addChild(mi.getDecapitalizedMethodProperty(),
+                    compiledModel.addChild(
                             childType.getName(),
                             mi.getRepresentedProperty(),
                             getChildType(mi.isList(), mi.isArray()),
@@ -589,7 +589,6 @@ public class Generator {
             // TODO: Generate a Map for defaultChild strings
             
             sb.append("retVal.addChild(" +
-              asParameter(entry.getKey()) + "," +
               asParameter(entry.getValue().getChildInterface()) + "," +
               asParameter(entry.getValue().getChildXmlTag()) + "," +
               asParameter(entry.getValue().getChildType()) + "," +
@@ -606,6 +605,12 @@ public class Generator {
         }
         
         sb.append("return retVal; }");
+        
+        if (DEBUG_METHODS) {
+            // Hidden behind static because of potential expensive toString costs
+            Logger.getLogger().debug("Adding static model generator for " + targetCtClass.getSimpleName() +
+                    " with implementation " + sb);
+        }
         
         targetCtClass.addMethod(CtNewMethod.make(sb.toString(), targetCtClass));
         
@@ -629,7 +634,11 @@ public class Generator {
     
     private static String asParameter(String me) {
         if (me == null) return "null";
-        return "\"" + me + "\"";
+        if (JAXB_DEFAULT_DEFAULT.equals(me)) {
+            return "null";
+        }
+        
+        return QUOTE + me + QUOTE;
     }
     
     private static String asParameter(ChildType ct) {

@@ -40,6 +40,10 @@
 package org.glassfish.hk2.xml.internal;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.glassfish.hk2.utilities.general.GeneralUtilities;
 
 /**
  * @author jwells
@@ -47,9 +51,31 @@ import java.io.Serializable;
  */
 public class ChildDataModel implements Serializable {
     private static final long serialVersionUID = 208423310453044595L;
+    private final static Map<String, Class<?>> TYPE_MAP = new HashMap<String, Class<?>>();
     
+    static {
+        TYPE_MAP.put("char", char.class);
+        TYPE_MAP.put("byte", byte.class);
+        TYPE_MAP.put("short", short.class);
+        TYPE_MAP.put("int", int.class);
+        TYPE_MAP.put("float", float.class);
+        TYPE_MAP.put("long", long.class);
+        TYPE_MAP.put("double", double.class);
+        TYPE_MAP.put("boolean", boolean.class);
+    };
+    
+    
+    
+    
+    
+    private final Object lock = new Object();
+    
+    /** Set at compile time, the type of the thing */
     private String childType;
     private String defaultAsString;
+    
+    private ClassLoader myLoader;
+    private Class<?> childTypeAsClass;
     
     public ChildDataModel() {
     }
@@ -65,6 +91,30 @@ public class ChildDataModel implements Serializable {
     
     public String getDefaultAsString() {
         return defaultAsString;
+    }
+    
+    public void setLoader(ClassLoader myLoader) {
+        synchronized (lock) {
+            this.myLoader = myLoader;
+        }
+    }
+    
+    public Class<?> getChildTypeAsClass() {
+        synchronized (lock) {
+            if (childTypeAsClass != null) return childTypeAsClass;
+            
+            childTypeAsClass = TYPE_MAP.get(childType);
+            if (childTypeAsClass != null) return childTypeAsClass;
+            
+            childTypeAsClass = GeneralUtilities.loadClass(myLoader, childType);
+            return childTypeAsClass;
+        }
+        
+    }
+    
+    @Override
+    public String toString() {
+        return "ChildDataModel(" + childType + "," + defaultAsString + ")";
     }
 
 }

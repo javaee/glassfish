@@ -40,10 +40,14 @@
 package org.glassfish.hk2.xml.internal;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.glassfish.hk2.utilities.general.GeneralUtilities;
 
 /**
  * This model is a description of the children and non-children nodes
@@ -63,16 +67,22 @@ public class Model implements Serializable {
     /** The interface from which the JAXB proxy was created, fully qualified */
     private String originalInterface;
     
+    /** Calculated at runtime lazily this is the original interface as a class */
+    private volatile Class<?> originalInterfaceAsClass;
+    
     /** The JAXB proxy of the originalInterface, fully qualified */
     private String translatedClass;
+    
+    /** Calculated at runtime lazily this is the proxy as a class */
+    private volatile Class<?> translatedClassAsClass;
     
     /** If this node can be a root, the xml tag of the root of the document */
     private String rootName;
     
-    /** A map from the property name (not the xml tag) to the parented child node */
+    /** A map from the xml tag to the parented child node */
     private final Map<String, ParentedModel> childrenByName = new HashMap<String, ParentedModel>();
     
-    /** A map from non-child property name to the default value */
+    /** A map from xml tag to information about the non-child property */
     private final Map<String, ChildDataModel> nonChildProperty = new HashMap<String, ChildDataModel>();
     
     /** If this node has a key, this is the property name of the key */
@@ -84,7 +94,7 @@ public class Model implements Serializable {
     private Set<String> unKeyedChildren = null;
     private Set<String> keyedChildren = null;
     private JAUtilities jaUtilities = null;
-    private ClassLoader myLoader = null;
+    private ClassLoader myLoader;
     
     public Model() {
     }
@@ -104,14 +114,13 @@ public class Model implements Serializable {
     }
     
     public void addChild(
-            String methodDecaptializedName,
             String childInterface,
             String xmlTag,
             ChildType childType,
             String givenDefault,
             Map<String, String> childDefault) {
         ParentedModel pm = new ParentedModel(childInterface, xmlTag, childType, givenDefault, childDefault);
-        childrenByName.put(methodDecaptializedName, pm);
+        childrenByName.put(xmlTag, pm);
     }
     
     public void addNonChild(String xmlTag, String defaultValue, String childType) {
@@ -193,6 +202,78 @@ public class Model implements Serializable {
             for (ParentedModel pm : childrenByName.values()) {
                 pm.setRuntimeInformation(jaUtilities, myLoader);
             }
+            
+            for (ChildDataModel cdm : nonChildProperty.values()) {
+                cdm.setLoader(myLoader);
+            }
+        }
+    }
+    
+    public String getDefaultChildValue(String propName) {
+        synchronized (lock) {
+            ChildDataModel cd = nonChildProperty.get(propName);
+            if (cd == null) return null;
+            return cd.getDefaultAsString();
+        }
+    }
+    
+    public boolean isChildProperty(String propName) {
+        synchronized (lock) {
+            if (nonChildProperty.containsKey(propName)) return false;
+            if (childrenByName.containsKey(propName)) return true;
+            
+            throw new AssertionError("Unknwn property " + propName + " for " + this);
+        }
+    }
+    
+    public Class<?> getNonChildType(String propName) {
+        synchronized (lock) {
+            ChildDataModel cd = nonChildProperty.get(propName);
+            if (cd == null) return null;
+            
+            return cd.getChildTypeAsClass();
+        }
+    }
+    
+    public ParentedModel getChild(String propName) {
+        synchronized (lock) {
+            return childrenByName.get(propName);
+        }
+    }
+    
+    public Class<?> getOriginalInterfaceAsClass() {
+        if (originalInterfaceAsClass != null) return originalInterfaceAsClass;
+        
+        synchronized (lock) {
+            if (originalInterfaceAsClass != null) return originalInterfaceAsClass;
+            
+            originalInterfaceAsClass = GeneralUtilities.loadClass(myLoader, originalInterface);
+            return originalInterfaceAsClass;
+            
+        }
+    }
+    
+    public Class<?> getProxyAsClass() {
+        if (translatedClassAsClass != null) return translatedClassAsClass;
+        
+        synchronized (lock) {
+            if (translatedClassAsClass != null) return translatedClassAsClass;
+            
+            translatedClassAsClass = GeneralUtilities.loadClass(myLoader, translatedClass);
+            return translatedClassAsClass;
+            
+        }
+    }
+    
+    public Collection<ParentedModel> getAllChildren() {
+        synchronized (lock) {
+            return Collections.unmodifiableCollection(childrenByName.values());
+        }
+    }
+    
+    public Map<String, ParentedModel> getChildrenProperties() {
+        synchronized (lock) {
+            return Collections.unmodifiableMap(childrenByName);
         }
     }
     

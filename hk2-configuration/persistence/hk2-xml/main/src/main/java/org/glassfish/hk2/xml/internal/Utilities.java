@@ -284,7 +284,7 @@ public class Utilities {
             throw new IllegalArgumentException("The child added must be from XmlService.createBean");
         }
         
-        ParentedNode childNode = myParent._getLiveModel().getChild(childProperty);
+        ParentedModel childNode = myParent._getModel().getChild(childProperty);
         if (childNode == null) {
             throw new IllegalArgumentException("There is no child with xmlTag " + childProperty + " of " + myParent);
         }
@@ -316,13 +316,13 @@ public class Utilities {
             throw new IllegalStateException("Attempting to add direct child of " + myParent + " of name " + childProperty + " but there is already one there");
         }
         
-        BaseHK2JAXBBean child = createBean(childNode.getChild().getTranslatedClass());
-        child._setModel(childNode.getChild(), myParent._getClassReflectionHelper());
+        BaseHK2JAXBBean child = createBean(childNode.getChildModel().getProxyAsClass());
+        child._setClassReflectionHelper(myParent._getClassReflectionHelper());
         
         if (rawChild != null) {
             // Handling of children will be handled once the real child is better setup
             BaseHK2JAXBBean childToCopy = (BaseHK2JAXBBean) rawChild;
-            for (String nonChildProperty : childToCopy._getLiveModel().getNonChildProperties()) {
+            for (String nonChildProperty : childToCopy._getModel().getNonChildProperties().keySet()) {
                 Object value = childToCopy._getProperty(nonChildProperty);
                 if (value == null) continue;
                 
@@ -332,9 +332,9 @@ public class Utilities {
         
         if (childKey == null) {
             if (!ChildType.DIRECT.equals(childNode.getChildType())) {
-                if (childNode.getChild().getKeyProperty() != null) {
+                if (childNode.getChildModel().getKeyProperty() != null) {
                     if (rawChild != null) {
-                        childKey = (String) child._getProperty(childNode.getChild().getKeyProperty());
+                        childKey = (String) child._getProperty(childNode.getChildModel().getKeyProperty());
                     }
                     
                     if (childKey == null) {
@@ -358,22 +358,22 @@ public class Utilities {
             }
         }
         else { /* childKey != null */
-            if (childNode.getChild().getKeyProperty() == null) {
+            if (childNode.getChildModel().getKeyProperty() == null) {
                 throw new IllegalArgumentException("Attempted to add an unkeyed child with key " + childKey + " in " + myParent);
             }
                 
-            child._setProperty(childNode.getChild().getKeyProperty(), childKey, false);
+            child._setProperty(childNode.getChildModel().getKeyProperty(), childKey, false);
             child._setKeyValue(childKey);
         }
         
         child._setParent(myParent);
-        child._setSelfXmlTag(childNode.getChildName());
+        child._setSelfXmlTag(childNode.getChildXmlTag());
         child._setKeyValue(childKey);
         if (!ChildType.DIRECT.equals(childNode.getChildType())) {
             child._setInstanceName(myParent._getInstanceName() + Utilities.INSTANCE_PATH_SEPARATOR + child._getKeyValue());
         }
         else {
-            child._setInstanceName(myParent._getInstanceName() + Utilities.INSTANCE_PATH_SEPARATOR + childNode.getChildName());
+            child._setInstanceName(myParent._getInstanceName() + Utilities.INSTANCE_PATH_SEPARATOR + childNode.getChildXmlTag());
         }
         
         if (rawChild != null) {
@@ -396,7 +396,7 @@ public class Utilities {
             }
             else {
                 // ARRAY
-                finalChildList = Array.newInstance(childNode.getChild().getOriginalInterface(), multiChildren.size());
+                finalChildList = Array.newInstance(childNode.getChildModel().getOriginalInterfaceAsClass(), multiChildren.size());
                 for (int lcv = 0; lcv < multiChildren.size(); lcv++) {
                     Array.set(finalChildList, lcv, multiChildren.get(lcv));
                 }
@@ -432,11 +432,11 @@ public class Utilities {
     
     @SuppressWarnings("unchecked")
     private static void handleChildren(BaseHK2JAXBBean child, BaseHK2JAXBBean childToCopy, DynamicChangeInfo changeInformation) {
-        Map<String, ParentedNode> childrenMap = childToCopy._getLiveModel().getChildrenProperties();
+        Map<String, ParentedModel> childrenMap = childToCopy._getModel().getChildrenProperties();
         
-        for (Map.Entry<String, ParentedNode> childsChildrenEntry : childrenMap.entrySet()) {
+        for (Map.Entry<String, ParentedModel> childsChildrenEntry : childrenMap.entrySet()) {
             String childsChildProperty = childsChildrenEntry.getKey();
-            ParentedNode childsChildParentNode = childsChildrenEntry.getValue();
+            ParentedModel childsChildParentNode = childsChildrenEntry.getValue();
             
             if (!ChildType.DIRECT.equals(childsChildParentNode.getChildType())) {
                 List<BaseHK2JAXBBean> childsChildren = null;
@@ -458,7 +458,7 @@ public class Utilities {
                 if (childsChildren.size() <= 0) continue;
                 
                 ArrayList<BaseHK2JAXBBean> copiedChildArray = new ArrayList<BaseHK2JAXBBean>(childsChildren.size());
-                Object asArray = Array.newInstance(childsChildParentNode.getChild().getOriginalInterface(), childsChildren.size());
+                Object asArray = Array.newInstance(childsChildParentNode.getChildModel().getOriginalInterfaceAsClass(), childsChildren.size());
                 int lcv = 0;
                 for (BaseHK2JAXBBean childsChild : childsChildren) {
                     BaseHK2JAXBBean grandchild = internalAdd(child, childsChildProperty,
@@ -493,7 +493,7 @@ public class Utilities {
         
         Utilities.advertise(writeableDatabase, config, root);
         
-        for (String keyedChildProperty : root._getLiveModel().getKeyedChildren()) {
+        for (String keyedChildProperty : root._getModel().getKeyedChildren()) {
             Object keyedRawChild = root._getProperty(keyedChildProperty);
             if (keyedRawChild == null) continue;
             
@@ -516,7 +516,7 @@ public class Utilities {
             }
         }
         
-        for (String unkeyedChildProperty : root._getLiveModel().getUnKeyedChildren()) {
+        for (String unkeyedChildProperty : root._getModel().getUnKeyedChildren()) {
             Object unkeyedRawChild = root._getProperty(unkeyedChildProperty);
             if (unkeyedRawChild == null) continue;
             
@@ -561,11 +561,11 @@ public class Utilities {
         }
         
         BaseHK2JAXBBean child = Utilities.createBean(rootNode.getTranslatedClass());
-        child._setModel(rootNode, helper);
+        child._setClassReflectionHelper(helper);
         
         // Handling of children will be handled once the real child is better setup
         BaseHK2JAXBBean childToCopy = (BaseHK2JAXBBean) rawRoot;
-        for (String nonChildProperty : childToCopy._getLiveModel().getNonChildProperties()) {
+        for (String nonChildProperty : childToCopy._getModel().getNonChildProperties().keySet()) {
             Object value = childToCopy._getProperty(nonChildProperty);
             if (value == null) continue;
             
@@ -613,8 +613,8 @@ public class Utilities {
         
         if (childKey == null && index < 0) return null;
         
-        ParentedNode removeMeParentedNode = myParent._getLiveModel().getChild(childProperty);
-        UnparentedNode removeMeNode = removeMeParentedNode.getChild();
+        ParentedModel removeMeParentedNode = myParent._getModel().getChild(childProperty);
+        Model removeMeNode = removeMeParentedNode.getChildModel();
         BaseHK2JAXBBean rootForDeletion = null;
         
         if (!ChildType.DIRECT.equals(removeMeParentedNode.getChildType())) {
@@ -670,7 +670,7 @@ public class Utilities {
                 int removeFromArrayLength = Array.getLength(removeFromArray);
                 if (removeFromArrayLength == 0) return null;
                 
-                Class<?> arrayType = removeMeNode.getOriginalInterface();
+                Class<?> arrayType = removeMeNode.getOriginalInterfaceAsClass();
                 
                 Object arrayWithObjectRemoved = Array.newInstance(arrayType, removeFromArrayLength - 1);
                 
@@ -765,11 +765,11 @@ public class Utilities {
         
         descriptorsToRemove.add(fromMeDescriptor);
         
-        UnparentedNode model = fromMe._getLiveModel();
+        Model model = fromMe._getModel();
         if (model == null) return;
         
-        for (ParentedNode parentedChild : model.getAllChildren()) {
-            String childPropertyName = parentedChild.getChildName();
+        for (ParentedModel parentedChild : model.getAllChildren()) {
+            String childPropertyName = parentedChild.getChildXmlTag();
             
             switch (parentedChild.getChildType()) {
             case LIST:

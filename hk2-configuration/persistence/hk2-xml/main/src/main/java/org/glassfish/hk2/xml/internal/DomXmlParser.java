@@ -89,13 +89,10 @@ public class DomXmlParser implements XmlServiceParser {
     @Override
     public <T> T parseRoot(Class<T> clazz, URI location, Listener listener)
             throws Exception {
-        JAUtilities jaUtilities = xmlService.get().getJAUtilities();
         ClassReflectionHelper classReflectionHelper = xmlService.get().getClassReflectionHelper();
         
-        UnparentedNode node = jaUtilities.getNode(clazz);
-        
         BaseHK2JAXBBean hk2Root = Utilities.createBean(clazz);
-        hk2Root._setModel(node, classReflectionHelper);
+        hk2Root._setClassReflectionHelper(classReflectionHelper);
         
         InputStream urlStream = location.toURL().openStream();
         Document document;
@@ -115,7 +112,7 @@ public class DomXmlParser implements XmlServiceParser {
     }
     
     private void handleNode(Node childNode,
-            UnparentedNode model,
+            Model model,
             BaseHK2JAXBBean target,
             Listener listener,
             ClassReflectionHelper classReflectionHelper,
@@ -126,7 +123,7 @@ public class DomXmlParser implements XmlServiceParser {
             Element childElement = (Element) childNode;
             String tagName = childElement.getTagName();
             
-            if (model.getNonChildProperties().contains(tagName)) {
+            if (model.getNonChildProperties().keySet().contains(tagName)) {
                 Class<?> childType = model.getNonChildType(tagName);
                 
                 NodeList childNodeChildren = childElement.getChildNodes();
@@ -148,11 +145,11 @@ public class DomXmlParser implements XmlServiceParser {
             }
             else if (model.getKeyedChildren().contains(tagName) ||
                      model.getUnKeyedChildren().contains(tagName)) {
-                ParentedNode informedChild = model.getChild(tagName);
-                UnparentedNode grandChild = informedChild.getChild();
+                ParentedModel informedChild = model.getChild(tagName);
+                Model grandChild = informedChild.getChildModel();
                 
-                BaseHK2JAXBBean hk2Root = Utilities.createBean(grandChild.getTranslatedClass());
-                hk2Root._setModel(grandChild, classReflectionHelper);
+                BaseHK2JAXBBean hk2Root = Utilities.createBean(grandChild.getProxyAsClass());
+                hk2Root._setClassReflectionHelper(classReflectionHelper);
                 
                 handleElement(hk2Root, target, childElement, classReflectionHelper, listener);
                 
@@ -184,7 +181,7 @@ public class DomXmlParser implements XmlServiceParser {
             Attr childAttr = (Attr) childNode;
             String tagName = childAttr.getName();
             
-            if (model.getNonChildProperties().contains(tagName)) {
+            if (model.getNonChildProperties().keySet().contains(tagName)) {
                 Class<?> childType = model.getNonChildType(tagName);
                 String sValue = childAttr.getValue();
                 
@@ -202,7 +199,7 @@ public class DomXmlParser implements XmlServiceParser {
         Map<String, List<BaseHK2JAXBBean>> listChildren = new HashMap<String, List<BaseHK2JAXBBean>>();
         Map<String, List<BaseHK2JAXBBean>> arrayChildren = new HashMap<String, List<BaseHK2JAXBBean>>();
         
-        UnparentedNode model = target._getLiveModel();
+        Model model = target._getModel();
         
         NamedNodeMap attributeMap = element.getAttributes();
         for (int lcv = 0; lcv < attributeMap.getLength(); lcv++) {
@@ -227,8 +224,8 @@ public class DomXmlParser implements XmlServiceParser {
         
         for (Map.Entry<String, List<BaseHK2JAXBBean>> entry : arrayChildren.entrySet()) {
             String childTag = entry.getKey();
-            ParentedNode pn = model.getChild(childTag);
-            Class<?> childType = pn.getChild().getOriginalInterface();
+            ParentedModel pn = model.getChild(childTag);
+            Class<?> childType = pn.getChildModel().getOriginalInterfaceAsClass();
             
             List<BaseHK2JAXBBean> individuals = entry.getValue();
             
