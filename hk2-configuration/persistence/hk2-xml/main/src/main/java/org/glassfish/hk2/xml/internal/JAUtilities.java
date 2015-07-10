@@ -56,6 +56,7 @@ import org.glassfish.hk2.utilities.cache.HybridCacheEntry;
 import org.glassfish.hk2.utilities.cache.LRUHybridCache;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
+import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.xml.internal.alt.clazz.ClassAltClassImpl;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
@@ -67,8 +68,6 @@ import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 public class JAUtilities {
     private final static String ID_PREFIX = "XmlServiceUID-";
     
-    private final static boolean DEBUG_METHODS = Boolean.parseBoolean(GeneralUtilities.getSystemProperty(
-            "org.jvnet.hk2.properties.xmlservice.jaxb.methods", "false"));
     private final static boolean DEBUG_PREGEN = Boolean.parseBoolean(GeneralUtilities.getSystemProperty(
             "org.jvnet.hk2.properties.xmlservice.jaxb.pregenerated", "false"));
     /* package */ final static boolean DEBUG_GENERATION_TIMING = Boolean.parseBoolean(GeneralUtilities.getSystemProperty(
@@ -87,6 +86,7 @@ public class JAUtilities {
     private final ClassPool defaultClassPool = ClassPool.getDefault(); // TODO:  We probably need to be more sophisticated about this
     private final CtClass superClazz;
     
+    private final Computer computer;
     private final LRUHybridCache<Class<?>, Model> interface2ModelCache;
     
     private final AtomicLong idGenerator = new AtomicLong();
@@ -100,7 +100,8 @@ public class JAUtilities {
             throw new MultiException(e);
         }
         
-        interface2ModelCache = new LRUHybridCache<Class<?>, Model>(Integer.MAX_VALUE - 1, new Computer(this));
+        computer = new Computer(this);
+        interface2ModelCache = new LRUHybridCache<Class<?>, Model>(Integer.MAX_VALUE - 1, computer);
     }
     
     /**
@@ -122,14 +123,39 @@ public class JAUtilities {
         return entry.getValue();
     }
     
-    public synchronized void convertRootAndLeavesDuex(Class<?> root, boolean mustConvertAll) {
+    public synchronized void convertRootAndLeaves(Class<?> root, boolean mustConvertAll) {
+        long currentTime = 0L;
+        if (DEBUG_GENERATION_TIMING) {
+            computer.numGenerated = 0;
+            computer.numPreGenerated = 0;
+            
+            currentTime = System.currentTimeMillis();
+        }
+        
         Model rootModel = interface2ModelCache.compute(root).getValue();
-        if (!mustConvertAll) return;
+        if (!mustConvertAll) {
+            if (DEBUG_GENERATION_TIMING) {
+                currentTime = System.currentTimeMillis() - currentTime;
+                
+                Logger.getLogger().debug("Took " + currentTime + " to perform " +
+                  computer.numGenerated + " generations with " +
+                  computer.numPreGenerated + " pregenerations with a lazy parser");
+            }
+            return;
+        }
         
         HashSet<Class<?>> cycles = new HashSet<Class<?>>();
         cycles.add(root);
         
         convertAllRootAndLeaves(rootModel, cycles);
+        
+        if (DEBUG_GENERATION_TIMING) {
+            currentTime = System.currentTimeMillis() - currentTime;
+            
+            Logger.getLogger().debug("Took " + currentTime + " to perform " +
+              computer.numGenerated + " generations with " +
+              computer.numPreGenerated + " pregenerations with a non-lazy parser");
+        }
     }
     
     private void convertAllRootAndLeaves(Model rootModel, HashSet<Class<?>> cycles) {
@@ -188,6 +214,8 @@ public class JAUtilities {
     
     private final class Computer implements Computable<Class<?>, HybridCacheEntry<Model>> {
         private final JAUtilities jaUtilities;
+        private int numGenerated;
+        private int numPreGenerated;
         
         private Computer(JAUtilities jaUtilities) {
             this.jaUtilities = jaUtilities;
@@ -203,6 +231,12 @@ public class JAUtilities {
             
             Class<?> proxyClass = GeneralUtilities.loadClass(key.getClassLoader(), proxyName);
             if (proxyClass == null) {
+                numGenerated++;
+                
+                if (DEBUG_PREGEN) {
+                    Logger.getLogger().debug("Pregenerating proxy for " + key.getName());
+                }
+                
                 // Generate the proxy
                 try {
                   CtClass generated = Generator.generate(new ClassAltClassImpl(key, classReflectionHelper),
@@ -219,6 +253,13 @@ public class JAUtilities {
                 catch (Throwable th) {
                     throw new RuntimeException(th);
                 }
+            }
+            else {
+                if (DEBUG_PREGEN) {
+                    Logger.getLogger().debug("Proxy for " + key.getName() + " was pregenerated");
+                }
+                
+                numPreGenerated++;
             }
             
             Method getModelMethod;

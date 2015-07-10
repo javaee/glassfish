@@ -67,8 +67,6 @@ import org.glassfish.hk2.xml.spi.XmlServiceParser;
  */
 @Singleton
 public class XmlServiceImpl implements XmlService {
-    
-    
     @Inject
     private ServiceLocator serviceLocator;
     
@@ -107,7 +105,7 @@ public class XmlServiceImpl implements XmlService {
         }
         
         try {
-            jaUtilities.convertRootAndLeavesDuex(jaxbAnnotatedInterface, true);
+            jaUtilities.convertRootAndLeaves(jaxbAnnotatedInterface, true);
             
             Model model = jaUtilities.getModel(jaxbAnnotatedInterface);
                 
@@ -218,7 +216,7 @@ public class XmlServiceImpl implements XmlService {
             throw new IllegalArgumentException("Only an interface can be given to unmarshall: " + jaxbAnnotatedInterface.getName());
         }
         try {
-            jaUtilities.convertRootAndLeavesDuex(jaxbAnnotatedInterface, true);
+            jaUtilities.convertRootAndLeaves(jaxbAnnotatedInterface, true);
             
             Model model = jaUtilities.getModel(jaxbAnnotatedInterface);
         
@@ -256,7 +254,7 @@ public class XmlServiceImpl implements XmlService {
             throw new IllegalArgumentException("Only an interface can be given to unmarshall: " + beanInterface.getName());
         }
         
-        jaUtilities.convertRootAndLeavesDuex(beanInterface, true);
+        jaUtilities.convertRootAndLeaves(beanInterface, true);
         
         Model model = jaUtilities.getModel(beanInterface);
         
