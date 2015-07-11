@@ -37,29 +37,23 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.internal;
-
-import java.io.Serializable;
+package org.glassfish.hk2.xml.spi;
 
 /**
- * Information about non-bean children
- * 
  * @author jwells
+ *
  */
-public class ChildData implements Serializable {
-    private static final long serialVersionUID = -2690787310154109720L;
+public enum PreGenerationRequirement {
+    /**
+     * The proxies must be pre-generated before being
+     * asked to parse a document
+     */
+    MUST_PREGENERATE,
     
-    private String defaultAsString;
-    private Class<?> childType;
-    
-    public ChildData() {
-    }
-    
-    public ChildData(String defaultAsString, Class<?> childType) {
-        this.defaultAsString = defaultAsString;
-        this.childType = childType;
-    }
-    
-    public String getDefaultAsString() { return defaultAsString; }
-    public Class<?> getChildType() { return childType; }
+    /**
+     * The proxies can be generated lazily when needed,
+     * they are not needed prior to parsing a document
+     */
+    LAZY_PREGENERATION
+
 }

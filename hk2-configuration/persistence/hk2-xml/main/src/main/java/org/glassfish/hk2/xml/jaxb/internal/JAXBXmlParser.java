@@ -47,6 +47,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.Unmarshaller.Listener;
 
+import org.glassfish.hk2.xml.spi.PreGenerationRequirement;
 import org.glassfish.hk2.xml.spi.XmlServiceParser;
 
 /**
@@ -71,6 +72,14 @@ public class JAXBXmlParser implements XmlServiceParser {
         T root = (T) unmarshaller.unmarshal(location.toURL());
         
         return root;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.spi.XmlServiceParser#getPreGenerationRequirement()
+     */
+    @Override
+    public PreGenerationRequirement getPreGenerationRequirement() {
+        return PreGenerationRequirement.MUST_PREGENERATE;
     }
 
 }

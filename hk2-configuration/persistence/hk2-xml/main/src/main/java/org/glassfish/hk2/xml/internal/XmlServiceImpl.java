@@ -59,6 +59,7 @@ import org.glassfish.hk2.xml.api.XmlHubCommitMessage;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
+import org.glassfish.hk2.xml.spi.PreGenerationRequirement;
 import org.glassfish.hk2.xml.spi.XmlServiceParser;
 
 /**
@@ -104,12 +105,18 @@ public class XmlServiceImpl implements XmlService {
             throw new IllegalArgumentException("Only an interface can be given to unmarshall: " + jaxbAnnotatedInterface.getName());
         }
         
+        XmlServiceParser localParser = parser.get();
+        if (localParser == null) {
+            throw new IllegalStateException("There is no XmlServiceParser implementation");
+        }
+        
         try {
-            jaUtilities.convertRootAndLeaves(jaxbAnnotatedInterface, true);
+            boolean generateAll = PreGenerationRequirement.MUST_PREGENERATE.equals(localParser.getPreGenerationRequirement());
+            jaUtilities.convertRootAndLeaves(jaxbAnnotatedInterface, generateAll);
             
             Model model = jaUtilities.getModel(jaxbAnnotatedInterface);
                 
-            return unmarshallClass(uri, model, advertiseInRegistry, advertiseInHub);
+            return unmarshallClass(uri, model, localParser, advertiseInRegistry, advertiseInHub);
         }
         catch (RuntimeException re) {
             throw re;
@@ -121,13 +128,14 @@ public class XmlServiceImpl implements XmlService {
     
     @SuppressWarnings("unchecked")
     private <T> XmlRootHandle<T> unmarshallClass(URI uri, Model model,
+            XmlServiceParser localParser,
             boolean advertise, boolean advertiseInHub) throws Exception {
         long elapsedUpToJAXB = 0;
         if (JAUtilities.DEBUG_GENERATION_TIMING) {
             elapsedUpToJAXB = System.currentTimeMillis();
         }
         
-        XmlServiceParser localParser = parser.get();
+        
         Hk2JAXBUnmarshallerListener listener = new Hk2JAXBUnmarshallerListener(jaUtilities, classReflectionHelper);
         
         long jaxbUnmarshallElapsedTime = 0L;

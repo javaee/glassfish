@@ -58,6 +58,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
+import org.glassfish.hk2.xml.spi.PreGenerationRequirement;
 import org.glassfish.hk2.xml.spi.XmlServiceParser;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -243,4 +244,11 @@ public class DomXmlParser implements XmlServiceParser {
         listener.afterUnmarshal(target, parent);
     }
 
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.spi.XmlServiceParser#getPreGenerationRequirement()
+     */
+    @Override
+    public PreGenerationRequirement getPreGenerationRequirement() {
+        return PreGenerationRequirement.LAZY_PREGENERATION;
+    }
 }

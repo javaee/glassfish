@@ -69,5 +69,15 @@ public interface XmlServiceParser {
      * @return The root object with all fields filled in from the given document
      */
     public <T> T parseRoot(Class<T> clazz, URI location, Unmarshaller.Listener listener) throws Exception;
+    
+    
+    /**
+     * This tells the system whether or not it needs to pregenerate all proxies
+     * prior to parsing a document or if the proxies can be generated lazily
+     * 
+     * @return The value that indicates whether or not the proxies can be
+     * loaded lazily or must be pre-generated prior to parsing a document
+     */
+    public PreGenerationRequirement getPreGenerationRequirement();
 
 }
