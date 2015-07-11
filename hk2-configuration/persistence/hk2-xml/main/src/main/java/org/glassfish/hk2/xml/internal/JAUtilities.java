@@ -139,7 +139,7 @@ public class JAUtilities {
                 
                 Logger.getLogger().debug("Took " + currentTime + " to perform " +
                   computer.numGenerated + " generations with " +
-                  computer.numPreGenerated + " pregenerations with a lazy parser");
+                  computer.numPreGenerated + " pre generated with a lazy parser");
             }
             return;
         }
@@ -152,9 +152,9 @@ public class JAUtilities {
         if (DEBUG_GENERATION_TIMING) {
             currentTime = System.currentTimeMillis() - currentTime;
             
-            Logger.getLogger().debug("Took " + currentTime + " to perform " +
+            Logger.getLogger().debug("Took " + currentTime + " milliseconds to perform " +
               computer.numGenerated + " generations with " +
-              computer.numPreGenerated + " pregenerations with a non-lazy parser");
+              computer.numPreGenerated + " pre generated with a non-lazy parser");
         }
     }
     

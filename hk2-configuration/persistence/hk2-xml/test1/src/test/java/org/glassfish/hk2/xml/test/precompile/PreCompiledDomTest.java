@@ -56,8 +56,7 @@ import org.junit.Test;
  * @author jwells
  *
  */
-public class PreCompiledTest {
-    private final static String CLASS_ADD_ON_NAME = "_Hk2_Jaxb";
+public class PreCompiledDomTest {
     private final static String PRE_COMPILED_FILE = "pre-compiled.xml";
     private final static String SIMPLE_FILE = "simple.xml";
     private final static String ALICE = "Alice";
@@ -65,36 +64,6 @@ public class PreCompiledTest {
     private final static String CAROL = "Carol";
     private final static String DAVE = "Dave";
     private final static String ENGLEBERT = "Englebert";
-    
-    static Class<?> getAssociatedClass(Class<?> forInterface) {
-        ClassLoader loader = forInterface.getClass().getClassLoader();
-        if (loader == null) loader = ClassLoader.getSystemClassLoader();
-        Assert.assertNotNull(loader);
-        
-        String implClass = forInterface.getName() + CLASS_ADD_ON_NAME;
-        
-        try {
-            return loader.loadClass(implClass);
-        }
-        catch (ClassNotFoundException e) {
-            return null;
-        }
-    }
-    
-    private static boolean alreadyDone = false;
-    static void ensurePreCompilation() {
-        if (alreadyDone) return;
-        alreadyDone = true;
-        
-        Assert.assertNull(getAssociatedClass(MultiChild.class));
-        Assert.assertNull(getAssociatedClass(DirectChild.class));
-        Assert.assertNotNull(getAssociatedClass(PreCompiledRoot.class));
-        Assert.assertNotNull(getAssociatedClass(PreCompiledMultiChild.class));
-        Assert.assertNotNull(getAssociatedClass(PreCompiledDirectChild.class));
-        Assert.assertNotNull(getAssociatedClass(PreCompiledArrayChild.class));
-        Assert.assertNull(getAssociatedClass(ArrayChild.class));
-        
-    }
     
     /**
      * Checks to see that the pre-compiled class
@@ -104,9 +73,9 @@ public class PreCompiledTest {
      */
     @Test // @org.junit.Ignore
     public void testPreCompiledGotPreCompile() throws Exception {
-        ensurePreCompilation();
+        PreCompiledTest.ensurePreCompilation();
         
-        ServiceLocator locator = Utilities.createLocator(MyCustomizer.class);
+        ServiceLocator locator = Utilities.createDomLocator(MyCustomizer.class);
         XmlService xmlService = locator.getService(XmlService.class);
         
         URL url = getClass().getClassLoader().getResource(PRE_COMPILED_FILE);
@@ -169,9 +138,9 @@ public class PreCompiledTest {
      */
     @Test // @org.junit.Ignore
     public void testSimple() throws Exception {
-        Assert.assertNotNull(getAssociatedClass(SimpleBean.class));
+        Assert.assertNotNull(PreCompiledTest.getAssociatedClass(SimpleBean.class));
         
-        ServiceLocator locator = Utilities.createLocator(SimpleBeanCustomizer.class);
+        ServiceLocator locator = Utilities.createDomLocator(SimpleBeanCustomizer.class);
         XmlService xmlService = locator.getService(XmlService.class);
         
         URL url = getClass().getClassLoader().getResource(SIMPLE_FILE);
