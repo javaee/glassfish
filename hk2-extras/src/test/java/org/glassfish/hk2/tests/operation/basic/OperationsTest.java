@@ -1023,6 +1023,26 @@ public class OperationsTest {
         Assert.assertFalse(BasicOperationUsesServiceInPreDispose.getDisposeSuccess());
     }
     
+    /**
+     * The Factory produces a class proxy (not an interface) which is legal.
+     * This test ensures though that the actual method called is called on
+     * the "real" service as created by the Factory
+     */
+    @Test
+    public void testFactoryProducedOperationScopeIsProxiedProperly() {
+        ServiceLocator locator = createLocator(BasicOperationScopeContext.class,
+                ProxyDetectorFactory.class,
+                SingletonToDetermineProxyService.class);
+        
+        OperationManager operationManager = locator.getService(OperationManager.class);
+        
+        operationManager.createAndStartOperation(BASIC_OPERATION_ANNOTATION);
+        
+        SingletonToDetermineProxyService stdps = locator.getService(SingletonToDetermineProxyService.class);
+        Assert.assertFalse(stdps.isCalledOnProxy());
+        
+    }
+    
     private static class Closer implements Runnable {
         private final Object notifier;
         private final OperationHandle<BasicOperationScope> closeMe;
