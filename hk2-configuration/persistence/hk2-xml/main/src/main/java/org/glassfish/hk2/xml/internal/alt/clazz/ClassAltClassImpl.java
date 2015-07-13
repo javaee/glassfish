@@ -67,6 +67,7 @@ public class ClassAltClassImpl implements AltClass {
     public static final AltClass LONG = new ClassAltClassImpl(long.class, SCALAR_HELPER);
     public static final AltClass FLOAT = new ClassAltClassImpl(float.class, SCALAR_HELPER);
     public static final AltClass DOUBLE = new ClassAltClassImpl(double.class, SCALAR_HELPER);
+    public static final AltClass OBJECT = new ClassAltClassImpl(Object.class, SCALAR_HELPER);
     
     private final Class<?> clazz;
     private final ClassReflectionHelper helper;

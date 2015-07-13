@@ -49,14 +49,18 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
 import org.glassfish.hk2.xml.internal.Utilities;
 import org.glassfish.hk2.xml.internal.alt.AltAnnotation;
 import org.glassfish.hk2.xml.internal.alt.AltClass;
 import org.glassfish.hk2.xml.internal.alt.AltMethod;
+import org.glassfish.hk2.xml.internal.alt.clazz.ClassAltClassImpl;
 
 /**
  * @author jwells
@@ -142,7 +146,29 @@ public class ElementAltMethodImpl implements AltMethod {
      */
     @Override
     public AltClass getFirstTypeArgumentOfParameter(int index) {
-        throw new AssertionError("ElementAltMethodImpl.getFirstTypeArgumentOfParameter not yet implemented");
+        VariableElement ve = method.getParameters().get(index);
+        TypeMirror tm = ve.asType();
+        if (!TypeKind.DECLARED.equals(tm.getKind())) {
+            return ClassAltClassImpl.OBJECT;
+        }
+        
+        DeclaredType dt = (DeclaredType) tm;
+        List<? extends TypeMirror> typeParams = dt.getTypeArguments();
+        if (typeParams == null || typeParams.size() < 1) {
+            return ClassAltClassImpl.OBJECT;
+        }
+        
+        TypeMirror firstTypeParam = typeParams.get(0);
+        if (!TypeKind.DECLARED.equals(firstTypeParam.getKind())) {
+            return ClassAltClassImpl.OBJECT;
+        }
+        
+        Element ele = ((DeclaredType) firstTypeParam).asElement();
+        if (!(ele instanceof TypeElement)) {
+            return ClassAltClassImpl.OBJECT;
+        }
+        
+        return new TypeElementAltClassImpl((TypeElement) ele, processingEnv);
     }
 
     /* (non-Javadoc)
@@ -186,4 +212,8 @@ public class ElementAltMethodImpl implements AltMethod {
         return method.isVarArgs();
     }
 
+    @Override
+    public String toString() {
+        return "ElementAltMethodImpl(" + method + ")";
+    }
 }

@@ -48,6 +48,7 @@ import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.precompile.anno.EverythingBagel;
 import org.glassfish.hk2.xml.test.precompile.anno.GreekEnum;
+import org.glassfish.hk2.xml.test.precompile.dom.EntertainmentBean;
 import org.glassfish.hk2.xml.test1.utilities.Utilities;
 import org.junit.Assert;
 import org.junit.Test;
@@ -57,6 +58,7 @@ import org.junit.Test;
  *
  */
 public class PreCompiledDomTest {
+    private final static String FREETIME_FILE = "freetime.xml";
     private final static String PRE_COMPILED_FILE = "pre-compiled.xml";
     private final static String SIMPLE_FILE = "simple.xml";
     private final static String ALICE = "Alice";
@@ -206,6 +208,28 @@ public class PreCompiledDomTest {
         WorkerClass worker = new WorkerClass();
         root.customizer14(worker);
         Assert.assertEquals(14, worker.returnFourteen());
+    }
+    
+    /**
+     * This is dom which allows lazy generation
+     * 
+     * @throws Exception
+     */
+    @Test // @org.junit.Ignore
+    public void testLazyGeneration() throws Exception {
+        PreCompiledTest.ensurePreCompilation();
+        
+        ServiceLocator locator = Utilities.createDomLocator(MyCustomizer.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(FREETIME_FILE);
+        
+        XmlRootHandle<EntertainmentBean> rootHandle = xmlService.unmarshall(url.toURI(), EntertainmentBean.class);
+        Assert.assertNotNull(rootHandle);
+        
+        EntertainmentBean root = rootHandle.getRoot();
+        
+        Assert.assertEquals("Eagles", root.getSports().get(0).getFootball().get(0).getName());
     }
     
     private static class BeanListenerInterfaceImpl implements BeanListenerInterface {

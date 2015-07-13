@@ -1,0 +1,10 @@
+<entertainment>
+  <sports>
+    <football name="Eagles"/>
+  </sports>
+  <movies>
+    <drama name="The Sound And The Fury" />
+    <drama name="Romeo and Juliet" />
+    <comedy name="Bananas" />
+  </movies>
+</entertainment>

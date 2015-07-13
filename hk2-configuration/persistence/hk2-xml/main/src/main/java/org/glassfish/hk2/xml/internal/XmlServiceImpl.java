@@ -151,7 +151,9 @@ public class XmlServiceImpl implements XmlService {
         if (JAUtilities.DEBUG_GENERATION_TIMING) {
             elapsedJAXBToAdvertisement = System.currentTimeMillis();
             jaxbUnmarshallElapsedTime = elapsedJAXBToAdvertisement - jaxbUnmarshallElapsedTime;
-            Logger.getLogger().debug("Time parsing " + uri + " is " + jaxbUnmarshallElapsedTime + " milliseconds");
+            Logger.getLogger().debug("Time parsing " + uri + " is " + jaxbUnmarshallElapsedTime + " milliseconds " +
+              ", now with " + jaUtilities.getNumGenerated() + " proxies generated and " +
+                    jaUtilities.getNumPreGenerated() + " pre generated proxies loaded");
         }
         
         DynamicChangeInfo changeControl = new DynamicChangeInfo(jaUtilities,

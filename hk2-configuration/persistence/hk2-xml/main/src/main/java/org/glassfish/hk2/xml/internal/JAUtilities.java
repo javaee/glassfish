@@ -212,6 +212,14 @@ public class JAUtilities {
         return defaultClassPool;
     }
     
+    public int getNumGenerated() {
+        return computer.numGenerated;
+    }
+    
+    public int getNumPreGenerated() {
+        return computer.numPreGenerated;
+    }
+    
     private final class Computer implements Computable<Class<?>, HybridCacheEntry<Model>> {
         private final JAUtilities jaUtilities;
         private int numGenerated;
