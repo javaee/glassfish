@@ -107,6 +107,7 @@ public class ChildDataModel implements Serializable {
             if (childTypeAsClass != null) return childTypeAsClass;
             
             childTypeAsClass = GeneralUtilities.loadClass(myLoader, childType);
+            
             return childTypeAsClass;
         }
         

@@ -538,11 +538,12 @@ public class UnmarshallDomTest {
     }
     
     /**
-     * Tests that a list child with no elements returns an empty array (not null)
+     * Tests that a byte[] child gets properly translated
+     * (into itself, for now)
      * 
      * @throws Exception
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testByteArrayNonChild() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
         XmlService xmlService = locator.getService(XmlService.class);

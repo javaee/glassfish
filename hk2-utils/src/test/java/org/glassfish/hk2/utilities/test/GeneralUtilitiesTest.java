@@ -119,6 +119,57 @@ public class GeneralUtilitiesTest {
         Assert.assertFalse(GeneralUtilities.safeEquals(new Integer(0), zero));
     }
     
+    /**
+     * Tests two different object that are equal returns true
+     */
+    @Test
+    public void testVariousArrayTypes() {
+        {
+            Class<?> bArray = GeneralUtilities.loadClass(getClass().getClassLoader(), "[B");
+            Assert.assertEquals("[B", bArray.getName());
+        }
+        
+        {
+            Class<?> iArray = GeneralUtilities.loadClass(getClass().getClassLoader(), "[[I");
+            Assert.assertEquals("[[I", iArray.getName());
+        }
+        
+        {
+            Class<?> jArray = GeneralUtilities.loadClass(getClass().getClassLoader(), "[[[J");
+            Assert.assertEquals("[[[J", jArray.getName());
+        }
+        
+        {
+            Class<?> zArray = GeneralUtilities.loadClass(getClass().getClassLoader(), "[Z");
+            Assert.assertEquals("[Z", zArray.getName());
+        }
+        
+        {
+            Class<?> sArray = GeneralUtilities.loadClass(getClass().getClassLoader(), "[S");
+            Assert.assertEquals("[S", sArray.getName());
+        }
+        
+        {
+            Class<?> cArray = GeneralUtilities.loadClass(getClass().getClassLoader(), "[C");
+            Assert.assertEquals("[C", cArray.getName());
+        }
+        
+        {
+            Class<?> dArray = GeneralUtilities.loadClass(getClass().getClassLoader(), "[D");
+            Assert.assertEquals("[D", dArray.getName());
+        }
+        
+        {
+            Class<?> fArray = GeneralUtilities.loadClass(getClass().getClassLoader(), "[F");
+            Assert.assertEquals("[F", fArray.getName());
+        }
+        
+        {
+            Class<?> lArray = GeneralUtilities.loadClass(getClass().getClassLoader(), "[[[[[Ljava.lang.String;");
+            Assert.assertEquals("[[[[[Ljava.lang.String;", lArray.getName());
+        }
+    }
+    
     private static class IntegerObject {
         private final int value;
         
