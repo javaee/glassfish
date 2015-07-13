@@ -648,7 +648,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
 
     private <T> ServiceHandleImpl<T> internalGetServiceHandle(
             ActiveDescriptor<T> activeDescriptor,
-            Type requestedType) {
+            Type requestedType,
+            Injectee originalRequest) {
         if (activeDescriptor == null) throw new IllegalArgumentException();
         checkState();
 
@@ -656,7 +657,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
             return getServiceHandleImpl(activeDescriptor, null);
         }
 
-        return getServiceHandleImpl(activeDescriptor, new InjecteeImpl(requestedType));
+        Injectee useInjectee = (originalRequest != null) ? originalRequest : new InjecteeImpl(requestedType) ;
+        return getServiceHandleImpl(activeDescriptor, useInjectee);
     }
 
     /* (non-Javadoc)
@@ -683,7 +685,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             return Utilities.createService(activeDescriptor, originalRequest, this, tmpRoot, rawClass);
         }
 
-        ServiceHandleImpl<T> subHandle = internalGetServiceHandle(activeDescriptor, contractOrImpl);
+        ServiceHandleImpl<T> subHandle = internalGetServiceHandle(activeDescriptor, contractOrImpl, originalRequest);
 
         if (PerLookup.class.equals(activeDescriptor.getScopeAnnotation())) {
             ((ServiceHandleImpl<?>) root).addSubHandle(subHandle);
@@ -1416,7 +1418,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         LinkedList<Object> retVal = new LinkedList<Object>();
         for (ActiveDescriptor<?> candidate : immediate.getImmediateResults()) {
             if (getHandles) {
-                retVal.add(internalGetServiceHandle(candidate, contractOrImpl));
+                retVal.add(internalGetServiceHandle(candidate, contractOrImpl, null));
             }
             else {
                 Object service = Utilities.createService(candidate, null, this, null, rawClass);
@@ -1445,7 +1447,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         ActiveDescriptor<T> ad = internalGetDescriptor(null, contractOrImpl, name, null, false, qualifiers);
         if (ad == null) return null;
 
-        return internalGetServiceHandle(ad, contractOrImpl);
+        return internalGetServiceHandle(ad, contractOrImpl, null);
     }
 
     /* (non-Javadoc)

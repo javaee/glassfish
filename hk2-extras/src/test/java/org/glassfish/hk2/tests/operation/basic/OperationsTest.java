@@ -50,7 +50,6 @@ import org.glassfish.hk2.extras.operation.OperationHandle;
 import org.glassfish.hk2.extras.operation.OperationManager;
 import org.glassfish.hk2.extras.operation.OperationState;
 import org.glassfish.hk2.tests.extras.internal.Utilities;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -1029,7 +1028,7 @@ public class OperationsTest {
      * This test ensures though that the actual method called is called on
      * the "real" service as created by the Factory
      */
-    @Test
+    @Test // @org.junit.Ignore
     public void testFactoryProducedOperationScopeIsProxiedProperly() {
         ServiceLocator locator = createLocator(BasicOperationScopeContext.class,
                 ProxyDetectorFactory.class,
@@ -1048,14 +1047,12 @@ public class OperationsTest {
      * Tests that services that come from proxies from the same scope
      * and from a Factory honor the not-in-same-scope attribute
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testFactoriesProxiesAndHandlesOhMy() {
         ServiceLocator locator = createLocator(BasicOperationScopeContext.class,
                 SimpleSingleton.class,
                 Frobnicator.class,
                 CaturgiatorFactory.class);
-        
-        ServiceLocatorUtilities.dumpAllDescriptors(locator);
         
         SimpleSingleton root = locator.getService(SimpleSingleton.class);
         
