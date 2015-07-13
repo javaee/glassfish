@@ -50,6 +50,7 @@ import org.glassfish.hk2.extras.operation.OperationHandle;
 import org.glassfish.hk2.extras.operation.OperationManager;
 import org.glassfish.hk2.extras.operation.OperationState;
 import org.glassfish.hk2.tests.extras.internal.Utilities;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -1041,6 +1042,24 @@ public class OperationsTest {
         SingletonToDetermineProxyService stdps = locator.getService(SingletonToDetermineProxyService.class);
         Assert.assertFalse(stdps.isCalledOnProxy());
         
+    }
+    
+    /**
+     * Tests that services that come from proxies from the same scope
+     * and from a Factory honor the not-in-same-scope attribute
+     */
+    @Test @org.junit.Ignore
+    public void testFactoriesProxiesAndHandlesOhMy() {
+        ServiceLocator locator = createLocator(BasicOperationScopeContext.class,
+                SimpleSingleton.class,
+                Frobnicator.class,
+                CaturgiatorFactory.class);
+        
+        ServiceLocatorUtilities.dumpAllDescriptors(locator);
+        
+        SimpleSingleton root = locator.getService(SimpleSingleton.class);
+        
+        root.reticulateSplines();
     }
     
     private static class Closer implements Runnable {

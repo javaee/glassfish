@@ -275,7 +275,7 @@ public class JAUtilities {
                 getModelMethod = proxyClass.getMethod(Generator.STATIC_GET_MODEL_METHOD_NAME, new Class<?>[0]);
             }
             catch (NoSuchMethodException e) {
-                throw new AssertionError("This proxy must have been generated with an old generator, it has no __getModel method");
+                throw new AssertionError("This proxy must have been generated with an old generator, it has no __getModel method for " + key.getName());
             }
             
             Model retVal;

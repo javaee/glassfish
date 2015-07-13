@@ -536,4 +536,27 @@ public class UnmarshallDomTest {
         Assert.assertNotNull(noChildrenList);
         Assert.assertEquals(0, noChildrenList.length);
     }
+    
+    /**
+     * Tests that a list child with no elements returns an empty array (not null)
+     * 
+     * @throws Exception
+     */
+    @Test @org.junit.Ignore
+    public void testByteArrayNonChild() throws Exception {
+        ServiceLocator locator = Utilities.createDomLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(ACME2_FILE);
+        
+        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
+        Employees employees = rootHandle.getRoot();
+        
+        byte[] encrypted = employees.getEncryptedCredentials();
+        Assert.assertNotNull(encrypted);
+        
+        String asString = new String(encrypted);
+        
+        Assert.assertEquals("Garbledeguk", asString);
+    }
 }

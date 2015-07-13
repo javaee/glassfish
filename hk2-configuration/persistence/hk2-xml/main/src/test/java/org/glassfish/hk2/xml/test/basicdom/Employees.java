@@ -115,4 +115,8 @@ public interface Employees {
     @XmlElement(name="no-child-array")
     public void setNoChildArray(OtherData noChildren[]);
     public OtherData[] getNoChildArray();
+    
+    @XmlElement(name="encrypted-credentials")
+    public byte[] getEncryptedCredentials();
+    public void setEncryptedCredentials(byte[] creds);
 }

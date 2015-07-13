@@ -42,4 +42,6 @@
 
 <employees>
   <company-name>Oracle</company-name>
+  
+  <encrypted-credentials>Garbledeguk</encrypted-credentials>
 </employees>
