@@ -93,7 +93,7 @@ public class Model implements Serializable {
      */
     private Set<String> unKeyedChildren = null;
     private Set<String> keyedChildren = null;
-    private JAUtilities jaUtilities = null;
+    private transient JAUtilities jaUtilities = null;
     private ClassLoader myLoader;
     
     public Model() {

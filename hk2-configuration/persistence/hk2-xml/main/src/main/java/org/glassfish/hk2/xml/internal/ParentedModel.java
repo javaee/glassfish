@@ -68,7 +68,7 @@ public class ParentedModel implements Serializable {
     
     /** Set at runtime */
     private ClassLoader myLoader;
-    private JAUtilities jaUtilities;
+    private transient JAUtilities jaUtilities;
     
     /** Calculated lazily */
     private Model childModel;
