@@ -1059,6 +1059,29 @@ public class OperationsTest {
         root.reticulateSplines();
     }
     
+    /**
+     * Tests that equals will call through to the proxies
+     */
+    @Test // @org.junit.Ignore
+    public void testEquals() {
+        ServiceLocator locator = createLocator(BasicOperationScopeContext.class,
+                BasicOperationSimpleService.class);
+        
+        OperationManager operationManager = locator.getService(OperationManager.class);
+        OperationHandle<BasicOperationScope> operation1 = operationManager.createAndStartOperation(BASIC_OPERATION_ANNOTATION);
+        
+        BasicOperationSimpleService service1 = locator.getService(BasicOperationSimpleService.class);
+        Assert.assertTrue(service1 instanceof ProxyCtl);
+        
+        BasicOperationSimpleService service2 = locator.getService(BasicOperationSimpleService.class);
+        Assert.assertTrue(service2 instanceof ProxyCtl);
+        
+        Assert.assertTrue(service1.equals(((ProxyCtl) service2).__make()));
+        Assert.assertTrue(service2.equals(((ProxyCtl) service1).__make()));
+        
+        operation1.closeOperation();
+    }
+    
     private static class Closer implements Runnable {
         private final Object notifier;
         private final OperationHandle<BasicOperationScope> closeMe;
