@@ -43,9 +43,11 @@ package org.jvnet.hk2.internal;
 import java.lang.reflect.Method;
 
 import javassist.util.proxy.MethodHandler;
+
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.ProxyCtl;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
@@ -84,8 +86,26 @@ public class MethodInterceptorImpl implements MethodHandler {
             // We did what we came here to do
             return service;
         }
+        
+        if (isEquals(method) && (params.length == 1) && (params[0] != null) && (params[0] instanceof ProxyCtl)) {
+            ProxyCtl equalsProxy = (ProxyCtl) params[0];
+            
+            params = new Object[1];
+            params[0] = equalsProxy.__make();
+        }
 
         return ReflectionHelper.invoke(service, method, params, locator.getNeutralContextClassLoader());
 
+    }
+    
+    private final static String EQUALS_NAME = "equals";
+    
+    private static boolean isEquals(Method m) {
+        if (!m.getName().equals(EQUALS_NAME)) return false;
+        Class<?>[] params = m.getParameterTypes();
+        if (params == null || params.length != 1) return false;
+        
+        if (!Object.class.equals(params[0])) return false;
+        return true;
     }
 }

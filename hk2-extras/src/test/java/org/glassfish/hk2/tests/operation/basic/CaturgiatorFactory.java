@@ -64,7 +64,6 @@ public class CaturgiatorFactory implements Factory<Caturgiator> {
   @Enscrofulated
   @Miserable
   public Caturgiator provide() {
-    System.out.println("JRW(10) provide called");
     return new Caturgiator("John");
   }
 

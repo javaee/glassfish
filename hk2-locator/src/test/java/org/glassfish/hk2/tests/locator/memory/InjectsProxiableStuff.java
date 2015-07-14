@@ -54,7 +54,6 @@ public class InjectsProxiableStuff {
     private ProxiableSimpleService pss;
     
     public void operate() {
-        // System.out.println("JRW(10) pss=" + pss);
         ((ProxyCtl) pss).__make();
     }
 

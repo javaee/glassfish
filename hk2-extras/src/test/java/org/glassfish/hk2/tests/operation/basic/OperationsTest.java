@@ -1076,8 +1076,8 @@ public class OperationsTest {
         BasicOperationSimpleService service2 = locator.getService(BasicOperationSimpleService.class);
         Assert.assertTrue(service2 instanceof ProxyCtl);
         
-        Assert.assertTrue(service1.equals(((ProxyCtl) service2).__make()));
-        Assert.assertTrue(service2.equals(((ProxyCtl) service1).__make()));
+        Assert.assertTrue(service1.equals(service2));
+        Assert.assertTrue(service2.equals(service1));
         
         operation1.closeOperation();
     }

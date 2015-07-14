@@ -236,6 +236,27 @@ public class ExpensiveRequestService {
 }
 ```java
 
+#### Proxies and equals()
+
+HK2 treats the equals method of Object slightly differently from other methods.  If the incoming parameter of the equals
+method is itself a proxy, then HK2 will unwrap that object and send in the unproxied object.  This is to ensure that
+two proxy instances that are pointing to the same underlying service will return true even if the equals method is
+not explicitly implemented.  Consider the following example:
+
+```java
+Foo foo1 = locator.getService(Foo.class);
+Foo foo2 = locator.getService(Foo.class);
+Assert.assertTrue(foo1.equals(foo2));
+```
+
+In the example above if foo1 and foo2 are proxies that point to the same underlying service then if hk2 did NOT treat equals
+specially the assertion of truth would fail, since foo1 would have its equals method called being given the proxy of foo2, not
+the underlying object of foo2.  Instead, because equals is treated specially, the assertion will be true since foo2 will be
+unwrapped and the underlying object will get passed in.
+
+No other method is treated in this way by the proxying code of HK2.
+
+
 ### ClassLoading
 
 Classloading is an interesting challenge in any Java environment.  HK2 defers classloading as long as possible, but at some
