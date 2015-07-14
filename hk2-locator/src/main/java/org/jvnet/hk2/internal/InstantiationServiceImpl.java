@@ -76,6 +76,11 @@ public class InstantiationServiceImpl implements InstantiationService {
                 return head;
             }
             
+            @Override
+            public String toString() {
+                return "InstantiationData(" + head + "," + System.identityHashCode(this) + ")";
+            }
+            
         };
    
     }
@@ -104,6 +109,11 @@ public class InstantiationServiceImpl implements InstantiationService {
             // prevents memory leaks for long dead threads
             injecteeStack.remove(tid);
         }
+    }
+    
+    @Override
+    public String toString() {
+        return "InstantiationServiceImpl(" + injecteeStack.keySet() + "," + System.identityHashCode(this) + ")";
     }
 
 }
