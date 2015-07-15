@@ -51,7 +51,7 @@
     </parent>
     <groupId>org.glassfish.hk2</groupId>
     <artifactId>hk2-bom</artifactId>
-    <version>2.4.0-b27</version>
+    <version>2.4.0-b28-SNAPSHOT</version>
     <packaging>pom</packaging>
     
     <properties>
@@ -478,8 +478,4 @@
             </plugins>
         </pluginManagement>
     </build>
-
-  <scm>
-    <tag>hk2-parent-2.4.0-b27</tag>
-  </scm>
 </project>
