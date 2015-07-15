@@ -92,7 +92,7 @@ import org.jvnet.hk2.generator.InFlightGenerator;
  */
 public class InhabitantsGeneratorTest {
     private final static String CLASS_PATH_PROP = "java.class.path";
-    private final static String CLASSPATH = GeneralUtilities.getSystemProperty(CLASS_PATH_PROP, null);
+    private final static String CLASSPATH = System.getProperty(CLASS_PATH_PROP);
     
     private final static String FILE_ARGUMENT = "--file";
     private final static String OUTJAR_FILE_ARGUMENT = "--outjar";

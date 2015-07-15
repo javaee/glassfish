@@ -110,7 +110,6 @@ import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.NamedImpl;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
-import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.Constants;
 import org.glassfish.hk2.utilities.reflection.MethodWrapper;
@@ -139,7 +138,7 @@ public class Utilities {
 
             @Override
             public Boolean run() {
-                return Boolean.parseBoolean(GeneralUtilities.getSystemProperty(USE_SOFT_REFERENCE_PROPERTY, "true"));
+                return Boolean.parseBoolean(System.getProperty(USE_SOFT_REFERENCE_PROPERTY, "true"));
             }
 
         });

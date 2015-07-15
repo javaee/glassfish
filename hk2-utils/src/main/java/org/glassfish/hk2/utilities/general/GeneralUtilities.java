@@ -68,24 +68,6 @@ public class GeneralUtilities {
         return a.equals(b);
     }
     
-    public static String getSystemProperty(final String property, final String defaultValue) {
-        try {
-          String retVal = AccessController.doPrivileged(new PrivilegedAction<String>() {
-
-              @Override
-              public String run() {
-                  return System.getProperty(property, defaultValue);
-              }
-
-          });
-          
-          return retVal;
-        }
-        catch (Throwable th) {
-            return defaultValue;
-        }
-    }
-    
     private static Class<?> loadArrayClass(ClassLoader cl, String aName) {
         Class<?> componentType = null;
         int[] dimensions = null;

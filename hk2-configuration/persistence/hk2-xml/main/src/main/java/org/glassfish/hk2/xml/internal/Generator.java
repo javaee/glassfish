@@ -40,6 +40,8 @@
 package org.glassfish.hk2.xml.internal;
 
 import java.beans.Introspector;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -105,8 +107,14 @@ import org.jvnet.hk2.annotations.Contract;
  *
  */
 public class Generator {
-    private final static boolean DEBUG_METHODS = Boolean.parseBoolean(GeneralUtilities.getSystemProperty(
-            "org.jvnet.hk2.properties.xmlservice.jaxb.methods", "false"));
+    private final static boolean DEBUG_METHODS = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+        @Override
+        public Boolean run() {
+            return Boolean.parseBoolean(
+                System.getProperty("org.jvnet.hk2.properties.xmlservice.jaxb.methods", "false"));
+        }
+            
+    });
     
     private final static String JAXB_DEFAULT_STRING = "##default";
     public final static String JAXB_DEFAULT_DEFAULT = "\u0000";

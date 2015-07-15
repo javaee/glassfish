@@ -56,7 +56,7 @@ public class Logger {
         @Override
         public Boolean run() {
             return Boolean.parseBoolean(
-                GeneralUtilities.getSystemProperty("org.jvnet.hk2.logger.debugToStdout", "false"));
+                System.getProperty("org.jvnet.hk2.logger.debugToStdout", "false"));
         }
             
     });

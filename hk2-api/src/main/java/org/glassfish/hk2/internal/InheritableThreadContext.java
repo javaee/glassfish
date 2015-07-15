@@ -62,7 +62,7 @@ public class InheritableThreadContext implements Context<InheritableThread> {
 
         @Override
         public Boolean run() {
-            return Boolean.parseBoolean(GeneralUtilities.getSystemProperty("org.hk2.debug.inheritablethreadcontext.log", "false"));
+            return Boolean.parseBoolean(System.getProperty("org.hk2.debug.inheritablethreadcontext.log", "false"));
         }
 
     });

@@ -41,6 +41,8 @@
 package org.glassfish.hk2.xml.internal;
 
 import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -68,10 +70,23 @@ import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 public class JAUtilities {
     private final static String ID_PREFIX = "XmlServiceUID-";
     
-    private final static boolean DEBUG_PREGEN = Boolean.parseBoolean(GeneralUtilities.getSystemProperty(
-            "org.jvnet.hk2.properties.xmlservice.jaxb.pregenerated", "false"));
-    /* package */ final static boolean DEBUG_GENERATION_TIMING = Boolean.parseBoolean(GeneralUtilities.getSystemProperty(
-            "org.jvnet.hk2.properties.xmlservice.jaxb.generationtime", "false"));
+    private final static boolean DEBUG_PREGEN = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+        @Override
+        public Boolean run() {
+            return Boolean.parseBoolean(
+                System.getProperty("org.jvnet.hk2.properties.xmlservice.jaxb.pregenerated", "false"));
+        }
+            
+    });
+            
+    /* package */ final static boolean DEBUG_GENERATION_TIMING = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+        @Override
+        public Boolean run() {
+            return Boolean.parseBoolean(
+                System.getProperty("org.jvnet.hk2.properties.xmlservice.jaxb.generationtime", "false"));
+        }
+            
+    });
     
     public final static String GET = "get";
     public final static String SET = "set";

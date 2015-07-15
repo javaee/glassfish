@@ -66,7 +66,6 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
-import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.junit.Before;
 import org.jvnet.hk2.testing.junit.annotations.Classes;
 import org.jvnet.hk2.testing.junit.annotations.Excludes;
@@ -379,7 +378,14 @@ public class HK2Runner {
             return;
         }
         
-        String classPath = GeneralUtilities.getSystemProperty(CLASS_PATH_PROP, null);
+        String classPath = AccessController.doPrivileged(new PrivilegedAction<String>() {
+            @Override
+            public String run() {
+                return System.getProperty(CLASS_PATH_PROP);
+            }
+                
+        });
+        
         StringTokenizer st = new StringTokenizer(classPath, File.pathSeparator);
         
         while(st.hasMoreTokens()) {

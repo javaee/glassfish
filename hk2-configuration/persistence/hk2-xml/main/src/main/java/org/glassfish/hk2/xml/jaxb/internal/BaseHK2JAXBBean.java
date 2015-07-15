@@ -44,6 +44,8 @@ import java.beans.PropertyChangeEvent;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -78,8 +80,14 @@ import org.glassfish.hk2.xml.internal.Utilities;
 public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
     private static final long serialVersionUID = 8149986319033910297L;
 
-    private final static boolean DEBUG_GETS_AND_SETS = Boolean.parseBoolean(GeneralUtilities.getSystemProperty(
-            "org.jvnet.hk2.properties.xmlservice.jaxb.getsandsets", "false"));
+    private final static boolean DEBUG_GETS_AND_SETS = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+        @Override
+        public Boolean run() {
+            return Boolean.parseBoolean(
+                System.getProperty("org.jvnet.hk2.properties.xmlservice.jaxb.getsandsets", "false"));
+        }
+            
+    });
     
     private final static String EMPTY = "";
     public final static char XML_PATH_SEPARATOR = '/';

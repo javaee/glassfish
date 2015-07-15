@@ -64,7 +64,7 @@ public class PerThreadContext implements Context<PerThread> {
 
         @Override
         public Boolean run() {
-            return Boolean.parseBoolean(GeneralUtilities.getSystemProperty("org.hk2.debug.perthreadcontext.log", "false"));
+            return Boolean.parseBoolean(System.getProperty("org.hk2.debug.perthreadcontext.log", "false"));
         }
         
     });

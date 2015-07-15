@@ -42,8 +42,9 @@ package org.jvnet.hk2.generator;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
-import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.jvnet.hk2.generator.internal.GeneratorRunner;
 
 /**
@@ -56,7 +57,13 @@ import org.jvnet.hk2.generator.internal.GeneratorRunner;
  */
 public class HabitatGenerator {
     private final static String CLASS_PATH_PROP = "java.class.path";
-    private final static String CLASSPATH = GeneralUtilities.getSystemProperty(CLASS_PATH_PROP, null);
+    private final static String CLASSPATH = AccessController.doPrivileged(new PrivilegedAction<String>() {
+        @Override
+        public String run() {
+            return System.getProperty(CLASS_PATH_PROP);
+        }
+            
+    });
     
     /** The flag for the location of the file */
     public final static String FILE_ARG = "--file";

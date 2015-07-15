@@ -40,6 +40,8 @@
 package org.jvnet.hk2.component;
 
 import java.io.Serializable;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -47,8 +49,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.glassfish.hk2.utilities.general.GeneralUtilities;
 
 /**
  * Map from a key to multiple values.
@@ -361,15 +361,22 @@ public class MultiMap<K, V> implements Serializable, Cloneable {
         return store.equals(other.store);
     }
     
+    private final static String NEWLINE = AccessController.doPrivileged(new PrivilegedAction<String>() {
+        @Override
+        public String run() {
+            return System.getProperty("line.separator");
+        } 
+    });
+    
     @Override
     public String toString() {
         final StringBuilder builder = new StringBuilder();
-        final String newline = GeneralUtilities.getSystemProperty("line.separator", null);
+        
         builder.append("{");
         for (final K key : store.keySet()) {
             builder.append(key).append(": ");
             builder.append(store.get(key));
-            builder.append(newline);
+            builder.append(NEWLINE);
         }
         builder.append("}");
         return builder.toString();
