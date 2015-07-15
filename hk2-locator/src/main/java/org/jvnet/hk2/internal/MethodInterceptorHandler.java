@@ -42,6 +42,8 @@ package org.jvnet.hk2.internal;
 
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Method;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,6 +55,7 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.glassfish.hk2.api.AOPProxyCtl;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.HK2Invocation;
+import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
 import javassist.util.proxy.MethodHandler;
@@ -64,6 +67,15 @@ import javassist.util.proxy.MethodHandler;
  *
  */
 public class MethodInterceptorHandler implements MethodHandler {
+    private final static boolean DEBUG_INTERCEPTION = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+        @Override
+        public Boolean run() {
+            return Boolean.parseBoolean(
+                System.getProperty("org.jvnet.hk2.properties.tracing.interceptors", "false"));
+        }
+            
+    });
+    
     private final ServiceLocatorImpl locator;
     private final Map<Method, List<MethodInterceptor>> interceptorLists;
     private final ActiveDescriptor<?> underlyingDescriptor;
@@ -98,8 +110,24 @@ public class MethodInterceptorHandler implements MethodHandler {
         
         MethodInterceptor nextInterceptor = interceptors.get(0);
         
-        return nextInterceptor.invoke(new MethodInvocationImpl(args,
+        long aggregateInterceptionTime = 0L;
+        if (DEBUG_INTERCEPTION) {
+            aggregateInterceptionTime = System.currentTimeMillis();
+            Logger.getLogger().debug("Invoking interceptor " + nextInterceptor.getClass().getName() +
+                    " index 0 in stack of " + interceptors.size() + " of method " + thisMethod);
+        }
+        
+        try {
+            return nextInterceptor.invoke(new MethodInvocationImpl(args,
                 thisMethod, self, interceptors, 0, proceed, null));
+        }
+        finally {
+            if (DEBUG_INTERCEPTION) {
+                aggregateInterceptionTime = System.currentTimeMillis() - aggregateInterceptionTime;
+                Logger.getLogger().debug("Interceptor " + nextInterceptor.getClass().getName() +
+                        " index 0 took an aggregate of " + aggregateInterceptionTime + " milliseconds");
+            }
+        }
     }
     
     private class MethodInvocationImpl implements MethodInvocation, HK2Invocation {
@@ -151,15 +179,46 @@ public class MethodInterceptorHandler implements MethodHandler {
         public Object proceed() throws Throwable {
             int newIndex = index + 1;
             if (newIndex >= interceptors.size()) {
-                // Call the actual method
-                return ReflectionHelper.invoke(myself, proceed, arguments, locator.getNeutralContextClassLoader());
+                long methodTime = 0L;
+                if (DEBUG_INTERCEPTION) {
+                    methodTime = System.currentTimeMillis();
+                }
+                try {
+                    // Call the actual method
+                    return ReflectionHelper.invoke(myself, proceed, arguments, locator.getNeutralContextClassLoader());
+                }
+                finally {
+                    if (DEBUG_INTERCEPTION) {
+                        methodTime = System.currentTimeMillis() - methodTime;
+                        
+                        Logger.getLogger().debug("Time to call actual intercepted method " + method + " is " + methodTime + " milliseconds");
+                    }
+                }
             }
             
             // Invoke the next interceptor
             MethodInterceptor nextInterceptor = interceptors.get(newIndex);
             
-            return nextInterceptor.invoke(new MethodInvocationImpl(arguments,
+            long aggregateInterceptionTime = 0L;
+            if (DEBUG_INTERCEPTION) {
+                aggregateInterceptionTime = System.currentTimeMillis();
+                Logger.getLogger().debug("Invoking interceptor " + nextInterceptor.getClass().getName() +
+                        " index " + newIndex + " in stack of " + interceptors.size() +
+                        " of method " + method);
+            }
+            
+            try {
+                return nextInterceptor.invoke(new MethodInvocationImpl(arguments,
                     method, myself, interceptors, newIndex, proceed, userData));
+            }
+            finally {
+                if (DEBUG_INTERCEPTION) {
+                    aggregateInterceptionTime = System.currentTimeMillis() - aggregateInterceptionTime;
+                    Logger.getLogger().debug("Interceptor " + nextInterceptor.getClass().getName() +
+                            " index " + newIndex +
+                            " took an aggregate of " + aggregateInterceptionTime + " milliseconds");
+                }
+            }
         }
 
         /* (non-Javadoc)

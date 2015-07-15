@@ -42,8 +42,6 @@ package org.glassfish.hk2.utilities.reflection;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-import org.glassfish.hk2.utilities.general.GeneralUtilities;
-
 /**
  * A logger for HK2.  Currently implemented over the JDK logger
  * 
