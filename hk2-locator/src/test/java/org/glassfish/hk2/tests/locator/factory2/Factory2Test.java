@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.tests.locator.factory2;
 
+import java.lang.reflect.Field;
+
 import javax.inject.Singleton;
 
 import org.junit.Assert;
@@ -46,7 +48,9 @@ import org.junit.Test;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.FactoryDescriptors;
+import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
@@ -155,6 +159,46 @@ public class Factory2Test {
         // Twice because it is per lookup
         three = locator.getService(CorrelatedServiceThree.class);
         Assert.assertEquals(CAROL, three.getName());
+    }
+    
+    /**
+     * Tests service injected with another service that comes from a factory
+     * has the proper Injectee for the original service.  The lookup of the
+     * original service is done via ServiceHandle
+     */
+    @Test @org.junit.Ignore
+    public void testGetInjecteeOfPerLookupInFactoryWithServiceHandle() {
+        ServiceLocator locator = LocatorHelper.getServiceLocator(InjectsPerLookupViaFactoryService.class,
+                PerLookupFactory.class);
+        
+        ServiceHandle<InjectsPerLookupViaFactoryService> handle = locator.getServiceHandle(InjectsPerLookupViaFactoryService.class);
+        Assert.assertNotNull(handle);
+        
+        InjectsPerLookupViaFactoryService handleService = handle.getService();
+        Injectee injectee = handleService.getParentInjectee();
+        
+        Assert.assertNotNull(injectee);
+        Assert.assertNotNull(injectee.getParent());
+        
+        Assert.assertTrue(injectee.getParent() instanceof Field);
+    }
+    
+    /**
+     * Tests service injected with another service that comes from a factory
+     * has the proper Injectee for the original service.  The lookup of the
+     * original service is done via direct lookup
+     */
+    @Test // @org.junit.Ignore
+    public void testGetInjecteeOfPerLookupInFactoryWithDirectService() {
+        ServiceLocator locator = LocatorHelper.getServiceLocator(InjectsPerLookupViaFactoryService.class,
+                PerLookupFactory.class);
+        InjectsPerLookupViaFactoryService handleService = locator.getService(InjectsPerLookupViaFactoryService.class);
+        Injectee injectee = handleService.getParentInjectee();
+        
+        Assert.assertNotNull(injectee);
+        Assert.assertNotNull(injectee.getParent());
+        
+        Assert.assertTrue(injectee.getParent() instanceof Field);
     }
 
 }
