@@ -40,6 +40,7 @@
 package org.glassfish.hk2.tests.locator.factory2;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import javax.inject.Singleton;
 
@@ -166,7 +167,7 @@ public class Factory2Test {
      * has the proper Injectee for the original service.  The lookup of the
      * original service is done via ServiceHandle
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testGetInjecteeOfPerLookupInFactoryWithServiceHandle() {
         ServiceLocator locator = LocatorHelper.getServiceLocator(InjectsPerLookupViaFactoryService.class,
                 PerLookupFactory.class);
@@ -199,6 +200,43 @@ public class Factory2Test {
         Assert.assertNotNull(injectee.getParent());
         
         Assert.assertTrue(injectee.getParent() instanceof Field);
+    }
+    
+    /**
+     * Tests service injected with another service that comes from a factory
+     * has the proper Injectee for the original service.  The lookup of the
+     * original service is done via direct lookup
+     */
+    @Test // @org.junit.Ignore
+    public void testGetInjecteeOfProxyWithDirectService() {
+        ServiceLocator locator = LocatorHelper.getServiceLocator(InjectsProxiedService.class,
+                ProxiedServiceFactory.class);
+        InjectsProxiedService handleService = locator.getService(InjectsProxiedService.class);
+        Injectee injectee = handleService.getProxiedInjectee();
+        
+        Assert.assertNotNull(injectee);
+        Assert.assertNotNull(injectee.getParent());
+        
+        Assert.assertTrue(injectee.getParent() instanceof Method);
+    }
+    
+    /**
+     * Tests service injected with another service that comes from a factory
+     * has the proper Injectee for the original service.  The lookup of the
+     * original service is done via direct lookup
+     */
+    @Test @org.junit.Ignore
+    public void testGetInjecteeOfProxyWithHandleService() {
+        ServiceLocator locator = LocatorHelper.getServiceLocator(InjectsProxiedService.class,
+                ProxiedServiceFactory.class);
+        
+        ServiceHandle<InjectsProxiedService> handleService = locator.getServiceHandle(InjectsProxiedService.class);
+        Injectee injectee = handleService.getService().getProxiedInjectee();
+        
+        Assert.assertNotNull(injectee);
+        Assert.assertNotNull(injectee.getParent());
+        
+        Assert.assertTrue(injectee.getParent() instanceof Method);
     }
 
 }
