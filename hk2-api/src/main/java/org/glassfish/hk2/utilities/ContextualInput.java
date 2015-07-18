@@ -99,5 +99,10 @@ public class ContextualInput<T> {
         
         return descriptor.equals(other.descriptor);
     }
+    
+    @Override
+    public String toString() {
+        return "ContextualInput(" + descriptor.getImplementation() + "," + root + "," + System.identityHashCode(this) + ")";
+    }
 
 }

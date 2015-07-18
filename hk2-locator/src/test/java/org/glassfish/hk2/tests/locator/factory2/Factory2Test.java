@@ -225,7 +225,7 @@ public class Factory2Test {
      * has the proper Injectee for the original service.  The lookup of the
      * original service is done via direct lookup
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testGetInjecteeOfProxyWithHandleService() {
         ServiceLocator locator = LocatorHelper.getServiceLocator(InjectsProxiedService.class,
                 ProxiedServiceFactory.class);
@@ -236,7 +236,9 @@ public class Factory2Test {
         Assert.assertNotNull(injectee);
         Assert.assertNotNull(injectee.getParent());
         
+        
         Assert.assertTrue(injectee.getParent() instanceof Method);
+        
     }
 
 }
