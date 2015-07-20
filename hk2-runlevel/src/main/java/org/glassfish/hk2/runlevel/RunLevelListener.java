@@ -62,6 +62,8 @@ public interface RunLevelListener {
      * Neither {@link RunLevelController#proceedTo(int)} nor
      * {@link RunLevelController#proceedToAsync(int)} may be called from this method.  However,
      * {@link ChangeableRunLevelFuture#changeProposedLevel(int)} may be called
+     * <p>
+     * Any exception thrown from this method is ignored
      *
      * @param currentJob the job currently running
      * @param levelAchieved the level just achieved by the currentJob.  Note
@@ -79,6 +81,8 @@ public interface RunLevelListener {
      * <p>
      * Neither {@link RunLevelController#proceedTo(int)} nor
      * {@link RunLevelController#proceedToAsync(int)} may be called from this method
+     * <p>
+     * Any exception thrown from this method is ignored
      *
      * @param currentJob the job currently running
      * @param levelAchieved the level just achieved by the currentJob.  Note
@@ -95,8 +99,10 @@ public interface RunLevelListener {
      * operation
      * <p>
      * Neither {@link RunLevelController#proceedTo(int)} nor
-     * {@link RunLevelController#proceedToAsync(int)} may be called from this method.
-     *
+     * {@link RunLevelController#proceedToAsync(int)} may be called from this method
+     * <p>
+     * Any exception thrown from this method is ignored
+     * 
      * @param currentJob    the run level controller
      * @param errorInformation information about the error that had been caught
      */
