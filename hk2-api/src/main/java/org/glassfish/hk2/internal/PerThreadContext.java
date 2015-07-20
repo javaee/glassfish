@@ -52,7 +52,7 @@ import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.PerThread;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.Visibility;
-import org.glassfish.hk2.utilities.general.GeneralUtilities;
+import org.glassfish.hk2.utilities.general.Hk2ThreadLocal;
 import org.glassfish.hk2.utilities.reflection.Logger;
 
 /**
@@ -69,8 +69,8 @@ public class PerThreadContext implements Context<PerThread> {
         
     });
     
-    private ThreadLocal<PerContextThreadWrapper> threadMap =
-            new ThreadLocal<PerContextThreadWrapper>() {
+    private final Hk2ThreadLocal<PerContextThreadWrapper> threadMap =
+            new Hk2ThreadLocal<PerContextThreadWrapper>() {
         public PerContextThreadWrapper initialValue() {
             return new PerContextThreadWrapper();
         }
@@ -129,7 +129,7 @@ public class PerThreadContext implements Context<PerThread> {
      */
     @Override
     public void shutdown() {
-        threadMap = null;
+        threadMap.removeAll();
     }
 
     @Override

@@ -48,6 +48,7 @@ import java.util.WeakHashMap;
 import javax.inject.Inject;
 
 import org.glassfish.hk2.api.InjectionResolver;
+import org.glassfish.hk2.utilities.general.Hk2ThreadLocal;
 import org.glassfish.hk2.utilities.reflection.Pretty;
 import org.jvnet.hk2.annotations.Service;
 
@@ -60,8 +61,8 @@ import org.jvnet.hk2.annotations.Service;
  */
 public class PerLocatorUtilities {
     /** Must not be static, otherwise it can leak when using thread pools */
-    private ThreadLocal<WeakHashMap<Class<?>, String>> threadLocalAutoAnalyzerNameCache =
-            new ThreadLocal<WeakHashMap<Class<?>, String>>() {
+    private final Hk2ThreadLocal<WeakHashMap<Class<?>, String>> threadLocalAutoAnalyzerNameCache =
+            new Hk2ThreadLocal<WeakHashMap<Class<?>, String>>() {
                 @Override
                 protected WeakHashMap<Class<?>, String> initialValue() {
                     return new WeakHashMap<Class<?>, String>();
@@ -69,9 +70,9 @@ public class PerLocatorUtilities {
             };
 
     /** Must not be static, otherwise it can leak when using thread pools */
-    private ThreadLocal<WeakHashMap<AnnotatedElement, SoftAnnotatedElementAnnotationInfo>>
+    private final Hk2ThreadLocal<WeakHashMap<AnnotatedElement, SoftAnnotatedElementAnnotationInfo>>
         threadLocalAnnotationCache =
-            new ThreadLocal<WeakHashMap<AnnotatedElement, SoftAnnotatedElementAnnotationInfo>>() {
+            new Hk2ThreadLocal<WeakHashMap<AnnotatedElement, SoftAnnotatedElementAnnotationInfo>>() {
                 @Override
                 protected WeakHashMap<AnnotatedElement, SoftAnnotatedElementAnnotationInfo> initialValue() {
                     return new WeakHashMap<AnnotatedElement, SoftAnnotatedElementAnnotationInfo>();
@@ -211,8 +212,8 @@ public class PerLocatorUtilities {
     public void shutdown() {
         releaseCaches();
         
-        threadLocalAutoAnalyzerNameCache = null;
-        threadLocalAnnotationCache = null;
+        threadLocalAutoAnalyzerNameCache.removeAll();
+        threadLocalAnnotationCache.removeAll();
     }
     
     public ProxyUtilities getProxyUtilities() {
