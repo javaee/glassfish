@@ -40,6 +40,7 @@
 package org.glassfish.hk2.utilities.test;
 
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
+import org.glassfish.hk2.utilities.general.Hk2ThreadLocal;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -167,6 +168,252 @@ public class GeneralUtilitiesTest {
         {
             Class<?> lArray = GeneralUtilities.loadClass(getClass().getClassLoader(), "[[[[[Ljava.lang.String;");
             Assert.assertEquals("[[[[[Ljava.lang.String;", lArray.getName());
+        }
+    }
+    
+    /**
+     * Tests the gets in Hk2ThreadLocal
+     */
+    @Test
+    public void testBasicHk2ThreadLocalOperation() throws InterruptedException {
+        ThreadService ts = new ThreadService();
+        
+        ThreadGetter g1 = new ThreadGetter(ts);
+        ThreadGetter g2 = new ThreadGetter(ts);
+        ThreadGetter g3 = new ThreadGetter(ts);
+        
+        Thread t1 = new Thread(g1);
+        Thread t2 = new Thread(g2);
+        Thread t3 = new Thread(g3);
+        
+        t1.start();
+        t2.start();
+        t3.start();
+        
+        Assert.assertEquals(t1.getId(), g1.getThreadIdFromService());
+        Assert.assertEquals(t2.getId(), g2.getThreadIdFromService());
+        Assert.assertEquals(t3.getId(), g3.getThreadIdFromService());
+        Assert.assertEquals(Thread.currentThread().getId(), ts.getThreadIdFromLocal());
+    }
+    
+    /**
+     * Tests that sets override the initial value, in various combinations such as
+     * initialSet, non-initialSet and then also after a removal
+     */
+    @Test
+    public void testSetsOverrideInitialValue() throws InterruptedException {
+        ThreadService ts = new ThreadService();
+        
+        ThreadSpecificSetOverridesInitialValue g1 = new ThreadSpecificSetOverridesInitialValue(ts, -1, false, false);
+        ThreadSpecificSetOverridesInitialValue g2 = new ThreadSpecificSetOverridesInitialValue(ts, -2, true, false);
+        ThreadSpecificSetOverridesInitialValue g3 = new ThreadSpecificSetOverridesInitialValue(ts, -3, true, true);
+        ThreadSpecificSetOverridesInitialValue g4 = new ThreadSpecificSetOverridesInitialValue(ts, -3, false, true);
+        
+        Thread t1 = new Thread(g1);
+        Thread t2 = new Thread(g2);
+        Thread t3 = new Thread(g3);
+        Thread t4 = new Thread(g4);
+        
+        t1.start();
+        t2.start();
+        t3.start();
+        t4.start();
+        
+        Assert.assertEquals(-1, g1.getThreadIdFromService());
+        Assert.assertEquals(-2, g2.getThreadIdFromService());
+        Assert.assertEquals(t3.getId(), g3.getThreadIdFromService());
+        Assert.assertEquals(t4.getId(), g4.getThreadIdFromService());
+        Assert.assertEquals(Thread.currentThread().getId(), ts.getThreadIdFromLocal());
+    }
+    
+    /**
+     * Tests that removeAll works
+     */
+    @Test
+    public void testRemoveAllRemovesAll() throws InterruptedException {
+        ThreadService ts = new ThreadService();
+        
+        ThreadSpecificReuppingGetter g1 = new ThreadSpecificReuppingGetter(ts, -1);
+        ThreadSpecificReuppingGetter g2 = new ThreadSpecificReuppingGetter(ts, -2);
+        
+        Thread t1 = new Thread(g1);
+        Thread t2 = new Thread(g2);
+        
+        t1.start();
+        t2.start();
+        
+        Assert.assertEquals(-1, g1.getThreadIdFromService());
+        Assert.assertEquals(-2, g2.getThreadIdFromService());
+        
+        ts.doRemoveAll();
+        
+        g1.reup();
+        g2.reup();
+        
+        Assert.assertEquals(t1.getId(), g1.getThreadIdFromService());
+        Assert.assertEquals(t2.getId(), g2.getThreadIdFromService());
+        
+        g1.shutdown();
+        g2.shutdown();
+    }
+    
+    /**
+     * Tests that a ThreadLocal can have a null value
+     */
+    @Test
+    public void testHk2ThreadLocalCanHaveNullValue() throws InterruptedException {
+        Hk2ThreadLocal<Object> threadLocal = new Hk2ThreadLocal<Object>();
+        
+        // First time uses default impl of initialValue to set it
+        Assert.assertNull(threadLocal.get());
+        
+        // Second time just gets it
+        Assert.assertNull(threadLocal.get());
+    }
+    
+    private static class ThreadGetter implements Runnable {
+        private final ThreadService threadService;
+        private Long tid;
+        
+        private ThreadGetter(ThreadService ts) {
+            threadService = ts;
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Runnable#run()
+         */
+        @Override
+        public void run() {
+            synchronized (this) {
+                tid = threadService.getThreadIdFromLocal();
+                notifyAll();
+            }
+            
+        }
+        
+        public long getThreadIdFromService() throws InterruptedException {
+            synchronized (this) {
+                while (tid == null) {
+                    wait();
+                }
+                
+                return tid;
+            }
+        }
+    }
+    
+    private static class ThreadSpecificSetOverridesInitialValue implements Runnable {
+        private final ThreadService threadService;
+        private final long customInitial;
+        private final boolean doInitialGet;
+        private final boolean doPostRemove;
+        private Long tid;
+        
+        private ThreadSpecificSetOverridesInitialValue(ThreadService ts,
+                long customInitial,
+                boolean doInitialGet,
+                boolean doPostRemove) {
+            threadService = ts;
+            this.customInitial = customInitial;
+            this.doInitialGet = doInitialGet;
+            this.doPostRemove = doPostRemove;
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Runnable#run()
+         */
+        @Override
+        public void run() {
+            if (doInitialGet) {
+                if (threadService.getThreadIdFromLocal() != Thread.currentThread().getId()) {
+                    throw new AssertionError("Should have gotten an initial value equal to thread id");
+                }
+            }
+            
+            threadService.doSet(customInitial);
+            
+            if (doPostRemove) {
+                threadService.doRemove();
+            }
+            
+            synchronized (this) {
+                
+                tid = threadService.getThreadIdFromLocal();
+                notifyAll();
+            }
+            
+        }
+        
+        public long getThreadIdFromService() throws InterruptedException {
+            synchronized (this) {
+                while (tid == null) {
+                    wait();
+                }
+                
+                return tid;
+            }
+        }
+    }
+    
+    private static class ThreadSpecificReuppingGetter implements Runnable {
+        private final ThreadService threadService;
+        private Long tid;
+        private boolean done = false;
+        private final long altSet;
+        
+        private ThreadSpecificReuppingGetter(ThreadService ts, long altSet) {
+            threadService = ts;
+            this.altSet = altSet;
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Runnable#run()
+         */
+        @Override
+        public void run() {
+            synchronized (this) {
+                threadService.doSet(altSet);
+                
+                while (!done) {
+                    if (tid == null) {
+                        tid = threadService.getThreadIdFromLocal();
+                        notifyAll();
+                    }
+                    
+                    try {
+                        wait();
+                    }
+                    catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    
+                }
+            }
+            
+        }
+        
+        public long getThreadIdFromService() throws InterruptedException {
+            synchronized (this) {
+                while (tid == null) {
+                    wait();
+                }
+                
+                return tid;
+            }
+        }
+        
+        public void reup() {
+            synchronized (this) {
+                tid = null;
+                notifyAll();
+            }
+        }
+        
+        public void shutdown() {
+            synchronized (this) {
+                done = true;
+                notifyAll();
+            }
         }
     }
     
