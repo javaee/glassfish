@@ -54,7 +54,7 @@ import org.glassfish.hk2.utilities.reflection.MethodWrapper;
  *
  */
 public class ClassReflectionHelperImpl implements ClassReflectionHelper {
-    private final int MAX_CACHE_SIZE = 200;
+    private final int MAX_CACHE_SIZE = 20000;
     
     private final LRUHybridCache<LifecycleKey, Method> postConstructCache =
             new LRUHybridCache<LifecycleKey, Method>(MAX_CACHE_SIZE, new Computable<LifecycleKey, HybridCacheEntry<Method>>() {
