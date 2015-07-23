@@ -45,6 +45,7 @@ import org.easymock.EasyMock;
 import org.glassfish.hk2.api.*;
 import org.glassfish.hk2.utilities.Binder;
 import org.glassfish.hk2.utilities.DescriptorImpl;
+import org.glassfish.hk2.utilities.FactoryDescriptorsImpl;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Test;
 
@@ -52,7 +53,9 @@ import javax.inject.Singleton;
 
 import static org.easymock.EasyMock.*;
 import static org.glassfish.hk2.utilities.binding.BindingBuilderFactory.newBinder;
+import static org.glassfish.hk2.utilities.binding.BindingBuilderFactory.newFactoryBinder;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class BindingTest {
@@ -137,6 +140,40 @@ public class BindingTest {
       assertTrue( "Missing contract", capturedDescriptor.getValue().getAdvertisedContracts().contains("org.glassfish.hk2.utilities.binding.BindingTest$MyContract"));
 
     }
+    
+    @Test
+    public void testBindingBuilderFactoryMakesBadFactoryDescriptors() {
+        final Fantastic fantasticAnnotationLiteral = new FantasticLiteral(4);
+        BindingBuilder<Widget> bb = newFactoryBinder(WidgetFactory.class, Singleton.class)
+            .to(Widget.class)
+            .in(PerLookup.class)
+            .qualifiedBy(fantasticAnnotationLiteral);
+        assertNotNull(bb);
+        
+        final DynamicConfiguration dc = createMock(DynamicConfiguration.class);
+
+        final DescriptorImpl descriptorForFactoryAsAService = new DescriptorImpl();
+        descriptorForFactoryAsAService.setImplementation(WidgetFactory.class.getName());
+        descriptorForFactoryAsAService.setScope(Singleton.class.getName());
+        descriptorForFactoryAsAService.addAdvertisedContract(Factory.class.getName());
+        descriptorForFactoryAsAService.addQualifier(Fantastic.class.getName());
+
+        final DescriptorImpl descriptorForFactoryAsProvideMethod = new DescriptorImpl();
+        descriptorForFactoryAsProvideMethod.setImplementation(WidgetFactory.class.getName());
+        descriptorForFactoryAsProvideMethod.setScope(PerLookup.class.getName());
+        descriptorForFactoryAsProvideMethod.setDescriptorType(DescriptorType.PROVIDE_METHOD);
+        descriptorForFactoryAsProvideMethod.addAdvertisedContract(Widget.class.getName());
+        descriptorForFactoryAsProvideMethod.addQualifier(Fantastic.class.getName());
+
+        final FactoryDescriptorsImpl factoryDescriptors = new FactoryDescriptorsImpl(descriptorForFactoryAsAService, descriptorForFactoryAsProvideMethod);
+
+        expect(dc.bind(factoryDescriptors)).andReturn(null);
+        replay(dc);
+        
+        BindingBuilderFactory.addBinding(bb, dc);
+
+        verify(dc);
+    }
 
     class Foo implements MyContract{
 
@@ -144,4 +181,19 @@ public class BindingTest {
 
 
     public interface MyContract {}
+    
+    private static final class FantasticLiteral extends AnnotationLiteral<Fantastic> implements Fantastic {
+
+        private final int level;
+
+        private FantasticLiteral(final int level) {
+            super();
+            this.level = level;
+        }
+
+        @Override
+        public int level() {
+            return this.level;
+        }
+    }
 }

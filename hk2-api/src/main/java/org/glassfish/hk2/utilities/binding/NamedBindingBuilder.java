@@ -102,7 +102,10 @@ public interface NamedBindingBuilder<T> extends BindingBuilder<T> {
     public NamedBindingBuilder<T> withMetadata(String key, List<String> values);
 
     /**
-     * Add a binging qualifier annotation.
+     * Add a binging qualifier annotation.  If this is
+     * being used with a {@link org.glassfish.hk2.api.Factory} then both the
+     * Factory Service and the {@link org.glassfish.hk2.api.Factory#provide()}
+     * method will get the qualifier
      *
      * @param annotation qualifier annotation.
      * @return updated binder.
