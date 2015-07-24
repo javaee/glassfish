@@ -79,9 +79,11 @@ public interface ScopedNamedBindingBuilder<T> extends BindingBuilder<T> {
 
     /**
      * Add binding descriptor metadata.
-     *
+     * <p>
      * The metadata can be later used to e.g. {@link org.glassfish.hk2.api.Filter filter} binding
-     * descriptors.
+     * descriptors.  If this is for {@link org.glassfish.hk2.api.Factory} descriptors the metadata
+     * will be placed on both the Factory as a service and on the
+     * Factories {@link org.glassfish.hk2.api.Factory#provide()} method
      *
      * @param key   metadata key.
      * @param value metadata value.
@@ -93,7 +95,9 @@ public interface ScopedNamedBindingBuilder<T> extends BindingBuilder<T> {
      * Add binding descriptor metadata.
      *
      * The metadata can be later used to e.g. {@link org.glassfish.hk2.api.Filter filter} binding
-     * descriptors.
+     * descriptors.  If this is for {@link org.glassfish.hk2.api.Factory} descriptors the metadata
+     * will be placed on both the Factory as a service and on the
+     * Factories {@link org.glassfish.hk2.api.Factory#provide()} method
      *
      * @param key    metadata key.
      * @param values metadata values.

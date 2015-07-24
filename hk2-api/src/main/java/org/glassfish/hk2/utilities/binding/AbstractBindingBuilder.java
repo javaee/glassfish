@@ -80,7 +80,7 @@ abstract class AbstractBindingBuilder<T> implements
     /**
      * Binding metadata (e.g. useful for filtering).
      */
-    MultiMap<String, String> metadata = new MultiMap<String, String>();
+    final MultiMap<String, String> metadata = new MultiMap<String, String>();
     /**
      * Qualifiers (other than @Named).
      */
@@ -362,6 +362,15 @@ abstract class AbstractBindingBuilder<T> implements
                 descriptorBuilder.to(contract);
             }
             
+            Set<String> keys = metadata.keySet();
+            for (String key : keys) {
+                List<String> values = metadata.get(key);
+                for (String value : values) {
+                    factoryContractDescriptor.addMetadata(key, value);
+                    descriptorBuilder.has(key, value);
+                }
+            }
+            
             if (proxiable != null) {
                 descriptorBuilder.proxy(proxiable);
             }
@@ -422,6 +431,15 @@ abstract class AbstractBindingBuilder<T> implements
             for (Type contract : contracts) {
                 factoryDescriptorBuilder.to(new ParameterizedTypeImpl(Factory.class, contract));
                 descriptorBuilder.to(contract);
+            }
+            
+            Set<String> keys = metadata.keySet();
+            for (String key : keys) {
+                List<String> values = metadata.get(key);
+                for (String value : values) {
+                    factoryDescriptorBuilder.has(key, value);
+                    descriptorBuilder.has(key, value);
+                }
             }
             
             if (proxiable != null) {

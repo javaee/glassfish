@@ -141,8 +141,11 @@ public class BindingTest {
 
     }
     
+    /**
+     * Ensures that the provide method and the service both get the qualifiers
+     */
     @Test
-    public void testBindingBuilderFactoryMakesBadFactoryDescriptors() {
+    public void testBindingBuilderFactoryPutsQualifiesOnBothProvideMethodAndService() {
         final Fantastic fantasticAnnotationLiteral = new FantasticLiteral(4);
         BindingBuilder<Widget> bb = newFactoryBinder(WidgetFactory.class, Singleton.class)
             .to(Widget.class)
@@ -164,6 +167,44 @@ public class BindingTest {
         descriptorForFactoryAsProvideMethod.setDescriptorType(DescriptorType.PROVIDE_METHOD);
         descriptorForFactoryAsProvideMethod.addAdvertisedContract(Widget.class.getName());
         descriptorForFactoryAsProvideMethod.addQualifier(Fantastic.class.getName());
+
+        final FactoryDescriptorsImpl factoryDescriptors = new FactoryDescriptorsImpl(descriptorForFactoryAsAService, descriptorForFactoryAsProvideMethod);
+
+        expect(dc.bind(factoryDescriptors)).andReturn(null);
+        replay(dc);
+        
+        BindingBuilderFactory.addBinding(bb, dc);
+
+        verify(dc);
+    }
+    
+    /**
+     * Ensures that the provide method and the service with metadata and
+     * onlye the provide method gets the metadata
+     */
+    @Test
+    public void testBindingBuilderFactoryWithMetadata() {
+        final Fantastic fantasticAnnotationLiteral = new FantasticLiteral(4);
+        BindingBuilder<Widget> bb = newFactoryBinder(WidgetFactory.class, Singleton.class)
+            .to(Widget.class)
+            .in(PerLookup.class)
+            .withMetadata("key", "value");
+        assertNotNull(bb);
+        
+        final DynamicConfiguration dc = createMock(DynamicConfiguration.class);
+
+        final DescriptorImpl descriptorForFactoryAsAService = new DescriptorImpl();
+        descriptorForFactoryAsAService.setImplementation(WidgetFactory.class.getName());
+        descriptorForFactoryAsAService.setScope(Singleton.class.getName());
+        descriptorForFactoryAsAService.addAdvertisedContract(Factory.class.getName());
+        descriptorForFactoryAsAService.addMetadata("key", "value");
+
+        final DescriptorImpl descriptorForFactoryAsProvideMethod = new DescriptorImpl();
+        descriptorForFactoryAsProvideMethod.setImplementation(WidgetFactory.class.getName());
+        descriptorForFactoryAsProvideMethod.setScope(PerLookup.class.getName());
+        descriptorForFactoryAsProvideMethod.setDescriptorType(DescriptorType.PROVIDE_METHOD);
+        descriptorForFactoryAsProvideMethod.addAdvertisedContract(Widget.class.getName());
+        descriptorForFactoryAsProvideMethod.addMetadata("key", "value");
 
         final FactoryDescriptorsImpl factoryDescriptors = new FactoryDescriptorsImpl(descriptorForFactoryAsAService, descriptorForFactoryAsProvideMethod);
 

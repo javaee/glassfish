@@ -58,7 +58,7 @@ import org.junit.Test;
  *
  */
 public class OperationsTest {
-    private final static BasicOperationScope BASIC_OPERATION_ANNOTATION = new BasicOperationScopeImpl();
+    public final static BasicOperationScope BASIC_OPERATION_ANNOTATION = new BasicOperationScopeImpl();
     private final static SecondaryOperationScope SECONDARY_OPERATION_ANNOTATION = new SecondaryOperationScopeImpl();
     
     private final static String ALICE_NM = "Alice";
@@ -97,7 +97,7 @@ public class OperationsTest {
     private final static long FIRST_ID = 1;
     private final static long SECOND_ID = 2;
     
-    private static ServiceLocator createLocator(Class<?>... clazzes) {
+    public static ServiceLocator createLocator(Class<?>... clazzes) {
         ServiceLocator locator = Utilities.getUniqueLocator(clazzes);
         ExtrasUtilities.enableOperations(locator);
         
