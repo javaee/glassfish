@@ -40,15 +40,16 @@
 
 package org.jvnet.hk2.internal;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 
 import javassist.util.proxy.MethodHandler;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
+import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ProxyCtl;
-import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 
 /**
@@ -60,16 +61,27 @@ public class MethodInterceptorImpl implements MethodHandler {
     
     private final ServiceLocatorImpl locator;
     private final ActiveDescriptor<?> descriptor;
-    private final ServiceHandle<?> root;
+    /** Original root node, needed for proper destruction */
+    private final ServiceHandleImpl<?> root;
+    /** Actual injectee, needed for InstantiationService */
+    private final WeakReference<Injectee> myInjectee;
     
-    /* package */ MethodInterceptorImpl(ServiceLocatorImpl sli, ActiveDescriptor<?> descriptor, ServiceHandle<?> root) {
+    /* package */ MethodInterceptorImpl(ServiceLocatorImpl sli,
+            ActiveDescriptor<?> descriptor,
+            ServiceHandleImpl<?> root,
+            Injectee injectee) {
         this.locator = sli;
         this.descriptor = descriptor;
         this.root = root;
+        if (injectee != null) {
+          this.myInjectee = new WeakReference<Injectee>(injectee);
+        }
+        else {
+            this.myInjectee = null;
+        }
     }
-
-    @Override
-    public Object invoke(Object target, Method method, Method proceed, Object[] params) throws Throwable {
+    
+    private Object internalInvoke(Object target, Method method, Method proceed, Object[] params) throws Throwable {
         Context<?> context;
         Object service;
 
@@ -95,6 +107,28 @@ public class MethodInterceptorImpl implements MethodHandler {
         }
 
         return ReflectionHelper.invoke(service, method, params, locator.getNeutralContextClassLoader());
+        
+    }
+
+    @Override
+    public Object invoke(Object target, Method method, Method proceed, Object[] params) throws Throwable {
+        boolean pushed = false;
+        if (root != null && myInjectee != null) {
+            Injectee ref = myInjectee.get();
+            if (ref != null) {
+                root.pushInjectee(ref);
+                pushed = true;
+            }
+        }
+        
+        try {
+            return internalInvoke(target, method, proceed, params);
+        }
+        finally {
+            if (pushed) {
+                root.popInjectee();
+            }
+        }
 
     }
     

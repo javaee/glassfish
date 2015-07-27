@@ -46,9 +46,9 @@ import java.security.PrivilegedAction;
 import java.util.HashMap;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ProxyCtl;
-import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 
 import javassist.util.proxy.MethodHandler;
@@ -185,7 +185,8 @@ public class ProxyUtilities {
     public <T> T generateProxy(Class<?> requestedClass,
             ServiceLocatorImpl locator,
             ActiveDescriptor<T> root,
-            ServiceHandle<T> handle) {
+            ServiceHandleImpl<T> handle,
+            Injectee injectee) {
         boolean isInterface = (requestedClass == null) ? false : requestedClass.isInterface() ;
 
         final Class<?> proxyClass;
@@ -206,7 +207,7 @@ public class ProxyUtilities {
         try {
             proxy = (T) secureCreate(proxyClass,
                 iFaces,
-                new MethodInterceptorImpl(locator, root, handle),
+                new MethodInterceptorImpl(locator, root, handle, injectee),
                 isInterface, locator);
         }
         catch (Throwable th) {

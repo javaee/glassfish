@@ -236,7 +236,6 @@ public class Factory2Test {
         Assert.assertNotNull(injectee);
         Assert.assertNotNull(injectee.getParent());
         
-        
         Assert.assertTrue(injectee.getParent() instanceof Method);
         
     }

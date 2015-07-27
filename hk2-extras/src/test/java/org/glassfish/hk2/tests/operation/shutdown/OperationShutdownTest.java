@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.tests.operation.shutdown;
 
+import org.glassfish.hk2.api.ProxyCtl;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.extras.operation.OperationHandle;
@@ -57,7 +58,7 @@ public class OperationShutdownTest {
     /**
      * Tests that the destroy of ServiceHandle works
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testServiceHandleDestroyWorks() {
         ServiceLocator locator = OperationsTest.createLocator(BasicOperationScopeContext.class,
                 Registrar.class,
@@ -73,6 +74,9 @@ public class OperationShutdownTest {
                 locator.getServiceHandle(OperationalServiceWithPerLookupService.class);
         
         OperationalServiceWithPerLookupService parent = handle.getService();
+        if (parent instanceof ProxyCtl) {
+            parent = (OperationalServiceWithPerLookupService) ((ProxyCtl) parent).__make();
+        }
         
         Assert.assertFalse(handle.getService().isClosed());
         

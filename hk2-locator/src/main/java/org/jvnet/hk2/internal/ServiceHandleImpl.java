@@ -62,7 +62,7 @@ import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 public class ServiceHandleImpl<T> implements ServiceHandle<T> {
     private ActiveDescriptor<T> root;
     private final ServiceLocatorImpl locator;
-    private final Injectee injectee;
+    private final LinkedList<Injectee> injectees = new LinkedList<Injectee>();
     private final Object lock = new Object();
     
     private boolean serviceDestroyed = false;
@@ -75,7 +75,9 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
     /* package */ ServiceHandleImpl(ServiceLocatorImpl locator, ActiveDescriptor<T> root, Injectee injectee) {
         this.root = root;
         this.locator = locator;
-        this.injectee = injectee;
+        if (injectee != null) {
+            injectees.add(injectee);
+        }
     }
 
     /* (non-Javadoc)
@@ -84,6 +86,12 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
     @Override
     public T getService() {
         return getService(this);
+    }
+    
+    private Injectee getLastInjectee() {
+        synchronized (lock) {
+            return (injectees.isEmpty()) ? null : injectees.getLast() ;
+        }
     }
     
     /* package */ T getService(ServiceHandle<T> handle) {
@@ -98,6 +106,8 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
             if (serviceDestroyed) throw new IllegalStateException("Service has been disposed");
             
             if (serviceSet) return service;
+            
+            Injectee injectee = getLastInjectee();
             
             Class<?> requiredClass = (injectee == null) ? null : ReflectionHelper.getRawClass(injectee.getRequiredType());
             
@@ -195,6 +205,18 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
         }
     }
     
+    public void pushInjectee(Injectee push) {
+        synchronized (lock) {
+            injectees.add(push);
+        }
+    }
+    
+    public void popInjectee() {
+        synchronized (lock) {
+            injectees.removeLast();
+        }
+    }
+    
     /**
      * Add a sub handle to this for proper destruction
      * 
@@ -205,10 +227,14 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
     }
     
     public Injectee getOriginalRequest() {
+        Injectee injectee = getLastInjectee();
+        
         if (subHandles.isEmpty()) return injectee;
         
         ServiceHandleImpl<?> last = subHandles.getLast();
-        return last.injectee;
+        
+        Injectee retVal = last.getLastInjectee();
+        return retVal;
     }
     
     public String toString() {

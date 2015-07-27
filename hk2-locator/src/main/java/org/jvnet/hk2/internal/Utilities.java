@@ -2041,9 +2041,8 @@ public class Utilities {
                 throw new IllegalStateException("A descriptor " + root + " requires a proxy, but the proxyable library is not on the classpath");
             }
             
-            // The proxy needs the immediate parent handle, NOT the handle from whomever has created the service
-            ServiceHandleImpl<T> tmpHandle = new ServiceHandleImpl<T>(locator, root, injectee);
-            return locator.getPerLocatorUtilities().getProxyUtilities().generateProxy(requestedClass, locator, root, tmpHandle);
+            return locator.getPerLocatorUtilities().getProxyUtilities().generateProxy(requestedClass,
+                    locator, root, (ServiceHandleImpl<T>) handle, injectee);
         }
 
         Context<?> context;
