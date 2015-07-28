@@ -94,5 +94,138 @@ public class OperationShutdownTest {
         operationHandle.closeOperation();
         
     }
+    
+    /**
+     * Tests that the destroy gets called when an operation is closed, even for
+     * a factory created service that was proxied
+     */
+    @Test // @org.junit.Ignore
+    public void testFactoryDestructionWorksOnCloseOperation() {
+        ServiceLocator locator = OperationsTest.createLocator(BasicOperationScopeContext.class,
+                SingletonWithFactoryCreatedService.class,
+                OperationScopeFactory.class);
+        
+        OperationManager operationManager = locator.getService(OperationManager.class);
+        
+        OperationHandle<BasicOperationScope> operationHandle = operationManager.createOperation(OperationsTest.BASIC_OPERATION_ANNOTATION);
+        operationHandle.resume();
+        
+        SingletonWithFactoryCreatedService singleton = locator.getService(SingletonWithFactoryCreatedService.class);
+        CreatedByFactory factoryCreated = singleton.getFactoryCreated();
+        Assert.assertTrue(factoryCreated instanceof ProxyCtl);
+        
+        // Forces underlying creation
+        factoryCreated.createMe();
+        
+        OperationScopeFactory osf = locator.getService(OperationScopeFactory.class);
+        
+        CreatedByFactory unwrapped = (CreatedByFactory) ((ProxyCtl) factoryCreated).__make();
+        
+        Assert.assertFalse(osf.hasBeenDestroyed(unwrapped));
+        
+        operationHandle.closeOperation();
+        
+        Assert.assertTrue(osf.hasBeenDestroyed(unwrapped));
+    }
+    
+    /**
+     * Tests that the destroy gets called when an operation is closed, even for
+     * a factory created service that was proxied and created with a ServiceHandle
+     */
+    @Test // @org.junit.Ignore
+    public void testFactoryDestructionWorksOnCloseOperationWithServiceHandle() {
+        ServiceLocator locator = OperationsTest.createLocator(BasicOperationScopeContext.class,
+                SingletonWithFactoryCreatedService.class,
+                OperationScopeFactory.class);
+        
+        OperationManager operationManager = locator.getService(OperationManager.class);
+        
+        OperationHandle<BasicOperationScope> operationHandle = operationManager.createOperation(OperationsTest.BASIC_OPERATION_ANNOTATION);
+        operationHandle.resume();
+        
+        ServiceHandle<SingletonWithFactoryCreatedService> singleton = locator.getServiceHandle(SingletonWithFactoryCreatedService.class);
+        CreatedByFactory factoryCreated = singleton.getService().getFactoryCreated();
+        Assert.assertTrue(factoryCreated instanceof ProxyCtl);
+        
+        // Forces underlying creation
+        factoryCreated.createMe();
+        
+        OperationScopeFactory osf = locator.getService(OperationScopeFactory.class);
+        
+        CreatedByFactory unwrapped = (CreatedByFactory) ((ProxyCtl) factoryCreated).__make();
+        
+        Assert.assertFalse(osf.hasBeenDestroyed(unwrapped));
+        
+        operationHandle.closeOperation();
+        
+        Assert.assertTrue(osf.hasBeenDestroyed(unwrapped));
+        
+        // Ensures doubles do not happen
+        singleton.destroy();
+    }
+    
+    /**
+     * Tests that the destroy gets called when an operation is closed, even for
+     * a factory created service that was not proxied
+     */
+    @Test // @org.junit.Ignore
+    public void testFactoryDestructionWorksOnCloseOperationNotProxied() {
+        ServiceLocator locator = OperationsTest.createLocator(BasicOperationScopeContext.class,
+                OperationScopeWithFactoryCreatedService.class,
+                OperationScopeFactory.class);
+        
+        OperationManager operationManager = locator.getService(OperationManager.class);
+        
+        OperationHandle<BasicOperationScope> operationHandle = operationManager.createOperation(OperationsTest.BASIC_OPERATION_ANNOTATION);
+        operationHandle.resume();
+        
+        OperationScopeWithFactoryCreatedService opScoped = locator.getService(OperationScopeWithFactoryCreatedService.class);
+        CreatedByFactory factoryCreated = opScoped.getCreatedByFactory();
+        Assert.assertFalse(factoryCreated instanceof ProxyCtl);
+        
+        // Puts it into the create map in the factory
+        factoryCreated.createMe();
+        
+        OperationScopeFactory osf = locator.getService(OperationScopeFactory.class);
+        
+        Assert.assertFalse(osf.hasBeenDestroyed(factoryCreated));
+        
+        operationHandle.closeOperation();
+        
+        Assert.assertTrue(osf.hasBeenDestroyed(factoryCreated));
+    }
+    
+    /**
+     * Tests that the destroy gets called when an operation is closed, even for
+     * a factory created service that was not proxied and created with ServiceHandle
+     */
+    @Test // @org.junit.Ignore
+    public void testFactoryDestructionWorksOnCloseOperationNotProxiedWithServiceHandle() {
+        ServiceLocator locator = OperationsTest.createLocator(BasicOperationScopeContext.class,
+                OperationScopeWithFactoryCreatedService.class,
+                OperationScopeFactory.class);
+        
+        OperationManager operationManager = locator.getService(OperationManager.class);
+        
+        OperationHandle<BasicOperationScope> operationHandle = operationManager.createOperation(OperationsTest.BASIC_OPERATION_ANNOTATION);
+        operationHandle.resume();
+        
+        ServiceHandle<OperationScopeWithFactoryCreatedService> opScoped = locator.getServiceHandle(OperationScopeWithFactoryCreatedService.class);
+        CreatedByFactory factoryCreated = opScoped.getService().getCreatedByFactory();
+        Assert.assertFalse(factoryCreated instanceof ProxyCtl);
+        
+        // Puts it into the create map in the factory
+        factoryCreated.createMe();
+        
+        OperationScopeFactory osf = locator.getService(OperationScopeFactory.class);
+        
+        Assert.assertFalse(osf.hasBeenDestroyed(factoryCreated));
+        
+        operationHandle.closeOperation();
+        
+        Assert.assertTrue(osf.hasBeenDestroyed(factoryCreated));
+        
+        opScoped.destroy();
+    }
 
 }
