@@ -43,12 +43,14 @@ import java.util.List;
 
 import javax.inject.Singleton;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -60,14 +62,26 @@ public class MultiThreaded1Test {
     private final static int NUM_THREADS = 20;
     private final static int NUM_ITERATIONS = 10000;
     
-    /**
-     * Many threads looking up all of many services
-     * using a Filter with no name but an interface
-     * contract and looking for a specific qualifier
-     */
-    @Test // @org.junit.Ignore
-    public void testManyThreadsGettingALotOfServices() throws Throwable {
-        ServiceLocator locator = LocatorHelper.getServiceLocator(
+    private final static IndexedFilter FILTER = new IndexedFilter() {
+        @Override
+        public boolean matches(Descriptor d) {
+            return d.getQualifiers().contains(QualifierA.class.getName());
+        }
+
+        @Override
+        public String getAdvertisedContract() {
+            return ContractA.class.getName();
+        }
+
+        @Override
+        public String getName() {
+            return null;
+        }
+        
+    };
+    
+    private ServiceLocator getLocator() {
+        return LocatorHelper.getServiceLocator(
                 Singleton1.class,
                 Singleton2.class,
                 Singleton3.class,
@@ -88,31 +102,52 @@ public class MultiThreaded1Test {
                 Singleton18.class,
                 Singleton19.class,
                 Singleton20.class);
-                
-        IndexedFilter filter = new IndexedFilter() {
-
-            @Override
-            public boolean matches(Descriptor d) {
-                return d.getQualifiers().contains(QualifierA.class.getName());
-            }
-
-            @Override
-            public String getAdvertisedContract() {
-                return ContractA.class.getName();
-            }
-
-            @Override
-            public String getName() {
-                return null;
-            }
-            
-        };
+        
+    }
+    
+    /**
+     * Many threads looking up all of many services
+     * using a Filter with no name but an interface
+     * contract and looking for a specific qualifier
+     */
+    @Test // @org.junit.Ignore
+    public void testManyThreadsGettingALotOfServices() throws Throwable {
+        ServiceLocator locator = getLocator();
         
         Thread threads[] = new Thread[NUM_THREADS];
         Runner runners[] = new Runner[NUM_THREADS];
         
         for (int lcv = 0; lcv < NUM_THREADS; lcv++) {
-            runners[lcv] = new Runner(filter, NUM_ITERATIONS, locator);
+            runners[lcv] = new Runner(FILTER, NUM_ITERATIONS, locator, true);
+            threads[lcv] = new Thread(runners[lcv]);
+        }
+        
+        for (int lcv = 0; lcv < NUM_THREADS; lcv++) {
+            threads[lcv].start();
+        }
+        
+        for (int lcv = 0; lcv < NUM_THREADS; lcv++) {
+            runners[lcv].isDone(20 * 1000);
+        }
+        
+    }
+    
+    /**
+     * Many threads looking up all of many services
+     * using a Filter with no name but an interface
+     * contract and looking for a specific qualifier.
+     * This version of the test dynamically adds and
+     * removes services during the run
+     */
+    @Test // @org.junit.Ignore
+    public void testManyThreadsGettingALotOfServicesWithAddsAndRemoves() throws Throwable {
+        ServiceLocator locator = getLocator();
+        
+        Thread threads[] = new Thread[NUM_THREADS];
+        Runner runners[] = new Runner[NUM_THREADS];
+        
+        for (int lcv = 0; lcv < NUM_THREADS; lcv++) {
+            runners[lcv] = new Runner(FILTER, NUM_ITERATIONS, locator, false);
             threads[lcv] = new Thread(runners[lcv]);
         }
         
@@ -131,14 +166,17 @@ public class MultiThreaded1Test {
         private final Filter filter;
         private final int iterations;
         private final ServiceLocator locator;
+        // If true swap ranks, if false do adds/removes
+        private final boolean ranks;
         
         private Throwable exception;
         private boolean done = false;
         
-        private Runner(Filter filter, int iterations, ServiceLocator locator) {
+        private Runner(Filter filter, int iterations, ServiceLocator locator, boolean ranks) {
             this.filter = filter;
             this.iterations = iterations;
             this.locator = locator;
+            this.ranks = ranks;
         }
 
         /* (non-Javadoc)
@@ -165,18 +203,38 @@ public class MultiThreaded1Test {
         private void internalRun() throws Throwable {
             boolean oneOrNegativeOne = false;
             
+            ActiveDescriptor<?> added = null;
             for (int lcv = 0; lcv < iterations; lcv++) {
                 List<ServiceHandle<?>> allInterceptors = locator.getAllServiceHandles(filter);
-                Assert.assertEquals(20, allInterceptors.size());
+                if (!ranks) {
+                    Assert.assertTrue(allInterceptors.size() >= 20);
+                }
+                else {
+                    Assert.assertEquals(20, allInterceptors.size());
+                }
                 
-                if ((lcv % 5) == 0) {
-                    if (oneOrNegativeOne) {
-                        allInterceptors.get(0).getActiveDescriptor().setRanking(1);
-                        oneOrNegativeOne = false;
+                if (ranks) {
+                    if ((lcv % 5) == 0) {
+                        if (oneOrNegativeOne) {
+                            allInterceptors.get(0).getActiveDescriptor().setRanking(1);
+                            oneOrNegativeOne = false;
+                        }
+                        else {
+                            allInterceptors.get(0).getActiveDescriptor().setRanking(-1);
+                            oneOrNegativeOne = true;
+                        }
+                    
                     }
-                    else {
-                        allInterceptors.get(0).getActiveDescriptor().setRanking(-1);
-                        oneOrNegativeOne = true;
+                }
+                else {
+                    if ((lcv % 5) == 0) {
+                        if (added == null) {
+                            added = ServiceLocatorUtilities.addClasses(locator, SingletonExtra.class).get(0);
+                        }
+                        else {
+                            ServiceLocatorUtilities.removeOneDescriptor(locator, added);
+                            added = null;
+                        }
                     }
                     
                 }
@@ -264,6 +322,10 @@ public class MultiThreaded1Test {
     }
     @Singleton @QualifierA
     private static class Singleton20 implements ContractA {
+    }
+    
+    @Singleton @QualifierA
+    private static class SingletonExtra implements ContractA {
     }
 
 }
