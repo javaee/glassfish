@@ -49,6 +49,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -350,6 +351,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
 
             retVal = new LinkedList<SystemDescriptor<?>>();
 
+            try {
             for (SystemDescriptor<?> candidate : sortMeOut) {
                 if (!getLocals && DescriptorVisibility.LOCAL.equals(candidate.getDescriptorVisibility())) {
                     continue;
@@ -360,6 +362,11 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 if (filter.matches(candidate)) {
                     retVal.add(candidate);
                 }
+            }
+            }
+            catch (ConcurrentModificationException cme) {
+                System.out.println("JRW(10) SLI got cme " + Thread.currentThread().getId());
+                throw cme;
             }
         } finally {
             rLock.unlock();
@@ -2536,6 +2543,23 @@ public class ServiceLocatorImpl implements ServiceLocator {
         finally {
             wLock.unlock();
         }
+    }
+    
+    /* package */ int unsortIndexes(int newRank, SystemDescriptor<?> desc, Set<IndexedListData> myLists) {
+        wLock.lock();
+        try {
+            int retVal = desc.setRankWithLock(newRank);
+            
+            for (IndexedListData myList : myLists) {
+                myList.unSort();
+            }
+            
+            return retVal;
+        }
+        finally {
+            wLock.unlock();
+        }
+        
     }
 
     @Override

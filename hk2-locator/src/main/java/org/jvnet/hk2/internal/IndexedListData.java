@@ -57,56 +57,45 @@ import java.util.TreeSet;
 public class IndexedListData {
     private final static DescriptorComparator UNSORTED_COMPARATOR = new DescriptorComparator();
     
-    private LinkedList<SystemDescriptor<?>> unsortedList = new LinkedList<SystemDescriptor<?>>();
-    private TreeSet<SystemDescriptor<?>> sortedList = null;
+    private final LinkedList<SystemDescriptor<?>> unsortedList = new LinkedList<SystemDescriptor<?>>();
+    private volatile LinkedList<SystemDescriptor<?>> sortedList = null;
     
     public Collection<SystemDescriptor<?>> getSortedList() {
         if (sortedList != null) return sortedList;
         
         if (unsortedList.size() <= 1) return unsortedList;
         
-        sortedList = new TreeSet<SystemDescriptor<?>>(ServiceLocatorImpl.DESCRIPTOR_COMPARATOR);
-        sortedList.addAll(unsortedList);
-        
-        unsortedList.clear();
-        unsortedList = null;
+        TreeSet<SystemDescriptor<?>> sorter = new TreeSet<SystemDescriptor<?>>(ServiceLocatorImpl.DESCRIPTOR_COMPARATOR);
+        sorter.addAll(unsortedList);
+            
+        sortedList = new LinkedList<SystemDescriptor<?>>(sorter);
         
         return sortedList;
     }
     
     public void addDescriptor(SystemDescriptor<?> descriptor) {
-        if (sortedList != null) {  
-            sortedList.add(descriptor);
-        }
-        else {
-            unsortedList.add(descriptor);
-        }
+        unsortedList.add(descriptor);
+        sortedList = null;
         
         descriptor.addList(this);
     }
     
     public void removeDescriptor(SystemDescriptor<?> descriptor) {
-        if (sortedList != null) {
-            sortedList.remove(descriptor);
-        }
-        else {
-            ListIterator<SystemDescriptor<?>> iterator = unsortedList.listIterator();
-            while (iterator.hasNext()) {
-                SystemDescriptor<?> candidate = iterator.next();
-                if (UNSORTED_COMPARATOR.compare(descriptor, candidate) == 0) {
-                    iterator.remove();
-                    break;
-                }
+        ListIterator<SystemDescriptor<?>> iterator = unsortedList.listIterator();
+        while (iterator.hasNext()) {
+            SystemDescriptor<?> candidate = iterator.next();
+            if (UNSORTED_COMPARATOR.compare(descriptor, candidate) == 0) {
+                iterator.remove();
+                break;
             }
         }
+        
+        sortedList = null;
         
         descriptor.removeList(this);
     }
     
     public boolean isEmpty() {
-        if (sortedList != null) {
-            return sortedList.isEmpty();
-        }
         return unsortedList.isEmpty();
     }
     
@@ -114,40 +103,20 @@ public class IndexedListData {
      * Called by a SystemDescriptor when its ranking has changed
      */
     public void unSort() {
-        if (sortedList != null) {
-            unsortedList = new LinkedList<SystemDescriptor<?>>(sortedList);
-            
-            sortedList.clear();
-            sortedList = null;
-        }
+        sortedList = null;
     }
     
     public void clear() {
-        Collection<SystemDescriptor<?>> removeMe;
-        if (sortedList != null) {
-            removeMe = sortedList;
-        }
-        else {
-            removeMe = unsortedList;
-        }
+        sortedList = null;
         
-        for (SystemDescriptor<?> descriptor : removeMe) {
+        for (SystemDescriptor<?> descriptor : unsortedList) {
             descriptor.removeList(this);
         }
         
-        if (sortedList != null) {
-            sortedList.clear();
-            sortedList = null;
-            
-            unsortedList = new LinkedList<SystemDescriptor<?>>();
-        }
-        else {
-            unsortedList.clear();
-        }
+        unsortedList.clear();
     }
     
     public int size() {
-        if (sortedList != null) return sortedList.size();
         return unsortedList.size();
     }
 }

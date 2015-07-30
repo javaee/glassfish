@@ -262,13 +262,13 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T>, Closeable {
      */
     @Override
     public int setRanking(int ranking) {
-        int retVal = baseDescriptor.setRanking(ranking);
-
-        for (IndexedListData myList : myLists) {
-            myList.unSort();
-        }
-
-        return retVal;
+        // do NOT change this without the write lock, can cause
+        // all sorts of problems with ConcurrentModificationExceptions
+        return sdLocator.unsortIndexes(ranking, this, myLists);
+    }
+    
+    /* package */ int setRankWithLock(int ranking) {
+        return baseDescriptor.setRanking(ranking);
     }
 
     /* package */ void addList(IndexedListData indexedList) {

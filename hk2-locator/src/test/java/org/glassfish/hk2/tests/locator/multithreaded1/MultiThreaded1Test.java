@@ -65,7 +65,7 @@ public class MultiThreaded1Test {
      * using a Filter with no name but an interface
      * contract and looking for a specific qualifier
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testManyThreadsGettingALotOfServices() throws Throwable {
         ServiceLocator locator = LocatorHelper.getServiceLocator(
                 Singleton1.class,
