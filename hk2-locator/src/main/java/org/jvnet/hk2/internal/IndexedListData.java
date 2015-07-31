@@ -63,24 +63,32 @@ public class IndexedListData {
     public Collection<SystemDescriptor<?>> getSortedList() {
         if (sortedList != null) return sortedList;
         
-        if (unsortedList.size() <= 1) return unsortedList;
+        synchronized (this) {
+            if (sortedList != null) return sortedList;
         
-        TreeSet<SystemDescriptor<?>> sorter = new TreeSet<SystemDescriptor<?>>(ServiceLocatorImpl.DESCRIPTOR_COMPARATOR);
-        sorter.addAll(unsortedList);
+            if (unsortedList.size() <= 1) {
+                sortedList = new LinkedList<SystemDescriptor<?>>(unsortedList);
+                
+                return sortedList;
+            }
+        
+            TreeSet<SystemDescriptor<?>> sorter = new TreeSet<SystemDescriptor<?>>(ServiceLocatorImpl.DESCRIPTOR_COMPARATOR);
+            sorter.addAll(unsortedList);
             
-        sortedList = new LinkedList<SystemDescriptor<?>>(sorter);
+            sortedList = new LinkedList<SystemDescriptor<?>>(sorter);
         
-        return sortedList;
+            return sortedList;
+        }
     }
     
-    public void addDescriptor(SystemDescriptor<?> descriptor) {
+    public synchronized void addDescriptor(SystemDescriptor<?> descriptor) {
         unsortedList.add(descriptor);
         sortedList = null;
         
         descriptor.addList(this);
     }
     
-    public void removeDescriptor(SystemDescriptor<?> descriptor) {
+    public synchronized void removeDescriptor(SystemDescriptor<?> descriptor) {
         ListIterator<SystemDescriptor<?>> iterator = unsortedList.listIterator();
         while (iterator.hasNext()) {
             SystemDescriptor<?> candidate = iterator.next();
@@ -95,18 +103,18 @@ public class IndexedListData {
         descriptor.removeList(this);
     }
     
-    public boolean isEmpty() {
+    public synchronized boolean isEmpty() {
         return unsortedList.isEmpty();
     }
     
     /**
      * Called by a SystemDescriptor when its ranking has changed
      */
-    public void unSort() {
+    public synchronized void unSort() {
         sortedList = null;
     }
     
-    public void clear() {
+    public synchronized void clear() {
         sortedList = null;
         
         for (SystemDescriptor<?> descriptor : unsortedList) {
@@ -116,7 +124,7 @@ public class IndexedListData {
         unsortedList.clear();
     }
     
-    public int size() {
+    public synchronized int size() {
         return unsortedList.size();
     }
 }
