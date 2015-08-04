@@ -40,10 +40,10 @@
 
 package org.jvnet.hk2.internal;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.ListIterator;
-import java.util.TreeSet;
 
 /**
  * This object contains a list of values.  The list is not always sorted, but will
@@ -57,33 +57,36 @@ import java.util.TreeSet;
 public class IndexedListData {
     private final static DescriptorComparator UNSORTED_COMPARATOR = new DescriptorComparator();
     
-    private final LinkedList<SystemDescriptor<?>> unsortedList = new LinkedList<SystemDescriptor<?>>();
-    private volatile LinkedList<SystemDescriptor<?>> sortedList = null;
+    private final ArrayList<SystemDescriptor<?>> unsortedList = new ArrayList<SystemDescriptor<?>>();
+    private volatile boolean sorted = true;
     
     public Collection<SystemDescriptor<?>> getSortedList() {
-        if (sortedList != null) return sortedList;
+        if (sorted) return unsortedList;
         
         synchronized (this) {
-            if (sortedList != null) return sortedList;
+            if (sorted) return unsortedList;
         
             if (unsortedList.size() <= 1) {
-                sortedList = new LinkedList<SystemDescriptor<?>>(unsortedList);
-                
-                return sortedList;
+                sorted = true;
+                return unsortedList;
             }
-        
-            TreeSet<SystemDescriptor<?>> sorter = new TreeSet<SystemDescriptor<?>>(ServiceLocatorImpl.DESCRIPTOR_COMPARATOR);
-            sorter.addAll(unsortedList);
             
-            sortedList = new LinkedList<SystemDescriptor<?>>(sorter);
+            Collections.sort(unsortedList, ServiceLocatorImpl.DESCRIPTOR_COMPARATOR);
         
-            return sortedList;
+            sorted = true;
+            return unsortedList;
         }
     }
     
     public synchronized void addDescriptor(SystemDescriptor<?> descriptor) {
         unsortedList.add(descriptor);
-        sortedList = null;
+        
+        if (unsortedList.size() > 1) {
+            sorted = false;
+        }
+        else {
+            sorted = true;
+        }
         
         descriptor.addList(this);
     }
@@ -98,7 +101,12 @@ public class IndexedListData {
             }
         }
         
-        sortedList = null;
+        if (unsortedList.size() > 1) {
+            sorted = false;
+        }
+        else {
+            sorted = true;
+        }
         
         descriptor.removeList(this);
     }
@@ -111,12 +119,12 @@ public class IndexedListData {
      * Called by a SystemDescriptor when its ranking has changed
      */
     public synchronized void unSort() {
-        sortedList = null;
+        if (unsortedList.size() > 1) {
+            sorted = false;
+        }
     }
     
     public synchronized void clear() {
-        sortedList = null;
-        
         for (SystemDescriptor<?> descriptor : unsortedList) {
             descriptor.removeList(this);
         }
