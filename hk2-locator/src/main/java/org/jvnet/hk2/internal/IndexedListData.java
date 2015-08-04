@@ -55,8 +55,6 @@ import java.util.ListIterator;
  *
  */
 public class IndexedListData {
-    private final static DescriptorComparator UNSORTED_COMPARATOR = new DescriptorComparator();
-    
     private final ArrayList<SystemDescriptor<?>> unsortedList = new ArrayList<SystemDescriptor<?>>();
     private volatile boolean sorted = true;
     
@@ -95,7 +93,7 @@ public class IndexedListData {
         ListIterator<SystemDescriptor<?>> iterator = unsortedList.listIterator();
         while (iterator.hasNext()) {
             SystemDescriptor<?> candidate = iterator.next();
-            if (UNSORTED_COMPARATOR.compare(descriptor, candidate) == 0) {
+            if (ServiceLocatorImpl.DESCRIPTOR_COMPARATOR.compare(descriptor, candidate) == 0) {
                 iterator.remove();
                 break;
             }
