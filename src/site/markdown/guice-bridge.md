@@ -67,7 +67,7 @@ This is a code snippet that initializes a [ServiceLocator][servicelocator]:
  
 ```java
   GuiceBridge.getGuiceBridge().initializeGuiceBridge(aServiceLocator);
-```java
+```
 
 In the second step you must tell your initialized [ServiceLocator][servicelocator] about the
 specific [Guice][guice] [Injector][injector](s) that you want it to look for services in.
@@ -79,7 +79,7 @@ The following code snippet adds a [Guice][guice] [Injector][injector] to be sear
       GuiceIntoHK2Bridge guiceBridge = aServiceLocator.getService(GuiceIntoHK2Bridge.class);
       guiceBridge.bridgeGuiceInjector(guiceInjector);
   }
-```java
+```
 
 Any [Guice][guice] [Injector][injector] added with the [bridgeGuiceInjector][bridgeguiceinjector]
 method will be searched for services that HK2 cannot otherwise find.
@@ -93,7 +93,7 @@ For example, if you have a service called GuiceService that is created by [Guice
       @Inject
       private GuiceService guiceService;
   }
-```java
+```
 
 ### Injecting HK2 services into Guice services
 
@@ -107,7 +107,7 @@ into a [Guice][guice] service (called GuiceService) your code would look like th
       @HK2Inject
       private HK2Service hk2Service;
   }
-```java
+```
 
 In order to do this we have provided an implementation of [Module][module]
 that should be given to [Guice][guice] when creating the [Guice][guice] [Injector][injector].
@@ -120,7 +120,7 @@ tell the [Guice][guice] [Injector][injector] about the [ServiceLocator][servicel
   Injector injector = Guice.createInjector(
                 new HK2IntoGuiceBridge(serviceLocator),
                 // application modules);
-```java
+```
 
 Any [Guice][guice] service that can be created with this [Injector][injector] 
 will now search the provided [ServiceLocator][servicelocator] 
@@ -149,7 +149,7 @@ The following code example shows how you could accomplish such a thing:
         
         return injector;
     }
-```java
+```
 
 The above method will create a [Guice][guice] [Injector][injector] 
 where services created by Guice can be injected with HK2 services (using the [HK2Inject][hk2inject] annotation).
