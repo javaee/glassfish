@@ -132,6 +132,8 @@ public final class ConfigModel {
      */
     public final String targetTypeName;
 
+    private Class targetTypeClass;
+
     /**
      * Fully-qualified name under which this type is indexed.
      * This is the class name where the key property is defined.
@@ -165,8 +167,11 @@ public final class ConfigModel {
      * @return the class object for this proxy type
      */
     public <T extends ConfigBeanProxy> Class<T> getProxyType() {
-        Class<T> retVal = (Class<T>) classLoaderHolder.loadClass(targetTypeName);
-        return retVal;
+        if (targetTypeClass == null) {
+            targetTypeClass = (Class<T>) classLoaderHolder.loadClass(targetTypeName);
+        }
+
+        return targetTypeClass;
     }
 
     /**
