@@ -1095,7 +1095,7 @@
         <profile>
             <id>javadoc-jdk8+</id>
             <activation>
-                <jdk>[1.8</jdk>
+                <jdk>[1.8,)</jdk>
                 <activeByDefault>false</activeByDefault>
             </activation>
             <properties>
