@@ -1,4 +1,3 @@
-
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
@@ -38,88 +37,44 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.proxiableshared;
+package org.glassfish.hk2.tests.proxiableshared;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.api.Factory;
+import org.glassfish.hk2.api.ServiceLocator;
 
 /**
- * Global component that is managed by its own "bean manager".
- * The component is made accessible in HK2 via {@link GlobalComponentFactory}
- * and is being injected by HK2 via a simple {@link ComponentInjector} SPI.
+ * Integration point between HK2 and our {@link GlobalComponent.BeanManager}.
+ * HK2 asks bean manager for the component when needed and provides a simple
+ * {@link GlobalComponent.ComponentInjector} implementation so that
+ * the component could be HK2 injected.
  *
  * @author Jakub Podlesak (jakub.podlesak at oracle.com)
  */
-public class GlobalComponent {
+@Singleton
+public class GlobalComponentFactory implements Factory<GlobalComponent> {
 
-    /**
-     * Our "singleton" instance.
-     */
-    static GlobalComponent instance = null;
+    private final ServiceLocator locator;
 
-    /**
-     * This is to allow HK2 to inject a component managed here.
-     */
-    public interface ComponentInjector {
-
-        /**
-         * Just inject provided component.
-         *
-         * @param component injected component.
-         */
-        void inject(GlobalComponent component);
-    }
-
-    /**
-     * Our "bean manager" implementation. All we do here
-     * is we mimic CDI application scope.
-     */
-    public static class BeanManager {
-
-        /**
-         * Start from scratch.
-         */
-        public static void restart() {
-            instance = null;
-        }
-
-        /**
-         * Get me the actual global component, that will get
-         * injected by provided injector after instantiation.
-         * If there is an existing instance available,
-         * no injection happens.
-         *
-         * @param injector use this to inject a new component.
-         * @return injected component.
-         */
-        public static GlobalComponent provideComponent(ComponentInjector injector) {
-
-            if (instance == null) {
-                instance = new GlobalComponent();
-                injector.inject(instance);
-            }
-
-            return instance;
-        }
-    }
-
-    private GlobalComponent() {
-        // disable instantiation
-    }
-
-    /**
-     * HK2 injected field. A dynamic proxy will be injected here,
-     * that will unfortunately keep reference to the first HK2 locator
-     * used to inject this.
-     */
     @Inject
-    ReqData request;
+    public GlobalComponentFactory(ServiceLocator locator) {
+        this.locator = locator;
+    }
 
-    /**
-     * Get me actual request name, so that i can check you have the right guy.
-     *
-     * @return actual request name.
-     */
-    public String getRequestName() {
-        return request.getRequestName();
+    @Override
+    public GlobalComponent provide() {
+        return GlobalComponent.BeanManager.provideComponent(new GlobalComponent.ComponentInjector() {
+            @Override
+            public void inject(GlobalComponent component) {
+                locator.inject(component);
+            }
+        });
+    }
+
+    @Override
+    public void dispose(GlobalComponent instance) {
+        // we do not care
     }
 }

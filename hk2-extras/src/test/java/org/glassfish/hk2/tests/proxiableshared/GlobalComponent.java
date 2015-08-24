@@ -1,3 +1,4 @@
+
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
@@ -37,91 +38,88 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.proxiableshared;
+package org.glassfish.hk2.tests.proxiableshared;
 
-import java.lang.annotation.Annotation;
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.inject.Singleton;
-
-import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Context;
-import org.glassfish.hk2.api.ServiceHandle;
+import javax.inject.Inject;
 
 /**
- * Request context to manage request scoped components.
- * A single threaded client is assumed for the sake of simplicity.
-  *
+ * Global component that is managed by its own "bean manager".
+ * The component is made accessible in HK2 via {@link GlobalComponentFactory}
+ * and is being injected by HK2 via a simple {@link ComponentInjector} SPI.
+ *
  * @author Jakub Podlesak (jakub.podlesak at oracle.com)
  */
-@Singleton
-public class ReqContext implements Context<ReqScoped> {
-
-    Map<ActiveDescriptor<?>, Object> context = null;
+public class GlobalComponent {
 
     /**
-     * Make room for new request scoped data.
+     * Our "singleton" instance.
      */
-    public void startRequest() {
-        context = new HashMap<ActiveDescriptor<?>, Object>();
+    static GlobalComponent instance = null;
+
+    /**
+     * This is to allow HK2 to inject a component managed here.
+     */
+    public interface ComponentInjector {
+
+        /**
+         * Just inject provided component.
+         *
+         * @param component injected component.
+         */
+        void inject(GlobalComponent component);
     }
 
     /**
-     * Forget all request data.
+     * Our "bean manager" implementation. All we do here
+     * is we mimic CDI application scope.
      */
-    public void stopRequest() {
-        this.context = null;
-    }
+    public static class BeanManager {
 
-    @Override
-    public Class<? extends Annotation> getScope() {
-        return ReqScoped.class;
-    }
-
-    @Override
-    public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor, ServiceHandle<?> root) {
-
-        ensureActiveRequest();
-
-        Object result = context.get(activeDescriptor);
-        if (result == null) {
-            result = activeDescriptor.create(root);
-            context.put(activeDescriptor, result);
+        /**
+         * Start from scratch.
+         */
+        public static void restart() {
+            instance = null;
         }
-        return (U) result;
-    }
 
-    private void ensureActiveRequest() {
-        if (context == null) {
-            throw new IllegalStateException("Not inside an active request scope");
+        /**
+         * Get me the actual global component, that will get
+         * injected by provided injector after instantiation.
+         * If there is an existing instance available,
+         * no injection happens.
+         *
+         * @param injector use this to inject a new component.
+         * @return injected component.
+         */
+        public static GlobalComponent provideComponent(ComponentInjector injector) {
+
+            if (instance == null) {
+                instance = new GlobalComponent();
+                injector.inject(instance);
+            }
+
+            return instance;
         }
     }
 
-    @Override
-    public boolean containsKey(ActiveDescriptor<?> descriptor) {
-        ensureActiveRequest();
-        return context.containsKey(descriptor);
+    private GlobalComponent() {
+        // disable instantiation
     }
 
-    @Override
-    public void destroyOne(ActiveDescriptor<?> descriptor) {
-        ensureActiveRequest();
-        context.remove(descriptor);
-    }
+    /**
+     * HK2 injected field. A dynamic proxy will be injected here,
+     * that will unfortunately keep reference to the first HK2 locator
+     * used to inject this.
+     */
+    @Inject
+    private ReqData request;
 
-    @Override
-    public boolean supportsNullCreation() {
-        return false;
-    }
-
-    @Override
-    public boolean isActive() {
-        return true;
-    }
-
-    @Override
-    public void shutdown() {
-        context.clear();
+    /**
+     * Get me actual request name, so that i can check you have the right guy.
+     *
+     * @return actual request name.
+     */
+    public String getRequestName() {
+        return request.getRequestName();
     }
 }

@@ -37,25 +37,25 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.proxiableshared;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import javax.inject.Scope;
-
-import org.glassfish.hk2.api.Proxiable;
+package org.glassfish.hk2.tests.proxiableshared;
 
 /**
- * Request scope that is proxiable.
- *
  * @author Jakub Podlesak (jakub.podlesak at oracle.com)
  */
-@Scope
-@Proxiable(proxyForSameScope = false)
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface ReqScoped {
+@ReqScoped
+public class ReqData {
+
+    private String requestName;
+
+    public String getRequestName() {
+        return requestName;
+    }
+
+    public void setRequestName(String requestName) {
+        this.requestName = requestName;
+    }
+    
+    public String toString() {
+        return "ReqData(" + requestName + "," + System.identityHashCode(this) + ")";
+    }
 }

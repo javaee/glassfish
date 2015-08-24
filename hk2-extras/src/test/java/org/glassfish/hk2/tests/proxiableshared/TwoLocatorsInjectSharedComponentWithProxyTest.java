@@ -37,11 +37,10 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.proxiableshared;
+package org.glassfish.hk2.tests.proxiableshared;
 
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
-
+import org.glassfish.hk2.tests.extras.internal.Utilities;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -63,10 +62,13 @@ public class TwoLocatorsInjectSharedComponentWithProxyTest {
     private final static String TEST_NAME = TwoLocatorsInjectSharedComponentWithProxyTest.class.getSimpleName();
 
     private static ServiceLocator newAppLocator(String name) {
-        return LocatorHelper.create(name, new AppModule());
+        return Utilities.getCleanLocator(name, ReqContext.class, ReqData.class, GlobalComponentFactory.class);
     }
 
-    @Test
+    /**
+     * Tests that the proxy application works with a single ServiceLocator
+     */
+    @Test // @Ignore
     public void testSingleAppWorksFine() {
 
         GlobalComponent.BeanManager.restart();
@@ -98,10 +100,13 @@ public class TwoLocatorsInjectSharedComponentWithProxyTest {
         request.stopRequest();
     }
 
+    /**
+     * Tests the same app as above but working on two different ServiceLocators
+     * at once.  The two locators should not interfere with each other
+     */
     @Test
     @Ignore
     public void testTwoAppsWorkFine() {
-
         GlobalComponent.BeanManager.restart();
 
         // create two "apps"
@@ -120,7 +125,7 @@ public class TwoLocatorsInjectSharedComponentWithProxyTest {
         ReqData reqData = adamAppLocator.getService(ReqData.class);
         assertThat(reqData, is(notNullValue()));
         reqData.setRequestName("adam/one");
-
+        
         final GlobalComponent globalComponentOne = adamAppLocator.getService(GlobalComponent.class);
         assertThat(globalComponentOne.getRequestName(), is(equalTo("adam/one")));
         adamRequest.stopRequest();

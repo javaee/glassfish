@@ -37,21 +37,24 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.proxiableshared;
+package org.glassfish.hk2.tests.proxiableshared;
+
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
 
 /**
+ * Application module. We have a proxiable scope there
+ * and we try to mimic request processing, where request data
+ * could be injected into a 3rd party component, that is
+ * managed outside of HK2.
+ *
  * @author Jakub Podlesak (jakub.podlesak at oracle.com)
  */
-@ReqScoped
-public class ReqData {
+public class AppModule extends AbstractBinder {
 
-    private String requestName;
-
-    public String getRequestName() {
-        return requestName;
-    }
-
-    public void setRequestName(String requestName) {
-        this.requestName = requestName;
+    @Override
+    public void configure() {
+        addActiveDescriptor(ReqContext.class);
+        bind(ReqData.class).in(ReqScoped.class);
+        bindFactory(GlobalComponentFactory.class).to(GlobalComponent.class);
     }
 }

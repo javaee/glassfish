@@ -37,26 +37,25 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.proxiableshared;
+package org.glassfish.hk2.tests.proxiableshared;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import javax.inject.Scope;
+
+import org.glassfish.hk2.api.Proxiable;
 
 /**
- * Application module. We have a proxiable scope there
- * and we try to mimic request processing, where request data
- * could be injected into a 3rd party component, that is
- * managed outside of HK2.
+ * Request scope that is proxiable.
  *
  * @author Jakub Podlesak (jakub.podlesak at oracle.com)
  */
-public class AppModule implements TestModule {
-
-    @Override
-    public void configure(DynamicConfiguration config) {
-        config.bind(BuilderHelper.createDescriptorFromClass(ReqContext.class));
-        config.bind(BuilderHelper.link(ReqData.class).in(ReqScoped.class).build());
-        config.bind(BuilderHelper.link(GlobalComponentFactory.class).to(GlobalComponent.class).buildFactory());
-    }
+@Scope
+@Proxiable(proxyForSameScope = false)
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface ReqScoped {
 }

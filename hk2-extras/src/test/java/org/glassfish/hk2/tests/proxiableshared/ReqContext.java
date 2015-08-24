@@ -37,42 +37,91 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.proxiableshared;
+package org.glassfish.hk2.tests.proxiableshared;
 
-import javax.inject.Inject;
+import java.lang.annotation.Annotation;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.glassfish.hk2.api.Factory;
-import org.glassfish.hk2.api.ServiceLocator;
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Context;
+import org.glassfish.hk2.api.ServiceHandle;
 
 /**
- * Integration point between HK2 and our {@link GlobalComponent.BeanManager}.
- * HK2 asks bean manager for the component when needed and provides a simple
- * {@link GlobalComponent.ComponentInjector} implementation so that
- * the component could be HK2 injected.
- *
+ * Request context to manage request scoped components.
+ * A single threaded client is assumed for the sake of simplicity.
+  *
  * @author Jakub Podlesak (jakub.podlesak at oracle.com)
  */
-public class GlobalComponentFactory implements Factory<GlobalComponent> {
+@Singleton
+public class ReqContext implements Context<ReqScoped> {
 
-    private final ServiceLocator locator;
+    Map<ActiveDescriptor<?>, Object> context = null;
 
-    @Inject
-    public GlobalComponentFactory(ServiceLocator locator) {
-        this.locator = locator;
+    /**
+     * Make room for new request scoped data.
+     */
+    public void startRequest() {
+        context = new HashMap<ActiveDescriptor<?>, Object>();
+    }
+
+    /**
+     * Forget all request data.
+     */
+    public void stopRequest() {
+        this.context = null;
     }
 
     @Override
-    public GlobalComponent provide() {
-        return GlobalComponent.BeanManager.provideComponent(new GlobalComponent.ComponentInjector() {
-            @Override
-            public void inject(GlobalComponent component) {
-                locator.inject(component);
-            }
-        });
+    public Class<? extends Annotation> getScope() {
+        return ReqScoped.class;
     }
 
     @Override
-    public void dispose(GlobalComponent instance) {
-        // we do not care
+    public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor, ServiceHandle<?> root) {
+
+        ensureActiveRequest();
+
+        Object result = context.get(activeDescriptor);
+        if (result == null) {
+            result = activeDescriptor.create(root);
+            context.put(activeDescriptor, result);
+        }
+        return (U) result;
+    }
+
+    private void ensureActiveRequest() {
+        if (context == null) {
+            throw new IllegalStateException("Not inside an active request scope");
+        }
+    }
+
+    @Override
+    public boolean containsKey(ActiveDescriptor<?> descriptor) {
+        ensureActiveRequest();
+        return context.containsKey(descriptor);
+    }
+
+    @Override
+    public void destroyOne(ActiveDescriptor<?> descriptor) {
+        ensureActiveRequest();
+        context.remove(descriptor);
+    }
+
+    @Override
+    public boolean supportsNullCreation() {
+        return false;
+    }
+
+    @Override
+    public boolean isActive() {
+        return true;
+    }
+
+    @Override
+    public void shutdown() {
+        context.clear();
     }
 }
