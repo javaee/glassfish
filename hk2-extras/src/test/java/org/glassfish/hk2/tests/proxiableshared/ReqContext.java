@@ -64,6 +64,9 @@ public class ReqContext implements Context<ReqScoped> {
     @Inject
     private OperationManager parentOperationManager;
     
+    @Inject
+    private ServiceLocator whoAmIFor;
+    
     private OperationHandle<ReqScoped> currentRequest;
 
     private Map<ActiveDescriptor<?>, Object> context = null;
@@ -78,6 +81,7 @@ public class ReqContext implements Context<ReqScoped> {
         }
         
         currentRequest = parentOperationManager.createAndStartOperation(ReqScopedImpl.REQ_SCOPED);
+        currentRequest.setOperationData(whoAmIFor);
         
         context = new HashMap<ActiveDescriptor<?>, Object>();
     }

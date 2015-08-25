@@ -48,6 +48,8 @@ import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.extras.operation.OperationContext;
 
 /**
+ * This is here as the Operation version of the RequestScope
+ *
  * @author jwells
  *
  */

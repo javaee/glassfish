@@ -82,4 +82,9 @@ public class GlobalComponent {
     public String getRequestName() {
         return request.getRequestName();
     }
+    
+    @Override
+    public String toString() {
+        return "GlobalComponent(" + System.identityHashCode(this) + ")";
+    }
 }

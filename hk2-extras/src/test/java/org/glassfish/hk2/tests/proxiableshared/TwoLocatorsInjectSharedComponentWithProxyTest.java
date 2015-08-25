@@ -42,10 +42,10 @@ package org.glassfish.hk2.tests.proxiableshared;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.extras.ExtrasUtilities;
+import org.glassfish.hk2.extras.operation.OperationManager;
 import org.glassfish.hk2.tests.extras.internal.Utilities;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -79,12 +79,22 @@ public class TwoLocatorsInjectSharedComponentWithProxyTest {
         return Utilities.getCleanLocator(name, appLocator, ReqContext.class, ReqData.class);
     }
     
-    private static <T> void tellAppLocatorAboutComponentService(ServiceLocator appLocator,
+    private static <T> ForeignActiveDescriptor<T> tellAppLocatorAboutFirstComponentService(ServiceLocator appLocator,
             ServiceLocator childLocator,
             ActiveDescriptor<T> requestScopedDescriptor) {
-        ActiveDescriptor<T> componentService = new ForeignActiveDescriptor<T>(childLocator, requestScopedDescriptor);
+        ForeignActiveDescriptor<T> componentService = new ForeignActiveDescriptor<T>(appLocator.getService(OperationManager.class),
+                childLocator, requestScopedDescriptor);
         
         ServiceLocatorUtilities.addOneDescriptor(appLocator, componentService, false);
+        
+        return componentService;
+    }
+    
+    private static <T> void tellAppLocatorAboutSubsequentComponentService(
+            ServiceLocator childLocator,
+            ForeignActiveDescriptor<T> firstDescriptor,
+            ActiveDescriptor<T> subsequentDescriptor) {
+        firstDescriptor.addSimilarChild(childLocator, subsequentDescriptor);
     }
     
     private static ActiveDescriptor<?> getReqDataDescriptor(ServiceLocator componentLocator) {
@@ -94,13 +104,11 @@ public class TwoLocatorsInjectSharedComponentWithProxyTest {
     /**
      * Tests that the proxy application works with a single ServiceLocator
      */
-    @Test // @Ignore
+    @Test // @org.junit.Ignore
     public void testSingleAppWorksFine() {
-
-
         final ServiceLocator appLocator = newApplicationLocator(TEST_NAME + "_SingleApp");
         final ServiceLocator componentLocator = newComponentLocator(TEST_NAME + "_SingleComponent", appLocator);
-        tellAppLocatorAboutComponentService(appLocator, componentLocator, getReqDataDescriptor(componentLocator));
+        tellAppLocatorAboutFirstComponentService(appLocator, componentLocator, getReqDataDescriptor(componentLocator));
 
         final ReqContext request = componentLocator.getService(ReqContext.class);
         assertThat(request, is(notNullValue()));
@@ -131,8 +139,8 @@ public class TwoLocatorsInjectSharedComponentWithProxyTest {
      * Tests the same app as above but working on two different ServiceLocators
      * at once.  The two locators should not interfere with each other
      */
-    @Test
-    @Ignore
+    @SuppressWarnings("unchecked")
+    @Test // @Ignore
     public void testTwoAppsWorkFine() {
         // create the application locator
         final ServiceLocator appLocator = newApplicationLocator(TEST_NAME + "_MultiApp");
@@ -142,8 +150,9 @@ public class TwoLocatorsInjectSharedComponentWithProxyTest {
         final ServiceLocator evaAppLocator = newComponentLocator(TEST_NAME + "_EvaApp", appLocator);
         
         // Ensure the global knows about the request services
-        tellAppLocatorAboutComponentService(appLocator, adamAppLocator, getReqDataDescriptor(adamAppLocator));
-        tellAppLocatorAboutComponentService(appLocator, evaAppLocator, getReqDataDescriptor(evaAppLocator));
+        ForeignActiveDescriptor<?> firstDesc = tellAppLocatorAboutFirstComponentService(appLocator, adamAppLocator, getReqDataDescriptor(adamAppLocator));
+        tellAppLocatorAboutSubsequentComponentService(evaAppLocator, (ForeignActiveDescriptor<ReqData>) firstDesc,
+                (ActiveDescriptor<ReqData>) getReqDataDescriptor(evaAppLocator));
 
         // get app context from both
         final ReqContext adamRequest = adamAppLocator.getService(ReqContext.class);
