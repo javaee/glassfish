@@ -43,11 +43,15 @@ import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.extras.operation.OperationHandle;
+import org.glassfish.hk2.extras.operation.OperationManager;
 
 /**
  * Request context to manage request scoped components.
@@ -57,13 +61,24 @@ import org.glassfish.hk2.api.ServiceHandle;
  */
 @Singleton
 public class ReqContext implements Context<ReqScoped> {
+    @Inject
+    private OperationManager parentOperationManager;
+    
+    private OperationHandle<ReqScoped> currentRequest;
 
-    Map<ActiveDescriptor<?>, Object> context = null;
+    private Map<ActiveDescriptor<?>, Object> context = null;
 
     /**
      * Make room for new request scoped data.
      */
     public void startRequest() {
+        if (currentRequest != null) {
+            currentRequest.closeOperation();
+            currentRequest = null;
+        }
+        
+        currentRequest = parentOperationManager.createAndStartOperation(ReqScopedImpl.REQ_SCOPED);
+        
         context = new HashMap<ActiveDescriptor<?>, Object>();
     }
 
@@ -72,6 +87,10 @@ public class ReqContext implements Context<ReqScoped> {
      */
     public void stopRequest() {
         this.context = null;
+        if (currentRequest != null) {
+            currentRequest.closeOperation();
+            currentRequest = null;
+        }
     }
 
     @Override

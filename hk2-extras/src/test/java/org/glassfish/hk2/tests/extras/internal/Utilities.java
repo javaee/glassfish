@@ -66,6 +66,13 @@ public class Utilities {
         return retVal;
     }
     
+    public static ServiceLocator getCleanLocator(String name, ServiceLocator parent, Class<?>...classes) {
+        ServiceLocator retVal = FACTORY.create(name, parent);
+        
+        ServiceLocatorUtilities.addClasses(retVal, classes);
+        return retVal;
+    }
+    
     public static ServiceLocator getCleanLocator(String name, Class<?>...classes) {
         ServiceLocator retVal = FACTORY.create(name);
         

@@ -39,42 +39,61 @@
  */
 package org.glassfish.hk2.tests.proxiableshared;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import org.glassfish.hk2.api.Factory;
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.DescriptorVisibility;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 
 /**
- * Integration point between HK2 and our {@link GlobalComponent.BeanManager}.
- * HK2 asks bean manager for the component when needed and provides a simple
- * {@link GlobalComponent.ComponentInjector} implementation so that
- * the component could be HK2 injected.
+ * @author jwells
  *
- * @author Jakub Podlesak (jakub.podlesak at oracle.com)
  */
-@Singleton
-public class GlobalComponentFactory implements Factory<GlobalComponent> {
-
-    private final ServiceLocator locator;
-
-    @Inject
-    public GlobalComponentFactory(ServiceLocator locator) {
-        this.locator = locator;
+public class ForeignActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
+    private final ServiceLocator childLocator;
+    private final ActiveDescriptor<T> foreignDescriptor;
+    
+    public ForeignActiveDescriptor(ServiceLocator childLocator, ActiveDescriptor<T> foreignDescriptor) {
+        super(
+                foreignDescriptor.getContractTypes(),
+                foreignDescriptor.getScopeAnnotation(),
+                foreignDescriptor.getName(),
+                foreignDescriptor.getQualifierAnnotations(),
+                foreignDescriptor.getDescriptorType(),
+                DescriptorVisibility.LOCAL,
+                foreignDescriptor.getRanking(),
+                foreignDescriptor.isProxiable(),
+                foreignDescriptor.isProxyForSameScope(),
+                foreignDescriptor.getClassAnalysisName(),
+                foreignDescriptor.getMetadata());
+        
+        setScopeAsAnnotation(foreignDescriptor.getScopeAsAnnotation());
+        setReified(true);
+        
+        this.childLocator = childLocator;
+        this.foreignDescriptor = foreignDescriptor;
     }
 
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#getImplementationClass()
+     */
     @Override
-    public GlobalComponent provide() {
-        return GlobalComponent.BeanManager.provideComponent(new GlobalComponent.ComponentInjector() {
-            @Override
-            public void inject(GlobalComponent component) {
-                locator.inject(component);
-            }
-        });
+    public Class<?> getImplementationClass() {
+        return foreignDescriptor.getImplementationClass();
+    }
+    
+    @Override
+    public String getImplementation() {
+        return foreignDescriptor.getImplementation();
     }
 
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#create(org.glassfish.hk2.api.ServiceHandle)
+     */
     @Override
-    public void dispose(GlobalComponent instance) {
-        // we do not care
+    public T create(ServiceHandle<?> root) {
+        ServiceHandle<T> handle = childLocator.getServiceHandle(foreignDescriptor);
+        return handle.getService();
     }
+
 }

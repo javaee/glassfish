@@ -39,8 +39,12 @@
  */
 package org.glassfish.hk2.tests.proxiableshared;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.extras.ExtrasUtilities;
 import org.glassfish.hk2.tests.extras.internal.Utilities;
+import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -60,9 +64,31 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class TwoLocatorsInjectSharedComponentWithProxyTest {
 
     private final static String TEST_NAME = TwoLocatorsInjectSharedComponentWithProxyTest.class.getSimpleName();
+    
+    private static ServiceLocator newApplicationLocator(String name) {
+        ServiceLocator retVal = Utilities.getCleanLocator(name,
+                GlobalReqContext.class,
+                GlobalComponent.class);
+        
+        ExtrasUtilities.enableOperations(retVal);
+        
+        return retVal;
+    }
 
-    private static ServiceLocator newAppLocator(String name) {
-        return Utilities.getCleanLocator(name, ReqContext.class, ReqData.class, GlobalComponentFactory.class);
+    private static ServiceLocator newComponentLocator(String name, ServiceLocator appLocator) {
+        return Utilities.getCleanLocator(name, appLocator, ReqContext.class, ReqData.class);
+    }
+    
+    private static <T> void tellAppLocatorAboutComponentService(ServiceLocator appLocator,
+            ServiceLocator childLocator,
+            ActiveDescriptor<T> requestScopedDescriptor) {
+        ActiveDescriptor<T> componentService = new ForeignActiveDescriptor<T>(childLocator, requestScopedDescriptor);
+        
+        ServiceLocatorUtilities.addOneDescriptor(appLocator, componentService, false);
+    }
+    
+    private static ActiveDescriptor<?> getReqDataDescriptor(ServiceLocator componentLocator) {
+        return componentLocator.getBestDescriptor(BuilderHelper.createContractFilter(ReqData.class.getName()));
     }
 
     /**
@@ -71,30 +97,31 @@ public class TwoLocatorsInjectSharedComponentWithProxyTest {
     @Test // @Ignore
     public void testSingleAppWorksFine() {
 
-        GlobalComponent.BeanManager.restart();
 
-        final ServiceLocator singleAppLocator = newAppLocator(TEST_NAME + "_SingleApp");
+        final ServiceLocator appLocator = newApplicationLocator(TEST_NAME + "_SingleApp");
+        final ServiceLocator componentLocator = newComponentLocator(TEST_NAME + "_SingleComponent", appLocator);
+        tellAppLocatorAboutComponentService(appLocator, componentLocator, getReqDataDescriptor(componentLocator));
 
-        final ReqContext request = singleAppLocator.getService(ReqContext.class);
+        final ReqContext request = componentLocator.getService(ReqContext.class);
         assertThat(request, is(notNullValue()));
 
         // req one:
         request.startRequest();
-        ReqData reqData = singleAppLocator.getService(ReqData.class);
+        ReqData reqData = componentLocator.getService(ReqData.class);
         assertThat(reqData, is(notNullValue()));
         reqData.setRequestName("one");
 
-        final GlobalComponent globalComponentOne = singleAppLocator.getService(GlobalComponent.class);
+        final GlobalComponent globalComponentOne = componentLocator.getService(GlobalComponent.class);
         assertThat(globalComponentOne.getRequestName(), is(equalTo("one")));
         request.stopRequest();
 
         // req two:
         request.startRequest();
-        reqData = singleAppLocator.getService(ReqData.class);
+        reqData = componentLocator.getService(ReqData.class);
         assertThat(reqData, is(notNullValue()));
         reqData.setRequestName("two");
 
-        final GlobalComponent globalComponentTwo = singleAppLocator.getService(GlobalComponent.class);
+        final GlobalComponent globalComponentTwo = componentLocator.getService(GlobalComponent.class);
         assertThat(globalComponentOne.getRequestName(), is(equalTo("two")));
         assertThat(globalComponentTwo, is(equalTo(globalComponentOne)));
         request.stopRequest();
@@ -107,11 +134,16 @@ public class TwoLocatorsInjectSharedComponentWithProxyTest {
     @Test
     @Ignore
     public void testTwoAppsWorkFine() {
-        GlobalComponent.BeanManager.restart();
-
+        // create the application locator
+        final ServiceLocator appLocator = newApplicationLocator(TEST_NAME + "_MultiApp");
+        
         // create two "apps"
-        final ServiceLocator adamAppLocator = newAppLocator(TEST_NAME + "_AdamApp");
-        final ServiceLocator evaAppLocator = newAppLocator(TEST_NAME + "_EvaApp");
+        final ServiceLocator adamAppLocator = newComponentLocator(TEST_NAME + "_AdamApp", appLocator);
+        final ServiceLocator evaAppLocator = newComponentLocator(TEST_NAME + "_EvaApp", appLocator);
+        
+        // Ensure the global knows about the request services
+        tellAppLocatorAboutComponentService(appLocator, adamAppLocator, getReqDataDescriptor(adamAppLocator));
+        tellAppLocatorAboutComponentService(appLocator, evaAppLocator, getReqDataDescriptor(evaAppLocator));
 
         // get app context from both
         final ReqContext adamRequest = adamAppLocator.getService(ReqContext.class);

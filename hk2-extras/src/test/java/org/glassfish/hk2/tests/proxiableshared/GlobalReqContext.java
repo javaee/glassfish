@@ -1,4 +1,3 @@
-
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
@@ -40,46 +39,27 @@
  */
 package org.glassfish.hk2.tests.proxiableshared;
 
-import javax.inject.Inject;
+import java.lang.annotation.Annotation;
+
 import javax.inject.Singleton;
 
+import org.glassfish.hk2.api.DescriptorVisibility;
+import org.glassfish.hk2.api.Visibility;
+import org.glassfish.hk2.extras.operation.OperationContext;
+
 /**
- * Global component that is managed by its own "bean manager".
- * The component is made accessible in HK2 via {@link GlobalComponentFactory}
- * and is being injected by HK2 via a simple {@link ComponentInjector} SPI.
+ * @author jwells
  *
- * @author Jakub Podlesak (jakub.podlesak at oracle.com)
  */
-@Singleton
-public class GlobalComponent {
-    /**
-     * HK2 injected field. A dynamic proxy will be injected here,
-     * that will unfortunately keep reference to the first HK2 locator
-     * used to inject this.
-     */
-    @Inject
-    private ReqData request;
+@Singleton @Visibility(DescriptorVisibility.LOCAL)
+public class GlobalReqContext extends OperationContext<ReqScoped> {
 
-    /**
-     * Our "bean manager" implementation. All we do here
-     * is we mimic CDI application scope.
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#getScope()
      */
-    public static class BeanManager {
-        // ...
-
+    @Override
+    public Class<? extends Annotation> getScope() {
+        return ReqScoped.class;
     }
 
-    @Inject
-    private GlobalComponent() {
-        // disable instantiation
-    }
-
-    /**
-     * Get me actual request name, so that i can check you have the right guy.
-     *
-     * @return actual request name.
-     */
-    public String getRequestName() {
-        return request.getRequestName();
-    }
 }
