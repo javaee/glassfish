@@ -45,6 +45,16 @@ import java.util.Set;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
+ * Manages HK2 operations, allowing the user to create new operations of a particular
+ * type or discover the current set of active operations or find the current operation
+ * on the current thread
+ * <p>
+ * Operations are categorized by the Annotation type.  The annotation type corresponds
+ * to the annotation class used in the extension of the {@link OperationContext} which
+ * defines the scope of the Operation.  Most of the methods for this service take an
+ * implementation of that annotation class, which is usually implemented by extending
+ * {@link org.glassfish.hk2.api.AnnotationLiteral}
+ * 
  * @author jwells
  *
  */

@@ -49,7 +49,7 @@ public enum OperationState {
     /** The Operation is open and is active on at least one thread */
     ACTIVE,
     
-    /** The Opereration is open but not active on any thread */
+    /** The Operation is open but not active on any thread */
     SUSPENDED,
     
     /** The Operation has been closed */
