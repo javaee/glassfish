@@ -60,5 +60,6 @@
         <module>caching</module>
         <module>events</module>
         <module>configuration</module>
+        <module>operations</module>
     </modules>
 </project>
