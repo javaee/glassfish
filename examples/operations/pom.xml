@@ -53,10 +53,6 @@
     <name>Operations Example</name>
     <description>A demonstration of an HK2 Operation</description>
 
-    <properties>
-        <findbugs.exclude>${project.basedir}/exclude.xml</findbugs.exclude>
-    </properties>
-
     <build>
         <plugins>
             <plugin>
