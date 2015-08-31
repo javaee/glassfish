@@ -67,6 +67,7 @@ overview of each feature.  Among the set of HK2 features are:
 + [Self Descriptor Injection](extensibility.html#Self_Descriptor_Injection)
 + [ServiceLocator to ServiceLocator Bridge](extensibility.html#ServiceLocator_to_ServiceLocator_Bridge)
 + [Error Handling](extensibility.html#Error_Handling)
++ [Operations](extensibility.html#Operations)
 
 ### Events
 
@@ -424,6 +425,15 @@ errors that the system sends to the [ErrorService][errorservice]:
 
 Using the [ErrorService][errorservice] can be a convenient place to standardize on logging of service failures.
 
+### Operations
+
+An HK2 Operation is a scope/context pair used to implement scopes like RequestScope, ApplicationScope
+or TransactionScope.  Any service lifecycle (context) for which only one instance of that context can be
+active at a time is a candidate to be an HK2 Operation.  RequestScope is a good example in most containers,
+as each thread is generally tied to a single request.
+
+More information about HK2 Operations and an example can be found [here][operations].
+
 [apioverview]: api-overview.html
 [servicelocator]: apidocs/org/glassfish/hk2/api/ServiceLocator.html
 [context]: apidocs/org/glassfish/hk2/api/Context.html
@@ -473,3 +483,4 @@ Using the [ErrorService][errorservice] can be a convenient place to standardize 
 [NORMAL]: apidocs/org/glassfish/hk2/api/DescriptorVisibility.html#NORMAL
 [justintimeinjectionresolver]: apidocs/org/glassfish/hk2/api/JustInTimeInjectionResolver.html
 [injectee]: apidocs/org/glassfish/hk2/api/Injectee.html
+[operations]: operations.html
