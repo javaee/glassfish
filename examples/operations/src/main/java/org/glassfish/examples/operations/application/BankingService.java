@@ -51,12 +51,12 @@ import org.jvnet.hk2.annotations.Contract;
 @Contract
 public interface BankingService {
     /**
-     * Transfers funds between the withdrawl account and the deposit account.  If there
-     * is not enough funds in the withdrawl account it may transfer less than the requested
+     * Transfers funds between the withdrawal account and the deposit account.  If there
+     * is not enough funds in the withdrawal account it may transfer less than the requested
      * amount
      * 
-     * @param withdrawlBank The bank from which the withdrawl is being made
-     * @param withdrawlAccount The account number to withdrawl funds from
+     * @param withdrawlBank The bank from which the withdrawal is being made
+     * @param withdrawlAccount The account number to withdrawal funds from
      * @param depositorBank The bank to which the deposit is being done
      * @param depositAccount The account number to deposit funds to
      * @param funds The number of funds to transfer
@@ -75,7 +75,7 @@ public interface BankingService {
     public int getDepositedBalance(String bank, long account);
     
     /**
-     * Tells how much money that is available for withdrawl from the
+     * Tells how much money that is available for withdrawal from the
      * given account number at the given bank.  Note that if the
      * account number has never been seen before the amount given
      * at the start is 100 funds
@@ -84,6 +84,6 @@ public interface BankingService {
      * @param account the account number to check
      * @return the amount of money deposited in this account
      */
-    public int getWithdrawlBalance(String bank, long account);
+    public int getWithdrawalBalance(String bank, long account);
 
 }

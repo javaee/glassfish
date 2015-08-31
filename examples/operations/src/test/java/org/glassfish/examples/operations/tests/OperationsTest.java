@@ -42,10 +42,10 @@ package org.glassfish.examples.operations.tests;
 import org.glassfish.examples.operations.application.BankingService;
 import org.glassfish.examples.operations.application.DepositorService;
 import org.glassfish.examples.operations.application.TransferService;
-import org.glassfish.examples.operations.application.WithdrawlService;
+import org.glassfish.examples.operations.application.WithdrawalService;
 import org.glassfish.examples.operations.application.internal.BankingServiceImpl;
 import org.glassfish.examples.operations.scopes.DepositScopeContext;
-import org.glassfish.examples.operations.scopes.WithdrawlScopeContext;
+import org.glassfish.examples.operations.scopes.WithdrawalScopeContext;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.extras.ExtrasUtilities;
@@ -76,10 +76,10 @@ public class OperationsTest {
         ExtrasUtilities.enableOperations(retVal);
         ServiceLocatorUtilities.addClasses(retVal,
                 DepositScopeContext.class,
-                WithdrawlScopeContext.class,
+                WithdrawalScopeContext.class,
                 BankingServiceImpl.class,
                 DepositorService.class,
-                WithdrawlService.class,
+                WithdrawalService.class,
                 TransferService.class);
         
         return retVal;
@@ -95,9 +95,9 @@ public class OperationsTest {
         BankingService bankingService = locator.getService(BankingService.class);
         
         // First, initialize the accounts of ALICE, BOB and CAROL with 100 funds
-        int aliceBalance = bankingService.getWithdrawlBalance(CHASE_BANK, ALICE_ACCOUNT);
-        int bobBalance = bankingService.getWithdrawlBalance(BOA_BANK, BOB_ACCOUNT);
-        int carolBalance = bankingService.getWithdrawlBalance(SJFCU_BANK, CAROL_ACCOUNT);
+        int aliceBalance = bankingService.getWithdrawalBalance(CHASE_BANK, ALICE_ACCOUNT);
+        int bobBalance = bankingService.getWithdrawalBalance(BOA_BANK, BOB_ACCOUNT);
+        int carolBalance = bankingService.getWithdrawalBalance(SJFCU_BANK, CAROL_ACCOUNT);
         
         Assert.assertEquals(100, aliceBalance);
         Assert.assertEquals(100, bobBalance);
@@ -109,9 +109,9 @@ public class OperationsTest {
         Assert.assertEquals(100, amtTransferred);
         
         // And lets check the withdrawl funds again, alice should have zero, bob should have 100, carol should still have 100
-        aliceBalance = bankingService.getWithdrawlBalance(CHASE_BANK, ALICE_ACCOUNT);
-        bobBalance = bankingService.getWithdrawlBalance(BOA_BANK, BOB_ACCOUNT);
-        carolBalance = bankingService.getWithdrawlBalance(SJFCU_BANK, CAROL_ACCOUNT);
+        aliceBalance = bankingService.getWithdrawalBalance(CHASE_BANK, ALICE_ACCOUNT);
+        bobBalance = bankingService.getWithdrawalBalance(BOA_BANK, BOB_ACCOUNT);
+        carolBalance = bankingService.getWithdrawalBalance(SJFCU_BANK, CAROL_ACCOUNT);
         
         Assert.assertEquals(0, aliceBalance);
         Assert.assertEquals(100, bobBalance);
@@ -130,9 +130,9 @@ public class OperationsTest {
         amtTransferred = bankingService.transferFunds(SJFCU_BANK, CAROL_ACCOUNT, CHASE_BANK, ALICE_ACCOUNT, 100);
         
         // Now Alice and Carol should have nothing left, while Bob still has his original 100
-        aliceBalance = bankingService.getWithdrawlBalance(CHASE_BANK, ALICE_ACCOUNT);
-        bobBalance = bankingService.getWithdrawlBalance(BOA_BANK, BOB_ACCOUNT);
-        carolBalance = bankingService.getWithdrawlBalance(SJFCU_BANK, CAROL_ACCOUNT);
+        aliceBalance = bankingService.getWithdrawalBalance(CHASE_BANK, ALICE_ACCOUNT);
+        bobBalance = bankingService.getWithdrawalBalance(BOA_BANK, BOB_ACCOUNT);
+        carolBalance = bankingService.getWithdrawalBalance(SJFCU_BANK, CAROL_ACCOUNT);
         
         Assert.assertEquals(0, aliceBalance);
         Assert.assertEquals(100, bobBalance);

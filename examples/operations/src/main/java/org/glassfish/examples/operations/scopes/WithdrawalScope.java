@@ -39,32 +39,22 @@
  */
 package org.glassfish.examples.operations.scopes;
 
-import java.lang.annotation.Annotation;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import javax.inject.Singleton;
+import javax.inject.Scope;
 
-import org.glassfish.hk2.extras.operation.OperationContext;
+import org.glassfish.hk2.api.Proxiable;
 
 /**
- * The implementation of {@link org.glassfish.hk2.api.Context} for
- * {@link WithdrawlScope}.  Notice that most of the implementation details
- * are handled by {@link OperationContext} and that this is here
- * to tell HK2 information about the existence of the scope.  It is required
- * that every HK2 Operation type (scope) have a corresponding extension
- * of {@link OperationContext} as a service in the system.
- * 
  * @author jwells
  *
  */
-@Singleton
-public class WithdrawlScopeContext extends OperationContext<WithdrawlScope> {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Context#getScope()
-     */
-    @Override
-    public Class<? extends Annotation> getScope() {
-        return WithdrawlScope.class;
-    }
-
+@Scope
+@Proxiable(proxyForSameScope = false)
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface WithdrawalScope {
 }

@@ -56,7 +56,7 @@ public class TransferService {
     private DepositorService depositor;
     
     @Inject
-    private WithdrawlService withdrawer;
+    private WithdrawalService withdrawer;
     
     public int doTransfer(long depositAccount, long withdrawlAccount, int funds) {
         int recieved = withdrawer.withdrawlFunds(withdrawlAccount, funds);

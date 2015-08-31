@@ -42,7 +42,7 @@ package org.glassfish.examples.operations.application;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.glassfish.examples.operations.scopes.WithdrawlScope;
+import org.glassfish.examples.operations.scopes.WithdrawalScope;
 
 /**
  * This simple service just keeps a record of withdrawls made to the accounts in a single bank.
@@ -54,8 +54,8 @@ import org.glassfish.examples.operations.scopes.WithdrawlScope;
  * @author jwells
  *
  */
-@WithdrawlScope
-public class WithdrawlService {
+@WithdrawalScope
+public class WithdrawalService {
     private Map<Long, Integer> accounts = new HashMap<Long, Integer>();
     
     public int withdrawlFunds(long account, int funds) {

@@ -48,9 +48,9 @@ import javax.inject.Singleton;
 import org.glassfish.examples.operations.application.BankingService;
 import org.glassfish.examples.operations.application.DepositorService;
 import org.glassfish.examples.operations.application.TransferService;
-import org.glassfish.examples.operations.application.WithdrawlService;
+import org.glassfish.examples.operations.application.WithdrawalService;
 import org.glassfish.examples.operations.scopes.DepositScope;
-import org.glassfish.examples.operations.scopes.WithdrawlScope;
+import org.glassfish.examples.operations.scopes.WithdrawalScope;
 import org.glassfish.hk2.extras.operation.OperationHandle;
 import org.glassfish.hk2.extras.operation.OperationManager;
 
@@ -73,10 +73,10 @@ public class BankingServiceImpl implements BankingService {
     private DepositorService depositorAgent;
     
     @Inject
-    private WithdrawlService withdrawerAgent;
+    private WithdrawalService withdrawerAgent;
     
     private final Map<String, OperationHandle<DepositScope>> depositors = new HashMap<String, OperationHandle<DepositScope>>();
-    private final Map<String, OperationHandle<WithdrawlScope>> withdrawers = new HashMap<String, OperationHandle<WithdrawlScope>>();
+    private final Map<String, OperationHandle<WithdrawalScope>> withdrawers = new HashMap<String, OperationHandle<WithdrawalScope>>();
     
     private synchronized OperationHandle<DepositScope> getDepositBankHandle(String bank) {
         OperationHandle<DepositScope> depositor = depositors.get(bank);
@@ -89,11 +89,11 @@ public class BankingServiceImpl implements BankingService {
         return depositor;
     }
     
-    private synchronized OperationHandle<WithdrawlScope> getWithdrawerBankHandle(String bank) {
-        OperationHandle<WithdrawlScope> withdrawer = withdrawers.get(bank);
+    private synchronized OperationHandle<WithdrawalScope> getWithdrawerBankHandle(String bank) {
+        OperationHandle<WithdrawalScope> withdrawer = withdrawers.get(bank);
         if (withdrawer == null) {
             // create and start it
-            withdrawer = manager.createOperation(WithdrawlScopeImpl.INSTANCE);
+            withdrawer = manager.createOperation(WithdrawalScopeImpl.INSTANCE);
             withdrawers.put(bank, withdrawer);
         }
         
@@ -107,7 +107,7 @@ public class BankingServiceImpl implements BankingService {
     public synchronized int transferFunds(String withdrawlBank, long withdrawlAccount,
             String depositorBank, long depositAccount, int funds) {
         OperationHandle<DepositScope> depositor = getDepositBankHandle(depositorBank);
-        OperationHandle<WithdrawlScope> withdrawer = getWithdrawerBankHandle(withdrawlBank);
+        OperationHandle<WithdrawalScope> withdrawer = getWithdrawerBankHandle(withdrawlBank);
         
         // Set the context for the transfer
         depositor.resume();
@@ -148,10 +148,10 @@ public class BankingServiceImpl implements BankingService {
      * @see org.glassfish.examples.operations.application.BankingService#getWithdrawlBalance(java.lang.String, long)
      */
     @Override
-    public int getWithdrawlBalance(String bank, long account) {
-        OperationHandle<WithdrawlScope> withdrawer = getWithdrawerBankHandle(bank);
+    public int getWithdrawalBalance(String bank, long account) {
+        OperationHandle<WithdrawalScope> withdrawer = getWithdrawerBankHandle(bank);
         
-        // Set the context for the withdrawl balance check
+        // Set the context for the withdrawal balance check
         withdrawer.resume();
         
         try {

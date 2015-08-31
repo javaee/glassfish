@@ -37,25 +37,18 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.examples.operations.scopes;
+package org.glassfish.examples.operations.application.internal;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import javax.inject.Scope;
-
-import org.glassfish.hk2.api.Proxiable;
+import org.glassfish.examples.operations.scopes.WithdrawalScope;
+import org.glassfish.hk2.api.AnnotationLiteral;
 
 /**
  * @author jwells
  *
  */
-@Scope
-@Proxiable(proxyForSameScope = false)
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface WithdrawlScope {
+public class WithdrawalScopeImpl extends AnnotationLiteral<WithdrawalScope> implements WithdrawalScope {
+    private static final long serialVersionUID = -6737713851216041475L;
+    
+    public static final WithdrawalScope INSTANCE = new WithdrawalScopeImpl();
 
 }

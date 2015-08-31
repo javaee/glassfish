@@ -37,18 +37,34 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.examples.operations.application.internal;
+package org.glassfish.examples.operations.scopes;
 
-import org.glassfish.examples.operations.scopes.WithdrawlScope;
-import org.glassfish.hk2.api.AnnotationLiteral;
+import java.lang.annotation.Annotation;
+
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.extras.operation.OperationContext;
 
 /**
+ * The implementation of {@link org.glassfish.hk2.api.Context} for
+ * {@link WithdrawalScope}.  Notice that most of the implementation details
+ * are handled by {@link OperationContext} and that this is here
+ * to tell HK2 information about the existence of the scope.  It is required
+ * that every HK2 Operation type (scope) have a corresponding extension
+ * of {@link OperationContext} as a service in the system.
+ * 
  * @author jwells
  *
  */
-public class WithdrawlScopeImpl extends AnnotationLiteral<WithdrawlScope> implements WithdrawlScope {
-    private static final long serialVersionUID = -6737713851216041475L;
-    
-    public static final WithdrawlScope INSTANCE = new WithdrawlScopeImpl();
+@Singleton
+public class WithdrawalScopeContext extends OperationContext<WithdrawalScope> {
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Context#getScope()
+     */
+    @Override
+    public Class<? extends Annotation> getScope() {
+        return WithdrawalScope.class;
+    }
 
 }
