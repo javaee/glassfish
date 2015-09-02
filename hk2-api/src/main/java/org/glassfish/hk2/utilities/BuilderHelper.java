@@ -41,6 +41,7 @@
 package org.glassfish.hk2.utilities;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.security.AccessController;
@@ -607,11 +608,33 @@ public class BuilderHelper {
 	        if (addMe instanceof Class) {
 	            addMeString = ((Class<?>) addMe).getName();
 	        }
+	        else if (addMe.getClass().isArray()) {
+	            int length = Array.getLength(addMe);
+	            
+	            for (int lcv = 0; lcv < length; lcv++) {
+	                Object iValue = Array.get(addMe, lcv);
+	                
+	                if (iValue == null) continue;
+	                
+	                if (iValue instanceof Class) {
+	                    String cName = ((Class<?>) iValue).getName();
+	                    
+	                    ReflectionHelper.addMetadata(metadata, key, cName);
+	                }
+	                else {
+	                    ReflectionHelper.addMetadata(metadata, key, iValue.toString());
+	                }
+	            }
+	            
+	            addMeString = null;
+	        }
 	        else {
 	            addMeString = addMe.toString();
 	        }
 	        
-	        ReflectionHelper.addMetadata(metadata, key, addMeString);
+	        if (addMeString != null) {
+	            ReflectionHelper.addMetadata(metadata, key, addMeString);
+	        }
 	    }
 	}
 	

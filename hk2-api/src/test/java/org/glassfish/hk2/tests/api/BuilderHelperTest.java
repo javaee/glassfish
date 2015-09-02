@@ -753,7 +753,7 @@ public class BuilderHelperTest {
      * Tests scope and qualifier annotations that have array types
      * with the Metadata annotation
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testArrayMetadata() {
         ArrayMetadataService ams = new ArrayMetadataService();
         
@@ -829,8 +829,8 @@ public class BuilderHelperTest {
             Assert.assertNotNull(value);
             
             Assert.assertEquals(2, value.size());
-            Assert.assertEquals("9", value.get(0));
-            Assert.assertEquals("10", value.get(1));
+            Assert.assertEquals("9.0", value.get(0));
+            Assert.assertEquals("10.0", value.get(1));
         }
         
         {
@@ -838,8 +838,8 @@ public class BuilderHelperTest {
             Assert.assertNotNull(value);
             
             Assert.assertEquals(2, value.size());
-            Assert.assertEquals("11", value.get(0));
-            Assert.assertEquals("12", value.get(1));
+            Assert.assertEquals("11.0", value.get(0));
+            Assert.assertEquals("12.0", value.get(1));
         }
         
         {
@@ -910,8 +910,8 @@ public class BuilderHelperTest {
             Assert.assertNotNull(value);
             
             Assert.assertEquals(2, value.size());
-            Assert.assertEquals("21", value.get(0));
-            Assert.assertEquals("22", value.get(1));
+            Assert.assertEquals("21.0", value.get(0));
+            Assert.assertEquals("22.0", value.get(1));
         }
         
         {
@@ -919,8 +919,8 @@ public class BuilderHelperTest {
             Assert.assertNotNull(value);
             
             Assert.assertEquals(2, value.size());
-            Assert.assertEquals("23", value.get(0));
-            Assert.assertEquals("24", value.get(1));
+            Assert.assertEquals("23.0", value.get(0));
+            Assert.assertEquals("24.0", value.get(1));
         }
         
     }
