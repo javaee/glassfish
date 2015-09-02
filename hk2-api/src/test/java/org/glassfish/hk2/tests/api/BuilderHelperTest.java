@@ -748,4 +748,180 @@ public class BuilderHelperTest {
         nullMe.setServiceData(null);
         Assert.assertNull(nullMe.getServiceData());
     }
+    
+    /**
+     * Tests scope and qualifier annotations that have array types
+     * with the Metadata annotation
+     */
+    @Test @org.junit.Ignore
+    public void testArrayMetadata() {
+        ArrayMetadataService ams = new ArrayMetadataService();
+        
+        AbstractActiveDescriptor<ArrayMetadataService> desc = BuilderHelper.createConstantDescriptor(ams);
+        
+        Map<String, List<String>> metadata = desc.getMetadata();
+        
+        {
+            List<String> value = metadata.get(ArrayMetadataScope.STRING_KEY);
+            Assert.assertNotNull(value);
+            
+            Assert.assertEquals(2, value.size());
+            Assert.assertEquals("a", value.get(0));
+            Assert.assertEquals("b", value.get(1));
+        }
+        
+        {
+            List<String> value = metadata.get(ArrayMetadataScope.BYTE_KEY);
+            Assert.assertNotNull(value);
+            
+            Assert.assertEquals(2, value.size());
+            Assert.assertEquals("1", value.get(0));
+            Assert.assertEquals("2", value.get(1));
+        }
+        
+        {
+            List<String> value = metadata.get(ArrayMetadataScope.SHORT_KEY);
+            Assert.assertNotNull(value);
+            
+            Assert.assertEquals(2, value.size());
+            Assert.assertEquals("3", value.get(0));
+            Assert.assertEquals("4", value.get(1));
+        }
+        
+        {
+            List<String> value = metadata.get(ArrayMetadataScope.INT_KEY);
+            Assert.assertNotNull(value);
+            
+            Assert.assertEquals(2, value.size());
+            Assert.assertEquals("5", value.get(0));
+            Assert.assertEquals("6", value.get(1));
+        }
+        
+        {
+            List<String> value = metadata.get(ArrayMetadataScope.CHAR_KEY);
+            Assert.assertNotNull(value);
+            
+            Assert.assertEquals(2, value.size());
+            Assert.assertEquals("c", value.get(0));
+            Assert.assertEquals("d", value.get(1));
+        }
+        
+        {
+            List<String> value = metadata.get(ArrayMetadataScope.LONG_KEY);
+            Assert.assertNotNull(value);
+            
+            Assert.assertEquals(2, value.size());
+            Assert.assertEquals("7", value.get(0));
+            Assert.assertEquals("8", value.get(1));
+        }
+        
+        {
+            List<String> value = metadata.get(ArrayMetadataScope.CLASS_KEY);
+            Assert.assertNotNull(value);
+            
+            Assert.assertEquals(2, value.size());
+            Assert.assertEquals(ArrayMetadataScope.class.getName(), value.get(0));
+            Assert.assertEquals(ArrayMetadataQualifier.class.getName(), value.get(1));
+        }
+        
+        {
+            List<String> value = metadata.get(ArrayMetadataScope.FLOAT_KEY);
+            Assert.assertNotNull(value);
+            
+            Assert.assertEquals(2, value.size());
+            Assert.assertEquals("9", value.get(0));
+            Assert.assertEquals("10", value.get(1));
+        }
+        
+        {
+            List<String> value = metadata.get(ArrayMetadataScope.DOUBLE_KEY);
+            Assert.assertNotNull(value);
+            
+            Assert.assertEquals(2, value.size());
+            Assert.assertEquals("11", value.get(0));
+            Assert.assertEquals("12", value.get(1));
+        }
+        
+        {
+            List<String> value = metadata.get(ArrayMetadataQualifier.STRING_KEY);
+            Assert.assertNotNull(value);
+            
+            Assert.assertEquals(2, value.size());
+            Assert.assertEquals("e", value.get(0));
+            Assert.assertEquals("f", value.get(1));
+        }
+        
+        {
+            List<String> value = metadata.get(ArrayMetadataQualifier.BYTE_KEY);
+            Assert.assertNotNull(value);
+            
+            Assert.assertEquals(2, value.size());
+            Assert.assertEquals("13", value.get(0));
+            Assert.assertEquals("14", value.get(1));
+        }
+        
+        {
+            List<String> value = metadata.get(ArrayMetadataQualifier.SHORT_KEY);
+            Assert.assertNotNull(value);
+            
+            Assert.assertEquals(2, value.size());
+            Assert.assertEquals("15", value.get(0));
+            Assert.assertEquals("16", value.get(1));
+        }
+        
+        {
+            List<String> value = metadata.get(ArrayMetadataQualifier.INT_KEY);
+            Assert.assertNotNull(value);
+            
+            Assert.assertEquals(2, value.size());
+            Assert.assertEquals("17", value.get(0));
+            Assert.assertEquals("18", value.get(1));
+        }
+        
+        {
+            List<String> value = metadata.get(ArrayMetadataQualifier.CHAR_KEY);
+            Assert.assertNotNull(value);
+            
+            Assert.assertEquals(2, value.size());
+            Assert.assertEquals("g", value.get(0));
+            Assert.assertEquals("h", value.get(1));
+        }
+        
+        {
+            List<String> value = metadata.get(ArrayMetadataQualifier.LONG_KEY);
+            Assert.assertNotNull(value);
+            
+            Assert.assertEquals(2, value.size());
+            Assert.assertEquals("19", value.get(0));
+            Assert.assertEquals("20", value.get(1));
+        }
+        
+        {
+            List<String> value = metadata.get(ArrayMetadataQualifier.CLASS_KEY);
+            Assert.assertNotNull(value);
+            
+            Assert.assertEquals(2, value.size());
+            Assert.assertEquals(Blue.class.getName(), value.get(0));
+            Assert.assertEquals(Green.class.getName(), value.get(1));
+        }
+        
+        {
+            List<String> value = metadata.get(ArrayMetadataQualifier.FLOAT_KEY);
+            Assert.assertNotNull(value);
+            
+            Assert.assertEquals(2, value.size());
+            Assert.assertEquals("21", value.get(0));
+            Assert.assertEquals("22", value.get(1));
+        }
+        
+        {
+            List<String> value = metadata.get(ArrayMetadataQualifier.DOUBLE_KEY);
+            Assert.assertNotNull(value);
+            
+            Assert.assertEquals(2, value.size());
+            Assert.assertEquals("23", value.get(0));
+            Assert.assertEquals("24", value.get(1));
+        }
+        
+    }
 }
