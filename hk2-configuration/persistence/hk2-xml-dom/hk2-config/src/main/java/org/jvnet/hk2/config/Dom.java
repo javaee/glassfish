@@ -54,12 +54,14 @@ import javax.xml.stream.Location;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
+
 import java.beans.PropertyVetoException;
 import java.lang.reflect.*;
 import java.lang.annotation.Annotation;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 /**
@@ -967,12 +969,20 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
 
         return null;
     }
+    
+    private final ConcurrentHashMap<Class<?>, ConfigBeanProxy> proxyCache =
+            new ConcurrentHashMap<Class<?>, ConfigBeanProxy>();
 
     /**
      * Creates a strongly-typed proxy to access values in this {@link Dom} object,
      * by using the specified interface type as the proxy type.
      */
     public <T extends ConfigBeanProxy> T createProxy(final Class<T> proxyType) {
+        ConfigBeanProxy retVal = proxyCache.get(proxyType);
+        if (retVal != null) {
+            return proxyType.cast(retVal);
+        }
+        
         ClassLoader cl;
         if (System.getSecurityManager()!=null) {
             cl = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
@@ -984,7 +994,10 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
         } else {
             cl = proxyType.getClassLoader();
         }
-        return proxyType.cast(Proxy.newProxyInstance(cl,new Class[]{proxyType},this));
+        
+        retVal = (ConfigBeanProxy) Proxy.newProxyInstance(cl,new Class[]{proxyType},this);
+        proxyCache.put(proxyType, retVal);
+        return proxyType.cast(retVal);
     }
 
     /**
