@@ -43,6 +43,7 @@ import org.glassfish.hk2.utilities.cache.Cache;
 import org.glassfish.hk2.utilities.cache.Computable;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.security.AccessController;
@@ -154,7 +155,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     private final ServiceLocatorImpl parent;
     private volatile boolean neutralContextClassLoader = true;
     private final ClassReflectionHelper classReflectionHelper = new ClassReflectionHelperImpl();
-    private final PerLocatorUtilities perLocatorUtilities = new PerLocatorUtilities();
+    private final PerLocatorUtilities perLocatorUtilities = new PerLocatorUtilities(this);
 
     private final IndexedListData allDescriptors = new IndexedListData();
     private final HashMap<String, IndexedListData> descriptorsByAdvertisedContract =
@@ -2480,6 +2481,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
      */
     private ServiceLocatorImpl getMe() {
         return this;
+    }
+    
+    /* package */ boolean hasInjectAnnotation(AnnotatedElement annotated, boolean checkParams) {
+        return perLocatorUtilities.hasInjectAnnotation(annotated, checkParams);
     }
     
     /* package */ InjectionResolver<?> getInjectionResolverForInjectee(SystemInjecteeImpl injectee) {

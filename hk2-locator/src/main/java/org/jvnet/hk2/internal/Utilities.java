@@ -89,7 +89,6 @@ import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.Injectee;
-import org.glassfish.hk2.api.InjectionPointIndicator;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.InstanceLifecycleListener;
 import org.glassfish.hk2.api.InterceptionService;
@@ -1255,7 +1254,7 @@ public class Utilities {
                 zeroArgConstructor = constructor;
             }
 
-            if (hasInjectAnnotation(locator, constructor, true)) {
+            if (locator.hasInjectAnnotation(constructor, true)) {
                 if (aConstructorWithInjectAnnotation != null) {
                     collector.addThrowable(new IllegalArgumentException("There is more than one constructor on class " +
                             Pretty.clazz(annotatedType)));
@@ -1344,7 +1343,7 @@ public class Utilities {
         for (MethodWrapper methodWrapper : crh.getAllMethods(annotatedType)) {
             Method method = methodWrapper.getMethod();
             
-            if (!hasInjectAnnotation(locator, method, true)) {
+            if (!locator.hasInjectAnnotation(method, true)) {
                 // Not an initializer method
                 continue;
             }
@@ -1411,7 +1410,7 @@ public class Utilities {
         Set<Field> fields = crh.getAllFields(annotatedType);
 
         for (Field field : fields) {
-            if (!hasInjectAnnotation(locator, field, false)) {
+            if (!locator.hasInjectAnnotation(field, false)) {
                 // Not an initializer field
                 continue;
             }
@@ -1426,59 +1425,6 @@ public class Utilities {
         }
 
         return retVal;
-    }
-
-    /**
-     * Checks whether an annotated element has any annotation that was used for the injection
-     *
-     * @param locator The service locator to use (as it will get all
-     * the annotations that were added on as well as the normal Inject)
-     * @param annotated  the annotated element
-     * @param checkParams  check the params if true
-     * @return True if element contains at least one inject annotation
-     */
-    private static boolean hasInjectAnnotation(ServiceLocatorImpl locator, AnnotatedElement annotated, boolean checkParams) {
-        for (Annotation anno : annotated.getAnnotations()) {
-            if (anno.annotationType().getAnnotation(InjectionPointIndicator.class) != null) {
-                return true;
-            }
-            
-            if (locator.isInjectAnnotation(anno)) {
-                return true;
-            }
-        }
-
-        if (!checkParams) return false;
-
-        boolean isConstructor;
-        Annotation allAnnotations[][];
-        if (annotated instanceof Method) {
-            Method m = (Method) annotated;
-
-            isConstructor = false;
-            allAnnotations = m.getParameterAnnotations();
-        } else if (annotated instanceof Constructor) {
-            Constructor<?> c = (Constructor<?>) annotated;
-
-            isConstructor = true;
-            allAnnotations = c.getParameterAnnotations();
-        } else {
-            return false;
-        }
-
-        for (Annotation allParamAnnotations[] : allAnnotations) {
-            for (Annotation paramAnno : allParamAnnotations) {
-                if (paramAnno.annotationType().getAnnotation(InjectionPointIndicator.class) != null) {
-                    return true;
-                }
-                
-                if (locator.isInjectAnnotation(paramAnno, isConstructor)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 
     /**
@@ -1882,20 +1828,24 @@ public class Utilities {
         return retVal;
     }
 
-    private static Set<Annotation> getFieldAdjustedQualifierAnnotations(Field f) {
-        Set<Annotation> unadjustedAnnotations = ReflectionHelper.getQualifierAnnotations(f);
-
-        // The getQualifierAnnotations will NOT add a Named annotation that has no
-        // value.  So we must now determine if that is the case, and if so add
-        // our own NamedImpl based on the name of the field
+    private static Set<Annotation> getFieldAdjustedQualifierAnnotations(Field f, Set<Annotation> qualifiers) {
         Named n = f.getAnnotation(Named.class);
-        if (n == null) return unadjustedAnnotations;
-
-        if (n.value() == null || "".equals(n.value())) {
-            unadjustedAnnotations.add(new NamedImpl(f.getName()));
+        if (n == null) return qualifiers;
+        if (n.value() != null && !"".equals(n.value())) {
+            return qualifiers;
         }
-
-        return unadjustedAnnotations;
+        
+        HashSet<Annotation> retVal = new HashSet<Annotation>();
+        for (Annotation qualifier : qualifiers) {
+            if (qualifier.annotationType().equals(Named.class)) {
+                retVal.add(new NamedImpl(f.getName()));
+            }
+            else {
+                retVal.add(qualifier);
+            }
+        }
+        
+        return retVal;
     }
 
     /**
@@ -1911,7 +1861,7 @@ public class Utilities {
         Type adjustedType = ReflectionHelper.resolveField(actualClass, f);
 
         retVal.add(new SystemInjecteeImpl(adjustedType,
-                getFieldAdjustedQualifierAnnotations(f),
+                getFieldAdjustedQualifierAnnotations(f, ai.qualifiers),
                 -1,
                 f,
                 ai.optional,

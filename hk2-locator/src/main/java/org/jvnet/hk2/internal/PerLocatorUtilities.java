@@ -47,6 +47,7 @@ import java.util.WeakHashMap;
 
 import javax.inject.Inject;
 
+import org.glassfish.hk2.api.InjectionPointIndicator;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.utilities.general.Hk2ThreadLocal;
 import org.glassfish.hk2.utilities.reflection.Pretty;
@@ -80,6 +81,64 @@ public class PerLocatorUtilities {
             };
             
     private volatile ProxyUtilities proxyUtilities;
+    private final ServiceLocatorImpl parent;
+    
+    /* package */ PerLocatorUtilities(ServiceLocatorImpl parent) {
+        this.parent = parent;
+    }
+    
+    /**
+     * Checks whether an annotated element has any annotation that was used for the injection
+     *
+     * @param locator The service locator to use (as it will get all
+     * the annotations that were added on as well as the normal Inject)
+     * @param annotated  the annotated element
+     * @param checkParams  check the params if true
+     * @return True if element contains at least one inject annotation
+     */
+    /* package */ boolean hasInjectAnnotation(AnnotatedElement annotated, boolean checkParams) {
+        for (Annotation anno : annotated.getAnnotations()) {
+            if (anno.annotationType().getAnnotation(InjectionPointIndicator.class) != null) {
+                return true;
+            }
+            
+            if (parent.isInjectAnnotation(anno)) {
+                return true;
+            }
+        }
+
+        if (!checkParams) return false;
+
+        boolean isConstructor;
+        Annotation allAnnotations[][];
+        if (annotated instanceof Method) {
+            Method m = (Method) annotated;
+
+            isConstructor = false;
+            allAnnotations = m.getParameterAnnotations();
+        } else if (annotated instanceof Constructor) {
+            Constructor<?> c = (Constructor<?>) annotated;
+
+            isConstructor = true;
+            allAnnotations = c.getParameterAnnotations();
+        } else {
+            return false;
+        }
+
+        for (Annotation allParamAnnotations[] : allAnnotations) {
+            for (Annotation paramAnno : allParamAnnotations) {
+                if (paramAnno.annotationType().getAnnotation(InjectionPointIndicator.class) != null) {
+                    return true;
+                }
+                
+                if (parent.isInjectAnnotation(paramAnno, isConstructor)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
             
     /**
      * Gets the analyzer name from the Service annotation
