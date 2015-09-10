@@ -2483,8 +2483,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
         return this;
     }
     
-    /* package */ boolean hasInjectAnnotation(AnnotatedElement annotated, boolean checkParams) {
-        return perLocatorUtilities.hasInjectAnnotation(annotated, checkParams);
+    /* package */ boolean hasInjectAnnotation(AnnotatedElement annotated) {
+        return perLocatorUtilities.hasInjectAnnotation(annotated);
     }
     
     /* package */ InjectionResolver<?> getInjectionResolverForInjectee(SystemInjecteeImpl injectee) {

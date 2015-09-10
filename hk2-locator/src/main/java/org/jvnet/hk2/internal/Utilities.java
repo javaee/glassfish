@@ -1254,7 +1254,7 @@ public class Utilities {
                 zeroArgConstructor = constructor;
             }
 
-            if (locator.hasInjectAnnotation(constructor, true)) {
+            if (locator.hasInjectAnnotation(constructor)) {
                 if (aConstructorWithInjectAnnotation != null) {
                     collector.addThrowable(new IllegalArgumentException("There is more than one constructor on class " +
                             Pretty.clazz(annotatedType)));
@@ -1343,7 +1343,7 @@ public class Utilities {
         for (MethodWrapper methodWrapper : crh.getAllMethods(annotatedType)) {
             Method method = methodWrapper.getMethod();
             
-            if (!locator.hasInjectAnnotation(method, true)) {
+            if (!locator.hasInjectAnnotation(method)) {
                 // Not an initializer method
                 continue;
             }
@@ -1410,7 +1410,7 @@ public class Utilities {
         Set<Field> fields = crh.getAllFields(annotatedType);
 
         for (Field field : fields) {
-            if (!locator.hasInjectAnnotation(field, false)) {
+            if (!locator.hasInjectAnnotation(field)) {
                 // Not an initializer field
                 continue;
             }

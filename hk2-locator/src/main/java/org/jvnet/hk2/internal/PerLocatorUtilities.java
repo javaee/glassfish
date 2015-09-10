@@ -80,6 +80,14 @@ public class PerLocatorUtilities {
                 }
             };
             
+    private final Hk2ThreadLocal<WeakHashMap<AnnotatedElement, Boolean>> hasInjectCache =
+            new Hk2ThreadLocal<WeakHashMap<AnnotatedElement, Boolean>>() {
+                @Override
+                protected WeakHashMap<AnnotatedElement, Boolean> initialValue() {
+                    return new WeakHashMap<AnnotatedElement, Boolean>();
+                }
+            };
+            
     private volatile ProxyUtilities proxyUtilities;
     private final ServiceLocatorImpl parent;
     
@@ -96,18 +104,22 @@ public class PerLocatorUtilities {
      * @param checkParams  check the params if true
      * @return True if element contains at least one inject annotation
      */
-    /* package */ boolean hasInjectAnnotation(AnnotatedElement annotated, boolean checkParams) {
+    /* package */ boolean hasInjectAnnotation(AnnotatedElement annotated) {
+        WeakHashMap<AnnotatedElement, Boolean> cache = hasInjectCache.get();
+        Boolean rv = cache.get(annotated);
+        if (rv != null) return rv;
+
         for (Annotation anno : annotated.getAnnotations()) {
             if (anno.annotationType().getAnnotation(InjectionPointIndicator.class) != null) {
+                cache.put(annotated, true);
                 return true;
             }
             
             if (parent.isInjectAnnotation(anno)) {
+                cache.put(annotated, true);
                 return true;
             }
         }
-
-        if (!checkParams) return false;
 
         boolean isConstructor;
         Annotation allAnnotations[][];
@@ -122,21 +134,25 @@ public class PerLocatorUtilities {
             isConstructor = true;
             allAnnotations = c.getParameterAnnotations();
         } else {
+            cache.put(annotated, false);
             return false;
         }
 
         for (Annotation allParamAnnotations[] : allAnnotations) {
             for (Annotation paramAnno : allParamAnnotations) {
                 if (paramAnno.annotationType().getAnnotation(InjectionPointIndicator.class) != null) {
+                    cache.put(annotated, true);
                     return true;
                 }
                 
                 if (parent.isInjectAnnotation(paramAnno, isConstructor)) {
+                    cache.put(annotated, true);
                     return true;
                 }
             }
         }
 
+        cache.put(annotated, false);
         return false;
     }
             
@@ -263,6 +279,7 @@ public class PerLocatorUtilities {
     }
     
     public synchronized void releaseCaches() {
+        hasInjectCache.removeAll();
         if (proxyUtilities != null) {
             proxyUtilities.releaseCache();
         }
