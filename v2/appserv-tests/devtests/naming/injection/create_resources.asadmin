@@ -1,1 +1,0 @@
-create-custom-resource --restype java.net.URL --factoryclass org.glassfish.resources.custom.factory.URLObjectFactory --property spec=http\\://java.net url/testUrl

@@ -1,4 +1,0 @@
-To invoke the joboperator-api application :
-	curl "http://localhost:8080/joboperator-api/PayrollJobSubmitterServlet?inputMonthYear=JAN-2013&calculatePayroll=Calculate+Payroll"
-	The application was built from javaee7 samples project
-

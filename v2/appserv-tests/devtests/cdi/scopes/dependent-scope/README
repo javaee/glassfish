@@ -1,5 +1,0 @@
-Test that Dependent scoped
-- bean is instantiated once per injection point
-- don't have a proxy
-- beans injected across two different injection points or differnt clients are 
-not the same

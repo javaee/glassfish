@@ -1,9 +1,0 @@
-delete-jms-resource --target server jms/jms_unit_test_QCF
-
-delete-jms-resource --target server jms/jms_unit_test_Topic
-delete-jmsdest --target server --desttype topic jms_unit_test_Topic
-
-delete-jms-resource --target server jms/jms_unit_result_Queue
-delete-jmsdest --target server --desttype queue jms_unit_result_Queue
-
-quit

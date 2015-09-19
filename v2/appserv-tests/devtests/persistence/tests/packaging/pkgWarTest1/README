@@ -1,7 +1,0 @@
-
-Testcase
----------
-
-pu root is WEB-INF/lib
-war - ejb-cmp-pkgWarTest1-web.war
-      persistenece.xml and entity classes are packaged under WEB-INF/lib as entity.jar

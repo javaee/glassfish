@@ -1,2 +1,0 @@
-delete-jms-resource jms/ejb_ejb31_timer31_mdb_InQueue
-delete-jmsdest --desttype queue ejb_ejb31_timer31_mdb_InQueue

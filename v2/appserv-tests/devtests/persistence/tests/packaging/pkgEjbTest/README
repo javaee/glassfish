@@ -1,9 +1,0 @@
-
-Testcase
----------
-
-pu root is EJB-JAR file,pu is accessable to ejb. Place persistence.xml and entity classes under EJB Jar.
-ear - ejb-cmp-pkgEarTest-client.jar
-    - ejb-cmp-pkgEarTest-ejb.jar 
-
-ejb-cmp-pkgEarTest-ejb.jar contains persistence.xml and entity classes.

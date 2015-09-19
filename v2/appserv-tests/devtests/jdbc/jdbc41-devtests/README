@@ -1,7 +1,0 @@
-Steps : 
-
-1. Set JAVA_HOME to jdk7
-2. Copy the jdbc41 derby jars 
-3. start domain/database in JDK7
-4. ant all
-

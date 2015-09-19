@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Created-By: 1.4.0 (Sun Microsystems Inc.)
-Implementation-Vendor-Id: com.sun
-Implementation-Vendor: Sun Microsystems, Inc.
-Class-Path: appserv-cmp_ja.jar appserv-cmp_zh.jar appserv-cmp_fr.jar appserv-cmp_de.jar appserv-cmp_es.jar appserv-cmp_it.jar appserv-cmp_sw.jar appserv-cmp_ko.jar appserv-cmp_zh_TW.jar appserv-cmp_zh_CN.jar appserv-cmp_lang1.jar appserv-cmp_lang2.jar appserv-cmp_lang3.jar appserv-cmp_lang4.jar appserv-cmp_lang5.jar
-

@@ -1,7 +1,0 @@
-2010-10-04 01:57:06.093 GMT : Apache Derby Network Server - 10.5.3.0 - (802917) started and ready to accept connections on port 1528
-----------------------------------------------------------------
-2010-10-04 01:57:10.765 GMT:
- Booting Derby version The Apache Software Foundation - Apache Derby - 10.5.3.0 - (802917): instance a816c00e-012b-74f4-dd55-0000053087c4
-on database directory /space/work/v3/appserv-tests/devtests/ejb/sfsb/keepstate/sun-appserv-samples  
-
-Database Class Loader started - derby.database.classpath=''

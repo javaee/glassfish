@@ -1,4 +1,0 @@
-Test
-- Use of InjectionPoint API to get dependent objects that needs to know something
-about the injection point(Logger and HttpParams example from the CDI documentation at
-https://docs.jboss.org/weld/reference/snapshot/en-US/html/injection.html#d0e1635)

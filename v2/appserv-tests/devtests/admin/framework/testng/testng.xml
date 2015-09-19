@@ -1,9 +1,0 @@
-<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
-  
-<suite name="admin framework tests" >
-  <test name="admin.framework"  junit="true" >
-    <classes>
-      <class name="com.sun.enterprise.admin.AdminInfraTest" />
-    </classes>
-  </test>
-</suite>
