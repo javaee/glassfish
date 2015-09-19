@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.glassfish.main</groupId>
         <artifactId>glassfish-nucleus-parent</artifactId>
-        <version>4.1.1-SNAPSHOT</version>
+        <version>4.1.1</version>
         <relativePath>../nucleus/pom.xml</relativePath>
     </parent>    
     <artifactId>glassfish-parent</artifactId>
@@ -54,9 +54,9 @@
     <name>GlassFish Appserver Parent Project</name>
     
     <scm>
-        <connection>scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/main/appserver</connection>
-        <developerConnection>scm:svn:https://svn.java.net/svn/glassfish~svn/trunk/main/appserver</developerConnection>
-        <url>https://svn.java.net/svn/glassfish~svn/trunk/main/appserver</url>
+        <connection>scm:svn:https://svn.java.net/svn/glassfish~svn/tags/4.1.1/main/appserver</connection>
+        <developerConnection>scm:svn:https://svn.java.net/svn/glassfish~svn/tags/4.1.1/main/appserver</developerConnection>
+        <url>https://svn.java.net/svn/glassfish~svn/tags/4.1.1/main/appserver</url>
     </scm>
     
     <properties>
