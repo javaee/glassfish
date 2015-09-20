@@ -633,6 +633,7 @@
                     <additionalparam>${javadoc.options}</additionalparam>
                     <sourcepath>
                         ${basedir}/hk2-api/src/main/java;
+                        ${basedir}/hk2-locator/src/main/java;
                         ${basedir}/hk2-utils/src/main/java;
                         ${basedir}/hk2-runlevel/src/main/java;
                         ${basedir}/guice-bridge/src/main/java;

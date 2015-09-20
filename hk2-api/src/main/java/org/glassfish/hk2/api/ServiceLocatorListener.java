@@ -54,7 +54,7 @@ public interface ServiceLocatorListener {
     /**
      * This method returns the complete list of named service
      * locators at the time that this listener is registered.  The list
-     * may be empty.  
+     * may be empty.  This method will NOT pass any unnamed
      * <p>
      * Any exceptions thrown from this method will be logged
      * and ignored.  If an exception is thrown from
@@ -68,24 +68,26 @@ public interface ServiceLocatorListener {
     
     /**
      * This method is called whenever a named ServiceLocator has been
-     * added to the set of ServiceLocators
+     * added to the set of ServiceLocators.  This method
+     * WILL be passed unnamed ServiceLocators when they are added
      * <p>
      * Any exceptions thrown from this method will be logged
      * and ignored
      * 
      * @param added The non-null ServiceLocator that is to be added
      */
-    public void listenerAdded(ServiceLocator added);
+    public void locatorAdded(ServiceLocator added);
     
     /**
      * This method is called whenever a named ServiceLocator will be
-     * removed from the set of ServiceLocators
+     * removed from the set of ServiceLocators.  This method WILL
+     * be passed unnamed ServiceLocators when they are destroyed
      * <p>
      * Any exceptions thrown from this method will be logged
      * and ignored
      * 
      * @param destroyed The non-null ServiceLocator that is to be destroyed
      */
-    public void listenerDestroyed(ServiceLocator destroyed);
+    public void locatorDestroyed(ServiceLocator destroyed);
 
 }

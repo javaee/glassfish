@@ -125,6 +125,7 @@ public class ServiceLocatorFactoryTest {
       
       slf.create(SLF_LISTENER_1);
       slf.create(SLF_LISTENER_2);
+      ServiceLocator tmpLocator = slf.create(null);
       
       // Ensures a second listener can be added and will be initialized properly
       ServiceLocatorListenerImpl listener2 = new ServiceLocatorListenerImpl();
@@ -134,19 +135,33 @@ public class ServiceLocatorFactoryTest {
       
       Assert.assertTrue(names1.contains(SLF_LISTENER_1));
       Assert.assertTrue(names1.contains(SLF_LISTENER_2));
+      Assert.assertTrue(names1.contains(tmpLocator.getName()));
       
       Set<String> names2 = listener2.getLocatorNames();
       
       Assert.assertTrue(names2.contains(SLF_LISTENER_1));
       Assert.assertTrue(names2.contains(SLF_LISTENER_2));
+      Assert.assertFalse(names2.contains(tmpLocator.getName()));
       
       slf.destroy(SLF_LISTENER_1);
       
       Assert.assertFalse(names1.contains(SLF_LISTENER_1));
       Assert.assertTrue(names1.contains(SLF_LISTENER_2));
+      Assert.assertTrue(names1.contains(tmpLocator.getName()));
       
       Assert.assertFalse(names2.contains(SLF_LISTENER_1));
       Assert.assertTrue(names2.contains(SLF_LISTENER_2));
+      Assert.assertFalse(names2.contains(tmpLocator.getName()));
+      
+      slf.destroy(tmpLocator);
+      
+      Assert.assertFalse(names1.contains(SLF_LISTENER_1));
+      Assert.assertTrue(names1.contains(SLF_LISTENER_2));
+      Assert.assertFalse(names1.contains(tmpLocator.getName()));
+      
+      Assert.assertFalse(names2.contains(SLF_LISTENER_1));
+      Assert.assertTrue(names2.contains(SLF_LISTENER_2));
+      Assert.assertFalse(names2.contains(tmpLocator.getName()));
       
       slf.removeListener(listener1);
       
@@ -219,15 +234,13 @@ public class ServiceLocatorFactoryTest {
       }
 
       @Override
-      public void listenerAdded(ServiceLocator added) {
+      public void locatorAdded(ServiceLocator added) {
           locators.add(added.getName());
-        
       }
 
       @Override
-      public void listenerDestroyed(ServiceLocator destroyed) {
+      public void locatorDestroyed(ServiceLocator destroyed) {
           locators.remove(destroyed.getName());
-        
       }
       
       public Set<String> getLocatorNames() {
@@ -243,11 +256,11 @@ public class ServiceLocatorFactoryTest {
       }
 
       @Override
-      public void listenerAdded(ServiceLocator added) {
+      public void locatorAdded(ServiceLocator added) {
       }
 
       @Override
-      public void listenerDestroyed(ServiceLocator destroyed) {
+      public void locatorDestroyed(ServiceLocator destroyed) {
           destroyedLocators.add(destroyed.getName()); 
       }
       

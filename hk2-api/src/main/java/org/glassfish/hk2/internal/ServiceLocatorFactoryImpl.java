@@ -158,15 +158,25 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
    */
   @Override
   public void destroy(String name) {
+      destroy(name, null);
+  }
+  
+  private void destroy(String name, ServiceLocator locator) {
       ServiceLocator killMe = null;
     
       synchronized (lock) {
-          killMe = serviceLocators.remove(name);
+          if (name != null) {
+              killMe = serviceLocators.remove(name);
+          }
+          
+          if (killMe == null) {
+              killMe = locator;
+          }
           
           if (killMe != null) {
               for (ServiceLocatorListener listener : listeners) {
                   try {
-                      listener.listenerDestroyed(killMe);
+                      listener.locatorDestroyed(killMe);
                   }
                   catch (Throwable th) {
                       Logger.getLogger().debug(getClass().getName(), "destroy " + listener, th);
@@ -183,9 +193,7 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
   public void destroy(ServiceLocator locator) {
       if (locator == null) return;
       
-      locator.shutdown();
-      
-      destroy(locator.getName());  // Removes it from our DB
+      destroy(locator.getName(), locator);
   }
 
     /* (non-Javadoc)
@@ -214,6 +222,17 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
         return create(name, parent, generator, CreatePolicy.RETURN);
     }
     
+    private void callListenerAdded(ServiceLocator added) {
+        for (ServiceLocatorListener listener : listeners) {
+            try {
+                listener.locatorAdded(added);
+            }
+            catch (Throwable th) {
+                Logger.getLogger().debug(getClass().getName(), "create " + listener, th);
+            }
+        }
+    }
+    
     @Override
     public ServiceLocator create(String name, ServiceLocator parent,
             ServiceLocatorGenerator generator, CreatePolicy policy) {
@@ -222,7 +241,9 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
 
             if (name == null) {
                 name = getGeneratedName();
-                return internalCreate(name, parent, generator);
+                ServiceLocator added = internalCreate(name, parent, generator);
+                callListenerAdded(added);
+                return added;
             }
 
             retVal = serviceLocators.get(name);
@@ -242,14 +263,7 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
             retVal = internalCreate(name, parent, generator);
             serviceLocators.put(name, retVal);
             
-            for (ServiceLocatorListener listener : listeners) {
-                try {
-                    listener.listenerAdded(retVal);
-                }
-                catch (Throwable th) {
-                    Logger.getLogger().debug(getClass().getName(), "create " + listener, th);
-                }
-            }
+            callListenerAdded(retVal);
 
             return retVal;
         }
