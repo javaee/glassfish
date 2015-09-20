@@ -42,10 +42,8 @@ package org.glassfish.hk2.api;
 import java.util.Set;
 
 /**
- * This is added to {@link ServiceLocatorFactory} in order to listen on service locators
- * coming and going.  This listener will only be notified about named ServiceLocators.
- * ServiceLocators that are created with a generated name are not tracked by the
- * system.  Implementations of this interface must be able to be stored in a HashMap
+ * This is added to the {@link ServiceLocatorFactory} in order to listen on service locators
+ * coming and going.  Implementations of this interface must be able to be stored in a HashMap
  * 
  * @author jwells
  *
@@ -55,19 +53,20 @@ public interface ServiceLocatorListener {
      * This method returns the complete list of named service
      * locators at the time that this listener is registered.  The list
      * may be empty.  This method will NOT pass any unnamed
+     * ServiceLocators, as they are not tracked by the system
      * <p>
      * Any exceptions thrown from this method will be logged
      * and ignored.  If an exception is thrown from
      * this method then this listener will NOT be added
      * to the set of listeners notified by the system
      * 
-     * @param initialLocators The set of locators available when
+     * @param initialLocators The set of named locators available when
      * the listener is registered
      */
     public void initialize(Set<ServiceLocator> initialLocators);
     
     /**
-     * This method is called whenever a named ServiceLocator has been
+     * This method is called whenever a ServiceLocator has been
      * added to the set of ServiceLocators.  This method
      * WILL be passed unnamed ServiceLocators when they are added
      * <p>
@@ -79,7 +78,7 @@ public interface ServiceLocatorListener {
     public void locatorAdded(ServiceLocator added);
     
     /**
-     * This method is called whenever a named ServiceLocator will be
+     * This method is called whenever a ServiceLocator will be
      * removed from the set of ServiceLocators.  This method WILL
      * be passed unnamed ServiceLocators when they are destroyed
      * <p>
