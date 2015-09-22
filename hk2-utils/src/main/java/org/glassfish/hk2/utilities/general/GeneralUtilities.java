@@ -40,8 +40,8 @@
 package org.glassfish.hk2.utilities.general;
 
 import java.lang.reflect.Array;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
+
+import org.glassfish.hk2.utilities.general.internal.WeakHashClockImpl;
 
 /**
  * This class contains utilities useful for any code
@@ -149,6 +149,14 @@ public class GeneralUtilities {
         catch (Throwable th) {
             return null;
         }
+    }
+    
+    /**
+     * Creates a weak hash clock
+     * @return A weak hash clock implementation
+     */
+    public static <K,V> WeakHashClock<K,V> getWeakHashClock() {
+        return new WeakHashClockImpl<K,V>();
     }
 
 }
