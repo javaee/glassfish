@@ -46,7 +46,9 @@ package org.glassfish.hk2.utilities.general;
 public interface WeakHashLRU<K> {
     /**
      * Adds the given key to the LRU.  It will
-     * be placed at the MRU of the LRU
+     * be placed at the MRU of the LRU.  If this
+     * key already exists in the LRU it will
+     * be moved to the MRU
      * 
      * @param key Must not be null
      */

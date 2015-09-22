@@ -42,6 +42,7 @@ package org.glassfish.hk2.utilities.general;
 import java.lang.reflect.Array;
 
 import org.glassfish.hk2.utilities.general.internal.WeakHashClockImpl;
+import org.glassfish.hk2.utilities.general.internal.WeakHashLRUImpl;
 
 /**
  * This class contains utilities useful for any code
@@ -157,6 +158,14 @@ public class GeneralUtilities {
      */
     public static <K,V> WeakHashClock<K,V> getWeakHashClock() {
         return new WeakHashClockImpl<K,V>();
+    }
+    
+    /**
+     * Creates a weak hash clock
+     * @return A weak hash clock implementation
+     */
+    public static <K> WeakHashLRU<K> getWeakHashLRU() {
+        return new WeakHashLRUImpl<K>();
     }
 
 }

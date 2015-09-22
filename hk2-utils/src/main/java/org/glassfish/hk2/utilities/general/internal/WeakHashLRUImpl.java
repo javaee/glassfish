@@ -39,66 +39,181 @@
  */
 package org.glassfish.hk2.utilities.general.internal;
 
+import java.lang.ref.ReferenceQueue;
+import java.util.WeakHashMap;
+
 import org.glassfish.hk2.utilities.general.WeakHashLRU;
 
 /**
+ * An implementation of the WeakHashLRU as needed by the CAR algorithm
+ * 
  * @author jwells
  *
  */
 public class WeakHashLRUImpl<K> implements WeakHashLRU<K> {
+    private final static Object VALUE = new Object();
+    
+    private final WeakHashMap<K, DoubleNode<K, Object>> byKey = new WeakHashMap<K, DoubleNode<K, Object>>();
+    
+    private final ReferenceQueue<? super K> myQueue = new ReferenceQueue<K>();
+    
+    private DoubleNode<K, Object> mru;
+    private DoubleNode<K, Object> lru;
+    
+    private DoubleNode<K,Object> addToHead(K key) {
+        DoubleNode<K, Object> added = new DoubleNode<K,Object>(key, VALUE, myQueue);
+        
+        if (mru == null) {
+            mru = added;
+            lru = added;
+            return added;
+        }
+        
+        added.setNext(mru);
+        
+        mru.setPrevious(added);
+        mru = added;
+        
+        return added;
+    }
+    
+    private K remove(DoubleNode<K, Object> removeMe) {
+        K retVal = removeMe.getWeakKey().get();
+        
+        if (removeMe.getNext() != null) {
+            removeMe.getNext().setPrevious(removeMe.getPrevious());
+        }
+        if (removeMe.getPrevious() != null) {
+            removeMe.getPrevious().setNext(removeMe.getNext());
+        }
+        
+        if (removeMe == mru) {
+            mru = removeMe.getNext();
+        }
+        if (removeMe == lru) {
+            lru = removeMe.getPrevious();
+        }
+        
+        removeMe.setNext(null);
+        removeMe.setPrevious(null);
+        
+        return retVal;
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.utilities.general.WeakHashLRU#add(java.lang.Object)
      */
     @Override
-    public void add(Object key) {
-        // TODO Auto-generated method stub
+    public synchronized void add(K key) {
+        clearStale();
+        if (key == null) {
+            throw new IllegalArgumentException("key may not be null");
+        }
         
+        DoubleNode<K, Object> existing = byKey.get(key);
+        if (existing != null) {
+            remove(existing);
+        }
+        
+        DoubleNode<K, Object> added = addToHead(key);
+        
+        byKey.put(key, added);
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.utilities.general.WeakHashLRU#contains(java.lang.Object)
      */
     @Override
-    public boolean contains(Object key) {
-        // TODO Auto-generated method stub
-        return false;
+    public synchronized boolean contains(K key) {
+        clearStale();
+        
+        return byKey.containsKey(key);
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.utilities.general.WeakHashLRU#remove(java.lang.Object)
      */
     @Override
-    public boolean remove(Object key) {
-        // TODO Auto-generated method stub
-        return false;
+    public synchronized boolean remove(K key) {
+        clearStale();
+        return removeNoClear(key);
+    }
+    
+    public boolean removeNoClear(K key) {
+        if (key == null) return false;
+        
+        DoubleNode<K, Object> removeMe = byKey.remove(key);
+        if (removeMe == null) return false;
+        
+        remove(removeMe);
+        
+        return true;
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.utilities.general.WeakHashLRU#size()
      */
     @Override
-    public int size() {
-        // TODO Auto-generated method stub
-        return 0;
+    public synchronized int size() {
+        clearStale();
+        
+        return byKey.size();
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.utilities.general.WeakHashLRU#remove()
      */
     @Override
-    public K remove() {
-        // TODO Auto-generated method stub
-        return null;
+    public synchronized K remove() {
+        try {
+            if (lru == null) return null;
+        
+            DoubleNode<K, Object> current = lru;
+            while (current != null) {
+                DoubleNode<K, Object> previous = current.getPrevious();
+            
+                K retVal = current.getWeakKey().get();
+            
+                if (retVal != null) {
+                    removeNoClear(retVal);
+                
+                    return retVal;
+                }
+                else {
+                    remove(current);
+                }
+            
+                current = previous;
+            }
+        
+            return null;
+        }
+        finally {
+            clearStale();
+        }
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.utilities.general.WeakHashLRU#clearStaleReferences()
      */
     @Override
-    public void clearStaleReferences() {
-        // TODO Auto-generated method stub
+    public synchronized void clearStaleReferences() {
+        clearStale();
+    }
+    
+    private void clearStale() {
+        DoubleNode<K, Object> current;
         
+        current = mru;
+        while (current != null) {
+            DoubleNode<K, Object> next = current.getNext();
+            
+            if (current.getWeakKey().get() == null) {
+                remove(current);
+            }
+            
+            current = next;
+        }
     }
 
 }
