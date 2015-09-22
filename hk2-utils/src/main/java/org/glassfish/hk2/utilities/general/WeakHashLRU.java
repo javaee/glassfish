@@ -39,44 +39,34 @@
  */
 package org.glassfish.hk2.utilities.general;
 
-import java.util.Map;
-
 /**
- * This is a clock (if non-empty the next verb will always return a new value
- * in a cycle) that can also get values in O(1) complexity.  This HashClock
- * also has Weak key references, so if the key becomes unavailable it
- * will not be retrievable from the get operation and the next operation
- * will remove it from the clock
- * 
  * @author jwells
  *
  */
-public interface WeakHashClock<K,V> {
+public interface WeakHashLRU<K> {
     /**
-     * Adds the given pair to the clock.  It will
-     * be placed at the current tail of the clock
+     * Adds the given key to the LRU.  It will
+     * be placed at the MRU of the LRU
      * 
      * @param key Must not be null
-     * @param value May not be null
      */
-    public void put(K key, V value);
+    public void add(K key);
     
     /**
-     * Gets the given key, returning null
-     * if not found
+     * Tells if the given key is in the LRU
      * 
      * @param key The key to search for, may not be null
-     * @return The value found, or null if not found
+     * @return true if found, false otherwise
      */
-    public V get(K key);
+    public boolean contains(K key);
     
     /**
-     * Removes the given key from the clock, if found
+     * Removes the given key from the LRU, if found
      * 
      * @param key The key to remove, may not be null
-     * @return The value removed if found, or null if not found
+     * @return true if removed, false otherwise
      */
-    public V remove(K key);
+    public boolean remove(K key);
     
     /**
      * Returns the number of elements currently
@@ -85,22 +75,18 @@ public interface WeakHashClock<K,V> {
      * will not be counted in the size
      * 
      * @return The number of entries currently
-     * in the clock
+     * in the LRU
      */
     public int size();
     
     /**
-     * Returns the next key/value pair in the clock,
-     * or null if the clock has no members.  This
-     * will advance the head and tail of the clock
-     * to the next element.  If the WeakReference
-     * for the returned element is null then this
-     * element will also have been removed from
-     * the clock by this operation
+     * Removes the key that was Least
+     * Recently Used
      * 
-     * @return The next key/value pair in the 
+     * @return The key that was removed, or
+     * null if the list is empty
      */
-    public Map.Entry<K, V> next();
+    public K remove();
     
     /**
      * Causes stale references to be cleared from the data
@@ -112,4 +98,5 @@ public interface WeakHashClock<K,V> {
      * to call in order to clear out any stale references
      */
     public void clearStaleReferences();
+
 }

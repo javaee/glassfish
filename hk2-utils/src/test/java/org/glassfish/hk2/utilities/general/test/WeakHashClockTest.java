@@ -390,5 +390,59 @@ public class WeakHashClockTest {
         
         Assert.fail("The clock never removed the weak reference");
     }
+    
+    /**
+     * Tests that a weak key/value is removed after a GC
+     * @throws InterruptedException 
+     */
+    @Test
+    public void testWeakKeysAllGoneAfterGCNextOnly() throws InterruptedException {
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock();
+        
+        // It is important to keep references to the keys
+        // in a weak clock, otherwise they have the possibility
+        // to get collected.  These arrays give a hard reference
+        // to the keys and values
+        String keys[] = new String[ITERATIONS];
+        String values[] = new String[ITERATIONS];
+        
+        for (int lcv = 0; lcv < ITERATIONS; lcv++) {
+            keys[lcv] = KEY + lcv;
+            values[lcv] = VALUE + lcv;
+            
+            clock.put(keys[lcv], values[lcv]);
+        }
+        
+        Assert.assertEquals(ITERATIONS, clock.size());
+        
+        for (int lcv = 0; lcv < ITERATIONS; lcv++) {
+            // All keys gone
+            keys[lcv] = null;
+            
+        }
+        
+        for (int lcv = 0; lcv < ITERATIONS; lcv++) {
+            System.gc();
+            
+            if (clock.next() == null) {
+                for (int lcv2 = 0; lcv2 < ITERATIONS; lcv2++) {
+                    if (clock.size() == 0) {
+                        // success
+                        return;
+                    }
+                    
+                    Thread.sleep(10);
+                    
+                    System.gc();
+                }
+                
+                Assert.fail("Size never went to zero");
+            }
+            
+            Thread.sleep(10);
+        }
+        
+        Assert.fail("All keys were not removed when using only next");
+    }
 
 }

@@ -40,7 +40,6 @@
 package org.glassfish.hk2.utilities.general.internal;
 
 import java.lang.ref.ReferenceQueue;
-import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.WeakHashMap;
@@ -73,47 +72,47 @@ public class WeakHashClockImpl<K,V> implements WeakHashClock<K,V> {
             return toAdd;
         }
         
-        if (dot.previous == null) {
+        if (dot.getPrevious() == null) {
             // Dot is currently at the head
-            dot.previous = toAdd;
+            dot.setPrevious(toAdd);
             
-            toAdd.next = dot;
+            toAdd.setNext(dot);
             head = toAdd;
             return toAdd;
         }
         
         // Otherwise just add it.  Note it will NEVER be added as
         // the tail because it is always being added before something
-        toAdd.next = dot;
-        toAdd.previous = dot.previous;
+        toAdd.setNext(dot);
+        toAdd.setPrevious(dot.getPrevious());
         
-        dot.previous.next = toAdd;
-        dot.previous = toAdd;
+        dot.getPrevious().setNext(toAdd);
+        dot.setPrevious(toAdd);
         
         return toAdd;
     }
     
     private void removeFromDLL(DoubleNode<K,V> removeMe) {
-        if (removeMe.previous != null) {
-            removeMe.previous.next = removeMe.next;
+        if (removeMe.getPrevious() != null) {
+            removeMe.getPrevious().setNext(removeMe.getNext());
         }
-        if (removeMe.next != null) {
-            removeMe.next.previous = removeMe.previous;
+        if (removeMe.getNext() != null) {
+            removeMe.getNext().setPrevious(removeMe.getPrevious());
         }
         
         if (removeMe == head) {
-            head = removeMe.next;
+            head = removeMe.getNext();
         }
         if (removeMe == tail) {
-            tail = removeMe.previous;
+            tail = removeMe.getPrevious();
         }
         
         if (removeMe == dot) {
-            dot = removeMe.next;
+            dot = removeMe.getNext();
         }
         
-        removeMe.next = null;
-        removeMe.previous = null;
+        removeMe.setNext(null);
+        removeMe.setPrevious(null);
     }
 
     /* (non-Javadoc)
@@ -142,7 +141,7 @@ public class WeakHashClockImpl<K,V> implements WeakHashClock<K,V> {
         DoubleNode<K,V> node = byKey.get(key);
         if (node == null) return null;
         
-        return node.value;
+        return node.getValue();
     }
 
     /* (non-Javadoc)
@@ -159,7 +158,7 @@ public class WeakHashClockImpl<K,V> implements WeakHashClock<K,V> {
         
         removeFromDLL(node);
         
-        return node.value;
+        return node.getValue();
     }
 
     /* (non-Javadoc)
@@ -171,46 +170,69 @@ public class WeakHashClockImpl<K,V> implements WeakHashClock<K,V> {
         
         return byKey.size();
     }
+    
+    private DoubleNode<K,V> moveDot() {
+        if (dot == null) return null;
+        
+        DoubleNode<K,V> returnSource = dot;
+        dot = returnSource.getNext();
+        if (dot == null) dot = head;
+        
+        return returnSource;
+    }
+    
+    private DoubleNode<K,V> moveDotNoWeak() {
+        DoubleNode<K,V> original = moveDot();
+        DoubleNode<K,V> retVal = original;
+        if (retVal == null) return null;
+        
+        K key;
+        while ((key = retVal.getWeakKey().get()) == null) {
+            retVal = moveDot();
+            if (retVal == null) return null;
+            if (retVal == original) return null; // All the way around
+        }
+        
+        retVal.setHardenedKey(key);
+        
+        return retVal;
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.utilities.general.WeakHashClock#next()
      */
     @Override
     public synchronized Entry<K, V> next() {
-        DoubleNode<K,V> returnSource = dot;
-        if (dot == null) return null;
-        
-        dot = returnSource.next;
-        if (dot == null) dot = head;
-        
-        final K key = returnSource.weakKey.get();
-        if (key == null) {
-            // it went from underneath us
-            removeStale();
+        DoubleNode<K,V> hardenedNode = moveDotNoWeak();
+        if (hardenedNode == null) return null;
+        try {
+            final K key = hardenedNode.getHardenedKey();
+            final V value = hardenedNode.getValue();
             
-            return next();
+            return new Map.Entry<K,V>() {
+
+                @Override
+                public K getKey() {
+                    return key;
+                }
+
+                @Override
+                public V getValue() {
+                    return value;
+                }
+
+                @Override
+                public V setValue(V value) {
+                    throw new AssertionError("not implemented");
+                }
+                
+            };
         }
-        final V value = returnSource.value;
-        
-        return new Map.Entry<K,V>() {
-
-            @Override
-            public K getKey() {
-                return key;
-            }
-
-            @Override
-            public V getValue() {
-                return value;
-            }
-
-            @Override
-            public V setValue(V value) {
-                throw new AssertionError("not implemented");
-            }
+        finally {
+            hardenedNode.setHardenedKey(null);
             
-        };
-        
+            removeStale();
+        }
     }
     
     /* (non-Javadoc)
@@ -231,27 +253,13 @@ public class WeakHashClockImpl<K,V> implements WeakHashClock<K,V> {
         
         DoubleNode<K,V> current = head;
         while (current != null) {
-            DoubleNode<K,V> next = current.next;
+            DoubleNode<K,V> next = current.getNext();
             
-            if (current.weakKey.get() == null) {
+            if (current.getWeakKey().get() == null) {
                 removeFromDLL(current);
             }
             
             current = next;
         }
     }
-    
-    private final static class DoubleNode<K, V> {
-        private final WeakReference<K> weakKey;
-        private final V value;
-        private DoubleNode<K, V> previous;
-        private DoubleNode<K, V> next;
-        
-        private DoubleNode(K key, V value, ReferenceQueue<? super K> queue) {
-            weakKey = new WeakReference<K>(key, queue);
-            this.value = value;
-        }
-    }
-
-    
 }
