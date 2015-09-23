@@ -33,7 +33,7 @@ asadmin install-node --installdir /export/home/hudson/testnode/glassfish4 `grep 
 echo "Benchmark of commands: base case"
 benchmark_commands || exit 1
 create_hosted_nodes || exit 1
-create_hosted_clusters 2 5 10 || exit 1
+create_hosted_clusters 2 5 4 || exit 1
 echo "Benchmark of commands: cluster created but not started"
 benchmark_commands || exit 1
 (time asadmin start-cluster ch1) 2> start-cluster.time || exit 1
