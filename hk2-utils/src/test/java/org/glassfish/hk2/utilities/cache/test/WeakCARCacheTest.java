@@ -51,6 +51,7 @@ import org.junit.Test;
  */
 public class WeakCARCacheTest {
     private final static ToIntegerComputable TO_INTEGER = new ToIntegerComputable();
+    private final static ReflectiveComputable<Integer> INT_TO_INT = new ReflectiveComputable<Integer>();
     
     private final static String ZERO = "0";
     private final static String ONE = "1";
@@ -66,10 +67,58 @@ public class WeakCARCacheTest {
     
     private final static int SMALL_CACHE_SIZE = 10;
     
+    private final static int[] TAKE_OFF_OF_B2 = {
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+        10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
+        1
+    };
+    
+    private final static int[] ACCESS_T2 = {
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+        10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
+        1, 1, 5
+    };
+    
+    private final static int[] TAKE_OFF_OF_B1 = {
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+        10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
+        1, 0
+    };
+    
+    private final static int[] EQUAL_T1_T2 = {
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+        10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
+        1, 0, 11, 12, 11, 12, 15, 16, 17, 18, 19
+    };
+    
+    private final static int[] MAX_OUT_B2_KEYS_PLUS_ONE = {
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+        10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
+        1, 0, 11, 12, 11, 12, 15, 16, 17, 18, 19,
+        15, 20, 16, 21, 17, 22
+    };
+    
+    private final static int[] CYCLE_ACCESSED_T2_TO_FIND_DEMOTE = {
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+        10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1,
+        11
+    };
+    
+    private static Integer[] getIntArray(int[] fromScalar) {
+        Integer[] retVal = new Integer[fromScalar.length];
+        
+        for (int lcv = 0; lcv < fromScalar.length; lcv++) {
+            retVal[lcv] = new Integer(fromScalar[lcv]);
+        }
+        
+        return retVal;
+    }
+    
     /**
      * Tests that we can add eleven things to a cache of size 10, twice!
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testAddElevenToCacheSizeTen() {
         WeakCARCache<String, Integer> car = CacheUtilities.createWeakCARCache(TO_INTEGER, SMALL_CACHE_SIZE);
         
@@ -87,6 +136,196 @@ public class WeakCARCacheTest {
             Assert.assertEquals(10, car.compute(TEN).intValue());
         }
         
+        Assert.assertEquals(10, car.getValueSize());
+        Assert.assertEquals(10, car.getKeySize());
+        
+        Assert.assertEquals(0, car.getP());
+    }
+    
+    /**
+     * Tests moving completely from T1 to T2 (and one B1)
+     */
+    @Test // @org.junit.Ignore
+    public void testAddElevenToCacheSizeTenForwardThenBackward() {
+        WeakCARCache<String, Integer> car = CacheUtilities.createWeakCARCache(TO_INTEGER, SMALL_CACHE_SIZE);
+        
+        Assert.assertEquals(0, car.compute(ZERO).intValue());
+        Assert.assertEquals(1, car.compute(ONE).intValue());
+        Assert.assertEquals(2, car.compute(TWO).intValue());
+        Assert.assertEquals(3, car.compute(THREE).intValue());
+        Assert.assertEquals(4, car.compute(FOUR).intValue());
+        Assert.assertEquals(5, car.compute(FIVE).intValue());
+        Assert.assertEquals(6, car.compute(SIX).intValue());
+        Assert.assertEquals(7, car.compute(SEVEN).intValue());
+        Assert.assertEquals(8, car.compute(EIGHT).intValue());
+        Assert.assertEquals(9, car.compute(NINE).intValue());
+        Assert.assertEquals(10, car.compute(TEN).intValue());
+        
+        Assert.assertEquals(10, car.compute(TEN).intValue());
+        Assert.assertEquals(9, car.compute(NINE).intValue());
+        Assert.assertEquals(8, car.compute(EIGHT).intValue());
+        Assert.assertEquals(7, car.compute(SEVEN).intValue());
+        Assert.assertEquals(6, car.compute(SIX).intValue());
+        Assert.assertEquals(5, car.compute(FIVE).intValue());
+        Assert.assertEquals(4, car.compute(FOUR).intValue());
+        Assert.assertEquals(3, car.compute(THREE).intValue());
+        Assert.assertEquals(2, car.compute(TWO).intValue());
+        Assert.assertEquals(1, car.compute(ONE).intValue());
+        Assert.assertEquals(0, car.compute(ZERO).intValue());
+        
+        Assert.assertEquals(10, car.getValueSize());
+        Assert.assertEquals(11, car.getKeySize());
+        
+        Assert.assertEquals(1, car.getT1Size());
+        Assert.assertEquals(9, car.getT2Size());
+        Assert.assertEquals(0, car.getB1Size());
+        Assert.assertEquals(1, car.getB2Size());
+        
+        Assert.assertEquals(0, car.getP());
+    }
+    
+    /**
+     * Takes a value off of B2
+     */
+    @Test // @org.junit.Ignore
+    public void testTakingOffOfB2() {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE);
+        
+        Integer[] keys = getIntArray(TAKE_OFF_OF_B2);
+        
+        for (int lcv = 0; lcv < keys.length; lcv++) {
+            Assert.assertEquals(keys[lcv], car.compute(keys[lcv]));
+        }
+        
+        Assert.assertEquals(10, car.getValueSize());
+        Assert.assertEquals(11, car.getKeySize());
+        
+        Assert.assertEquals(0, car.getT1Size());
+        Assert.assertEquals(10, car.getT2Size());
+        Assert.assertEquals(1, car.getB1Size());
+        Assert.assertEquals(0, car.getB2Size());
+        
+        Assert.assertEquals(0, car.getP());
+    }
+    
+    /**
+     * Takes a value off of B1
+     */
+    @Test // @org.junit.Ignore
+    public void testTakingOffOfB1() {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE);
+        
+        Integer[] keys = getIntArray(TAKE_OFF_OF_B1);
+        
+        for (int lcv = 0; lcv < keys.length; lcv++) {
+            Assert.assertEquals(keys[lcv], car.compute(keys[lcv]));
+        }
+        
+        Assert.assertEquals(10, car.getValueSize());
+        Assert.assertEquals(11, car.getKeySize());
+        
+        Assert.assertEquals(0, car.getT1Size());
+        Assert.assertEquals(10, car.getT2Size());
+        Assert.assertEquals(0, car.getB1Size());
+        Assert.assertEquals(1, car.getB2Size());
+        
+        Assert.assertEquals(1, car.getP());
+    }
+    
+    /**
+     * Gets T1 and T2 to equal size
+     */
+    @Test // @org.junit.Ignore
+    public void testEqualT1T2() {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE);
+        
+        Integer[] keys = getIntArray(EQUAL_T1_T2);
+        
+        for (int lcv = 0; lcv < keys.length; lcv++) {
+            Assert.assertEquals(keys[lcv], car.compute(keys[lcv]));
+        }
+        
+        Assert.assertEquals(10, car.getValueSize());
+        Assert.assertEquals(18, car.getKeySize());
+        
+        Assert.assertEquals(5, car.getT1Size());
+        Assert.assertEquals(5, car.getT2Size());
+        Assert.assertEquals(0, car.getB1Size());
+        Assert.assertEquals(8, car.getB2Size());
+        
+        Assert.assertEquals(5, car.getP());
+    }
+    
+    /**
+     * Maxes keys plus one off of B2, makes sure B2 does not grow without bound
+     */
+    @Test // @org.junit.Ignore
+    public void testMaxOutKeysPlusOne() {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE);
+        
+        Integer[] keys = getIntArray(MAX_OUT_B2_KEYS_PLUS_ONE);
+        
+        for (int lcv = 0; lcv < keys.length; lcv++) {
+            Assert.assertEquals(keys[lcv], car.compute(keys[lcv]));
+        }
+        
+        Assert.assertEquals(10, car.getValueSize());
+        Assert.assertEquals(20, car.getKeySize());
+        
+        Assert.assertEquals(5, car.getT1Size());
+        Assert.assertEquals(5, car.getT2Size());
+        Assert.assertEquals(0, car.getB1Size());
+        Assert.assertEquals(10, car.getB2Size());
+        
+        Assert.assertEquals(5, car.getP());
+    }
+    
+    /**
+     * Maxes keys plus one off of B2, makes sure B2 does not grow without bound
+     */
+    @Test // @org.junit.Ignore
+    public void testWeCanAccessAMemberOfT2() {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE);
+        
+        Integer[] keys = getIntArray(ACCESS_T2);
+        
+        for (int lcv = 0; lcv < keys.length; lcv++) {
+            Assert.assertEquals(keys[lcv], car.compute(keys[lcv]));
+        }
+        
+        Assert.assertEquals(10, car.getValueSize());
+        Assert.assertEquals(11, car.getKeySize());
+        
+        Assert.assertEquals(0, car.getT1Size());
+        Assert.assertEquals(10, car.getT2Size());
+        Assert.assertEquals(1, car.getB1Size());
+        Assert.assertEquals(0, car.getB2Size());
+        
+        Assert.assertEquals(0, car.getP());
+    }
+    
+    /**
+     * Sets all T2 to true bit forces cycle when looking for demotion candidate
+     */
+    @Test // @org.junit.Ignore
+    public void testForceDemotionT2ToCycle() {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE);
+        
+        Integer[] keys = getIntArray(CYCLE_ACCESSED_T2_TO_FIND_DEMOTE);
+        
+        for (int lcv = 0; lcv < keys.length; lcv++) {
+            Assert.assertEquals(keys[lcv], car.compute(keys[lcv]));
+        }
+        
+        Assert.assertEquals(10, car.getValueSize());
+        Assert.assertEquals(12, car.getKeySize());
+        
+        Assert.assertEquals(1, car.getT1Size());
+        Assert.assertEquals(9, car.getT2Size());
+        Assert.assertEquals(1, car.getB1Size());
+        Assert.assertEquals(1, car.getB2Size());
+        
+        Assert.assertEquals(0, car.getP());
     }
     
     private static class ToIntegerComputable implements Computable<String, Integer> {
@@ -97,6 +336,18 @@ public class WeakCARCacheTest {
         @Override
         public Integer compute(String key) {
             return Integer.parseInt(key);
+        }
+        
+    }
+    
+    private static class ReflectiveComputable<I> implements Computable<I, I> {
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.utilities.cache.Computable#compute(java.lang.Object)
+         */
+        @Override
+        public I compute(I key) {
+            return key;
         }
         
     }

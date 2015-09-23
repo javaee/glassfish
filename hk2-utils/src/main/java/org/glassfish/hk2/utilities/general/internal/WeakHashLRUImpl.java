@@ -215,5 +215,32 @@ public class WeakHashLRUImpl<K> implements WeakHashLRU<K> {
             current = next;
         }
     }
+    
+    @Override
+    public synchronized String toString() {
+        StringBuffer sb = new StringBuffer("WeakHashLRUImpl({");
+        
+        boolean first = true;
+        DoubleNode<K,Object> current = mru;
+        while (current != null) {
+            K key = current.getWeakKey().get();
+            String keyString = (key == null) ? "null" : key.toString();
+            
+            if (first) {
+                first = false;
+                
+                sb.append(keyString);
+            }
+            else {
+                sb.append("," + keyString);
+            }
+            
+            current = current.getNext();
+        }
+        
+        sb.append("}," + System.identityHashCode(this) + ")");
+              
+        return sb.toString();
+    }
 
 }

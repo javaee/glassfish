@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.utilities.cache;
 
+import org.glassfish.hk2.utilities.cache.internal.WeakCARCacheImpl;
+
 /**
  * Utilities for creating caches
  * 
@@ -57,7 +59,7 @@ public class CacheUtilities {
      * @return A WeakCARCache that is empty
      */
     public static <K,V> WeakCARCache<K,V> createWeakCARCache(Computable<K,V> computable, int maxSize) {
-        throw new AssertionError("not yet implemented");
+        return new WeakCARCacheImpl<K,V>(computable, maxSize);
     }
 
 }

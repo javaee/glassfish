@@ -40,7 +40,22 @@
 package org.glassfish.hk2.utilities.cache;
 
 /**
- * A cache that uses the CAR algorithm to remove entries
+ * A cache that uses the CAR algorithm to remove entries.
+ * <p>
+ * As a quick review, the CAR algorithm maintains four lists:<OL>
+ * <LI>t1 - A clock of recently used keys with values</LI>
+ * <LI>t2 - A clock of frequently used keys with values</LI>
+ * <LI>b1 - A LRU of keys removed from t1 with no values</LI>
+ * <LI>b2 - A LRU of keys removed from t2 with no values</LI>
+ * </OL>
+ * The sum of entries in t1 and t2 will never be higher than maxSize (c).
+ * The sum of entries in all four lists will never be higher than 2c.
+ * There is an adaptive parameter p which is the target size of the
+ * t1 list which gets modified when a key is found on either the b1 or
+ * b2 list.  This adaptive parameter essentially allows the algorithm
+ * to adapt to the pattern of keys, whether there be more frequently used
+ * keys or there be a pattern of keys used quickly but not again.
+ * 
  * 
  * @author jwells
  *
@@ -74,6 +89,35 @@ public interface WeakCARCache<K,V> {
      * @return The current number of value entries in the cache
      */
     public int getValueSize();
+    
+    /**
+     * Returns the number of items in the T1 clock
+     * 
+     * @return The current number of items in the T1 clock
+     */
+    public int getT1Size();
+    
+    /**
+     * Returns the number of items in the T2 clock
+     * 
+     * @return The current number of items in the T2 clock
+     */
+    public int getT2Size();
+    
+    /**
+     * Returns the number of items in the B1 LRU
+     * 
+     * @return The current number of items in the B1 LRU
+     */
+    public int getB1Size();
+    
+    /**
+     * Returns the number of items in the B2 LRU
+     * 
+     * @return The current number of items in the B2 LRU
+     */
+    public int getB2Size();
+    
     
     /**
      * Clears the current cache, making the current size zero
@@ -127,5 +171,20 @@ public interface WeakCARCache<K,V> {
      * to call in order to clear out any stale references
      */
     public void clearStaleReferences();
+    
+    /**
+     * Returns the value of p from the CAR algorithm, which
+     * is the target size of the t1 clock
+     * 
+     * @return The current value of P
+     */
+    public int getP();
+    
+    /**
+     * Returns a string that will contain all the elements of the four lists
+     * 
+     * @return A String containing the values of T1, T2, B1 and B2
+     */
+    public String dumpAllLists();
 
 }

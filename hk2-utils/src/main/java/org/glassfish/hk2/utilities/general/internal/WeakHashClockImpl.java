@@ -262,4 +262,34 @@ public class WeakHashClockImpl<K,V> implements WeakHashClock<K,V> {
             current = next;
         }
     }
+    
+    @Override
+    public synchronized String toString() {
+        StringBuffer sb = new StringBuffer("WeakHashClockImpl({");
+        
+        boolean first = true;
+        DoubleNode<K,V> current = dot;
+        if (current != null) {
+            do {
+                K key = current.getWeakKey().get();
+                String keyString = (key == null) ? "null" : key.toString();
+            
+                if (first) {
+                    first = false;
+                
+                    sb.append(keyString);
+                }
+                else {
+                    sb.append("," + keyString);
+                }
+            
+                current = current.getNext();
+                if (current == null) current = head;
+            } while (current != dot);
+        }
+        
+        sb.append("}," + System.identityHashCode(this) + ")");
+              
+        return sb.toString();
+    }
 }
