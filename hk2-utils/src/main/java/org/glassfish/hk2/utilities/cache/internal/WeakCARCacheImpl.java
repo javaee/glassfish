@@ -72,7 +72,7 @@ public class WeakCARCacheImpl<K,V> implements WeakCARCache<K, V> {
      * @see org.glassfish.hk2.utilities.cache.WeakCARCache#compute(java.lang.Object)
      */
     @Override
-    public synchronized V compute(K key) {
+    public V compute(K key) {
         CarValue<V> cValue = t1.get(key);
         if (cValue != null) {
             // So fast
@@ -91,58 +91,74 @@ public class WeakCARCacheImpl<K,V> implements WeakCARCache<K, V> {
         // will bubble up prior to us messing with any data structures
         V value = computable.compute(key);
         
-        int cacheSize = getValueSize();
-        if (cacheSize >= maxSize) {
-            replace();
+        synchronized (this) {
+            cValue = t1.get(key);
+            if (cValue != null) {
+                // So fast
+                cValue.referenceBit = true;
+                return cValue.value;
+            }
             
-            boolean inB1 = b1.contains(key);
-            boolean inB2 = b2.contains(key);
-            if (!inB1 && !inB2) {
-                if ((t1.size() + b1.size()) >= maxSize) {
-                    b1.remove();
-                }
-                else if ((t1.size() + t2.size() + b1.size() + b2.size()) >= (2 * maxSize)) {
-                    b2.remove();
+            cValue = t2.get(key);
+            if (cValue != null) {
+                // So fast
+                cValue.referenceBit = true;
+                return cValue.value;
+            }
+        
+            int cacheSize = getValueSize();
+            if (cacheSize >= maxSize) {
+                replace();
+            
+                boolean inB1 = b1.contains(key);
+                boolean inB2 = b2.contains(key);
+                if (!inB1 && !inB2) {
+                    if ((t1.size() + b1.size()) >= maxSize) {
+                        b1.remove();
+                    }
+                    else if ((t1.size() + t2.size() + b1.size() + b2.size()) >= (2 * maxSize)) {
+                        b2.remove();
+                    }
                 }
             }
-        }
         
-        boolean inB1 = b1.contains(key);
-        boolean inB2 = b2.contains(key);
+            boolean inB1 = b1.contains(key);
+            boolean inB2 = b2.contains(key);
         
-        if (!inB1 && !inB2) {
-            t1.put(key, new CarValue<V>(value));
-        }
-        else if (inB1) {
-            int b1size = b1.size();
-            if (b1size == 0) b1size = 1;  // Can happen in a weak situation, we fake the one
+            if (!inB1 && !inB2) {
+                t1.put(key, new CarValue<V>(value));
+            }
+            else if (inB1) {
+                int b1size = b1.size();
+                if (b1size == 0) b1size = 1;  // Can happen in a weak situation, we fake the one
             
-            int b2size = b2.size();
+                int b2size = b2.size();
             
-            int ratio = b2size / b1size;  // integer division
-            if (ratio <= 0) ratio = 1;
+                int ratio = b2size / b1size;  // integer division
+                if (ratio <= 0) ratio = 1;
             
-            p = p + ratio;
-            if (p > maxSize) p = maxSize;
+                p = p + ratio;
+                if (p > maxSize) p = maxSize;
             
-            b1.remove(key);
-            t2.put(key, new CarValue<V>(value));
-        }
-        else {
-            // Must be in B2
-            int b2size = b2.size();
-            if (b2size == 0) b2size = 1;  // Can happen in a weak situation, we fake the one
+                b1.remove(key);
+                t2.put(key, new CarValue<V>(value));
+            }
+            else {
+                // Must be in B2
+                int b2size = b2.size();
+                if (b2size == 0) b2size = 1;  // Can happen in a weak situation, we fake the one
             
-            int b1size = b1.size();
+                int b1size = b1.size();
             
-            int ratio = b1size / b2size;
-            if (ratio <= 0) ratio = 1;
+                int ratio = b1size / b2size;
+                if (ratio <= 0) ratio = 1;
             
-            p = p - ratio;
-            if (p < 0) p = 0;
+                p = p - ratio;
+                if (p < 0) p = 0;
             
-            b2.remove(key);
-            t2.put(key, new CarValue<V>(value));
+                b2.remove(key);
+                t2.put(key, new CarValue<V>(value));
+            }
         }
         
         return value;
@@ -242,7 +258,19 @@ public class WeakCARCacheImpl<K,V> implements WeakCARCache<K, V> {
      */
     @Override
     public boolean remove(K key) {
-        throw new AssertionError("not implemented yet");
+        if (t1.remove(key) == null) {
+            if (t2.remove(key) == null) {
+                if (!b1.remove(key)) {
+                    return b2.remove(key);
+                }
+                
+                return true;
+            }
+            
+            return true;
+        }
+        
+        return true;
     }
 
     /* (non-Javadoc)
@@ -258,7 +286,7 @@ public class WeakCARCacheImpl<K,V> implements WeakCARCache<K, V> {
     
     private static class CarValue<V> {
         private final V value;
-        private boolean referenceBit = false;
+        private volatile boolean referenceBit = false;
         
         private CarValue(V value) {
             this.value = value;
@@ -311,7 +339,7 @@ public class WeakCARCacheImpl<K,V> implements WeakCARCache<K, V> {
      */
     @Override
     public String dumpAllLists() {
-        StringBuffer sb = new StringBuffer("T1: " + t1.toString() + "\n");
+        StringBuffer sb = new StringBuffer("p=" + p + "\nT1: " + t1.toString() + "\n");
         sb.append("T2: " + t2.toString() + "\n");
         sb.append("B1: " + b1.toString() + "\n");
         sb.append("B2: " + b2.toString() + "\n");

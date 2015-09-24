@@ -105,6 +105,26 @@ public class WeakCARCacheTest {
         11
     };
     
+    private final static int[] ADD_TO_T1_WITH_VALUE_INB2 = {
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+        10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
+        11
+    };
+    
+    private final static int[] PUSH_P_TO_MAX = {
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+        10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
+        1, 0, 11, 12, 11, 12, 15, 16, 17, 18, 19,
+        15, 20, 16, 21, 17, 22, 23, 18, 19
+    };
+    
+    private final static int[] P_TO_5_BACK_TO_2 = {
+        0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+        10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0,
+        1, 0, 11, 12, 11, 12, 15, 16, 17, 18, 19,
+        9, 8, 7
+    };
+    
     private static Integer[] getIntArray(int[] fromScalar) {
         Integer[] retVal = new Integer[fromScalar.length];
         
@@ -326,6 +346,117 @@ public class WeakCARCacheTest {
         Assert.assertEquals(1, car.getB2Size());
         
         Assert.assertEquals(0, car.getP());
+    }
+    
+    /**
+     * Sets all T2 to true bit forces cycle when looking for demotion candidate
+     */
+    @Test // @org.junit.Ignore
+    public void testRemoveB2ToZeroAndGetSomethingFromB1() {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE);
+        
+        Integer[] keys = getIntArray(TAKE_OFF_OF_B2);
+        
+        for (int lcv = 0; lcv < keys.length; lcv++) {
+            Assert.assertEquals(keys[lcv], car.compute(keys[lcv]));
+        }
+        
+        // At this point 0 is in B1 and 2 is in T2.  Removing 2
+        // gives us space in the cache and doing a compute of
+        // 0 has us move 0 from B1 onto T2, where the size of
+        // B2 is zero
+        Assert.assertTrue(car.remove(new Integer(2)));
+        Assert.assertEquals(0, car.compute(new Integer(0)).intValue());
+        
+        Assert.assertEquals(10, car.getValueSize());
+        Assert.assertEquals(10, car.getKeySize());
+        
+        Assert.assertEquals(0, car.getT1Size());
+        Assert.assertEquals(10, car.getT2Size());
+        Assert.assertEquals(0, car.getB1Size());
+        Assert.assertEquals(0, car.getB2Size());
+        
+        Assert.assertEquals(1, car.getP());
+    }
+    
+    /**
+     * Sets all T2 to true bit forces cycle when looking for demotion candidate
+     */
+    @Test // @org.junit.Ignore
+    public void testMakeB1SizeBeLessThanB2SizeDuringCacheMiss() {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE);
+        
+        Integer[] keys = getIntArray(ADD_TO_T1_WITH_VALUE_INB2);
+        
+        for (int lcv = 0; lcv < keys.length; lcv++) {
+            Assert.assertEquals(keys[lcv], car.compute(keys[lcv]));
+        }
+        
+        // At this point 0 is in B1, 1 is in B2, 7 is in T2
+        // We remove 0 to make the size of B1 less than B2,
+        // and remove a value from T2 to allow the cache to
+        // just take a new one, then take it from B2
+        Assert.assertTrue(car.remove(new Integer(0)));
+        Assert.assertTrue(car.remove(new Integer(7)));
+        Assert.assertEquals(1, car.compute(new Integer(1)).intValue());
+        
+        Assert.assertEquals(10, car.getValueSize());
+        Assert.assertEquals(10, car.getKeySize());
+        
+        Assert.assertEquals(1, car.getT1Size());
+        Assert.assertEquals(9, car.getT2Size());
+        Assert.assertEquals(0, car.getB1Size());
+        Assert.assertEquals(0, car.getB2Size());
+        
+        Assert.assertEquals(0, car.getP());
+    }
+    
+    /**
+     * Pushes P to maxSize, makes sure it cannot go over
+     */
+    @Test // @org.junit.Ignore
+    public void testPushPToMaxSize() {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE);
+        
+        Integer[] keys = getIntArray(PUSH_P_TO_MAX);
+        
+        for (int lcv = 0; lcv < keys.length; lcv++) {
+            Assert.assertEquals(keys[lcv], car.compute(keys[lcv]));
+        }
+        
+        Assert.assertEquals(10, car.getValueSize());
+        Assert.assertEquals(20, car.getKeySize());
+        
+        Assert.assertEquals(4, car.getT1Size());
+        Assert.assertEquals(6, car.getT2Size());
+        Assert.assertEquals(0, car.getB1Size());
+        Assert.assertEquals(10, car.getB2Size());
+        
+        Assert.assertEquals(10, car.getP());
+    }
+    
+    /**
+     * Pushes P to 5 and then back down to zero
+     */
+    @Test // @org.junit.Ignore
+    public void testPushPToFiveThenBackToZero() {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE);
+        
+        Integer[] keys = getIntArray(P_TO_5_BACK_TO_2);
+        
+        for (int lcv = 0; lcv < keys.length; lcv++) {
+            Assert.assertEquals(keys[lcv], car.compute(keys[lcv]));
+        }
+        
+        Assert.assertEquals(10, car.getValueSize());
+        Assert.assertEquals(18, car.getKeySize());
+        
+        Assert.assertEquals(2, car.getT1Size());
+        Assert.assertEquals(8, car.getT2Size());
+        Assert.assertEquals(3, car.getB1Size());
+        Assert.assertEquals(5, car.getB2Size());
+        
+        Assert.assertEquals(2, car.getP());
     }
     
     private static class ToIntegerComputable implements Computable<String, Integer> {
