@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.glassfish.main</groupId>
         <artifactId>glassfish-nucleus-parent</artifactId>
-        <version>4.1.1-SNAPSHOT</version>
+        <version>5.0-SNAPSHOT</version>
         <relativePath>../nucleus/pom.xml</relativePath>
     </parent>    
     <artifactId>glassfish-parent</artifactId>
@@ -88,10 +88,11 @@
         <default_domain_template>appserver-domain.jar</default_domain_template>
         <version_prefix />
         <version_suffix />
-        <major_version>4</major_version>
-        <minor_version>1</minor_version>
-        <update_version>1</update_version>
-        <install.dir.name>glassfish${major_version}</install.dir.name>
+        <major_version>5</major_version>
+        <minor_version>0</minor_version>
+        <update_version></update_version>
+        <!--install.dir.name>glassfish${major_version}</install.dir.name-->
+        <install.dir.name>glassfish4</install.dir.name>
         
         <javaee.major_version>7</javaee.major_version>
         <javaee.version_qualifier>-b${build.id}</javaee.version_qualifier>
