@@ -154,10 +154,13 @@ public class GeneralUtilities {
     
     /**
      * Creates a weak hash clock
+     * @param isWeak if true this will keep weak keyes, if false the keys will
+     * be hard and will not go away even if they do not exist anywhere else
+     * but this cache
      * @return A weak hash clock implementation
      */
-    public static <K,V> WeakHashClock<K,V> getWeakHashClock() {
-        return new WeakHashClockImpl<K,V>();
+    public static <K,V> WeakHashClock<K,V> getWeakHashClock(boolean isWeak) {
+        return new WeakHashClockImpl<K,V>(isWeak);
     }
     
     /**

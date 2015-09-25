@@ -63,7 +63,7 @@ public class WeakHashClockTest {
      */
     @Test
     public void testNextKeepsGoingWithOneEntry() {
-        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock();
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
         
         clock.put(KEY, VALUE);
         Assert.assertEquals(1, clock.size());
@@ -83,7 +83,7 @@ public class WeakHashClockTest {
      */
     @Test
     public void testNextReturnsNullWithZeroEntries() {
-        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock();
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
         
         Assert.assertEquals(0, clock.size());
         
@@ -101,7 +101,7 @@ public class WeakHashClockTest {
      */
     @Test
     public void testNextKeepsGoingWithTwoEntries() {
-        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock();
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
         
         clock.put(KEY, VALUE);
         clock.put(KEY1, VALUE1);
@@ -128,7 +128,7 @@ public class WeakHashClockTest {
      */
     @Test
     public void testNextKeepsGoingWithTenEntries() {
-        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock();
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
         
         // It is important to keep references to the keys
         // in a weak clock, otherwise they have the possibility
@@ -163,7 +163,7 @@ public class WeakHashClockTest {
      */
     @Test
     public void testNullsToPutThrowsExceptions() {
-        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock();
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
         
         try {
             clock.put(KEY, null);
@@ -195,7 +195,7 @@ public class WeakHashClockTest {
      */
     @Test
     public void testNullGet() {
-        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock();
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
         
         Assert.assertNull(clock.get(null));
         
@@ -209,7 +209,7 @@ public class WeakHashClockTest {
      */
     @Test
     public void testFoundGet() {
-        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock();
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
         
         Assert.assertNull(clock.get(KEY));
         
@@ -227,7 +227,7 @@ public class WeakHashClockTest {
      */
     @Test
     public void testNullNextWorksAfterRemovingLastItem() {
-        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock();
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
         
         // It is important to keep references to the keys
         // in a weak clock, otherwise they have the possibility
@@ -266,7 +266,7 @@ public class WeakHashClockTest {
      */
     @Test
     public void testWeakKeyValueGoneAfterGC() throws InterruptedException {
-        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock();
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
         
         // It is important to keep references to the keys
         // in a weak clock, otherwise they have the possibility
@@ -331,7 +331,7 @@ public class WeakHashClockTest {
      */
     @Test
     public void testRemovalOfNullReturnsNull() throws InterruptedException {
-        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock();
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
         
         Assert.assertNull(clock.remove(null));
         
@@ -347,7 +347,7 @@ public class WeakHashClockTest {
      */
     @Test
     public void testRemovalOfKeyNotFoundReturnsNull() throws InterruptedException {
-        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock();
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
         
         Assert.assertNull(clock.remove(KEY));
         
@@ -367,7 +367,7 @@ public class WeakHashClockTest {
      */
     @Test
     public void testWeaksRemovedOnlyUsingNext() throws InterruptedException {
-        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock();
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
         
         String key = new String(KEY);
         clock.put(key, VALUE);
@@ -397,7 +397,7 @@ public class WeakHashClockTest {
      */
     @Test
     public void testWeakKeysAllGoneAfterGCNextOnly() throws InterruptedException {
-        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock();
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
         
         // It is important to keep references to the keys
         // in a weak clock, otherwise they have the possibility

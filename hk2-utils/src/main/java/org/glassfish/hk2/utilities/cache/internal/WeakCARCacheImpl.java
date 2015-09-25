@@ -55,8 +55,8 @@ public class WeakCARCacheImpl<K,V> implements WeakCARCache<K, V> {
     private final Computable<K,V> computable;
     private final int maxSize;  // TODO, make this dynamic
     
-    private final WeakHashClock<K,CarValue<V>> t1 = GeneralUtilities.getWeakHashClock();
-    private final WeakHashClock<K,CarValue<V>> t2 = GeneralUtilities.getWeakHashClock();
+    private final WeakHashClock<K,CarValue<V>> t1 = GeneralUtilities.getWeakHashClock(true);
+    private final WeakHashClock<K,CarValue<V>> t2 = GeneralUtilities.getWeakHashClock(true);
     private final WeakHashLRU<K> b1 = GeneralUtilities.getWeakHashLRU();
     private final WeakHashLRU<K> b2 = GeneralUtilities.getWeakHashLRU();
     

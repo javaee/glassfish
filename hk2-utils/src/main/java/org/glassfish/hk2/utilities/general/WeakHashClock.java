@@ -103,6 +103,11 @@ public interface WeakHashClock<K,V> {
     public Map.Entry<K, V> next();
     
     /**
+     * Sets the clock size back to zero, no entries
+     */
+    public void clear();
+    
+    /**
      * Causes stale references to be cleared from the data
      * structures.  Since this is a weak clock the references
      * can go away at any time, which happens whenever

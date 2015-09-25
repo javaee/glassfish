@@ -43,6 +43,7 @@ import java.lang.ref.ReferenceQueue;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.glassfish.hk2.utilities.general.WeakHashClock;
 
@@ -53,13 +54,27 @@ import org.glassfish.hk2.utilities.general.WeakHashClock;
  *
  */
 public class WeakHashClockImpl<K,V> implements WeakHashClock<K,V> {
-    private final WeakHashMap<K, DoubleNode<K, V>> byKey = new WeakHashMap<K, DoubleNode<K, V>>();
+    private final boolean isWeak;
+    private final ConcurrentHashMap<K, DoubleNode<K,V>> byKeyNotWeak;
+    private final WeakHashMap<K, DoubleNode<K, V>> byKey;
     
     private final ReferenceQueue<? super K> myQueue = new ReferenceQueue<K>();
     
     private DoubleNode<K, V> head;
     private DoubleNode<K, V> tail;
     private DoubleNode<K, V> dot;
+    
+    public WeakHashClockImpl(boolean isWeak) {
+        this.isWeak = isWeak;
+        if (isWeak) {
+            byKey = new WeakHashMap<K, DoubleNode<K, V>>();
+            byKeyNotWeak = null;
+        }
+        else {
+            byKeyNotWeak = new ConcurrentHashMap<K, DoubleNode<K,V>>();
+            byKey = null;
+        }
+    }
     
     private DoubleNode<K,V> addBeforeDot(K key, V value) {
         DoubleNode<K, V> toAdd = new DoubleNode<K,V>(key,value, myQueue);
@@ -119,26 +134,44 @@ public class WeakHashClockImpl<K,V> implements WeakHashClock<K,V> {
      * @see org.glassfish.hk2.utilities.general.WeakHashClock#put(java.lang.Object, java.lang.Object)
      */
     @Override
-    public synchronized void put(final K key, final V value) {
-        removeStale();
-        
+    public void put(final K key, final V value) {
         if (key == null || value == null) throw new IllegalArgumentException("key " + key + " or value " + value + " is null");
         
-        DoubleNode<K,V> addMe = addBeforeDot(key, value);
+        synchronized (this) {
+            if (isWeak) {
+                removeStale();
+            }
+            
+            DoubleNode<K,V> addMe = addBeforeDot(key, value);
         
-        byKey.put(key, addMe);
+            if (isWeak) {
+                byKey.put(key, addMe);
+            }
+            else {
+                byKeyNotWeak.put(key, addMe);
+            }
+        }
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.utilities.general.WeakHashClock#get(java.lang.Object)
      */
     @Override
-    public synchronized V get(K key) {
-        removeStale();
-        
+    public V get(K key) {
         if (key == null) return null;
         
-        DoubleNode<K,V> node = byKey.get(key);
+        DoubleNode<K,V> node;
+        if (isWeak) {
+            synchronized (this) {
+                removeStale();
+        
+                node = byKey.get(key);
+            }
+        }
+        else {
+            node = byKeyNotWeak.get(key);
+        }
+        
         if (node == null) return null;
         
         return node.getValue();
@@ -148,27 +181,42 @@ public class WeakHashClockImpl<K,V> implements WeakHashClock<K,V> {
      * @see org.glassfish.hk2.utilities.general.WeakHashClock#remove(java.lang.Object)
      */
     @Override
-    public synchronized V remove(K key) {
-        removeStale();
-        
+    public V remove(K key) {
         if (key == null) return null;
         
-        DoubleNode<K,V> node = byKey.remove(key);
-        if (node == null) return null;
-        
-        removeFromDLL(node);
-        
-        return node.getValue();
+        synchronized (this) {
+            DoubleNode<K,V> node;
+            if (isWeak) {
+                removeStale();
+                
+                node = byKey.remove(key);
+            }
+            else {
+                node = byKeyNotWeak.remove(key);
+            }
+                
+            if (node == null) return null;
+            
+            removeFromDLL(node);
+            
+            return node.getValue();
+        }
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.utilities.general.WeakHashClock#size()
      */
     @Override
-    public synchronized int size() {
-        removeStale();
+    public int size() {
+        if (isWeak) {
+            synchronized (this) {
+                removeStale();
         
-        return byKey.size();
+                return byKey.size();
+            }
+        }
+        
+        return byKeyNotWeak.size();
     }
     
     private DoubleNode<K,V> moveDot() {
@@ -236,6 +284,21 @@ public class WeakHashClockImpl<K,V> implements WeakHashClock<K,V> {
     }
     
     /* (non-Javadoc)
+     * @see org.glassfish.hk2.utilities.general.WeakHashClock#clear()
+     */
+    @Override
+    public synchronized void clear() {
+        if (isWeak) {
+            byKey.clear();
+        }
+        else {
+            byKeyNotWeak.clear();
+        }
+        
+        head = tail = dot = null;
+    }
+    
+    /* (non-Javadoc)
      * @see org.glassfish.hk2.utilities.general.WeakHashClock#clearStaleReferences()
      */
     @Override
@@ -292,4 +355,6 @@ public class WeakHashClockImpl<K,V> implements WeakHashClock<K,V> {
               
         return sb.toString();
     }
+
+    
 }
