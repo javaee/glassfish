@@ -326,6 +326,14 @@ public class WeakHashClockImpl<K,V> implements WeakHashClock<K,V> {
         }
     }
     
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.utilities.general.WeakHashClock#hasWeakKeys()
+     */
+    @Override
+    public boolean hasWeakKeys() {
+        return isWeak;
+    }
+    
     @Override
     public synchronized String toString() {
         StringBuffer sb = new StringBuffer("WeakHashClockImpl({");
@@ -355,6 +363,8 @@ public class WeakHashClockImpl<K,V> implements WeakHashClock<K,V> {
               
         return sb.toString();
     }
+
+    
 
     
 }

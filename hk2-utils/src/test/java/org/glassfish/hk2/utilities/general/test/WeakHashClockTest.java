@@ -61,10 +61,7 @@ public class WeakHashClockTest {
     /**
      * Ensures that next goes forever and keeps returning the same element
      */
-    @Test
-    public void testNextKeepsGoingWithOneEntry() {
-        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
-        
+    private void testNextKeepsGoingWithOneEntry(WeakHashClock<String, String> clock) {
         clock.put(KEY, VALUE);
         Assert.assertEquals(1, clock.size());
         
@@ -78,13 +75,24 @@ public class WeakHashClockTest {
         Assert.assertEquals(1, clock.size());
     }
     
+    @Test
+    public void testNextKeepsGoingWithOneEntryWeak() {
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
+        
+        testNextKeepsGoingWithOneEntry(clock);
+    }
+    
+    @Test
+    public void testNextKeepsGoingWithOneEntryStrong() {
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(false);
+        
+        testNextKeepsGoingWithOneEntry(clock);
+    }
+    
     /**
      * Ensures that next returns null when no entries
      */
-    @Test
-    public void testNextReturnsNullWithZeroEntries() {
-        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
-        
+    private void testNextReturnsNullWithZeroEntries(WeakHashClock<String, String> clock) {
         Assert.assertEquals(0, clock.size());
         
         for (int lcv = 0; lcv < ITERATIONS; lcv++) {
@@ -96,13 +104,22 @@ public class WeakHashClockTest {
         Assert.assertEquals(0, clock.size());
     }
     
+    @Test
+    public void testNextReturnsNullWithZeroEntriesWeak() {
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
+        testNextReturnsNullWithZeroEntries(clock);
+    }
+    
+    @Test
+    public void testNextReturnsNullWithZeroEntriesStrong() {
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(false);
+        testNextReturnsNullWithZeroEntries(clock);
+    }
+    
     /**
      * Ensures that next goes forever returning the two elements again and again
      */
-    @Test
-    public void testNextKeepsGoingWithTwoEntries() {
-        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
-        
+    private void testNextKeepsGoingWithTwoEntries(WeakHashClock<String, String> clock) {
         clock.put(KEY, VALUE);
         clock.put(KEY1, VALUE1);
         Assert.assertEquals(2, clock.size());
@@ -127,9 +144,21 @@ public class WeakHashClockTest {
      * Ensures that next goes forever returning the two elements again and again
      */
     @Test
-    public void testNextKeepsGoingWithTenEntries() {
+    public void testNextKeepsGoingWithTwoEntriesWeak() {
         WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
-        
+        testNextKeepsGoingWithTwoEntries(clock);
+    }
+    
+    @Test
+    public void testNextKeepsGoingWithTwoEntriesStrong() {
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(false);
+        testNextKeepsGoingWithTwoEntries(clock);
+    }
+    
+    /**
+     * Ensures that next goes forever returning the two elements again and again
+     */
+    private void testNextKeepsGoingWithTenEntries(WeakHashClock<String, String> clock) {
         // It is important to keep references to the keys
         // in a weak clock, otherwise they have the possibility
         // to get collected.  These arrays give a hard reference
@@ -156,6 +185,21 @@ public class WeakHashClockTest {
         }
         
         Assert.assertEquals(ITERATIONS, clock.size());
+    }
+    
+    /**
+     * Ensures that next goes forever returning the two elements again and again
+     */
+    @Test
+    public void testNextKeepsGoingWithTenEntriesWeak() {
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
+        testNextKeepsGoingWithTenEntries(clock);
+    }
+    
+    @Test
+    public void testNextKeepsGoingWithTenEntriesString() {
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(false);
+        testNextKeepsGoingWithTenEntries(clock);
     }
     
     /**
@@ -193,10 +237,7 @@ public class WeakHashClockTest {
     /**
      * Ensures that a null as the key to get returns null
      */
-    @Test
-    public void testNullGet() {
-        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
-        
+    private void testNullGet(WeakHashClock<String, String> clock) {
         Assert.assertNull(clock.get(null));
         
         clock.put(KEY, VALUE);
@@ -205,12 +246,27 @@ public class WeakHashClockTest {
     }
     
     /**
-     * Tests that a get that is found is found, and one not found is not found
+     * Ensures that a null as the key to get returns null
      */
     @Test
-    public void testFoundGet() {
+    public void testNullGetWeak() {
         WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
-        
+        testNullGet(clock);
+    }
+    
+    /**
+     * Ensures that a null as the key to get returns null
+     */
+    @Test
+    public void testNullGetStrong() {
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(false);
+        testNullGet(clock);
+    }
+    
+    /**
+     * Tests that a get that is found is found, and one not found is not found
+     */
+    private void testFoundGet(WeakHashClock<String, String> clock) {
         Assert.assertNull(clock.get(KEY));
         
         clock.put(KEY, VALUE);
@@ -222,13 +278,22 @@ public class WeakHashClockTest {
         Assert.assertNull(clock.get(KEY));
     }
     
+    @Test
+    public void testFoundGetWeak() {
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
+        testFoundGet(clock);
+    }
+    
+    @Test
+    public void testFoundGetStrong() {
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(false);
+        testFoundGet(clock);
+    }
+    
     /**
      * Tests that a get that is found is found, and one not found is not found
      */
-    @Test
-    public void testNullNextWorksAfterRemovingLastItem() {
-        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
-        
+    private void testNullNextWorksAfterRemovingLastItem(WeakHashClock<String, String> clock) {
         // It is important to keep references to the keys
         // in a weak clock, otherwise they have the possibility
         // to get collected.  These arrays give a hard reference
@@ -258,6 +323,18 @@ public class WeakHashClockTest {
         }
         
         Assert.assertEquals(0, clock.size());
+    }
+    
+    @Test
+    public void testNullNextWorksAfterRemovingLastItemWeak() {
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
+        testNullNextWorksAfterRemovingLastItem(clock);
+    }
+    
+    @Test
+    public void testNullNextWorksAfterRemovingLastItemStrong() {
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(false);
+        testNullNextWorksAfterRemovingLastItem(clock);
     }
     
     /**
@@ -329,10 +406,7 @@ public class WeakHashClockTest {
      * 
      * @throws InterruptedException
      */
-    @Test
-    public void testRemovalOfNullReturnsNull() throws InterruptedException {
-        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
-        
+    private void testRemovalOfNullReturnsNull(WeakHashClock<String, String> clock) throws InterruptedException {
         Assert.assertNull(clock.remove(null));
         
         clock.put(KEY, VALUE);
@@ -340,15 +414,24 @@ public class WeakHashClockTest {
         Assert.assertNull(clock.remove(null));
     }
     
+    @Test
+    public void testRemovalOfNullReturnsNullWeak() throws InterruptedException {
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
+        testRemovalOfNullReturnsNull(clock);
+    }
+    
+    @Test
+    public void testRemovalOfNullReturnsNullStrong() throws InterruptedException {
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(false);
+        testRemovalOfNullReturnsNull(clock);
+    }
+    
     /**
      * Tests removal of key not present returns null
      * 
      * @throws InterruptedException
      */
-    @Test
-    public void testRemovalOfKeyNotFoundReturnsNull() throws InterruptedException {
-        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
-        
+    private void testRemovalOfKeyNotFoundReturnsNull(WeakHashClock<String, String> clock) throws InterruptedException {
         Assert.assertNull(clock.remove(KEY));
         
         clock.put(KEY, VALUE);
@@ -357,6 +440,18 @@ public class WeakHashClockTest {
         
         Assert.assertEquals(VALUE, clock.remove(KEY));
         Assert.assertNull(clock.remove(KEY));
+    }
+    
+    @Test
+    public void testRemovalOfKeyNotFoundReturnsNullWeak() throws InterruptedException {
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
+        testRemovalOfKeyNotFoundReturnsNull(clock);
+    }
+    
+    @Test
+    public void testRemovalOfKeyNotFoundReturnsNullStrong() throws InterruptedException {
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(false);
+        testRemovalOfKeyNotFoundReturnsNull(clock);
     }
     
     /**
@@ -443,6 +538,103 @@ public class WeakHashClockTest {
         }
         
         Assert.fail("All keys were not removed when using only next");
+    }
+    
+    /**
+     * Tests removal of key not present returns null
+     * 
+     * @throws InterruptedException
+     */
+    private void testClearOnNonEmpty(WeakHashClock<String, String> clock) throws InterruptedException {
+        clock.put(KEY, VALUE);
+        
+        Assert.assertEquals(1, clock.size());
+        
+        Map.Entry<String, String> entry = clock.next();
+        Assert.assertEquals(KEY, entry.getKey());
+        Assert.assertEquals(VALUE, entry.getValue());
+        
+        clock.clear();
+        
+        Assert.assertEquals(0, clock.size());
+        
+        entry = clock.next();
+        Assert.assertNull(entry);
+    }
+    
+    @Test
+    public void testClearOnNonEmptyWeak() throws InterruptedException {
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
+        testClearOnNonEmpty(clock);
+    }
+    
+    @Test
+    public void testClearOnNonEmptyStrong() throws InterruptedException {
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(false);
+        testClearOnNonEmpty(clock);
+    }
+    
+    /**
+     * Tests removal of key not present returns null
+     * 
+     * @throws InterruptedException
+     */
+    private void testEntrySetKeyThrows(WeakHashClock<String, String> clock) throws InterruptedException {
+        clock.put(KEY, VALUE);
+        
+        Map.Entry<String, String> entry = clock.next();
+        
+        try {
+            entry.setValue(VALUE1);
+            Assert.fail("setValue should not have been implemented");
+        }
+        catch (AssertionError ae) {
+            // correct
+        }
+    }
+    
+    @Test
+    public void testEntrySetKeyThrowsWeak() throws InterruptedException {
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
+        testEntrySetKeyThrows(clock);
+    }
+    
+    @Test
+    public void testEntrySetKeyThrowsStrong() throws InterruptedException {
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(false);
+        testEntrySetKeyThrows(clock);
+    }
+    
+    /**
+     * Tests that hasWeakKeys works
+     * @throws InterruptedException
+     */
+    @Test
+    public void testHasWeakKeys() throws InterruptedException {
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
+        Assert.assertTrue(clock.hasWeakKeys());
+        
+        clock = GeneralUtilities.getWeakHashClock(false);
+        Assert.assertFalse(clock.hasWeakKeys());
+    }
+    
+    /**
+     * Ensures that toString works
+     */
+    @Test
+    public void testClockToString() {
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
+        String empty = clock.toString();
+        
+        Assert.assertTrue(empty.contains("" + System.identityHashCode(clock)));
+        
+        clock.put(KEY, VALUE);
+        clock.put(KEY1, VALUE1);
+        
+        String nonEmpty = clock.toString();
+        
+        Assert.assertTrue(nonEmpty.contains(KEY));
+        Assert.assertTrue(nonEmpty.contains(KEY1));
     }
 
 }

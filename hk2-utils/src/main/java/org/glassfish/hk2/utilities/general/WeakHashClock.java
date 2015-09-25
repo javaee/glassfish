@@ -117,4 +117,10 @@ public interface WeakHashClock<K,V> {
      * to call in order to clear out any stale references
      */
     public void clearStaleReferences();
+    
+    /**
+     * Tells if this WeakHashClock has Weak keys
+     * @return true if this map has weak keys, true otherwise
+     */
+    public boolean hasWeakKeys();
 }
