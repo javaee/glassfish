@@ -78,14 +78,14 @@ public class WeakCARCacheImpl<K,V> implements WeakCARCache<K, V> {
      */
     @Override
     public V compute(K key) {
-        CarValue<V> cValue = t1.get(key);
+        CarValue<V> cValue = t2.get(key);
         if (cValue != null) {
             // So fast
             cValue.referenceBit = true;
             return cValue.value;
         }
         
-        cValue = t2.get(key);
+        cValue = t1.get(key);
         if (cValue != null) {
             // So fast
             cValue.referenceBit = true;
@@ -97,6 +97,13 @@ public class WeakCARCacheImpl<K,V> implements WeakCARCache<K, V> {
         V value = computable.compute(key);
         
         synchronized (this) {
+            cValue = t2.get(key);
+            if (cValue != null) {
+                // So fast
+                cValue.referenceBit = true;
+                return cValue.value;
+            }
+            
             cValue = t1.get(key);
             if (cValue != null) {
                 // So fast
@@ -104,13 +111,6 @@ public class WeakCARCacheImpl<K,V> implements WeakCARCache<K, V> {
                 return cValue.value;
             }
             
-            cValue = t2.get(key);
-            if (cValue != null) {
-                // So fast
-                cValue.referenceBit = true;
-                return cValue.value;
-            }
-        
             int cacheSize = getValueSize();
             if (cacheSize >= maxSize) {
                 replace();
@@ -229,9 +229,13 @@ public class WeakCARCacheImpl<K,V> implements WeakCARCache<K, V> {
      * @see org.glassfish.hk2.utilities.cache.WeakCARCache#clear()
      */
     @Override
-    public void clear() {
-        throw new AssertionError("not yet implemented");
+    public synchronized void clear() {
+        t1.clear();
+        t2.clear();
+        b1.clear();
+        b2.clear();
         
+        p = 0;
     }
 
     /* (non-Javadoc)
