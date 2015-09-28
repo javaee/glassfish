@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2013-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,21 +40,27 @@
 package org.glassfish.hk2.utilities.cache;
 
 /**
- * Utility interface to capture generic computation of type V from type K.
- * Used in {@link Cache}.
+ * This exception should be thrown from the {@link Computable#compute(Object)} method
+ * if the returned computation should NOT be kept in the cache.  The actual value
+ * returned by the {@link #getComputation()} should be returned to the caller, but
+ * that value should be considered volatile and should NOT be kept in the cache
+ * 
+ * @author jwells
  *
- * @author Jakub Podlesak (jakub.podlesak @ oracle.com)
  */
-public interface Computable<K, V> {
-
-    /**
-     * Defines an expensive computation to retrieve value V from key K.
-     *
-     * @param key input data.
-     * @return output from the computation.
-     * @throws ComputationErrorException if the computation performed should
-     * be returned by the cache but should not be kept in the cache associated
-     * with the key
-     */
-    public V compute(K key) throws ComputationErrorException;
+public class ComputationErrorException extends RuntimeException {
+    private static final long serialVersionUID = 1186268368624844657L;
+    public Object computation;
+    
+    public ComputationErrorException() {
+        super();
+    }
+    
+    public ComputationErrorException(Object computation) {
+        this.computation = computation;
+    }
+    
+    public Object getComputation() {
+        return computation;
+    }
 }

@@ -43,6 +43,7 @@ import java.util.Map;
 
 import org.glassfish.hk2.utilities.cache.CacheKeyFilter;
 import org.glassfish.hk2.utilities.cache.Computable;
+import org.glassfish.hk2.utilities.cache.ComputationErrorException;
 import org.glassfish.hk2.utilities.cache.WeakCARCache;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.general.WeakHashClock;
@@ -77,6 +78,7 @@ public class WeakCARCacheImpl<K,V> implements WeakCARCache<K, V> {
     /* (non-Javadoc)
      * @see org.glassfish.hk2.utilities.cache.WeakCARCache#compute(java.lang.Object)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public V compute(K key) {
         CarValue<V> cValue = t2.get(key);
@@ -95,7 +97,14 @@ public class WeakCARCacheImpl<K,V> implements WeakCARCache<K, V> {
         
         // Cache Miss.  First, get the value.  Any failures
         // will bubble up prior to us messing with any data structures
-        V value = computable.compute(key);
+        V value;
+        try {
+            value = computable.compute(key);
+        }
+        catch (ComputationErrorException cee) {
+            // In this case the value should not be kept in the cache
+            return (V) cee.getComputation();
+        }
         
         synchronized (this) {
             cValue = t2.get(key);
