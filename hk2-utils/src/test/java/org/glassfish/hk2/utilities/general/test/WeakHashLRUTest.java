@@ -447,5 +447,23 @@ public class WeakHashLRUTest {
         
         Assert.assertEquals(0, lru.size());
     }
+    
+    @Test
+    public void testToString() {
+        WeakHashLRU<String> lru = GeneralUtilities.getWeakHashLRU(false);
+        
+        String zeroLRU = lru.toString();
+        Assert.assertTrue(zeroLRU.contains("" + System.identityHashCode(lru)));
+        
+        lru.add(KEY1);
+        lru.add(KEY);
+        lru.add(KEY2);
+        
+        String fullLRU = lru.toString();
+        
+        Assert.assertTrue(fullLRU.contains(KEY1));
+        Assert.assertTrue(fullLRU.contains(KEY));
+        Assert.assertTrue(fullLRU.contains(KEY2));
+    }
 
 }
