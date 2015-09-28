@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.utilities.general;
 
+import org.glassfish.hk2.utilities.cache.CacheKeyFilter;
+
 /**
  * @author jwells
  *
@@ -69,6 +71,14 @@ public interface WeakHashLRU<K> {
      * @return true if removed, false otherwise
      */
     public boolean remove(K key);
+    
+    /**
+     * Releases all keys that match the filter
+     * 
+     * @param filter A non-null filter that can be used
+     * to delete every key that matches the filter
+     */
+    public void releaseMatching(CacheKeyFilter<K> filter);
     
     /**
      * Returns the number of elements currently

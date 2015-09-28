@@ -40,6 +40,7 @@
 package org.glassfish.hk2.utilities.general.test;
 
 
+import org.glassfish.hk2.utilities.cache.CacheKeyFilter;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.general.WeakHashLRU;
 import org.junit.Assert;
@@ -464,6 +465,83 @@ public class WeakHashLRUTest {
         Assert.assertTrue(fullLRU.contains(KEY1));
         Assert.assertTrue(fullLRU.contains(KEY));
         Assert.assertTrue(fullLRU.contains(KEY2));
+    }
+    
+    /**
+     * Tests that a get that is found is found, and one not found is not found
+     */
+    private void testReleaseMatching(WeakHashLRU<String> lru) {
+        lru.add(KEY);
+        lru.add(KEY1);
+        lru.add(KEY2);
+        
+        lru.releaseMatching(new CacheKeyFilter<String>() {
+
+            @Override
+            public boolean matches(String key) {
+                if (key.equals(KEY)) return true;
+                if (key.equals(KEY2)) return true;
+                return false;
+            }
+            
+        });
+        
+        Assert.assertEquals(1, lru.size());
+        Assert.assertFalse(lru.contains(KEY));
+        Assert.assertTrue(lru.contains(KEY1));
+        Assert.assertFalse(lru.contains(KEY2));
+        
+        // Make sure doesn't bomb
+        lru.releaseMatching(null);
+        
+        Assert.assertEquals(1, lru.size());
+        Assert.assertFalse(lru.contains(KEY));
+        Assert.assertTrue(lru.contains(KEY1));
+        Assert.assertFalse(lru.contains(KEY2));
+        
+        // Make sure even if filter matches nothing we are ok
+        lru.releaseMatching(new CacheKeyFilter<String>() {
+
+            @Override
+            public boolean matches(String key) {
+                if (key.equals(KEY)) return true;
+                if (key.equals(KEY2)) return true;
+                return false;
+            }
+            
+        });
+        
+        Assert.assertEquals(1, lru.size());
+        Assert.assertFalse(lru.contains(KEY));
+        Assert.assertTrue(lru.contains(KEY1));
+        Assert.assertFalse(lru.contains(KEY2));
+        
+        // Ensures this remove can take us to zero
+        lru.releaseMatching(new CacheKeyFilter<String>() {
+
+            @Override
+            public boolean matches(String key) {
+                return true;
+            }
+            
+        });
+        
+        Assert.assertEquals(0, lru.size());
+        Assert.assertFalse(lru.contains(KEY));
+        Assert.assertFalse(lru.contains(KEY1));
+        Assert.assertFalse(lru.contains(KEY2));
+    }
+    
+    @Test
+    public void testReleaseMatchingWeak() {
+        WeakHashLRU<String> lru = GeneralUtilities.getWeakHashLRU(true);
+        testReleaseMatching(lru);
+    }
+    
+    @Test
+    public void testReleaseMatchingStrong() {
+        WeakHashLRU<String> lru = GeneralUtilities.getWeakHashLRU(false);
+        testReleaseMatching(lru);
     }
 
 }

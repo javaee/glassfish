@@ -41,6 +41,7 @@ package org.glassfish.hk2.utilities.cache.internal;
 
 import java.util.Map;
 
+import org.glassfish.hk2.utilities.cache.CacheKeyFilter;
 import org.glassfish.hk2.utilities.cache.Computable;
 import org.glassfish.hk2.utilities.cache.WeakCARCache;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
@@ -266,7 +267,7 @@ public class WeakCARCacheImpl<K,V> implements WeakCARCache<K, V> {
      * @see org.glassfish.hk2.utilities.cache.WeakCARCache#remove(java.lang.Object)
      */
     @Override
-    public boolean remove(K key) {
+    public synchronized boolean remove(K key) {
         if (t1.remove(key) == null) {
             if (t2.remove(key) == null) {
                 if (!b1.remove(key)) {
@@ -280,6 +281,19 @@ public class WeakCARCacheImpl<K,V> implements WeakCARCache<K, V> {
         }
         
         return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.utilities.cache.WeakCARCache#releaseMatching(org.glassfish.hk2.utilities.cache.CacheKeyFilter)
+     */
+    @Override
+    public synchronized void releaseMatching(CacheKeyFilter<K> filter) {
+        if (filter == null) return;
+        
+        b2.releaseMatching(filter);
+        b1.releaseMatching(filter);
+        t1.releaseMatching(filter);
+        t2.releaseMatching(filter);
     }
 
     /* (non-Javadoc)
@@ -362,5 +376,7 @@ public class WeakCARCacheImpl<K,V> implements WeakCARCache<K, V> {
                 ",b1Size=" + b1.size() + ",b2Size=" + b2.size() + ",p=" + p + "," +
                 System.identityHashCode(this) + ")";
     }
+
+    
 
 }

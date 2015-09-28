@@ -162,6 +162,14 @@ public interface WeakCARCache<K,V> {
     public boolean remove(K key);
     
     /**
+     * Releases all key/value pairs that match the filter
+     * 
+     * @param filter A non-null filter that can be used
+     * to delete every key/value pair that matches the filter
+     */
+    public void releaseMatching(CacheKeyFilter<K> filter);
+    
+    /**
      * Causes stale references to be cleared from the data
      * structures.  Since this is a weak cache the references
      * can go away at any time, which happens whenever

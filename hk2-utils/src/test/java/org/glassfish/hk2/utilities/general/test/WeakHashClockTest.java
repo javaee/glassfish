@@ -41,6 +41,7 @@ package org.glassfish.hk2.utilities.general.test;
 
 import java.util.Map;
 
+import org.glassfish.hk2.utilities.cache.CacheKeyFilter;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.general.WeakHashClock;
 import org.junit.Assert;
@@ -55,6 +56,8 @@ public class WeakHashClockTest {
     private final static String VALUE = "value";
     private final static String KEY1 = "key1";
     private final static String VALUE1 = "value1";
+    private final static String KEY2 = "key2";
+    private final static String VALUE2 = "value2";
     
     private final static int ITERATIONS = 10;
     
@@ -635,6 +638,83 @@ public class WeakHashClockTest {
         
         Assert.assertTrue(nonEmpty.contains(KEY));
         Assert.assertTrue(nonEmpty.contains(KEY1));
+    }
+    
+    /**
+     * Tests that a get that is found is found, and one not found is not found
+     */
+    private void testReleaseMatching(WeakHashClock<String, String> clock) {
+        clock.put(KEY, VALUE);
+        clock.put(KEY1, VALUE1);
+        clock.put(KEY2, VALUE2);
+        
+        clock.releaseMatching(new CacheKeyFilter<String>() {
+
+            @Override
+            public boolean matches(String key) {
+                if (key.equals(KEY)) return true;
+                if (key.equals(KEY2)) return true;
+                return false;
+            }
+            
+        });
+        
+        Assert.assertEquals(1, clock.size());
+        Assert.assertNull(clock.get(KEY));
+        Assert.assertEquals(VALUE1, clock.get(KEY1));
+        Assert.assertNull(clock.get(KEY2));
+        
+        // Make sure doesn't bomb
+        clock.releaseMatching(null);
+        
+        Assert.assertEquals(1, clock.size());
+        Assert.assertNull(clock.get(KEY));
+        Assert.assertEquals(VALUE1, clock.get(KEY1));
+        Assert.assertNull(clock.get(KEY2));
+        
+        // Make sure even if filter matches nothing we are ok
+        clock.releaseMatching(new CacheKeyFilter<String>() {
+
+            @Override
+            public boolean matches(String key) {
+                if (key.equals(KEY)) return true;
+                if (key.equals(KEY2)) return true;
+                return false;
+            }
+            
+        });
+        
+        Assert.assertEquals(1, clock.size());
+        Assert.assertNull(clock.get(KEY));
+        Assert.assertEquals(VALUE1, clock.get(KEY1));
+        Assert.assertNull(clock.get(KEY2));
+        
+        // Ensures this remove can take us to zero
+        clock.releaseMatching(new CacheKeyFilter<String>() {
+
+            @Override
+            public boolean matches(String key) {
+                return true;
+            }
+            
+        });
+        
+        Assert.assertEquals(0, clock.size());
+        Assert.assertNull(clock.get(KEY));
+        Assert.assertNull(clock.get(KEY1));
+        Assert.assertNull(clock.get(KEY2));
+    }
+    
+    @Test
+    public void testReleaseMatchingWeak() {
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(true);
+        testReleaseMatching(clock);
+    }
+    
+    @Test
+    public void testReleaseMatchingStrong() {
+        WeakHashClock<String, String> clock = GeneralUtilities.getWeakHashClock(false);
+        testReleaseMatching(clock);
     }
 
 }

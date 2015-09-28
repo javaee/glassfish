@@ -40,9 +40,11 @@
 package org.glassfish.hk2.utilities.general.internal;
 
 import java.lang.ref.ReferenceQueue;
+import java.util.LinkedList;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.glassfish.hk2.utilities.cache.CacheKeyFilter;
 import org.glassfish.hk2.utilities.general.WeakHashLRU;
 
 /**
@@ -243,6 +245,32 @@ public class WeakHashLRUImpl<K> implements WeakHashLRU<K> {
     }
     
     /* (non-Javadoc)
+     * @see org.glassfish.hk2.utilities.general.WeakHashLRU#releaseMatching(org.glassfish.hk2.utilities.cache.CacheKeyFilter)
+     */
+    @Override
+    public synchronized void releaseMatching(CacheKeyFilter<K> filter) {
+        if (filter == null) return;
+        if (isWeak) {
+            clearStale();
+        }
+        
+        LinkedList<K> removeMe = new LinkedList<K>();
+        DoubleNode<K, Object> current = mru;
+        while (current != null) {
+            K key = current.getWeakKey().get();
+            if (key != null && filter.matches(key)) {
+                removeMe.add(key);
+            }
+            
+            current = current.getNext();
+        }
+        
+        for (K removeKey : removeMe) {
+            removeNoClear(removeKey);
+        }
+    }
+    
+    /* (non-Javadoc)
      * @see org.glassfish.hk2.utilities.general.WeakHashLRU#clear()
      */
     @Override
@@ -316,7 +344,4 @@ public class WeakHashLRUImpl<K> implements WeakHashLRU<K> {
               
         return sb.toString();
     }
-
-    
-
 }

@@ -40,11 +40,13 @@
 package org.glassfish.hk2.utilities.general.internal;
 
 import java.lang.ref.ReferenceQueue;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.glassfish.hk2.utilities.cache.CacheKeyFilter;
 import org.glassfish.hk2.utilities.general.WeakHashClock;
 
 /**
@@ -200,6 +202,33 @@ public class WeakHashClockImpl<K,V> implements WeakHashClock<K,V> {
             removeFromDLL(node);
             
             return node.getValue();
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.utilities.general.WeakHashClock#releaseMatching(org.glassfish.hk2.utilities.cache.CacheKeyFilter)
+     */
+    @Override
+    public synchronized void releaseMatching(CacheKeyFilter<K> filter) {
+        if (filter == null) return;
+        
+        if (isWeak) {
+            removeStale();
+        }
+        
+        LinkedList<K> removeMe = new LinkedList<K>();
+        DoubleNode<K,V> current = head;
+        while (current != null) {
+            K key = current.getWeakKey().get();
+            if (key != null && filter.matches(key)) {
+                removeMe.add(key);
+            }
+            
+            current = current.getNext();
+        }
+        
+        for (K removeKey : removeMe) {
+            remove(removeKey);
         }
     }
 
@@ -363,8 +392,4 @@ public class WeakHashClockImpl<K,V> implements WeakHashClock<K,V> {
               
         return sb.toString();
     }
-
-    
-
-    
 }

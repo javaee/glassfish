@@ -41,6 +41,8 @@ package org.glassfish.hk2.utilities.general;
 
 import java.util.Map;
 
+import org.glassfish.hk2.utilities.cache.CacheKeyFilter;
+
 /**
  * This is a clock (if non-empty the next verb will always return a new value
  * in a cycle) that can also get values in O(1) complexity.  This HashClock
@@ -77,6 +79,14 @@ public interface WeakHashClock<K,V> {
      * @return The value removed if found, or null if not found
      */
     public V remove(K key);
+    
+    /**
+     * Releases all key/value pairs that match the filter
+     * 
+     * @param filter A non-null filter that can be used
+     * to delete every key/value pair that matches the filter
+     */
+    public void releaseMatching(CacheKeyFilter<K> filter);
     
     /**
      * Returns the number of elements currently
