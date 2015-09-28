@@ -91,6 +91,11 @@ public interface WeakHashLRU<K> {
     public K remove();
     
     /**
+     * Removes all entries from this LRU
+     */
+    public void clear();
+    
+    /**
      * Causes stale references to be cleared from the data
      * structures.  Since this is a weak clock the references
      * can go away at any time, which happens whenever

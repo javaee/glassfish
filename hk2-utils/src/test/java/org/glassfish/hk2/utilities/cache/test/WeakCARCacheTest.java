@@ -138,10 +138,7 @@ public class WeakCARCacheTest {
     /**
      * Tests that we can add eleven things to a cache of size 10, twice!
      */
-    @Test // @org.junit.Ignore
-    public void testAddElevenToCacheSizeTen() {
-        WeakCARCache<String, Integer> car = CacheUtilities.createWeakCARCache(TO_INTEGER, SMALL_CACHE_SIZE);
-        
+    private void testAddElevenToCacheSizeTen(WeakCARCache<String, Integer> car) {
         for (int lcv = 0; lcv < 2; lcv++) {
             Assert.assertEquals(0, car.compute(ZERO).intValue());
             Assert.assertEquals(1, car.compute(ONE).intValue());
@@ -162,13 +159,22 @@ public class WeakCARCacheTest {
         Assert.assertEquals(0, car.getP());
     }
     
+    @Test // @org.junit.Ignore
+    public void testAddElevenToCacheSizeTenWeak() {
+        WeakCARCache<String, Integer> car = CacheUtilities.createWeakCARCache(TO_INTEGER, SMALL_CACHE_SIZE, true);
+        testAddElevenToCacheSizeTen(car);
+    }
+    
+    @Test // @org.junit.Ignore
+    public void testAddElevenToCacheSizeTenStrong() {
+        WeakCARCache<String, Integer> car = CacheUtilities.createWeakCARCache(TO_INTEGER, SMALL_CACHE_SIZE, false);
+        testAddElevenToCacheSizeTen(car);
+    }
+    
     /**
      * Tests moving completely from T1 to T2 (and one B1)
      */
-    @Test // @org.junit.Ignore
-    public void testAddElevenToCacheSizeTenForwardThenBackward() {
-        WeakCARCache<String, Integer> car = CacheUtilities.createWeakCARCache(TO_INTEGER, SMALL_CACHE_SIZE);
-        
+    private void testAddElevenToCacheSizeTenForwardThenBackward(WeakCARCache<String, Integer> car) {
         Assert.assertEquals(0, car.compute(ZERO).intValue());
         Assert.assertEquals(1, car.compute(ONE).intValue());
         Assert.assertEquals(2, car.compute(TWO).intValue());
@@ -204,13 +210,22 @@ public class WeakCARCacheTest {
         Assert.assertEquals(0, car.getP());
     }
     
+    @Test // @org.junit.Ignore
+    public void testAddElevenToCacheSizeTenForwardThenBackwardWeak() {
+        WeakCARCache<String, Integer> car = CacheUtilities.createWeakCARCache(TO_INTEGER, SMALL_CACHE_SIZE, true);
+        testAddElevenToCacheSizeTenForwardThenBackward(car);
+    }
+    
+    @Test // @org.junit.Ignore
+    public void testAddElevenToCacheSizeTenForwardThenBackwardStrong() {
+        WeakCARCache<String, Integer> car = CacheUtilities.createWeakCARCache(TO_INTEGER, SMALL_CACHE_SIZE, false);
+        testAddElevenToCacheSizeTenForwardThenBackward(car);
+    }
+    
     /**
      * Takes a value off of B2
      */
-    @Test // @org.junit.Ignore
-    public void testTakingOffOfB2() {
-        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE);
-        
+    private void testTakingOffOfB2(WeakCARCache<Integer, Integer> car) {
         Integer[] keys = getIntArray(TAKE_OFF_OF_B2);
         
         for (int lcv = 0; lcv < keys.length; lcv++) {
@@ -228,13 +243,24 @@ public class WeakCARCacheTest {
         Assert.assertEquals(0, car.getP());
     }
     
+    @Test // @org.junit.Ignore
+    public void testTakingOffOfB2Weak() {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE, true);
+        testTakingOffOfB2(car);
+        
+    }
+    
+    @Test // @org.junit.Ignore
+    public void testTakingOffOfB2Strong() {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE, false);
+        testTakingOffOfB2(car);
+        
+    }
+    
     /**
      * Takes a value off of B1
      */
-    @Test // @org.junit.Ignore
-    public void testTakingOffOfB1() {
-        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE);
-        
+    private void testTakingOffOfB1(WeakCARCache<Integer, Integer> car) {
         Integer[] keys = getIntArray(TAKE_OFF_OF_B1);
         
         for (int lcv = 0; lcv < keys.length; lcv++) {
@@ -252,13 +278,22 @@ public class WeakCARCacheTest {
         Assert.assertEquals(1, car.getP());
     }
     
+    @Test // @org.junit.Ignore
+    public void testTakingOffOfB1Weak() {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE, true);
+        testTakingOffOfB1(car);
+    }
+    
+    @Test // @org.junit.Ignore
+    public void testTakingOffOfB1Strong() {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE, false);
+        testTakingOffOfB1(car);
+    }
+    
     /**
      * Gets T1 and T2 to equal size
      */
-    @Test // @org.junit.Ignore
-    public void testEqualT1T2() {
-        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE);
-        
+    private void testEqualT1T2(WeakCARCache<Integer, Integer> car) {
         Integer[] keys = getIntArray(EQUAL_T1_T2);
         
         for (int lcv = 0; lcv < keys.length; lcv++) {
@@ -276,13 +311,22 @@ public class WeakCARCacheTest {
         Assert.assertEquals(5, car.getP());
     }
     
+    @Test // @org.junit.Ignore
+    public void testEqualT1T2Weak() {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE, true);
+        testEqualT1T2(car);
+    }
+    
+    @Test // @org.junit.Ignore
+    public void testEqualT1T2Strong() {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE, false);
+        testEqualT1T2(car);
+    }
+    
     /**
      * Maxes keys plus one off of B2, makes sure B2 does not grow without bound
      */
-    @Test // @org.junit.Ignore
-    public void testMaxOutKeysPlusOne() {
-        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE);
-        
+    private void testMaxOutKeysPlusOne(WeakCARCache<Integer, Integer> car) {
         Integer[] keys = getIntArray(MAX_OUT_B2_KEYS_PLUS_ONE);
         
         for (int lcv = 0; lcv < keys.length; lcv++) {
@@ -300,13 +344,22 @@ public class WeakCARCacheTest {
         Assert.assertEquals(5, car.getP());
     }
     
+    @Test // @org.junit.Ignore
+    public void testMaxOutKeysPlusOneWeak() {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE, true);
+        testMaxOutKeysPlusOne(car);
+    }
+    
+    @Test // @org.junit.Ignore
+    public void testMaxOutKeysPlusOneStrong() {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE, false);
+        testMaxOutKeysPlusOne(car);
+    }
+    
     /**
      * Maxes keys plus one off of B2, makes sure B2 does not grow without bound
      */
-    @Test // @org.junit.Ignore
-    public void testWeCanAccessAMemberOfT2() {
-        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE);
-        
+    private void testWeCanAccessAMemberOfT2(WeakCARCache<Integer, Integer> car) {
         Integer[] keys = getIntArray(ACCESS_T2);
         
         for (int lcv = 0; lcv < keys.length; lcv++) {
@@ -324,13 +377,22 @@ public class WeakCARCacheTest {
         Assert.assertEquals(0, car.getP());
     }
     
+    @Test // @org.junit.Ignore
+    public void testWeCanAccessAMemberOfT2Weak() {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE, true);
+        testWeCanAccessAMemberOfT2(car);
+    }
+    
+    @Test // @org.junit.Ignore
+    public void testWeCanAccessAMemberOfT2Strong() {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE, false);
+        testWeCanAccessAMemberOfT2(car);
+    }
+    
     /**
      * Sets all T2 to true bit forces cycle when looking for demotion candidate
      */
-    @Test // @org.junit.Ignore
-    public void testForceDemotionT2ToCycle() {
-        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE);
-        
+    private void testForceDemotionT2ToCycle(WeakCARCache<Integer, Integer> car) {
         Integer[] keys = getIntArray(CYCLE_ACCESSED_T2_TO_FIND_DEMOTE);
         
         for (int lcv = 0; lcv < keys.length; lcv++) {
@@ -348,12 +410,23 @@ public class WeakCARCacheTest {
         Assert.assertEquals(0, car.getP());
     }
     
+    @Test // @org.junit.Ignore
+    public void testForceDemotionT2ToCycleWeak() {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE, true);
+        testForceDemotionT2ToCycle(car);
+    }
+    
+    @Test // @org.junit.Ignore
+    public void testForceDemotionT2ToCycleStrong() {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE, false);
+        testForceDemotionT2ToCycle(car);
+    }
+    
     /**
      * Sets all T2 to true bit forces cycle when looking for demotion candidate
      */
-    @Test // @org.junit.Ignore
-    public void testRemoveB2ToZeroAndGetSomethingFromB1() {
-        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE);
+    private void testRemoveB2ToZeroAndGetSomethingFromB1(WeakCARCache<Integer, Integer> car) {
+        
         
         Integer[] keys = getIntArray(TAKE_OFF_OF_B2);
         
@@ -379,13 +452,22 @@ public class WeakCARCacheTest {
         Assert.assertEquals(1, car.getP());
     }
     
+    @Test // @org.junit.Ignore
+    public void testRemoveB2ToZeroAndGetSomethingFromB1Weak () {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE, true);
+        testRemoveB2ToZeroAndGetSomethingFromB1(car);
+    }
+    
+    @Test // @org.junit.Ignore
+    public void testRemoveB2ToZeroAndGetSomethingFromB1Strong () {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE, false);
+        testRemoveB2ToZeroAndGetSomethingFromB1(car);
+    }
+    
     /**
      * Sets all T2 to true bit forces cycle when looking for demotion candidate
      */
-    @Test // @org.junit.Ignore
-    public void testMakeB1SizeBeLessThanB2SizeDuringCacheMiss() {
-        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE);
-        
+    private void testMakeB1SizeBeLessThanB2SizeDuringCacheMiss(WeakCARCache<Integer, Integer> car) {
         Integer[] keys = getIntArray(ADD_TO_T1_WITH_VALUE_INB2);
         
         for (int lcv = 0; lcv < keys.length; lcv++) {
@@ -411,13 +493,22 @@ public class WeakCARCacheTest {
         Assert.assertEquals(0, car.getP());
     }
     
+    @Test // @org.junit.Ignore
+    public void testMakeB1SizeBeLessThanB2SizeDuringCacheMissWeak() {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE, true);
+        testMakeB1SizeBeLessThanB2SizeDuringCacheMiss(car);
+    }
+    
+    @Test // @org.junit.Ignore
+    public void testMakeB1SizeBeLessThanB2SizeDuringCacheMissStrong() {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE, false);
+        testMakeB1SizeBeLessThanB2SizeDuringCacheMiss(car);
+    }
+    
     /**
      * Pushes P to maxSize, makes sure it cannot go over
      */
-    @Test // @org.junit.Ignore
-    public void testPushPToMaxSize() {
-        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE);
-        
+    private void testPushPToMaxSize(WeakCARCache<Integer, Integer> car) {
         Integer[] keys = getIntArray(PUSH_P_TO_MAX);
         
         for (int lcv = 0; lcv < keys.length; lcv++) {
@@ -435,13 +526,22 @@ public class WeakCARCacheTest {
         Assert.assertEquals(10, car.getP());
     }
     
+    @Test // @org.junit.Ignore
+    public void testPushPToMaxSizeWeak() {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE, true);
+        testPushPToMaxSize(car);
+    }
+    
+    @Test // @org.junit.Ignore
+    public void testPushPToMaxSizeStrong() {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE, false);
+        testPushPToMaxSize(car);
+    }
+    
     /**
      * Pushes P to 5 and then back down to zero
      */
-    @Test // @org.junit.Ignore
-    public void testPushPToFiveThenBackToZero() {
-        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE);
-        
+    private void testPushPToFiveThenBackToZero(WeakCARCache<Integer, Integer> car) {
         Integer[] keys = getIntArray(P_TO_5_BACK_TO_2);
         
         for (int lcv = 0; lcv < keys.length; lcv++) {
@@ -457,6 +557,18 @@ public class WeakCARCacheTest {
         Assert.assertEquals(5, car.getB2Size());
         
         Assert.assertEquals(2, car.getP());
+    }
+    
+    @Test // @org.junit.Ignore
+    public void testPushPToFiveThenBackToZeroWeak() {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE, true);
+        testPushPToFiveThenBackToZero(car);
+    }
+    
+    @Test // @org.junit.Ignore
+    public void testPushPToFiveThenBackToZeroStrong() {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE, false);
+        testPushPToFiveThenBackToZero(car);
     }
     
     private static class ToIntegerComputable implements Computable<String, Integer> {

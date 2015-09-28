@@ -56,10 +56,13 @@ public class CacheUtilities {
      * 
      * @param computable The computable that is used to get the V from the given K
      * @param maxSize The maximumSize of the cache
+     * @param isWeak if true this will keep weak keyes, if false the keys will
+     * be hard and will not go away even if they do not exist anywhere else
+     * but this cache
      * @return A WeakCARCache that is empty
      */
-    public static <K,V> WeakCARCache<K,V> createWeakCARCache(Computable<K,V> computable, int maxSize) {
-        return new WeakCARCacheImpl<K,V>(computable, maxSize);
+    public static <K,V> WeakCARCache<K,V> createWeakCARCache(Computable<K,V> computable, int maxSize, boolean isWeak) {
+        return new WeakCARCacheImpl<K,V>(computable, maxSize, isWeak);
     }
 
 }

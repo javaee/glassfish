@@ -165,10 +165,13 @@ public class GeneralUtilities {
     
     /**
      * Creates a weak hash clock
+     * @param isWeak if true this will keep weak keyes, if false the keys will
+     * be hard and will not go away even if they do not exist anywhere else
+     * but this cache
      * @return A weak hash clock implementation
      */
-    public static <K> WeakHashLRU<K> getWeakHashLRU() {
-        return new WeakHashLRUImpl<K>();
+    public static <K> WeakHashLRU<K> getWeakHashLRU(boolean isWeak) {
+        return new WeakHashLRUImpl<K>(isWeak);
     }
 
 }

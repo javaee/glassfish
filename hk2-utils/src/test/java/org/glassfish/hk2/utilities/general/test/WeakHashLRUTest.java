@@ -60,10 +60,7 @@ public class WeakHashLRUTest {
      * Ensures that remove can remove from a single and zero length
      * lru list
      */
-    @Test
-    public void testRemoveDeletesSingleEntry() {
-        WeakHashLRU<String> lru = GeneralUtilities.getWeakHashLRU();
-        
+    private void testRemoveDeletesSingleEntry(WeakHashLRU<String> lru) {
         lru.add(KEY);
         Assert.assertEquals(1, lru.size());
         
@@ -76,13 +73,22 @@ public class WeakHashLRUTest {
         Assert.assertEquals(0, lru.size());
     }
     
+    @Test
+    public void testRemoveDeletesSingleEntryWeak() {
+        WeakHashLRU<String> lru = GeneralUtilities.getWeakHashLRU(true);
+        testRemoveDeletesSingleEntry(lru);
+    }
+    
+    @Test
+    public void testRemoveDeletesSingleEntryStrong() {
+        WeakHashLRU<String> lru = GeneralUtilities.getWeakHashLRU(false);
+        testRemoveDeletesSingleEntry(lru);
+    }
+    
     /**
      * Ensures that remove actually removes the LRU
      */
-    @Test
-    public void testRemoveRemovesLRU() {
-        WeakHashLRU<String> lru = GeneralUtilities.getWeakHashLRU();
-        
+    private void testRemoveRemovesLRU(WeakHashLRU<String> lru) {
         lru.add(KEY);  // LRU
         lru.add(KEY1); // MRU
         Assert.assertEquals(2, lru.size());
@@ -96,13 +102,22 @@ public class WeakHashLRUTest {
         Assert.assertEquals(0, lru.size());
     }
     
+    @Test
+    public void testRemoveRemovesLRUWeak() {
+        WeakHashLRU<String> lru = GeneralUtilities.getWeakHashLRU(true);
+        testRemoveRemovesLRU(lru);
+    }
+    
+    @Test
+    public void testRemoveRemovesLRUStrong() {
+        WeakHashLRU<String> lru = GeneralUtilities.getWeakHashLRU(false);
+        testRemoveRemovesLRU(lru);
+    }
+    
     /**
      * Ensures that re-add of key moves it from LRU spot
      */
-    @Test
-    public void testReAddChangesLRU() {
-        WeakHashLRU<String> lru = GeneralUtilities.getWeakHashLRU();
-        
+    private void testReAddChangesLRU(WeakHashLRU<String> lru) {
         lru.add(KEY);  // LRU
         lru.add(KEY1); // MRU
         lru.add(KEY); // now KEY1 should be LRU and KEY should be MRU again
@@ -118,12 +133,24 @@ public class WeakHashLRUTest {
         Assert.assertEquals(0, lru.size());
     }
     
+    @Test
+    public void testReAddChangesLRUWeak() {
+        WeakHashLRU<String> lru = GeneralUtilities.getWeakHashLRU(true);
+        testReAddChangesLRU(lru);
+    }
+    
+    @Test
+    public void testReAddChangesLRUStrong() {
+        WeakHashLRU<String> lru = GeneralUtilities.getWeakHashLRU(false);
+        testReAddChangesLRU(lru);
+    }
+    
     /**
      * Tests that a null key throws exception
      */
     @Test
     public void testBadInputToAdd() {
-        WeakHashLRU<String> lru = GeneralUtilities.getWeakHashLRU();
+        WeakHashLRU<String> lru = GeneralUtilities.getWeakHashLRU(true);
         
         try {
             lru.add(null);
@@ -137,10 +164,7 @@ public class WeakHashLRUTest {
     /**
      * Tests contains
      */
-    @Test
-    public void testContains() {
-        WeakHashLRU<String> lru = GeneralUtilities.getWeakHashLRU();
-        
+    private void testContains(WeakHashLRU<String> lru) {
         lru.add(KEY);
         lru.add(KEY2);
         
@@ -174,17 +198,81 @@ public class WeakHashLRUTest {
         
     }
     
+    @Test
+    public void testContainsWeak() {
+        WeakHashLRU<String> lru = GeneralUtilities.getWeakHashLRU(true);
+        testContains(lru);
+    }
+    
+    @Test
+    public void testContainsStrong() {
+        WeakHashLRU<String> lru = GeneralUtilities.getWeakHashLRU(false);
+        testContains(lru);
+    }
+    
     /**
      * Tests null remove
      */
-    @Test
-    public void testNullRemoveReturnsFalse() {
-        WeakHashLRU<String> lru = GeneralUtilities.getWeakHashLRU();
-        
+    private void testNullRemoveReturnsFalse(WeakHashLRU<String> lru) {
         lru.add(KEY);
         
         Assert.assertFalse(lru.remove(null));
+    }
+    
+    @Test
+    public void testNullRemoveReturnsFalseWeak() {
+        WeakHashLRU<String> lru = GeneralUtilities.getWeakHashLRU(true);
+        testNullRemoveReturnsFalse(lru);
+    }
+    
+    @Test
+    public void testNullRemoveReturnsFalseStrong() {
+        WeakHashLRU<String> lru = GeneralUtilities.getWeakHashLRU(false);
+        testNullRemoveReturnsFalse(lru);
+    }
+    
+    /**
+     * Tests clear
+     */
+    private void testClear(WeakHashLRU<String> lru) {
+        lru.add(KEY);
+        lru.add(KEY1);
+        lru.add(KEY2);
         
+        Assert.assertEquals(3, lru.size());
+        
+        lru.clear();
+        
+        Assert.assertEquals(0, lru.size());
+        
+        lru.clear();
+        
+        Assert.assertEquals(0, lru.size());
+        
+        lru.add(KEY1);
+        
+        Assert.assertEquals(1, lru.size());
+        
+        lru.clear();
+        
+        Assert.assertNull(lru.remove());
+        
+        lru.add(KEY2);
+        lru.clear();
+        
+        Assert.assertFalse(lru.remove(KEY2));
+    }
+    
+    @Test
+    public void testClearWeak() {
+        WeakHashLRU<String> lru = GeneralUtilities.getWeakHashLRU(true);
+        testClear(lru);
+    }
+    
+    @Test
+    public void testClearStrong() {
+        WeakHashLRU<String> lru = GeneralUtilities.getWeakHashLRU(false);
+        testClear(lru);
     }
     
     /**
@@ -193,7 +281,7 @@ public class WeakHashLRUTest {
      */
     @Test
     public void testWeakInTheMiddleIgnored() throws InterruptedException {
-        WeakHashLRU<String> lru = GeneralUtilities.getWeakHashLRU();
+        WeakHashLRU<String> lru = GeneralUtilities.getWeakHashLRU(true);
         
         // It is important to keep references to the keys
         // in a weak clock, otherwise they have the possibility
@@ -239,7 +327,7 @@ public class WeakHashLRUTest {
      */
     @Test
     public void testAllKeysGoWeak() throws InterruptedException {
-        WeakHashLRU<String> lru = GeneralUtilities.getWeakHashLRU();
+        WeakHashLRU<String> lru = GeneralUtilities.getWeakHashLRU(true);
         
         // It is important to keep references to the keys
         // in a weak clock, otherwise they have the possibility
@@ -278,7 +366,7 @@ public class WeakHashLRUTest {
      */
     @Test
     public void testWeakOnlyRemoveUsed() throws InterruptedException {
-        WeakHashLRU<String> lru = GeneralUtilities.getWeakHashLRU();
+        WeakHashLRU<String> lru = GeneralUtilities.getWeakHashLRU(true);
         
         String key = new String(KEY);
         
@@ -318,7 +406,7 @@ public class WeakHashLRUTest {
      */
     @Test
     public void testClearStaleReferences() throws InterruptedException {
-        WeakHashLRU<String> lru = GeneralUtilities.getWeakHashLRU();
+        WeakHashLRU<String> lru = GeneralUtilities.getWeakHashLRU(true);
         
         // It is important to keep references to the keys
         // in a weak clock, otherwise they have the possibility
