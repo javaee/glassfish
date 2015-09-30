@@ -106,8 +106,9 @@ import org.glassfish.hk2.api.messaging.Topic;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.InjecteeImpl;
 import org.glassfish.hk2.utilities.cache.CacheKeyFilter;
-import org.glassfish.hk2.utilities.cache.HybridCacheEntry;
-import org.glassfish.hk2.utilities.cache.LRUHybridCache;
+import org.glassfish.hk2.utilities.cache.CacheUtilities;
+import org.glassfish.hk2.utilities.cache.ComputationErrorException;
+import org.glassfish.hk2.utilities.cache.WeakCARCache;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.ParameterizedTypeImpl;
@@ -1133,15 +1134,15 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
     }
 
-    private final LRUHybridCache<IgdCacheKey, IgdValue> igdCache =
-            new LRUHybridCache<IgdCacheKey, IgdValue>(CACHE_SIZE, new Computable<IgdCacheKey, HybridCacheEntry<IgdValue>>() {
-        @Override
-        public HybridCacheEntry<IgdValue> compute(final IgdCacheKey key) {
-            return igdCacheCompute(key);
-        }
-    });
+    private final WeakCARCache<IgdCacheKey, IgdValue> igdCache = CacheUtilities.createWeakCARCache(
+            new Computable<IgdCacheKey, IgdValue>() {
+                @Override
+                public IgdValue compute(final IgdCacheKey key) {
+                    return igdCacheCompute(key);
+                }
+            }, CACHE_SIZE, false);
     
-    private HybridCacheEntry<IgdValue> igdCacheCompute(final IgdCacheKey key) {
+    private IgdValue igdCacheCompute(final IgdCacheKey key) {
         final List<SystemDescriptor<?>> candidates = getDescriptors(key.filter, key.onBehalfOf, true, false, true);
         final ImmediateResults immediate = narrow(ServiceLocatorImpl.this, // locator
                 candidates, // candidates
@@ -1157,10 +1158,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
         final NarrowResults results = immediate.getTimelessResults();
         if (!results.getErrors().isEmpty()) {
             Utilities.handleErrors(results, new LinkedList<ErrorService>(errorHandlers));
-            return igdCache.createCacheEntry(key, new IgdValue(results, immediate), true);
+            throw new ComputationErrorException(new IgdValue(results, immediate));
         }
         
-        return igdCache.createCacheEntry(key, new IgdValue(results, immediate), false);
+        return new IgdValue(results, immediate);
     }
     
     private Unqualified getEffectiveUnqualified(Unqualified givenUnqualified, boolean isIterable, Annotation qualifiers[]) {
@@ -1208,8 +1209,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
 
         rLock.lock();
         try {
-            final HybridCacheEntry<IgdValue> entry = igdCache.compute(igdCacheKey);
-            final IgdValue value = entry.getValue();
+            final IgdValue value = igdCache.compute(igdCacheKey);
             final boolean freshOne = value.freshnessKeeper.compareAndSet(1, 2);
             if (!freshOne) {
                 immediate = narrow(this,  // locator
@@ -1316,10 +1316,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 internalGetAllServiceHandles(contractOrImpl, unqualified, true, isIterable, qualifiers);
     }
 
-    final private LRUHybridCache<IgdCacheKey, IgdValue> igashCache =
-            new LRUHybridCache<IgdCacheKey, IgdValue>(CACHE_SIZE, new Computable<IgdCacheKey, HybridCacheEntry<IgdValue>>() {
+    final private WeakCARCache<IgdCacheKey, IgdValue> igashCache =
+            CacheUtilities.createWeakCARCache(new Computable<IgdCacheKey, IgdValue>() {
         @Override
-        public HybridCacheEntry<IgdValue> compute(final IgdCacheKey key) {
+        public IgdValue compute(final IgdCacheKey key) {
 
             List<SystemDescriptor<?>> candidates = getDescriptors(key.filter, null, true, false, true);
             ImmediateResults immediate = narrow(ServiceLocatorImpl.this,
@@ -1335,12 +1335,12 @@ public class ServiceLocatorImpl implements ServiceLocator {
             NarrowResults results = immediate.getTimelessResults();
             if (!results.getErrors().isEmpty()) {
                 Utilities.handleErrors(results, new LinkedList<ErrorService>(errorHandlers));
-                return igashCache.createCacheEntry(key, new IgdValue(results, immediate), true);
+                throw new ComputationErrorException(new IgdValue(results, immediate)) ;
             }
             
-            return igashCache.createCacheEntry(key, new IgdValue(results, immediate), false);
+            return new IgdValue(results, immediate);
         }
-    });
+    }, CACHE_SIZE, false);
 
     private List<?> internalGetAllServiceHandles(
             Type contractOrImpl,
@@ -1379,8 +1379,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
 
         rLock.lock();
         try {
-            final HybridCacheEntry<IgdValue> entry = igashCache.compute(igdCacheKey);
-            final IgdValue value = entry.getValue();
+            final IgdValue value = igashCache.compute(igdCacheKey);
             final boolean freshOne = value.freshnessKeeper.compareAndSet(1, 2);
             if (!freshOne) {
                 immediate = narrow(this,
@@ -2517,11 +2516,11 @@ public class ServiceLocatorImpl implements ServiceLocator {
     }
 
     /* package */ int getServiceCacheSize() {
-        return igdCache.size();
+        return igdCache.getValueSize();
     }
 
     /* package */ int getServiceCacheMaximumSize() {
-        return igdCache.getMaximumCacheSize();
+        return igdCache.getMaxSize();
     }
 
     /* package */ void clearServiceCache() {

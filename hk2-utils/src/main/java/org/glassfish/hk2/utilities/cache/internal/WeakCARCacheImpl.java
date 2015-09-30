@@ -81,14 +81,14 @@ public class WeakCARCacheImpl<K,V> implements WeakCARCache<K, V> {
     @SuppressWarnings("unchecked")
     @Override
     public V compute(K key) {
-        CarValue<V> cValue = t2.get(key);
+        CarValue<V> cValue = t1.get(key);
         if (cValue != null) {
             // So fast
             cValue.referenceBit = true;
             return cValue.value;
         }
         
-        cValue = t1.get(key);
+        cValue = t2.get(key);
         if (cValue != null) {
             // So fast
             cValue.referenceBit = true;
