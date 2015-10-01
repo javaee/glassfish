@@ -45,6 +45,10 @@ import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.AliasDescriptor;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.glassfish.hk2.utilities.cache.CacheUtilities;
+import org.glassfish.hk2.utilities.cache.Computable;
+import org.glassfish.hk2.utilities.cache.ComputationErrorException;
+import org.glassfish.hk2.utilities.cache.WeakCARCache;
 import org.jvnet.hk2.config.provider.internal.Creator;
 import org.jvnet.hk2.config.provider.internal.CreatorImpl;
 
@@ -61,7 +65,6 @@ import java.lang.annotation.Annotation;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 /**
@@ -970,33 +973,15 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
         return null;
     }
     
-    private final ConcurrentHashMap<Class<?>, ConfigBeanProxy> proxyCache =
-            new ConcurrentHashMap<Class<?>, ConfigBeanProxy>();
+    private final WeakCARCache<Class<?>, ConfigBeanProxy> proxyCache =
+            CacheUtilities.createWeakCARCache(new DomProxyComputable(this), 200, false);
 
     /**
      * Creates a strongly-typed proxy to access values in this {@link Dom} object,
      * by using the specified interface type as the proxy type.
      */
     public <T extends ConfigBeanProxy> T createProxy(final Class<T> proxyType) {
-        ConfigBeanProxy retVal = proxyCache.get(proxyType);
-        if (retVal != null) {
-            return proxyType.cast(retVal);
-        }
-        
-        ClassLoader cl;
-        if (System.getSecurityManager()!=null) {
-            cl = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
-                @Override
-                public ClassLoader run() {
-                    return proxyType.getClassLoader();
-                }
-            });
-        } else {
-            cl = proxyType.getClassLoader();
-        }
-        
-        retVal = (ConfigBeanProxy) Proxy.newProxyInstance(cl,new Class[]{proxyType},this);
-        proxyCache.put(proxyType, retVal);
+        ConfigBeanProxy retVal = proxyCache.compute(proxyType);
         return proxyType.cast(retVal);
     }
 
@@ -1432,5 +1417,36 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
     
     public boolean equals(Object o) {
         return this == o;
+    }
+    
+    private static class DomProxyComputable implements Computable<Class<?>, ConfigBeanProxy> {
+        private final Dom dom;
+        
+        private DomProxyComputable(Dom dom) {
+            this.dom = dom;
+        }
+
+        @Override
+        public ConfigBeanProxy compute(final Class<?> proxyType)
+                throws ComputationErrorException {
+            
+            ClassLoader cl;
+            if (System.getSecurityManager()!=null) {
+                cl = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
+                    @Override
+                    public ClassLoader run() {
+                        return proxyType.getClassLoader();
+                    }
+                });
+            } else {
+                cl = proxyType.getClassLoader();
+            }
+            
+            ConfigBeanProxy retVal = (ConfigBeanProxy) Proxy.newProxyInstance(cl,new Class[]{proxyType}, dom);
+            
+            return retVal;
+        }
+        
+        
     }
 }
