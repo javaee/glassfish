@@ -40,6 +40,9 @@
 package org.glassfish.hk2.utilities.general.test;
 
 
+import java.util.LinkedList;
+import java.util.Random;
+
 import org.glassfish.hk2.utilities.cache.CacheKeyFilter;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.general.WeakHashLRU;
@@ -542,6 +545,211 @@ public class WeakHashLRUTest {
     public void testReleaseMatchingStrong() {
         WeakHashLRU<String> lru = GeneralUtilities.getWeakHashLRU(false);
         testReleaseMatching(lru);
+    }
+    
+    private final static int NUM_THREADS = 20;
+    
+    /**
+     * Tests the concurrency of the system
+     * 
+     * @param clock
+     * @throws InterruptedException
+     */
+    private void testConcurrency(WeakHashLRU<Integer> lru) throws InterruptedException {
+        Thread threads[] = new Thread[NUM_THREADS];
+        Runner runners[] = new Runner[NUM_THREADS];
+        
+        for (int lcv = 0; lcv < NUM_THREADS; lcv++) {
+            runners[lcv] = new Runner(lcv, lru);
+            threads[lcv] = new Thread(runners[lcv]);
+            
+            threads[lcv].start();
+        }
+        
+        for (int lcv = 0; lcv < NUM_THREADS; lcv++) {
+            Assert.assertTrue(runners[lcv].waitForFinish(600 * 1000));
+        }
+        
+        for (int lcv = 0; lcv < NUM_THREADS; lcv++) {
+            for (Throwable th : runners[lcv].errors) {
+                if (th instanceof RuntimeException) {
+                    throw (RuntimeException) th;
+                }
+                
+                throw new RuntimeException(th);
+            }
+        }
+        
+    }
+    
+    @Test
+    public void testConcurrencyWeak() throws InterruptedException {
+        WeakHashLRU<Integer> lru = GeneralUtilities.getWeakHashLRU(true);
+        testConcurrency(lru);
+    }
+    
+    @Test
+    public void testConcurrencyStrong() throws InterruptedException {
+        WeakHashLRU<Integer> clock = GeneralUtilities.getWeakHashLRU(false);
+        testConcurrency(clock);
+    }
+    
+    private final static int CONCURRENT_ITERATIONS = 100000;
+    
+    private static class Runner implements Runnable {
+        private final Random RANDOM;
+        private final WeakHashLRU<Integer> lru;
+        private final LinkedList<Throwable> errors = new LinkedList<Throwable>();
+        private final LinkedList<Integer> hardenedKeys = new LinkedList<Integer>();
+        private final Object lock = new Object();
+        private boolean finished = false;
+        
+        private Runner(int randomizer, WeakHashLRU<Integer> lru) {
+            RANDOM = new Random(10000L + randomizer);
+            this.lru = lru;
+        }
+
+        private void runInternal() {
+            for (int i = 0; i < CONCURRENT_ITERATIONS; i++) {
+                int operation = RANDOM.nextInt(100);
+                if (operation < 40) {
+                    // Get operation, 40% of the time
+                    int getMe = RANDOM.nextInt(100);
+                    
+                    try {
+                        lru.contains(getMe);
+                    }
+                    catch (Throwable th) {
+                        System.err.println("contains failure: " + th.getMessage());
+                        th.printStackTrace();
+                        
+                        errors.add(th);
+                    }
+                }
+                else if (operation < 60) {
+                    // put operation, 20% of the time
+                    Integer putMe = RANDOM.nextInt(100);
+                    
+                    try {
+                        lru.add(putMe);
+                        if (RANDOM.nextInt(2) == 0) {
+                            // Half the keys added are hardened
+                            hardenedKeys.add(putMe);
+                        }
+                    }
+                    catch (Throwable th) {
+                        System.err.println("add failure: " + th.getMessage());
+                        th.printStackTrace();
+                        
+                        errors.add(th);
+                    }
+                }
+                else if (operation < 75) {
+                    // remove operation, 15% of the time
+                    int removeMe = RANDOM.nextInt(100);
+                    
+                    try {
+                        lru.remove(removeMe);
+                    }
+                    catch (Throwable th) {
+                        System.err.println("removeFailure: " + th.getMessage());
+                        th.printStackTrace();
+                        
+                        errors.add(th);
+                    }
+                }
+                else if (operation < 90) {
+                    // remove releaseMatching, 15% of the time
+                    
+                    try {
+                        lru.releaseMatching(new CacheKeyFilter<Integer>() {
+
+                            /**
+                             * Removes even entries
+                             */
+                            @Override
+                            public boolean matches(Integer key) {
+                                int candidate = key;
+                                if ((candidate % 2) == 0) return true;
+                                return false;
+                            }
+                            
+                        });
+                    }
+                    catch (Throwable th) {
+                        System.err.println("releaseMatching failure: " + th.getMessage());
+                        th.printStackTrace();
+                        
+                        errors.add(th);
+                    }
+                }
+                else if (operation < 98) {
+                    // size, 8% of the time
+                    try {
+                        lru.size();
+                    }
+                    catch (Throwable th) {
+                        System.err.println("size failure: " + th.getMessage());
+                        th.printStackTrace();
+                        
+                        errors.add(th);
+                    }
+                }
+                else if (operation < 99) {
+                    // clear, 1% of the time
+                    try {
+                        lru.clear();
+                    }
+                    catch (Throwable th) {
+                        System.err.println("clear failure: " + th.getMessage());
+                        th.printStackTrace();
+                        
+                        errors.add(th);
+                    }
+                }
+                else if (operation < 100) {
+                    // clearStaleReferences, 1% of the time
+                    try {
+                        lru.clearStaleReferences();
+                    }
+                    catch (Throwable th) {
+                        System.err.println("clearStale failure: " + th.getMessage());
+                        th.printStackTrace();
+                        
+                        errors.add(th);
+                    }
+                }
+                
+            }
+            
+        }
+        
+        /* (non-Javadoc)
+         * @see java.lang.Runnable#run()
+         */
+        @Override
+        public void run() {
+            runInternal();
+            synchronized (lock) {
+                finished = true;
+                lock.notifyAll();
+            }
+        }
+        
+        private boolean waitForFinish(long waitMillis) throws InterruptedException {
+            synchronized (lock) {
+                while (!finished && (waitMillis > 0)) {
+                    long elapsedTime = System.currentTimeMillis();
+                    
+                    lock.wait(waitMillis);
+                    
+                    elapsedTime = System.currentTimeMillis() - elapsedTime;
+                    waitMillis -= elapsedTime;
+                }
+                
+                return finished;
+            }
+        }
     }
 
 }

@@ -42,7 +42,6 @@ package org.glassfish.hk2.utilities.general.test;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.glassfish.hk2.utilities.cache.CacheKeyFilter;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
