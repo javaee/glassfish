@@ -125,17 +125,6 @@ public interface WeakCARCache<K,V> {
     public void clear();
     
     /**
-     * The maximum number of values kept in the cache.  Note
-     * that the number of keys kept will be 2x, where x is the
-     * max size of the cache (see CAR algorithm which keeps a
-     * key history)
-     * 
-     * @param newMax The new maximum size of the cache
-     * @return The old maximum size of the cache
-     */
-    public int setMaxSize(int newMax);
-    
-    /**
      * Gets the current maximum size of the cache (the maximum
      * number of values that will be kept by the cache).  Note
      * that the number of keys kept will be 2x, where x is the

@@ -249,14 +249,6 @@ public class WeakCARCacheImpl<K,V> implements WeakCARCache<K, V> {
     }
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.utilities.cache.WeakCARCache#setMaxSize(int)
-     */
-    @Override
-    public int setMaxSize(int newMax) {
-        throw new AssertionError("not yet implemented");
-    }
-
-    /* (non-Javadoc)
      * @see org.glassfish.hk2.utilities.cache.WeakCARCache#getMaxSize()
      */
     @Override

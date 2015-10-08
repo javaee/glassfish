@@ -39,6 +39,10 @@
  */
 package org.glassfish.hk2.utilities.cache.test;
 
+import java.util.LinkedList;
+import java.util.Random;
+
+import org.glassfish.hk2.utilities.cache.CacheKeyFilter;
 import org.glassfish.hk2.utilities.cache.CacheUtilities;
 import org.glassfish.hk2.utilities.cache.Computable;
 import org.glassfish.hk2.utilities.cache.WeakCARCache;
@@ -569,6 +573,217 @@ public class WeakCARCacheTest {
     public void testPushPToFiveThenBackToZeroStrong() {
         WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE, false);
         testPushPToFiveThenBackToZero(car);
+    }
+    
+    private final static int NUM_THREADS = 20;
+    
+    /**
+     * Tests the concurrency of the system
+     * 
+     * @param clock
+     * @throws InterruptedException
+     */
+    private void testConcurrency(WeakCARCache<Integer, Integer> cache) throws InterruptedException {
+        Thread threads[] = new Thread[NUM_THREADS];
+        Runner runners[] = new Runner[NUM_THREADS];
+        
+        for (int lcv = 0; lcv < NUM_THREADS; lcv++) {
+            runners[lcv] = new Runner(lcv, cache);
+            threads[lcv] = new Thread(runners[lcv]);
+            
+            threads[lcv].start();
+        }
+        
+        for (int lcv = 0; lcv < NUM_THREADS; lcv++) {
+            Assert.assertTrue(runners[lcv].waitForFinish(600 * 1000));
+        }
+        
+        for (int lcv = 0; lcv < NUM_THREADS; lcv++) {
+            for (Throwable th : runners[lcv].errors) {
+                if (th instanceof RuntimeException) {
+                    throw (RuntimeException) th;
+                }
+                
+                throw new RuntimeException(th);
+            }
+        }
+        
+    }
+    
+    @Test @org.junit.Ignore
+    public void testConcurrencyWeak() throws InterruptedException {
+        // Key space is 100 keys, so we will make the cache size 50
+        WeakCARCache<Integer, Integer> cache = CacheUtilities.createWeakCARCache(INT_TO_INT, 50, true);
+        testConcurrency(cache);
+    }
+    
+    @Test @org.junit.Ignore
+    public void testConcurrencyStrong() throws InterruptedException {
+        // Key space is 100 keys, so we will make the cache size 50
+        WeakCARCache<Integer, Integer> cache = CacheUtilities.createWeakCARCache(INT_TO_INT, 50, false);
+        testConcurrency(cache);
+    }
+    
+    private final static int CONCURRENT_ITERATIONS = 100000;
+    
+    private static class Runner implements Runnable {
+        private final Random RANDOM;
+        private final WeakCARCache<Integer, Integer> cache;
+        private final LinkedList<Throwable> errors = new LinkedList<Throwable>();
+        private final LinkedList<Integer> hardenedKeys = new LinkedList<Integer>();
+        private final Object lock = new Object();
+        private boolean finished = false;
+        
+        private Runner(int randomizer, WeakCARCache<Integer, Integer> cache) {
+            RANDOM = new Random(10000L + randomizer);
+            this.cache = cache;
+        }
+
+        private void runInternal() {
+            for (int i = 0; i < CONCURRENT_ITERATIONS; i++) {
+                int operation = RANDOM.nextInt(100);
+                if (operation < 70) {
+                    // compute operation, 70% of the time
+                    int getMe = RANDOM.nextInt(100);
+                    
+                    try {
+                        cache.compute(getMe);
+                    }
+                    catch (Throwable th) {
+                        System.err.println("contains failure: " + th.getMessage());
+                        th.printStackTrace();
+                        
+                        errors.add(th);
+                    }
+                    
+                    if (RANDOM.nextInt(2) == 0) {
+                        // Half the keys added are hardened
+                        hardenedKeys.add(getMe);
+                    }
+                }
+                else if (operation < 80) {
+                    // remove operation, 10% of the time
+                    Integer putMe = RANDOM.nextInt(100);
+                    
+                    try {
+                        cache.remove(putMe);
+                    }
+                    catch (Throwable th) {
+                        System.err.println("remove failure: " + th.getMessage());
+                        th.printStackTrace();
+                        
+                        errors.add(th);
+                    }
+                }
+                else if (operation < 90) {
+                    // remove releaseMatching, 10% of the time
+                    
+                    try {
+                        cache.releaseMatching(new CacheKeyFilter<Integer>() {
+
+                            /**
+                             * Removes even entries
+                             */
+                            @Override
+                            public boolean matches(Integer key) {
+                                int candidate = key;
+                                if ((candidate % 2) == 0) return true;
+                                return false;
+                            }
+                            
+                        });
+                    }
+                    catch (Throwable th) {
+                        System.err.println("releaseMatching failure: " + th.getMessage());
+                        th.printStackTrace();
+                        
+                        errors.add(th);
+                    }
+                }
+                else if (operation < 95) {
+                    // size, 5% of the time
+                    try {
+                        cache.getValueSize();
+                        cache.getKeySize();
+                        cache.getT1Size();
+                        cache.getT2Size();
+                        cache.getB1Size();
+                        cache.getB2Size();
+                    }
+                    catch (Throwable th) {
+                        System.err.println("size failure: " + th.getMessage());
+                        th.printStackTrace();
+                        
+                        errors.add(th);
+                    }
+                }
+                else if (operation < 98) {
+                    // getP, 2% of the time
+                    try {
+                        cache.getP();
+                    }
+                    catch (Throwable th) {
+                        System.err.println("getP failure: " + th.getMessage());
+                        th.printStackTrace();
+                        
+                        errors.add(th);
+                    }
+                }
+                else if (operation < 99) {
+                    // clear, 1% of the time
+                    try {
+                        cache.clear();
+                    }
+                    catch (Throwable th) {
+                        System.err.println("clear failure: " + th.getMessage());
+                        th.printStackTrace();
+                        
+                        errors.add(th);
+                    }
+                }
+                else if (operation < 100) {
+                    // clearStaleReferences, 1% of the time
+                    try {
+                        cache.clearStaleReferences();
+                    }
+                    catch (Throwable th) {
+                        System.err.println("clearStale failure: " + th.getMessage());
+                        th.printStackTrace();
+                        
+                        errors.add(th);
+                    }
+                }
+                
+            }
+            
+        }
+        
+        /* (non-Javadoc)
+         * @see java.lang.Runnable#run()
+         */
+        @Override
+        public void run() {
+            runInternal();
+            synchronized (lock) {
+                finished = true;
+                lock.notifyAll();
+            }
+        }
+        
+        private boolean waitForFinish(long waitMillis) throws InterruptedException {
+            synchronized (lock) {
+                while (!finished && (waitMillis > 0)) {
+                    long elapsedTime = System.currentTimeMillis();
+                    
+                    lock.wait(waitMillis);
+                    
+                    elapsedTime = System.currentTimeMillis() - elapsedTime;
+                    waitMillis -= elapsedTime;
+                }
+                
+                return finished;
+            }
+        }
     }
     
     private static class ToIntegerComputable implements Computable<String, Integer> {
