@@ -126,6 +126,7 @@ public class WeakHashClockImpl<K,V> implements WeakHashClock<K,V> {
         
         if (removeMe == dot) {
             dot = removeMe.getNext();
+            if (dot == null) dot = head;
         }
         
         removeMe.setNext(null);

@@ -610,14 +610,14 @@ public class WeakCARCacheTest {
         
     }
     
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testConcurrencyWeak() throws InterruptedException {
         // Key space is 100 keys, so we will make the cache size 50
         WeakCARCache<Integer, Integer> cache = CacheUtilities.createWeakCARCache(INT_TO_INT, 50, true);
         testConcurrency(cache);
     }
     
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testConcurrencyStrong() throws InterruptedException {
         // Key space is 100 keys, so we will make the cache size 50
         WeakCARCache<Integer, Integer> cache = CacheUtilities.createWeakCARCache(INT_TO_INT, 50, false);
