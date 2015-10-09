@@ -56,6 +56,7 @@ import org.junit.Test;
 public class WeakCARCacheTest {
     private final static ToIntegerComputable TO_INTEGER = new ToIntegerComputable();
     private final static ReflectiveComputable<Integer> INT_TO_INT = new ReflectiveComputable<Integer>();
+    private final static WeakComputable WEAK_COMPUTABLE = new WeakComputable();
     
     private final static String ZERO = "0";
     private final static String ONE = "1";
@@ -575,6 +576,44 @@ public class WeakCARCacheTest {
         testPushPToFiveThenBackToZero(car);
     }
     
+    /**
+     * Tests that Weak keys are removed eventually
+     * @throws InterruptedException 
+     */
+    @Test
+    public void testWeakIsWeak() throws InterruptedException {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(WEAK_COMPUTABLE, SMALL_CACHE_SIZE, true);
+        
+        Integer[] keys = getIntArray(EQUAL_T1_T2);
+        
+        for (int lcv = 0; lcv < keys.length; lcv++) {
+            Assert.assertEquals(keys[lcv], car.compute(keys[lcv]));
+        }
+        
+        int keysSize = car.getValueSize();
+        
+        for (int lcv = 0; lcv < keys.length; lcv++) {
+            if ((lcv % 2) == 0) {
+                keys[lcv] = null;
+            }
+        }
+        
+        System.gc();
+        
+        int currentSize = car.getValueSize();
+        int counter = 0;
+        while ((currentSize == keysSize) && (counter < 200)) {
+            System.gc();
+            
+            Thread.sleep(100);
+            
+            currentSize = car.getValueSize();
+            counter++;
+        }
+        
+        Assert.assertNotSame(currentSize, keysSize);
+    }
+    
     private final static int NUM_THREADS = 20;
     
     /**
@@ -807,7 +846,17 @@ public class WeakCARCacheTest {
         public I compute(I key) {
             return key;
         }
-        
+    }
+    
+    private static class WeakComputable implements Computable<Integer, Integer> {
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.utilities.cache.Computable#compute(java.lang.Object)
+         */
+        @Override
+        public Integer compute(Integer key) {
+            return new Integer(key.intValue());
+        }
     }
 
 }
