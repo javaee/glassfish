@@ -612,6 +612,52 @@ public class WeakCARCacheTest {
         }
         
         Assert.assertNotSame(currentSize, keysSize);
+        
+        // Do some adds, make sure it still works basically
+        Integer[] keys2 = getIntArray(EQUAL_T1_T2);
+        for (int lcv = 0; lcv < keys2.length; lcv++) {
+            Assert.assertEquals(keys2[lcv], car.compute(keys2[lcv]));
+        }
+        
+        Assert.assertEquals(SMALL_CACHE_SIZE, car.getValueSize());
+    }
+    
+    /**
+     * Tests that Weak keys are removed eventually, even if they ALL go weak
+     * @throws InterruptedException 
+     */
+    @Test
+    public void testAllKeysGoWeak() throws InterruptedException {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(WEAK_COMPUTABLE, SMALL_CACHE_SIZE, true);
+        
+        Integer[] keys = getIntArray(EQUAL_T1_T2);
+        
+        for (int lcv = 0; lcv < keys.length; lcv++) {
+            Assert.assertEquals(keys[lcv], car.compute(keys[lcv]));
+        }
+        
+        for (int lcv = 0; lcv < keys.length; lcv++) {
+            keys[lcv] = null;
+        }
+        
+        System.gc();
+        
+        int currentSize = car.getValueSize();
+        int counter = 0;
+        while ((currentSize > 0) && (counter < 200)) {
+            System.gc();
+            
+            Thread.sleep(100);
+            
+            currentSize = car.getValueSize();
+            counter++;
+        }
+        
+        Assert.assertEquals(0, car.getB1Size());
+        Assert.assertEquals(0, car.getB2Size());
+        Assert.assertEquals(0, car.getT1Size());
+        Assert.assertEquals(0, car.getT2Size());
+        Assert.assertEquals(5, car.getP());
     }
     
     private final static int NUM_THREADS = 20;
