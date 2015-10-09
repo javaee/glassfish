@@ -260,7 +260,7 @@ init_common(){
     MINOR_VERSION=0
     PRODUCT_VERSION_GF=${MAJOR_VERSION}.${MINOR_VERSION}
     MICRO_VERSION=0
-    if [ ! -z $MICRO_VERSION ] && [ ${#MICRO_VERSION} -gt 0 ]; then
+    if [ ! -z $MICRO_VERSION ] && [ ${MICRO_VERSION} -gt 0 ]; then
         PRODUCT_VERSION_GF=$PRODUCT_VERSION_GF.${MICRO_VERSION} 
     fi
 
