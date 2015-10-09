@@ -50,6 +50,10 @@ import org.glassfish.hk2.utilities.general.WeakHashClock;
 import org.glassfish.hk2.utilities.general.WeakHashLRU;
 
 /**
+ * Implements the CAR algorithm as found here:
+ * 
+ * http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.105.6057
+ * 
  * @author jwells
  *
  */
@@ -74,13 +78,8 @@ public class WeakCARCacheImpl<K,V> implements WeakCARCache<K, V> {
         b1 = GeneralUtilities.getWeakHashLRU(isWeak);
         b2 = GeneralUtilities.getWeakHashLRU(isWeak);
     }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.utilities.cache.WeakCARCache#compute(java.lang.Object)
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public V compute(K key) {
+    
+    private V getValueFromT(K key) {
         CarValue<V> cValue = t1.get(key);
         if (cValue != null) {
             // So fast
@@ -95,30 +94,30 @@ public class WeakCARCacheImpl<K,V> implements WeakCARCache<K, V> {
             return cValue.value;
         }
         
-        // Cache Miss.  First, get the value.  Any failures
-        // will bubble up prior to us messing with any data structures
-        V value;
-        try {
-            value = computable.compute(key);
-        }
-        catch (ComputationErrorException cee) {
-            // In this case the value should not be kept in the cache
-            return (V) cee.getComputation();
-        }
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.utilities.cache.WeakCARCache#compute(java.lang.Object)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public V compute(K key) {
+        V value = getValueFromT(key);
+        if (value != null) return value;
         
         synchronized (this) {
-            cValue = t2.get(key);
-            if (cValue != null) {
-                // So fast
-                cValue.referenceBit = true;
-                return cValue.value;
-            }
+            value = getValueFromT(key);
+            if (value != null) return value;
             
-            cValue = t1.get(key);
-            if (cValue != null) {
-                // So fast
-                cValue.referenceBit = true;
-                return cValue.value;
+            // Cache Miss.  First, get the value.  Any failures
+            // will bubble up prior to us messing with any data structures
+            try {
+                value = computable.compute(key);
+            }
+            catch (ComputationErrorException cee) {
+                // In this case the value should not be kept in the cache
+                return (V) cee.getComputation();
             }
             
             int cacheSize = getValueSize();
