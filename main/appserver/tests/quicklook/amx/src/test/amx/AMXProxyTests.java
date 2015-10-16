@@ -310,7 +310,7 @@ public final class AMXProxyTests extends AMXTestBase
 
     
     /** test all MBeans generically */
-    @Test
+    @Test(/* GLASSFISH-21214 */enabled=false)
     public void testAllGenerically()
     {
         final Interfaces interfaces = getInterfaces();
