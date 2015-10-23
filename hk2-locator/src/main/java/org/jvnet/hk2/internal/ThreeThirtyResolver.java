@@ -93,5 +93,10 @@ public class ThreeThirtyResolver implements InjectionResolver<Inject> {
     public boolean isMethodParameterIndicator() {
         return false;
     }
+    
+    @Override
+    public String toString() {
+        return "ThreeThirtyResolver(" + locator + "," + System.identityHashCode(this) + ")";
+    }
 
 }

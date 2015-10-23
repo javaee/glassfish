@@ -444,5 +444,10 @@ public class ClazzCreator<T> implements Creator<T> {
             this.baseElement = baseElement;
             this.injectees.addAll(injectees);
         }
+        
+        @Override
+        public String toString() {
+            return "ResolutionInfo(" + baseElement + "," + injectees + "," + System.identityHashCode(this) + ")";
+        }
     }
 }
