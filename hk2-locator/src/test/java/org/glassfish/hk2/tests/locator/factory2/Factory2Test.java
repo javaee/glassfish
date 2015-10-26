@@ -50,6 +50,7 @@ import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.InstantiationData;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
@@ -170,7 +171,11 @@ public class Factory2Test {
     @Test // @org.junit.Ignore
     public void testGetInjecteeOfPerLookupInFactoryWithServiceHandle() {
         ServiceLocator locator = LocatorHelper.getServiceLocator(InjectsPerLookupViaFactoryService.class,
-                PerLookupFactory.class);
+                PerLookupFactory.class,
+                SimplePerLookupServiceOne.class,
+                SimplePerLookupServiceTwo.class,
+                SingletonServiceFactory.class,
+                NestedSingletonService.class);
         
         ServiceHandle<InjectsPerLookupViaFactoryService> handle = locator.getServiceHandle(InjectsPerLookupViaFactoryService.class);
         Assert.assertNotNull(handle);
@@ -182,6 +187,14 @@ public class Factory2Test {
         Assert.assertNotNull(injectee.getParent());
         
         Assert.assertTrue(injectee.getParent() instanceof Field);
+        Assert.assertEquals(((Field) injectee.getParent()).getType(), PerLookupService.class);
+        
+        SingletonService singleton = handleService.getFactoryCreatedSingletonService().getSingletonService();
+        InstantiationData singletonData = singleton.getData();
+        Field singletonField = (Field) singletonData.getParentInjectee().getParent();
+        
+        Assert.assertEquals(SingletonService.class, singletonField.getType());
+        Assert.assertEquals(NestedSingletonService.class, singletonData.getParentInjectee().getInjecteeClass());
     }
     
     /**
@@ -192,7 +205,12 @@ public class Factory2Test {
     @Test // @org.junit.Ignore
     public void testGetInjecteeOfPerLookupInFactoryWithDirectService() {
         ServiceLocator locator = LocatorHelper.getServiceLocator(InjectsPerLookupViaFactoryService.class,
-                PerLookupFactory.class);
+                PerLookupFactory.class,
+                SimplePerLookupServiceOne.class,
+                SimplePerLookupServiceTwo.class,
+                SingletonServiceFactory.class,
+                NestedSingletonService.class);
+        
         InjectsPerLookupViaFactoryService handleService = locator.getService(InjectsPerLookupViaFactoryService.class);
         Injectee injectee = handleService.getParentInjectee();
         

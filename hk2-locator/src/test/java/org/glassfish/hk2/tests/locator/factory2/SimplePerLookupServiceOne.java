@@ -39,35 +39,10 @@
  */
 package org.glassfish.hk2.tests.locator.factory2;
 
-import javax.inject.Inject;
-
-import org.glassfish.hk2.api.Injectee;
-import org.glassfish.hk2.api.PerLookup;
-
 /**
  * @author jwells
  *
  */
-@PerLookup
-public class InjectsPerLookupViaFactoryService {
-    @Inject
-    private SimplePerLookupServiceOne one;
-    
-    @Inject
-    private PerLookupService pls;
-    
-    @Inject
-    private SimplePerLookupServiceTwo two;
-    
-    @Inject
-    private NestedSingletonService nestedSingletonService;
-    
-    public Injectee getParentInjectee() {
-        return pls.getInjectee();
-    }
-    
-    public NestedSingletonService getFactoryCreatedSingletonService() {
-        return nestedSingletonService;
-    }
+public class SimplePerLookupServiceOne {
 
 }
