@@ -48,14 +48,20 @@ import org.glassfish.hk2.api.Injectee;
 public class SonService {
     private final GrandsonService gs;
     private final Injectee myInjectee;
+    private final GrandDaughterService gd;
     
-    public SonService(GrandsonService gs, Injectee myInjectee) {
+    public SonService(GrandsonService gs, GrandDaughterService gd, Injectee myInjectee) {
         this.gs = gs;
         this.myInjectee = myInjectee;
+        this.gd = gd;
     }
     
     public GrandsonService getGrandson() {
         return gs;
+    }
+    
+    public GrandDaughterService getGrandDaughter() {
+        return gd;
     }
     
     public Injectee getMyInjectee() {

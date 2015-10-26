@@ -54,15 +54,20 @@ public class SonServiceFactory implements Factory<SonService> {
     @Inject
     private InstantiationService instantiationService;
     
+    /** Factory is Singleton */
     @Inject
     private GrandsonService grandsonService;
+    
+    /** Factory is PerLookup */
+    @Inject
+    private GrandDaughterService granddaughterService;
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Factory#provide()
      */
     @Override @Singleton
     public SonService provide() {
-        return new SonService(grandsonService, instantiationService.getInstantiationData().getParentInjectee());
+        return new SonService(grandsonService, granddaughterService, instantiationService.getInstantiationData().getParentInjectee());
         
     }
 
