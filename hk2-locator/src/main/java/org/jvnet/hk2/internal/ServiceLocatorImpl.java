@@ -683,14 +683,22 @@ public class ServiceLocatorImpl implements ServiceLocator {
             ServiceHandleImpl<T> tmpRoot = new ServiceHandleImpl<T>(this, activeDescriptor, originalRequest);
             return Utilities.createService(activeDescriptor, originalRequest, this, tmpRoot, rawClass);
         }
+        
+        ServiceHandleImpl<?> rootImpl = (ServiceHandleImpl<?>) root;
 
         ServiceHandleImpl<T> subHandle = internalGetServiceHandle(activeDescriptor, contractOrImpl, originalRequest);
 
         if (PerLookup.class.equals(activeDescriptor.getScopeAnnotation())) {
-            ((ServiceHandleImpl<?>) root).addSubHandle(subHandle);
+            rootImpl.addSubHandle(subHandle);
         }
 
-        return subHandle.getService((ServiceHandle<T>) root);
+        rootImpl.pushInjectee(originalRequest);
+        try {
+            return subHandle.getService((ServiceHandle<T>) root);
+        }
+        finally {
+            rootImpl.popInjectee();
+        }
     }
 
     /* (non-Javadoc)

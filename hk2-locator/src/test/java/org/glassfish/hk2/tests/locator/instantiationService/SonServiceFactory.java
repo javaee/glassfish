@@ -60,7 +60,7 @@ public class SonServiceFactory implements Factory<SonService> {
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.Factory#provide()
      */
-    @Override
+    @Override @Singleton
     public SonService provide() {
         return new SonService(grandsonService, instantiationService.getInstantiationData().getParentInjectee());
         

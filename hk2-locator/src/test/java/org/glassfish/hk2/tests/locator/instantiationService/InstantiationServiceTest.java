@@ -55,7 +55,7 @@ public class InstantiationServiceTest {
     /**
      * Test that nested Factories injecting InstantiationService get the proper fields
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testNestedFactoriesWithInstantiationService() {
         ServiceLocator locator = LocatorHelper.getServiceLocator(RootService.class,
                 SonServiceFactory.class,

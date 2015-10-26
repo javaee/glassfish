@@ -228,13 +228,7 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
     
     public Injectee getOriginalRequest() {
         Injectee injectee = getLastInjectee();
-        
-        if (subHandles.isEmpty()) return injectee;
-        
-        ServiceHandleImpl<?> last = subHandles.getLast();
-        
-        Injectee retVal = last.getLastInjectee();
-        return retVal;
+        return injectee;
     }
     
     public String toString() {
