@@ -63,6 +63,7 @@ import org.glassfish.hk2.api.ErrorService;
 import org.glassfish.hk2.api.ErrorType;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.Immediate;
+import org.glassfish.hk2.api.ImmediateController;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.Operation;
 import org.glassfish.hk2.api.ServiceHandle;
@@ -100,7 +101,7 @@ import org.glassfish.hk2.utilities.ImmediateErrorHandler;
  */
 @Singleton @Visibility(DescriptorVisibility.LOCAL)
 public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
-    ValidationService, ErrorService, Validator {
+    ValidationService, ErrorService, Validator, ImmediateController {
     private static final ThreadFactory THREAD_FACTORY = new ImmediateThreadFactory();
     
     private static final Executor DEFAULT_EXECUTOR = new ThreadPoolExecutor(0, Integer.MAX_VALUE,
@@ -328,6 +329,58 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
         
     }
     
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ImmediateController#getExecutor()
+     */
+    @Override
+    public Executor getExecutor() {
+        throw new AssertionError("not implemented yet");
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ImmediateController#setExecutor(java.util.concurrent.Executor)
+     */
+    @Override
+    public void setExecutor(Executor executor) throws IllegalStateException {
+        throw new AssertionError("not implemented yet");
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ImmediateController#getThreadInactivityTimeout()
+     */
+    @Override
+    public long getThreadInactivityTimeout() {
+        throw new AssertionError("not implemented yet");
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ImmediateController#setThreadInactivityTimeout(long)
+     */
+    @Override
+    public void setThreadInactivityTimeout(long timeInMillis)
+            throws IllegalStateException {
+        throw new AssertionError("not implemented yet");
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ImmediateController#getImmediateState()
+     */
+    @Override
+    public ImmediateServiceState getImmediateState() {
+        throw new AssertionError("not implemented yet");
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ImmediateController#setImmediateState(org.glassfish.hk2.api.ImmediateController.ImmediateServiceState)
+     */
+    @Override
+    public void setImmediateState(ImmediateServiceState state) {
+        throw new AssertionError("not implemented yet");
+        
+    }
+    
     private List<ActiveDescriptor<?>> getImmediateServices() {
         List<ActiveDescriptor<?>> inScopeAndInThisLocator;
         try {
@@ -524,5 +577,7 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
         }
         
     }
+
+    
 
 }

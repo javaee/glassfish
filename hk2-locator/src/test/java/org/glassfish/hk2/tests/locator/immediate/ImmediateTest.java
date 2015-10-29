@@ -49,6 +49,7 @@ import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.Immediate;
+import org.glassfish.hk2.api.ImmediateController;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
@@ -381,6 +382,34 @@ public class ImmediateTest {
         Throwable th = errorData.get(0).getThrowable();
         Assert.assertTrue(th instanceof IllegalStateException);
         Assert.assertTrue(th.getMessage().contains(locator.getName()));
+    }
+    
+    /**
+     * Tests that when we enable Immediate scope in suspended mode
+     * that it doesn't in fact start any Immediate services
+     * @throws InterruptedException 
+     */
+    @Test @org.junit.Ignore
+    public void testImmediateInSuspendedIsSuspended() throws InterruptedException {
+        WaitableImmediateService.clear();
+        
+        ServiceLocator locator = LocatorHelper.getServiceLocator(
+                WaitableImmediateService.class);
+        
+        ImmediateController controller = ServiceLocatorUtilities.enableImmediateScopeSuspended(locator);
+        Assert.assertNotNull(controller);
+        
+        Assert.assertEquals(ImmediateController.ImmediateServiceState.SUSPENDED, controller.getImmediateState());
+        
+        // Wait a half-second to ensure the immediate service does not come on-line
+        int numStarts = WaitableImmediateService.waitForCreationsGreaterThanZero(500);
+        Assert.assertEquals(0, numStarts);
+        
+        controller.setImmediateState(ImmediateController.ImmediateServiceState.RUNNING);
+        
+        numStarts = WaitableImmediateService.waitForCreationsGreaterThanZero(500);
+        Assert.assertEquals(1, numStarts);
+        
     }
     
     private final static Object sLock = new Object();

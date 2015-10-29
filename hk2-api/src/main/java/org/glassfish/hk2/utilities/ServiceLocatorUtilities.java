@@ -66,6 +66,7 @@ import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.Immediate;
+import org.glassfish.hk2.api.ImmediateController;
 import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.InheritableThread;
 import org.glassfish.hk2.api.MultiException;
@@ -195,6 +196,23 @@ public abstract class ServiceLocatorUtilities {
         }
 
         addClasses(locator, ImmediateContext.class, ImmediateHelper.class);
+    }
+    
+    /**
+     * This method will add the ability to use the {@link Immediate} scope to
+     * the given locator.  If the locator already has a {@link Context} implementation
+     * that handles the {@link Immediate} scope this method does nothing.  The Immediate
+     * scope will start in the suspended state, allowing the caller to customize the
+     * Immediate scope using the {@link ImmediateController}
+     * <p>
+     *
+     * @param locator The non-null locator to enable the Immediate scope on
+     * @return The ImmediateController that can be used to further configure
+     * the Immediate scope
+     * @throws MultiException if there were errors when committing the service
+     */
+    public static ImmediateController enableImmediateScopeSuspended(ServiceLocator locator) {
+        throw new AssertionError("not yet implemented");
     }
 
     /**
