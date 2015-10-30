@@ -41,6 +41,11 @@
 package org.glassfish.hk2.tests.locator.immediate;
 
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Singleton;
 
@@ -50,6 +55,7 @@ import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.Immediate;
 import org.glassfish.hk2.api.ImmediateController;
+import org.glassfish.hk2.api.ImmediateController.ImmediateServiceState;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
@@ -412,6 +418,61 @@ public class ImmediateTest {
         
     }
     
+    private final static int NUM_LOCATORS = 4;
+    
+    /**
+     * Creates n different ServiceLocators and uses the same Executor for all of them, then ensures
+     * that all the threads used by all of the locators is the same one
+     * @throws InterruptedException 
+     */
+    @Test @org.junit.Ignore
+    public void testCanSetExecutorToBeTheSameAmongstDifferentLocators() throws InterruptedException {
+        ServiceLocator locators[] = new ServiceLocator[NUM_LOCATORS];
+        ImmediateController controllers[] = new ImmediateController[NUM_LOCATORS];
+        ImmediateThreadIdHolderService services[] = new ImmediateThreadIdHolderService[NUM_LOCATORS];
+        
+        Executor executor = new ThreadPoolExecutor(0, Integer.MAX_VALUE,
+                60L, TimeUnit.SECONDS,
+                new SynchronousQueue<Runnable>(true),
+                new SimpleThreadFactory());
+        
+        for (int lcv = 0; lcv < NUM_LOCATORS; lcv++) {
+            locators[lcv] = LocatorHelper.getServiceLocator(ImmediateThreadIdHolderService.class);
+            
+            controllers[lcv] = ServiceLocatorUtilities.enableImmediateScopeSuspended(locators[lcv]);
+            controllers[lcv].setExecutor(executor);
+            controllers[lcv].setThreadInactivityTimeout(0);
+        }
+        
+        // All set up, lets blast them off!
+        for (int lcv = 0; lcv < NUM_LOCATORS; lcv++) {
+            controllers[lcv].setImmediateState(ImmediateServiceState.RUNNING);
+        }
+        
+        boolean first = true;
+        long tid = -1;
+        
+        for (int lcv = 0; lcv < NUM_LOCATORS; lcv++) {
+            services[lcv] = locators[lcv].getService(ImmediateThreadIdHolderService.class);
+            
+            if (first) {
+                first = false;
+                tid = services[lcv].getTid(20 * 1000);
+                Assert.assertTrue(tid >= 0);
+            }
+            else {
+                long compareTid = services[lcv].getTid(20 * 1000);
+                
+                Assert.assertEquals(tid, compareTid);
+            }
+        }
+        
+        
+        for (int lcv = 0; lcv < NUM_LOCATORS; lcv++) {
+            locators[lcv].shutdown();
+        }
+    }
+    
     private final static Object sLock = new Object();
     private static long immediateTid = -1;
     
@@ -441,6 +502,18 @@ public class ImmediateTest {
         synchronized (sLock) {
             immediateTid = -1;
         }
+    }
+    
+    private static class SimpleThreadFactory implements ThreadFactory {
+
+        /* (non-Javadoc)
+         * @see java.util.concurrent.ThreadFactory#newThread(java.lang.Runnable)
+         */
+        @Override
+        public Thread newThread(Runnable r) {
+            return new Thread(r);
+        }
+        
     }
 
 }
