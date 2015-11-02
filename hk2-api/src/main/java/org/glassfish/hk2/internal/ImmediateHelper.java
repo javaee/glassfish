@@ -40,11 +40,8 @@
 package org.glassfish.hk2.internal;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
@@ -55,24 +52,21 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.DynamicConfigurationListener;
 import org.glassfish.hk2.api.ErrorInformation;
 import org.glassfish.hk2.api.ErrorService;
 import org.glassfish.hk2.api.ErrorType;
 import org.glassfish.hk2.api.Filter;
-import org.glassfish.hk2.api.Immediate;
 import org.glassfish.hk2.api.ImmediateController;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.Operation;
-import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ValidationInformation;
 import org.glassfish.hk2.api.ValidationService;
 import org.glassfish.hk2.api.Validator;
 import org.glassfish.hk2.api.Visibility;
-import org.glassfish.hk2.utilities.ImmediateErrorHandler;
+import org.glassfish.hk2.utilities.ImmediateContext;
 
 /**
  * The implementation of the immediate context.  This should NOT be added
@@ -109,11 +103,9 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
             new SynchronousQueue<Runnable>(true),
             THREAD_FACTORY);
     
-    private final Filter validationFilter;
     private final ServiceLocator locator;
+    private final ImmediateContext immediateContext;
     
-    private final HashMap<ActiveDescriptor<?>, HandleAndService> currentImmediateServices = new HashMap<ActiveDescriptor<?>, HandleAndService>();
-    private final HashMap<ActiveDescriptor<?>, Long> creating = new HashMap<ActiveDescriptor<?>, Long>();
     private final HashSet<Long> tidsWithWork = new HashSet<Long>();
     
     private final Object queueLock = new Object();
@@ -126,87 +118,9 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
     private long decayTime = 20 * 1000;
     
     @Inject
-    private ImmediateHelper(ServiceLocator serviceLocator) {
+    private ImmediateHelper(ServiceLocator serviceLocator, ImmediateContext immediateContext) {
         this.locator = serviceLocator;
-        this.validationFilter = new ImmediateLocalLocatorFilter(serviceLocator.getLocatorId());
-    }
-
-    /**
-     * Delegated to from the Context
-     * @param activeDescriptor The descriptor to create
-     * @param root The root handle
-     * @return The service
-     */
-    @SuppressWarnings("unchecked")
-    public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor,
-            ServiceHandle<?> root) {
-        U retVal = null;
-        
-        synchronized (this) {
-            HandleAndService has = currentImmediateServices.get(activeDescriptor);
-            if (has != null) {
-                return (U) has.getService();
-            }
-            
-            while (creating.containsKey(activeDescriptor)) {
-                long alreadyCreatingThread = creating.get(activeDescriptor);
-                if (alreadyCreatingThread == Thread.currentThread().getId()) {
-                    throw new MultiException(new IllegalStateException(
-                            "A circular dependency involving Immediate service " + activeDescriptor.getImplementation() +
-                            " was found.  Full descriptor is " + activeDescriptor));
-                }
-                
-                try {
-                    this.wait();
-                }
-                catch (InterruptedException ie) {
-                    throw new MultiException(ie);
-                }
-                
-            }
-            
-            has = currentImmediateServices.get(activeDescriptor);
-            if (has != null) {
-                return (U) has.getService();
-            }
-            
-            creating.put(activeDescriptor, Thread.currentThread().getId());
-        }
-        
-        try {
-            retVal = activeDescriptor.create(root);
-        }
-        finally {
-            synchronized (this) {
-                ServiceHandle<?> discoveredRoot = null;
-                if (root != null) {
-                    if (root.getActiveDescriptor().equals(activeDescriptor)) {
-                        discoveredRoot = root;
-                    }
-                }
-                
-                if (retVal != null) {
-                    currentImmediateServices.put(activeDescriptor, new HandleAndService(discoveredRoot, retVal));
-                }
-                
-                creating.remove(activeDescriptor);
-                this.notifyAll();
-            }
-            
-        }
-        
-        return retVal;
-    }
-
-    /**
-     * Delegated to from the Context
-     * @param descriptor The descriptor to find
-     * @return true if this service has been created
-     */
-    public boolean containsKey(ActiveDescriptor<?> descriptor) {
-        synchronized (this) {
-            return currentImmediateServices.containsKey(descriptor);
-        }
+        this.immediateContext = immediateContext;
     }
     
     /**
@@ -264,7 +178,7 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
     
     @Override
     public Filter getLookupFilter() {
-        return validationFilter;
+        return immediateContext.getValidationFilter();
     }
 
     @Override
@@ -339,7 +253,7 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
                 outstandingJob = false;
             }
             
-            doWork();
+            immediateContext.doWork();
         }
         
     }
@@ -429,7 +343,7 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
     private List<ActiveDescriptor<?>> getImmediateServices() {
         List<ActiveDescriptor<?>> inScopeAndInThisLocator;
         try {
-            inScopeAndInThisLocator = locator.getDescriptors(validationFilter);
+            inScopeAndInThisLocator = locator.getDescriptors(immediateContext.getValidationFilter());
         }
         catch (IllegalStateException ise) {
             // locator has been shutdown
@@ -437,136 +351,6 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
         }
         
         return inScopeAndInThisLocator;
-    }
-    
-    /**
-     * Destroys a single descriptor
-     * 
-     * @param descriptor The descriptor to destroy
-     * @param errorHandlers The handlers for exceptions (if null will get from service locator)
-     */
-    @SuppressWarnings("unchecked")
-    public void destroyOne(ActiveDescriptor<?> descriptor, List<ImmediateErrorHandler> errorHandlers) {
-        if (errorHandlers == null) {
-            errorHandlers = locator.getAllServices(ImmediateErrorHandler.class);
-        }
-        
-        synchronized (this) {
-            HandleAndService has = currentImmediateServices.remove(descriptor);
-            Object instance = has.getService();
-        
-            try {
-                ((ActiveDescriptor<Object>) descriptor).dispose(instance);
-            }
-            catch (Throwable th) {
-                for (ImmediateErrorHandler ieh : errorHandlers) {
-                    try {
-                        ieh.preDestroyFailed(descriptor, th);
-                    }
-                    catch (Throwable th2) {
-                        // ignore
-                    }
-                }
-            }
-            
-        }
-        
-    }
-    
-    /**
-     * For when the server shuts down
-     */
-    public void shutdown() {
-        List<ImmediateErrorHandler> errorHandlers = locator.getAllServices(ImmediateErrorHandler.class);
-        
-        synchronized (this) {
-            for (Map.Entry<ActiveDescriptor<?>, HandleAndService> entry :
-                new HashSet<Map.Entry<ActiveDescriptor<?>, HandleAndService>>(currentImmediateServices.entrySet())) {
-                HandleAndService has = entry.getValue();
-                
-                ServiceHandle<?> handle = has.getHandle();
-                
-                if (handle != null) {
-                    handle.destroy();
-                }
-                else {
-                    destroyOne(entry.getKey(), errorHandlers);
-                }
-                
-            }
-            
-            
-        }
-    }
-    
-    private void doWork() {
-        List<ActiveDescriptor<?>> inScopeAndInThisLocator = getImmediateServices();
-        
-        List<ImmediateErrorHandler> errorHandlers;
-        try {
-            errorHandlers = locator.getAllServices(ImmediateErrorHandler.class);
-        }
-        catch (IllegalStateException ise) {
-            // Locator has been shut down
-            return;
-        }
-        
-        LinkedHashSet<ActiveDescriptor<?>> oldSet;
-        LinkedHashSet<ActiveDescriptor<?>> newFullSet = new LinkedHashSet<ActiveDescriptor<?>>(inScopeAndInThisLocator);
-        LinkedHashSet<ActiveDescriptor<?>> addMe = new LinkedHashSet<ActiveDescriptor<?>>();
-        
-        synchronized (this) {
-            // First thing to do is wait until all the things in-flight have gone
-            while (creating.size() > 0) {
-                try {
-                    this.wait();
-                }
-                catch (InterruptedException ie) {
-                    throw new RuntimeException(ie);
-                }
-            }
-            
-            oldSet = new LinkedHashSet<ActiveDescriptor<?>>(currentImmediateServices.keySet());
-            
-            for (ActiveDescriptor<?> ad : inScopeAndInThisLocator) {
-                if (!oldSet.contains(ad)) {
-                  addMe.add(ad);
-                }
-            }
-                    
-            oldSet.removeAll(newFullSet);
-            
-            for (ActiveDescriptor<?> gone : oldSet) {
-                HandleAndService has = currentImmediateServices.get(gone);
-                ServiceHandle<?> handle = has.getHandle();
-                
-                if (handle != null) {
-                    handle.destroy();
-                }
-                else {
-                    destroyOne(gone, errorHandlers);
-                }
-            }
-        }
-        
-        for (ActiveDescriptor<?> ad : addMe) {
-            // Create demand
-            try {
-                locator.getServiceHandle(ad).getService();
-            }
-            catch (Throwable th) {
-                for (ImmediateErrorHandler ieh : errorHandlers) {
-                    try {
-                        ieh.postConstructFailed(ad, th);
-                    }
-                    catch (Throwable th2) {
-                        // ignore
-                    }
-                }
-                
-            }
-            
-        }
     }
     
     private static class ImmediateThread extends Thread {
@@ -586,43 +370,4 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
             return activeThread;
         }
     }
-
-    private static class ImmediateLocalLocatorFilter implements Filter {
-        private final long locatorId;
-        
-        private ImmediateLocalLocatorFilter(long locatorId) {
-            this.locatorId = locatorId;
-        }
-
-        @Override
-        public boolean matches(Descriptor d) {
-            String scope = d.getScope();
-            if (scope == null) return false;
-            if (d.getLocatorId() != locatorId) return false;
-            
-            return Immediate.class.getName().equals(scope);
-        }
-    }
-    
-    private static class HandleAndService {
-        private final ServiceHandle<?> handle;
-        private final Object service;
-        
-        private HandleAndService(ServiceHandle<?> handle, Object service) {
-            this.handle = handle;
-            this.service = service;
-        }
-        
-        private ServiceHandle<?> getHandle() {
-            return handle;
-        }
-        
-        private Object getService() {
-            return service;
-        }
-        
-    }
-
-    
-
 }
