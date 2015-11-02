@@ -475,6 +475,35 @@ public class ImmediateTest {
         }
     }
     
+    /**
+     * Tests that if there is no work for the Immediate system to do that it will
+     * not start a thread
+     * 
+     * @throws InterruptedException 
+     */
+    @Test // @org.junit.Ignore
+    public void testNoWorkNoThread() throws InterruptedException {
+        // No immediate services of any kind
+        ServiceLocator locator = LocatorHelper.getServiceLocator();
+        
+        FailingThreadFactory threadFactory = new FailingThreadFactory();
+        
+        Executor executor = new ThreadPoolExecutor(0, 100,
+                60L, TimeUnit.SECONDS,
+                new LinkedBlockingQueue<Runnable>(),
+                threadFactory);
+        
+        ImmediateController controller = ServiceLocatorUtilities.enableImmediateScopeSuspended(locator);
+        
+        controller.setExecutor(executor);
+        
+        controller.setImmediateState(ImmediateServiceState.RUNNING);
+        
+        Assert.assertFalse(threadFactory.didTryToStartOne(500));
+        
+        locator.shutdown();
+    }
+    
     private final static Object sLock = new Object();
     private static long immediateTid = -1;
     
@@ -514,6 +543,38 @@ public class ImmediateTest {
         @Override
         public Thread newThread(Runnable r) {
             return new Thread(r);
+        }
+        
+    }
+    
+    private static class FailingThreadFactory implements ThreadFactory {
+        private boolean didTryToStartOne = false;
+
+        /* (non-Javadoc)
+         * @see java.util.concurrent.ThreadFactory#newThread(java.lang.Runnable)
+         */
+        @Override
+        public Thread newThread(Runnable r) {
+            synchronized (this) {
+                didTryToStartOne = true;
+                this.notifyAll();
+            }
+            throw new AssertionError("Should never be called");
+        }
+        
+        public boolean didTryToStartOne(long waitTime) throws InterruptedException {
+            synchronized (this) {
+                while (!didTryToStartOne && waitTime > 0) {
+                    long elapsedTime = System.currentTimeMillis();
+                    
+                    this.wait(waitTime);
+                    
+                    elapsedTime = System.currentTimeMillis() - elapsedTime;
+                    waitTime -= elapsedTime;
+                }
+                
+                return didTryToStartOne;
+            }
         }
         
     }
