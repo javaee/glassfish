@@ -121,6 +121,9 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
     private boolean outstandingJob;
     private boolean waitingForWork;
     private boolean firstTime = true;
+    private ImmediateServiceState currentState = ImmediateServiceState.SUSPENDED;
+    private Executor currentExecutor = DEFAULT_EXECUTOR;
+    private long decayTime = 20 * 1000;
     
     @Inject
     private ImmediateHelper(ServiceLocator serviceLocator) {
@@ -206,19 +209,20 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
         }
     }
     
+    /**
+     * Must have queueLock held
+     * @return true if there is work to be done
+     */
     private boolean hasWork() {
         long tid = Thread.currentThread().getId();
         
-        boolean wasFirst;
-        synchronized (this) {
-            wasFirst = firstTime;
-            firstTime = false;
+        boolean wasFirst = firstTime;
+        firstTime = false;
             
-            boolean retVal = tidsWithWork.contains(tid);
-            tidsWithWork.remove(tid);
+        boolean retVal = tidsWithWork.contains(tid);
+        tidsWithWork.remove(tid);
         
-            if (retVal || !wasFirst) return retVal;
-        }
+        if (retVal || !wasFirst) return retVal;
         
         // OK, we added no Immediate services BUT this is the
         // first DynamicConfigurationService callback, which means
@@ -229,23 +233,32 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
         return !immediates.isEmpty();
     }
     
-    @Override
-    public void configurationChanged() {
+    /**
+     * Must have queueLock held
+     */
+    private void doWorkIfWeHaveSome() {
         if (!hasWork()) {
             return;
         }
         
-        synchronized (queueLock) {
-            outstandingJob = true;
+        outstandingJob = true;
             
-            if (!threadAvailable) {
-                threadAvailable = true;
+        if (!threadAvailable) {
+            threadAvailable = true;
                 
-                DEFAULT_EXECUTOR.execute(this);
-            }
-            else if (waitingForWork) {
-                queueLock.notify();
-            }
+            currentExecutor.execute(this);
+        }
+        else if (waitingForWork) {
+            queueLock.notify();
+        }
+    }
+    
+    @Override
+    public void configurationChanged() {
+        synchronized (queueLock) {
+            if (currentState.equals(ImmediateServiceState.SUSPENDED)) return;
+            
+            doWorkIfWeHaveSome();
         }
     }
     
@@ -266,7 +279,7 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
             // Only interested in dynamic configuration failures
             long tid = Thread.currentThread().getId();
             
-            synchronized (this) {
+            synchronized (queueLock) {
                 tidsWithWork.remove(tid);
             }
             
@@ -281,7 +294,7 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
                 info.getOperation().equals(Operation.UNBIND)) {
             long tid = Thread.currentThread().getId();
             
-            synchronized (this) {
+            synchronized (queueLock) {
                 tidsWithWork.add(tid);
             }
         }
@@ -297,9 +310,11 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
     public void run() {
         for(;;) {
             synchronized (queueLock) {
-                long decayTime = 20 * 1000L;
+                long decayTime = this.decayTime;
                 
-                while (!outstandingJob && (decayTime > 0L)) {
+                while (currentState.equals(ImmediateServiceState.RUNNING) &&
+                        !outstandingJob &&
+                        (decayTime > 0L)) {
                     waitingForWork = true;
                     long currentTime = System.currentTimeMillis();
                     try {
@@ -316,7 +331,7 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
                 }
                 waitingForWork = false;
                 
-                if (!outstandingJob) {
+                if (!outstandingJob || currentState.equals(ImmediateServiceState.SUSPENDED)) {
                     threadAvailable = false;
                     return;
                 }
@@ -334,7 +349,9 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
      */
     @Override
     public Executor getExecutor() {
-        throw new AssertionError("not implemented yet");
+        synchronized (queueLock) {
+            return currentExecutor;
+        }
     }
 
     /* (non-Javadoc)
@@ -342,7 +359,13 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
      */
     @Override
     public void setExecutor(Executor executor) throws IllegalStateException {
-        throw new AssertionError("not implemented yet");
+        synchronized (queueLock)  {
+            if (currentState.equals(ImmediateServiceState.RUNNING)) {
+                throw new IllegalStateException("ImmediateSerivce attempt made to change executor while in RUNNING state");
+            }
+            
+            currentExecutor = (executor == null) ? DEFAULT_EXECUTOR : executor ;
+        }
         
     }
 
@@ -351,7 +374,9 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
      */
     @Override
     public long getThreadInactivityTimeout() {
-        throw new AssertionError("not implemented yet");
+        synchronized (queueLock) {
+            return decayTime;
+        }
     }
 
     /* (non-Javadoc)
@@ -360,7 +385,16 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
     @Override
     public void setThreadInactivityTimeout(long timeInMillis)
             throws IllegalStateException {
-        throw new AssertionError("not implemented yet");
+        synchronized (queueLock)  {
+            if (currentState.equals(ImmediateServiceState.RUNNING)) {
+                throw new IllegalStateException("ImmediateSerivce attempt made to change inactivity timeout while in RUNNING state");
+            }
+            if (timeInMillis < 0) {
+                throw new IllegalArgumentException();
+            }
+            
+            decayTime = timeInMillis;
+        }
         
     }
 
@@ -369,7 +403,9 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
      */
     @Override
     public ImmediateServiceState getImmediateState() {
-        throw new AssertionError("not implemented yet");
+        synchronized (queueLock) {
+            return currentState;
+        }
     }
 
     /* (non-Javadoc)
@@ -377,7 +413,16 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
      */
     @Override
     public void setImmediateState(ImmediateServiceState state) {
-        throw new AssertionError("not implemented yet");
+        synchronized (queueLock)  {
+            if (state == null) throw new IllegalArgumentException();
+            
+            if (state == currentState) return;
+            currentState = state;
+            
+            if (currentState.equals(ImmediateServiceState.RUNNING)) {
+                doWorkIfWeHaveSome();
+            }
+        }
         
     }
     

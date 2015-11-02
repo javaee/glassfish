@@ -42,7 +42,7 @@ package org.glassfish.hk2.tests.locator.immediate;
 
 import java.util.List;
 import java.util.concurrent.Executor;
-import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -322,6 +322,8 @@ public class ImmediateTest {
         WaitableImmediateService.clear();
         
         ServiceLocator locator = ServiceLocatorUtilities.bind(new ImmediateScopeModule());
+        ImmediateController controller = locator.getService(ImmediateController.class);
+        controller.setImmediateState(ImmediateServiceState.RUNNING);
         
         List<ActiveDescriptor<?>> ims = ServiceLocatorUtilities.addClasses(locator, WaitableImmediateService.class);
         
@@ -395,7 +397,7 @@ public class ImmediateTest {
      * that it doesn't in fact start any Immediate services
      * @throws InterruptedException 
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testImmediateInSuspendedIsSuspended() throws InterruptedException {
         WaitableImmediateService.clear();
         
@@ -425,15 +427,15 @@ public class ImmediateTest {
      * that all the threads used by all of the locators is the same one
      * @throws InterruptedException 
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testCanSetExecutorToBeTheSameAmongstDifferentLocators() throws InterruptedException {
         ServiceLocator locators[] = new ServiceLocator[NUM_LOCATORS];
         ImmediateController controllers[] = new ImmediateController[NUM_LOCATORS];
         ImmediateThreadIdHolderService services[] = new ImmediateThreadIdHolderService[NUM_LOCATORS];
         
-        Executor executor = new ThreadPoolExecutor(0, Integer.MAX_VALUE,
+        Executor executor = new ThreadPoolExecutor(0, 1,
                 60L, TimeUnit.SECONDS,
-                new SynchronousQueue<Runnable>(true),
+                new LinkedBlockingQueue<Runnable>(),
                 new SimpleThreadFactory());
         
         for (int lcv = 0; lcv < NUM_LOCATORS; lcv++) {

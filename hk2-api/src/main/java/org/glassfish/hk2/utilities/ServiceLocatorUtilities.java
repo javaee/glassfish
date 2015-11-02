@@ -77,6 +77,7 @@ import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.api.TypeLiteral;
+import org.glassfish.hk2.api.ImmediateController.ImmediateServiceState;
 import org.glassfish.hk2.internal.ImmediateHelper;
 import org.glassfish.hk2.internal.InheritableThreadContext;
 import org.glassfish.hk2.internal.PerThreadContext;
@@ -189,13 +190,8 @@ public abstract class ServiceLocatorUtilities {
      * @throws MultiException if there were errors when committing the service
      */
     public static void enableImmediateScope(ServiceLocator locator) {
-        List<ServiceHandle<?>> immediateContexts = locator.getAllServiceHandles((new TypeLiteral<Context<Immediate>>() {}).getType());
-        for (ServiceHandle<?> immediateContext : immediateContexts) {
-            ActiveDescriptor<?> contextDescriptor = immediateContext.getActiveDescriptor();
-            if (contextDescriptor.getLocatorId() == locator.getLocatorId()) return;
-        }
-
-        addClasses(locator, ImmediateContext.class, ImmediateHelper.class);
+        ImmediateController controller = enableImmediateScopeSuspended(locator);
+        controller.setImmediateState(ImmediateServiceState.RUNNING);
     }
     
     /**
@@ -212,7 +208,16 @@ public abstract class ServiceLocatorUtilities {
      * @throws MultiException if there were errors when committing the service
      */
     public static ImmediateController enableImmediateScopeSuspended(ServiceLocator locator) {
-        throw new AssertionError("not yet implemented");
+        List<ServiceHandle<?>> immediateContexts = locator.getAllServiceHandles((new TypeLiteral<Context<Immediate>>() {}).getType());
+        for (ServiceHandle<?> immediateContext : immediateContexts) {
+            ActiveDescriptor<?> contextDescriptor = immediateContext.getActiveDescriptor();
+            if (contextDescriptor.getLocatorId() == locator.getLocatorId()) {
+                return locator.getService(ImmediateController.class);
+            }
+        }
+
+        addClasses(locator, ImmediateContext.class, ImmediateHelper.class);
+        return locator.getService(ImmediateController.class);
     }
 
     /**
