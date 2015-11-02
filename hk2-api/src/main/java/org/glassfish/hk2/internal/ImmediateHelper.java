@@ -300,9 +300,6 @@ public class ImmediateHelper implements DynamicConfigurationListener, Runnable,
     public void setThreadInactivityTimeout(long timeInMillis)
             throws IllegalStateException {
         synchronized (queueLock)  {
-            if (currentState.equals(ImmediateServiceState.RUNNING)) {
-                throw new IllegalStateException("ImmediateSerivce attempt made to change inactivity timeout while in RUNNING state");
-            }
             if (timeInMillis < 0) {
                 throw new IllegalArgumentException();
             }

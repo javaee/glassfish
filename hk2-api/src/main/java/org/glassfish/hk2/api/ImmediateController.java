@@ -86,16 +86,13 @@ public interface ImmediateController {
     
     /**
      * Sets the time in milliseconds a thread will wait for new Immediate
-     * services before dying.  May only be called when the system is in
-     * suspended state
+     * services before dying
      * 
      * @param timeInMillis The time in milliseconds a thread will wait for new
      * Immediate service before dying
-     * @throws IllegalStateException if this is called when the Immediate service
-     * is not in suspended state
      * @throws IllegalArgumentException if timeInMillis is less than zero
      */
-    public void setThreadInactivityTimeout(long timeInMillis) throws IllegalStateException, IllegalArgumentException;
+    public void setThreadInactivityTimeout(long timeInMillis) throws IllegalArgumentException;
     
     /**
      * Returns the state the system is currently running under
