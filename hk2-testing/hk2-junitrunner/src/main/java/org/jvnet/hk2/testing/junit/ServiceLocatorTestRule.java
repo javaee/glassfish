@@ -111,8 +111,9 @@ import static org.junit.Assert.assertNotNull;
  * {@link ServiceLocator} on a per-test-class or per-test-method
  * basis.
  *
- * <T> the type of JUnit test this {@link ServiceLocatorTestRule} is
- * related to; consider making it an instance of {@link Binder}
+ * @param <T> the type of JUnit test this {@link
+ * ServiceLocatorTestRule} is related to; consider making it an
+ * instance of {@link Binder}
  *
  * @author <a href="mailto:ljnelson@gmail.com">Laird Nelson</a>
  *
@@ -194,6 +195,8 @@ public class ServiceLocatorTestRule<T> extends ExternalResource {
    * @param isolation the {@link ServiceLocatorIsolation}; if {@code
    * null} then {@link ServiceLocatorIsolation#PER_TEST} will be used
    * instead
+   * 
+   * @exception AssertionError if {@code test} is {@code null}
    */
   public ServiceLocatorTestRule(final T test, final ServiceLocatorIsolation isolation) {
     super();
@@ -266,10 +269,11 @@ public class ServiceLocatorTestRule<T> extends ExternalResource {
    * <li>Removes, via {@link
    * DynamicConfiguration#addUnbindFilter(Filter)}, all {@link
    * Descriptor}s that have {@link Description Description.class} as
-   * their {@linkplain Descriptor#getContract() contract}</li>
+   * one of their {@linkplain Descriptor#getAdvertisedContracts()
+   * contracts}</li>
    *
    * <li>Adds a {@linkplain
-   * BuilderHelper#createConstantDescriptor(Class) constant
+   * BuilderHelper#createConstantDescriptor(Object) constant
    * descriptor} in {@link Singleton} scope with a {@linkplain
    * Descriptor#getName() name} equal to the return value of the
    * {@link Description#getDisplayName()} method for the supplied
@@ -650,7 +654,7 @@ public class ServiceLocatorTestRule<T> extends ExternalResource {
    * #configureServiceLocator(ServiceLocator, Description)} method
    * with the same {@link ServiceLocator}.</p>
    *
-   * @param servicelocator the {@link ServiceLocator} to use to
+   * @param serviceLocator the {@link ServiceLocator} to use to
    * perform injection; may be {@code null} in which case no action
    * will be taken
    *
@@ -752,9 +756,9 @@ public class ServiceLocatorTestRule<T> extends ExternalResource {
   /**
    * If the {@linkplain #getServiceLocatorIsolation() isolation level}
    * is {@link ServiceLocatorIsolation#PER_TEST}, calls the {@link
-   * #shutdownAndDestroyServiceLocator()} method.
+   * #shutdownAndDestroyServiceLocator(Description)} method.
    *
-   * @see #shutdownAndDestroyServiceLocator()
+   * @see #shutdownAndDestroyServiceLocator(Description)
    */
   @Override
   public void after() {
@@ -902,7 +906,7 @@ boolean commit = false;
    * @param serviceLocator the {@link ServiceLocator} to affect; may
    * be {@code null} in which case no action will be taken
    *
-   * @param configuraiton the {@link DynamicConfiguration} that should
+   * @param configuration the {@link DynamicConfiguration} that should
    * alter the contents of the supplied {@link ServiceLocator}; may be
    * {@code null} in which case a new {@link DynamicConfiguration}
    * will be used instead
