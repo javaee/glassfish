@@ -98,10 +98,4 @@ public class ServiceLocatorTestRuleTest {
     assertEquals("testDescriptionIsForThisMethod", this.description.getMethodName());
   }
 
-  @Test
-  public void testDumpDescriptors() {
-    assertNotNull(this.serviceLocator);
-    ServiceLocatorUtilities.dumpAllDescriptors(this.serviceLocator, System.out);
-  }
-  
 }

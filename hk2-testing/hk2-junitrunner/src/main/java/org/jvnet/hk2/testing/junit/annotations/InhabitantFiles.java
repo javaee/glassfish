@@ -47,6 +47,8 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import org.jvnet.hk2.testing.junit.HK2Runner; // for javadoc only
+
 /**
  * A set of locator inhabitant files to search for in the classpath.  This
  * annotation must be placed on a class that extends {@link HK2Runner}

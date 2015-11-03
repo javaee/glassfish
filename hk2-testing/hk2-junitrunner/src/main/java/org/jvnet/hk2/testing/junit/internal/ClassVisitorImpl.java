@@ -66,7 +66,7 @@ public class ClassVisitorImpl extends ClassVisitor {
     
     /**
      * Creates this with the config to add to if this is a service
-     * @param config
+     * @param locator
      * @param verbose true if we should print out any service we are binding
      * @param excludes The set of implementations to NOT add to the locator
      */
