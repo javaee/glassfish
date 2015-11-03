@@ -56,6 +56,7 @@ import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.Immediate;
 import org.glassfish.hk2.api.ImmediateController;
 import org.glassfish.hk2.api.ImmediateController.ImmediateServiceState;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
@@ -502,6 +503,50 @@ public class ImmediateTest {
         Assert.assertFalse(threadFactory.didTryToStartOne(500));
         
         locator.shutdown();
+    }
+    
+    /**
+     * Tests that if there is no work for the Immediate system to do that it will
+     * not start a thread
+     * 
+     * @throws InterruptedException 
+     */
+    @Test // @org.junit.Ignore
+    public void testDecayOfZeroDoesNotHoldThread() throws InterruptedException {
+        clearTid();
+        
+        // No immediate services of any kind
+        ServiceLocator locator = LocatorHelper.getServiceLocator();
+        ImmediateController controller = ServiceLocatorUtilities.enableImmediateScopeSuspended(locator);
+        
+        Executor executor = new ThreadPoolExecutor(0, 100,
+                0L, TimeUnit.SECONDS,
+                new LinkedBlockingQueue<Runnable>(),
+                new SimpleThreadFactory());
+        
+        controller.setExecutor(executor);
+        
+        // Checks that the default is 20 seconds
+        Assert.assertEquals(20 * 1000, controller.getThreadInactivityTimeout());
+        
+        controller.setThreadInactivityTimeout(0);
+        Assert.assertEquals(0, controller.getThreadInactivityTimeout());
+        
+        controller.setImmediateState(ImmediateServiceState.RUNNING);
+        
+        ServiceLocatorUtilities.addClasses(locator, ImmediateTidRecorder.class);
+        
+        long tid1 = waitForTid(20 * 1000);
+        clearTid();
+        
+        // wait for a little to allow the thread to die, since its inactivity timeout is 0
+        Thread.sleep(100);
+        
+        ServiceLocatorUtilities.addClasses(locator, ImmediateTidRecorder.class);
+        
+        long tid2 = waitForTid(20 * 1000);
+        
+        Assert.assertNotEquals(tid1, tid2);
     }
     
     private final static Object sLock = new Object();
