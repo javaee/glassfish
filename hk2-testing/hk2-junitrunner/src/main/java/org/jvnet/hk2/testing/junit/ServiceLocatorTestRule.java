@@ -434,6 +434,8 @@ public class ServiceLocatorTestRule<T> extends ExternalResource implements Binde
       descriptionDescriptor.setScope(Singleton.class.getName());
       dynamicConfiguration.addActiveDescriptor(descriptionDescriptor);
 
+      this.bind(dynamicConfiguration, this.getClass());
+      
       this.bind(dynamicConfiguration, testClass);
 
       this.bind(dynamicConfiguration);
