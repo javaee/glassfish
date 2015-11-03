@@ -745,7 +745,7 @@ public class ServiceLocatorTestRule<T> extends ExternalResource implements Binde
             if (Factory.class.isAssignableFrom(c)) {
               @SuppressWarnings("unchecked")
               final Class<? extends Factory<Object>> factoryClass = (Class<? extends Factory<Object>>)c;
-              configuration.addActiveFactoryDescriptor((Class<Factory<Object>>)factoryClass);
+              configuration.addActiveFactoryDescriptor(factoryClass);
             } else {
               configuration.addActiveDescriptor(c);
             }
