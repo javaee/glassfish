@@ -694,7 +694,7 @@ public class ServiceLocatorTestRule<T> extends ExternalResource implements Binde
             if (metaAnnotations != null && metaAnnotations.length > 0) {
               for (final Annotation metaAnnotation : metaAnnotations) {
                 assert metaAnnotation != null;
-                if (!isBlacklisted(metaAnnotation) && processedAnnotations.contains(metaAnnotation)) {
+                if (!isBlacklisted(metaAnnotation) && !processedAnnotations.contains(metaAnnotation)) {
                   annotationsToProcess.addLast(metaAnnotation);
                 }
               }
