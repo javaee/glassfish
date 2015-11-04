@@ -263,7 +263,7 @@ public class ImmediateTest {
         
         clearTid();
         
-        long dummyTid = waitForTid(500);
+        long dummyTid = waitForTid(100);
         
         // This is a good test that perhaps the first
         // service is not created twice
@@ -411,12 +411,12 @@ public class ImmediateTest {
         Assert.assertEquals(ImmediateController.ImmediateServiceState.SUSPENDED, controller.getImmediateState());
         
         // Wait a half-second to ensure the immediate service does not come on-line
-        int numStarts = WaitableImmediateService.waitForCreationsGreaterThanZero(500);
+        int numStarts = WaitableImmediateService.waitForCreationsGreaterThanZero(100);
         Assert.assertEquals(0, numStarts);
         
         controller.setImmediateState(ImmediateController.ImmediateServiceState.RUNNING);
         
-        numStarts = WaitableImmediateService.waitForCreationsGreaterThanZero(500);
+        numStarts = WaitableImmediateService.waitForCreationsGreaterThanZero(100);
         Assert.assertEquals(1, numStarts);
         
     }
@@ -500,14 +500,13 @@ public class ImmediateTest {
         
         controller.setImmediateState(ImmediateServiceState.RUNNING);
         
-        Assert.assertFalse(threadFactory.didTryToStartOne(500));
+        Assert.assertFalse(threadFactory.didTryToStartOne(100));
         
         locator.shutdown();
     }
     
     /**
-     * Tests that if there is no work for the Immediate system to do that it will
-     * not start a thread
+     * Tests that a decay of zero truly decays the thread
      * 
      * @throws InterruptedException 
      */
@@ -547,6 +546,103 @@ public class ImmediateTest {
         long tid2 = waitForTid(20 * 1000);
         
         Assert.assertNotEquals(tid1, tid2);
+    }
+    
+    /**
+     * Tests setting and getting the executor
+     * 
+     * @throws InterruptedException 
+     */
+    @Test // @org.junit.Ignore
+    public void testSetsGetsOfExecutor() throws InterruptedException {
+        // No immediate services of any kind
+        ServiceLocator locator = LocatorHelper.getServiceLocator();
+        ImmediateController controller = ServiceLocatorUtilities.enableImmediateScopeSuspended(locator);
+        
+        Executor defaultExecutor = controller.getExecutor();
+        Assert.assertNotNull(defaultExecutor);
+        
+        Executor executor = new ThreadPoolExecutor(0, 100,
+                0L, TimeUnit.SECONDS,
+                new LinkedBlockingQueue<Runnable>(),
+                new SimpleThreadFactory());
+        
+        controller.setExecutor(executor);
+        
+        Executor setExecutor = controller.getExecutor();
+        Assert.assertNotNull(setExecutor);
+        
+        Assert.assertNotEquals(defaultExecutor, setExecutor);
+        
+        controller.setExecutor(null);
+        
+        Assert.assertEquals(defaultExecutor, controller.getExecutor());
+        
+        controller.setImmediateState(ImmediateServiceState.RUNNING);
+        
+        try {
+            controller.setExecutor(executor);
+            Assert.fail("Should not be able to set this while running");
+        }
+        catch (IllegalStateException expected) {
+            // expected exception
+        }
+    }
+    
+    /**
+     * Tests setting and getting the state
+     * 
+     * @throws InterruptedException 
+     */
+    @Test // @org.junit.Ignore
+    public void testSetState() throws InterruptedException {
+        ServiceLocator locator = LocatorHelper.getServiceLocator();
+        ImmediateController controller = ServiceLocatorUtilities.enableImmediateScopeSuspended(locator);
+        
+        Assert.assertEquals(ImmediateServiceState.SUSPENDED, controller.getImmediateState());
+        
+        // Sets it to the same thing again (SUSPENDED)
+        controller.setImmediateState(ImmediateServiceState.SUSPENDED);
+        Assert.assertEquals(ImmediateServiceState.SUSPENDED, controller.getImmediateState());
+        
+        try {
+            controller.setImmediateState(null);
+            Assert.fail("Should not be able to set the state to null");
+        }
+        catch (IllegalArgumentException iae) {
+            // expected
+        }
+        
+        controller.setImmediateState(ImmediateServiceState.RUNNING);
+        Assert.assertEquals(ImmediateServiceState.RUNNING, controller.getImmediateState());
+        
+        // Sets it to the same thing again (RUNNING)
+        controller.setImmediateState(ImmediateServiceState.RUNNING);
+        Assert.assertEquals(ImmediateServiceState.RUNNING, controller.getImmediateState());
+        
+        // Back to SUSPENDED, just to make sure we can
+        controller.setImmediateState(ImmediateServiceState.SUSPENDED);
+        Assert.assertEquals(ImmediateServiceState.SUSPENDED, controller.getImmediateState());
+        
+        // Now ensure the other version of enable starts it out in RUNNING state
+        ServiceLocator locator2 = LocatorHelper.getServiceLocator();
+        ServiceLocatorUtilities.enableImmediateScope(locator2);
+        
+        ImmediateController controller2 = locator2.getService(ImmediateController.class);
+        Assert.assertEquals(ImmediateServiceState.RUNNING, controller2.getImmediateState());
+    }
+    
+    /**
+     * Tests setting and getting the state
+     * 
+     * @throws InterruptedException 
+     */
+    @Test(expected=IllegalArgumentException.class)
+    public void testBadDecayValue() throws InterruptedException {
+        ServiceLocator locator = LocatorHelper.getServiceLocator();
+        ImmediateController controller = ServiceLocatorUtilities.enableImmediateScopeSuspended(locator);
+        
+        controller.setThreadInactivityTimeout(-13);
     }
     
     private final static Object sLock = new Object();
