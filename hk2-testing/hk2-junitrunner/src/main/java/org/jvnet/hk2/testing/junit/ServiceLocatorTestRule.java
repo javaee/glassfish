@@ -46,14 +46,25 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintStream; // for javadoc only
 
 import java.lang.annotation.Annotation;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import java.lang.reflect.AnnotatedElement;
 
 import java.net.URL;
 
+import java.util.Arrays;
+import java.util.ArrayDeque;
 import java.util.Collection; // for javadoc only
 import java.util.Collections;
+import java.util.Deque;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -107,9 +118,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 
 /**
- * An {@link ExternalResource} that sets up and tears down an HK2
- * {@link ServiceLocator} on a per-test-class or per-test-method
- * basis.
+ * An {@link ExternalResource} (and a {@link Binder}) that sets up and
+ * tears down an HK2 {@link ServiceLocator} on a per-test-class or
+ * per-test-method basis.
  *
  * @param <T> the type of JUnit test this {@link
  * ServiceLocatorTestRule} is related to; consider making it an
@@ -117,11 +128,13 @@ import static org.junit.Assert.assertNotNull;
  *
  * @author <a href="mailto:ljnelson@gmail.com">Laird Nelson</a>
  *
+ * @since 2.4.0-b33
+ *
  * @see ExternalResource
  *
  * @see Binder
  */
-public class ServiceLocatorTestRule<T> extends ExternalResource {
+public class ServiceLocatorTestRule<T> extends ExternalResource implements Binder {
 
 
   /*
@@ -147,6 +160,15 @@ public class ServiceLocatorTestRule<T> extends ExternalResource {
    */
   private final ServiceLocatorIsolation isolation;
 
+  /**
+   * A {@code boolean} indicating whether this {@link
+   * ServiceLocatorTestRule} is configured to output additional
+   * information to {@link System#out System.out}.
+   *
+   * @see #isVerbose()
+   */
+  private final boolean verbose;
+  
   /**
    * The {@link Description} describing the JUnit test method
    * currently executing.
@@ -174,16 +196,56 @@ public class ServiceLocatorTestRule<T> extends ExternalResource {
   /**
    * Creates a new {@link ServiceLocatorTestRule} on behalf of the
    * supplied JUnit test in {@link ServiceLocatorIsolation#PER_TEST}
-   * isolation.
+   * isolation in non-verbose mode.
    *
    * @param test the JUnit test; must not be {@code null}
    *
    * @exception AssertionError if {@code test} is {@code null}
    *
-   * @see #ServiceLocatorTestRule(Object, ServiceLocatorIsolation)
+   * @see #ServiceLocatorTestRule(Object, ServiceLocatorIsolation,
+   * boolean)
    */
   public ServiceLocatorTestRule(final T test) {
-    this(test, ServiceLocatorIsolation.PER_TEST);
+    this(test, ServiceLocatorIsolation.PER_TEST, false);
+  }
+
+  /**
+   * Creates a new {@link ServiceLocatorTestRule} on behalf of the
+   * supplied JUnit test in {@link ServiceLocatorIsolation#PER_TEST}
+   * isolation with the supplied verbosity.
+   *
+   * @param test the JUnit test; must not be {@code null}
+   *
+   * @param verbose whether this {@link ServiceLocatorTestRule} should
+   * output additional information to {@link System#out System.out}
+   *
+   * @exception AssertionError if {@code test} is {@code null}
+   *
+   * @see #ServiceLocatorTestRule(Object, ServiceLocatorIsolation,
+   * boolean)
+   */
+  public ServiceLocatorTestRule(final T test, final boolean verbose) {
+    this(test, ServiceLocatorIsolation.PER_TEST, verbose);
+  }
+
+  /**
+   * Creates a new {@link ServiceLocatorTestRule} on behalf of the
+   * supplied JUnit test in the given {@link ServiceLocatorIsolation}
+   * in non-verbose mode.
+   *
+   * @param test the JUnit test; must not be {@code null}
+   *
+   * @param isolation the {@link ServiceLocatorIsolation}; if {@code
+   * null} then {@link ServiceLocatorIsolation#PER_TEST} will be used
+   * instead
+   * 
+   * @exception AssertionError if {@code test} is {@code null}
+   *
+   * @see #ServiceLocatorTestRule(Object, ServiceLocatorIsolation,
+   * boolean)
+   */
+  public ServiceLocatorTestRule(final T test, final ServiceLocatorIsolation isolation) {
+    this(test, isolation, false);
   }
 
   /**
@@ -195,14 +257,18 @@ public class ServiceLocatorTestRule<T> extends ExternalResource {
    * @param isolation the {@link ServiceLocatorIsolation}; if {@code
    * null} then {@link ServiceLocatorIsolation#PER_TEST} will be used
    * instead
+   *
+   * @param verbose whether this {@link ServiceLocatorTestRule} should
+   * output additional information to {@link System#out System.out}
    * 
    * @exception AssertionError if {@code test} is {@code null}
    */
-  public ServiceLocatorTestRule(final T test, final ServiceLocatorIsolation isolation) {
+  public ServiceLocatorTestRule(final T test, final ServiceLocatorIsolation isolation, final boolean verbose) {
     super();
     assertNotNull(test);
     this.test = test;
     this.isolation = isolation == null ? ServiceLocatorIsolation.PER_TEST : isolation;
+    this.verbose = verbose;
   }
 
 
@@ -225,6 +291,34 @@ public class ServiceLocatorTestRule<T> extends ExternalResource {
   }
 
   /**
+   * Returns the {@link Description} describing the currently
+   * executing JUnit test method.
+   *
+   * <p>This method may return {@code null}.</p>
+   *
+   * @return the {@link Description} describing the currently
+   * executing JUnit test method, or {@code null}
+   */
+  private final Description getDescription() {
+    return this.description;
+  }
+
+  /**
+   * Returns {@code true} if this {@link ServiceLocatorTestRule}
+   * should output additional information to {@link System#out
+   * System.out}.
+   *
+   * @return {@code true} if this {@link ServiceLocatorTestRule}
+   * should be verbose; {@code false} otherwise
+   *
+   * @see ServiceLocatorUtilities#dumpAllDescriptors(ServiceLocator,
+   * PrintStream)
+   */
+  public final boolean isVerbose() {
+    return this.verbose;
+  }
+  
+  /**
    * When necessary, calls the {@link
    * #createServiceLocator(Description)}, {@link
    * #configureServiceLocator(ServiceLocator, Description)} and {@link
@@ -244,13 +338,16 @@ public class ServiceLocatorTestRule<T> extends ExternalResource {
    */
   @Override
   public void before() throws IOException {
-    assertNotNull(this.description);
+    final Description description = this.getDescription();
+    assertNotNull(description);
     if (this.serviceLocator == null) {
-      this.serviceLocator = this.createServiceLocator(this.description);
+      this.serviceLocator = this.createServiceLocator(description);
       assertNotNull(this.serviceLocator);
-      this.configureServiceLocator(this.serviceLocator, this.description);
-      this.serviceLocator.inject(this);
+      this.configureServiceLocator(this.serviceLocator, description);
       this.performDependencyInjection(this.serviceLocator, this.test);
+      if (this.isVerbose()) {
+        ServiceLocatorUtilities.dumpAllDescriptors(this.serviceLocator, System.out);
+      }
     }
   }
 
@@ -295,6 +392,8 @@ public class ServiceLocatorTestRule<T> extends ExternalResource {
    * InhabitantFiles} annotation decorating the test class and adds
    * the services listed therein</li>
    *
+   * <li>Calls the {@link #bind(DynamicConfiguration)} method</li>
+   *
    * <li>Calls the {@link Binder#bind(DynamicConfiguration)} method on
    * the test if it is in fact an instance of {@link Binder}</li>
    *
@@ -315,18 +414,8 @@ public class ServiceLocatorTestRule<T> extends ExternalResource {
   protected void configureServiceLocator(final ServiceLocator serviceLocator, final Description testDescription) throws IOException {
     assertNotNull(serviceLocator);
     assertNotNull(testDescription);
-    final Class<?> testClass = this.description.getTestClass();
+    final Class<?> testClass = testDescription.getTestClass();
     if (testClass != null) {
-      final Set<Class<?>> classes = getClasses(testClass);
-      assertNotNull(classes);
-      
-      final Set<String> packages = getPackages(testClass);
-      assertNotNull(packages);
-
-      final Set<Class<?>> classesFromPackages = this.getClasses(packages);
-      assertNotNull(classesFromPackages);
-      
-      classes.addAll(classesFromPackages);
 
       final DynamicConfigurationService dynamicConfigurationService = serviceLocator.getService(DynamicConfigurationService.class);
       assertNotNull(dynamicConfigurationService);
@@ -343,31 +432,40 @@ public class ServiceLocatorTestRule<T> extends ExternalResource {
       assertNotNull(descriptionDescriptor);
       descriptionDescriptor.setName(testDescription.getDisplayName());
       descriptionDescriptor.setScope(Singleton.class.getName());
-      
       dynamicConfiguration.addActiveDescriptor(descriptionDescriptor);
+
+      this.bind(dynamicConfiguration, this.getClass());
       
-      if (!classes.isEmpty()) {
-        for (final Class<?> c : classes) {
-          if (c != null) {
-            if (Factory.class.isAssignableFrom(c)) {
-              @SuppressWarnings("unchecked")
-              final Class<? extends Factory<Object>> factoryClass = (Class<? extends Factory<Object>>)c;
-              dynamicConfiguration.addActiveFactoryDescriptor(factoryClass);
-            } else {
-              dynamicConfiguration.addActiveDescriptor(c);
-            }
-          }
-        }
-      }
+      this.bind(dynamicConfiguration, testClass);
 
-      readLocatorResources(serviceLocator, dynamicConfiguration, testClass);
-
+      this.bind(dynamicConfiguration);
+      
       if (this.test instanceof Binder) {
         ((Binder)this.test).bind(dynamicConfiguration);
       }
       
       dynamicConfiguration.commit();
     }  
+  }
+
+  /**
+   * Called at the appropriate time by the {@link
+   * #configureServiceLocator(ServiceLocator, Description)} method in
+   * case subclasses wish to add services to the {@link
+   * ServiceLocator} being configured.
+   *
+   * <p>Overrides of this method must not invoke the {@link
+   * DynamicConfiguration#commit()} method.</p>
+   *
+   * <p>The default implementation of this method does nothing.</p>
+   *
+   * @param dynamicConfiguration the {@link DynamicConfiguration} to
+   * manipulate in order to add or remove services from the {@link
+   * ServiceLocator} being configured; must not be {@code null}
+   */
+  @Override
+  public void bind(final DynamicConfiguration dynamicConfiguration) {
+    
   }
 
   /**
@@ -387,11 +485,11 @@ public class ServiceLocatorTestRule<T> extends ExternalResource {
    * @exception IOException if there was any kind of error during
    * package searching or file reading
    *
-   * @see #getClassesFromDirectory(Set, File)
+   * @see #getClassesFromDirectory(Set, File, boolean)
    *
    * @see #getClassesFromZipFile(Set, ZipFile)
    */
-  private final Set<Class<?>> getClasses(final Set<String> packageNames) throws IOException {
+  private final Set<Class<?>> getClassesFromPackages(final Set<String> packageNames) throws IOException {
     final Set<Class<?>> returnValue = new LinkedHashSet<Class<?>>();
     if (packageNames != null && !packageNames.isEmpty()) {
       final String classpath = this.getClasspath();
@@ -402,12 +500,12 @@ public class ServiceLocatorTestRule<T> extends ExternalResource {
           if (classpathEntry != null) {
             final File classpathEntryFile = new File(classpathEntry);
             if (classpathEntryFile.isDirectory()) {
-              returnValue.addAll(getClassesFromDirectory(packageNames, classpathEntryFile));
+              returnValue.addAll(getClassesFromDirectory(packageNames, classpathEntryFile, this.isVerbose()));
             } else if (classpathEntryFile.exists()) {
               // Zip format
               final ZipFile zipFile = new ZipFile(classpathEntryFile);
               try {
-                returnValue.addAll(getClassesFromZipFile(packageNames, zipFile));
+                returnValue.addAll(this.getClassesFromZipFile(packageNames, zipFile));
               } finally {
                 try {
                   if (zipFile != null) {
@@ -415,69 +513,6 @@ public class ServiceLocatorTestRule<T> extends ExternalResource {
                   }
                 } catch (final IOException ignore) {
 
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    return returnValue;
-  }
-
-  /**
-   * Given a {@link Set} of package names and a {@link File}
-   * designating an {@linkplain File#isDirectory() existing directory}
-   * in the classpath that {@linkplain File#canRead() can be read},
-   * returns a {@link Set} of {@link Service}-annotated {@link
-   * Class}es that can be found there that belong to one of the
-   * supplied package names.
-   *
-   * <p>This method never returns {@code null}.</p>
-   *
-   * @param packageNames a {@link Set} of package names; may be {@code
-   * null} in which case an {@linkplain Collection#isEmpty() empty}
-   * {@link Set} will be returned
-   *
-   * @param directory a {@link File} designating a directory; an
-   * {@linkplain Collection#isEmpty() empty} {@link Set} will be
-   * returned unless the directory so designated exists and is
-   * readable
-   *
-   * @return a non-{@code null} {@link Set} of {@link
-   * Service}-annotated {@link Class}es
-   *
-   * @exception IOException if there was a problem reading files
-   */
-  private static final Set<Class<?>> getClassesFromDirectory(final Set<String> packageNames, final File directory) throws IOException {
-    final Set<Class<?>> returnValue = new LinkedHashSet<Class<?>>();
-    if (packageNames != null && directory != null && !packageNames.isEmpty() && directory.isDirectory() && directory.canRead()) {
-      for (final String packageName : packageNames) {
-        if (packageName != null) {
-          final File packagePath = new File(directory, packageName.replace('.', '/'));
-          if (packagePath.isDirectory() && packagePath.canRead()) {
-            final File[] candidates = packagePath.listFiles(new FilenameFilter() {
-                @Override
-                public final boolean accept(final File directory, final String name) {
-                  return name != null && name.endsWith(".class");
-                }
-              });
-            if (candidates != null && candidates.length > 0) {
-              for (final File candidate : candidates) {
-                if (candidate != null && candidate.isFile() && candidate.canRead()) {
-                  final InputStream fileInputStream = new FileInputStream(candidate);
-                  try {
-                    final Visitor classVisitor = new Visitor(returnValue);
-                    new ClassReader(fileInputStream).accept(classVisitor, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
-                  } finally {
-                    if (fileInputStream != null) {
-                      try {
-                        fileInputStream.close();
-                      } catch (final IOException ignore) {
-
-                      }
-                    }
-                  }
                 }
               }
             }
@@ -525,7 +560,7 @@ public class ServiceLocatorTestRule<T> extends ExternalResource {
                 if (entryName != null && entryName.startsWith(packagePath) && entryName.endsWith(".class")) {
                   final InputStream entryStream = zipFile.getInputStream(entry);
                   try {
-                    final Visitor classVisitor = new Visitor(returnValue);
+                    final Visitor classVisitor = new Visitor(returnValue, this.isVerbose());
                     new ClassReader(entryStream).accept(classVisitor, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
                   } finally {
                     if (entryStream != null) {
@@ -568,87 +603,281 @@ public class ServiceLocatorTestRule<T> extends ExternalResource {
   }
 
   /**
-   * Returns a {@link Set} of {@link Class}es by reading the {@link
-   * Classes} annotation optionally present on the supplied {@code
-   * testClass}.
+   * {@linkplain AnnotatedElement#getAnnotations() Retrieves any
+   * <code>Annotation</code>s found on the supplied
+   * <code>AnnotatedElement</code>} and calls the {@link
+   * #bind(DynamicConfiguration, Collection)} method supplying them as
+   * the second parameter.
    *
-   * <p>This method never returns {@code null}.</p>
+   * @param configuration a {@link DynamicConfiguration} that will
+   * perform the binding; must not be {@code null}
    *
-   * @param testClass the {@link Class} whose {@link Classes}
-   * anntation, if present, should be consulted; may be {@code null}
-   * in which case an {@linkplain Collection#isEmpty() empty} {@link
-   * Set} will be returned
+   * @param element the {@link AnnotatedElement} that {@linkplain
+   * AnnotatedElement#getAnnotations() has annotations}; may be {@code
+   * null} in which case no action is performed
    *
-   * @return a non-{@code null} {@link Set} of {@link Class}es
+   * @exception AssertionError if {@code configuration} is {@code
+   * null}
+   *
+   * @exception IOException if there was a problem reading class or
+   * locator files
+   *
+   * @see #bind(DynamicConfiguration, Collection)
    */
-  private static final Set<Class<?>> getClasses(final Class<?> testClass) {
-    final Set<Class<?>> returnValue = new LinkedHashSet<Class<?>>();
-    if (testClass != null) {
-      final Classes classes = testClass.getAnnotation(Classes.class);
-      if (classes != null) {
-        final Class<?>[] classArray = classes.value();
-        if (classArray != null && classArray.length > 0) {
-          for (final Class<?> c : classArray) {
-            if (c != null) {
-              returnValue.add(c);
-            }
-          }
-        }
+  private final void bind(final DynamicConfiguration configuration, final AnnotatedElement element) throws IOException {
+    assertNotNull(configuration);
+    if (element != null) {
+      final Annotation[] annotations = element.getAnnotations();
+      if (annotations != null && annotations.length > 0) {
+        bind(configuration, Arrays.asList(annotations));
       }
     }
-    return returnValue;
   }
 
   /**
-   * Returns a {@link Set} of package names acquired by reading the
-   * {@link Packages} annotation optionally present on the supplied
-   * {@link Class}.
+   * Recursively examines the {@link Annotation}s supplied looking for
+   * instances of the {@link Classes}, {@link InhabitantFiles} and
+   * {@link Packages} annotations, and, using the binding methods on
+   * the supplied {@link DynamicConfiguration} binds {@link
+   * Descriptor}s for those "reachable" classes into the
+   * configuration.
    *
-   * <p>This method never returns {@code null}.</p>
+   * <p><em>Recursively</em> means that a user-defined {@link
+   * Annotation} might itself be annotated with {@link Classes}; in
+   * such a case the {@link Classes} annotation's contents will be
+   * found and processed.  This effectively allows stereotyping the
+   * {@link Classes}, {@link InhabitantFiles} and {@link Packages}
+   * annotations.</p>
    *
-   * @param testClass the {@link Class} whose {@link Packages}
-   * annotation, if present, should be consulted; may be {@code null}
-   * in which case an {@linkplain Collection#isEmpty() empty} {@link
-   * Set} will be returned
+   * @param configuration a {@link DynamicConfiguration} that will
+   * perform the binding; must not be {@code null}
    *
-   * @return a non-{@code null} {@link Set} of package names
+   * @param annotations a {@link Collection} of {@link Annotation}s;
+   * may be {@code null} in which case no action will be performed
+   *
+   * @exception AssertionError if {@code configuration} is {@code
+   * null}
+   *
+   * @exception IOException if there was a problem reading class or
+   * locator files
+   *
+   * @see #bind(DynamicConfiguration, Classes)
+   *
+   * @see #bind(DynamicConfiguration, InhabitantFiles)
+   *
+   * @see #bind(DynamicConfiguration, Packages)
    */
-  private static final Set<String> getPackages(final Class<?> testClass) {
-    Set<String> returnValue = null;
-    if (testClass != null) {
-      final Packages packages = testClass.getAnnotation(Packages.class);
-      if (packages != null) {
-        final String[] packagesArray = packages.value();
-        if (packagesArray != null && packagesArray.length > 0) {
-          returnValue = new LinkedHashSet<String>();
-          for (String pkg : packagesArray) {
-            if (pkg != null) {
-              pkg = pkg.trim();
-              if (!pkg.isEmpty()) {
-                if (Packages.THIS_PACKAGE.equals(pkg)) {
-                  returnValue.add(testClass.getPackage().getName());
-                } else {
-                  returnValue.add(pkg);
+  private final void bind(final DynamicConfiguration configuration, final Collection<? extends Annotation> annotations) throws IOException {
+    assertNotNull(configuration);    
+    if (annotations != null && !annotations.isEmpty()) {
+      final Deque<Annotation> annotationsToProcess = new ArrayDeque<Annotation>();
+      for (final Annotation annotation : annotations) {
+        assert annotation != null;
+        if (!isBlacklisted(annotation)) {
+          annotationsToProcess.addLast(annotation);
+        }
+      }
+      final Set<Annotation> processedAnnotations = new HashSet<Annotation>();
+      while (!annotationsToProcess.isEmpty()) {
+        final Annotation annotation = annotationsToProcess.removeFirst();
+        assert annotation != null;
+        if (!isBlacklisted(annotation)) {
+          processedAnnotations.add(annotation);
+          if (annotation instanceof Classes) {
+            bind(configuration, (Classes)annotation);
+          } else if (annotation instanceof InhabitantFiles) {
+            bind(configuration, (InhabitantFiles)annotation);
+          } else if (annotation instanceof Packages) {
+            this.bind(configuration, ((Packages)annotation));
+          } else {
+            final Class<? extends Annotation> annotationType = annotation.annotationType();
+            assert annotationType != null;
+            final Annotation[] metaAnnotations = annotationType.getAnnotations();
+            if (metaAnnotations != null && metaAnnotations.length > 0) {
+              for (final Annotation metaAnnotation : metaAnnotations) {
+                assert metaAnnotation != null;
+                if (!isBlacklisted(metaAnnotation) && !processedAnnotations.contains(metaAnnotation)) {
+                  annotationsToProcess.addLast(metaAnnotation);
                 }
               }
             }
           }
         }
       }
+      processedAnnotations.clear();
     }
-    if (returnValue == null || returnValue.isEmpty()) {
-      returnValue = Collections.emptySet();
-    }
-    return returnValue;
   }
 
   /**
-   * Performs HK2 dependency injection on the supplied test instance,
-   * using the supplied {@link ServiceLocator} as needed.
+   * Binds all {@link Class}es "reachable" from the supplied {@link
+   * Classes} annotation.
    *
-   * <p>The default implementation of this method calls the {@link
-   * ServiceLocator#inject(Object)} method, passing it the supplied
-   * test instance.</p>
+   * <p>Each {@link Class} found as a member of the return value of
+   * the {@link Classes#value()} method is {@linkplain
+   * DynamicConfiguration#addActiveDescriptor(Class) bound}
+   * ({@linkplain
+   * DynamicConfiguration#addActiveFactoryDescriptor(Class) even if}
+   * it is an implementation of {@link Factory}) and in turn
+   * {@linkplain #bind(DynamicConfiguration, AnnotatedElement) is
+   * examined for <code>Annotation</code>s on itself}.</p>
+   *
+   * @param configuration a {@link DynamicConfiguration} that will
+   * perform the binding; must not be {@code null}
+   *
+   * @param classes a {@link Classes}; may be {@code null} in which
+   * case no action will be performed
+   *
+   * @exception AssertionError if {@code configuration} is {@code
+   * null}
+   *
+   * @exception IOException if there was a problem reading class files
+   * or locator files
+   *
+   * @see DynamicConfiguration#addActiveDescriptor(Class)
+   *
+   * @see DynamicConfiguration#addActiveFactoryDescriptor(Class)
+   */
+  private final void bind(final DynamicConfiguration configuration, final Classes classes) throws IOException {
+    assertNotNull(configuration);
+    if (classes != null) {
+      final Class<?>[] classArray = classes.value();
+      if (classArray != null && classArray.length > 0) {
+        for (final Class<?> c : classArray) {
+          if (c != null) {
+            if (Factory.class.isAssignableFrom(c)) {
+              @SuppressWarnings("unchecked")
+              final Class<? extends Factory<Object>> factoryClass = (Class<? extends Factory<Object>>)c;
+              configuration.addActiveFactoryDescriptor(factoryClass);
+            } else {
+              configuration.addActiveDescriptor(c);
+            }
+            bind(configuration, c);
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Binds all {@link Class}es "reachable" from packages described by
+   * the supplied {@link Packages} annotation.
+   *
+   * <p>This method calls the {@link #bind(DynamicConfiguration, Set)}
+   * method, passing it a {@link Set} formed from the supplied {@link
+   * Packages} annotation's {@linkplain Packages#value() list of
+   * package names} as the second parameter.</p>
+   *
+   * @param configuration a {@link DynamicConfiguration} that will
+   * perform the binding; must not be {@code null}
+   *
+   * @param packages a {@link Packages}; may be {@code null} in which
+   * case no action will be performed
+   *
+   * @exception AssertionError if {@code configuration} is {@code
+   * null}
+   *
+   * @exception IOException if there was a problem reading class files
+   * or locator files
+   *
+   * @see #bind(DynamicConfiguration, Set)
+   */
+  private final void bind(final DynamicConfiguration configuration, final Packages packages) throws IOException {
+    if (packages != null) {
+      final String[] packagesArray = packages.value();
+      if (packagesArray != null && packagesArray.length > 0) {
+        final Set<String> packageNames = new LinkedHashSet<String>();
+        for (final String packageName : packagesArray) {
+          if (packageName != null) {
+            packageNames.add(packageName);
+          }
+        }
+        this.bind(configuration, packageNames);
+      }
+    }
+  }
+
+  /**
+   * Binds all {@link Class}es "reachable" from the supplied packages.
+   *
+   * <p>This method calls the {@link #getClassesFromPackages(Set)}
+   * method, and, for each {@link Class} returned, if it is an
+   * implementation of {@link Factory} then two {@linkplain
+   * DynamicConfiguration#addActiveFactoryDescriptor(Class)
+   * <code>Descriptor</code>s are added to the
+   * <code>DynamicConfiguration</code> in the form of a
+   * <code>FactoryDescriptors</code> addition} by way of the {@link
+   * DynamicConfiguration#addActiveFactoryDescriptor(Class)} method,
+   * or, if not, then a {@linkplain
+   * DynamicConfiguration#addActiveDescriptor(Class) single
+   * <code>Descriptor</code> is added} to the {@link
+   * DynamicConfiguration}.</p>
+   *
+   * @param configuration a {@link DynamicConfiguration} that will
+   * perform the binding; must not be {@code null}
+   *
+   * @param packageNames a {@link Set} of package names; may be {@code
+   * null} in which case no action will be performed
+   *
+   * @exception AssertionError if {@code configuration} is {@code
+   * null}
+   *
+   * @exception IOException if there was a problem reading class files
+   * or locator files
+   *
+   * @see #getClassesFromPackages(Set)
+   *
+   * @see DynamicConfiguration#addActiveDescriptor(Class)
+   *
+   * @see DynamicConfiguration#addActiveFactoryDescriptor(Class)
+   */
+  private final void bind(final DynamicConfiguration configuration, final Set<String> packageNames) throws IOException {
+    assertNotNull(configuration);
+    if (packageNames != null && !packageNames.isEmpty()) {
+      final Set<Class<?>> classesFromPackages = this.getClassesFromPackages(packageNames);
+      if (classesFromPackages != null && !classesFromPackages.isEmpty()) {
+        for (final Class<?> c : classesFromPackages) {
+          if (c != null) {
+            if (Factory.class.isAssignableFrom(c)) {
+              @SuppressWarnings("unchecked")
+              final Class<? extends Factory<Object>> factoryClass = (Class<? extends Factory<Object>>)c;
+              configuration.addActiveFactoryDescriptor(factoryClass);
+            } else {
+              configuration.addActiveDescriptor(c);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * Performs HK2 dependency injection on this {@link
+   * ServiceLocatorTestRule} and the supplied test instance, using the
+   * supplied {@link ServiceLocator} as needed.
+   *
+   * <p>The default implementation of this method does the
+   * following:</p>
+   *
+   * <ol>
+   *
+   * <li>Calls {@link ServiceLocator#inject(Object)} on the supplied
+   * {@link ServiceLocator}, if it is non-{@code null}, passing it
+   * this {@link ServiceLocatorTestRule}</li>
+   *
+   * <li>Calls {@link ServiceLocator#postConstruct(Object)} on the
+   * supplied {@link ServiceLocator}, if it is non-{@code null},
+   * passing it this {@link ServiceLocatorTestRule}</li>
+   *
+   * <li>Calls {@link ServiceLocator#inject(Object)} on the supplied
+   * {@link ServiceLocator}, if it is non-{@code null}, passing it the
+   * supplied {@code test} instance, if it is non-{@code null}</li>
+   *
+   * <li>Calls {@link ServiceLocator#postConstruct(Object)} on the
+   * supplied {@link ServiceLocator}, if it is non-{@code null},
+   * passing it the supplied {@code test} instance, if it is
+   * non-{@code null}</li>
+   *
+   * </ol>
    *
    * <p>This method is guaranteed to be called after the {@link
    * #configureServiceLocator(ServiceLocator, Description)} method
@@ -658,14 +887,20 @@ public class ServiceLocatorTestRule<T> extends ExternalResource {
    * perform injection; may be {@code null} in which case no action
    * will be taken
    *
-   * @param test the test instance to inject; may be {@code null} in
-   * which case no action will be taken
+   * @param test the test instance to inject; may be {@code null}
+   *
+   * @see #bind(DynamicConfiguration)
    *
    * @see #configureServiceLocator(ServiceLocator, Description)
    */
   protected void performDependencyInjection(final ServiceLocator serviceLocator, final T test) {
-    if (serviceLocator != null && test != null) {
-      serviceLocator.inject(test);
+    if (serviceLocator != null) {
+      this.serviceLocator.inject(this);
+      this.serviceLocator.postConstruct(this);
+      if (test != null) {
+        serviceLocator.inject(test);      
+        serviceLocator.postConstruct(test);
+      }
     }
   }
 
@@ -754,18 +989,43 @@ public class ServiceLocatorTestRule<T> extends ExternalResource {
   }
   
   /**
-   * If the {@linkplain #getServiceLocatorIsolation() isolation level}
-   * is {@link ServiceLocatorIsolation#PER_TEST}, calls the {@link
-   * #shutdownAndDestroyServiceLocator(Description)} method.
+   * Shuts down and cleans up the {@link ServiceLocator} created by
+   * this {@link ServiceLocatorTestRule}.
+   *
+   * <p>This method performs the following actions in order:</p>
+   *
+   * <ol>
+   *
+   * <li>Calls the {@link ServiceLocator#preDestroy(Object)} method on
+   * the existing {@link ServiceLocator}, passing it the {@linkplain
+   * #ServiceLocatorTestRule(Object) test instance supplied at
+   * construction time}</li>
+   *
+   * <li>Calls the {@link ServiceLocator#preDestroy(Object)} method on
+   * the existing {@link ServiceLocator}, passing it this {@link
+   * ServiceLocatorTestRule}</li>
+   *
+   * <li>If the {@linkplain #getServiceLocatorIsolation()
+   * <code>ServiceLocator</code> isolation level} is {@link
+   * ServiceLocatorIsolation#PER_TEST PER_TEST}, calls the {@link
+   * #shutdownAndDestroyServiceLocator(Description)} method with a
+   * {@link Description} instance that describes the JUnit test method
+   * that just executed</li>
+   *
+   * </ol>
    *
    * @see #shutdownAndDestroyServiceLocator(Description)
    */
   @Override
   public void after() {
     if (this.serviceLocator != null) {
+      if (this.test != null) {
+        this.serviceLocator.preDestroy(this.test);
+      }
+      this.serviceLocator.preDestroy(this);
       final ServiceLocatorIsolation isolation = this.getServiceLocatorIsolation();
       if (isolation == null || this.isolation == ServiceLocatorIsolation.PER_TEST) {
-        this.shutdownAndDestroyServiceLocator(this.description);
+        this.shutdownAndDestroyServiceLocator(this.getDescription());
       }
     }  
     this.description = null;
@@ -788,54 +1048,153 @@ public class ServiceLocatorTestRule<T> extends ExternalResource {
       ServiceLocatorFactory.getInstance().destroy(this.serviceLocator);
     }
   }
+  
+
+  /*
+   * Static methods.
+   */
+  
 
   /**
-   * Given a {@link ServiceLocator}, a {@link DynamicConfiguration}
-   * that can alter the contents of that {@link ServiceLocator} and a
-   * {@link Class} that might have an {@link InhabitantFiles}
-   * annotation decorating it, processes the contents of the {@link
-   * InhabitantFiles} annotation, if present, and reads all resources
-   * present on the classpath by those names, {@linkplain
-   * DynamicConfiguration#addActiveDescriptor(Class) adding
-   * descriptors to the system} describing services found in those
-   * resources.
+   * Given a {@link Set} of package names and a {@link File}
+   * designating an {@linkplain File#isDirectory() existing directory}
+   * in the classpath that {@linkplain File#canRead() can be read},
+   * returns a {@link Set} of {@link Service}-annotated {@link
+   * Class}es that can be found there that belong to one of the
+   * supplied package names.
    *
-   * @param serviceLocator the {@link ServiceLocator} to affect; may
-   * be {@code null} in which case no action will be taken
+   * <p>This method never returns {@code null}.</p>
    *
-   * @param configuraiton the {@link DynamicConfiguration} that should
-   * alter the contents of the supplied {@link ServiceLocator}; may be
-   * {@code null} in which case a new {@link DynamicConfiguration}
-   * will be used instead
+   * @param packageNames a {@link Set} of package names; may be {@code
+   * null} in which case an {@linkplain Collection#isEmpty() empty}
+   * {@link Set} will be returned
    *
-   * @param testClass the {@link Class} that might be decorated with
-   * an {@link InhabitantFiles} annotation; may be {@code null} in
-   * which case no action will be taken
+   * @param directory a {@link File} designating a directory; an
+   * {@linkplain Collection#isEmpty() empty} {@link Set} will be
+   * returned unless the directory so designated exists and is
+   * readable
    *
-   * @exception IOException if an error occurs reading files
+   * @param verbose whether additional information should be output
    *
-   * @see #readLocatorResource(ServiceLocator, DynamicConfiguration, String)
+   * @return a non-{@code null} {@link Set} of {@link
+   * Service}-annotated {@link Class}es
+   *
+   * @exception IOException if there was a problem reading files
    */
-  private static final void readLocatorResources(final ServiceLocator serviceLocator, DynamicConfiguration configuration, final Class<?> testClass) throws IOException {
-    if (serviceLocator != null && testClass != null) {
-boolean commit = false;
-      final InhabitantFiles inhabitantFiles = testClass.getAnnotation(InhabitantFiles.class);
-      if (inhabitantFiles != null) {
-        final String[] inhabitantFilesArray = inhabitantFiles.value();
-        if (inhabitantFilesArray != null && inhabitantFilesArray.length > 0) {
-          if (configuration == null) {
-            commit = true;
-            configuration = ServiceLocatorUtilities.createDynamicConfiguration(serviceLocator);       
-          }
+  private static final Set<Class<?>> getClassesFromDirectory(final Set<String> packageNames, final File directory, final boolean verbose) throws IOException {
+    final Set<Class<?>> returnValue = new LinkedHashSet<Class<?>>();
+    if (packageNames != null && directory != null && !packageNames.isEmpty() && directory.isDirectory() && directory.canRead()) {
+      for (final String packageName : packageNames) {
+        if (packageName != null) {
+          final File packagePath = new File(directory, packageName.replace('.', '/'));
+          if (packagePath.isDirectory() && packagePath.canRead()) {
+            final File[] candidates = packagePath.listFiles(new FilenameFilter() {
+                @Override
+                public final boolean accept(final File directory, final String name) {
+                  return name != null && name.endsWith(".class");
+                }
+              });
+            if (candidates != null && candidates.length > 0) {
+              for (final File candidate : candidates) {
+                if (candidate != null && candidate.isFile() && candidate.canRead()) {
+                  final InputStream fileInputStream = new FileInputStream(candidate);
+                  try {
+                    final Visitor classVisitor = new Visitor(returnValue, verbose);
+                    new ClassReader(fileInputStream).accept(classVisitor, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+                  } finally {
+                    if (fileInputStream != null) {
+                      try {
+                        fileInputStream.close();
+                      } catch (final IOException ignore) {
 
-          for (final String inhabitantFile : inhabitantFilesArray) {
-            if (inhabitantFile != null) {
-              readLocatorResource(serviceLocator, configuration, inhabitantFile);
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
-          
-          if (commit && configuration != null) {
-            configuration.commit();
+        }
+      }
+    }
+    return returnValue;
+  }
+
+  /**
+   * Returns {@code true} if the supplied {@link Annotation} is {@code
+   * null} or designates an annotation type that should be excluded
+   * from recursive annotation scanning performed by the {@link
+   * #bind(DynamicConfiguration, AnnotatedElement)} method.
+   *
+   * @param annotation the {@link Annotation} to consider; may be
+   * {@code null} in which case {@code true} will be returned
+   *
+   * @return {@code true} if the supplied {@link Annotation} is {@code
+   * null} or designates an annotation type that should be excluded
+   * from recursive annotation scanning performed by the {@link
+   * #bind(DynamicConfiguration, AnnotatedElement)} method
+   *
+   * @see #isBlacklisted(Class)
+   */
+  private static final boolean isBlacklisted(final Annotation annotation) {
+    return annotation == null || isBlacklisted(annotation.annotationType());
+  }
+  
+  /**
+   * Returns {@code true} if the supplied {@link Class} is {@code
+   * null} or designates an annotation type that should be excluded
+   * from recursive annotation scanning performed by the {@link
+   * #bind(DynamicConfiguration, AnnotatedElement)} method.
+   *
+   * @param c the {@link Class} to consider; may be {@code null} in
+   * which case {@code true} will be returned
+   *
+   * @return {@code true} if the supplied {@link Class} is {@code
+   * null} or designates an annotation type that should be excluded
+   * from recursive annotation scanning performed by the {@link
+   * #bind(DynamicConfiguration, AnnotatedElement)} method; {@code
+   * false} otherwise
+   */
+  private static final boolean isBlacklisted(final Class<? extends Annotation> c) {
+    final boolean returnValue;
+    if (c == null) {
+      returnValue = true;
+    } else {
+      final String className = c.getName();
+      returnValue = className.startsWith("java.") || className.startsWith("javax.");
+    }
+    return returnValue;
+  }
+
+  /**
+   * Gathers all classpath resource names {@linkplain
+   * InhabitantFiles#value() found} in the supplied {@link
+   * InhabitantFiles} annotation representing HK2 locator files and
+   * calls the {@link #bind(DynamicConfiguration, String)} method for
+   * each such entry found.
+   *
+   * @param configuration a {@link DynamicConfiguration} that will
+   * perform the binding; must not be {@code null}
+   *
+   * @param inhabitantFiles an {@link InhabitantFiles}; may be {@code
+   * null} in which case no action will be performed
+   *
+   * @exception AssertionError if {@code configuration} is {@code
+   * null}
+   *
+   * @exception IOException if there was a problem reading locator
+   * files
+   *
+   * @see #bind(DynamicConfiguration, String)
+   */
+  private static final void bind(final DynamicConfiguration configuration, final InhabitantFiles inhabitantFiles) throws IOException {
+    assertNotNull(configuration);
+    if (inhabitantFiles != null) {
+      final String[] inhabitantFilesArray = inhabitantFiles.value();
+      if (inhabitantFilesArray != null && inhabitantFilesArray.length > 0) {
+        for (final String inhabitantFile : inhabitantFilesArray) {
+          if (inhabitantFile != null) {
+            bind(configuration, inhabitantFile);
           }
         }
       }
@@ -843,110 +1202,117 @@ boolean commit = false;
   }
 
   /**
-   * Given a {@link ServiceLocator}, a {@link DynamicConfiguration}
-   * that can alter the contents of that {@link ServiceLocator} and a
-   * name of a classpath resource, reads all resources {@linkplain
-   * ClassLoader#getResources(String) present on the classpath by that
-   * name}, {@linkplain
-   * DynamicConfiguration#addActiveDescriptor(Class) adding
-   * descriptors to the system} describing services found in those
-   * resources.
+   * Using the {@linkplain Thread#getContextClassLoader() context
+   * <code>ClassLoader</code>}, {@linkplain
+   * ClassLoader#getResources(String) gets all classpath resources
+   * with the supplied <code>locatorResourceName</code>}, and iterates
+   * through them, calling the {@link #bind(DynamicConfiguration,
+   * URL)} method for each one.
    *
-   * @param serviceLocator the {@link ServiceLocator} to affect; may
-   * be {@code null} in which case no action will be taken
+   * @param configuration a {@link DynamicConfiguration} that will
+   * perform the binding; must not be {@code null}
    *
-   * @param configuraiton the {@link DynamicConfiguration} that should
-   * alter the contents of the supplied {@link ServiceLocator}; may be
-   * {@code null} in which case a new {@link DynamicConfiguration}
-   * will be used instead
+   * @param locatorResourceName the name of a classpath resource
+   * identifying one or more HK2 locator files; may be {@code null} in
+   * which case no action will be performed
    *
-   * @param resourceName the name of a classpath resource whose
-   * instances will be read; may be {@code null} in which case no
-   * action will be taken
+   * @exception AssertionError if {@code configuration} is {@code
+   * null}
    *
-   * @exception IOException if an error occurs while reading files
+   * @exception IOException if there was a problem reading locator
+   * files
    *
-   * @see #readLocatorResource(ServiceLocator, DynamicConfiguration,
-   * URL)
+   * @see ClassLoader#getResources(String)
+   *
+   * @see Thread#getContextClassLoader()
+   *
+   * @see #bind(DynamicConfiguration, URL)
    */
-  private static final void readLocatorResource(final ServiceLocator serviceLocator, DynamicConfiguration configuration, final String resourceName) throws IOException {
-    if (serviceLocator != null && resourceName != null) {
-      boolean commit = false;
-      if (configuration == null) {
-        commit = true;
-        configuration = ServiceLocatorUtilities.createDynamicConfiguration(serviceLocator);       
-      }
-
-      final Enumeration<URL> locatorResources = Thread.currentThread().getContextClassLoader().getResources(resourceName);
+  private static final void bind(final DynamicConfiguration configuration, final String locatorResourceName) throws IOException {
+    assertNotNull(configuration);
+    if (locatorResourceName != null) {
+      final Enumeration<URL> locatorResources = Thread.currentThread().getContextClassLoader().getResources(locatorResourceName);
       if (locatorResources != null) {
         while (locatorResources.hasMoreElements()) {
           final URL locatorResource = locatorResources.nextElement();
           if (locatorResource != null) {
-            readLocatorResource(serviceLocator, configuration, locatorResource);
+            bind(configuration, locatorResource);
           }
         }
-      }
-      
-      if (commit && configuration != null) {
-        configuration.commit();
       }
     }
   }
 
   /**
-   * Given a {@link ServiceLocator}, a {@link DynamicConfiguration}
-   * that can alter the contents of that {@link ServiceLocator} and a
-   * name of a classpath resource, reads all resources {@linkplain
-   * ClassLoader#getResources(String) present on the classpath by that
-   * name}, {@linkplain
-   * DynamicConfiguration#addActiveDescriptor(Class) adding
-   * descriptors to the system} describing services found in those
-   * resources.
+   * {@linkplain URL#openStream() Opens an <code>InputStream</code>}
+   * to the supplied {@link URL}, wraps a {@link BufferedReader}
+   * around it, and calls the {@link #bind(DynamicConfiguration,
+   * BufferedReader)} method.
    *
-   * @param serviceLocator the {@link ServiceLocator} to affect; may
-   * be {@code null} in which case no action will be taken
+   * @param configuration a {@link DynamicConfiguration} that will
+   * perform the binding; must not be {@code null}
    *
-   * @param configuration the {@link DynamicConfiguration} that should
-   * alter the contents of the supplied {@link ServiceLocator}; may be
-   * {@code null} in which case a new {@link DynamicConfiguration}
-   * will be used instead
+   * @param locatorResource a {@link URL} to an HK2 locator resource;
+   * may be {@code null} in which case no action will be taken
    *
-   * @param locatorResource a {@link URL} of a classpath resource whose
-   * instances will be read; may be {@code null} in which case no
-   * action will be taken
+   * @exception AssertionError if {@code configuration} is {@code
+   * null}
    *
-   * @exception IOException if an error occurs while reading resources
+   * @exception IOException if there was a problem reading locator
+   * files
    *
-   * @see DescriptorImpl#readObject(BufferedReader)
+   * @see #bind(DynamicConfiguration, BufferedReader)
    */
-  public static final void readLocatorResource(final ServiceLocator serviceLocator, DynamicConfiguration configuration, final URL locatorResource) throws IOException {
-    if (serviceLocator != null && locatorResource != null) {
-      boolean commit = false;
-      if (configuration == null) {
-        commit = true;
-        configuration = ServiceLocatorUtilities.createDynamicConfiguration(serviceLocator);       
-      }
-      assert configuration != null;
+  private static final void bind(final DynamicConfiguration configuration, final URL locatorResource) throws IOException {
+    assertNotNull(configuration);
+    if (locatorResource != null) {
       final BufferedReader reader = new BufferedReader(new InputStreamReader(locatorResource.openStream()));
       try {
-        while (true) {
-          final DescriptorImpl descriptor = new DescriptorImpl();
-          if (!descriptor.readObject(reader)) {
-            break;
-          }
-          configuration.bind(descriptor);
-        }
+        bind(configuration, reader);
       } finally {
         if (reader != null) {
           try {
             reader.close();
           } catch (final IOException ignore) {
-
+            
           }
         }
       }
-      if (commit && configuration != null) {
-        configuration.commit();
+    }
+  }
+
+  /**
+   * {@linkplain DescriptorImpl#readObject(BufferedReader) Reads} the
+   * HK2 locator file represented by the supplied {@link
+   * BufferedReader} and {@linkplain
+   * DynamicConfiguration#bind(Descriptor) binds the
+   * <code>Descriptor</code>}s it represents.
+   *
+   * @param configuration a {@link DynamicConfiguration} that will
+   * perform the binding; must not be {@code null}
+   *
+   * @param reader a {@link BufferedReader} reading a stream of
+   * descriptor information as parseable by the {@link
+   * DescriptorImpl#readObject(BufferedReader)} method; may be {@code
+   * null} in which case no action will be performed
+   *
+   * @exception AssertionError if {@code configuration} is {@code
+   * null}
+   *
+   * @exception IOException if there was a problem reading locator
+   * files
+   *
+   * @see DescriptorImpl#readObject(BufferedReader)
+   *
+   * @see DynamicConfiguration#bind(Descriptor)
+   */
+  private static final void bind(final DynamicConfiguration configuration, final BufferedReader reader) throws IOException {
+    assertNotNull(configuration);
+    if (reader != null) {
+      DescriptorImpl descriptor = new DescriptorImpl();
+      while (descriptor.readObject(reader)) {
+        configuration.bind(descriptor);
+        descriptor = new DescriptorImpl();
       }
     }
   }
@@ -962,6 +1328,8 @@ boolean commit = false;
    * isolation levels for JUnit tests.
    *
    * @author <a href="mailto:ljnelson@gmail.com">Laird Nelson</a>
+   *
+   * @since 2.4.0-b33
    *
    * @see ServiceLocatorTestRule#getServiceLocatorIsolation()
    */
@@ -995,6 +1363,8 @@ boolean commit = false;
    *
    * @author <a href="mailto:ljnelson@gmail.com">Laird Nelson</a>
    *
+   * @since 2.4.0-b33
+   *
    * @see ServiceLocatorTestRule
    *
    * @see ClassVisitorImpl
@@ -1019,7 +1389,8 @@ boolean commit = false;
      *
      * <p>This field is never {@code null}.</p>
      *
-     * @see #Visitor(Set)
+     * @see
+     * ServiceLocatorTestRule.Visitor#ServiceLocatorTestRule.Visitor(Set, boolean)
      *
      * @see #visitAnnotation(String, boolean)
      */
@@ -1038,10 +1409,13 @@ boolean commit = false;
      * added to by the {@link #visitAnnotation(String, boolean)}
      * method; must not be {@code null}; must be mutable
      *
+     * @param verbose whether or not additional information should be
+     * output
+     *
      * @see #visitAnnotation(String, boolean)
      */
-    private Visitor(final Set<Class<?>> classes) {
-      super(null, false, Collections.<String>emptySet());
+    private Visitor(final Set<Class<?>> classes, final boolean verbose) {
+      super(null, verbose, Collections.<String>emptySet());
       assertNotNull(classes);
       this.classes = classes;
     }
@@ -1100,8 +1474,10 @@ boolean commit = false;
      * the {@link Class} encountered in the prior (guaranteed) call to
      * the {@link #visit(int, int, String, String, String, String[])}
      * method, and, if that is successful, adds the resulting {@link
-     * Class} to the {@linkplain #Visitor(Set) <code>Set</code> of
-     * <code>Class</code>es that was supplied at construction time}.
+     * Class} to the {@linkplain
+     * ServiceLocatorTestRule.Visitor#ServiceLocatorTestRule.Visitor(Set,
+     * boolean) <code>Set</code> of <code>Class</code>es that was
+     * supplied at construction time}.
      *
      * @param annotationClassDescriptor the descriptor for the
      * annotation being visited; may be {@code null}
@@ -1110,7 +1486,9 @@ boolean commit = false;
      *
      * @return {@code null} when invoked
      *
-     * @see #Visitor(Set)
+     * @see
+     * ServiceLocatorTestRule.Visitor#ServiceLocatorTestRule.Visitor(Set,
+     * boolean)
      */
     @Override
     public final AnnotationVisitor visitAnnotation(final String annotationClassDescriptor, final boolean visible) {

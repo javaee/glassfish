@@ -47,6 +47,8 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import org.jvnet.hk2.testing.junit.HK2Runner; // for javadoc only
+
 /**
  * A set of implementations that should be excluded from being added to testLocator.  This list is
  * NOT checked against the classes list (the explicit include wins), but instead against the set of

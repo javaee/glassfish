@@ -47,6 +47,8 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
+import org.jvnet.hk2.testing.junit.HK2Runner; // for javadoc only
+
 /**
  * The list of packages (in &quot;.&quot; format, i.e. &quot;com.acme.test.services&quot;)
  * that we should scan through the classpath for in order to find services.  This
