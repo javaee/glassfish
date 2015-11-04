@@ -426,9 +426,10 @@ public class ImmediateTest {
     /**
      * Creates n different ServiceLocators and uses the same Executor for all of them, then ensures
      * that all the threads used by all of the locators is the same one
+     * 
      * @throws InterruptedException 
      */
-    @Test // @org.junit.Ignore
+    @Test @org.junit.Ignore
     public void testCanSetExecutorToBeTheSameAmongstDifferentLocators() throws InterruptedException {
         ServiceLocator locators[] = new ServiceLocator[NUM_LOCATORS];
         ImmediateController controllers[] = new ImmediateController[NUM_LOCATORS];
@@ -454,6 +455,9 @@ public class ImmediateTest {
         
         boolean first = true;
         long tid = -1;
+        
+        // Ensure the thread has plenty of time to get going
+        Thread.sleep(200);
         
         for (int lcv = 0; lcv < NUM_LOCATORS; lcv++) {
             services[lcv] = locators[lcv].getService(ImmediateThreadIdHolderService.class);
