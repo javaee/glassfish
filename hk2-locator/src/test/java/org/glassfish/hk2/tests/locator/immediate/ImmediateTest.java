@@ -429,7 +429,7 @@ public class ImmediateTest {
      * 
      * @throws InterruptedException 
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testCanSetExecutorToBeTheSameAmongstDifferentLocators() throws InterruptedException {
         ServiceLocator locators[] = new ServiceLocator[NUM_LOCATORS];
         ImmediateController controllers[] = new ImmediateController[NUM_LOCATORS];
