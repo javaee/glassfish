@@ -63,6 +63,15 @@ import org.glassfish.hk2.utilities.reflection.Logger;
  * @author jwells
  */
 public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
+    private final static String BIND_TRACING_PATTERN_PROPERTY = "org.jvnet.hk2.properties.debug.service.locator.lifecycle";
+    private final static boolean DEBUG_SERVICE_LOCATOR_LIFECYCLE = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+        @Override
+        public Boolean run() {
+            return Boolean.parseBoolean(System.getProperty(BIND_TRACING_PATTERN_PROPERTY, "false"));
+        }
+            
+    });
+    
     private static final Object sLock = new Object();
     private static int name_count = 0;
     private static final String GENERATED_NAME_PREFIX = "__HK2_Generated_";
@@ -169,6 +178,12 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
               killMe = serviceLocators.remove(name);
           }
           
+          if (DEBUG_SERVICE_LOCATOR_LIFECYCLE) {
+              Logger.getLogger().debug("ServiceFactoryImpl destroying locator with name " + name + " and locator " + locator +
+                      " with found locator " + killMe,
+                      new Throwable());
+          }
+          
           if (killMe == null) {
               killMe = locator;
           }
@@ -236,6 +251,10 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
     @Override
     public ServiceLocator create(String name, ServiceLocator parent,
             ServiceLocatorGenerator generator, CreatePolicy policy) {
+        if (DEBUG_SERVICE_LOCATOR_LIFECYCLE) {
+            Logger.getLogger().debug("ServiceFactoryImpl given create of " + name + " with parent " + parent +
+                    " with generator " + generator + " and policy " + policy);
+        }
         synchronized (lock) {
             ServiceLocator retVal;
 
@@ -243,12 +262,18 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
                 name = getGeneratedName();
                 ServiceLocator added = internalCreate(name, parent, generator);
                 callListenerAdded(added);
+                if (DEBUG_SERVICE_LOCATOR_LIFECYCLE) {
+                    Logger.getLogger().debug("ServiceFactoryImpl added untracked listener " + added);
+                }
                 return added;
             }
 
             retVal = serviceLocators.get(name);
             if (retVal != null) {
                 if (policy == null || CreatePolicy.RETURN.equals(policy)) {
+                    if (DEBUG_SERVICE_LOCATOR_LIFECYCLE) {
+                        Logger.getLogger().debug("ServiceFactoryImpl added found listener under RETURN policy of " + retVal);
+                    }
                     return retVal;
                 }
                 
@@ -265,6 +290,9 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
             
             callListenerAdded(retVal);
 
+            if (DEBUG_SERVICE_LOCATOR_LIFECYCLE) {
+                Logger.getLogger().debug("ServiceFactoryImpl created locator " + retVal);
+            }
             return retVal;
         }
     }
