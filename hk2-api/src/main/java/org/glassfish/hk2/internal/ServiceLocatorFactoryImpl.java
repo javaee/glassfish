@@ -253,7 +253,7 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
             ServiceLocatorGenerator generator, CreatePolicy policy) {
         if (DEBUG_SERVICE_LOCATOR_LIFECYCLE) {
             Logger.getLogger().debug("ServiceFactoryImpl given create of " + name + " with parent " + parent +
-                    " with generator " + generator + " and policy " + policy);
+                    " with generator " + generator + " and policy " + policy, new Throwable());
         }
         synchronized (lock) {
             ServiceLocator retVal;
