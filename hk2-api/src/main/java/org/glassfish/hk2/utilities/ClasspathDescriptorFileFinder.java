@@ -147,7 +147,23 @@ public class ClasspathDescriptorFileFinder implements DescriptorFileFinder, Desc
                     throw new IOException(e1);
                 }
                 
-                InputStream inputStream = url.openStream();
+                InputStream inputStream;
+                try {
+                    inputStream = url.openStream();
+                }
+                catch (IOException ioe) {
+                    if (DEBUG_DESCRIPTOR_FINDER) {
+                        Logger.getLogger().debug("IOException for url " + url, ioe);
+                    }
+                    throw ioe;
+                }
+                catch (Throwable th) {
+                    if (DEBUG_DESCRIPTOR_FINDER) {
+                        Logger.getLogger().debug("Unexpected exception for url " + url, th);
+                    }
+                    throw new IOException(th);
+                }
+                
                 if (DEBUG_DESCRIPTOR_FINDER) {
                     Logger.getLogger().debug("Input stream for: " + url + " from " + RESOURCE_BASE+name + " has succesfully been opened");
                 }

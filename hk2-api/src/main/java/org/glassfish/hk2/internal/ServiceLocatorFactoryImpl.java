@@ -76,30 +76,37 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
     private static int name_count = 0;
     private static final String GENERATED_NAME_PREFIX = "__HK2_Generated_";
     
-  private final ServiceLocatorGenerator defaultGenerator;
-  private final Object lock = new Object();
-  private final HashMap<String, ServiceLocator> serviceLocators = new HashMap<String, ServiceLocator>();
-  private final HashSet<ServiceLocatorListener> listeners = new HashSet<ServiceLocatorListener>();
+    private final static class DefaultGeneratorInitializer {
+        private final static ServiceLocatorGenerator defaultGenerator = getGeneratorSecure();
+    }
+    
+    private final Object lock = new Object();
+    private final HashMap<String, ServiceLocator> serviceLocators = new HashMap<String, ServiceLocator>();
+    private final HashSet<ServiceLocatorListener> listeners = new HashSet<ServiceLocatorListener>();
+    
+    private static ServiceLocatorGenerator getGeneratorSecure() {
+        return AccessController.doPrivileged(new PrivilegedAction<ServiceLocatorGenerator>() {
+
+            @Override
+            public ServiceLocatorGenerator run() {
+                try {
+                    return getGenerator();
+                }
+                catch (Throwable th) {
+                    Logger.getLogger().warning("Error finding implementation of hk2:", th);
+                    return null;
+                }
+            }
+              
+          });
+        
+    }
 
     /**
-   * This will create a new set of name to locator mappings
-   */
-  public ServiceLocatorFactoryImpl() {
-      defaultGenerator = AccessController.doPrivileged(new PrivilegedAction<ServiceLocatorGenerator>() {
-
-        @Override
-        public ServiceLocatorGenerator run() {
-            try {
-                return getGenerator();
-            }
-            catch (Throwable th) {
-                Logger.getLogger().warning("Error finding implementation of hk2:", th);
-                return null;
-            }
-        }
-          
-      });
-  }
+     * This will create a new set of name to locator mappings
+     */
+    public ServiceLocatorFactoryImpl() {
+    }
   
   private static Iterable<? extends ServiceLocatorGenerator> getOSGiSafeGenerators() {
       try {
@@ -297,10 +304,10 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
 
     private ServiceLocator internalCreate(String name, ServiceLocator parent, ServiceLocatorGenerator generator) {
         if (generator == null) {
-            if (defaultGenerator == null) {
+            if (DefaultGeneratorInitializer.defaultGenerator == null) {
                 throw new IllegalStateException("No generator was provided and there is no default generator registered");
             }
-            generator = defaultGenerator;
+            generator = DefaultGeneratorInitializer.defaultGenerator;
         }
         return generator.create(name, parent);
     }
