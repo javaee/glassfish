@@ -112,6 +112,19 @@ public class Logger {
     }
     
     /**
+     * Sends this message to the Debug channel (FINER level in JDK parlance)
+     * 
+     * @param warningMessage The non-null message to log to the debug logger
+     */
+    public void warning(String warningMessage, Throwable th) {
+        jdkLogger.log(Level.WARNING, warningMessage, th);
+        if (STDOUT_DEBUG) {
+            System.out.println("HK2DEBUG (Warning): " + warningMessage);
+            printThrowable(th);
+        }
+    }
+    
+    /**
      * Prints a throwable to stdout
      * 
      * @param th The throwable to print

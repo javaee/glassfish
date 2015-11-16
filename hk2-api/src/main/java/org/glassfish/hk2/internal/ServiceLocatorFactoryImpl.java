@@ -63,11 +63,11 @@ import org.glassfish.hk2.utilities.reflection.Logger;
  * @author jwells
  */
 public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
-    private final static String BIND_TRACING_PATTERN_PROPERTY = "org.jvnet.hk2.properties.debug.service.locator.lifecycle";
+    private final static String DEBUG_SERVICE_LOCATOR_PROPERTY = "org.jvnet.hk2.properties.debug.service.locator.lifecycle";
     private final static boolean DEBUG_SERVICE_LOCATOR_LIFECYCLE = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
         @Override
         public Boolean run() {
-            return Boolean.parseBoolean(System.getProperty(BIND_TRACING_PATTERN_PROPERTY, "false"));
+            return Boolean.parseBoolean(System.getProperty(DEBUG_SERVICE_LOCATOR_PROPERTY, "false"));
         }
             
     });
@@ -93,9 +93,7 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
                 return getGenerator();
             }
             catch (Throwable th) {
-                Logger.getLogger().warning("Error finding implementation of hk2: " + th.getMessage());
-                // th.printStackTrace();
-                // Thread.dumpStack();
+                Logger.getLogger().warning("Error finding implementation of hk2:", th);
                 return null;
             }
         }

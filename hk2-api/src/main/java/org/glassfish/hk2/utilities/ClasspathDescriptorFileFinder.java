@@ -44,6 +44,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -51,6 +53,7 @@ import java.util.List;
 
 import org.glassfish.hk2.api.DescriptorFileFinder;
 import org.glassfish.hk2.api.DescriptorFileFinderInformation;
+import org.glassfish.hk2.utilities.reflection.Logger;
 
 /**
  * This is an implementation of {@link DescriptorFileFinder} that
@@ -59,6 +62,15 @@ import org.glassfish.hk2.api.DescriptorFileFinderInformation;
  *
  */
 public class ClasspathDescriptorFileFinder implements DescriptorFileFinder, DescriptorFileFinderInformation {
+    private final static String DEBUG_DESCRIPTOR_FINDER_PROPERTY = "org.jvnet.hk2.properties.debug.descriptor.file.finder";
+    private final static boolean DEBUG_DESCRIPTOR_FINDER = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+        @Override
+        public Boolean run() {
+            return Boolean.parseBoolean(System.getProperty(DEBUG_DESCRIPTOR_FINDER_PROPERTY, "false"));
+        }
+            
+    });
+    
     private final static String DEFAULT_NAME = "default";
 
     private final ClassLoader classLoader;
@@ -125,6 +137,9 @@ public class ClasspathDescriptorFileFinder implements DescriptorFileFinder, Desc
             for (; e.hasMoreElements();) {
                 URL url = e.nextElement();
                 
+                if (DEBUG_DESCRIPTOR_FINDER) {
+                    Logger.getLogger().debug("Adding in URL to set being parsed: " + url + " from " + RESOURCE_BASE+name);
+                }
                 try {
                     identifiers.add(url.toURI().toString());
                 }
@@ -132,7 +147,11 @@ public class ClasspathDescriptorFileFinder implements DescriptorFileFinder, Desc
                     throw new IOException(e1);
                 }
                 
-                returnList.add(url.openStream());
+                InputStream inputStream = url.openStream();
+                if (DEBUG_DESCRIPTOR_FINDER) {
+                    Logger.getLogger().debug("Input stream for: " + url + " from " + RESOURCE_BASE+name + " has succesfully been opened");
+                }
+                returnList.add(inputStream);
             }
         }
         

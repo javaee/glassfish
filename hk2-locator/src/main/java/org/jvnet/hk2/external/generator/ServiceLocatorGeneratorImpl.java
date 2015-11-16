@@ -104,5 +104,9 @@ public class ServiceLocatorGeneratorImpl implements ServiceLocatorGenerator {
         
         return retVal;
     }
-
+    
+    @Override
+    public String toString() {
+        return "ServiceLocatorGeneratorImpl(hk2-locator, " + System.identityHashCode(this) + ")";
+    }
 }
