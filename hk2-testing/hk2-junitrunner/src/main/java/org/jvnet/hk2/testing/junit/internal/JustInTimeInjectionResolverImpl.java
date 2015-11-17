@@ -49,6 +49,7 @@ import java.util.Collections;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.Injectee;
@@ -79,39 +80,58 @@ public class JustInTimeInjectionResolverImpl implements
             this.excludes = excludes;
         }
     }
+
+    /**
+     * Returns {@code true} if the supplied {@link Injectee}
+     * represents a service lookup rather than a true injection point.
+     *
+     * @param failedInjectionPoint the {@link Injectee} to test; may
+     * be {@code null} in which case {@code true} will be returned
+     *
+     * @return {@code true} if the supplied {@link Injectee}
+     * represents a service lookup rather than a true injection point
+     */
+    protected boolean isLookup(final Injectee failedInjectionPoint) {
+        return failedInjectionPoint == null || failedInjectionPoint.getParent() == null;
+    }
   
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.JustInTimeInjectionResolver#justInTimeResolution(org.glassfish.hk2.api.Injectee)
      */
     @Override
     public boolean justInTimeResolution(Injectee failedInjectionPoint) {
-        Type needType = failedInjectionPoint.getRequiredType();
-        
-        Class<?> needClass = null;
-        if (needType instanceof Class) {
-            needClass = (Class<?>) needType;
-        }
-        else if (needType instanceof ParameterizedType) {
-            Type rawType = ((ParameterizedType) needType).getRawType();
-            if (rawType instanceof Class) {
-                needClass = (Class<?>) rawType;
+        boolean returnValue = false;
+        if (failedInjectionPoint != null && !isLookup(failedInjectionPoint)) {
+            
+            Type needType = failedInjectionPoint.getRequiredType();
+            
+            Class<?> needClass = null;
+            if (needType instanceof Class) {
+                needClass = (Class<?>) needType;
+            }
+            else if (needType instanceof ParameterizedType) {
+                Type rawType = ((ParameterizedType) needType).getRawType();
+                if (rawType instanceof Class) {
+                    needClass = (Class<?>) rawType;
+                }
+            }
+            
+            if (needClass == null || needClass.isInterface() || (excludes != null && excludes.contains(needClass.getName()))) {
+                return false;
+            }
+            
+            DynamicConfiguration config = dcs.createDynamicConfiguration();
+            
+            try {
+                final ActiveDescriptor<?> ad = config.addActiveDescriptor(needClass);
+                config.commit();
+                returnValue = true;
+            }
+            catch (Throwable th) {
+                returnValue = false;
             }
         }
-        
-        if (needClass == null || needClass.isInterface() || (excludes != null && excludes.contains(needClass.getName()))) {
-            return false;
-        }
-        
-        DynamicConfiguration config = dcs.createDynamicConfiguration();
-        
-        try {
-            config.addActiveDescriptor(needClass);
-            config.commit();
-            return true;
-        }
-        catch (Throwable th) {
-            return false;
-        }
+        return returnValue;
     }
 
 }
