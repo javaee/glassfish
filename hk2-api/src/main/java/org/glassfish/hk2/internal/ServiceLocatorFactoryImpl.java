@@ -63,36 +63,50 @@ import org.glassfish.hk2.utilities.reflection.Logger;
  * @author jwells
  */
 public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
+    private final static String DEBUG_SERVICE_LOCATOR_PROPERTY = "org.jvnet.hk2.properties.debug.service.locator.lifecycle";
+    private final static boolean DEBUG_SERVICE_LOCATOR_LIFECYCLE = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+        @Override
+        public Boolean run() {
+            return Boolean.parseBoolean(System.getProperty(DEBUG_SERVICE_LOCATOR_PROPERTY, "false"));
+        }
+            
+    });
+    
     private static final Object sLock = new Object();
     private static int name_count = 0;
     private static final String GENERATED_NAME_PREFIX = "__HK2_Generated_";
     
-  private final ServiceLocatorGenerator defaultGenerator;
-  private final Object lock = new Object();
-  private final HashMap<String, ServiceLocator> serviceLocators = new HashMap<String, ServiceLocator>();
-  private final HashSet<ServiceLocatorListener> listeners = new HashSet<ServiceLocatorListener>();
+    private final static class DefaultGeneratorInitializer {
+        private final static ServiceLocatorGenerator defaultGenerator = getGeneratorSecure();
+    }
+    
+    private final Object lock = new Object();
+    private final HashMap<String, ServiceLocator> serviceLocators = new HashMap<String, ServiceLocator>();
+    private final HashSet<ServiceLocatorListener> listeners = new HashSet<ServiceLocatorListener>();
+    
+    private static ServiceLocatorGenerator getGeneratorSecure() {
+        return AccessController.doPrivileged(new PrivilegedAction<ServiceLocatorGenerator>() {
+
+            @Override
+            public ServiceLocatorGenerator run() {
+                try {
+                    return getGenerator();
+                }
+                catch (Throwable th) {
+                    Logger.getLogger().warning("Error finding implementation of hk2:", th);
+                    return null;
+                }
+            }
+              
+          });
+        
+    }
 
     /**
-   * This will create a new set of name to locator mappings
-   */
-  public ServiceLocatorFactoryImpl() {
-      defaultGenerator = AccessController.doPrivileged(new PrivilegedAction<ServiceLocatorGenerator>() {
-
-        @Override
-        public ServiceLocatorGenerator run() {
-            try {
-                return getGenerator();
-            }
-            catch (Throwable th) {
-                Logger.getLogger().warning("Error finding implementation of hk2: " + th.getMessage());
-                // th.printStackTrace();
-                // Thread.dumpStack();
-                return null;
-            }
-        }
-          
-      });
-  }
+     * This will create a new set of name to locator mappings
+     */
+    public ServiceLocatorFactoryImpl() {
+    }
   
   private static Iterable<? extends ServiceLocatorGenerator> getOSGiSafeGenerators() {
       try {
@@ -169,6 +183,12 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
               killMe = serviceLocators.remove(name);
           }
           
+          if (DEBUG_SERVICE_LOCATOR_LIFECYCLE) {
+              Logger.getLogger().debug("ServiceFactoryImpl destroying locator with name " + name + " and locator " + locator +
+                      " with found locator " + killMe,
+                      new Throwable());
+          }
+          
           if (killMe == null) {
               killMe = locator;
           }
@@ -236,6 +256,10 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
     @Override
     public ServiceLocator create(String name, ServiceLocator parent,
             ServiceLocatorGenerator generator, CreatePolicy policy) {
+        if (DEBUG_SERVICE_LOCATOR_LIFECYCLE) {
+            Logger.getLogger().debug("ServiceFactoryImpl given create of " + name + " with parent " + parent +
+                    " with generator " + generator + " and policy " + policy, new Throwable());
+        }
         synchronized (lock) {
             ServiceLocator retVal;
 
@@ -243,12 +267,18 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
                 name = getGeneratedName();
                 ServiceLocator added = internalCreate(name, parent, generator);
                 callListenerAdded(added);
+                if (DEBUG_SERVICE_LOCATOR_LIFECYCLE) {
+                    Logger.getLogger().debug("ServiceFactoryImpl added untracked listener " + added);
+                }
                 return added;
             }
 
             retVal = serviceLocators.get(name);
             if (retVal != null) {
                 if (policy == null || CreatePolicy.RETURN.equals(policy)) {
+                    if (DEBUG_SERVICE_LOCATOR_LIFECYCLE) {
+                        Logger.getLogger().debug("ServiceFactoryImpl added found listener under RETURN policy of " + retVal);
+                    }
                     return retVal;
                 }
                 
@@ -265,16 +295,19 @@ public class ServiceLocatorFactoryImpl extends ServiceLocatorFactory {
             
             callListenerAdded(retVal);
 
+            if (DEBUG_SERVICE_LOCATOR_LIFECYCLE) {
+                Logger.getLogger().debug("ServiceFactoryImpl created locator " + retVal);
+            }
             return retVal;
         }
     }
 
     private ServiceLocator internalCreate(String name, ServiceLocator parent, ServiceLocatorGenerator generator) {
         if (generator == null) {
-            if (defaultGenerator == null) {
+            if (DefaultGeneratorInitializer.defaultGenerator == null) {
                 throw new IllegalStateException("No generator was provided and there is no default generator registered");
             }
-            generator = defaultGenerator;
+            generator = DefaultGeneratorInitializer.defaultGenerator;
         }
         return generator.create(name, parent);
     }
