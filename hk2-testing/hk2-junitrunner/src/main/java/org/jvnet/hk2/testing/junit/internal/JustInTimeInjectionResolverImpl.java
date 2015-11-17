@@ -43,6 +43,9 @@ package org.jvnet.hk2.testing.junit.internal;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
+import java.util.Collection;
+import java.util.Collections;
+
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -58,9 +61,25 @@ import org.glassfish.hk2.api.JustInTimeInjectionResolver;
 @Singleton
 public class JustInTimeInjectionResolverImpl implements
         JustInTimeInjectionResolver {
+
+    private final Collection<?> excludes;
+    
     @Inject
     private DynamicConfigurationService dcs;
 
+    public JustInTimeInjectionResolverImpl() {
+        this(Collections.emptySet());
+    }
+
+    public JustInTimeInjectionResolverImpl(final Collection<?> excludes) {
+        super();
+        if (excludes == null) {
+            this.excludes = Collections.emptySet();
+        } else {
+            this.excludes = excludes;
+        }
+    }
+  
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.JustInTimeInjectionResolver#justInTimeResolution(org.glassfish.hk2.api.Injectee)
      */
@@ -79,7 +98,7 @@ public class JustInTimeInjectionResolverImpl implements
             }
         }
         
-        if (needClass == null || needClass.isInterface()) {
+        if (needClass == null || needClass.isInterface() || (excludes != null && excludes.contains(needClass.getName()))) {
             return false;
         }
         

@@ -572,12 +572,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
 
         Annotation qualifiers[] = qualifiersAsSet.toArray(new Annotation[qualifiersAsSet.size()]);
 
-        ActiveDescriptor<?> retVal = internalGetDescriptor(injectee, requiredType, name, injectee.getUnqualified(), false, qualifiers);
-        if (retVal == null && firstTime) {
-            return secondChanceResolve(injectee);
-        }
-        return retVal;
-
+        return internalGetDescriptor(injectee, requiredType, name, injectee.getUnqualified(), false, qualifiers);
     }
 
     /* (non-Javadoc)
@@ -1252,6 +1247,28 @@ public class ServiceLocatorImpl implements ServiceLocator {
         ActiveDescriptor<T> postValidateResult = immediate.getImmediateResults().isEmpty() ? null
                     : (ActiveDescriptor<T>) immediate.getImmediateResults().get(0);
 
+        // See https://java.net/jira/browse/HK2-170
+        if (postValidateResult == null) {
+            final Injectee injectee;
+            if (onBehalfOf == null) {
+                final HashSet<Annotation> requiredQualifiers = new HashSet<Annotation>();
+                if (qualifiers != null && qualifiers.length > 0) {
+                    for (final Annotation qualifier : qualifiers) {
+                        if (qualifier != null) {
+                            requiredQualifiers.add(qualifier);
+                        }
+                    }
+                }
+                final InjecteeImpl injecteeImpl = new InjecteeImpl(contractOrImpl);
+                injecteeImpl.setRequiredQualifiers(requiredQualifiers);
+                injecteeImpl.setUnqualified(unqualified);
+                injectee = injecteeImpl;
+            } else {
+                injectee = onBehalfOf;
+            }
+            postValidateResult = (ActiveDescriptor<T>)secondChanceResolve(injectee);
+        }
+        
         return postValidateResult;
     }
 
