@@ -73,7 +73,8 @@ public class JustInTimeModule implements TestModule {
         
         configurator.bind(BuilderHelper.link(
                 DoubleTroubleService.class).in(Singleton.class.getName()).build());
-        
+
+        // XXX Isn't this the same as the first bind invocation above?
         // This JIT resolver is for the lookup case
         configurator.bind(BuilderHelper.link(SimpleServiceJITResolver.class).
                 to(JustInTimeInjectionResolver.class).
