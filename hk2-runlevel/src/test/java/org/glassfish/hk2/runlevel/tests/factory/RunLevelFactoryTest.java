@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,49 +37,41 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.hk2.runlevel.tests.factory;
 
-package org.glassfish.hk2.tests.locator.justintime;
-
-import javax.inject.Singleton;
-
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.JustInTimeInjectionResolver;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.runlevel.RunLevelController;
+import org.glassfish.hk2.runlevel.tests.utilities.Utilities;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
  * @author jwells
  *
  */
-public class JustInTimeModule implements TestModule {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
+public class RunLevelFactoryTest {
+    /**
+     * Tests that a factory can be used as a RLS
      */
-    @Override
-    public void configure(DynamicConfiguration configurator) {
-        // Whoops, I forgot to add my service here
-        // Lucky for me, I can add it with my just
-        // in time resolver:
-        configurator.bind(BuilderHelper.link(
-                SimpleServiceJITResolver.class).to(JustInTimeInjectionResolver.class).in(Singleton.class.getName()).build());
+    @Test
+    public void testFactoryBasedRLS() {
+        ServiceLocator locator = Utilities.getServiceLocator(
+                ARunLevelServiceFactory.class);
         
-        configurator.bind(BuilderHelper.link(
-                InjectedThriceService.class).in(Singleton.class.getName()).build());
+        ARunLevelServiceFactory factory = locator.getService(ARunLevelServiceFactory.class);
         
-        // This next set is for the DoubleTrouble resolver, which has its own resolution issues
-        configurator.bind(BuilderHelper.link(
-                DoubleTroubleJITResolver.class).to(JustInTimeInjectionResolver.class).in(Singleton.class.getName()).build());
+        Assert.assertFalse(factory.wasCreated());
         
-        configurator.bind(BuilderHelper.link(
-                DoubleTroubleService.class).in(Singleton.class.getName()).build());
-
-        // XXX Isn't this the same as the first bind invocation above?
-        // This JIT resolver is for the lookup case
-        configurator.bind(BuilderHelper.link(SimpleServiceJITResolver.class).
-                to(JustInTimeInjectionResolver.class).
-                in(Singleton.class.getName()).
-                build());
+        RunLevelController controller = locator.getService(RunLevelController.class);
+        controller.proceedTo(5);
+        
+        Assert.assertTrue(factory.wasCreated());
+        Assert.assertFalse(factory.wasDestroyed());
+        
+        controller.proceedTo(0);
+        Assert.assertFalse(factory.wasCreated());
+        Assert.assertTrue(factory.wasDestroyed());
+        
     }
 
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,49 +37,48 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.hk2.runlevel.tests.factory;
 
-package org.glassfish.hk2.tests.locator.justintime;
-
-import javax.inject.Singleton;
-
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.JustInTimeInjectionResolver;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.api.Factory;
+import org.glassfish.hk2.runlevel.RunLevel;
+import org.jvnet.hk2.annotations.Service;
 
 /**
  * @author jwells
  *
  */
-public class JustInTimeModule implements TestModule {
+@Service
+public class ARunLevelServiceFactory implements Factory<ARunLevelService> {
+    private boolean wasCreated = false;
+    private boolean wasDestroyed = false;
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
+     * @see org.glassfish.hk2.api.Factory#provide()
      */
     @Override
-    public void configure(DynamicConfiguration configurator) {
-        // Whoops, I forgot to add my service here
-        // Lucky for me, I can add it with my just
-        // in time resolver:
-        configurator.bind(BuilderHelper.link(
-                SimpleServiceJITResolver.class).to(JustInTimeInjectionResolver.class).in(Singleton.class.getName()).build());
+    @RunLevel(5)
+    public ARunLevelService provide() {
+        wasCreated = true;
+        wasDestroyed = false;
         
-        configurator.bind(BuilderHelper.link(
-                InjectedThriceService.class).in(Singleton.class.getName()).build());
-        
-        // This next set is for the DoubleTrouble resolver, which has its own resolution issues
-        configurator.bind(BuilderHelper.link(
-                DoubleTroubleJITResolver.class).to(JustInTimeInjectionResolver.class).in(Singleton.class.getName()).build());
-        
-        configurator.bind(BuilderHelper.link(
-                DoubleTroubleService.class).in(Singleton.class.getName()).build());
+        return new ARunLevelService() {};
+    }
 
-        // XXX Isn't this the same as the first bind invocation above?
-        // This JIT resolver is for the lookup case
-        configurator.bind(BuilderHelper.link(SimpleServiceJITResolver.class).
-                to(JustInTimeInjectionResolver.class).
-                in(Singleton.class.getName()).
-                build());
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.Factory#dispose(java.lang.Object)
+     */
+    @Override
+    public void dispose(ARunLevelService instance) {
+        wasDestroyed = true;
+        wasCreated = false;
+    }
+    
+    public boolean wasCreated() {
+        return wasCreated;
+    }
+    
+    public boolean wasDestroyed() {
+        return wasDestroyed;
     }
 
 }

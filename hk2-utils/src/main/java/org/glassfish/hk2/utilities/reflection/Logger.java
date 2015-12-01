@@ -41,6 +41,7 @@ package org.glassfish.hk2.utilities.reflection;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.logging.Level;
 
 /**
  * A logger for HK2.  Currently implemented over the JDK logger
@@ -88,12 +89,38 @@ public class Logger {
     /**
      * Sends this message to the Debug channel (FINER level in JDK parlance)
      * 
+     * @param debuggingMessage The non-null message to log to the debug logger
+     */
+    public void debug(String debuggingMessage, Throwable th) {
+        jdkLogger.log(Level.FINER, debuggingMessage, th);
+        if (STDOUT_DEBUG) {
+            System.out.println("HK2DEBUG: " + debuggingMessage);
+            printThrowable(th);
+        }
+    }
+    
+    /**
+     * Sends this message to the Debug channel (FINER level in JDK parlance)
+     * 
      * @param warningMessage The non-null message to log to the debug logger
      */
     public void warning(String warningMessage) {
         jdkLogger.warning(warningMessage);
         if (STDOUT_DEBUG) {
             System.out.println("HK2DEBUG (Warning): " + warningMessage);
+        }
+    }
+    
+    /**
+     * Sends this message to the Debug channel (FINER level in JDK parlance)
+     * 
+     * @param warningMessage The non-null message to log to the debug logger
+     */
+    public void warning(String warningMessage, Throwable th) {
+        jdkLogger.log(Level.WARNING, warningMessage, th);
+        if (STDOUT_DEBUG) {
+            System.out.println("HK2DEBUG (Warning): " + warningMessage);
+            printThrowable(th);
         }
     }
     

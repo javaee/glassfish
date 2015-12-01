@@ -567,7 +567,7 @@ public class DefaultTopicDistributionService implements
     
     @Override
     public void configurationChanged() {
-        List<ActiveDescriptor<?>> allDescriptors = locator.getDescriptors(SUBSCRIBER_FILTER);
+        List<ActiveDescriptor<?>> allDescriptors = locator.getDescriptors(getFilter());
         
         wLock.lock();
         try {

@@ -119,7 +119,7 @@ public class JustInTimeTest {
         IterableProviderService ips = locator.getService(IterableProviderService.class);
         Assert.assertNotNull(ips);
         
-        Assert.assertNull(locator.getService(SimpleService4.class));
+        Assert.assertNotNull(locator.getService(SimpleService4.class));
         
         ips.checkGet();
     }
@@ -134,7 +134,7 @@ public class JustInTimeTest {
         IterableProviderService ips = locator.getService(IterableProviderService.class);
         Assert.assertNotNull(ips);
         
-        Assert.assertNull(locator.getService(SimpleService4.class));
+        Assert.assertNotNull(locator.getService(SimpleService4.class));
         
         ips.checkGetHandle();
     }
@@ -149,7 +149,7 @@ public class JustInTimeTest {
         IterableProviderService ips = locator.getService(IterableProviderService.class);
         Assert.assertNotNull(ips);
         
-        Assert.assertNull(locator.getService(SimpleService4.class));
+        Assert.assertNotNull(locator.getService(SimpleService4.class));
         
         ips.checkIterator();
     }
@@ -164,7 +164,7 @@ public class JustInTimeTest {
         IterableProviderService ips = locator.getService(IterableProviderService.class);
         Assert.assertNotNull(ips);
         
-        Assert.assertNull(locator.getService(SimpleService4.class));
+        Assert.assertNotNull(locator.getService(SimpleService4.class));
         
         ips.checkSize();
     }
@@ -179,7 +179,7 @@ public class JustInTimeTest {
         IterableProviderService ips = locator.getService(IterableProviderService.class);
         Assert.assertNotNull(ips);
         
-        Assert.assertNull(locator.getService(SimpleService4.class));
+        Assert.assertNotNull(locator.getService(SimpleService4.class));
         
         ips.checkHandleIterator();
     }

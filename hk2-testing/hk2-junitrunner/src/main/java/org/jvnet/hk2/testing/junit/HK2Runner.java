@@ -277,7 +277,10 @@ public class HK2Runner {
         
         testLocator = ServiceLocatorFactory.getInstance().create(name);
         
-        ServiceLocatorUtilities.addClasses(testLocator, ErrorServiceImpl.class, JustInTimeInjectionResolverImpl.class);
+        ServiceLocatorUtilities.addClasses(testLocator, ErrorServiceImpl.class);
+        final JustInTimeInjectionResolverImpl jitResolver = new JustInTimeInjectionResolverImpl(excludes);
+        testLocator.inject(jitResolver);
+        ServiceLocatorUtilities.addOneConstant(testLocator, jitResolver);
         
         DynamicConfigurationService dcs = testLocator.getService(DynamicConfigurationService.class);
         DynamicConfiguration config = dcs.createDynamicConfiguration();

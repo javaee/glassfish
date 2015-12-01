@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.glassfish.hk2</groupId>
         <artifactId>hk2-parent</artifactId>
-        <version>2.4.0-b34-SNAPSHOT</version>
+        <version>2.4.0-b35-SNAPSHOT</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
 
@@ -98,4 +98,7 @@
             <artifactId>asm-all-repackaged</artifactId>
         </dependency>
     </dependencies>
+    <properties>
+      <links>http://junit.org/javadoc/latest/</links>
+    </properties>
 </project>
