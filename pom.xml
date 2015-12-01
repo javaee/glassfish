@@ -202,6 +202,7 @@
         <javax.el.version>2.2.5</javax.el.version>
         <findbugs.exclude />
         <findbugs.threshold>High</findbugs.threshold>
+        <surefireArgLineExtra/>
 
         <!-- site is generated under target/site/${project.version} -->
         <site.dir>${project.build.directory}/site</site.dir>
@@ -225,7 +226,7 @@
         <module>hk2-inhabitant-generator</module>
         <module>hk2-metadata-generator</module>
         <module>consolidatedbundle-maven-plugin</module>
-        <!--<module>osgi-resource-locator</module>-->
+        <module>osgi-resource-locator</module>
         <module>hk2-runlevel</module>
         <module>hk2-locator</module>
         <module>class-model</module>
@@ -1001,15 +1002,6 @@
 
     <profiles>
         <profile>
-          <id>noagent</id>
-          <activation>
-            <activeByDefault>true</activeByDefault>
-          </activation>
-          <properties>
-            <surefireArgLineExtra />
-          </properties>
-        </profile>
-        <profile>
             <id>sonar</id>
             <build>
                 <plugins>
@@ -1048,7 +1040,8 @@
                             <!-- Prepares the property pointing to the JaCoCo runtime agent which
                                  is passed as VM argument when Maven the Surefire plugin is executed. -->
                             <execution>
-                                <id>pre-unit-test</id>
+                                <id>agent-jacoco-property</id>
+                                <phase>test</phase>
                                 <goals>
                                     <goal>prepare-agent</goal>
                                 </goals>
