@@ -62,6 +62,7 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
     private final ServiceLocatorImpl locator;
     private final LinkedList<SystemDescriptor<?>> allDescriptors = new LinkedList<SystemDescriptor<?>>();
     private final LinkedList<Filter> allUnbindFilters = new LinkedList<Filter>();
+    private final LinkedList<Filter> allIdempotentFilters = new LinkedList<Filter>();
     
     private final Object lock = new Object();
     private boolean committed = false;
@@ -231,6 +232,22 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         
         allUnbindFilters.add(unbindFilter);
     }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.DynamicConfiguration#addIdempotentFilter(org.glassfish.hk2.api.Filter[])
+     */
+    @Override
+    public void addIdempotentFilter(Filter... idempotentFilter)
+            throws IllegalArgumentException {
+        if (idempotentFilter == null) throw new IllegalArgumentException();
+        for (Filter iFilter : idempotentFilter) {
+            if (iFilter == null) throw new IllegalArgumentException();
+        }
+        
+        for (Filter iFilter : idempotentFilter) {
+            allIdempotentFilters.add(iFilter);
+        }
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.DynamicConfiguration#commit()
@@ -287,6 +304,8 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
             Pretty.collection(allUnbindFilters) + "," +
             System.identityHashCode(this) + ")";
     }
+
+    
 
     
 }

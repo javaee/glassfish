@@ -307,6 +307,18 @@ public abstract class AbstractBinder implements Binder, DynamicConfiguration {
     public void addUnbindFilter(Filter unbindFilter) throws IllegalArgumentException {
         configuration().addUnbindFilter(unbindFilter);
     }
+    
+    /**
+     * {@inheritDoc}
+     * <p>
+     * This method can be called only in the execution context of the {@link #configure()}
+     * method.
+     * </p>
+     */
+    @Override
+    public void addIdempotentFilter(Filter... unbindFilter) throws IllegalArgumentException {
+        configuration().addIdempotentFilter(unbindFilter);
+    }
 
     /**
      * {@inheritDoc}

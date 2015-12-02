@@ -69,7 +69,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import java.util.zip.ZipEntry;;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import javax.inject.Singleton;

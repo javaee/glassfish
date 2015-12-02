@@ -218,6 +218,27 @@ public interface DynamicConfiguration {
     public void addUnbindFilter(Filter unbindFilter) throws IllegalArgumentException;
     
     /**
+     * At commit time all idempotent filters in this dynamic configuration will be run
+     * against all validation-visible descriptors.  If any of the idempotent filters are
+     * a match then the commit will FAIL and none of the descriptors in this DynamicConfiguration
+     * will be added or removed.  The idempotent filters will be run under the same lock as the
+     * commit, and hence can guarantee true idempotency of the transaction.
+     * <p>
+     * The normal use case for the use of this filter is to ensure that a service is only added
+     * once to the {@link ServiceLocator}, even when multiple threads may be attempting to add the
+     * same service
+     * <p>
+     * The filter passed in should not do any change to the set of descriptors itself, any attempt
+     * to do so will leave the system in an inconsistent state.  {@link IndexedFilter} is supported
+     * and is the normal use of an idempotent filter, though it is not required
+     * 
+     * @param idempotentFilter A non-null idempotent filter to use during commit.  If any descriptors
+     * match the filter, the commit will fail
+     * @throws IllegalArgumentException If any of the filters are null
+     */
+    public void addIdempotentFilter(Filter... idempotentFilter) throws IllegalArgumentException;
+    
+    /**
      * This causes the configuration to get committed.  This
      * method may only be called once
      * 
