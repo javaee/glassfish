@@ -45,8 +45,12 @@ import java.lang.reflect.Type;
 import javax.inject.Provider;
 
 /**
- * This object can be injected rather than Provider or ExtendedProvider when
+ * This object can be injected rather than {@link Provider} when
  * it is desired to iterate over more than one returned instance of the type.
+ * This interface also has several methods which allow the user to further
+ * narrow down the selected services at runtime.  It can also provide
+ * an {@link Iterable} of {@link ServiceHandle} for finer control of the lifecycle
+ * of services found
  * <p>
  * The iterator returned will be in ranked order (with DescriptorRank as
  * primary key, largest rank first and ServiceID as secondary key, smallest
