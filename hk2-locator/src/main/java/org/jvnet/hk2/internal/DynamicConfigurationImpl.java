@@ -298,6 +298,10 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
         return allUnbindFilters;
     }
     
+    /* package */ LinkedList<Filter> getIdempotentFilters() {
+        return allIdempotentFilters;
+    }
+    
     public String toString() {
         return "DynamicConfigurationImpl(" + locator + "," +
             Pretty.collection(allDescriptors) + "," +

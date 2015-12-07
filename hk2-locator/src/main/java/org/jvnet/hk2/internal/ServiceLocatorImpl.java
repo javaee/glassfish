@@ -1687,6 +1687,26 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 }
             }
         }
+        
+        List<Filter> idempotentFilters = dci.getIdempotentFilters();
+        if (!idempotentFilters.isEmpty()) {
+            List<ActiveDescriptor<?>> allValidatedDescriptors = getDescriptors(BuilderHelper.allFilter());
+            
+            List<Throwable> idempotentFailures = new LinkedList<Throwable>();
+            for (ActiveDescriptor<?> aValidatedDescriptor : allValidatedDescriptors) {
+                for (Filter idempotentFilter : idempotentFilters) {
+                    if (BuilderHelper.filterMatches(aValidatedDescriptor, idempotentFilter)) {
+                        idempotentFailures.add(new IllegalStateException("The idempotentFilter " + idempotentFilter +
+                                " found a service that matched: " + aValidatedDescriptor));
+                    }
+                    
+                }
+            }
+            
+            if (!idempotentFailures.isEmpty()) {
+                throw new MultiException(idempotentFailures);
+            }
+        }
 
         return new CheckConfigurationData(retVal,
                 addOrRemoveOfInstanceListener,

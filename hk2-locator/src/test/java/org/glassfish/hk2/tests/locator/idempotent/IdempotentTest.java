@@ -62,7 +62,7 @@ public class IdempotentTest {
      * Tests that in the most basic case, idempotence works (adding the
      * same service twice)
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testBasicIdempotence() {
         ServiceLocator locator = LocatorHelper.create();
         DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
@@ -93,7 +93,9 @@ public class IdempotentTest {
                 Assert.fail("Should have failed, SimpleService has already been added");
             }
             catch (MultiException me) {
-                // Expected
+                List<Throwable> errors = me.getErrors();
+                Assert.assertEquals(1, errors.size());
+                Assert.assertTrue(errors.get(0) instanceof IllegalStateException);
             }
         }
         
