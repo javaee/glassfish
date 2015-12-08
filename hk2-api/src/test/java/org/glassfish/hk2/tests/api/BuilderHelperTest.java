@@ -924,4 +924,35 @@ public class BuilderHelperTest {
         }
         
     }
+    
+    /**
+     * This modifies the incoming DescriptorImpl after the filter was created to ensure a copy was made
+     */
+    @Test
+    public void testCreateDescriptorImplFilter() {
+        DescriptorImpl di = BuilderHelper.link("an.implementation.Thing").to("a.contract.Thing").qualifiedBy("a.qualifier.Thing").build();
+        
+        IndexedFilter filter = BuilderHelper.createDescriptorFilter(di);
+        Assert.assertTrue(BuilderHelper.filterMatches(di, filter));
+        
+        di.addQualifier("another.qualifier.Thing");
+        Assert.assertFalse(BuilderHelper.filterMatches(di, filter));
+    }
+    
+    /**
+     * This modifies the incoming DescriptorImpl after the filter was created to ensure a copy was made
+     */
+    @Test
+    public void testCreateDescriptorImplFilterNoCopy() {
+        DescriptorImpl di1 = BuilderHelper.link("an.implementation.Thing1").to("a.contract.Thing1").qualifiedBy("a.qualifier.Thing1").build();
+        DescriptorImpl di2 = BuilderHelper.link("an.implementation.Thing2").to("a.contract.Thing2").qualifiedBy("a.qualifier.Thing2").build();
+        
+        IndexedFilter filter = BuilderHelper.createDescriptorFilter(di1, false);
+        Assert.assertTrue(BuilderHelper.filterMatches(di1, filter));
+        Assert.assertFalse(BuilderHelper.filterMatches(di2, filter));
+        
+        di1.addQualifier("another.qualifier.Thing");
+        Assert.assertTrue(BuilderHelper.filterMatches(di1, filter));
+        Assert.assertFalse(BuilderHelper.filterMatches(di2, filter));
+    }
 }

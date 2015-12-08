@@ -261,6 +261,54 @@ public class BuilderHelper {
     }
     
     /**
+     * Returns a filter that will return true an IndexedFilter that will match 
+     * the {@link DescriptorImpl#equals(Object)} return
+     * 
+     * @param descriptorImpl A non-null Descriptor to compare against other Descriptors
+     * @param deepCopy If true then a copy will be made of the descriptorImpl to protect the filter
+     * from the case where the incoming descriptorImpl may change.  If false then the user
+     * must ensure that the fields of the descriptorImpl cannot change after the filter is returned.
+     * @return An IndexedFilter that can be used to determine equality with the given filter
+     * based on the fields of the Descriptor
+     */
+    public static IndexedFilter createDescriptorFilter(Descriptor descriptorImpl, boolean deepCopy) {
+        final Descriptor filterDescriptor = (deepCopy) ? new DescriptorImpl(descriptorImpl) : descriptorImpl ;
+        return new IndexedFilter() {
+
+            @Override
+            public boolean matches(Descriptor d) {
+                return filterDescriptor.equals(d);
+            }
+
+            @Override
+            public String getAdvertisedContract() {
+                Set<String> contracts = filterDescriptor.getAdvertisedContracts();
+                if (contracts == null || contracts.isEmpty()) return null;
+                return contracts.iterator().next();
+            }
+
+            @Override
+            public String getName() {
+                return filterDescriptor.getName();
+            }
+            
+        };
+        
+    }
+    
+    /**
+     * Returns a filter that will return true an IndexedFilter that will match 
+     * the {@link DescriptorImpl#equals(Object)} return
+     * 
+     * @param descriptorImpl A non-null Descriptor to compare against other Descriptors
+     * @return An IndexedFilter that can be used to determine equality with the given filter
+     * based on the fields of the Descriptor
+     */
+    public static IndexedFilter createDescriptorFilter(Descriptor descriptorImpl) {
+        return createDescriptorFilter(descriptorImpl, true);
+    }
+    
+    /**
      * Returns a filter of type Descriptor that matches
      * all descriptors
      * 

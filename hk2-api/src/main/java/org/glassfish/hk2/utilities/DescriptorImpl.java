@@ -627,6 +627,24 @@ public class DescriptorImpl implements Descriptor, Externalizable {
         return true;
     }
 	
+	/**
+	 * This equals matches only if the following fields of the descriptor match:
+	 * <UL>
+	 * <LI>implementation</LI>
+	 * <LI>contracts</LI>
+	 * <LI>name</LI>
+	 * <LI>scope</LI>
+	 * <LI>qualifiers</LI>
+	 * <LI>descriptorType</LI>
+	 * <LI>descriptorVisibility</LI>
+	 * <LI>metadata</LI>
+	 * <LI>proxiable</LI>
+	 * <LI>proxyForSameScope</LI>
+	 * <LI>analysisName</LI>
+	 * </UL>
+	 * @param a The object to compare to this one. May be null (which will result in a false)
+	 * @return true if the descriptors are equal
+	 */
 	public boolean equals(Object a) {
 	    if (a == null) return false;
 	    if (!(a instanceof Descriptor)) return false;
