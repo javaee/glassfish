@@ -168,6 +168,13 @@ public class JustInTimeTest {
         
         ips.checkSize();
     }
+
+    @Test
+    public void testMaliciousResolver() {
+        ServiceLocator locator = getProviderLocator();
+
+        Assert.assertNull(locator.getService(UnimplementedContract.class));
+    }
     
     /**
      * Tests the getSize method of Provider
@@ -189,6 +196,7 @@ public class JustInTimeTest {
         
         ServiceLocatorUtilities.addClasses(locator,
                 IterableProviderService.class,
+                EvilJITResolver.class,
                 SimpleService4JITResolver.class);
         
         return locator;
