@@ -522,7 +522,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             }
 
             // Try again
-            return internalGetInjecteeDescriptor(injectee, false);
+            return internalGetInjecteeDescriptor(injectee, true);
         }
         finally {
             for (ServiceHandle<JustInTimeInjectionResolver> jitResolver : jitResolvers) {
@@ -535,7 +535,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
     }
 
-    private ActiveDescriptor<?> internalGetInjecteeDescriptor(Injectee injectee, boolean firstTime) {
+    private ActiveDescriptor<?> internalGetInjecteeDescriptor(Injectee injectee, boolean calledFromSecondChanceResolveMethod) {
         if (injectee == null) throw new IllegalArgumentException();
         checkState();
 
@@ -572,7 +572,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
 
         Annotation qualifiers[] = qualifiersAsSet.toArray(new Annotation[qualifiersAsSet.size()]);
 
-        return internalGetDescriptor(injectee, requiredType, name, injectee.getUnqualified(), false, qualifiers);
+        return internalGetDescriptor(injectee, requiredType, name, injectee.getUnqualified(), false, calledFromSecondChanceResolveMethod, qualifiers);
     }
 
     /* (non-Javadoc)
@@ -581,7 +581,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
     @Override
     public ActiveDescriptor<?> getInjecteeDescriptor(Injectee injectee)
             throws MultiException {
-        return internalGetInjecteeDescriptor(injectee, true);
+        return internalGetInjecteeDescriptor(injectee, false);
     }
 
     /* (non-Javadoc)
@@ -1182,6 +1182,16 @@ public class ServiceLocatorImpl implements ServiceLocator {
             Unqualified unqualified,
             boolean isIterable,
             Annotation... qualifiers) throws MultiException {
+      return internalGetDescriptor(onBehalfOf, contractOrImpl, name, unqualified, isIterable, false, qualifiers);
+    }
+  
+    @SuppressWarnings("unchecked")
+    private <T> ActiveDescriptor<T> internalGetDescriptor(Injectee onBehalfOf, Type contractOrImpl,
+            String name,
+            Unqualified unqualified,
+            boolean isIterable,
+            boolean calledFromSecondChanceResolveMethod,
+            Annotation... qualifiers) throws MultiException {
         if (contractOrImpl == null) throw new IllegalArgumentException();
 
         Class<?> rawClass = ReflectionHelper.getRawClass(contractOrImpl);
@@ -1248,7 +1258,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
                     : (ActiveDescriptor<T>) immediate.getImmediateResults().get(0);
 
         // See https://java.net/jira/browse/HK2-170
-        if (postValidateResult == null) {
+        if (!calledFromSecondChanceResolveMethod && postValidateResult == null) {
             final Injectee injectee;
             if (onBehalfOf == null) {
                 final HashSet<Annotation> requiredQualifiers = new HashSet<Annotation>();
