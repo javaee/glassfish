@@ -58,13 +58,12 @@ import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.AnnotationLiteral;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.api.DescriptorVisibility;
+import org.glassfish.hk2.api.DuplicateServiceException;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.Filter;
-import org.glassfish.hk2.api.HK2Loader;
 import org.glassfish.hk2.api.Immediate;
 import org.glassfish.hk2.api.ImmediateController;
 import org.glassfish.hk2.api.IndexedFilter;
@@ -76,7 +75,6 @@ import org.glassfish.hk2.api.Populator;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
-import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.api.ImmediateController.ImmediateServiceState;
 import org.glassfish.hk2.internal.ImmediateHelper;
 import org.glassfish.hk2.internal.InheritableThreadContext;
@@ -105,33 +103,12 @@ public abstract class ServiceLocatorUtilities {
      * @throws MultiException if there were errors when committing the service
      */
     public static void enablePerThreadScope(ServiceLocator locator) {
-        Context<PerThread> perThreadContext = locator.getService((new TypeLiteral<Context<PerThread>>() {}).getType());
-        if (perThreadContext != null) return;
-
-        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
-        DynamicConfiguration config = dcs.createDynamicConfiguration();
-        final DescriptorImpl descriptor = BuilderHelper.link(PerThreadContext.class).
-                to(Context.class).
-                in(Singleton.class.getName()).
-                visibility(DescriptorVisibility.LOCAL).
-                build();
-
-        ClassLoader loader = ServiceLocatorUtilities.class.getClassLoader();
-        final ClassLoader binderClassLoader = loader == null ? ClassLoader.getSystemClassLoader() : loader;
-        descriptor.setLoader(new HK2Loader() {
-            @Override
-            public Class<?> loadClass(String className) throws MultiException {
-                try {
-                    return binderClassLoader.loadClass(className);
-                } catch (ClassNotFoundException e) {
-                    throw new MultiException(e);
-                }
-
-            }
-        });
-
-        config.bind(descriptor, false);
-        config.commit();
+        try {
+            addClasses(locator, true, PerThreadContext.class);
+        }
+        catch (MultiException me) {
+            if (!isDupException(me)) throw me;
+        }
     }
 
     /**
@@ -144,36 +121,12 @@ public abstract class ServiceLocatorUtilities {
      * @throws MultiException if there were errors when committing the service
      */
     public static void enableInheritableThreadScope(ServiceLocator locator) {
-        Context<InheritableThread> inheritableThreadContext = locator.getService((new TypeLiteral<Context<InheritableThread>>() {
-        }).getType());
-        if (inheritableThreadContext != null) {
-            return;
+        try {
+            addClasses(locator, true, InheritableThreadContext.class);
         }
-
-        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
-        DynamicConfiguration config = dcs.createDynamicConfiguration();
-        final DescriptorImpl descriptor = BuilderHelper.link(InheritableThreadContext.class).
-                to(Context.class).
-                in(Singleton.class.getName()).
-                visibility(DescriptorVisibility.LOCAL).
-                build();
-
-        ClassLoader loader = ServiceLocatorUtilities.class.getClassLoader();
-        final ClassLoader binderClassLoader = loader == null ? ClassLoader.getSystemClassLoader() : loader;
-        descriptor.setLoader(new HK2Loader() {
-            @Override
-            public Class<?> loadClass(String className) throws MultiException {
-                try {
-                    return binderClassLoader.loadClass(className);
-                } catch (ClassNotFoundException e) {
-                    throw new MultiException(e);
-                }
-
-            }
-        });
-
-        config.bind(descriptor, false);
-        config.commit();
+        catch (MultiException me) {
+            if (!isDupException(me)) throw me;
+        }
     }
 
 
@@ -208,15 +161,13 @@ public abstract class ServiceLocatorUtilities {
      * @throws MultiException if there were errors when committing the service
      */
     public static ImmediateController enableImmediateScopeSuspended(ServiceLocator locator) {
-        List<ServiceHandle<?>> immediateContexts = locator.getAllServiceHandles((new TypeLiteral<Context<Immediate>>() {}).getType());
-        for (ServiceHandle<?> immediateContext : immediateContexts) {
-            ActiveDescriptor<?> contextDescriptor = immediateContext.getActiveDescriptor();
-            if (contextDescriptor.getLocatorId() == locator.getLocatorId()) {
-                return locator.getService(ImmediateController.class);
-            }
+        try {
+            addClasses(locator, true, ImmediateContext.class, ImmediateHelper.class);
         }
-
-        addClasses(locator, ImmediateContext.class, ImmediateHelper.class);
+        catch (MultiException me) {
+            if (!isDupException(me)) throw me;
+        }
+        
         return locator.getService(ImmediateController.class);
     }
 
@@ -920,10 +871,13 @@ public abstract class ServiceLocatorUtilities {
      */
     public static void enableLookupExceptions(ServiceLocator locator) {
         if (locator == null) throw new IllegalArgumentException();
-
-        if (locator.getService(RethrowErrorService.class) != null) return;
-
-        addClasses(locator, RethrowErrorService.class);
+        
+        try {
+            addClasses(locator, true, RethrowErrorService.class);
+        }
+        catch (MultiException me) {
+            if (!isDupException(me)) throw me;
+        }
     }
 
     /**
@@ -1011,6 +965,18 @@ public abstract class ServiceLocatorUtilities {
      * @return a {@link Immediate} {@link Annotation} implementation
      */
     public static Immediate getImmediateAnnotation() { return IMMEDIATE; }
+    
+    private static boolean isDupException(MultiException me) {
+        boolean atLeastOne = false;
+        
+        for (Throwable error : me.getErrors()) {
+            atLeastOne = true;
+            
+            if (!(error instanceof DuplicateServiceException)) return false;
+        }
+        
+        return atLeastOne;
+    }
 
     private static class ImmediateImpl extends AnnotationLiteral<Immediate> implements Immediate {
         private static final long serialVersionUID = -4189466670823669605L;
