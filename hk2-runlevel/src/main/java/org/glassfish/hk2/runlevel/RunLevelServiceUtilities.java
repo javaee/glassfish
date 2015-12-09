@@ -39,9 +39,9 @@
  */
 package org.glassfish.hk2.runlevel;
 
-import java.lang.annotation.Annotation;
-
 import org.glassfish.hk2.api.AnnotationLiteral;
+import org.glassfish.hk2.api.DuplicateServiceException;
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.runlevel.internal.AsyncRunLevelContext;
 import org.glassfish.hk2.runlevel.internal.RunLevelControllerImpl;
@@ -70,10 +70,27 @@ public class RunLevelServiceUtilities {
     public static void enableRunLevelService(ServiceLocator locator) {
         if (locator.getService(RunLevelContext.class) != null) return;
         
-        ServiceLocatorUtilities.addClasses(locator,
+        try {
+            ServiceLocatorUtilities.addClasses(locator, true,
                 RunLevelContext.class,
                 AsyncRunLevelContext.class,
                 RunLevelControllerImpl.class);
+        }
+        catch (MultiException me) {
+            if (!isDupException(me)) throw me;
+        }
+    }
+    
+    private static boolean isDupException(MultiException me) {
+        boolean atLeastOne = false;
+        
+        for (Throwable error : me.getErrors()) {
+            atLeastOne = true;
+            
+            if (!(error instanceof DuplicateServiceException)) return false;
+        }
+        
+        return atLeastOne;
     }
     
     /**

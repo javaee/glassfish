@@ -40,6 +40,8 @@
 
 package org.glassfish.hk2.extras;
 
+import org.glassfish.hk2.api.DuplicateServiceException;
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.messaging.TopicDistributionService;
@@ -80,7 +82,12 @@ public class ExtrasUtilities {
      */
     public static void enableDefaultInterceptorServiceImplementation(ServiceLocator locator) {
         if (locator.getBestDescriptor(BuilderHelper.createContractFilter(DefaultInterceptionService.class.getName())) == null) {
-            ServiceLocatorUtilities.addClasses(locator, DefaultInterceptionService.class);
+            try {
+                ServiceLocatorUtilities.addClasses(locator, true, DefaultInterceptionService.class);
+            }
+            catch (MultiException me) {
+                if (!isDupException(me)) throw me;
+            }
         }
     }
     
@@ -95,7 +102,12 @@ public class ExtrasUtilities {
     public static void enableOperations(ServiceLocator locator) {
         if (locator.getBestDescriptor(BuilderHelper.createContractFilter(OperationManagerImpl.class.getName())) != null) return;
         
-        ServiceLocatorUtilities.addClasses(locator, OperationManagerImpl.class);
+        try {
+            ServiceLocatorUtilities.addClasses(locator, true, OperationManagerImpl.class);
+        }
+        catch (MultiException me) {
+            if (!isDupException(me)) throw me;
+        }
     }
     
     private final static String BRIDGE_NAME_PREFIX = "LocatorBridge(";
@@ -201,7 +213,24 @@ public class ExtrasUtilities {
             return;
         }
 
-        ServiceLocatorUtilities.addClasses(locator, DefaultTopicDistributionService.class);
+        try {
+            ServiceLocatorUtilities.addClasses(locator, true, DefaultTopicDistributionService.class);
+        }
+        catch (MultiException me) {
+            if (!isDupException(me)) throw me;
+        }
+    }
+    
+    private static boolean isDupException(MultiException me) {
+        boolean atLeastOne = false;
+        
+        for (Throwable error : me.getErrors()) {
+            atLeastOne = true;
+            
+            if (!(error instanceof DuplicateServiceException)) return false;
+        }
+        
+        return atLeastOne;
     }
 
 }
