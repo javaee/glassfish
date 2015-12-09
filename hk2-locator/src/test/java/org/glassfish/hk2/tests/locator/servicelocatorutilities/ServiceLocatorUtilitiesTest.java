@@ -47,6 +47,7 @@ import javax.inject.Singleton;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.AnnotationLiteral;
 import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.DuplicateServiceException;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ErrorService;
@@ -901,6 +902,54 @@ public class ServiceLocatorUtilitiesTest {
         
         descriptors = locator.getDescriptors(filter);
         Assert.assertEquals(1, descriptors.size());
+        
+        
+    }
+    
+    /**
+     * Tests addClasses with factories can be idempotent
+     */
+    @Test
+    public void testIdempotentAddClassesThatAreFactories() {
+        ServiceLocator locator = uniqueCreate();
+        
+        ServiceLocatorUtilities.addClasses(locator, true, RedFactory.class);
+        
+        {
+            Filter filter1 = BuilderHelper.createContractFilter(RedFactory.class.getName());
+            List<ActiveDescriptor<?>> descriptors1 = locator.getDescriptors(filter1);
+            Assert.assertEquals(1, descriptors1.size());
+        }
+        
+        {
+            Filter filter2 = BuilderHelper.createContractFilter(Red.class.getName());
+            List<ActiveDescriptor<?>> descriptors2 = locator.getDescriptors(filter2);
+            Assert.assertEquals(1, descriptors2.size());
+        }
+        
+        try {
+            ServiceLocatorUtilities.addClasses(locator, true, RedFactory.class);
+            Assert.fail("Already have a factory service that should match perfectly");
+        }
+        catch (MultiException fail) {
+            List<Throwable> errors = fail.getErrors();
+            Assert.assertEquals(2, errors.size());
+            for (Throwable error : errors) {
+                Assert.assertTrue(error instanceof DuplicateServiceException);
+            }
+        }
+        
+        {
+            Filter filter1 = BuilderHelper.createContractFilter(RedFactory.class.getName());
+            List<ActiveDescriptor<?>> descriptors1 = locator.getDescriptors(filter1);
+            Assert.assertEquals(1, descriptors1.size());
+        }
+        
+        {
+            Filter filter2 = BuilderHelper.createContractFilter(Red.class.getName());
+            List<ActiveDescriptor<?>> descriptors2 = locator.getDescriptors(filter2);
+            Assert.assertEquals(1, descriptors2.size());
+        }
         
         
     }
