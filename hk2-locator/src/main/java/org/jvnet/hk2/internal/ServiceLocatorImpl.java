@@ -77,6 +77,7 @@ import org.glassfish.hk2.api.ClassAnalyzer;
 import org.glassfish.hk2.api.Context;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorVisibility;
+import org.glassfish.hk2.api.DuplicateServiceException;
 import org.glassfish.hk2.api.DynamicConfigurationListener;
 import org.glassfish.hk2.api.ErrorService;
 import org.glassfish.hk2.api.ErrorType;
@@ -1696,8 +1697,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             for (ActiveDescriptor<?> aValidatedDescriptor : allValidatedDescriptors) {
                 for (Filter idempotentFilter : idempotentFilters) {
                     if (BuilderHelper.filterMatches(aValidatedDescriptor, idempotentFilter)) {
-                        idempotentFailures.add(new IllegalStateException("The idempotentFilter " + idempotentFilter +
-                                " found a service that matched: " + aValidatedDescriptor));
+                        idempotentFailures.add(new DuplicateServiceException(aValidatedDescriptor));
                     }
                     
                 }

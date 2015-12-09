@@ -43,6 +43,7 @@ import java.util.List;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.DuplicateServiceException;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.Filter;
@@ -50,6 +51,7 @@ import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -95,7 +97,10 @@ public class IdempotentTest {
             catch (MultiException me) {
                 List<Throwable> errors = me.getErrors();
                 Assert.assertEquals(1, errors.size());
-                Assert.assertTrue(errors.get(0) instanceof IllegalStateException);
+                Assert.assertTrue(errors.get(0) instanceof DuplicateServiceException);
+                
+                DuplicateServiceException dse = (DuplicateServiceException) errors.get(0);
+                Assert.assertTrue(DescriptorImpl.descriptorEquals(addMeOnce, dse.getExistingDescriptor()));
             }
         }
         

@@ -277,7 +277,7 @@ public class BuilderHelper {
 
             @Override
             public boolean matches(Descriptor d) {
-                return filterDescriptor.equals(d);
+                return DescriptorImpl.descriptorEquals(filterDescriptor, d);
             }
 
             @Override

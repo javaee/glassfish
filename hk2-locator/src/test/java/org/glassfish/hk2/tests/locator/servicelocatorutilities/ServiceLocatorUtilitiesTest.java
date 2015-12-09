@@ -41,13 +41,16 @@
 package org.glassfish.hk2.tests.locator.servicelocatorutilities;
 
 import java.util.List;
+
 import javax.inject.Singleton;
+
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.AnnotationLiteral;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.ErrorService;
+import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.Immediate;
 import org.glassfish.hk2.api.InheritableThread;
 import org.glassfish.hk2.api.MultiException;
@@ -873,6 +876,33 @@ public class ServiceLocatorUtilitiesTest {
 
         Assert.assertTrue(fromClass.equals(fromUtility));
         Assert.assertTrue(fromUtility.equals(fromClass));
+    }
+    
+    /**
+     * Tests addClasses can be idempotent
+     */
+    @Test
+    public void testIdempotentAddClasses() {
+        ServiceLocator locator = uniqueCreate();
+        
+        ServiceLocatorUtilities.addClasses(locator, true, SimpleService.class);
+        
+        Filter filter = BuilderHelper.createContractFilter(SimpleService.class.getName());
+        List<ActiveDescriptor<?>> descriptors = locator.getDescriptors(filter);
+        Assert.assertEquals(1, descriptors.size());
+        
+        try {
+            ServiceLocatorUtilities.addClasses(locator, true, SimpleService.class);
+            Assert.fail("Already have a service that should match perfectly");
+        }
+        catch (MultiException fail) {
+            // Expected
+        }
+        
+        descriptors = locator.getDescriptors(filter);
+        Assert.assertEquals(1, descriptors.size());
+        
+        
     }
 
     private static class BlueImpl extends AnnotationLiteral<Blue> implements Blue {

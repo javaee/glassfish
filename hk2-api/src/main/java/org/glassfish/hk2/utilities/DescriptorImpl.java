@@ -628,6 +628,46 @@ public class DescriptorImpl implements Descriptor, Externalizable {
     }
 	
 	/**
+	 * Tests if two descriptors are equal not taking into account the locator-id
+	 * and server-id by comparing the following fields:
+	 * <UL>
+     * <LI>implementation</LI>
+     * <LI>contracts</LI>
+     * <LI>name</LI>
+     * <LI>scope</LI>
+     * <LI>qualifiers</LI>
+     * <LI>descriptorType</LI>
+     * <LI>descriptorVisibility</LI>
+     * <LI>metadata</LI>
+     * <LI>proxiable</LI>
+     * <LI>proxyForSameScope</LI>
+     * <LI>analysisName</LI>
+     * </UL>
+     * 
+	 * @param a The possibly null descriptor to compare
+	 * @param b The possibly null descriptor to compare
+	 * @return true if they are the same, false otherwise
+	 */
+	public static boolean descriptorEquals(Descriptor a, Descriptor b) {
+	    if (a == null && b == null) return true;
+	    if (a == null || b == null) return false;
+        
+        if (!GeneralUtilities.safeEquals(a.getImplementation(), b.getImplementation())) return false;
+        if (!equalOrderedCollection(a.getAdvertisedContracts(), b.getAdvertisedContracts())) return false;
+        if (!GeneralUtilities.safeEquals(a.getName(), b.getName())) return false;
+        if (!GeneralUtilities.safeEquals(a.getScope(), b.getScope())) return false;
+        if (!equalOrderedCollection(a.getQualifiers(), b.getQualifiers())) return false;
+        if (!GeneralUtilities.safeEquals(a.getDescriptorType(), b.getDescriptorType())) return false;
+        if (!GeneralUtilities.safeEquals(a.getDescriptorVisibility(), b.getDescriptorVisibility())) return false;
+        if (!equalMetadata(a.getMetadata(), b.getMetadata())) return false;
+        if (!GeneralUtilities.safeEquals(a.isProxiable(), b.isProxiable())) return false;
+        if (!GeneralUtilities.safeEquals(a.isProxyForSameScope(), b.isProxyForSameScope())) return false;
+        if (!GeneralUtilities.safeEquals(a.getClassAnalysisName(), b.getClassAnalysisName())) return false;
+	    
+        return true;
+	}
+	
+	/**
 	 * This equals matches only if the following fields of the descriptor match:
 	 * <UL>
 	 * <LI>implementation</LI>
@@ -650,19 +690,7 @@ public class DescriptorImpl implements Descriptor, Externalizable {
 	    if (!(a instanceof Descriptor)) return false;
 	    Descriptor d = (Descriptor) a;
 	    
-	    if (!GeneralUtilities.safeEquals(implementation, d.getImplementation())) return false;
-	    if (!equalOrderedCollection((contracts == null) ? EMPTY_CONTRACTS_SET : contracts, d.getAdvertisedContracts())) return false;
-	    if (!GeneralUtilities.safeEquals(name, d.getName())) return false;
-	    if (!GeneralUtilities.safeEquals(scope, d.getScope())) return false;
-	    if (!equalOrderedCollection((qualifiers == null) ? EMPTY_QUALIFIER_SET : qualifiers, d.getQualifiers())) return false;
-	    if (!GeneralUtilities.safeEquals(descriptorType, d.getDescriptorType())) return false;
-	    if (!GeneralUtilities.safeEquals(descriptorVisibility, d.getDescriptorVisibility())) return false;
-	    if (!equalMetadata((metadatas == null) ? EMPTY_METADATAS_MAP : metadatas, d.getMetadata())) return false;
-	    if (!GeneralUtilities.safeEquals(proxiable, d.isProxiable())) return false;
-	    if (!GeneralUtilities.safeEquals(proxyForSameScope, d.isProxyForSameScope())) return false;
-	    if (!GeneralUtilities.safeEquals(analysisName, d.getClassAnalysisName())) return false;
-	    
-	    return true;
+	    return descriptorEquals(this, d);
 	}
 	
 	/**
