@@ -40,7 +40,11 @@
 
 package org.glassfish.hk2.tests.api;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.LinkedList;
@@ -209,6 +213,24 @@ public class MultiExceptionTest {
         
         Assert.assertTrue(asString.contains(E1));
         Assert.assertTrue(asString.contains(E2));
+    }
+
+    /**
+     * Tests that I can serialize a multi exception
+     */
+    @Test
+    public void testSerializeMultiException() throws ClassNotFoundException, IOException {
+        final MultiException me = new MultiException();
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        final ObjectOutputStream oos = new ObjectOutputStream(baos);
+        oos.writeObject(me);
+        final byte[] bits = baos.toByteArray();
+        Assert.assertNotNull(bits);
+        Assert.assertTrue(bits.length > 0);
+        final ByteArrayInputStream bais = new ByteArrayInputStream(bits);
+        final ObjectInputStream ois = new ObjectInputStream(bais);
+        final Object lazarus = ois.readObject();
+        Assert.assertTrue(lazarus instanceof MultiException);
     }
 
 }

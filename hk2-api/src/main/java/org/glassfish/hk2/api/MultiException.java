@@ -58,7 +58,7 @@ public class MultiException extends HK2RuntimeException {
      * For serialization
      */
     private static final long serialVersionUID = 2112432697858621044L;
-    private final Object lock = new Object();
+    private final Object lock = new byte[0]; // byte[0] is an arbitrary type that is Serializable
     private final List<Throwable> throwables = new LinkedList<Throwable>();
     private boolean reportToErrorService = true;
 
