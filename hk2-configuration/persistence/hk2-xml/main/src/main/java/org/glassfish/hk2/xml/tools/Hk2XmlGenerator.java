@@ -103,6 +103,9 @@ public class Hk2XmlGenerator extends AbstractProcessor {
                 }
             
                 File asFile = new File(uri);
+                if (!asFile.exists() || !asFile.canRead()) {
+                    continue;
+                }
                 try {
                     defaultClassPool.appendClassPath(asFile.getAbsolutePath());
                 }
