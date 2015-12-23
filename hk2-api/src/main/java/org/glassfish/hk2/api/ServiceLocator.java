@@ -144,8 +144,8 @@ public interface ServiceLocator {
     public <T> T getService(Type contractOrImpl, String name, Annotation... qualifiers) throws MultiException;
     
     /**
-     * Gets the all the services from this locator that implements
-     * this contract or has this implementation
+     * Gets all services from this locator that implement this contract or have this
+     * implementation and have the provided qualifiers
      * <p>
      * Use this method only if destroying the service is not important,
      * otherwise use {@link ServiceLocator#getAllServiceHandles(Class, Annotation...)}
@@ -163,8 +163,8 @@ public interface ServiceLocator {
             Annotation... qualifiers) throws MultiException;
     
     /**
-     * Gets the all the services from this locator that implements
-     * this contract or has this implementation
+     * Gets all services from this locator that implement this contract or have this
+     * implementation and have the provided qualifiers
      * <p>
      * Use this method only if destroying the service is not important,
      * otherwise use {@link ServiceLocator#getAllServiceHandles(Type, Annotation...)}
@@ -182,8 +182,7 @@ public interface ServiceLocator {
             Annotation... qualifiers) throws MultiException;
     
     /**
-     * Gets the all the services from this locator that has the given
-     * qualifier or qualifiers
+     * Gets all services from this locator that have the provided qualifiers
      * <p>
      * Use this method only if destroying the services is not important,
      * otherwise use {@link ServiceLocator#getAllServiceHandles(Annotation, Annotation...)}
@@ -201,8 +200,7 @@ public interface ServiceLocator {
             Annotation... qualifiers) throws MultiException;
     
     /**
-     * Gets the all the services from this locator that matches the
-     * {@link Filter}
+     * Gets all services from this locator that match the provided {@link Filter}
      * <p>
      * Use this method only if destroying the service is not important,
      * otherwise use {@link ServiceLocator#getAllServiceHandles(Filter)}
