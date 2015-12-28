@@ -49,8 +49,6 @@ import java.util.Set;
 
 import javax.inject.Singleton;
 
-import junit.framework.Assert;
-
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
@@ -63,6 +61,7 @@ import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.glassfish.hk2.utilities.reflection.Pretty;
