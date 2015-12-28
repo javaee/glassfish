@@ -57,7 +57,7 @@ public class Hk2LocatorUtilitiesTest {
     /**
      * Ensures filter is empty if no user services were added
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testSingleLocatorNoUserServices() {
         ServiceLocator locator = LocatorHelper.create();
         
@@ -70,7 +70,7 @@ public class Hk2LocatorUtilitiesTest {
     /**
      * Ensures filter is empty if a user services is added
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testSingleLocatorWithUserServices() {
         ServiceLocator locator = LocatorHelper.getServiceLocator(SimpleService.class);
         
@@ -88,7 +88,7 @@ public class Hk2LocatorUtilitiesTest {
     /**
      * Ensures filter is empty in a child if no services in parent or child
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testChildLocatorNoUserServices() {
         ServiceLocator locator = LocatorHelper.getServiceLocator();
         ServiceLocator child = LocatorHelper.create(locator);
@@ -101,7 +101,7 @@ public class Hk2LocatorUtilitiesTest {
     /**
      * Ensures filter is empty in a child if there is a service in the parent
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testChildLocatorUserServiceInParent() {
         ServiceLocator locator = LocatorHelper.getServiceLocator(SimpleService.class);
         ServiceLocator child = LocatorHelper.create(locator);
@@ -119,14 +119,15 @@ public class Hk2LocatorUtilitiesTest {
     /**
      * Ensures filter is not empty if there is a service in the child
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testChildLocatorUserServiceInChild() {
         ServiceLocator locator = LocatorHelper.getServiceLocator();
         ServiceLocator child = LocatorHelper.create(locator);
         ServiceLocatorUtilities.addClasses(child, SimpleService.class);
         
-        List<ActiveDescriptor<?>> parentDescriptors = child.getDescriptors(
+        List<ActiveDescriptor<?>> parentDescriptors = locator.getDescriptors(
                 Hk2LocatorUtilities.getNoInitialServicesFilter());
+        
         Assert.assertTrue(parentDescriptors.isEmpty());
         
         List<ActiveDescriptor<?>> descriptors = child.getDescriptors(
@@ -142,13 +143,13 @@ public class Hk2LocatorUtilitiesTest {
     /**
      * Ensures filter is not empty if there is a service in the child
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testChildLocatorUserServicesInBoth() {
         ServiceLocator locator = LocatorHelper.getServiceLocator(SimpleService.class);
         ServiceLocator child = LocatorHelper.create(locator);
         ServiceLocatorUtilities.addClasses(child, SimpleService.class);
         
-        List<ActiveDescriptor<?>> parentDescriptors = child.getDescriptors(
+        List<ActiveDescriptor<?>> parentDescriptors = locator.getDescriptors(
                 Hk2LocatorUtilities.getNoInitialServicesFilter());
         Assert.assertFalse(parentDescriptors.isEmpty());
         Assert.assertEquals(1, parentDescriptors.size());
