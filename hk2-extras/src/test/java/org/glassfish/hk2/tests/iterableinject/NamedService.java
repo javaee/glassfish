@@ -37,53 +37,16 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.listinject;
+package org.glassfish.hk2.tests.iterableinject;
 
-import java.util.List;
-
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.tests.extras.internal.Utilities;
-import org.junit.Assert;
-import org.junit.Test;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
  * @author jwells
  *
  */
-public class ListInjectTest {
-    public static final String ALICE = "Alice";
-    public static final String BOB = "Bob";
-    
-    @Test @org.junit.Ignore
-    public void testBasicListInjection() {
-        ServiceLocator locator = Utilities.getCleanLocator(null,
-                AliceService.class,
-                BobService.class,
-                BasicListInjectingService.class);
-        
-        BasicListInjectingService blis = locator.getService(BasicListInjectingService.class);
-        List<NamedService> allNamed = blis.getAllNamed();
-        Assert.assertEquals(2, allNamed.size());
-        
-        AliceService alice = null;
-        BobService bob = null;
-        for (NamedService ns : allNamed) {
-            if (ns instanceof AliceService) {
-                alice = (AliceService) ns;
-            }
-            else if (ns instanceof BobService) {
-                bob = (BobService) ns;
-            }
-            else {
-                Assert.fail("unknown ns type: " + ns);
-            }
-        }
-        
-        Assert.assertNotNull(alice);
-        Assert.assertNotNull(bob);
-        
-        Assert.assertEquals(ALICE, alice.getName());
-        Assert.assertEquals(BOB, bob.getName());
-    }
+@Contract
+public interface NamedService {
+    public String getName();
 
 }

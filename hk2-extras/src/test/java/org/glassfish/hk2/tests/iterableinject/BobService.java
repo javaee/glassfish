@@ -37,16 +37,24 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.listinject;
+package org.glassfish.hk2.tests.iterableinject;
 
-import org.jvnet.hk2.annotations.Contract;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 /**
  * @author jwells
  *
  */
-@Contract
-public interface NamedService {
-    public String getName();
+@Singleton @Named(IterableInjectTest.BOB)
+public class BobService implements NamedService {
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.tests.listinject.NamedService#getName()
+     */
+    @Override
+    public String getName() {
+        return IterableInjectTest.BOB;
+    }
 
 }

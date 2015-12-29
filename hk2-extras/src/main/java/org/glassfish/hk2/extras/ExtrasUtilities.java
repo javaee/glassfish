@@ -48,6 +48,7 @@ import org.glassfish.hk2.api.messaging.TopicDistributionService;
 import org.glassfish.hk2.extras.events.internal.DefaultTopicDistributionService;
 import org.glassfish.hk2.extras.hk2bridge.internal.Hk2BridgeImpl;
 import org.glassfish.hk2.extras.interception.internal.DefaultInterceptionService;
+import org.glassfish.hk2.extras.listinjection.internal.IterableJITService;
 import org.glassfish.hk2.extras.operation.internal.OperationManagerImpl;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorImpl;
@@ -205,7 +206,6 @@ public class ExtrasUtilities {
      * @param locator The service locator to enable topic distribution on.  May not be null
      */
     public static void enableTopicDistribution(ServiceLocator locator) {
-        // This is here until we move the topic distribution to the extras jar
         if (locator == null) throw new IllegalArgumentException();
 
         if (locator.getService(TopicDistributionService.class, TopicDistributionService.HK2_DEFAULT_TOPIC_DISTRIBUTOR) != null) {
@@ -219,6 +219,28 @@ public class ExtrasUtilities {
         catch (MultiException me) {
             if (!isDupException(me)) throw me;
         }
+    }
+    
+    /**
+     * Enables injection (and lookup) of multiple services of the same type
+     * by injecting java.lang.Iterable of the type to be looked up.  Care should
+     * be used when enabling this feature as it will cause services to be added
+     * to the given locator anytime that an Iterable is used for injection or
+     * lookup
+     * 
+     * @param locator The non-null locator to allow injection of java.lang.Iterable
+     * injection points and lookups
+     */
+    public static void enableIterableServiceInjection(ServiceLocator locator) {
+        if (locator == null) throw new IllegalArgumentException();
+        
+        try {
+            ServiceLocatorUtilities.addClasses(locator, true, IterableJITService.class);
+        }
+        catch (MultiException me) {
+            if (!isDupException(me)) throw me;
+        }
+        
     }
     
     private static boolean isDupException(MultiException me) {
