@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,39 +37,36 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.extras.listinjection.internal;
+package org.glassfish.hk2.tests.iterableinject;
 
-import java.util.Iterator;
+import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.Factory;
-import org.glassfish.hk2.api.IterableProvider;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
  * @author jwells
  *
  */
-public class IterableInjectionFactory implements Factory<Iterable<?>> {
-    private final IterableProvider<Object> provider;
+@Contract
+public class TernaryServices {
+    @Singleton @TernaryQualifiers(Ternary.TRUE)
+    public static class TrueOne extends TernaryServices {
+    }
     
-    @SuppressWarnings("unchecked")
-    IterableInjectionFactory(IterableProvider<?> outwardProvider) {
-        provider = (IterableProvider<Object>) outwardProvider;
+    @Singleton @TernaryQualifiers(Ternary.TRUE)
+    public static class TrueTwo extends TernaryServices {
     }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Factory#provide()
-     */
-    @Override
-    public Iterable<?> provide() {
-        return provider;
+    
+    @Singleton @TernaryQualifiers(Ternary.NEITHER)
+    public static class NeitherOne extends TernaryServices {
     }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Factory#dispose(java.lang.Object)
-     */
-    @Override
-    public void dispose(Iterable<?> instance) {
-        // Do nothing
+    
+    @Singleton @TernaryQualifiers(Ternary.NEITHER)
+    public static class NeitherTwo extends TernaryServices {
+    }
+    
+    @Singleton @TernaryQualifiers(Ternary.NEITHER)
+    public static class NeitherThree extends TernaryServices {
     }
 
 }

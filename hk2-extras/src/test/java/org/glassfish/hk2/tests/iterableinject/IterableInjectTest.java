@@ -129,5 +129,27 @@ public class IterableInjectTest {
         
         Assert.assertEquals(ALICE, alice.getName());
     }
+    
+    /**
+     * Tests that this works with a qualifier that contains values
+     */
+    @Test @org.junit.Ignore
+    public void testQualifierWithValue() {
+        ServiceLocator locator = Utilities.getCleanLocator(null,
+                TernaryServices.NeitherOne.class,
+                TernaryServices.NeitherTwo.class,
+                TernaryServices.NeitherThree.class,
+                TernaryServices.TrueOne.class,
+                TernaryServices.TrueTwo.class,
+                TernaryInjectedService.class);
+        ExtrasUtilities.enableIterableServiceInjection(locator);
+        
+        TernaryInjectedService tis = locator.getService(TernaryInjectedService.class);
+        
+        Assert.assertEquals(3, tis.getNumNeithers());
+        Assert.assertEquals(2, tis.getNumTrues());
+        Assert.assertEquals(0, tis.getNumFalses());
+        Assert.assertEquals(5, tis.getNumAlls());
+    }
 
 }

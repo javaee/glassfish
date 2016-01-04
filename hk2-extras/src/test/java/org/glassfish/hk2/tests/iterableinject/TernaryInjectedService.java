@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,39 +37,49 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.extras.listinjection.internal;
+package org.glassfish.hk2.tests.iterableinject;
 
-import java.util.Iterator;
-
-import org.glassfish.hk2.api.Factory;
-import org.glassfish.hk2.api.IterableProvider;
+import javax.inject.Inject;
 
 /**
  * @author jwells
  *
  */
-public class IterableInjectionFactory implements Factory<Iterable<?>> {
-    private final IterableProvider<Object> provider;
+public class TernaryInjectedService {
+    @Inject @TernaryQualifiers(Ternary.TRUE)
+    private Iterable<TernaryServices> trues;
     
-    @SuppressWarnings("unchecked")
-    IterableInjectionFactory(IterableProvider<?> outwardProvider) {
-        provider = (IterableProvider<Object>) outwardProvider;
+    @Inject @TernaryQualifiers(Ternary.FALSE)
+    private Iterable<TernaryServices> falses;
+    
+    @Inject @TernaryQualifiers(Ternary.NEITHER)
+    private Iterable<TernaryServices> neithers;
+    
+    @Inject
+    private Iterable<TernaryServices> alls;
+    
+    private int getCount(Iterable<?> it) {
+        int lcv = 0;
+        for (@SuppressWarnings("unused") Object i : it) {
+            lcv++;
+        }
+        return lcv;
     }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Factory#provide()
-     */
-    @Override
-    public Iterable<?> provide() {
-        return provider;
+    
+    public int getNumTrues() {
+        return getCount(trues);
     }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Factory#dispose(java.lang.Object)
-     */
-    @Override
-    public void dispose(Iterable<?> instance) {
-        // Do nothing
+    
+    public int getNumFalses() {
+        return getCount(falses);
+    }
+    
+    public int getNumNeithers() {
+        return getCount(neithers);
+    }
+    
+    public int getNumAlls() {
+        return getCount(alls);
     }
 
 }

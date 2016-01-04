@@ -37,39 +37,14 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.extras.listinjection.internal;
-
-import java.util.Iterator;
-
-import org.glassfish.hk2.api.Factory;
-import org.glassfish.hk2.api.IterableProvider;
+package org.glassfish.hk2.tests.iterableinject;
 
 /**
  * @author jwells
  *
  */
-public class IterableInjectionFactory implements Factory<Iterable<?>> {
-    private final IterableProvider<Object> provider;
-    
-    @SuppressWarnings("unchecked")
-    IterableInjectionFactory(IterableProvider<?> outwardProvider) {
-        provider = (IterableProvider<Object>) outwardProvider;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Factory#provide()
-     */
-    @Override
-    public Iterable<?> provide() {
-        return provider;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Factory#dispose(java.lang.Object)
-     */
-    @Override
-    public void dispose(Iterable<?> instance) {
-        // Do nothing
-    }
-
+public enum Ternary {
+    TRUE,
+    FALSE,
+    NEITHER
 }
