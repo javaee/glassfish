@@ -547,7 +547,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
                     "Invalid injectee with required type of " + injectee.getRequiredType() + " passed to getInjecteeDescriptor"));
         }
 
-        if (Provider.class.equals(rawType) || IterableProvider.class.equals(rawType) ) {
+        if (Provider.class.equals(rawType) || Iterable.class.equals(rawType) || IterableProvider.class.equals(rawType) ) {
             boolean isIterable = (IterableProvider.class.equals(rawType));
             
             IterableProviderImpl<?> value = new IterableProviderImpl<Object>(this,

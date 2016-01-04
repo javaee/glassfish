@@ -55,7 +55,7 @@ public class IterableInjectTest {
     /**
      * Tests the most basic iterable injection
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testBasicListInjection() {
         ServiceLocator locator = LocatorHelper.getServiceLocator(
                 AliceService.class,
@@ -93,7 +93,7 @@ public class IterableInjectTest {
     /**
      * Tests the most basic iterable injection
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testListInjectionWithQualifier() {
         ServiceLocator locator = LocatorHelper.getServiceLocator(
                 AliceService.class,
@@ -130,7 +130,7 @@ public class IterableInjectTest {
     /**
      * Tests that this works with a qualifier that contains values
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testQualifierWithValue() {
         ServiceLocator locator = LocatorHelper.getServiceLocator(
                 TernaryServices.NeitherOne.class,
