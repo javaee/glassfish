@@ -37,11 +37,10 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.iterableinject;
+package org.glassfish.hk2.tests.locator.iterableinject;
 
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.extras.ExtrasUtilities;
-import org.glassfish.hk2.tests.extras.internal.Utilities;
+import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -56,13 +55,12 @@ public class IterableInjectTest {
     /**
      * Tests the most basic iterable injection
      */
-    @Test // @org.junit.Ignore
+    @Test @org.junit.Ignore
     public void testBasicListInjection() {
-        ServiceLocator locator = Utilities.getCleanLocator(null,
+        ServiceLocator locator = LocatorHelper.getServiceLocator(
                 AliceService.class,
                 BobService.class,
                 BasicIterableInjectingService.class);
-        ExtrasUtilities.enableIterableServiceInjection(locator);
         
         BasicIterableInjectingService blis = locator.getService(BasicIterableInjectingService.class);
         Iterable<NamedService> allNamed = blis.getAllNamed();
@@ -95,13 +93,12 @@ public class IterableInjectTest {
     /**
      * Tests the most basic iterable injection
      */
-    @Test // @org.junit.Ignore
+    @Test @org.junit.Ignore
     public void testListInjectionWithQualifier() {
-        ServiceLocator locator = Utilities.getCleanLocator(null,
+        ServiceLocator locator = LocatorHelper.getServiceLocator(
                 AliceService.class,
                 BobService.class,
                 AliceIterableInjectionService.class);
-        ExtrasUtilities.enableIterableServiceInjection(locator);
         
         AliceIterableInjectionService blis = locator.getService(AliceIterableInjectionService.class);
         Iterable<NamedService> allNamed = blis.getAllAlice();
@@ -135,14 +132,13 @@ public class IterableInjectTest {
      */
     @Test @org.junit.Ignore
     public void testQualifierWithValue() {
-        ServiceLocator locator = Utilities.getCleanLocator(null,
+        ServiceLocator locator = LocatorHelper.getServiceLocator(
                 TernaryServices.NeitherOne.class,
                 TernaryServices.NeitherTwo.class,
                 TernaryServices.NeitherThree.class,
                 TernaryServices.TrueOne.class,
                 TernaryServices.TrueTwo.class,
                 TernaryInjectedService.class);
-        ExtrasUtilities.enableIterableServiceInjection(locator);
         
         TernaryInjectedService tis = locator.getService(TernaryInjectedService.class);
         

@@ -37,7 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.iterableinject;
+package org.glassfish.hk2.tests.locator.iterableinject;
 
 import javax.inject.Inject;
 import javax.inject.Named;

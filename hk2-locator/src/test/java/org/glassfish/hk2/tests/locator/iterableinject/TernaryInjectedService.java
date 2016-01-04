@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,14 +37,49 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.iterableinject;
+package org.glassfish.hk2.tests.locator.iterableinject;
+
+import javax.inject.Inject;
 
 /**
  * @author jwells
  *
  */
-public enum Ternary {
-    TRUE,
-    FALSE,
-    NEITHER
+public class TernaryInjectedService {
+    @Inject @TernaryQualifiers(Ternary.TRUE)
+    private Iterable<TernaryServices> trues;
+    
+    @Inject @TernaryQualifiers(Ternary.FALSE)
+    private Iterable<TernaryServices> falses;
+    
+    @Inject @TernaryQualifiers(Ternary.NEITHER)
+    private Iterable<TernaryServices> neithers;
+    
+    @Inject
+    private Iterable<TernaryServices> alls;
+    
+    private int getCount(Iterable<?> it) {
+        int lcv = 0;
+        for (@SuppressWarnings("unused") Object i : it) {
+            lcv++;
+        }
+        return lcv;
+    }
+    
+    public int getNumTrues() {
+        return getCount(trues);
+    }
+    
+    public int getNumFalses() {
+        return getCount(falses);
+    }
+    
+    public int getNumNeithers() {
+        return getCount(neithers);
+    }
+    
+    public int getNumAlls() {
+        return getCount(alls);
+    }
+
 }

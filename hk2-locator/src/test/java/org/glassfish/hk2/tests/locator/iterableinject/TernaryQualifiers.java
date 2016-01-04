@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,24 +37,26 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.iterableinject;
+package org.glassfish.hk2.tests.locator.iterableinject;
 
-import javax.inject.Named;
-import javax.inject.Singleton;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import javax.inject.Qualifier;
 
 /**
  * @author jwells
  *
  */
-@Singleton @Named(IterableInjectTest.ALICE)
-public class AliceService implements NamedService {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.tests.listinject.NamedService#getName()
-     */
-    @Override
-    public String getName() {
-        return IterableInjectTest.ALICE;
-    }
-
+@Qualifier
+@Retention(RUNTIME)
+@Target( { TYPE, METHOD, FIELD, PARAMETER })
+public @interface TernaryQualifiers {
+    public Ternary value();
 }

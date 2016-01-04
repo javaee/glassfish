@@ -37,16 +37,22 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.iterableinject;
+package org.glassfish.hk2.tests.locator.iterableinject;
 
-import org.jvnet.hk2.annotations.Contract;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * @author jwells
  *
  */
-@Contract
-public interface NamedService {
-    public String getName();
+@Singleton
+public class BasicIterableInjectingService {
+    @Inject
+    private Iterable<NamedService> allNamed;
+    
+    public Iterable<NamedService> getAllNamed() {
+        return allNamed;
+    }
 
 }

@@ -37,24 +37,14 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.iterableinject;
-
-import javax.inject.Named;
-import javax.inject.Singleton;
+package org.glassfish.hk2.tests.locator.iterableinject;
 
 /**
  * @author jwells
  *
  */
-@Singleton @Named(IterableInjectTest.BOB)
-public class BobService implements NamedService {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.tests.listinject.NamedService#getName()
-     */
-    @Override
-    public String getName() {
-        return IterableInjectTest.BOB;
-    }
-
+public enum Ternary {
+    TRUE,
+    FALSE,
+    NEITHER
 }

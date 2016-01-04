@@ -37,39 +37,24 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.extras.listinjection.internal;
+package org.glassfish.hk2.tests.locator.iterableinject;
 
-import java.util.Iterator;
-
-import org.glassfish.hk2.api.Factory;
-import org.glassfish.hk2.api.IterableProvider;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
 /**
  * @author jwells
  *
  */
-public class IterableInjectionFactory implements Factory<Iterable<?>> {
-    private final IterableProvider<Object> provider;
-    
-    @SuppressWarnings("unchecked")
-    IterableInjectionFactory(IterableProvider<?> outwardProvider) {
-        provider = (IterableProvider<Object>) outwardProvider;
-    }
+@Singleton @Named(IterableInjectTest.ALICE)
+public class AliceService implements NamedService {
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Factory#provide()
+     * @see org.glassfish.hk2.tests.listinject.NamedService#getName()
      */
     @Override
-    public Iterable<?> provide() {
-        return provider;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Factory#dispose(java.lang.Object)
-     */
-    @Override
-    public void dispose(Iterable<?> instance) {
-        // Do nothing
+    public String getName() {
+        return IterableInjectTest.ALICE;
     }
 
 }

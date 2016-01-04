@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,36 +37,24 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.iterableinject;
+package org.glassfish.hk2.tests.locator.iterableinject;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
-
-import org.jvnet.hk2.annotations.Contract;
 
 /**
  * @author jwells
  *
  */
-@Contract
-public class TernaryServices {
-    @Singleton @TernaryQualifiers(Ternary.TRUE)
-    public static class TrueOne extends TernaryServices {
-    }
-    
-    @Singleton @TernaryQualifiers(Ternary.TRUE)
-    public static class TrueTwo extends TernaryServices {
-    }
-    
-    @Singleton @TernaryQualifiers(Ternary.NEITHER)
-    public static class NeitherOne extends TernaryServices {
-    }
-    
-    @Singleton @TernaryQualifiers(Ternary.NEITHER)
-    public static class NeitherTwo extends TernaryServices {
-    }
-    
-    @Singleton @TernaryQualifiers(Ternary.NEITHER)
-    public static class NeitherThree extends TernaryServices {
+@Singleton @Named(IterableInjectTest.BOB)
+public class BobService implements NamedService {
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.tests.listinject.NamedService#getName()
+     */
+    @Override
+    public String getName() {
+        return IterableInjectTest.BOB;
     }
 
 }
