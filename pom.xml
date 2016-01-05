@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010-2015 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2016 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -184,12 +184,17 @@
 
     <properties>
         <java.net.username>${user.name}</java.net.username>
-        
+        <hibernate-validator.version>5.1.2.Final</hibernate-validator.version>
+        <javax.validation.version>1.1.0.Final</javax.validation.version>
+        <javax.validation.osgi.version>1.1.0</javax.validation.osgi.version>
+        <javax.el.version>2.2.5</javax.el.version>
+        <jtype.version>0.1.0</jtype.version>
+        <javassist.version>3.18.1-GA</javassist.version>
         <junit.version>4.11</junit.version>
         <asm.version>5.0.3</asm.version>
         <tiger-types.version>1.4</tiger-types.version>
         <woodstox.version>3.2.3</woodstox.version>
-        <stax-api.version>1.0-2</stax-api.version>        
+        <stax-api.version>1.0-2</stax-api.version>
         <aopalliance.version>1.0</aopalliance.version>
         <testng.version>6.8.7</testng.version>
         <assertj.version>1.4.0</assertj.version>
@@ -197,9 +202,6 @@
         <javax-inject.version>1</javax-inject.version>
         <slf4j.version>1.7.12</slf4j.version>
         <org.jboss.logging.version>3.1.0.GA</org.jboss.logging.version>
-        <javax.validation.osgi.version>1.1.0</javax.validation.osgi.version>
-        <jtype.version>0.1.0</jtype.version>        
-        <javax.el.version>2.2.5</javax.el.version>
         <findbugs.exclude />
         <findbugs.threshold>High</findbugs.threshold>
         <surefireArgLineExtra/>
@@ -983,6 +985,26 @@
                 <groupId>org.uncommons</groupId>
                 <artifactId>reportng</artifactId>
                 <version>1.1.2</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>${javax.validation.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.el</groupId>
+                <artifactId>javax.el-api</artifactId>
+                <version>${javax.el.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.javassist</groupId>
+                <artifactId>javassist</artifactId>
+                <version>${javassist.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>${hibernate-validator.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
