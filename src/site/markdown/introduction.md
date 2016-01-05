@@ -48,7 +48,8 @@ Also, Habitat has been replaced with a new interface called [ServiceLocator][ser
 + [Injection by name](introduction.html#Injection_by_name)
 + [Injection by qualifier](introduction.html#Injection_by_qualifier)
 + [Provider injection](introduction.html#Provider_injection)
-+ [IterableProvider injection](introduction.html#IterableProvider)
++ [IterableProvider injection](introduction.html#IterableProvider_injection)
++ [Iterable injection](introduction.html#Iterable_injection)
 + [Conclusion](introduction.html#Conclusion)
 
 HK2 is a declarative framework for services using annotations like [Contract][contract] and [Service][service].
@@ -300,6 +301,9 @@ public class ColorMixer {
 
 Note that if no-one ever makes a color that involves using yellow, that the YellowColor implementation class will never
 be created, since no-one ever called the [get][providerget] method of the yellowProvider field.
+
+The value passed into any [Provider][provider] injection point will be an
+instance of [IterableProvider][iterableprovider].
  
 ### IterableProvider injection
 
@@ -352,6 +356,32 @@ public class Library {
 In the above example we call the [named][iterableprovidernamed] method [IterableProvider][iterableprovider]
 in order to select the book with the given name.
 The call to [get][providerget] then just returns the book with the given name.
+
+### Iterable injection
+
+[Iterable][iterable] can be used as an injection point rather than [IterableProvider][iterableprovider].  The following code will
+work as expected:
+
+```java
+@Service
+public class Library {
+    @Inject
+    private Iterable<Book> allBooks;
+    
+    public LinkedList<Book> getAllBooks() {
+        LinkedList<Book> retVal = new LinkedList<Book>();
+        
+        for (Book book : allBooks) {
+            retVal.add(book);
+        }
+        
+        return retVal;
+    }
+}
+```java
+
+The value passed into any [Iterable][iterable] injection point will be an
+instance of [IterableProvider][iterableprovider].
  
 ### Conclusion
 
