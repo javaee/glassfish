@@ -449,6 +449,27 @@ public class BuilderHelper {
     }
     
     /**
+     * Gets the rank from the given class
+     * 
+     * @param fromClass The class to get the rank from.  Will also check all
+     * superclasses
+     * @return The rank this class should initially have, or 0 if there is
+     * no Rank annotation on this class or all its superclasses
+     */
+    public static int getRank(Class<?> fromClass) {
+        while (fromClass != null && !Object.class.equals(fromClass)) {
+            Rank rank = fromClass.getAnnotation(Rank.class);
+            if (rank != null) {
+                return rank.value();
+            }
+            
+            fromClass = fromClass.getSuperclass();
+        }
+        
+        return 0;
+    }
+    
+    /**
      * This creates a descriptor that will always return the given object.
      * The advertised contracts is given in the incoming parameter and the
      * name on the descriptor also comes from the incoming parameter.
@@ -518,11 +539,7 @@ public class BuilderHelper {
             classAnalysisName = service.analyzer();
         }
         
-        int rank = 0;
-        Rank rankAnno = constant.getClass().getAnnotation(Rank.class);
-        if (rankAnno != null) {
-            rank = rankAnno.value();
-        }
+        int rank = getRank(constant.getClass());
         
         return new ConstantActiveDescriptor<T>(
                 constant,
@@ -576,11 +593,7 @@ public class BuilderHelper {
             visibility = vi.value();
         }
         
-        int rank = 0;
-        Rank rankAnno = clazz.getAnnotation(Rank.class);
-        if (rankAnno != null) {
-            rank = rankAnno.value();
-        }
+        int rank = getRank(clazz);
         
         // TODO:  Can we get metadata from @Service?
         return new DescriptorImpl(

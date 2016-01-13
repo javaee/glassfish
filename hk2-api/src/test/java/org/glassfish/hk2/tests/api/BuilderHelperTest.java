@@ -93,6 +93,9 @@ public class BuilderHelperTest {
 	/** analyze me */
 	public final static String ANALYZE_SERVICE = "analyzeMe";
 	
+	/** Rank used in superclass tests */
+	public final static int RANK_IN_SUPERCLASS = 7;
+	
 	/**
 	 * This predicate will only have an implementation and a contract
 	 */
@@ -954,5 +957,14 @@ public class BuilderHelperTest {
         di1.addQualifier("another.qualifier.Thing");
         Assert.assertTrue(BuilderHelper.filterMatches(di1, filter));
         Assert.assertFalse(BuilderHelper.filterMatches(di2, filter));
+    }
+    
+    /**
+     * Tests that the Rank annotation can be in the superclass
+     */
+    @Test
+    public void testRankAnnotationCanBeOnSuperclass() {
+        DescriptorImpl di = BuilderHelper.createDescriptorFromClass(ClassWithRankInSuperclass.class);
+        Assert.assertEquals(RANK_IN_SUPERCLASS, di.getRanking());
     }
 }

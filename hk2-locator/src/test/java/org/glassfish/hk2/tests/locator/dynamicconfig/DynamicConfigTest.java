@@ -48,8 +48,6 @@ import java.util.Set;
 
 import javax.inject.Singleton;
 
-import junit.framework.Assert;
-
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DescriptorType;
@@ -64,6 +62,7 @@ import org.glassfish.hk2.api.ValidationService;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -80,6 +79,9 @@ public class DynamicConfigTest {
     public final static String METADATA_KEY1 = "key1";
     /** Another key used in test */
     public final static String METADATA_KEY2 = "key2";
+    
+    /** Rank from a superclass */
+    public final static int RANK_IN_SUPERCLASS = 13;
     
     /**
      * Tests that things can be dynamically added to the system
@@ -755,5 +757,25 @@ public class DynamicConfigTest {
         Assert.assertTrue(descriptor.getAdvertisedContracts().contains(AlternateService.class.getName()));
         Assert.assertTrue(descriptor.getContractTypes().contains(AlternateService.class));
         
+    }
+    
+    /**
+     * Tests that Rank in a superclass will be honored
+     */
+    @Test
+    public void testRankInSuperclass() {
+        ServiceLocator locator = LocatorHelper.create();
+        
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        DynamicConfiguration dc = dcs.createDynamicConfiguration();
+        
+        ActiveDescriptor<ClassWithRankInSuperclass> ad = dc.addActiveDescriptor(ClassWithRankInSuperclass.class);
+        
+        Assert.assertEquals(RANK_IN_SUPERCLASS, ad.getRanking());
+        
+        dc.commit();
+        
+        ActiveDescriptor<?> ad2 = locator.getBestDescriptor(BuilderHelper.createContractFilter(ClassWithRankInSuperclass.class.getName()));
+        Assert.assertEquals(RANK_IN_SUPERCLASS, ad2.getRanking());
     }
 }

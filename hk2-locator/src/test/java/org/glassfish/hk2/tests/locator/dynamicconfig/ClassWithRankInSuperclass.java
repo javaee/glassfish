@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,33 +37,12 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.api;
-
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+package org.glassfish.hk2.tests.locator.dynamicconfig;
 
 /**
- * This annotation is used to provide the initial rank of
- * a service marked with {@link org.jvnet.hk2.annotations.Service}.
- * 
  * @author jwells
  *
  */
-@Documented
-@Inherited
-@Retention(RUNTIME)
-@Target( { TYPE, METHOD })
-public @interface Rank {
-    /**
-     * The value this service should take initially
-     * 
-     * @return The value this service should take initially
-     */
-    public int value();
+public class ClassWithRankInSuperclass extends SuperclassWithRank {
+
 }

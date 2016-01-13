@@ -720,11 +720,7 @@ public class Utilities {
             visibility = vi.value();
         }
         
-        int rank = 0;
-        Rank ranking = clazz.getAnnotation(Rank.class);
-        if (ranking != null) {
-            rank = ranking.value();
-        }
+        int rank = BuilderHelper.getRank(clazz);
 
         AutoActiveDescriptor<T> retVal = new AutoActiveDescriptor<T>(
                 clazz,
