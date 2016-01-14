@@ -106,7 +106,9 @@ public class Utilities {
      *
      * @return the mode
      */
-    public static int getRunLevelMode(ServiceLocator locator, Descriptor descriptor) {
+    public static int getRunLevelMode(ServiceLocator locator, Descriptor descriptor, Integer modeOverride) {
+        if (modeOverride != null) return modeOverride;
+        
         boolean isReified = false;
         ActiveDescriptor<?> active = null;
         if (descriptor instanceof ActiveDescriptor) {

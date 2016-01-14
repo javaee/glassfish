@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2013-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -200,7 +200,7 @@ public class ValidationTest {
     /**
      * Tests that a validating service can be overridden to non-validating
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testOverrideValidationValidatingToNonValidating() {
         ServiceLocator locator = Utilities.getServiceLocator(
                 LevelFiveService.class);
@@ -218,7 +218,7 @@ public class ValidationTest {
     /**
      * Tests that a non-validating service can be overridden to validating
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testOverrideValidationNonValidatingToValidating() {
         ServiceLocator locator = Utilities.getServiceLocator(
                 NonValidatingLevelFiveService.class);
@@ -233,7 +233,6 @@ public class ValidationTest {
         }
         catch (MultiException me) {
             // Expected failure, the non-validating service is now validating!
-            
         }
     }
 
