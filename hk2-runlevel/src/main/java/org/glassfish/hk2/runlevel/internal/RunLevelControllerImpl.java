@@ -49,6 +49,7 @@ import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.runlevel.CurrentlyRunningException;
+import org.glassfish.hk2.runlevel.RunLevel;
 import org.glassfish.hk2.runlevel.RunLevelController;
 import org.glassfish.hk2.runlevel.RunLevelFuture;
 import org.jvnet.hk2.annotations.ContractsProvided;
@@ -174,6 +175,28 @@ public class RunLevelControllerImpl implements RunLevelController {
         if (cancelTimeout < 1L) throw new IllegalArgumentException();
         
         context.setCancelTimeout(cancelTimeout);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.runlevel.RunLevelController#getValidationOverride()
+     */
+    @Override
+    public Integer getValidationOverride() {
+        return context.getModeOverride();
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.runlevel.RunLevelController#setValidationOverride(java.lang.Integer)
+     */
+    @Override
+    public void setValidationOverride(Integer validationMode) {
+        if (validationMode != null &&
+                validationMode.intValue() != RunLevel.RUNLEVEL_MODE_NON_VALIDATING &&
+                validationMode.intValue() != RunLevel.RUNLEVEL_MODE_VALIDATING) {
+            throw new IllegalArgumentException("validationMode must either be validating or non validating: " + validationMode);
+        }
+        
+        context.setModeOverride(validationMode);
     }
 
 }

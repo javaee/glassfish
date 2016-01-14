@@ -122,6 +122,7 @@ public class AsyncRunLevelContext {
     private int maxThreads = Integer.MAX_VALUE;
     private RunLevelController.ThreadingPolicy policy = RunLevelController.ThreadingPolicy.FULLY_THREADED;
     private long cancelTimeout = 5 * 1000;
+    private Integer modeOverride = null;
     
     /**
      * Constructor for the guy who does the work
@@ -475,6 +476,14 @@ public class AsyncRunLevelContext {
     
     /* package */ synchronized long getCancelTimeout() {
         return cancelTimeout;
+    }
+    
+    /* package */ synchronized Integer getModeOverride() {
+        return modeOverride;
+    }
+    
+    /* package */ synchronized void setModeOverride(Integer modeOverride) {
+        this.modeOverride = modeOverride;
     }
     
     private static class RunLevelControllerThread extends Thread {

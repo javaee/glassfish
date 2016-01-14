@@ -46,6 +46,7 @@ import java.util.concurrent.TimeoutException;
 
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.runlevel.RunLevel;
 import org.glassfish.hk2.runlevel.RunLevelController;
 import org.glassfish.hk2.runlevel.RunLevelFuture;
 import org.glassfish.hk2.runlevel.tests.utilities.Utilities;
@@ -194,6 +195,46 @@ public class ValidationTest {
             Assert.assertTrue(th1.getMessage().contains(" but it has a run level of "));
         }
         
+    }
+    
+    /**
+     * Tests that a validating service can be overridden to non-validating
+     */
+    @Test @org.junit.Ignore
+    public void testOverrideValidationValidatingToNonValidating() {
+        ServiceLocator locator = Utilities.getServiceLocator(
+                LevelFiveService.class);
+        
+        RunLevelController controller = locator.getService(RunLevelController.class);
+        
+        controller.setValidationOverride(RunLevel.RUNLEVEL_MODE_NON_VALIDATING);
+        
+        LevelFiveService lfs = locator.getService(LevelFiveService.class);
+        
+        // Got it, even though it is validating!
+        Assert.assertNotNull(lfs);
+    }
+    
+    /**
+     * Tests that a non-validating service can be overridden to validating
+     */
+    @Test @org.junit.Ignore
+    public void testOverrideValidationNonValidatingToValidating() {
+        ServiceLocator locator = Utilities.getServiceLocator(
+                NonValidatingLevelFiveService.class);
+        
+        RunLevelController controller = locator.getService(RunLevelController.class);
+        
+        controller.setValidationOverride(RunLevel.RUNLEVEL_MODE_VALIDATING);
+        
+        try {
+            locator.getService(NonValidatingLevelFiveService.class);
+            Assert.fail("Should have failed, service is now validating");
+        }
+        catch (MultiException me) {
+            // Expected failure, the non-validating service is now validating!
+            
+        }
     }
 
 }
