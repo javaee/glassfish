@@ -71,4 +71,14 @@ public interface LargeInterface {
     public short methodShort(short param);
     public List<String> methodDeclared(Map<Object, String> param, String param1, Random param2);
     
+    public boolean[] methodBooleanArray(boolean[] param);
+    public byte[][][][] methodByteArray(byte[] param);
+    public char[] methodCharArray(char[][] param);
+    public double[][] methodDoubleArray(double[][][] param);
+    public float[] methodFloatArray(float[][] param);
+    public int[][] methodIntArray(int[] param);
+    public long[] methodIntArray(long[][][][][] param);
+    public short[] methodShortArray(short param);
+    public List<String>[] methodDeclaredArray(Map<Object, String>[] param, String[] param1, Random... param2);
+    
 }

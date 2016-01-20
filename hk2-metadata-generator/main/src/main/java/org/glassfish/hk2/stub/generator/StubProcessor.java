@@ -56,6 +56,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
@@ -185,7 +186,7 @@ public class StubProcessor extends AbstractProcessor {
         }
         
         TypeMirror returnType = abstractMethod.getReturnType();
-        TypeMirrorOutputs returnOutputs = typeMirrorToString(returnType);
+        TypeMirrorOutputs returnOutputs = typeMirrorToString(returnType, false);
         
         writer.append(returnOutputs.leftHandSide + " " + abstractMethod.getSimpleName() + "(");
         
@@ -196,14 +197,16 @@ public class StubProcessor extends AbstractProcessor {
         for (VariableElement variable : parameterElements) {
             TypeMirror variableAsType = variable.asType();
             
-            TypeMirrorOutputs paramOutputs = typeMirrorToString(variableAsType);
+            boolean varArgs = abstractMethod.isVarArgs() && ((lcv + 1) == numParams);
+            
+            TypeMirrorOutputs paramOutputs = typeMirrorToString(variableAsType, varArgs);
             if (lcv > 0) {
                 writer.append(", ");
             }
             
             writer.append(paramOutputs.leftHandSide);
             
-            if (abstractMethod.isVarArgs() && ((lcv + 1) == numParams)) {
+            if (varArgs) {
                 writer.append("...");
             }
             
@@ -214,14 +217,14 @@ public class StubProcessor extends AbstractProcessor {
         writer.append(") {\n        return " + returnOutputs.body + ";\n    }\n\n");
     }
     
-    private TypeMirrorOutputs typeMirrorToString(TypeMirror mirror) throws IOException {
+    private TypeMirrorOutputs typeMirrorToString(TypeMirror mirror, boolean varArg) throws IOException {
         Types typeUtils = processingEnv.getTypeUtils();
         
         TypeKind returnKind = mirror.getKind();
         
         switch (returnKind) {
         case ARRAY:
-            throw new AssertionError("array types not yet implemented");
+            return new TypeMirrorOutputs(arrayTypeToString((ArrayType) mirror, varArg), "null");
         case VOID:
             return new TypeMirrorOutputs("void", "");
         case BOOLEAN:
@@ -246,6 +249,27 @@ public class StubProcessor extends AbstractProcessor {
         default:
             throw new IOException("Unknown kind: " + returnKind);
         }
+        
+    }
+    
+    private String arrayTypeToString(ArrayType arrayType, boolean varArgs) throws IOException {
+        int numBraces = (varArgs) ? 0 : 1 ;
+        
+        TypeMirror arrayOfType = arrayType.getComponentType();
+        while (arrayOfType instanceof ArrayType) {
+            numBraces++;
+            
+            arrayOfType = ((ArrayType) arrayOfType).getComponentType();
+        }
+        
+        TypeMirrorOutputs underlyingType = typeMirrorToString(arrayOfType, false);
+        
+        StringBuffer sb = new StringBuffer(underlyingType.leftHandSide);
+        for (int lcv = 0; lcv < numBraces; lcv++) {
+            sb.append("[]");
+        }
+        
+        return sb.toString();
         
     }
     
