@@ -60,8 +60,11 @@ import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.DescriptorImpl;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Test;
+import org.jvnet.hk2.metadata.tests.stub.LargeInterface;
 
 /**
  * Tests for the inhabitant generator
@@ -503,8 +506,20 @@ public class InhabitantsGeneratorTest {
             DescriptorImpl di = new DescriptorImpl();
             di.setImplementation("org.jvnet.hk2.metadata.tests.faux.stub.AbstractLargeInterface_hk2Stub");
             di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.faux.stub.AbstractLargeInterface_hk2Stub");
+            di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.stub.LargeInterface");
             di.setScope(Singleton.class.getName());
             di.setRanking(1);
+        
+            EXPECTED_DESCRIPTORS.put(di, 1);
+        }
+        
+        {
+            // This descriptor is the provide method for a factory with @ProxyForSameScope with no explicit value set (should be true)
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation("org.jvnet.hk2.metadata.tests.stub.impl.NotUseableLargeInterface");
+            di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.stub.impl.NotUseableLargeInterface");
+            di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.stub.LargeInterface");
+            di.setScope(Singleton.class.getName());
         
             EXPECTED_DESCRIPTORS.put(di, 0);
         }
@@ -533,7 +548,7 @@ public class InhabitantsGeneratorTest {
             // over the course of the lifeycle of the object) and hence must be checked
             // separately from the containsKey above
             int expectedRank = EXPECTED_DESCRIPTORS.get(di);
-            Assert.assertEquals(expectedRank, di.getRanking());
+            Assert.assertEquals("Expected Descriptor is: " + di + " with expected rank " + expectedRank, expectedRank, di.getRanking());
         }
         
         HashMap<DescriptorImpl, Integer> missing = new HashMap<DescriptorImpl, Integer>(EXPECTED_DESCRIPTORS);
@@ -574,5 +589,17 @@ public class InhabitantsGeneratorTest {
         }
         
         checkDescriptors(generatedImpls);
+    }
+    
+    /**
+     * Makes sure that the stubbed interface is used not the one from the main jar
+     */
+    @Test
+    public void testGetsStubImplementationRatherThanOneFromMain() {
+        ServiceLocator locator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
+        
+        LargeInterface li = locator.getService(LargeInterface.class);
+        
+        Assert.assertEquals(0, li.methodInt(27));
     }
 }

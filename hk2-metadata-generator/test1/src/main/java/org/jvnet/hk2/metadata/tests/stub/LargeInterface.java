@@ -43,12 +43,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.jvnet.hk2.annotations.Contract;
+
 /**
  * Imagine that this is an interface with a lot of methods on it
  * 
  * @author jwells
  *
  */
+@Contract
 public interface LargeInterface {
     
     

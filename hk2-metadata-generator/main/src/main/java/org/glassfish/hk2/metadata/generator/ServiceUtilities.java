@@ -413,10 +413,27 @@ public class ServiceUtilities {
     
     private static int getRank(Element clazz, ProcessingEnvironment processingEnv) {
         AnnotationMirror mirror = getAnnotation(clazz, Rank.class.getName(), processingEnv);
-        if (mirror == null) return 0;
+        if (mirror == null) {
+            if (ElementKind.CLASS.equals(clazz.getKind())) {
+                TypeElement typeClazz = (TypeElement) clazz;
+                
+                TypeMirror mirrorSuper = typeClazz.getSuperclass();
+                if (mirrorSuper != null) {
+                    Element elementSuper = processingEnv.getTypeUtils().asElement(mirrorSuper);
+                    
+                    if (elementSuper == null) return 0;
+                    
+                    return getRank(elementSuper, processingEnv);
+                }
+            }
+            
+            return 0;
+        }
         
         AnnotationValue annoValue = getValueFromAnnotation(mirror, processingEnv);
-        if (annoValue == null) return 0;
+        if (annoValue == null) {
+            return 0;
+        }
         
         Integer r = (Integer) annoValue.getValue();
         return r;
