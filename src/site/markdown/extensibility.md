@@ -1,6 +1,6 @@
 [//]: # ( DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER. )
 [//]: # (  )
-[//]: # ( Copyright (c) 2013-2015 Oracle and/or its affiliates. All rights reserved. )
+[//]: # ( Copyright (c) 2013-2016 Oracle and/or its affiliates. All rights reserved. )
 [//]: # (  )
 [//]: # ( The contents of this file are subject to the terms of either the GNU )
 [//]: # ( General Public License Version 2 only ("GPL") or the Common Development )
@@ -68,6 +68,7 @@ overview of each feature.  Among the set of HK2 features are:
 + [ServiceLocator to ServiceLocator Bridge](extensibility.html#ServiceLocator_to_ServiceLocator_Bridge)
 + [Error Handling](extensibility.html#Error_Handling)
 + [Operations](extensibility.html#Operations)
++ [Stub Generation](extensibility.html#Stub_Generation)
 
 ### Events
 
@@ -434,6 +435,13 @@ as each thread is generally tied to a single request.
 
 More information about HK2 Operations and an example can be found [here][operations].
 
+### Stub Generation
+
+HK2 has a [Stub][stub] annotation that can be put onto abstract classes.  The hk2-metadata-generator
+will then generate a class that implements the unimplemented methods on the abstract class.  This
+is very useful when testing as simple stubs can be made of services that would normally not work properly
+in a test environment.  For more information see [hk2-metdata-generator][hk2-metadata-generator].
+
 [apioverview]: api-overview.html
 [servicelocator]: apidocs/org/glassfish/hk2/api/ServiceLocator.html
 [context]: apidocs/org/glassfish/hk2/api/Context.html
@@ -484,3 +492,5 @@ More information about HK2 Operations and an example can be found [here][operati
 [justintimeinjectionresolver]: apidocs/org/glassfish/hk2/api/JustInTimeInjectionResolver.html
 [injectee]: apidocs/org/glassfish/hk2/api/Injectee.html
 [operations]: operations.html
+[hk2-metadata-generator]: inhabitant-generator.html
+[stub]: apidocs/org/glassfish/hk2/utilities/Stub.html

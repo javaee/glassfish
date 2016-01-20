@@ -1,6 +1,6 @@
 [//]: # ( DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER. )
 [//]: # (  )
-[//]: # ( Copyright (c) 2013-2015 Oracle and/or its affiliates. All rights reserved. )
+[//]: # ( Copyright (c) 2013-2016 Oracle and/or its affiliates. All rights reserved. )
 [//]: # (  )
 [//]: # ( The contents of this file are subject to the terms of either the GNU )
 [//]: # ( General Public License Version 2 only ("GPL") or the Common Development )
@@ -53,6 +53,7 @@ build environment.
 
 + [HK2 Metadata Generator](inhabitant-generator.html#HK2_Metadata_Generator)
 + [HK2 Inhabitant Generator](inhabitant-generator.html#HK2_Inhabitant_Generator)
++ [Stub Generation](inhabitant-generator.html#Stub_Generation)
 
 <h3>HK2 Metadata Generator</h3>
 
@@ -237,6 +238,76 @@ The ant plugin has the following options:
 + locator The name of the locator file (which is \"default\" by default)
 + noswap (true or false) if set to true the generator will overwrite files in place which is riskier but faster
 
+<h3>Stub Generation</h3>
+
+The HK2 metadata generator can also generate implementation classes based on abstract classes.  This is useful
+when testing, as it is often the case in tests that the user would like to replace some service with one
+that does nothing or does only a few special things during the test.  This is done by putting the [Stub][stub]
+annotation on an abstract class.  Any abstract methods NOT implemented by the class will have dummy implementations
+generated in a java file that also has an [Service][service] annotation.  This will then become an service in
+the Singleton scope, which should show up when using most hk2 initialization methodologies.  The benefits of
+using the [Stub][stub] annotation include:
+
++ The service need not be completely implemented.  Only those methods that need to return specific data
+needed by the test need to be implemented
++ The [Rank][rank] annotation will work when placed on the abstract class, so the stub can be given higher
+priority than the replacement class
++ Using [Stub][stub] means that this abstract class may not need to be updated if the underlying interface
+or class has an added method
++ It makes it very easy to write very simple test replacement classes
+
+In this simple example there is an interface with a large number of methods:
+
+```java
+@Contract
+public interface ManyMethodsService {
+  public void methodA();
+  public void methodB();
+  public int methodFoo();
+  public String methodBar(String input);
+  // And so on
+}
+```java
+
+Somewhere in your build there is an implementation of ManyMethodsService.  It may or may not look like this:
+
+```java
+@Service
+public class ManyMethodsServiceImpl implements ManyMethodsService {
+  // Here we really implement the interface, possibly doing JDBC or other possibly heavy operations
+}
+```java
+
+However, in the test environment there is only one or two methods that the test touches.  In this case
+we can very easily use the [Stub][stub] annotation to tell the hk2-metadata-generator to generate an
+implementation that fills in the missing methods.  This test version of the service might be
+implemented like this:
+
+```java
+@Stub @Rank(1)
+public abstract class TestManyMethodsService implements ManyMethodsService {
+  // Only implement the methods that the test actually touches, and return
+  // hard-coded data
+  public int methodFoo() {
+    return 13;
+  }
+  
+  public String methodBar(String input) {
+    return input;
+  }
+  
+  // Do not implement the other methods in the interface
+}
+```java
+
+If the hk2-metadata-generator is in the classpath of the test build then it will see the [Stub][stub]
+annotation and will generate a java file with the unimplemented methods implemented, returning
+either null or 0 or "a" along with an added [Service][service] annotation.  Since the [Rank][rank]
+annotation is set to 1 in the abstract class (TestManyMethodsService) it will be used in favor of the true
+implementation (ManyMethodsServiceImpl).
+
 [service]: apidocs/org/jvnet/hk2/annotations/Service.html
 [contract]: apidocs/org/jvnet/hk2/annotations/Contract.html
 [habitatgenerator]: apidocs/org/jvnet/hk2/generator/HabitatGenerator.html
+[stub]: apidocs/org/jvnet/hk2/utilities/Stub.html
+[rank]: apidocs/org/glassfish/hk2/api/Rank.html
