@@ -39,6 +39,10 @@
  */
 package org.jvnet.hk2.metadata.tests.stub;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
 /**
  * Imagine that this is an interface with a lot of methods on it
  * 
@@ -46,9 +50,25 @@ package org.jvnet.hk2.metadata.tests.stub;
  *
  */
 public interface LargeInterface {
-    public void method1();
     
-    public boolean method2(boolean param);
     
-    public int method3(int param);
+    /**
+     * This method will not be overridden
+     * 
+     * @param param
+     * @return
+     */
+    public boolean notOverridden(boolean param);
+    
+    public void methodVoids();
+    public boolean methodBoolean(boolean param);
+    public byte methodByte(byte param);
+    public char methodChar(char param);
+    public double methodDouble(double param);
+    public float methodFloat(float param);
+    public int methodInt(int param);
+    public long methodInt(long param);
+    public short methodShort(short param);
+    public List<String> methodDeclared(Map<Object, String> param, String param1, Random param2);
+    
 }

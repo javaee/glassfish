@@ -220,6 +220,8 @@ public class StubProcessor extends AbstractProcessor {
         TypeKind returnKind = mirror.getKind();
         
         switch (returnKind) {
+        case ARRAY:
+            throw new AssertionError("array types not yet implemented");
         case VOID:
             return new TypeMirrorOutputs("void", "");
         case BOOLEAN:

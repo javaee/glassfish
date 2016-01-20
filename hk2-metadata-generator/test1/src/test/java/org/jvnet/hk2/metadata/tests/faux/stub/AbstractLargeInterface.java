@@ -53,10 +53,10 @@ public abstract class AbstractLargeInterface implements LargeInterface {
 
     
     /* (non-Javadoc)
-     * @see org.jvnet.hk2.testing.stub.LargeInterface#method2(boolean)
+     * @see org.jvnet.hk2.testing.stub.LargeInterface#notOverridden(boolean)
      */
     @Override
-    public boolean method2(boolean param) {
+    public boolean notOverridden(boolean param) {
         return param;
     }
 

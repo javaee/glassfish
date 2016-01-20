@@ -504,6 +504,7 @@ public class InhabitantsGeneratorTest {
             di.setImplementation("org.jvnet.hk2.metadata.tests.faux.stub.AbstractLargeInterface_hk2Stub");
             di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.faux.stub.AbstractLargeInterface_hk2Stub");
             di.setScope(Singleton.class.getName());
+            di.setRanking(1);
         
             EXPECTED_DESCRIPTORS.put(di, 0);
         }
