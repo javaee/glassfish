@@ -1,2 +1,2 @@
 org.glassfish.hk2.metadata.generator.ServiceProcessor
-
+org.glassfish.hk2.stub.generator.StubProcessor

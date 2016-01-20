@@ -591,7 +591,7 @@ public class ServiceUtilities {
         return true;
     }
     
-    private static String nameToString(Name name) {
+    public static String nameToString(Name name) {
         if (name == null) return null;
         return name.toString();
     }
@@ -634,5 +634,4 @@ public class ServiceUtilities {
         return getValueFromAnnotation(annotation, "value", processingEnv);
         
     }
-
 }

@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -496,12 +497,21 @@ public class InhabitantsGeneratorTest {
         
             EXPECTED_DESCRIPTORS.put(di, 0);
         }
+        
+        {
+            // This descriptor is the provide method for a factory with @ProxyForSameScope with no explicit value set (should be true)
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation("org.jvnet.hk2.metadata.tests.faux.stub.AbstractLargeInterface_hk2Stub");
+            di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.faux.stub.AbstractLargeInterface_hk2Stub");
+            di.setScope(Singleton.class.getName());
+        
+            EXPECTED_DESCRIPTORS.put(di, 0);
+        }
     }
     
-    private Set<DescriptorImpl> getAllDescriptorsFromInputStream(InputStream is) throws IOException {
+    private void getAllDescriptorsFromInputStream(InputStream is, Set<DescriptorImpl> retVal) throws IOException {
         BufferedReader pr = new BufferedReader(new InputStreamReader(is));
         
-        Set<DescriptorImpl> retVal = new HashSet<DescriptorImpl>();
         while (pr.ready()) {
             DescriptorImpl di = new DescriptorImpl();
             
@@ -511,8 +521,6 @@ public class InhabitantsGeneratorTest {
             
             retVal.add(di);
         }
-        
-        return retVal;
     }
     
     private void checkDescriptors(Set<DescriptorImpl> dis) {
@@ -544,19 +552,26 @@ public class InhabitantsGeneratorTest {
      */
     @Test // @org.junit.Ignore
     public void testDefaultDirectoryGeneration() throws IOException {
-        URL defaultFile = getClass().getClassLoader().getResource(ZIP_FILE_INHABITANT_NAME);
-        Assert.assertNotNull(defaultFile);
+        Enumeration<URL> defaultFiles = getClass().getClassLoader().getResources(ZIP_FILE_INHABITANT_NAME);
+        Assert.assertNotNull(defaultFiles);
         
-        InputStream defaultFileStream = defaultFile.openStream();
-        try {
-            Set<DescriptorImpl> generatedImpls = getAllDescriptorsFromInputStream(
-                    defaultFile.openStream());
+        Set<DescriptorImpl> generatedImpls = new HashSet<DescriptorImpl>();
+        while (defaultFiles.hasMoreElements()) {
+            URL defaultFile = defaultFiles.nextElement();
             
-            checkDescriptors(generatedImpls);
+            InputStream defaultFileStream = defaultFile.openStream();
+            try {
+                getAllDescriptorsFromInputStream(
+                    defaultFile.openStream(), generatedImpls);
+            
+                
+            }
+            finally {
+                // The test should be clean
+                defaultFileStream.close();
+            }
         }
-        finally {
-            // The test should be clean
-            defaultFileStream.close();
-        }
+        
+        checkDescriptors(generatedImpls);
     }
 }
