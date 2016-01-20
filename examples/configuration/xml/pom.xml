@@ -46,7 +46,7 @@
     <parent>
         <groupId>org.glassfish.hk2</groupId>
         <artifactId>configuration-examples</artifactId>
-        <version>2.5.0-b02-SNAPSHOT</version>
+        <version>2.5.0-b02</version>
     </parent>
 
     <artifactId>xml-configuration-example</artifactId>
