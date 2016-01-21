@@ -49,6 +49,7 @@ import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -73,6 +74,13 @@ import org.glassfish.hk2.metadata.generator.ServiceUtilities;
  */
 @SupportedAnnotationTypes("org.glassfish.hk2.utilities.Stub")
 public class StubProcessor extends AbstractProcessor {
+    /**
+     * Gets rid of warnings and this code should work with all source versions
+     */
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return SourceVersion.latest();
+    }
 
     /* (non-Javadoc)
      * @see javax.annotation.processing.AbstractProcessor#process(java.util.Set, javax.annotation.processing.RoundEnvironment)
