@@ -147,7 +147,8 @@ public class StubProcessor extends AbstractProcessor {
         
         PackageElement packageElement = elementUtils.getPackageOf(clazz);
         String packageName = ServiceUtilities.nameToString(packageElement.getQualifiedName());
-        String clazzSimpleName = ServiceUtilities.nameToString(clazz.getQualifiedName());
+        String clazzQualifiedName = ServiceUtilities.nameToString(clazz.getQualifiedName());
+        String clazzSimpleName = ServiceUtilities.nameToString(clazz.getSimpleName());
         
         String stubClazzName = ServiceUtilities.nameToString(clazz.getSimpleName()) + "_hk2Stub";
         
@@ -160,7 +161,8 @@ public class StubProcessor extends AbstractProcessor {
             writer.append("package " + packageName + ";\n\n");
             
             writer.append("import javax.annotation.Generated;\n");
-            writer.append("import org.jvnet.hk2.annotations.Service;\n\n");
+            writer.append("import org.jvnet.hk2.annotations.Service;\n");
+            writer.append("import " + clazzQualifiedName + ";\n\n");
             
             writer.append("@Service @Generated(\"org.glassfish.hk2.stub.generator.StubProcessor\")\n");
             writer.append("public class " + stubClazzName + " extends " + clazzSimpleName + " {\n");

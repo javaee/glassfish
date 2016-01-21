@@ -47,5 +47,27 @@ public abstract class AbstractBaseService {
     public void aMethod() {}
     
     public abstract int bMethod(float[] param);
+    
+    public abstract InnerEnum cMethod(InnerEnum param0);
+    
+    public abstract InnerInterface dMethod(InnerInterface param0);
+    
+    public abstract InnerClass eMethod(InnerClass param0);
+    
+    public abstract double[] fMethod(InnerInterface param0[], InnerClass param1[], InnerEnum[]... param2);
+    
+    public enum InnerEnum {
+        A, B
+    }
+    
+    public interface InnerInterface {
+        public int innerMethod();
+    }
+    
+    public class InnerClass {
+        public int innerMethod() {
+            return 12;
+        }
+    }
 
 }
