@@ -64,6 +64,7 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Test;
+import org.jvnet.hk2.metadata.tests.faux.stub.AbstractService;
 import org.jvnet.hk2.metadata.tests.stub.LargeInterface;
 
 /**
@@ -523,6 +524,28 @@ public class InhabitantsGeneratorTest {
         
             EXPECTED_DESCRIPTORS.put(di, 0);
         }
+        
+        {
+            // This descriptor is the provide method for a factory with @ProxyForSameScope with no explicit value set (should be true)
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation("org.jvnet.hk2.metadata.tests.faux.stub.RandomBeanStub_hk2Stub");
+            di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.faux.stub.RandomBeanStub_hk2Stub");
+            di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.faux.stub.AbstractService$RandomBeanStub");
+            di.setScope(Singleton.class.getName());
+        
+            EXPECTED_DESCRIPTORS.put(di, 1);
+        }
+        
+        {
+            // This descriptor is the provide method for a factory with @ProxyForSameScope with no explicit value set (should be true)
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation("org.jvnet.hk2.metadata.tests.faux.stub.AbstractService_hk2Stub");
+            di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.faux.stub.AbstractService_hk2Stub");
+            di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.faux.stub.AbstractService");
+            di.setScope(Singleton.class.getName());
+        
+            EXPECTED_DESCRIPTORS.put(di, 1);
+        }
     }
     
     private void getAllDescriptorsFromInputStream(InputStream is, Set<DescriptorImpl> retVal) throws IOException {
@@ -601,5 +624,17 @@ public class InhabitantsGeneratorTest {
         LargeInterface li = locator.getService(LargeInterface.class);
         
         Assert.assertEquals(0, li.methodInt(27));
+    }
+    
+    /**
+     * Makes sure that the stubbed interface is used not the one from the main jar
+     */
+    @Test
+    public void testInnerClassCanBeStubbed() {
+        ServiceLocator locator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
+        
+        AbstractService li = locator.getService(AbstractService.class);
+        
+        Assert.assertNotNull(li.getRandomBeanStub());
     }
 }

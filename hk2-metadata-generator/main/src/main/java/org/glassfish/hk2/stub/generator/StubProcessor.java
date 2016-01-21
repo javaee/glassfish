@@ -147,15 +147,13 @@ public class StubProcessor extends AbstractProcessor {
         
         PackageElement packageElement = elementUtils.getPackageOf(clazz);
         String packageName = ServiceUtilities.nameToString(packageElement.getQualifiedName());
-        String clazzSimpleName = ServiceUtilities.nameToString(clazz.getSimpleName());
+        String clazzSimpleName = ServiceUtilities.nameToString(clazz.getQualifiedName());
         
-        String stubClazzName = clazzSimpleName + "_hk2Stub";
-        
-        String fileName = stubClazzName;
+        String stubClazzName = ServiceUtilities.nameToString(clazz.getSimpleName()) + "_hk2Stub";
         
         Filer filer = processingEnv.getFiler();
         
-        JavaFileObject jfo = filer.createSourceFile(fileName, clazz);
+        JavaFileObject jfo = filer.createSourceFile(stubClazzName, clazz);
         
         Writer writer = jfo.openWriter();
         try {
@@ -165,7 +163,7 @@ public class StubProcessor extends AbstractProcessor {
             writer.append("import org.jvnet.hk2.annotations.Service;\n\n");
             
             writer.append("@Service @Generated(\"org.glassfish.hk2.stub.generator.StubProcessor\")\n");
-            writer.append("public class " + stubClazzName + " extends " + clazzSimpleName + "{\n");
+            writer.append("public class " + stubClazzName + " extends " + clazzSimpleName + " {\n");
             
             for (ExecutableElement abstractMethod : abstractMethods) {
                 writeAbstractMethod(abstractMethod, writer); 
