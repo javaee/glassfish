@@ -232,5 +232,54 @@ public class MultiExceptionTest {
         final Object lazarus = ois.readObject();
         Assert.assertTrue(lazarus instanceof MultiException);
     }
+    
+    /**
+     * Tests that we can concurrently access the list of errors
+     * 
+     * @throws InterruptedException
+     */
+    @SuppressWarnings("unused")
+    @Test @org.junit.Ignore
+    public void testConcurrentAccessOfErrors() throws InterruptedException {
+        MultiException me = new MultiException(new IllegalStateException("Initial Exception"));
+        
+        Thread t = new Thread(new ExceptionChangerRunner(20, me));
+        
+        t.start();
+        
+        for (Throwable th : me.getErrors()) {
+            Thread.sleep(10);
+        }
+    }
+    
+    private static class ExceptionChangerRunner implements Runnable {
+        private final int numToAdd;
+        private final MultiException me;
+        
+        private ExceptionChangerRunner(int numToAdd, MultiException me) {
+            this.numToAdd = numToAdd;
+            this.me = me;
+        }
+
+        /* (non-Javadoc)
+         * @see java.lang.Runnable#run()
+         */
+        @Override
+        public void run() {
+            for (int lcv = 0; lcv < numToAdd; lcv++) {
+                me.addError(new IllegalStateException("Adding exception " + lcv));
+                
+                try {
+                    Thread.sleep(5);
+                }
+                catch (InterruptedException ie) {
+                    throw new RuntimeException(ie);
+                }
+                
+            }
+            
+        }
+        
+    }
 
 }
