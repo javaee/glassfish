@@ -41,7 +41,6 @@ package org.glassfish.hk2.api;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -131,7 +130,7 @@ public class MultiException extends HK2RuntimeException {
      */
     public List<Throwable> getErrors() {
         synchronized (lock) {
-            return Collections.unmodifiableList(new LinkedList<Throwable>(throwables));
+            return new LinkedList<Throwable>(throwables);
         }
     }
 
