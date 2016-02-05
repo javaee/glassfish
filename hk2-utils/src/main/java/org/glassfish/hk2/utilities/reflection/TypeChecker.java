@@ -58,7 +58,9 @@ public class TypeChecker {
      * from the given beanType.  In otherwords, if<code>
      * requiredType = beanType
      * </code>
-     * without any cast
+     * without any cast.  It should be noted that this
+     * checker is using the CDI rules (as stated in CDI version 1.1
+     * in section 
      * 
      * @param requiredType The type being assigned into
      * @param beanType the type being assigned
