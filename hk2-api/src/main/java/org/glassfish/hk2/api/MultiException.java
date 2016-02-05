@@ -131,7 +131,7 @@ public class MultiException extends HK2RuntimeException {
      */
     public List<Throwable> getErrors() {
         synchronized (lock) {
-            return Collections.unmodifiableList(throwables);
+            return Collections.unmodifiableList(new LinkedList<Throwable>(throwables));
         }
     }
 

@@ -234,12 +234,13 @@ public class MultiExceptionTest {
     }
     
     /**
-     * Tests that we can concurrently access the list of errors
+     * Tests that we can concurrently access the list of errors.  This
+     * test will fail out with a ConcurrentModificationException
+     * if the implementation is bad
      * 
      * @throws InterruptedException
      */
-    @SuppressWarnings("unused")
-    @Test @org.junit.Ignore
+    @Test
     public void testConcurrentAccessOfErrors() throws InterruptedException {
         MultiException me = new MultiException(new IllegalStateException("Initial Exception"));
         
@@ -249,6 +250,8 @@ public class MultiExceptionTest {
         
         for (Throwable th : me.getErrors()) {
             Thread.sleep(10);
+            
+            Assert.assertNotNull(th);
         }
     }
     
