@@ -39,47 +39,14 @@
  */
 package org.jvnet.hk2.metadata.tests.faux.stub;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
-import org.glassfish.hk2.api.Rank;
-import org.glassfish.hk2.utilities.Stub;
 import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.metadata.tests.InhabitantsGeneratorTest;
-import org.jvnet.hk2.metadata.tests.stub.RandomBean;
-import org.jvnet.hk2.metadata.tests.stub.impl.AbstractBaseService;
 
 /**
  * @author jwells
  *
  */
-@Contract @Rank(1) @Stub
-public abstract class AbstractService extends AbstractBaseService {
-    @Inject
-    private RandomBeanStub randomBeanStub;
-    
-    @Contract @Rank(1) @Stub
-    public static abstract class RandomBeanStub implements RandomBean {
-    }
-    
-    public RandomBeanStub getRandomBeanStub() {
-        return randomBeanStub;
-    }
-    
-    @Stub @Named
-    public static abstract class NamedBeanStub implements NamedBean {
-        @Override
-        public String getName() {
-            return "NamedBeanStub";
-        }
-    }
-    
-    @Stub @Named(InhabitantsGeneratorTest.ALICE)
-    public static abstract class AliceBeanStub implements NamedBean {
-        @Override
-        public String getName() {
-            return InhabitantsGeneratorTest.ALICE;
-        }
-    }
-
+@Contract
+public interface NamedBean {
+    public String getName();
+    public String getAddress();
 }

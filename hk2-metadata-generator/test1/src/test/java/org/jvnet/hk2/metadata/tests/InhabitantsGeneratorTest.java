@@ -56,6 +56,7 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.Factory;
@@ -65,6 +66,7 @@ import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Test;
 import org.jvnet.hk2.metadata.tests.faux.stub.AbstractService;
+import org.jvnet.hk2.metadata.tests.faux.stub.NamedBean;
 import org.jvnet.hk2.metadata.tests.stub.LargeInterface;
 
 /**
@@ -74,6 +76,7 @@ import org.jvnet.hk2.metadata.tests.stub.LargeInterface;
  */
 public class InhabitantsGeneratorTest {
     private final static String ZIP_FILE_INHABITANT_NAME = "META-INF/hk2-locator/default";
+    public final static String ALICE = "Alice";
     
     private final static Map<DescriptorImpl, Integer> EXPECTED_DESCRIPTORS = new HashMap<DescriptorImpl, Integer>();
     
@@ -546,6 +549,30 @@ public class InhabitantsGeneratorTest {
         
             EXPECTED_DESCRIPTORS.put(di, 1);
         }
+        
+        {
+            // This is one of the generated stubs
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation("org.jvnet.hk2.metadata.tests.faux.stub.NamedBeanStub_hk2Stub");
+            di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.faux.stub.NamedBeanStub_hk2Stub");
+            di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.faux.stub.NamedBean");
+            di.setScope(Singleton.class.getName());
+            // di.setName("NamedBeanStub");
+        
+            EXPECTED_DESCRIPTORS.put(di, 0);
+        }
+        
+        {
+            // This is one of the generated stubs
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation("org.jvnet.hk2.metadata.tests.faux.stub.AliceBeanStub_hk2Stub");
+            di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.faux.stub.AliceBeanStub_hk2Stub");
+            di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.faux.stub.NamedBean");
+            di.setScope(Singleton.class.getName());
+            // di.setName(ALICE);
+        
+            EXPECTED_DESCRIPTORS.put(di, 0);
+        }
     }
     
     private void getAllDescriptorsFromInputStream(InputStream is, Set<DescriptorImpl> retVal) throws IOException {
@@ -636,5 +663,19 @@ public class InhabitantsGeneratorTest {
         AbstractService li = locator.getService(AbstractService.class);
         
         Assert.assertNotNull(li.getRandomBeanStub());
+    }
+    
+    /**
+     * Ensures that {@link javax.inject.Named} works in a stub
+     */
+    @Test @Ignore
+    public void testNamedWorks() {
+        ServiceLocator locator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
+        
+        NamedBean rawNamedService = locator.getService(NamedBean.class, "NamedBeanStub");
+        Assert.assertEquals("NamedBeanStub", rawNamedService.getName());
+        
+        NamedBean aliceService = locator.getService(NamedBean.class, ALICE);
+        Assert.assertEquals(ALICE, aliceService.getName());
     }
 }
