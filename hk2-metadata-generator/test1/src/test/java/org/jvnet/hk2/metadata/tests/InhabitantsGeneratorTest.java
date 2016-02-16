@@ -56,7 +56,6 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.Factory;
@@ -557,7 +556,8 @@ public class InhabitantsGeneratorTest {
             di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.faux.stub.NamedBeanStub_hk2Stub");
             di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.faux.stub.NamedBean");
             di.setScope(Singleton.class.getName());
-            // di.setName("NamedBeanStub");
+            di.setName("NamedBeanStub");
+            di.addQualifier(Named.class.getName());
         
             EXPECTED_DESCRIPTORS.put(di, 0);
         }
@@ -569,7 +569,8 @@ public class InhabitantsGeneratorTest {
             di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.faux.stub.AliceBeanStub_hk2Stub");
             di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.faux.stub.NamedBean");
             di.setScope(Singleton.class.getName());
-            // di.setName(ALICE);
+            di.setName(ALICE);
+            di.addQualifier(Named.class.getName());
         
             EXPECTED_DESCRIPTORS.put(di, 0);
         }
@@ -668,7 +669,7 @@ public class InhabitantsGeneratorTest {
     /**
      * Ensures that {@link javax.inject.Named} works in a stub
      */
-    @Test @Ignore
+    @Test
     public void testNamedWorks() {
         ServiceLocator locator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
         

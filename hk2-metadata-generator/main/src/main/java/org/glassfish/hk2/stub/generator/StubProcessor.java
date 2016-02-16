@@ -43,13 +43,17 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.inject.Named;
 import javax.lang.model.SourceVersion;
+import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -58,6 +62,7 @@ import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
@@ -74,6 +79,8 @@ import org.glassfish.hk2.metadata.generator.ServiceUtilities;
  */
 @SupportedAnnotationTypes("org.glassfish.hk2.utilities.Stub")
 public class StubProcessor extends AbstractProcessor {
+    private final static String NAMED_ANNO = Named.class.getName();
+    
     /**
      * Gets rid of warnings and this code should work with all source versions
      */
@@ -139,10 +146,33 @@ public class StubProcessor extends AbstractProcessor {
             abstractMethods.add(executableMethod);
         }
         
-        writeJavaFile(clazz, abstractMethods);
+        String name = null;
+        List<? extends AnnotationMirror> annotationMirrors = elementUtils.getAllAnnotationMirrors(clazz);
+        for (AnnotationMirror annotationMirror : annotationMirrors) {
+            DeclaredType annoType = annotationMirror.getAnnotationType();
+            TypeElement annoElement = (TypeElement) annoType.asElement();
+            String annoQualifiedName = ServiceUtilities.nameToString(annoElement.getQualifiedName());
+            if (!annoQualifiedName.equals(NAMED_ANNO)) continue;
+            
+            Map<? extends ExecutableElement, ? extends AnnotationValue> values = annotationMirror.getElementValues();
+            AnnotationValue value = null;
+            for (AnnotationValue v : values.values()) {
+                value = v;
+                break;
+            }
+            
+            if (value == null) {
+                name = ServiceUtilities.nameToString(clazz.getSimpleName());
+            }
+            else {
+                name = (String) value.getValue();
+            }
+        }
+        
+        writeJavaFile(clazz, abstractMethods, name);
     }
     
-    private void writeJavaFile(TypeElement clazz, Set<ExecutableElement> abstractMethods) throws IOException {
+    private void writeJavaFile(TypeElement clazz, Set<ExecutableElement> abstractMethods, String name) throws IOException {
         Elements elementUtils = processingEnv.getElementUtils();
         
         PackageElement packageElement = elementUtils.getPackageOf(clazz);
@@ -161,10 +191,16 @@ public class StubProcessor extends AbstractProcessor {
             writer.append("package " + packageName + ";\n\n");
             
             writer.append("import javax.annotation.Generated;\n");
+            if (name != null) {
+                writer.append("import javax.inject.Named;\n");
+            }
             writer.append("import org.jvnet.hk2.annotations.Service;\n");
             writer.append("import " + clazzQualifiedName + ";\n\n");
             
             writer.append("@Service @Generated(\"org.glassfish.hk2.stub.generator.StubProcessor\")\n");
+            if (name != null) {
+                writer.append("@Named(\"" + name + "\")\n");
+            }
             writer.append("public class " + stubClazzName + " extends " + clazzSimpleName + " {\n");
             
             for (ExecutableElement abstractMethod : abstractMethods) {
