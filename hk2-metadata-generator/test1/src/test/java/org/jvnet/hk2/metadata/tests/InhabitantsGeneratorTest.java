@@ -65,6 +65,7 @@ import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Test;
 import org.jvnet.hk2.metadata.tests.faux.stub.AbstractService;
+import org.jvnet.hk2.metadata.tests.faux.stub.FailingLargeInterfaceStub;
 import org.jvnet.hk2.metadata.tests.faux.stub.NamedBean;
 import org.jvnet.hk2.metadata.tests.stub.LargeInterface;
 
@@ -574,6 +575,18 @@ public class InhabitantsGeneratorTest {
         
             EXPECTED_DESCRIPTORS.put(di, 0);
         }
+        
+        {
+            // This is one of the generated stubs
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation("org.jvnet.hk2.metadata.tests.faux.stub.FailingLargeInterfaceStub_hk2Stub");
+            di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.faux.stub.FailingLargeInterfaceStub_hk2Stub");
+            di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.faux.stub.FailingLargeInterfaceStub");
+            di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.stub.LargeInterface");
+            di.setScope(Singleton.class.getName());
+        
+            EXPECTED_DESCRIPTORS.put(di, 0);
+        }
     }
     
     private void getAllDescriptorsFromInputStream(InputStream is, Set<DescriptorImpl> retVal) throws IOException {
@@ -678,5 +691,170 @@ public class InhabitantsGeneratorTest {
         
         NamedBean aliceService = locator.getService(NamedBean.class, ALICE);
         Assert.assertEquals(ALICE, aliceService.getName());
+    }
+    
+    /**
+     * Ensures that the exception version of the stub works properly
+     */
+    @Test @org.junit.Ignore
+    public void testExceptionTypeStub() {
+        ServiceLocator locator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
+        
+        FailingLargeInterfaceStub stub = locator.getService(FailingLargeInterfaceStub.class);
+        
+        Assert.assertTrue(stub.notOverridden(false));
+        
+        try {
+            stub.methodBoolean(true);
+            Assert.fail("Should have thrown exception");
+        }
+        catch (UnsupportedOperationException uoe) {
+            // ok
+        }
+        
+        try {
+            stub.methodVoids();
+            Assert.fail("Should have thrown exception");
+        }
+        catch (UnsupportedOperationException uoe) {
+            // ok
+        }
+        
+        try {
+            stub.methodByte((byte) 0);
+            Assert.fail("Should have thrown exception");
+        }
+        catch (UnsupportedOperationException uoe) {
+            // ok
+        }
+            
+        try {
+            stub.methodChar('a');
+            Assert.fail("Should have thrown exception");
+        }
+        catch (UnsupportedOperationException uoe) {
+            // ok
+        }
+        
+        try {
+            stub.methodDouble((double) 0.0);
+            Assert.fail("Should have thrown exception");
+        }
+        catch (UnsupportedOperationException uoe) {
+            // ok
+        }
+        
+        try {
+            stub.methodFloat((float) 0.0);
+            Assert.fail("Should have thrown exception");
+        }
+        catch (UnsupportedOperationException uoe) {
+            // ok
+        }
+        
+        try {
+          stub.methodInt(0);
+          Assert.fail("Should have thrown exception");
+        }
+        catch (UnsupportedOperationException uoe) {
+            // ok
+        }
+        
+        try {
+            stub.methodInt(0);
+            Assert.fail("Should have thrown exception");
+        }
+        catch (UnsupportedOperationException uoe) {
+            // ok
+        }
+        
+        
+        try {
+            stub.methodShort((short) 0);
+            Assert.fail("Should have thrown exception");
+        }
+        catch (UnsupportedOperationException uoe) {
+            // ok
+        }
+        
+        try {
+            stub.methodDeclared(null, null, null);
+            Assert.fail("Should have thrown exception");
+        }
+        catch (UnsupportedOperationException uoe) {
+            // ok
+        }
+        
+        try {
+            stub.methodBooleanArray(null);
+            Assert.fail("Should have thrown exception");
+        }
+        catch (UnsupportedOperationException uoe) {
+            // ok
+        }
+        
+        try {
+            stub.methodByteArray(null);
+            Assert.fail("Should have thrown exception");
+        }
+        catch (UnsupportedOperationException uoe) {
+            // ok
+        }
+        
+        try {
+            stub.methodCharArray(null);
+            Assert.fail("Should have thrown exception");
+        }
+        catch (UnsupportedOperationException uoe) {
+            // ok
+        }
+        
+        try {
+            stub.methodDoubleArray(null);
+            Assert.fail("Should have thrown exception");
+        }
+        catch (UnsupportedOperationException uoe) {
+            // ok
+        }
+        
+        try {
+            stub.methodFloatArray(null);
+            Assert.fail("Should have thrown exception");
+        }
+        catch (UnsupportedOperationException uoe) {
+            // ok
+        }
+        
+        try {
+            stub.methodIntArray((int[]) null);
+            Assert.fail("Should have thrown exception");
+        }
+        catch (UnsupportedOperationException uoe) {
+            // ok
+        }
+        
+        try {
+            stub.methodIntArray((long[][][][][]) null);
+            Assert.fail("Should have thrown exception");
+        }
+        catch (UnsupportedOperationException uoe) {
+            // ok
+        }
+        
+        try {
+            stub.methodShortArray(null);
+            Assert.fail("Should have thrown exception");
+        }
+        catch (UnsupportedOperationException uoe) {
+            // ok
+        }
+        
+        try {
+            stub.methodDeclaredArray(null, null);
+            Assert.fail("Should have thrown exception");
+        }
+        catch (UnsupportedOperationException uoe) {
+            // ok
+        }
     }
 }

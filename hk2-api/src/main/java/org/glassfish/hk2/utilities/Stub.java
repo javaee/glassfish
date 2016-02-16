@@ -62,5 +62,14 @@ import java.lang.annotation.Target;
 @Retention(SOURCE)
 @Target( { TYPE} )
 public @interface Stub {
+    public Type value() default Type.VALUES;
+    
+    public enum Type {
+        /** The methods of this stub will return null or fixed values */
+        VALUES,
+        
+        /** The methods of this stub will throw an AssertionError */
+        EXCEPTIONS
+    }
 
 }

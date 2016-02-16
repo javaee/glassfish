@@ -203,7 +203,7 @@ public class NotUseableLargeInterface implements LargeInterface {
      * @see org.jvnet.hk2.metadata.tests.stub.LargeInterface#methodShortArray(short)
      */
     @Override
-    public short[] methodShortArray(short param) {
+    public short[] methodShortArray(short[] param) {
         throw new AssertionError("Must not be used");
     }
 

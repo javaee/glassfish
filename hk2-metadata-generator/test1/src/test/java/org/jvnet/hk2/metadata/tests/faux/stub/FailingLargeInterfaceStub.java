@@ -37,51 +37,20 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.metadata.tests.stub;
+package org.jvnet.hk2.metadata.tests.faux.stub;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
+import org.glassfish.hk2.utilities.Stub;
 import org.jvnet.hk2.annotations.Contract;
+import org.jvnet.hk2.metadata.tests.stub.LargeInterface;
 
 /**
- * Imagine that this is an interface with a lot of methods on it
- * 
  * @author jwells
  *
  */
-@Contract
-public interface LargeInterface {
-    
-    
-    /**
-     * This method will not be overridden
-     * 
-     * @param param
-     * @return
-     */
-    public boolean notOverridden(boolean param);
-    
-    public void methodVoids();
-    public boolean methodBoolean(boolean param);
-    public byte methodByte(byte param);
-    public char methodChar(char param);
-    public double methodDouble(double param);
-    public float methodFloat(float param);
-    public int methodInt(int param);
-    public long methodInt(long param);
-    public short methodShort(short param);
-    public List<String> methodDeclared(Map<Object, String> param, String param1, Random param2);
-    
-    public boolean[] methodBooleanArray(boolean[] param);
-    public byte[][][][] methodByteArray(byte[] param);
-    public char[] methodCharArray(char[][] param);
-    public double[][] methodDoubleArray(double[][][] param);
-    public float[] methodFloatArray(float[][] param);
-    public int[][] methodIntArray(int[] param);
-    public long[] methodIntArray(long[][][][][] param);
-    public short[] methodShortArray(short[] param);
-    public List<String>[] methodDeclaredArray(Map<Object, String>[] param, String[] param1, Random... param2);
-    
+@Stub(Stub.Type.EXCEPTIONS) @Contract
+public abstract class FailingLargeInterfaceStub implements LargeInterface {
+    @Override
+    public boolean notOverridden(boolean param) {
+        return true;
+    }
 }
