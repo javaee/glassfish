@@ -306,8 +306,29 @@ either null or 0 or "a" along with an added [Service][service] annotation.  Sinc
 annotation is set to 1 in the abstract class (TestManyMethodsService) it will be used in favor of the true
 implementation (ManyMethodsServiceImpl).
 
+If there is a [@Named][named] qualifier on the class annotated with [Stub][stub] that qualifier will also be
+copied to the resulting implementation class.  If [@Named][named] has no value associated with it the value
+used will be the value of the class with [Stub][stub] on it.  For example this class:
+
+```java
+@Stub @Named
+public abstract class AliceService implements SomeInterface {
+}
+```java
+
+will end up having the name \"AliceService\", while this class:
+
+```java
+@Stub @Named("Bob")
+public abstract class AliceService implements SomeInterface {
+}
+```java
+
+will end up having the name \"Bob\".
+
 [service]: apidocs/org/jvnet/hk2/annotations/Service.html
 [contract]: apidocs/org/jvnet/hk2/annotations/Contract.html
 [habitatgenerator]: apidocs/org/jvnet/hk2/generator/HabitatGenerator.html
 [stub]: apidocs/org/jvnet/hk2/utilities/Stub.html
 [rank]: apidocs/org/glassfish/hk2/api/Rank.html
+[named]: http://docs.oracle.com/javaee/6/api/javax/inject/Named.html
