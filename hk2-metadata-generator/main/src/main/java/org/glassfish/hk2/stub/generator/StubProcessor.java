@@ -72,6 +72,7 @@ import javax.tools.Diagnostic.Kind;
 
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.metadata.generator.ServiceUtilities;
+import org.glassfish.hk2.utilities.Stub;
 
 /**
  * @author jwells
@@ -80,6 +81,7 @@ import org.glassfish.hk2.metadata.generator.ServiceUtilities;
 @SupportedAnnotationTypes("org.glassfish.hk2.utilities.Stub")
 public class StubProcessor extends AbstractProcessor {
     private final static String NAMED_ANNO = Named.class.getName();
+    private final static String EXCEPTIONS = "EXCEPTIONS";
     
     /**
      * Gets rid of warnings and this code should work with all source versions
@@ -146,33 +148,50 @@ public class StubProcessor extends AbstractProcessor {
             abstractMethods.add(executableMethod);
         }
         
+        boolean exceptions = false;
         String name = null;
         List<? extends AnnotationMirror> annotationMirrors = elementUtils.getAllAnnotationMirrors(clazz);
         for (AnnotationMirror annotationMirror : annotationMirrors) {
             DeclaredType annoType = annotationMirror.getAnnotationType();
             TypeElement annoElement = (TypeElement) annoType.asElement();
             String annoQualifiedName = ServiceUtilities.nameToString(annoElement.getQualifiedName());
-            if (!annoQualifiedName.equals(NAMED_ANNO)) continue;
+            if (annoQualifiedName.equals(NAMED_ANNO)) {
             
-            Map<? extends ExecutableElement, ? extends AnnotationValue> values = annotationMirror.getElementValues();
-            AnnotationValue value = null;
-            for (AnnotationValue v : values.values()) {
-                value = v;
-                break;
-            }
+                Map<? extends ExecutableElement, ? extends AnnotationValue> values = annotationMirror.getElementValues();
+                AnnotationValue value = null;
+                for (AnnotationValue v : values.values()) {
+                    value = v;
+                    break;
+                }
             
-            if (value == null) {
-                name = ServiceUtilities.nameToString(clazz.getSimpleName());
+                if (value == null) {
+                    name = ServiceUtilities.nameToString(clazz.getSimpleName());
+                }
+                else {
+                    name = (String) value.getValue();
+                }
             }
-            else {
-                name = (String) value.getValue();
+            else if (annoQualifiedName.equals(Stub.class.getName())) {
+                Map<? extends ExecutableElement, ? extends AnnotationValue> values = annotationMirror.getElementValues();
+                
+                AnnotationValue value = null;
+                for (AnnotationValue v : values.values()) {
+                    value = v;
+                    break;
+                }
+                
+                if (value != null) {
+                    VariableElement ve = (VariableElement) value.getValue();
+                    String stubType = ServiceUtilities.nameToString(ve.getSimpleName());
+                    exceptions = EXCEPTIONS.equals(stubType);
+                }
             }
         }
         
-        writeJavaFile(clazz, abstractMethods, name);
+        writeJavaFile(clazz, abstractMethods, name, exceptions);
     }
     
-    private void writeJavaFile(TypeElement clazz, Set<ExecutableElement> abstractMethods, String name) throws IOException {
+    private void writeJavaFile(TypeElement clazz, Set<ExecutableElement> abstractMethods, String name, boolean exceptions) throws IOException {
         Elements elementUtils = processingEnv.getElementUtils();
         
         PackageElement packageElement = elementUtils.getPackageOf(clazz);
@@ -204,7 +223,7 @@ public class StubProcessor extends AbstractProcessor {
             writer.append("public class " + stubClazzName + " extends " + clazzSimpleName + " {\n");
             
             for (ExecutableElement abstractMethod : abstractMethods) {
-                writeAbstractMethod(abstractMethod, writer); 
+                writeAbstractMethod(abstractMethod, writer, exceptions); 
             }
             
             writer.append("}\n");
@@ -217,7 +236,7 @@ public class StubProcessor extends AbstractProcessor {
         
     }
     
-    private void writeAbstractMethod(ExecutableElement abstractMethod, Writer writer) throws IOException {
+    private void writeAbstractMethod(ExecutableElement abstractMethod, Writer writer, boolean exceptions) throws IOException {
         Set<Modifier> modifiers = abstractMethod.getModifiers();
         
         writer.append("    ");
@@ -258,7 +277,12 @@ public class StubProcessor extends AbstractProcessor {
             lcv++;
         }
         
-        writer.append(") {\n        return " + returnOutputs.body + ";\n    }\n\n");
+        if (exceptions) {
+            writer.append(") {\n        throw new UnsupportedOperationException(\"" + abstractMethod + "\");\n    }\n\n");
+        }
+        else {
+            writer.append(") {\n        return " + returnOutputs.body + ";\n    }\n\n");
+        }
     }
     
     private TypeMirrorOutputs typeMirrorToString(TypeMirror mirror, boolean varArg) throws IOException {

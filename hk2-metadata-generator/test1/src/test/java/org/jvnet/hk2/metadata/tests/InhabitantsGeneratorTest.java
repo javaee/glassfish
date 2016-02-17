@@ -696,7 +696,7 @@ public class InhabitantsGeneratorTest {
     /**
      * Ensures that the exception version of the stub works properly
      */
-    @Test @org.junit.Ignore
+    @Test
     public void testExceptionTypeStub() {
         ServiceLocator locator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
         
