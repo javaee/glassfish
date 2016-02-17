@@ -47,14 +47,23 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * When this annotation is place on an abstract class the methods of
+ * When this annotation is placed on an abstract class the methods of
  * the class that are abstract will be generated into a subclass by
  * the hk2-metadata-generator along with an empty
- * {@link org.jvnet.hk2.annotations.Service} annotation on the concrete
- * implementation.
+ * {@link org.jvnet.hk2.annotations.Service} annotation
  * <p>
- * This is useful for testing, though it will work both with test code
- * and non-test code
+ * Any {@link javax.inject.Named} annotation on the class marked with
+ * this annotation will also be copied to the implementation.
+ * No other qualifier or annotation will be copied to the concrete
+ * implementation.  However, the {@link org.glassfish.hk2.api.Rank} annotation
+ * on the stub class will be honored.
+ * <p>
+ * The methods generated into the subclass can either return null and fixed
+ * values (for scalars) or can throw exceptions, depending on the
+ * {@link Stub.Type} value of this annotation
+ * <p>
+ * Using this annotation is useful for testing, though it will work both with
+ * test code and non-test code
  * 
  * @author jwells
  */
@@ -62,13 +71,24 @@ import java.lang.annotation.Target;
 @Retention(SOURCE)
 @Target( { TYPE} )
 public @interface Stub {
+    /**
+     * This value determines what the generated methods do
+     * <p>
+     * If set to {@link Type#VALUES} then the methods will return
+     * nulls or fixed values for scalars.
+     * <p>
+     * If set to {@link Type#EXCEPTIONS} then the methods will
+     * throw UnsupportedOperationException
+     * 
+     * @return The behavior of the generated methods
+     */
     public Type value() default Type.VALUES;
     
     public enum Type {
-        /** The methods of this stub will return null or fixed values */
+        /** The generated methods of this stub will return null and fixed values */
         VALUES,
         
-        /** The methods of this stub will throw an AssertionError */
+        /** The generated methods of this stub will throw an UnsupportedOperationException */
         EXCEPTIONS
     }
 
