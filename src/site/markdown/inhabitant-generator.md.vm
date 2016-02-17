@@ -324,7 +324,22 @@ public abstract class AliceService implements SomeInterface {
 }
 ```java
 
-will end up having the name \"Bob\".
+will end up having the name \"Bob\".  Only the [@Named][named] qualifier is treated
+specially in this way.
+
+The [Stub][stub] annotation can also generate implementations where rather than returning null or zero values
+it throws UnsupportedOperationException (with the name of the method called in the message).  This can
+be done by setting the value field of the [Stub][stub] to EXCEPTIONS, like this:
+
+```java
+@Stub(Stub.Type.EXCEPTIONS)
+public abstract class AliceService implements SomeInterface {
+  // All generated methods will throw UnsupportedOperationException
+}
+```java
+
+This can be useful when writing tests to ensure that the code does not inadvertently use one of the
+methods of the stub's implementation.
 
 [service]: apidocs/org/jvnet/hk2/annotations/Service.html
 [contract]: apidocs/org/jvnet/hk2/annotations/Contract.html

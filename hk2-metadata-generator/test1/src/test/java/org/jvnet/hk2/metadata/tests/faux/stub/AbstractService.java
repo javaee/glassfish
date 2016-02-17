@@ -66,7 +66,7 @@ public abstract class AbstractService extends AbstractBaseService {
         return randomBeanStub;
     }
     
-    @Stub @Named
+    @Stub(Stub.Type.VALUES) @Named
     public static abstract class NamedBeanStub implements NamedBean {
         @Override
         public String getName() {

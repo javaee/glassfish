@@ -691,6 +691,9 @@ public class InhabitantsGeneratorTest {
         
         NamedBean aliceService = locator.getService(NamedBean.class, ALICE);
         Assert.assertEquals(ALICE, aliceService.getName());
+        
+        Assert.assertNull(rawNamedService.getAddress());
+        Assert.assertNull(aliceService.getAddress());
     }
     
     /**
