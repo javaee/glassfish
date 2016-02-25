@@ -215,6 +215,14 @@ public class BindingTest {
 
         verify(dc);
     }
+    
+    /**
+     * Makes sure this fails out with an NPE
+     */
+    @Test(expected=NullPointerException.class)
+    public void testNullPassedToCreateWithInstanceFails() {
+        AbstractBindingBuilder.create(null);
+    }
 
     class Foo implements MyContract{
 
