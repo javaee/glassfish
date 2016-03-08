@@ -270,7 +270,8 @@ public class GlassfishNetworkListener extends GenericGrizzlyListener {
             final DelayedExecutor delayedExecutor,
             final int maxRequestHeaders, final int maxResponseHeaders) {
         
-        return new GlassfishHttpCodecFilter(
+        final org.glassfish.grizzly.http.HttpServerFilter httpCodecFilter =
+                new GlassfishHttpCodecFilter(
                 http == null || Boolean.parseBoolean(http.getXpoweredBy()),
                 isChunkedEnabled,
                 headerBufferLengthBytes,
@@ -279,8 +280,17 @@ public class GlassfishNetworkListener extends GenericGrizzlyListener {
                 delayedExecutor,
                 maxRequestHeaders,
                 maxResponseHeaders);
+        
+        if (http != null) { // could be null for HTTP redirect
+            httpCodecFilter.setMaxPayloadRemainderToSkip(
+                    Integer.parseInt(http.getMaxSwallowingInputBytes()));
+            
+            httpCodecFilter.setAllowPayloadForUndefinedHttpMethods(
+                    Boolean.parseBoolean(http.getAllowPayloadForUndefinedHttpMethods()));
+        }
+        
+        return httpCodecFilter;
     }
-
 
 
     protected void registerMonitoringStatsProviders() {
