@@ -1,6 +1,6 @@
 [//]: # ( DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER. )
 [//]: # (  )
-[//]: # ( Copyright (c) 2013-2015 Oracle and/or its affiliates. All rights reserved. )
+[//]: # ( Copyright (c) 2013-2016 Oracle and/or its affiliates. All rights reserved. )
 [//]: # (  )
 [//]: # ( The contents of this file are subject to the terms of either the GNU )
 [//]: # ( General Public License Version 2 only ("GPL") or the Common Development )
@@ -221,13 +221,13 @@ There are several convenience methods that we have added to simplify the task of
 locator.  These are encapsulated in the [ServiceLocatorUtilities][servicelocatorutilities] class.
 
 If you already have a service class and you would like for hk2 to automatically analyze the class and add
-it to a locator then you can use the [addClasses][sluaddclasses] method.
+it to a locator then you can use the [addClasses][addclasses] method.
 
 If you already have an instance of a service and you would like hk2 to automatically analyze the class of the
-service and add it to a locator then you can use the [addOneConstant][sluaddoneconstant] method
+service and add it to a locator then you can use the [addOneConstant][addoneconstant] method
 
 If you already have a descriptor for a service and you would like hk2 to add it to a locator then you can use
-the [addOneDescriptor][sluaddonedescriptor] addOneDescriptor method
+the [addOneDescriptor][addonedescriptor] addOneDescriptor method
  
 ### Looking up services
 
@@ -242,9 +242,16 @@ The type passed in can be any implementation class or interface with which the s
 contract.  If there is no Widget that can be found in the system then the getService method will return null.  If there
 are more than one Widget (e.g. Widget is an interface that can have many implementations) then the best Widget will
 be returned from the getService method.
- 
-The best instance of a service is a service with the highest ranking or the lowest service id.
+
+Services are sorted by (in order) the service ranking, the largest locator id
+(so that services in children are picked before services in parents) and
+smallest service id (so that older services are picked prior to newer
+services). 
+Therefore the best instance of a service is a service with the highest
+ranking or largest service locator id or the lowest service id.
 The ranking of a service is found in its [Descriptor][descriptor] and can be changed at any time at run time.
+The locator id of a service is a system assigned value for the [Descriptor][descriptor] when it is bound into the [ServiceLocator][servicelocator] and is the
+id of that [ServiceLocator][servicelocator].
 The service id of a service is a system assigned value for the [Descriptor][descriptor] when it is bound into the [ServiceLocator][servicelocator].
 The system assigned value is a monotonically increasing value.
 Thus if two services have the same ranking the best service will be associated with the oldest [Descriptor][descriptor] bound into the system.
@@ -383,7 +390,7 @@ the objects themselves.
 [service]: apidocs/org/jvnet/hk2/annotations/Service.html
 [annotationliteral]: apidocs/org/glassfish/hk2/api/AnnotationLiteral.html
 [servicelocatorutilities]: apidocs/org/glassfish/hk2/utilities/ServiceLocatorUtilities.html
-[sluaddclasses]: apidocs/org/glassfish/hk2/utilities/ServiceLocatorUtilities.html#addClasses(org.glassfish.hk2.api.ServiceLocator, java.lang.Class...)
-[sluaddoneconstant]: apidocs/org/glassfish/hk2/utilities/ServiceLocatorUtilities.html#addOneConstant(org.glassfish.hk2.api.ServiceLocator, java.lang.Object)
-[sluaddonedescriptor]: apidocs/org/glassfish/hk2/utilities/ServiceLocatorUtilities.html#addOneDescriptor(org.glassfish.hk2.api.ServiceLocator, org.glassfish.hk2.api.Descriptor)
+[addclasses]: apidocs/org/glassfish/hk2/utilities/ServiceLocatorUtilities.html#addClasses%28org.glassfish.hk2.api.ServiceLocator,java.lang.Class...%29
+[addoneconstant]: apidocs/org/glassfish/hk2/utilities/ServiceLocatorUtilities.html#addOneConstant%28org.glassfish.hk2.api.ServiceLocator,java.lang.Object%29
+[addonedescriptor]: apidocs/org/glassfish/hk2/utilities/ServiceLocatorUtilities.html#addOneDescriptor%28org.glassfish.hk2.api.ServiceLocator,org.glassfish.hk2.api.Descriptor%29
 [gettingstarted]: getting-started.html#Automatic_Service_Population
