@@ -39,8 +39,9 @@
 # holder.
 #
 
+#
 # REQUIRED VARIABLES
-
+#
 #RE_USER=
 #HUDSON_MASTER_HOST=
 #STORAGE_HOST=
