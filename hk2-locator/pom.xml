@@ -90,7 +90,6 @@
         <dependency>
             <groupId>org.jvnet</groupId>
             <artifactId>tiger-types</artifactId>
-            <version>1.4</version>
             <optional>true</optional>
         </dependency>
         <dependency>
@@ -129,6 +128,55 @@
                     <scope>provided</scope>
                 </dependency>
             </dependencies>
+        </profile>
+        <profile>
+            <id>jdk8-</id>
+            <activation>
+                <jdk>(,1.8)</jdk>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                          <groupId>org.apache.maven.plugins</groupId>
+                          <artifactId>maven-compiler-plugin</artifactId>
+                          <executions>
+                                <execution>
+                                    <id>default-testCompile</id>
+                                    <configuration>
+                                          <testExcludes>
+                                              <testExclude>**/lambda/*</testExclude>
+                                          </testExcludes>
+                                    </configuration>
+                                </execution>
+                          </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>jdk8+</id>
+            <activation>
+                <jdk>[1.8,)</jdk>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                          <groupId>org.apache.maven.plugins</groupId>
+                          <artifactId>maven-compiler-plugin</artifactId>
+                          <executions>
+                                <execution>
+                                    <id>default-testCompile</id>
+                                    <configuration>
+                                          <source>1.8</source>
+                                          <target>1.8</target>
+                                    </configuration>
+                                </execution>
+                          </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 </project>
