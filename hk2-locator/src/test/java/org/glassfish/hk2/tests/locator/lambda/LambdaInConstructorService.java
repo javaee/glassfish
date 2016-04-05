@@ -46,17 +46,17 @@ import javax.inject.Inject;
  *
  */
 public class LambdaInConstructorService {
-	private int sum;
-	private final int diff;
+    private final int sum;
+    private final int diff;
 	
     @Inject
-    public LambdaInConstructorService(final AAndB aAndB) {
-    	sum = doOperation((int a, int b) -> a + b, aAndB);
-    	diff = doOperation((int a, int b) -> a - b, aAndB);
+    public LambdaInConstructorService(AAndB aAndB) {
+        sum = doOperation((int a, int b) -> a + b, aAndB);
+        diff = doOperation((int a, int b) -> a - b, aAndB);
     }
     
     private int doOperation(Operation a, AAndB aAndB) {
-    	return a.doWork(aAndB.getA(), aAndB.getB());
+        return a.doWork(aAndB.getA(), aAndB.getB());
     }
     
     public int getSum() { return sum; }

@@ -39,6 +39,9 @@
  */
 package org.glassfish.hk2.tests.locator.lambda;
 
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -46,9 +49,16 @@ import org.junit.Test;
  *
  */
 public class LambdaTest {
+	/**
+	 * Tests that a lambda can be used in a constructor
+	 */
     @Test
     public void testLambdaInConstructor() {
-        
+    	ServiceLocator locator = LocatorHelper.getServiceLocator(AAndB.class, LambdaInConstructorService.class);
+    	
+    	LambdaInConstructorService lics = locator.getService(LambdaInConstructorService.class);
+    	Assert.assertEquals(1, lics.getSum());
+    	Assert.assertEquals(-1, lics.getDiff());
     }
 
 }
