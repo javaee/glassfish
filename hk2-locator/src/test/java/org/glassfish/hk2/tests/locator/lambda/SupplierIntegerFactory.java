@@ -39,36 +39,26 @@
  */
 package org.glassfish.hk2.tests.locator.lambda;
 
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
-import org.junit.Assert;
-import org.junit.Test;
+import java.util.function.Supplier;
+
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.api.Factory;
 
 /**
  * @author jwells
  *
  */
-public class LambdaTest {
-	/**
-	 * Tests that a lambda can be used in a constructor
-	 */
-    @Test
-    public void testLambdaInConstructor() {
-    	ServiceLocator locator = LocatorHelper.getServiceLocator(AAndB.class, LambdaInConstructorService.class);
-    	
-    	LambdaInConstructorService lics = locator.getService(LambdaInConstructorService.class);
-    	Assert.assertEquals(1, lics.getSum());
-    	Assert.assertEquals(-1, lics.getDiff());
+@Singleton
+public class SupplierIntegerFactory implements Factory<Supplier<Integer>> {
+
+    @Override @Singleton
+    public Supplier<Integer> provide() {
+        return () -> 0;
     }
-    
-    @Test @org.junit.Ignore
-    public void testLambdaInConstructor2() {
-        ServiceLocator locator = LocatorHelper.getServiceLocator(LambdaInConstructorService2.class,
-                LambdaInjectionResolver.class,
-                SupplierIntegerFactory.class);
-        
-        LambdaInConstructorService2 lics2 = locator.getService(LambdaInConstructorService2.class);
-        System.out.println("JRW(10) value=" + lics2.getValue());
+
+    @Override
+    public void dispose(Supplier<Integer> instance) {
     }
 
 }

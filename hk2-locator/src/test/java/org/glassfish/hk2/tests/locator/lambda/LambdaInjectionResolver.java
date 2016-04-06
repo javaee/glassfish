@@ -39,36 +39,46 @@
  */
 package org.glassfish.hk2.tests.locator.lambda;
 
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
-import org.junit.Assert;
-import org.junit.Test;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.InjectionResolver;
+import org.glassfish.hk2.api.ServiceHandle;
 
 /**
  * @author jwells
  *
  */
-public class LambdaTest {
-	/**
-	 * Tests that a lambda can be used in a constructor
-	 */
-    @Test
-    public void testLambdaInConstructor() {
-    	ServiceLocator locator = LocatorHelper.getServiceLocator(AAndB.class, LambdaInConstructorService.class);
-    	
-    	LambdaInConstructorService lics = locator.getService(LambdaInConstructorService.class);
-    	Assert.assertEquals(1, lics.getSum());
-    	Assert.assertEquals(-1, lics.getDiff());
+@Singleton
+public class LambdaInjectionResolver
+        implements InjectionResolver<LambdaInjection> {
+    @Inject @Named(InjectionResolver.SYSTEM_RESOLVER_NAME)
+    private InjectionResolver<Inject> trueResolver;
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.InjectionResolver#resolve(org.glassfish.hk2.api.Injectee, org.glassfish.hk2.api.ServiceHandle)
+     */
+    @Override
+    public Object resolve(Injectee injectee, ServiceHandle<?> root) {
+        return trueResolver.resolve(injectee, root);
     }
-    
-    @Test @org.junit.Ignore
-    public void testLambdaInConstructor2() {
-        ServiceLocator locator = LocatorHelper.getServiceLocator(LambdaInConstructorService2.class,
-                LambdaInjectionResolver.class,
-                SupplierIntegerFactory.class);
-        
-        LambdaInConstructorService2 lics2 = locator.getService(LambdaInConstructorService2.class);
-        System.out.println("JRW(10) value=" + lics2.getValue());
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.InjectionResolver#isConstructorParameterIndicator()
+     */
+    @Override
+    public boolean isConstructorParameterIndicator() {
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.InjectionResolver#isMethodParameterIndicator()
+     */
+    @Override
+    public boolean isMethodParameterIndicator() {
+        return true;
     }
 
 }
