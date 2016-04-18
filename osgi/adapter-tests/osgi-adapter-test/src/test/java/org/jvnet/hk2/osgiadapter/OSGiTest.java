@@ -129,7 +129,7 @@ public class OSGiTest {
                 provision(mavenBundle().groupId(ServiceLocatorHk2MainTest.EXT_GROUP_ID).artifactId(
                                                 "bean-validator").version(projectVersion).startLevel(4)),
                 provision(mavenBundle().groupId("org.javassist").artifactId(
-                        "javassist").version("3.18.1-GA").startLevel(4)),
+                        "javassist").version("3.20.0-GA").startLevel(4)),
                 provision(mavenBundle().groupId(ServiceLocatorHk2MainTest.EXT_GROUP_ID).artifactId(
                         "asm-all-repackaged").version(projectVersion).startLevel(4)),
                 provision(mavenBundle().groupId(ServiceLocatorHk2MainTest.EXT_GROUP_ID).artifactId(
