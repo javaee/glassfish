@@ -1339,7 +1339,9 @@ public class Utilities {
         for (MethodWrapper methodWrapper : crh.getAllMethods(annotatedType)) {
             Method method = methodWrapper.getMethod();
             
-            if (!locator.hasInjectAnnotation(method)) {
+            if (!locator.hasInjectAnnotation(method) ||
+                    method.isSynthetic() ||
+                    method.isBridge()) {
                 // Not an initializer method
                 continue;
             }
