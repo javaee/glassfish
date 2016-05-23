@@ -190,7 +190,7 @@
         <javax.el.version>2.2.5</javax.el.version>
         <jtype.version>0.1.0</jtype.version>
         <javassist.version>3.20.0-GA</javassist.version>
-        <junit.version>4.11</junit.version>
+        <junit.version>4.12</junit.version>
         <asm.version>5.1</asm.version>
         <tiger-types.version>1.4</tiger-types.version>
         <woodstox.version>3.2.3</woodstox.version>
