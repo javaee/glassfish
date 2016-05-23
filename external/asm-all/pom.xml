@@ -80,9 +80,9 @@
                                     <manifestEntries>
                                         <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
                                         <Bundle-SymbolicName>org.glassfish.hk2.external.asm-all-repackaged</Bundle-SymbolicName>
-                                        <Bundle-Version>5.0.3</Bundle-Version>
+                                        <Bundle-Version>5.1</Bundle-Version>
                                         <Export-Package>
-                                            org.glassfish.hk2.external.org.objectweb.asm.signature;version="5.0.3",org.glassfish.hk2.external.org.objectweb.asm.commons;version="5.0.3",org.glassfish.hk2.external.org.objectweb.asm.attrs;version="5.0.3",org.glassfish.hk2.external.org.objectweb.asm.util;version="5.0.3",org.glassfish.hk2.external.org.objectweb.asm.tree.analysis;version="5.0.3",org.glassfish.hk2.external.org.objectweb.asm;version="5.0.3",org.glassfish.hk2.external.org.objectweb.asm.xml;version="5.0.3",org.glassfish.hk2.external.org.objectweb.asm.tree;version="5.0.3"
+                                            org.glassfish.hk2.external.org.objectweb.asm.signature;version="5.1",org.glassfish.hk2.external.org.objectweb.asm.commons;version="5.1",org.glassfish.hk2.external.org.objectweb.asm.attrs;version="5.1",org.glassfish.hk2.external.org.objectweb.asm.util;version="5.1",org.glassfish.hk2.external.org.objectweb.asm.tree.analysis;version="5.1",org.glassfish.hk2.external.org.objectweb.asm;version="5.1",org.glassfish.hk2.external.org.objectweb.asm.xml;version="5.1",org.glassfish.hk2.external.org.objectweb.asm.tree;version="5.1"
                                         </Export-Package>
                                         <Import-Package>
                                             javax.xml.transform;resolution:=optional,javax.xml.transform.sax;resolution:=optional,javax.xml.transform.stream;resolution:=optional,org.xml.sax;resolution:=optional,org.xml.sax.ext;resolution:=optional,org.xml.sax.helpers;resolution:=optional
