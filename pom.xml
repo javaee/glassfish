@@ -200,7 +200,7 @@
         <assertj.version>3.4.1</assertj.version>
         <pax-exam-version>3.5.0</pax-exam-version>
         <javax-inject.version>1</javax-inject.version>
-        <slf4j.version>1.7.12</slf4j.version>
+        <slf4j.version>1.7.21</slf4j.version>
         <org.jboss.logging.version>3.1.0.GA</org.jboss.logging.version>
         <findbugs.exclude />
         <findbugs.threshold>High</findbugs.threshold>
