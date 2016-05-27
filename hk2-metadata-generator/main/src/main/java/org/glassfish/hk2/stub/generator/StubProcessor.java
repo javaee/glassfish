@@ -65,6 +65,7 @@ import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.JavaFileObject;
@@ -313,7 +314,9 @@ public class StubProcessor extends AbstractProcessor {
             return new TypeMirrorOutputs("short", "0");
         case DECLARED:
             TypeElement element = (TypeElement) typeUtils.asElement(mirror);
-            return new TypeMirrorOutputs(ServiceUtilities.nameToString(element.getQualifiedName()), "null"); 
+            return new TypeMirrorOutputs(ServiceUtilities.nameToString(element.getQualifiedName()), "null");
+        case TYPEVAR:
+            return new TypeMirrorOutputs("Object", "null");
         default:
             throw new IOException("Unknown kind: " + returnKind);
         }

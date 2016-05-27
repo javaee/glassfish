@@ -66,6 +66,7 @@ import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Test;
 import org.jvnet.hk2.metadata.tests.faux.stub.AbstractService;
 import org.jvnet.hk2.metadata.tests.faux.stub.FailingLargeInterfaceStub;
+import org.jvnet.hk2.metadata.tests.faux.stub.InterfaceWithTypes;
 import org.jvnet.hk2.metadata.tests.faux.stub.NamedBean;
 import org.jvnet.hk2.metadata.tests.stub.LargeInterface;
 
@@ -587,6 +588,17 @@ public class InhabitantsGeneratorTest {
         
             EXPECTED_DESCRIPTORS.put(di, 0);
         }
+        
+        {
+            // This is one of the generated stubs
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation("org.jvnet.hk2.metadata.tests.faux.stub.AbstractPartiallyTypedStub_hk2Stub");
+            di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.faux.stub.AbstractPartiallyTypedStub_hk2Stub");
+            di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.faux.stub.InterfaceWithTypes");
+            di.setScope(Singleton.class.getName());
+        
+            EXPECTED_DESCRIPTORS.put(di, 0);
+        }
     }
     
     private void getAllDescriptorsFromInputStream(InputStream is, Set<DescriptorImpl> retVal) throws IOException {
@@ -859,5 +871,19 @@ public class InhabitantsGeneratorTest {
         catch (UnsupportedOperationException uoe) {
             // ok
         }
+    }
+    
+    /**
+     * Ensures that the exception version of the stub works properly
+     */
+    @Test
+    public void testStubsWithTypeVariables() {
+        ServiceLocator locator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
+        
+        InterfaceWithTypes<?,?> stub = locator.getService(InterfaceWithTypes.class);
+        
+        
+        Assert.assertNull(stub.get(null));
+        Assert.assertNull(stub.reverseGet(null));
     }
 }
