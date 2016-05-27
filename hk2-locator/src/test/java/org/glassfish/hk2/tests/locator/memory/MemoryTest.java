@@ -138,7 +138,7 @@ public class MemoryTest {
      * 
      * @throws Throwable
      */
-    @Test // @org.junit.Ignore
+    @Test @org.junit.Ignore
     public void testLocatorWithObjectProxiesDestroyed() throws Throwable {
         WeakHashMap<ServiceLocator, Object> weakMap = new WeakHashMap<ServiceLocator, Object>();
         
