@@ -40,7 +40,11 @@
 
 package org.glassfish.hk2.tests.locator.justintime;
 
+import java.lang.reflect.Field;
+import java.util.List;
+
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
@@ -48,7 +52,6 @@ import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.InjecteeImpl;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -189,6 +192,37 @@ public class JustInTimeTest {
         Assert.assertNotNull(locator.getService(SimpleService4.class));
         
         ips.checkHandleIterator();
+    }
+    
+    /**
+     * Makes sure that JIT is only called once from a Provider.get and
+     * that the parent is properly set
+     */
+    @Test
+    public void testProperInjecteeFromIterableProviderAndOnlyOne() {
+        ServiceLocator locator = ServiceLocatorFactory.getInstance().create(null);
+        
+        ServiceLocatorUtilities.addClasses(locator,
+                JITRecorder.class,
+                IterableProviderService.class);
+        
+        JITRecorder recorder = locator.getService(JITRecorder.class);
+        recorder.clear();
+        
+        IterableProviderService ips = locator.getService(IterableProviderService.class);
+        
+        Assert.assertEquals(0, recorder.getInjectees().size());
+        
+        ips.checkUnimplementedGet();
+        
+        List<Injectee> injectees = recorder.getInjectees();
+        Assert.assertEquals(1, injectees.size());
+        
+        Injectee onlyInjectee = injectees.get(0);
+        
+        // Make sure the parent is correct
+        Field field = (Field) onlyInjectee.getParent();
+        Assert.assertEquals("unimplementedContract", field.getName());
     }
     
     private static ServiceLocator getProviderLocator() {

@@ -730,9 +730,14 @@ public class ServiceLocatorImpl implements ServiceLocator {
             throws MultiException {
         return internalGetService(contractOrImpl, name, null, qualifiers);
     }
+    
+    private <T> T internalGetService(Type contractOrImpl, String name, Unqualified unqualified, Annotation... qualifiers) {
+        return internalGetService(contractOrImpl, name, unqualified, false, qualifiers);
+        
+    }
 
     @SuppressWarnings("unchecked")
-    private <T> T internalGetService(Type contractOrImpl, String name, Unqualified unqualified, Annotation... qualifiers) {
+    private <T> T internalGetService(Type contractOrImpl, String name, Unqualified unqualified, boolean calledFromSecondChanceResolveMethod, Annotation... qualifiers) {
         checkState();
         
         Class<?> rawType = ReflectionHelper.getRawClass(contractOrImpl);
@@ -760,7 +765,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
             return (T) retVal;
         }
 
-        ActiveDescriptor<T> ad = internalGetDescriptor(null, contractOrImpl, name, unqualified, false, qualifiers);
+        ActiveDescriptor<T> ad = internalGetDescriptor(null, contractOrImpl, name,
+                unqualified, false, calledFromSecondChanceResolveMethod, qualifiers);
         if (ad == null) return null;
 
         T retVal = Utilities.createService(ad, null, this, null, rawType);
@@ -769,8 +775,13 @@ public class ServiceLocatorImpl implements ServiceLocator {
 
     }
 
+    /**
+     * This method is only called from the get of IterableProvider.  IterableProvider has
+     * already called the JIT resolvers and so should not do so again, since it is too
+     * much work and doesn't have the information about the original injectee
+     */
     /* package */ <T> T getUnqualifiedService(Type contractOrImpl, Unqualified unqualified, boolean isIterable, Annotation... qualifiers) throws MultiException {
-        return internalGetService(contractOrImpl, null, unqualified, qualifiers);
+        return internalGetService(contractOrImpl, null, unqualified, true, qualifiers);
     }
 
     private <T> List<T> protectedGetAllServices(final Type contractOrImpl,

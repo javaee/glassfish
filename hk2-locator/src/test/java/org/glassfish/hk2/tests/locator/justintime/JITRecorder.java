@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2013-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,71 +37,46 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.hk2.tests.locator.justintime;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.IterableProvider;
-import org.glassfish.hk2.api.ServiceHandle;
-import org.junit.Assert;
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.JustInTimeInjectionResolver;
 
 /**
  * @author jwells
  *
  */
 @Singleton
-public class IterableProviderService {
-    @Inject
-    private IterableProvider<SimpleService4> provider;
+public class JITRecorder implements JustInTimeInjectionResolver {
+    private final LinkedList<Injectee> injectees = new LinkedList<Injectee>();
     
-    @Inject
-    private Provider<UnimplementedContract> unimplementedContract;
-    
-    /* package */ void checkGet() {
-        Assert.assertNotNull(provider.get());
-        
+    public void clear() {
+        synchronized (injectees) {
+            injectees.clear();
+        }
     }
     
-    /* package */ void checkUnimplementedGet() {
-        Assert.assertNull(unimplementedContract.get());
+    public List<Injectee> getInjectees() {
+        synchronized (injectees) {
+            return new LinkedList<Injectee>(injectees);
+        }
     }
-    
-    /* package */ void checkGetHandle() {
-        ServiceHandle<SimpleService4> handle = provider.getHandle();
-        Assert.assertNotNull(handle);
-        Assert.assertNotNull(handle.getService());
-        
-    }
-    
-    /* package */ void checkIterator() {
-        boolean found = false;
-        for (SimpleService4 ss4 : provider) {
-            Assert.assertFalse(found);
-            found = true;
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.JustInTimeInjectionResolver#justInTimeResolution(org.glassfish.hk2.api.Injectee)
+     */
+    @Override
+    public boolean justInTimeResolution(Injectee failedInjectionPoint) {
+        synchronized (injectees) {
+            injectees.add(failedInjectionPoint);
         }
         
-        Assert.assertTrue(found);
-        
-    }
-    
-    /* package */ void checkSize() {
-        Assert.assertEquals(1, provider.getSize());
-        
-    }
-    
-    /* package */ void checkHandleIterator() {
-        boolean found = false;
-        for (ServiceHandle<SimpleService4> ss4Handle : provider.handleIterator()) {
-            Assert.assertFalse(found);
-            found = true;
-            Assert.assertNotNull(ss4Handle.getService());
-        }
-        
-        Assert.assertTrue(found);
-        
+        return false;
     }
 
 }
