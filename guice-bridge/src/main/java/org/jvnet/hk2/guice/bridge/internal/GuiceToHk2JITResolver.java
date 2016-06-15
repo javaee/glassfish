@@ -133,6 +133,18 @@ public class GuiceToHk2JITResolver implements JustInTimeInjectionResolver {
     @Override
     @SuppressWarnings({"rawtypes", "unchecked"})
     public boolean justInTimeResolution(Injectee failedInjectionPoint) {
+        if (failedInjectionPoint.getParent() == null) {
+            // Jersey looks things up expecting to find only
+            // hk2 versions of things, which sometimes confuses
+            // the bridge.  The new feature added to JIT resolvers
+            // which allows for JIT to work for lookups as well
+            // as for Injection points breaks the jersey-guice
+            // bridge, so it has been disabled to go back to the
+            // old behavior.  It would be nice to go to Jersey
+            // and have them fix this since having guice lookup
+            // is a good feature
+            return false;
+        }
 
         Class<?> implClass = getClassFromType(failedInjectionPoint.getRequiredType());
         if (implClass == null) return false;

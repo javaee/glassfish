@@ -77,7 +77,7 @@ public class SampleControllerTest {
         assertThat(res, containsString("http://localhost:8090/"));
     }
 
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void hoge() throws Exception {
         MultivaluedMap<String, String> form = new MultivaluedHashMap<String, String>() {{
             add("btnName", "fuga");
