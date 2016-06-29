@@ -60,7 +60,7 @@ public class SignatureVisitorImpl extends SignatureVisitor {
     private final List<ParameterizedInterfaceModelImpl> parameterizedIntf = new ArrayList<ParameterizedInterfaceModelImpl>();
 
     public SignatureVisitorImpl(TypeBuilder typeBuilder) {
-        super(Opcodes.ASM5);
+        super(Opcodes.ASM6);
         
         this.typeBuilder = typeBuilder;
     }

@@ -78,7 +78,7 @@ public class ModelClassVisitor extends ClassVisitor {
 
     public ModelClassVisitor(ParsingContext ctx, URI definingURI, String entryName,
                              boolean isApplicationClass) {
-        super(Opcodes.ASM5);
+        super(Opcodes.ASM6);
         
         this.ctx = ctx;
         this.definingURI = definingURI;
@@ -326,7 +326,7 @@ public class ModelClassVisitor extends ClassVisitor {
         private final MethodVisitingContext context;
 
         private ModelMethodVisitor(MemberVisitingContext context) {
-            super(Opcodes.ASM5);
+            super(Opcodes.ASM6);
             
             this.context = new MethodVisitingContext(context.modelUnAnnotatedMembers);
         }
@@ -375,7 +375,7 @@ public class ModelClassVisitor extends ClassVisitor {
       private final MethodVisitingContext context;
       
       public ModelDefaultAnnotationVisitor(MethodVisitingContext visitingContext) {
-          super(Opcodes.ASM5);
+          super(Opcodes.ASM6);
         this.context = visitingContext;
       }
 
@@ -391,7 +391,7 @@ public class ModelClassVisitor extends ClassVisitor {
         private final FieldVisitingContext context;
 
         private ModelFieldVisitor(MemberVisitingContext context) {
-            super(Opcodes.ASM5);
+            super(Opcodes.ASM6);
             
             this.context = new FieldVisitingContext(context.modelUnAnnotatedMembers);
         }
@@ -441,7 +441,7 @@ public class ModelClassVisitor extends ClassVisitor {
         private final AnnotationVisitingContext context;
 
         private ModelAnnotationVisitor() {
-            super(Opcodes.ASM5);
+            super(Opcodes.ASM6);
             
             this.context = new AnnotationVisitingContext();
         }
