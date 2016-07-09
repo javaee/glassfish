@@ -162,7 +162,6 @@ public class BridgeTest {
         ServiceLocator from1 = Utilities.getUniqueLocator(SimpleService.class);
         ServiceLocator from2 = Utilities.getUniqueLocator(SimpleService2.class);
         
-        
         ExtrasUtilities.bridgeServiceLocator(into, from1);
         ExtrasUtilities.bridgeServiceLocator(into, from2);
         
@@ -440,6 +439,30 @@ public class BridgeTest {
         Assert.assertNotNull(into.getService(SimpleService.class));
         Assert.assertNotNull(into.getService(PerLookupService.class));
         Assert.assertNotNull(into.getService(SingletonService.class));
+    }
+    
+    @Test @org.junit.Ignore
+    public void testSingletonOnlyStartedOnce() {
+        ServiceLocator locator1 = Utilities.getCleanLocator("SingletonOnlyStartedOnce-1",
+                ConstructorCountingSingletonService.class);
+        ServiceLocator locator2 = Utilities.getCleanLocator("SingletonOnlyStartedOnce-2");
+        
+        try {
+            ConstructorCountingSingletonService.reset();
+        
+            ExtrasUtilities.bridgeServiceLocator(locator2, locator1);
+        
+            ConstructorCountingSingletonService s1 = locator1.getService(ConstructorCountingSingletonService.class);
+            ConstructorCountingSingletonService s2 = locator2.getService(ConstructorCountingSingletonService.class);
+        
+            Assert.assertEquals(1, ConstructorCountingSingletonService.getNumConstructorCalls());
+            Assert.assertEquals(s1, s2);
+        }
+        finally {
+            locator2.shutdown();
+            locator1.shutdown();
+        }
+        
     }
 
 }
