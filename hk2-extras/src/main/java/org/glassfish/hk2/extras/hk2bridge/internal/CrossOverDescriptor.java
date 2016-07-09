@@ -158,7 +158,7 @@ public class CrossOverDescriptor<T> extends AbstractActiveDescriptor<T> {
     public T create(ServiceHandle<?> root) {
         checkState();
         
-        return remote.create(root);
+        return remoteLocator.getService(remote, root);
     }
     
     @Override

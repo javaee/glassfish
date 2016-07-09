@@ -311,7 +311,7 @@ public class BridgeTest {
     /**
      * Tests that we will not bridge parents or selfies
      */
-    @Test
+    @Test // @org.junit.Ignore
     public void testNoParentedBridges() {
         ServiceLocator grandparent = Utilities.FACTORY.create("NoParentedBridges_Grandparent");
         ServiceLocator parent = Utilities.FACTORY.create("NoParentedBridges_Parent", grandparent);
@@ -441,7 +441,10 @@ public class BridgeTest {
         Assert.assertNotNull(into.getService(SingletonService.class));
     }
     
-    @Test @org.junit.Ignore
+    /**
+     * Makes sure a singleton is only started once when using the bridge
+     */
+    @Test // @org.junit.Ignore
     public void testSingletonOnlyStartedOnce() {
         ServiceLocator locator1 = Utilities.getCleanLocator("SingletonOnlyStartedOnce-1",
                 ConstructorCountingSingletonService.class);
