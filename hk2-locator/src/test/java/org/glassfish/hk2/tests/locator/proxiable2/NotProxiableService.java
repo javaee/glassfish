@@ -43,6 +43,9 @@ package org.glassfish.hk2.tests.locator.proxiable2;
 import javax.annotation.PostConstruct;
 
 /**
+ * This service is not proxiable only because in the ProxiableModule .proxy(false)
+ * is used
+ * 
  * @author jwells
  *
  */
@@ -62,7 +65,6 @@ public class NotProxiableService {
     public void doService() {
     }
     
-    @SuppressWarnings("unused")
     @PostConstruct
     private void postConstruct() {
         constructorCalled++;

@@ -41,6 +41,7 @@
 package org.jvnet.hk2.internal;
 
 import java.lang.reflect.Proxy;
+import java.security.AccessControlException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.HashMap;
@@ -93,7 +94,16 @@ public class ProxyUtilities {
             @Override
             public ClassLoader run() {
                 ClassLoader retVal = superclass.getClassLoader();
-                if (retVal == null) retVal = ClassLoader.getSystemClassLoader();
+                if (retVal == null) {
+                    try {
+                        retVal = ClassLoader.getSystemClassLoader();
+                    }
+                    catch (SecurityException se) {
+                        throw new IllegalStateException(
+                                "Insufficient privilege to get system classloader while looking for classloader of " +
+                                superclass.getName(), se);
+                    }
+                }
                 if (retVal == null) {
                     throw new IllegalStateException("Could not find system classloader or classloader of " + superclass.getName());
                 }
