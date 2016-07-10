@@ -42,12 +42,16 @@ package org.glassfish.hk2.tests.hk2bridge;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.AnnotationLiteral;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.PerLookup;
+import org.glassfish.hk2.api.ProxyCtl;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.extras.ExtrasUtilities;
+import org.glassfish.hk2.extras.operation.OperationHandle;
+import org.glassfish.hk2.extras.operation.OperationManager;
 import org.glassfish.hk2.tests.extras.internal.Utilities;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
@@ -59,6 +63,8 @@ import org.junit.Test;
  *
  */
 public class BridgeTest {
+    private static final PerRequest PER_REQUEST = new PerRequestImpl();
+    
     /**
      * Tests the hk2 to hk2 bridging feature
      */
@@ -466,6 +472,74 @@ public class BridgeTest {
             locator1.shutdown();
         }
         
+    }
+    
+    /**
+     * Makes sure a context defined in one locator works properly
+     * from the other locator
+     */
+    @Test // @org.junit.Ignore
+    public void testContextFromOneLocatorWorksInOtherlocator() {
+        ServiceLocator locator1 = Utilities.getCleanLocator("testContextFromOneLocatorWorksInOtherlocator-1",
+                PerRequestOperationContext.class,
+                PerRequestService.class);
+        ServiceLocator locator2 = Utilities.getCleanLocator("testContextFromOneLocatorWorksInOtherlocator-2",
+                SingletonInjectsPerRequest.class,
+                AnotherPerRequestService.class);
+        
+        ExtrasUtilities.enableOperations(locator1);
+        
+        PerRequestService.reset();
+        
+        OperationHandle<PerRequest> handle = null;
+        try {
+            ExtrasUtilities.bridgeServiceLocator(locator2, locator1);
+        
+            OperationManager operationManager = locator1.getService(OperationManager.class);
+            handle = operationManager.createAndStartOperation(PER_REQUEST);
+            
+            Assert.assertEquals(0, PerRequestService.getNumInitializations());
+            
+            SingletonInjectsPerRequest sipr = locator2.getService(SingletonInjectsPerRequest.class);
+            PerRequestService prs = locator2.getService(PerRequestService.class);
+            AnotherPerRequestService aprs = locator2.getService(AnotherPerRequestService.class);
+            
+            prs.invoke();
+            
+            // Just here to ensure only one initialization no matter from two locators
+            locator1.getService(PerRequestService.class);
+            
+            Assert.assertEquals(1, PerRequestService.getNumInitializations());
+            
+            PerRequestService originalPRS = (PerRequestService) ((ProxyCtl) prs).__make();
+            
+            Assert.assertTrue(sipr.getUnderlyingService() == originalPRS);
+            Assert.assertTrue(aprs.returnNotProxied() == originalPRS);
+            
+            Assert.assertEquals(1, PerRequestService.getNumInitializations());
+            
+            handle.closeOperation();
+            handle = operationManager.createAndStartOperation(PER_REQUEST);
+            
+            Assert.assertFalse(sipr.getUnderlyingService() == originalPRS);
+            Assert.assertFalse(aprs.returnNotProxied() == originalPRS);
+            
+            originalPRS.invoke();
+            
+            Assert.assertEquals(2, PerRequestService.getNumInitializations());
+        }
+        finally {
+            if (handle != null) {
+                handle.closeOperation();
+            }
+            
+            locator2.shutdown();
+            locator1.shutdown();
+        }
+        
+    }
+    
+    private static class PerRequestImpl extends AnnotationLiteral<PerRequest> implements PerRequest {
     }
 
 }

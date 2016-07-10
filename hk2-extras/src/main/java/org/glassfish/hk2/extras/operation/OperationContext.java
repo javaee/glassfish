@@ -72,7 +72,7 @@ import org.jvnet.hk2.annotations.Contract;
  * and making sure the parameterized type is the Scope annotation.
  * The {@link Scope} annotation for an Operation is usually
  * {@link Proxiable} but does not have to be. As with all implementations
- * of {@link Context} the subclass of this class must be in the {@link Singleton}
+ * of {@link Context} the subclass of this class must be in the {@link SingletonInjectsPerRequest}
  * scope.  The user code then uses the {@link OperationManager} and {@link OperationHandle}
  * to start and stop Operations and to associate and dis-associate
  * threads with Operations
