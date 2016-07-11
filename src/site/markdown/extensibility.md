@@ -413,6 +413,15 @@ A bridge between two service locators is torn down by using the method
 [unbridgeServiceLocator][unbridgeservicelocator] or by shutting down the ServiceLocator
 supplying the services.
 
+There are some feature interaction implications for bridged locators.  For example if you
+have a proxiable scope (such as a RequestScope) in a source locator that is bridged to destination
+locators then when the destination locator gets a reference to the service that object may be a proxy
+of a proxy.  The first proxy is the proxy created by the destination locator and the second proxy
+is the proxy created by the source locator.  Take this into account if you use the __make
+method of [ProxyCtl][proxyctl] since it may just return the underlying proxy rather than the
+end service.  Calling methods on services works but may go through layers of proxies.  This should
+be mostly invisible to your application unless you are doing complex work with the proxies.
+
 ### Error Handling
 
 Errors can pop up in various phases of the HK2 service lifecycle.  Users can register implementations of the
