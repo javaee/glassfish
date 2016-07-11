@@ -39,6 +39,9 @@
  */
 package org.glassfish.hk2.tests.hk2bridge;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
@@ -533,6 +536,45 @@ public class BridgeTest {
                 handle.closeOperation();
             }
             
+            locator2.shutdown();
+            locator1.shutdown();
+        }
+        
+    }
+    
+    /**
+     * Makes sure that ONLY the interceptors from the home locator are applied to
+     * the service even if the service is instantiated from the other locator
+     */
+    @Test // @org.junit.Ignore
+    public void testInterceptorAndBridgeOneWay() {
+        ServiceLocator locator1 = Utilities.getCleanLocator("testInterceptorAndBridgeOneWay-1",
+                MethodInterceptorA.class,
+                RecordedServiceImpl.class,
+                MethodInterceptorC.class);
+        ServiceLocator locator2 = Utilities.getCleanLocator("testInterceptorAndBridgeOneWay-2",
+                MethodInterceptorB.class);
+        
+        ExtrasUtilities.enableDefaultInterceptorServiceImplementation(locator1);
+        ExtrasUtilities.enableDefaultInterceptorServiceImplementation(locator2);
+        
+        try {
+            ExtrasUtilities.bridgeServiceLocator(locator2, locator1);
+        
+            RecordedServiceImpl rsi2 = locator2.getService(RecordedServiceImpl.class);
+        
+            List<String> tracker = new LinkedList<String>();
+            
+            rsi2.tracker(tracker);
+            List<String> whence = rsi2.getLastTrack();
+            
+            Assert.assertEquals(MethodInterceptorA.A_INTERCEPTOR_ID, whence.get(0));
+            Assert.assertEquals(MethodInterceptorC.C_INTERCEPTOR_ID, whence.get(1));
+            Assert.assertEquals(RecordedServiceImpl.SERVICE_TRACK, whence.get(2));
+            
+            Assert.assertEquals(3, whence.size());
+        }
+        finally {
             locator2.shutdown();
             locator1.shutdown();
         }
