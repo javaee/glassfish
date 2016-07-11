@@ -437,7 +437,6 @@ release_build(){
         -Dtarget.repo.dir=${IPS_REPO_DIR} \
         -Duc.toolkit.dir=${IPS_TOOLKIT} \
         -Drepo.url=${IPS_REPO_URL}:${IPS_REPO_PORT}/ \
-        -DjavadocExecutable=${HOME}/jdk1.7.0_25/bin/javadoc \
         -Dpython=${PYTHON_HOME}/bin/python
 }
 
