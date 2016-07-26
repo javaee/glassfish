@@ -43,6 +43,7 @@ package org.glassfish.diagnostics.context.impl;
 import junit.framework.Assert;
 import org.glassfish.diagnostics.context.ContextManager;
 import org.junit.Test;
+import org.junit.Ignore;
 
 import javax.inject.Inject;
 
@@ -53,6 +54,7 @@ public class ContextImplIntegrationTest
   private ContextManager mContextManager;
 
   @Test
+  @Ignore
   public void testInjectionOccurred()
   {
     System.out.println("mContextManager instance of " + mContextManager.getClass().getName());

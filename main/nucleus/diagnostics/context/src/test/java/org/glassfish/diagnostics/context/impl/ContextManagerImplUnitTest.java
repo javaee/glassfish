@@ -57,6 +57,7 @@ import org.glassfish.diagnostics.context.ContextManager;
 import org.junit.Test;
 import org.junit.Assert;
 import org.junit.runner.RunWith;
+import org.junit.Ignore;
 
 @RunWith(JMockit.class)
 public class ContextManagerImplUnitTest {
@@ -69,6 +70,7 @@ public class ContextManagerImplUnitTest {
   * the first new ContextManagerImpl has been created.
   */
   @Test
+  @Ignore
   public void testViewFactoryRegistration()
   {
     new MockUp<ContextMapHelper>(){
@@ -89,6 +91,7 @@ public class ContextManagerImplUnitTest {
   * ContextManagerImpl on invocation of getContext.
   */
   @Test
+  @Ignore
   public void testGetContextUseOfContextMap_new(
     @Mocked final ContextMap mockedContextMap)
   throws Exception

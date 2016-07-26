@@ -49,6 +49,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.Ignore;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -83,6 +84,7 @@ public class ContextImplContextPropagationIntegrationTest {
   * return the same instance.
   */
   @Test
+  @Ignore
   public void testThreadLocalBehaviour(){
     Context diagnosticsContextStart = mContextManager.getContext();
 
@@ -104,6 +106,7 @@ public class ContextImplContextPropagationIntegrationTest {
   * accessible on subsequent fetches of the diagnostics context.
   */
   @Test
+  @Ignore
   public void testValuePersistence(){
 
     final String propagatingKey = "propagatingKey";
@@ -132,6 +135,7 @@ public class ContextImplContextPropagationIntegrationTest {
   *
   */
   @Test
+  @Ignore
   public void testValuePropagationAndNonPropagation() throws Exception {
 
     final String propagatingKey = "propagatingKey";

@@ -257,8 +257,8 @@
                     <version>2.4</version>
                     <configuration>
                         <compilerArgument>-Djava.endorsed.dirs=${project.build.directory}/endorsed</compilerArgument>
-                        <source>1.7</source>
-                        <target>1.7</target>
+                        <source>1.8</source>
+                        <target>1.8</target>
                         <excludes>
                             <exclude>**/.ade_path/**</exclude>
                         </excludes>
