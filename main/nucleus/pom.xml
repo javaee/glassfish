@@ -138,7 +138,7 @@
         <findbugs.threshold>High</findbugs.threshold>
         <findbugs.common>exclude-common.xml</findbugs.common>
         <findbugs.exclude />
-        <findbugs.version>2.5.2</findbugs.version>
+        <findbugs.version>3.0.3</findbugs.version>
         <findbugs.glassfish.logging.validLoggerPrefixes>javax.enterprise</findbugs.glassfish.logging.validLoggerPrefixes>
 
         <glassfish-corba.version>4.0.1</glassfish-corba.version>
@@ -583,14 +583,14 @@
                     <excludeFilterFile>
                         ${findbugs.common},${findbugs.exclude}
                     </excludeFilterFile>
-		    <jvmArgs>-Dfindbugs.glassfish.logging.validLoggerPrefixes=${findbugs.glassfish.logging.validLoggerPrefixes}</jvmArgs>
-		    <plugins>
-		        <plugin>
-			    <groupId>org.glassfish.findbugs</groupId>
-			    <artifactId>findbugs-logging-detectors</artifactId>
-			    <version>1.6</version>
-		        </plugin>
-		    </plugins>
+                    <jvmArgs>-Dfindbugs.glassfish.logging.validLoggerPrefixes=${findbugs.glassfish.logging.validLoggerPrefixes}</jvmArgs>
+                    <plugins>
+                        <plugin>
+                            <groupId>org.glassfish.findbugs</groupId>
+                            <artifactId>findbugs-logging-detectors</artifactId>
+                            <version>1.6</version>
+                        </plugin>
+                    </plugins>
                 </configuration>
                 <dependencies>
                     <dependency>
