@@ -469,8 +469,11 @@ run_findbugs(){
     # run findbugs-tool
     OLD_PWD=`pwd`
     cd ${HUDSON_HOME}/tools/findbugs-tool-latest
+    set +e
     ./findbugscheck ${WORKSPACE}/main
-    if [ $? -ne 0 ]
+    EXIT_CODE=${?}
+    set -e
+    if [ ${EXIT_CODE} -ne 0 ]
     then
        echo "FAILED" > ${FINDBUGS_RESULTS}/findbugscheck.log
     else
