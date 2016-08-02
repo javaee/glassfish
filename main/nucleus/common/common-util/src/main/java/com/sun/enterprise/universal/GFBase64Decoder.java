@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -90,11 +90,14 @@ public class GFBase64Decoder  { // java.util.Base64 is private constructor and s
                 switch(var3) {
                     case 4:
                         var8 = pem_convert_array[this.decode_buffer[3] & 255];
+                        break;
                     case 3:
                         var7 = pem_convert_array[this.decode_buffer[2] & 255];
+                        break;
                     case 2:
                         var6 = pem_convert_array[this.decode_buffer[1] & 255];
                         var5 = pem_convert_array[this.decode_buffer[0] & 255];
+                        break;
                     default:
                         switch(var3) {
                             case 2:
@@ -108,6 +111,9 @@ public class GFBase64Decoder  { // java.util.Base64 is private constructor and s
                                 var2.write((byte)(var5 << 2 & 252 | var6 >>> 4 & 3));
                                 var2.write((byte)(var6 << 4 & 240 | var7 >>> 2 & 15));
                                 var2.write((byte)(var7 << 6 & 192 | var8 & 63));
+                                break;
+                            default:
+                            	break;
                         }
 
                 }
