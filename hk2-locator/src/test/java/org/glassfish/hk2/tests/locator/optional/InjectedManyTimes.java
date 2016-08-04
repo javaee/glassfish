@@ -41,10 +41,11 @@
 package org.glassfish.hk2.tests.locator.optional;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import junit.framework.Assert;
-
+import org.glassfish.hk2.api.IterableProvider;
+import org.junit.Assert;
 import org.jvnet.hk2.annotations.Optional;
 
 /**
@@ -58,6 +59,15 @@ public class InjectedManyTimes {
     
     @Inject @Optional
     private OptionalService optionalByField;
+    
+    @Inject @Optional
+    private Provider<OptionalService> optionalByProvider;
+    
+    @Inject @Optional
+    private Iterable<OptionalService> optionalByIterable;
+    
+    @Inject @Optional
+    private IterableProvider<OptionalService> optionalByIterableProvider;
     
     private final SimpleService simpleByConstructor;
     private final OptionalService optionalByConstructor;
@@ -74,7 +84,6 @@ public class InjectedManyTimes {
         this.optionalByConstructor = optionalByConstructor;
     }
     
-    @SuppressWarnings("unused")
     @Inject
     private void viaMethod(@Optional OptionalService optionalByMethod,
             @Optional SimpleService simpleByMethod) {
@@ -93,6 +102,26 @@ public class InjectedManyTimes {
         
         Assert.assertNotNull(simpleByMethod);
         Assert.assertNull(optionalByMethod);
+        
+        Assert.assertNotNull(optionalByIterable);
+        int lcv = 0;
+        for (OptionalService os : optionalByIterable) {
+            lcv++;
+        }
+        Assert.assertEquals(0, lcv);
+        
+        Assert.assertNotNull(optionalByIterableProvider);
+        Assert.assertNull(optionalByIterableProvider.getHandle());
+        Assert.assertNull(optionalByIterableProvider.get());
+        
+        lcv = 0;
+        for (OptionalService os : optionalByIterableProvider) {
+            lcv++;
+        }
+        Assert.assertEquals(0, lcv);
+        
+        Assert.assertNotNull(optionalByProvider);
+        Assert.assertNull(optionalByProvider.get());
         
         isValid = true;
     }
