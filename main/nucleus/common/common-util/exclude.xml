@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2016 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -60,5 +60,25 @@
 	<Class name="com.sun.enterprise.universal.process.ProcessUtils"/>
 	<Method name="isProcessRunning"/>
 	<Bug pattern="NP_BOOLEAN_RETURN_NULL"/>
+    </Match>
+    
+    <!--
+	We have copied sun.misc.Base64Decode and can't
+	use java.util.Base64 as of now due to JDK7 usage.
+    -->
+    <Match>
+	<Class name="com.sun.enterprise.universal.GFBase64Decoder"/>
+	<Method name="decodeAtom"/>
+	<Bug pattern="SF_SWITCH_FALLTHROUGH"/>
+    </Match>
+    
+    <!--
+	We have copied sun.misc.Base64Decode and can't
+	use java.util.Base64 as of now due to JDK7 usage.
+    -->
+    <Match>
+	<Class name="com.sun.enterprise.universal.GFBase64Decoder"/>
+	<Method name="decodeAtom"/>
+	<Bug pattern="SF_SWITCH_NO_DEFAULT"/>
     </Match>
 </FindBugsFilter>
