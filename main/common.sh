@@ -546,7 +546,7 @@ record_svn_rev(){
     if [ "${LOG}" != "${COMMIT_MSG}" ] && [ "${1}" != "`get_clean_svn_rev tmp-co`" ]
     then
         echo ${1} > svn-keywords
-        svn propset -F svn-keywords svn:keyword tmp-co
+        svn propset --force -F svn-keywords svn:keyword tmp-co
         svn commit ${WORKSPACE}/tmp-co -m "${COMMIT_MSG}"
         rm -rf tmp-co svn-keywords
     else
