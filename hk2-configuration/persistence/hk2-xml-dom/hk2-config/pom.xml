@@ -114,14 +114,8 @@
             <artifactId>tiger-types</artifactId>
         </dependency>
         <dependency>
-            <!-- 
-                 This can't be a provided scope or optional dependency, 
-                 because various modules like auto-depends-test/config-test
-                 use hk2:run goal and that requires javax.valiation to be found. Only, the APIs are not 
-                 enough. We need the full provider as well.
-            -->
-            <groupId>org.glassfish.hk2.external</groupId>
-            <artifactId>bean-validator</artifactId>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
         </dependency>
 
         <!-- hk2-config tests use hibernate-validator which requires javax.el-api -->

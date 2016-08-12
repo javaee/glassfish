@@ -58,8 +58,6 @@ public class TestModuleStartup implements ModuleStartup {
 
 	@Override
 	public void start() {
-		System.out.println(">>>>>>>>>>>>>>>>> HERE");
-	
 		wasCalled=true;
 	}
 

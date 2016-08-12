@@ -119,6 +119,10 @@
             <artifactId>no-hk2-bundle</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.glassfish.hk2</groupId>
             <artifactId>sdp-management-bundle</artifactId>
         </dependency>

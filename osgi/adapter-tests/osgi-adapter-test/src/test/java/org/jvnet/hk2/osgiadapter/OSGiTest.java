@@ -126,8 +126,6 @@ public class OSGiTest {
                         "hk2-locator").version(projectVersion).startLevel(4)),
                 provision(mavenBundle().groupId(ServiceLocatorHk2MainTest.EXT_GROUP_ID).artifactId(
                         "javax.inject").version(projectVersion).startLevel(4)),
-                provision(mavenBundle().groupId(ServiceLocatorHk2MainTest.EXT_GROUP_ID).artifactId(
-                                                "bean-validator").version(projectVersion).startLevel(4)),
                 provision(mavenBundle().groupId("org.javassist").artifactId(
                         "javassist").version("3.20.0-GA").startLevel(4)),
                 provision(mavenBundle().groupId(ServiceLocatorHk2MainTest.EXT_GROUP_ID).artifactId(
@@ -149,6 +147,10 @@ public class OSGiTest {
                 provision(mavenBundle().groupId(ServiceLocatorHk2MainTest.GROUP_ID).artifactId(
                                 "sdp-management-bundle").version(projectVersion).startLevel(4)),
                 provision(mavenBundle().groupId("javax.el").artifactId("javax.el-api").version("2.2.5")),
+                provision(mavenBundle().groupId("javax.validation").artifactId("validation-api").version("1.1.0.Final")),
+                provision(mavenBundle().groupId("org.hibernate").artifactId("hibernate-validator").version("5.1.2.Final")),
+                provision(mavenBundle().groupId("com.fasterxml").artifactId("classmate").version("1.0.0")),
+                provision(mavenBundle().groupId("org.jboss.logging").artifactId("jboss-logging").version("3.1.3.GA")),
                 // systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level")
                 //      .value("DEBUG"),
                 cleanCaches()
