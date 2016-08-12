@@ -58,7 +58,7 @@ public class TestModuleStartup implements ModuleStartup {
 
 	@Override
 	public void start() {
-		wasCalled=true;
+		setWasCalled();
 	}
 
 	@Override
@@ -67,4 +67,7 @@ public class TestModuleStartup implements ModuleStartup {
 		
 	}
 
+        private synchronized static void setWasCalled() {
+          wasCalled=true; 
+        }
 }
