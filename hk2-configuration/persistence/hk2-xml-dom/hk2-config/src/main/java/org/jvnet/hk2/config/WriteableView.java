@@ -93,7 +93,7 @@ public class WriteableView implements InvocationHandler, Transactor, ConfigView 
             });
    
        try {      
-           Thread.currentThread().setContextClassLoader(ValidatorFactory.class.getClassLoader());
+           Thread.currentThread().setContextClassLoader(org.hibernate.validator.HibernateValidator.class.getClassLoader());
        
            ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
            ValidatorContext validatorContext = validatorFactory.usingContext();
