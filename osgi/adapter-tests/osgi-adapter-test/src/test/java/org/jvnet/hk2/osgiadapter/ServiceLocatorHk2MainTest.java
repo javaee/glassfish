@@ -156,9 +156,9 @@ public class ServiceLocatorHk2MainTest {
 		                        "sdp-management-bundle").version(projectVersion).startLevel(4)),
                                 provision(mavenBundle().groupId("javax.el").artifactId("javax.el-api").version("2.2.5")),
                                 provision(mavenBundle().groupId("javax.validation").artifactId("validation-api").version("1.1.0.Final")),
-                provision(mavenBundle().groupId("org.hibernate").artifactId("hibernate-validator").version("5.1.2.Final")),
-                provision(mavenBundle().groupId("com.fasterxml").artifactId("classmate").version("1.0.0")),
-                provision(mavenBundle().groupId("org.jboss.logging").artifactId("jboss-logging").version("3.1.3.GA")),
+                provision(mavenBundle().groupId("org.hibernate").artifactId("hibernate-validator").version("5.2.4.Final")),
+                provision(mavenBundle().groupId("com.fasterxml").artifactId("classmate").version("1.1.0")),
+                provision(mavenBundle().groupId("org.jboss.logging").artifactId("jboss-logging").version("3.3.0.Final")),
 				// systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level")
 				//		.value("DEBUG"),
 				cleanCaches()
