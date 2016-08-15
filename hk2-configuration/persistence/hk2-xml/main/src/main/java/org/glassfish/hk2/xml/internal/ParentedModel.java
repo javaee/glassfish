@@ -64,7 +64,6 @@ public class ParentedModel implements Serializable {
     private String childXmlTag;
     private ChildType childType;
     private String givenDefault;
-    private Map<String, String> defaultChild;
     
     /** Set at runtime */
     private ClassLoader myLoader;
@@ -76,12 +75,11 @@ public class ParentedModel implements Serializable {
     public ParentedModel() {
     }
     
-    public ParentedModel(String childInterface, String childXmlTag, ChildType childType, String givenDefault, Map<String, String> defaultChild) {
+    public ParentedModel(String childInterface, String childXmlTag, ChildType childType, String givenDefault) {
         this.childInterface = childInterface;
         this.childXmlTag = childXmlTag;
         this.childType = childType;
         this.givenDefault = givenDefault;
-        this.defaultChild = defaultChild;
     }
     
     public String getChildInterface() {
@@ -98,10 +96,6 @@ public class ParentedModel implements Serializable {
     
     public String getGivenDefault() {
         return givenDefault;
-    }
-    
-    public Map<String, String> getDefaultChild() {
-        return defaultChild;
     }
     
     public Model getChildModel() {

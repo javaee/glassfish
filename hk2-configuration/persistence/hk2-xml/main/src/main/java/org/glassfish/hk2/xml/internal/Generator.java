@@ -45,7 +45,6 @@ import java.security.PrivilegedAction;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -85,10 +84,8 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.glassfish.hk2.api.AnnotationLiteral;
 import org.glassfish.hk2.api.MultiException;
-import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.xml.api.annotations.Customize;
-import org.glassfish.hk2.xml.api.annotations.DefaultChild;
 import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
 import org.glassfish.hk2.xml.api.annotations.PluralOf;
 import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
@@ -495,20 +492,11 @@ public class Generator {
             
             if (getterOrSetter) {
                 if (childType != null) {
-                    Map<String, String> defaultChild = null;
-                    AltAnnotation defaultChildAnnotation= mi.getOriginalMethod().getAnnotation(DefaultChild.class.getName());
-                    if (defaultChildAnnotation != null) {
-                        String[] defaultStrings = defaultChildAnnotation.getStringArrayValue("value");
-                        
-                        defaultChild = convertDefaultChildValueArray(defaultStrings);
-                    }
-                    
                     compiledModel.addChild(
                             childType.getName(),
                             mi.getRepresentedProperty(),
                             getChildType(mi.isList(), mi.isArray()),
-                            mi.getDefaultValue(),
-                            defaultChild);
+                            mi.getDefaultValue());
                 }
                 else {
                     compiledModel.addNonChild(mi.getRepresentedProperty(), mi.getDefaultValue(),
@@ -600,8 +588,7 @@ public class Generator {
               asParameter(entry.getValue().getChildInterface()) + "," +
               asParameter(entry.getValue().getChildXmlTag()) + "," +
               asParameter(entry.getValue().getChildType()) + "," +
-              asParameter(entry.getValue().getGivenDefault()) + "," +
-              asParameter((String) null) + ");\n");
+              asParameter(entry.getValue().getGivenDefault()) + ");\n");
         }
         
         Map<String, ChildDataModel> nonChildProperties = model.getNonChildProperties();
@@ -1324,38 +1311,6 @@ public class Generator {
         if (defaultClassPool.getOrNull(fixerClass) == null) {
             defaultClassPool.makeInterface(fixerClass);
         }
-    }
-    
-    private static Map<String, String> convertDefaultChildValueArray(String[] values) {
-        LinkedHashMap<String, String> retVal = new LinkedHashMap<String, String>();
-        if (values == null) return retVal;
-        for (String value : values) {
-            value = value.trim();
-            if ("".equals(value)) continue;
-            if (value.charAt(0) == '=') {
-                throw new AssertionError("First character of " + value + " may not be an =");
-            }
-            
-            int indexOfEquals = value.indexOf('=');
-            if (indexOfEquals < 0) {
-                retVal.put(value, null);
-            }
-            else {
-                String key = value.substring(0, indexOfEquals);
-                
-                String attValue;
-                if (indexOfEquals >= (value.length() - 1)) {
-                    attValue = null;
-                }
-                else {
-                    attValue = value.substring(indexOfEquals + 1);
-                }
-                
-                retVal.put(key, attValue);
-            }
-        }
-        
-        return retVal;
     }
     
     private static final class PluralOfDefault extends AnnotationLiteral<PluralOf> implements PluralOf {

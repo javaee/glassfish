@@ -117,9 +117,8 @@ public class Model implements Serializable {
             String childInterface,
             String xmlTag,
             ChildType childType,
-            String givenDefault,
-            Map<String, String> childDefault) {
-        ParentedModel pm = new ParentedModel(childInterface, xmlTag, childType, givenDefault, childDefault);
+            String givenDefault) {
+        ParentedModel pm = new ParentedModel(childInterface, xmlTag, childType, givenDefault);
         childrenByName.put(xmlTag, pm);
     }
     
