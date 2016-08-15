@@ -465,7 +465,7 @@ public class CommandRunnerImpl implements CommandRunner {
                     }
                 });
         try {
-            Thread.currentThread().setContextClassLoader(Validation.class.getClassLoader());
+            Thread.currentThread().setContextClassLoader(org.hibernate.validator.HibernateValidator.class.getClassLoader());
             ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
             ValidatorContext validatorContext = validatorFactory.usingContext();
             validatorContext.messageInterpolator(new MessageInterpolatorImpl());                

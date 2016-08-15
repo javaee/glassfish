@@ -1067,6 +1067,11 @@
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-validator-cdi</artifactId>
+                <version>${hibernate-validator.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
