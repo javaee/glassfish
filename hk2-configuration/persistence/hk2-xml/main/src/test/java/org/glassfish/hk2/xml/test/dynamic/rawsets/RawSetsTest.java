@@ -70,12 +70,12 @@ import org.junit.Test;
 public class RawSetsTest {
     public final static String MUSEUM2_FILE = "museum2.xml";
     
-    private final static String MUSEUM_TYPE = "/museum";
-    private final static String MUSEUM_INSTANCE = "museum";
+    public final static String MUSEUM_TYPE = "/museum";
+    public final static String MUSEUM_INSTANCE = "museum";
     
-    private final static String AGE_TAG = "age";
+    public final static String AGE_TAG = "age";
     
-    private final static int ONE_OH_ONE_INT = 101;
+    public final static int ONE_OH_ONE_INT = 101;
     
     /**
      * Just verifies that the original state of the Museum
@@ -214,60 +214,8 @@ public class RawSetsTest {
         }
     }
     
-    /**
-     * Overlays original file with new file
-     * 
-     * @throws Exception
-     */
-    @SuppressWarnings("unchecked")
-    @Test @org.junit.Ignore
-    public void testOverlay() throws Exception {
-        ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
-        XmlService xmlService = locator.getService(XmlService.class);
-        Hub hub = locator.getService(Hub.class);
-        UpdateListener listener = locator.getService(UpdateListener.class);
-        
-        URL url = getClass().getClassLoader().getResource(UnmarshallTest.MUSEUM1_FILE);
-        
-        XmlRootHandle<Museum> rootHandle = xmlService.unmarshall(url.toURI(), Museum.class);
-        
-        verifyPreState(rootHandle, hub);
-        
-        URL url2 = getClass().getClassLoader().getResource(MUSEUM2_FILE);
-        
-        XmlRootHandle<Museum> rootHandle2 = xmlService.unmarshall(url2.toURI(), Museum.class, false, false);
-        
-        // This just checks to make sure the original tree was not modified when creating the second handle
-        verifyPreState(rootHandle, hub);
-        
-        rootHandle.overlay(rootHandle2);
-        
-        Museum museum = rootHandle.getRoot();
-        
-        // Now make sure new values show up
-        Assert.assertEquals(ONE_OH_ONE_INT, museum.getId());
-        Assert.assertEquals(UnmarshallTest.BEN_FRANKLIN, museum.getName());
-        Assert.assertEquals(ONE_OH_ONE_INT, museum.getAge());
-        
-        Instance instance = hub.getCurrentDatabase().getInstance(MUSEUM_TYPE, MUSEUM_INSTANCE);
-        Map<String, Object> beanLikeMap = (Map<String, Object>) instance.getBean();
-        
-        Assert.assertEquals(UnmarshallTest.BEN_FRANKLIN, beanLikeMap.get(UnmarshallTest.NAME_TAG));
-        Assert.assertEquals(ONE_OH_ONE_INT, beanLikeMap.get(UnmarshallTest.ID_TAG));
-        Assert.assertEquals(ONE_OH_ONE_INT, beanLikeMap.get(AGE_TAG));  // The test
-        
-        List<Change> changes = listener.changes;
-        Assert.assertNotNull(changes);
-        
-        Assert.assertEquals(2, changes.size());
-        
-        for (Change change : changes) {
-            Assert.assertEquals(ChangeCategory.MODIFY_INSTANCE, change.getChangeCategory());
-        }
-    }
-    
     @Singleton
-    private static class UpdateListener implements BeanDatabaseUpdateListener {
+    public static class UpdateListener implements BeanDatabaseUpdateListener {
         private List<Change> changes;
 
         /* (non-Javadoc)
@@ -301,6 +249,10 @@ public class RawSetsTest {
                 List<Change> changes) {
             // TODO Auto-generated method stub
             
+        }
+        
+        public List<Change> getChanges() {
+            return changes;
         }
         
     }
