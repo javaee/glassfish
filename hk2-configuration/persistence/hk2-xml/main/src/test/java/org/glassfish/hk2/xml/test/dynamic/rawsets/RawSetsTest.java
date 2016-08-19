@@ -40,7 +40,6 @@
 
 package org.glassfish.hk2.xml.test.dynamic.rawsets;
 
-import java.beans.PropertyChangeEvent;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +53,6 @@ import org.glassfish.hk2.configuration.hub.api.Change;
 import org.glassfish.hk2.configuration.hub.api.Change.ChangeCategory;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
-import org.glassfish.hk2.xml.api.XmlRootCopy;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.basic.Museum;
@@ -82,7 +80,7 @@ public class RawSetsTest {
      * object from the file is as expected
      */
     @SuppressWarnings("unchecked")
-    private void verifyPreState(XmlRootHandle<Museum> rootHandle, Hub hub) {
+    public static void verifyPreState(XmlRootHandle<Museum> rootHandle, Hub hub) {
         Museum museum = rootHandle.getRoot();
         
         Assert.assertEquals(UnmarshallTest.HUNDRED_INT, museum.getId());
@@ -139,78 +137,6 @@ public class RawSetsTest {
         
         for (Change change : changes) {
             Assert.assertEquals(ChangeCategory.MODIFY_INSTANCE, change.getChangeCategory());
-        }
-    }
-    
-    /**
-     * Modifies two properties with one transaction
-     * 
-     * @throws Exception
-     */
-    @SuppressWarnings("unchecked")
-    @Test // @org.junit.Ignore
-    public void testModifyTwoPropertiesOneTransaction() throws Exception {
-        ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
-        XmlService xmlService = locator.getService(XmlService.class);
-        Hub hub = locator.getService(Hub.class);
-        UpdateListener listener = locator.getService(UpdateListener.class);
-        
-        URL url = getClass().getClassLoader().getResource(UnmarshallTest.MUSEUM1_FILE);
-        
-        XmlRootHandle<Museum> rootHandle = xmlService.unmarshall(url.toURI(), Museum.class);
-        
-        verifyPreState(rootHandle, hub);
-        
-        // All above just verifying the pre-state
-        XmlRootCopy<Museum> copy = rootHandle.getXmlRootCopy();
-        Museum museumCopy = copy.getChildRoot();
-        Museum museumOld = rootHandle.getRoot();
-        
-        museumCopy.setAge(ONE_OH_ONE_INT);  // getting younger?
-        museumCopy.setId(ONE_OH_ONE_INT);  // different from original!
-        
-        // Ensure that the modification of the copy did NOT affect the parent!
-        verifyPreState(rootHandle, hub);
-        
-        // Now do the merge
-        copy.merge();
-        
-        // Now make sure new values show up
-        Assert.assertEquals(ONE_OH_ONE_INT, museumOld.getId());
-        Assert.assertEquals(UnmarshallTest.BEN_FRANKLIN, museumOld.getName());
-        Assert.assertEquals(ONE_OH_ONE_INT, museumOld.getAge());
-        
-        Instance instance = hub.getCurrentDatabase().getInstance(MUSEUM_TYPE, MUSEUM_INSTANCE);
-        Map<String, Object> beanLikeMap = (Map<String, Object>) instance.getBean();
-        
-        Assert.assertEquals(UnmarshallTest.BEN_FRANKLIN, beanLikeMap.get(UnmarshallTest.NAME_TAG));
-        Assert.assertEquals(ONE_OH_ONE_INT, beanLikeMap.get(UnmarshallTest.ID_TAG));
-        Assert.assertEquals(ONE_OH_ONE_INT, beanLikeMap.get(AGE_TAG));  // The test
-        
-        List<Change> changes = listener.changes;
-        Assert.assertNotNull(changes);
-        
-        Assert.assertEquals(1, changes.size());
-        
-        for (Change change : changes) {
-            Assert.assertEquals(ChangeCategory.MODIFY_INSTANCE, change.getChangeCategory());
-            
-            List<PropertyChangeEvent> events = change.getModifiedProperties();
-            
-            Assert.assertEquals(2, events.size());
-            boolean gotId = false;
-            boolean gotAge = false;
-            for (PropertyChangeEvent event : events) {
-                if ("age".equals(event.getPropertyName())) {
-                    gotAge = true;
-                }
-                else if ("id".equals(event.getPropertyName())) {
-                    gotId = true;
-                }
-            }
-            
-            Assert.assertTrue(gotId);
-            Assert.assertTrue(gotAge);
         }
     }
     

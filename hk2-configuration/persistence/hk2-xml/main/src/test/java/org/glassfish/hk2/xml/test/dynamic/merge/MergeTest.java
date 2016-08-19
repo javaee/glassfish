@@ -37,8 +37,9 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test.dynamic.overlay;
+package org.glassfish.hk2.xml.test.dynamic.merge;
 
+import java.beans.PropertyChangeEvent;
 import java.net.URL;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,7 @@ import org.glassfish.hk2.configuration.hub.api.Change;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.Change.ChangeCategory;
+import org.glassfish.hk2.xml.api.XmlRootCopy;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.basic.Museum;
@@ -62,16 +64,15 @@ import org.junit.Test;
  * @author jwells
  *
  */
-public class OverlayTest {
+public class MergeTest {
     /**
-     * Overlays original file with new file
+     * Modifies two properties with one transaction in a merge
      * 
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    @Test
-    @org.junit.Ignore
-    public void testRooBeanOnlyOverlay() throws Exception {
+    @Test // @org.junit.Ignore
+    public void testMergeModifyTwoPropertiesOneTransaction() throws Exception {
         ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
         XmlService xmlService = locator.getService(XmlService.class);
         Hub hub = locator.getService(Hub.class);
@@ -83,21 +84,24 @@ public class OverlayTest {
         
         RawSetsTest.verifyPreState(rootHandle, hub);
         
-        URL url2 = getClass().getClassLoader().getResource(RawSetsTest.MUSEUM2_FILE);
+        // All above just verifying the pre-state
+        XmlRootCopy<Museum> copy = rootHandle.getXmlRootCopy();
+        Museum museumCopy = copy.getChildRoot();
+        Museum museumOld = rootHandle.getRoot();
         
-        XmlRootHandle<Museum> rootHandle2 = xmlService.unmarshall(url2.toURI(), Museum.class, false, false);
+        museumCopy.setAge(RawSetsTest.ONE_OH_ONE_INT);  // getting younger?
+        museumCopy.setId(RawSetsTest.ONE_OH_ONE_INT);  // different from original!
         
-        // This just checks to make sure the original tree was not modified when creating the second handle
+        // Ensure that the modification of the copy did NOT affect the parent!
         RawSetsTest.verifyPreState(rootHandle, hub);
         
-        rootHandle.overlay(rootHandle2);
-        
-        Museum museum = rootHandle.getRoot();
+        // Now do the merge
+        copy.merge();
         
         // Now make sure new values show up
-        Assert.assertEquals(RawSetsTest.ONE_OH_ONE_INT, museum.getId());
-        Assert.assertEquals(UnmarshallTest.BEN_FRANKLIN, museum.getName());
-        Assert.assertEquals(RawSetsTest.ONE_OH_ONE_INT, museum.getAge());
+        Assert.assertEquals(RawSetsTest.ONE_OH_ONE_INT, museumOld.getId());
+        Assert.assertEquals(UnmarshallTest.BEN_FRANKLIN, museumOld.getName());
+        Assert.assertEquals(RawSetsTest.ONE_OH_ONE_INT, museumOld.getAge());
         
         Instance instance = hub.getCurrentDatabase().getInstance(RawSetsTest.MUSEUM_TYPE, RawSetsTest.MUSEUM_INSTANCE);
         Map<String, Object> beanLikeMap = (Map<String, Object>) instance.getBean();
@@ -109,10 +113,28 @@ public class OverlayTest {
         List<Change> changes = listener.getChanges();
         Assert.assertNotNull(changes);
         
-        Assert.assertEquals(2, changes.size());
+        Assert.assertEquals(1, changes.size());
         
         for (Change change : changes) {
             Assert.assertEquals(ChangeCategory.MODIFY_INSTANCE, change.getChangeCategory());
+            
+            List<PropertyChangeEvent> events = change.getModifiedProperties();
+            
+            Assert.assertEquals(2, events.size());
+            boolean gotId = false;
+            boolean gotAge = false;
+            for (PropertyChangeEvent event : events) {
+                if ("age".equals(event.getPropertyName())) {
+                    gotAge = true;
+                }
+                else if ("id".equals(event.getPropertyName())) {
+                    gotId = true;
+                }
+            }
+            
+            Assert.assertTrue(gotId);
+            Assert.assertTrue(gotAge);
         }
     }
+
 }

@@ -132,6 +132,29 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
      */
     @Override
     public void overlay(XmlRootHandle<T> newRoot) {
+        if (!(newRoot instanceof XmlRootHandle)) {
+            throw new IllegalArgumentException("newRoot must have been created by the same XmlService as this one");
+        }
+        XmlRootHandleImpl<T> newRootImpl = (XmlRootHandleImpl<T>) newRoot;
+        if (newRootImpl.isAdvertisedInHub()) {
+            throw new IllegalArgumentException("The newRoot must not be advertised in the Hub");
+        }
+        if (newRootImpl.isAdvertisedInLocator()) {
+            throw new IllegalArgumentException("The newRoot must not be advertised as hk2 services");
+        }
+        if (root == null) {
+            throw new IllegalArgumentException("This XmlRootHandle must have a root to be overlayed");
+        }
+        T newRootRoot = newRootImpl.getRoot(); 
+        if (newRootRoot == null) {
+            throw new IllegalArgumentException("The newRoot must have a root to overlay onto this root");
+        }
+        if (!(newRootRoot instanceof BaseHK2JAXBBean)) {
+            throw new IllegalArgumentException("The newRoot has a root of an unknown type: " + newRootRoot.getClass().getName());
+        }
+        
+        BaseHK2JAXBBean newRootBase = (BaseHK2JAXBBean) newRootRoot;
+        
         throw new AssertionError("overlay not yet implemented");
         
     }
