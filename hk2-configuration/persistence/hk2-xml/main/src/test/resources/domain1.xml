@@ -55,7 +55,7 @@
 		<address>10.0.0.1</address>
 		
 		<server>
-			<name>Alice-Server-0</name>
+			<name>Server-0</name>
 			<port>12345</port>
 		</server>
 	</machine>

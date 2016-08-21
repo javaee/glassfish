@@ -50,6 +50,6 @@ import org.glassfish.hk2.xml.test.basic.NamedBean;
 public interface ServerBean extends NamedBean {
     @XmlElement(name="port")
     public int getPort();
-    public void setPort(String port);
+    public void setPort(int port);
 
 }

@@ -54,6 +54,11 @@ import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.basic.Museum;
 import org.glassfish.hk2.xml.test.basic.UnmarshallTest;
+import org.glassfish.hk2.xml.test.beans.AuthorizationProviderBean;
+import org.glassfish.hk2.xml.test.beans.DomainBean;
+import org.glassfish.hk2.xml.test.beans.MachineBean;
+import org.glassfish.hk2.xml.test.beans.SecurityManagerBean;
+import org.glassfish.hk2.xml.test.beans.ServerBean;
 import org.glassfish.hk2.xml.test.dynamic.rawsets.RawSetsTest;
 import org.glassfish.hk2.xml.test.dynamic.rawsets.RawSetsTest.UpdateListener;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
@@ -65,6 +70,35 @@ import org.junit.Test;
  *
  */
 public class MergeTest {
+    public final static String DOMAIN1_FILE = "domain1.xml";
+    
+    
+    private final static String DOMAIN1_NAME = "domain1";
+    private final static String RSA_ATZ_PROV_NAME = "RSA";
+    private final static String RSA_DOM_PFX = "rsa";
+    private final static String ALICE_NAME = "Alice";
+    private final static String BOB_NAME = "Bob";
+    private final static String ALICE_ADDRESS = "10.0.0.1";
+    private final static String ALICE_SERVER0_NAME = "Server-0";
+    private final static int ALICE_SERVER0_PORT = 12345;
+    
+    private final static String DOMAIN_TYPE = "/domain";
+    private final static String DOMAIN_INSTANCE = "domain";
+    private final static String MACHINE_TYPE = "/domain/machine";
+    private final static String SERVER_TYPE = "/domain/machine/server";
+    private final static String SECURITY_MANAGER_TYPE = "/domain/security-manager";
+    private final static String AUTHORIZATION_PROVIDER_TYPE = "/domain/security-manager/authorization-provider";
+    
+    private final static String ALICE_INSTANCE = "domain.Alice";
+    private final static String BOB_INSTANCE = "domain.Bob";
+    private final static String SERVER0_INSTANCE = "domain.Alice.Server-0";
+    private final static String SECURITY_MANAGER_INSTANCE = "domain.security-manager";
+    private final static String RSA_INSTANCE = "domain.security-manager.RSA";
+    
+    private final static String ADDRESS_TAG = "address";
+    private final static String PORT_TAG = "port";
+    private final static String ATZ_DOMAIN_PFX_TAG = "domain-pfx";
+    
     /**
      * Modifies two properties with one transaction in a merge
      * 
@@ -134,6 +168,166 @@ public class MergeTest {
             
             Assert.assertTrue(gotId);
             Assert.assertTrue(gotAge);
+        }
+    }
+    
+    /**
+     * Adds a child to the top bean
+     * 
+     * @throws Exception
+     */
+    @SuppressWarnings("unchecked")
+    @Test 
+    @org.junit.Ignore
+    public void testMergeModifyAddADirectChild() throws Exception {
+        ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        UpdateListener listener = locator.getService(UpdateListener.class);
+        
+        URL url = getClass().getClassLoader().getResource(DOMAIN1_FILE);
+        
+        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshall(url.toURI(), DomainBean.class);
+        
+        verifyDomain1Xml(rootHandle, hub);
+        
+        // All above just verifying the pre-state
+        XmlRootCopy<DomainBean> copy = rootHandle.getXmlRootCopy();
+        DomainBean domainCopy = copy.getChildRoot();
+        DomainBean domainOld = rootHandle.getRoot();
+        
+        MachineBean addedBean = xmlService.createBean(MachineBean.class);
+        addedBean.setName(BOB_NAME);
+        
+        domainCopy.addMachine(addedBean);
+        
+        // Ensure that the modification of the copy did NOT affect the parent!
+        verifyDomain1Xml(rootHandle, hub);
+        
+        // Now do the merge
+        copy.merge();
+        
+        // Now make sure new values show up
+        List<MachineBean> machines = domainOld.getMachines();
+        Assert.assertEquals(2, machines.size());
+        
+        boolean foundAlice = false;
+        boolean foundBob = false;
+        for (MachineBean machine : machines) {
+            if (machine.getName().equals(BOB_NAME)) {
+                if (foundBob) {
+                    Assert.fail("There were more than one bob in the list of machines: " + machines);
+                }
+                foundBob = true;
+            }
+            else if (machine.getName().equals(ALICE_NAME)) {
+                if (foundAlice) {
+                    Assert.fail("There were more than one alice in the list of machines: " + machines);
+                }
+                foundAlice = true;
+            }
+        }
+        
+        Assert.assertTrue("Added child was not found: " + machines, foundBob);
+        Assert.assertTrue("Existing child was not found: " + machines, foundAlice);
+        
+        {
+            // Check hub for bob
+            Instance machineBobInstance = hub.getCurrentDatabase().getInstance(MACHINE_TYPE, BOB_INSTANCE);
+            Assert.assertNotNull(machineBobInstance);
+            
+            Map<String, Object> bobMap = (Map<String, Object>) machineBobInstance.getBean();
+            Assert.assertEquals(BOB_NAME, bobMap.get(UnmarshallTest.NAME_TAG));
+            Assert.assertNull(bobMap.get(ADDRESS_TAG));
+        }
+        
+        // TODO: Check that we have the proper set of changes (one modify, one add)
+    }
+    
+    
+    
+    @SuppressWarnings("unchecked")
+    private void verifyDomain1Xml(XmlRootHandle<DomainBean> rootHandle, Hub hub) {
+        DomainBean root = rootHandle.getRoot();
+        Assert.assertEquals("Failing bean is " + root, DOMAIN1_NAME, root.getName());
+        
+        SecurityManagerBean securityManager = root.getSecurityManager();
+        Assert.assertNotNull(securityManager);
+        
+        List<AuthorizationProviderBean> atzProviders = securityManager.getAuthorizationProviders();
+        Assert.assertNotNull(atzProviders);
+        Assert.assertEquals(1, atzProviders.size());
+        
+        for (AuthorizationProviderBean atzProvider : atzProviders) {
+            Assert.assertEquals(RSA_ATZ_PROV_NAME, atzProvider.getName());
+            Assert.assertEquals(RSA_DOM_PFX, atzProvider.getAtzDomainPrefix());
+        }
+        
+        Assert.assertNull(securityManager.getSSLManager());
+        
+        List<MachineBean> machines = root.getMachines();
+        Assert.assertNotNull(machines);
+        Assert.assertEquals(1, machines.size());
+        
+        for (MachineBean machine : machines) {
+            Assert.assertEquals(ALICE_NAME, machine.getName());
+            Assert.assertEquals(ALICE_ADDRESS, machine.getAddress());
+            
+            List<ServerBean> servers = machine.getServers();
+            Assert.assertNotNull(servers);
+            Assert.assertEquals(1, servers.size());
+            
+            for (ServerBean server : servers) {
+                Assert.assertEquals(ALICE_SERVER0_NAME, server.getName());
+                Assert.assertEquals(ALICE_SERVER0_PORT, server.getPort());   
+            }
+            
+        }
+        
+        {
+            Instance domainInstance = hub.getCurrentDatabase().getInstance(DOMAIN_TYPE, DOMAIN_INSTANCE);
+            Assert.assertNotNull(domainInstance);
+        
+            // TODO: When domain has attributes check them here
+            // Map<String, Object> domainMap = (Map<String, Object>) domainInstance.getBean();
+        }
+        
+        {
+            Instance machineAliceInstance = hub.getCurrentDatabase().getInstance(MACHINE_TYPE, ALICE_INSTANCE);
+            Assert.assertNotNull(machineAliceInstance);
+            
+            Map<String, Object> aliceMap = (Map<String, Object>) machineAliceInstance.getBean();
+            Assert.assertEquals(ALICE_NAME, aliceMap.get(UnmarshallTest.NAME_TAG));
+            Assert.assertEquals(ALICE_ADDRESS, aliceMap.get(ADDRESS_TAG));
+        }
+        
+        {
+            Instance aliceServer0Instance = hub.getCurrentDatabase().getInstance(SERVER_TYPE, SERVER0_INSTANCE);
+            Assert.assertNotNull(aliceServer0Instance);
+            
+            Map<String, Object> server0Map = (Map<String, Object>) aliceServer0Instance.getBean();
+            Assert.assertEquals(ALICE_SERVER0_NAME, server0Map.get(UnmarshallTest.NAME_TAG));
+            Assert.assertEquals(ALICE_SERVER0_PORT, server0Map.get(PORT_TAG));
+        }
+        
+        {
+            Instance securityManagerInstance = hub.getCurrentDatabase().getInstance(SECURITY_MANAGER_TYPE, SECURITY_MANAGER_INSTANCE);
+            Assert.assertNotNull(securityManagerInstance);
+            
+            Map<String, Object> securityManagerMap = (Map<String, Object>) securityManagerInstance.getBean();
+            Assert.assertNotNull(securityManagerMap);
+            
+            // TODO if security manager gets some fields check them here
+        }
+        
+        {
+            Instance rsaInstance = hub.getCurrentDatabase().getInstance(AUTHORIZATION_PROVIDER_TYPE, RSA_INSTANCE);
+            Assert.assertNotNull(rsaInstance);
+            
+            Map<String, Object> rsaMap = (Map<String, Object>) rsaInstance.getBean();
+            
+            Assert.assertEquals(RSA_ATZ_PROV_NAME, rsaMap.get(UnmarshallTest.NAME_TAG));
+            Assert.assertEquals(RSA_DOM_PFX, rsaMap.get(ATZ_DOMAIN_PFX_TAG));
         }
     }
 

@@ -41,9 +41,11 @@ package org.glassfish.hk2.xml.test.beans;
 
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
 import org.glassfish.hk2.xml.test.basic.NamedBean;
 import org.jvnet.hk2.annotations.Contract;
 
@@ -51,7 +53,7 @@ import org.jvnet.hk2.annotations.Contract;
  * @author jwells
  *
  */
-@XmlRootElement @Contract
+@XmlRootElement(name="domain") @Contract
 public interface DomainBean extends NamedBean {
     @XmlElement(name="security-manager")
     public SecurityManagerBean getSecurityManager();
