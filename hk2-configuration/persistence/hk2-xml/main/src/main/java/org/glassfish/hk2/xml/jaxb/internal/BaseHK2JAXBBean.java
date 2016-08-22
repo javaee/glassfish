@@ -69,6 +69,7 @@ import org.glassfish.hk2.xml.api.XmlHk2BeanType;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlHubCommitMessage;
 import org.glassfish.hk2.xml.api.annotations.Customizer;
+import org.glassfish.hk2.xml.internal.ChildType;
 import org.glassfish.hk2.xml.internal.DynamicChangeInfo;
 import org.glassfish.hk2.xml.internal.ParentedModel;
 import org.glassfish.hk2.xml.internal.Utilities;
@@ -847,7 +848,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         for (Map.Entry<String, Object> entrySet : copyBeanLikeMap.entrySet()) {
             String xmlTag = entrySet.getKey();
             
-            if (copyMe.keyedChildrenCache.containsKey(xmlTag) || copyMe._getModel().getUnKeyedChildren().contains(xmlTag)) continue;
+            if (copyMe._getModel().getKeyedChildren().contains(xmlTag) || copyMe._getModel().getUnKeyedChildren().contains(xmlTag)) continue;
             
             beanLikeMap.put(entrySet.getKey(), entrySet.getValue());
         }
@@ -866,14 +867,49 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         
         Map<String, Object> otherMap = other._getBeanLikeMap();
         
-        WriteableType wt = writeableDatabase.getWriteableType(xmlPath);
+        WriteableType wt = null;
+        if (writeableDatabase != null) {
+            wt = writeableDatabase.getWriteableType(xmlPath);
+        }
         
         changes = BeanReflectionHelper.getChangeEvents(classReflectionHelper,
                 beanLikeMap, otherMap);
         
-        // TODO:  Children
+        Map<String, ParentedModel> modelChildren = _getModel().getChildrenProperties();
+        for (Map.Entry<String, ParentedModel> modelChild : modelChildren.entrySet()) {
+            String childXmlTag = modelChild.getKey();
+            ParentedModel childPModel = modelChild.getValue();
+            
+            Object otherChildren = otherMap.get(childXmlTag);
+            Object thisChildren = beanLikeMap.get(childXmlTag);
+            if (otherChildren != null) {
+                if (ChildType.DIRECT.equals(childPModel.getChildType())) {
+                    BaseHK2JAXBBean otherChild = (BaseHK2JAXBBean) otherChildren;
+                
+                }
+                else {
+                    for (BaseHK2JAXBBean otherChild : (Iterable<BaseHK2JAXBBean>) otherChildren) {
+                        
+                    }
+                }
+            }
+            else if (thisChildren != null) {
+                // TODO: Remove
+                if (ChildType.DIRECT.equals(childPModel.getChildType())) {
+                    BaseHK2JAXBBean otherChild = (BaseHK2JAXBBean) otherChildren;
+                
+                }
+                else {
+                    for (BaseHK2JAXBBean otherChild : (Iterable<BaseHK2JAXBBean>) otherChildren) {
+                        
+                    }
+                }
+            }
+        }
         
-        wt.modifyInstance(instanceName, otherMap, changes);
+        if (wt != null) {
+            wt.modifyInstance(instanceName, otherMap, changes);
+        }
     }
     
     /**

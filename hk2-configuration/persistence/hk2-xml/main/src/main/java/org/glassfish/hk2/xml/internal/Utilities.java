@@ -885,5 +885,4 @@ public class Utilities {
         
         throw new AssertionError("Default for type " + expectedClass.getName() + " not implemented");
     }
-    
 }

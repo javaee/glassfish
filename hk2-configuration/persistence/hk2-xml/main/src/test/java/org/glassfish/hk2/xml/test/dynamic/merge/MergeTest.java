@@ -105,7 +105,8 @@ public class MergeTest {
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    @Test // @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testMergeModifyTwoPropertiesOneTransaction() throws Exception {
         ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
         XmlService xmlService = locator.getService(XmlService.class);
@@ -244,11 +245,22 @@ public class MergeTest {
         // TODO: Check that we have the proper set of changes (one modify, one add)
     }
     
+    public static void verifyDomain1Xml(XmlRootHandle<DomainBean> rootHandle, Hub hub) {
+        DomainBean root = rootHandle.getRoot();
+        
+        verifyDomain1XmlDomain(root, hub);
+    }
     
+    public static void verifyDomain1Xml(XmlRootHandle<DomainBean> original, XmlRootCopy<DomainBean> rootHandle, Hub hub) {
+        Assert.assertEquals(original, rootHandle.getParent());
+        
+        DomainBean root = rootHandle.getChildRoot();
+        
+        verifyDomain1XmlDomain(root, hub);
+    }
     
     @SuppressWarnings("unchecked")
-    private void verifyDomain1Xml(XmlRootHandle<DomainBean> rootHandle, Hub hub) {
-        DomainBean root = rootHandle.getRoot();
+    private static void verifyDomain1XmlDomain(DomainBean root, Hub hub) {
         Assert.assertEquals("Failing bean is " + root, DOMAIN1_NAME, root.getName());
         
         SecurityManagerBean securityManager = root.getSecurityManager();

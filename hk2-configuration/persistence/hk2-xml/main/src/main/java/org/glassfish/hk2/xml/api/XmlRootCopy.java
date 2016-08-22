@@ -63,7 +63,7 @@ package org.glassfish.hk2.xml.api;
  */
 public interface XmlRootCopy<T> {
     /**
-     * Gets the XmlRootHandle from which
+     * Gets the XmlRootHandle from which this copy was created
      * @return
      */
     public XmlRootHandle<T> getParent();
