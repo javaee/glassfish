@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -65,7 +65,6 @@ import org.glassfish.hk2.utilities.reflection.BeanReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
-import org.glassfish.hk2.xml.api.XmlHk2BeanType;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlHubCommitMessage;
 import org.glassfish.hk2.xml.api.annotations.Customizer;
@@ -126,9 +125,6 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
     
     /** My own full xmlPath from root */
     private String xmlPath = EMPTY;
-    
-    /** The type of this bean */
-    private XmlHk2BeanType type = XmlHk2BeanType.NORMAL;
     
     /**
      * This object contains the tree locks
@@ -896,11 +892,11 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
             else if (thisChildren != null) {
                 // TODO: Remove
                 if (ChildType.DIRECT.equals(childPModel.getChildType())) {
-                    BaseHK2JAXBBean otherChild = (BaseHK2JAXBBean) otherChildren;
+                    BaseHK2JAXBBean thisChild = (BaseHK2JAXBBean) thisChildren;
                 
                 }
                 else {
-                    for (BaseHK2JAXBBean otherChild : (Iterable<BaseHK2JAXBBean>) otherChildren) {
+                    for (BaseHK2JAXBBean thisChild : (Iterable<BaseHK2JAXBBean>) thisChildren) {
                         
                     }
                 }
@@ -998,30 +994,11 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         return selfDescriptor;
     }
     
-    
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean#_isDefaultChild()
-     */
-    @Override
-    public XmlHk2BeanType _getBeanType() {
-        return type;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean#_normalizeBean()
-     */
-    @Override
-    public void _normalizeBean() {
-        throw new AssertionError("_normalizeBean not yet implemented");
-    }
-    
     @Override
     public String toString() {
         return "BaseHK2JAXBBean(XmlPath=" + xmlPath +
                 ",instanceName=" + instanceName +
                 ",keyValue=" + keyValue + "," +
-                ",type=" + type + "," +
                 System.identityHashCode(this) + ")";
     }
 }
