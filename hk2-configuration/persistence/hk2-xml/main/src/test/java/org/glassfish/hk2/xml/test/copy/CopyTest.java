@@ -47,11 +47,12 @@ import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootCopy;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
-import org.glassfish.hk2.xml.test.basic.Museum;
-import org.glassfish.hk2.xml.test.basic.UnmarshallTest;
+import org.glassfish.hk2.xml.test.beans.AuthorizationProviderBean;
 import org.glassfish.hk2.xml.test.beans.DomainBean;
+import org.glassfish.hk2.xml.test.beans.MachineBean;
+import org.glassfish.hk2.xml.test.beans.SecurityManagerBean;
+import org.glassfish.hk2.xml.test.beans.ServerBean;
 import org.glassfish.hk2.xml.test.dynamic.merge.MergeTest;
-import org.glassfish.hk2.xml.test.dynamic.rawsets.RawSetsTest;
 import org.glassfish.hk2.xml.test.dynamic.rawsets.RawSetsTest.UpdateListener;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
 import org.junit.Assert;
@@ -90,6 +91,26 @@ public class CopyTest {
         DomainBean domainOriginal = rootHandle.getRoot();
         
         verifyMetadataTheSame((XmlHk2ConfigurationBean) domainOriginal, (XmlHk2ConfigurationBean) domainCopy);
+        
+        SecurityManagerBean securityManagerCopy = domainCopy.getSecurityManager();
+        SecurityManagerBean securityManagerOriginal = domainCopy.getSecurityManager();
+        
+        verifyMetadataTheSame((XmlHk2ConfigurationBean) securityManagerOriginal, (XmlHk2ConfigurationBean) securityManagerCopy);
+        
+        AuthorizationProviderBean atzProviderCopy = securityManagerCopy.getAuthorizationProviders().get(0);
+        AuthorizationProviderBean atzProviderOriginal = securityManagerOriginal.getAuthorizationProviders().get(0);
+        
+        verifyMetadataTheSame((XmlHk2ConfigurationBean) atzProviderOriginal, (XmlHk2ConfigurationBean) atzProviderCopy);
+        
+        MachineBean machineCopy = domainCopy.getMachines().get(0);
+        MachineBean machineOriginal = domainOriginal.getMachines().get(0);
+        
+        verifyMetadataTheSame((XmlHk2ConfigurationBean) machineOriginal, (XmlHk2ConfigurationBean) machineCopy);
+        
+        ServerBean serverCopy = machineCopy.getServers().get(0);
+        ServerBean serverOriginal = machineOriginal.getServers().get(0);
+        
+        verifyMetadataTheSame((XmlHk2ConfigurationBean) serverOriginal, (XmlHk2ConfigurationBean) serverCopy);
     }
     
     private static void verifyMetadataTheSame(XmlHk2ConfigurationBean original, XmlHk2ConfigurationBean copy) {
