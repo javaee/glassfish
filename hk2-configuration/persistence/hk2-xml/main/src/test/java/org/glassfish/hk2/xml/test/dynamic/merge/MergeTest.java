@@ -56,9 +56,12 @@ import org.glassfish.hk2.xml.test.basic.Museum;
 import org.glassfish.hk2.xml.test.basic.UnmarshallTest;
 import org.glassfish.hk2.xml.test.beans.AuthorizationProviderBean;
 import org.glassfish.hk2.xml.test.beans.DomainBean;
+import org.glassfish.hk2.xml.test.beans.JMSServerBean;
 import org.glassfish.hk2.xml.test.beans.MachineBean;
+import org.glassfish.hk2.xml.test.beans.QueueBean;
 import org.glassfish.hk2.xml.test.beans.SecurityManagerBean;
 import org.glassfish.hk2.xml.test.beans.ServerBean;
+import org.glassfish.hk2.xml.test.beans.TopicBean;
 import org.glassfish.hk2.xml.test.dynamic.rawsets.RawSetsTest;
 import org.glassfish.hk2.xml.test.dynamic.rawsets.RawSetsTest.UpdateListener;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
@@ -78,6 +81,13 @@ public class MergeTest {
     private final static String RSA_DOM_PFX = "rsa";
     private final static String ALICE_NAME = "Alice";
     private final static String BOB_NAME = "Bob";
+    private final static String CAROL_NAME = "Carol";
+    private final static String TOPIC0_NAME = "Topic0";
+    private final static String TOPIC1_NAME = "Topic1";
+    private final static String QUEUE0_NAME = "Queue0";
+    private final static String QUEUE1_NAME = "Queue1";
+    private final static String QUEUE2_NAME = "Queue2";
+    
     private final static String ALICE_ADDRESS = "10.0.0.1";
     private final static String ALICE_SERVER0_NAME = "Server-0";
     private final static int ALICE_SERVER0_PORT = 12345;
@@ -88,12 +98,21 @@ public class MergeTest {
     private final static String SERVER_TYPE = "/domain/machine/server";
     private final static String SECURITY_MANAGER_TYPE = "/domain/security-manager";
     private final static String AUTHORIZATION_PROVIDER_TYPE = "/domain/security-manager/authorization-provider";
+    private final static String JMS_SERVER_TYPE = "/domain/jms-server";
+    private final static String TOPIC_TYPE = "/domain/jms-server/topic";
+    private final static String QUEUE_TYPE = "/domain/jms-server/queue";
     
     private final static String ALICE_INSTANCE = "domain.Alice";
     private final static String BOB_INSTANCE = "domain.Bob";
     private final static String SERVER0_INSTANCE = "domain.Alice.Server-0";
     private final static String SECURITY_MANAGER_INSTANCE = "domain.security-manager";
     private final static String RSA_INSTANCE = "domain.security-manager.RSA";
+    private final static String JMS_SERVER_INSTANCE = "domain.Carol";
+    private final static String TOPIC0_INSTANCE = "domain.Carol.Topic0";
+    private final static String TOPIC1_INSTANCE = "domain.Carol.Topic1";
+    private final static String QUEUE0_INSTANCE = "domain.Carol.Queue0";
+    private final static String QUEUE1_INSTANCE = "domain.Carol.Queue1";
+    private final static String QUEUE2_INSTANCE = "domain.Carol.Queue2";
     
     private final static String ADDRESS_TAG = "address";
     private final static String PORT_TAG = "port";
@@ -293,8 +312,28 @@ public class MergeTest {
                 Assert.assertEquals(ALICE_SERVER0_NAME, server.getName());
                 Assert.assertEquals(ALICE_SERVER0_PORT, server.getPort());   
             }
-            
         }
+        
+        JMSServerBean jmsServers[] = root.getJMSServers();
+        Assert.assertEquals(1, jmsServers.length);
+        
+        for (JMSServerBean jmsServer : jmsServers) {
+            Assert.assertEquals("Did not find name in " + jmsServer, CAROL_NAME, jmsServer.getName());
+            
+            List<TopicBean> topics = jmsServer.getTopics();
+            Assert.assertEquals(2, topics.size());
+            
+            Assert.assertEquals(TOPIC0_NAME, topics.get(0).getName());
+            Assert.assertEquals(TOPIC1_NAME, topics.get(1).getName());
+            
+            QueueBean queues[] = jmsServer.getQueues();
+            
+            Assert.assertEquals(QUEUE0_NAME, queues[0].getName());
+            Assert.assertEquals(QUEUE1_NAME, queues[1].getName());
+            Assert.assertEquals(QUEUE2_NAME, queues[2].getName());
+        }
+        
+        // Below is the verification for the Hub versions of the beans
         
         {
             Instance domainInstance = hub.getCurrentDatabase().getInstance(DOMAIN_TYPE, DOMAIN_INSTANCE);
@@ -341,6 +380,25 @@ public class MergeTest {
             Assert.assertEquals(RSA_ATZ_PROV_NAME, rsaMap.get(UnmarshallTest.NAME_TAG));
             Assert.assertEquals(RSA_DOM_PFX, rsaMap.get(ATZ_DOMAIN_PFX_TAG));
         }
+        
+        assertNameOnlyBean(hub, JMS_SERVER_TYPE, JMS_SERVER_INSTANCE, CAROL_NAME);
+        
+        assertNameOnlyBean(hub, TOPIC_TYPE, TOPIC0_INSTANCE, TOPIC0_NAME);
+        assertNameOnlyBean(hub, TOPIC_TYPE, TOPIC1_INSTANCE, TOPIC1_NAME);
+        
+        assertNameOnlyBean(hub, QUEUE_TYPE, QUEUE0_INSTANCE, QUEUE0_NAME);
+        assertNameOnlyBean(hub, QUEUE_TYPE, QUEUE1_INSTANCE, QUEUE1_NAME);
+        assertNameOnlyBean(hub, QUEUE_TYPE, QUEUE2_INSTANCE, QUEUE2_NAME);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static void assertNameOnlyBean(Hub hub, String type, String instance, String expectedName) {
+        Instance namedInstance = hub.getCurrentDatabase().getInstance(type, instance);
+        Assert.assertNotNull("Could not find instance of " + type + "," + instance, namedInstance);
+        
+        Map<String, Object> namedMap = (Map<String, Object>) namedInstance.getBean();
+        
+        Assert.assertEquals(expectedName, namedMap.get(UnmarshallTest.NAME_TAG));
     }
 
 }

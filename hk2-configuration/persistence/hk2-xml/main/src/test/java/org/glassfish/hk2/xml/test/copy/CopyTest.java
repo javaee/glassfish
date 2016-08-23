@@ -40,6 +40,7 @@
 package org.glassfish.hk2.xml.test.copy;
 
 import java.net.URL;
+import java.util.List;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Hub;
@@ -49,9 +50,12 @@ import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.beans.AuthorizationProviderBean;
 import org.glassfish.hk2.xml.test.beans.DomainBean;
+import org.glassfish.hk2.xml.test.beans.JMSServerBean;
 import org.glassfish.hk2.xml.test.beans.MachineBean;
+import org.glassfish.hk2.xml.test.beans.QueueBean;
 import org.glassfish.hk2.xml.test.beans.SecurityManagerBean;
 import org.glassfish.hk2.xml.test.beans.ServerBean;
+import org.glassfish.hk2.xml.test.beans.TopicBean;
 import org.glassfish.hk2.xml.test.dynamic.merge.MergeTest;
 import org.glassfish.hk2.xml.test.dynamic.rawsets.RawSetsTest.UpdateListener;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
@@ -70,7 +74,7 @@ public class CopyTest {
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testCopyOfDeepTree() throws Exception {
         ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
         XmlService xmlService = locator.getService(XmlService.class);
@@ -111,6 +115,47 @@ public class CopyTest {
         ServerBean serverOriginal = machineOriginal.getServers().get(0);
         
         verifyMetadataTheSame((XmlHk2ConfigurationBean) serverOriginal, (XmlHk2ConfigurationBean) serverCopy);
+        
+        JMSServerBean jmsServersCopy[] = domainCopy.getJMSServers();
+        JMSServerBean jmsServersOriginal[] = domainOriginal.getJMSServers();
+        
+        Assert.assertEquals(jmsServersCopy.length, jmsServersOriginal.length);
+        
+        for (int lcv = 0; lcv < jmsServersOriginal.length; lcv++) {
+            JMSServerBean jmsServerCopy = jmsServersCopy[lcv];
+            JMSServerBean jmsServerOriginal = jmsServersOriginal[lcv];
+            
+            verifyMetadataTheSame((XmlHk2ConfigurationBean) jmsServerOriginal, (XmlHk2ConfigurationBean) jmsServerCopy);
+            
+            {
+                List<TopicBean> topicsCopy = jmsServerCopy.getTopics();
+                List<TopicBean> topicsOriginal = jmsServerOriginal.getTopics();
+            
+                Assert.assertEquals(topicsCopy.size(), topicsOriginal.size());
+            
+                for (int lcv1 = 0; lcv1 < topicsOriginal.size(); lcv1++) {
+                    TopicBean topicCopy = topicsCopy.get(lcv1);
+                    TopicBean topicOriginal = topicsOriginal.get(lcv1);
+                
+                    verifyMetadataTheSame((XmlHk2ConfigurationBean) topicOriginal, (XmlHk2ConfigurationBean) topicCopy);
+                }
+            }
+            
+            {
+                QueueBean queuesCopy[] = jmsServerCopy.getQueues();
+                QueueBean queuesOriginal[] = jmsServerOriginal.getQueues();
+            
+                Assert.assertEquals(queuesCopy.length, queuesOriginal.length);
+            
+                for (int lcv1 = 0; lcv1 < queuesOriginal.length; lcv1++) {
+                    QueueBean queueCopy = queuesCopy[lcv1];
+                    QueueBean queueOriginal = queuesOriginal[lcv1];
+                
+                    verifyMetadataTheSame((XmlHk2ConfigurationBean) queueOriginal, (XmlHk2ConfigurationBean) queueCopy);
+                }
+            }
+            
+        }
     }
     
     private static void verifyMetadataTheSame(XmlHk2ConfigurationBean original, XmlHk2ConfigurationBean copy) {

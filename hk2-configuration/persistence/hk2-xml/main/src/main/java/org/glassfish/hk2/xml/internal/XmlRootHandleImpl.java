@@ -40,6 +40,7 @@
 
 package org.glassfish.hk2.xml.internal;
 
+import java.lang.reflect.Array;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -185,7 +186,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
         
             BaseHK2JAXBBean copy;
             try {
-                copy = doCopy(bean, copyController);
+                copy = doCopy(bean, copyController, null);
             }
             catch (RuntimeException re) {
                 throw re;
@@ -201,7 +202,9 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
         }
     }
     
-    private static BaseHK2JAXBBean doCopy(BaseHK2JAXBBean copyMe, DynamicChangeInfo copyController) throws Throwable {
+    private static BaseHK2JAXBBean doCopy(BaseHK2JAXBBean copyMe,
+            DynamicChangeInfo copyController,
+            BaseHK2JAXBBean theCopiedParent) throws Throwable {
         if (copyMe == null) return null;
         
         BaseHK2JAXBBean retVal = Utilities.createBean(copyMe.getClass());
@@ -218,8 +221,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
                 ArrayList<Object> toSetChildList = new ArrayList<Object>(childList.size());
                 
                 for (Object subChild : childList) {
-                    BaseHK2JAXBBean copiedChild = doCopy((BaseHK2JAXBBean) subChild, copyController);
-                    copiedChild._setParent(retVal);
+                    BaseHK2JAXBBean copiedChild = doCopy((BaseHK2JAXBBean) subChild, copyController, retVal);
                     
                     toSetChildList.add(copiedChild);
                 }
@@ -227,16 +229,40 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
                 // Sets the list property into the parent
                 retVal._setProperty(childProp, toSetChildList);
             }
+            else if (child.getClass().isArray()) {
+                int length = Array.getLength(child);
+                
+                Model myModel = retVal._getModel();
+                ParentedModel pm = myModel.getChild(childProp);
+                Model childModel = pm.getChildModel();
+                
+                Class<?> childInterface = childModel.getOriginalInterfaceAsClass();
+                
+                Object toSetChildArray = Array.newInstance(childInterface, length);
+                
+                for (int lcv = 0; lcv < length; lcv++) {
+                    Object subChild = Array.get(child, lcv);
+                    
+                    BaseHK2JAXBBean copiedChild = doCopy((BaseHK2JAXBBean) subChild, copyController, retVal);
+                    
+                    Array.set(toSetChildArray, lcv, copiedChild);
+                }
+                
+                // Sets the array property into the parent
+                retVal._setProperty(childProp, toSetChildArray);
+            }
             else {
                 // A direct child
-                BaseHK2JAXBBean copiedChild = doCopy((BaseHK2JAXBBean) child, copyController);
-                copiedChild._setParent(retVal);
+                BaseHK2JAXBBean copiedChild = doCopy((BaseHK2JAXBBean) child, copyController, retVal);
                 
                 retVal._setProperty(childProp, copiedChild);
             }
         }
         
-        retVal._setDynamicChangeInfo(copyController);
+        if (theCopiedParent != null) {
+            retVal._setParent(theCopiedParent);
+        }
+        retVal._setDynamicChangeInfo(copyController, false);
         return retVal;
     }
     

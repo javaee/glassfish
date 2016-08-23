@@ -41,12 +41,9 @@ package org.glassfish.hk2.xml.test.beans;
 
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
-import org.glassfish.hk2.xml.test.basic.NamedBean;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -64,4 +61,10 @@ public interface DomainBean extends NamedBean {
     public void setMachines(List<MachineBean> machines);
     public void addMachine(MachineBean machine);
     public void removeMachine(String machine);
+    
+    @XmlElement(name="jms-server")
+    public JMSServerBean[] getJMSServers();
+    public void setJMSServers(JMSServerBean[] jmsServers);
+    public void addJMSServer(JMSServerBean jmsServer);
+    public void removeJMSServer(String jmsServer);
 }

@@ -790,14 +790,24 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         return sb.toString();
     }
     
+    public void _setDynamicChangeInfo(DynamicChangeInfo change) {
+        _setDynamicChangeInfo(change, true);
+    }
+    
     /**
      * Once this is set the dynamic change protocol is in effect,
      * and all paths can be calculated
      * 
      * @param change The change control object
+     * @param doXmlPathCalculation if true then this should calculate the xml path at this time
+     * (all the parent information must be correct).  If this is false it is assumed that this
+     * is some sort of copy operation where the xmlPath has been pre-calculated and does not
+     * need to be modified
      */
-    public void _setDynamicChangeInfo(DynamicChangeInfo change) {
-        xmlPath = calculateXmlPath(this);
+    public void _setDynamicChangeInfo(DynamicChangeInfo change, boolean doXmlPathCalculation) {
+        if (doXmlPathCalculation) {
+            xmlPath = calculateXmlPath(this);
+        }
         
         changeControl = change;
         if (changeControl != null) active = true;
@@ -817,7 +827,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * @return The set of all children tags
      */
     public Set<String> _getChildrenXmlTags() {
-        HashSet<String> retVal = new HashSet<String>(keyedChildrenCache.keySet());
+        HashSet<String> retVal = new HashSet<String>(_getModel().getKeyedChildren());
         retVal.addAll(_getModel().getUnKeyedChildren());
         
         return retVal;

@@ -41,8 +41,6 @@ package org.glassfish.hk2.xml.test.beans;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import org.glassfish.hk2.xml.test.basic.NamedBean;
-
 /**
  * @author jwells
  *

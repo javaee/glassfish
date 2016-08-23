@@ -39,15 +39,28 @@
  */
 package org.glassfish.hk2.xml.test.beans;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlElement;
+
+import org.jvnet.hk2.annotations.Contract;
 
 /**
  * @author jwells
  *
  */
-public interface ServerBean extends NamedBean {
-    @XmlElement(name="port")
-    public int getPort();
-    public void setPort(int port);
+@Contract
+public interface JMSServerBean extends NamedBean {
+    @XmlElement(name="topic")
+    public List<TopicBean> getTopics();
+    public void setTopics(List<TopicBean> topics);
+    public void addTopic(TopicBean topic);
+    public void removeTopic(String topic);
+    
+    @XmlElement(name="queue")
+    public QueueBean[] getQueues();
+    public void setQueues(QueueBean[] queues);
+    public void addQueue(QueueBean queue);
+    public void removeQueue(String queueu);
 
 }

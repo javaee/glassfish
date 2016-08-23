@@ -39,15 +39,10 @@
  */
 package org.glassfish.hk2.xml.test.beans;
 
-import javax.xml.bind.annotation.XmlElement;
-
 /**
  * @author jwells
  *
  */
-public interface ServerBean extends NamedBean {
-    @XmlElement(name="port")
-    public int getPort();
-    public void setPort(int port);
+public interface TopicBean extends NamedBean {
 
 }

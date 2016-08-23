@@ -43,8 +43,6 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import org.glassfish.hk2.xml.test.basic.NamedBean;
-
 /**
  * @author jwells
  *

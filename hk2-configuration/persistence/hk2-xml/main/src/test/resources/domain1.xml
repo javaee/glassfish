@@ -59,4 +59,28 @@
 			<port>12345</port>
 		</server>
 	</machine>
+	
+	<jms-server>
+		<name>Carol</name>
+		
+		<topic>
+			<name>Topic0</name>
+		</topic>
+		
+		<topic>
+			<name>Topic1</name>
+		</topic>
+		
+		<queue>
+			<name>Queue0</name>
+		</queue>
+		
+		<queue>
+			<name>Queue1</name>
+		</queue>
+		
+		<queue>
+			<name>Queue2</name>
+		</queue>
+	</jms-server>
 </domain>
