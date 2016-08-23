@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -79,8 +79,11 @@ public interface RunLevelListener {
      * that if the currentJob is going up then the levelAchieved will
      * be the level for which all the services in that level were just started.
      * When going down the levelAchieved will be the level for which
-     * all the services ABOVE that level have been shutdown.  In both cases
-     * the levelAchieved represents the current level of the system
+     * all the services ABOVE that level have been shutdown.  
+     * If the callback type (see {@link ChangeableRunLevelFuture#getCallbackType()})
+     * is INITIAL then this will be the current level of the system when
+     * the {@link RunLevelController#proceedTo(int)} method was called.
+     * In all cases the levelAchieved represents the current level of the system.
      */
     void onProgress(ChangeableRunLevelFuture currentJob, int levelAchieved);
     
