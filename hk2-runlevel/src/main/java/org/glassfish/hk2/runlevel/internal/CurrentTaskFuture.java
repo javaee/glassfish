@@ -59,6 +59,7 @@ import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.runlevel.ChangeableRunLevelFuture;
 import org.glassfish.hk2.runlevel.ErrorInformation;
+import org.glassfish.hk2.runlevel.OnProgressCallbackType;
 import org.glassfish.hk2.runlevel.RunLevel;
 import org.glassfish.hk2.runlevel.RunLevelListener;
 import org.glassfish.hk2.runlevel.Sorter;
@@ -91,6 +92,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
     private boolean done = false;
     private boolean cancelled = false;
     private boolean inCallback = false;
+    private OnProgressCallbackType callbackType = OnProgressCallbackType.PROGRESSION;
     
     /* package */ CurrentTaskFuture(AsyncRunLevelContext asyncContext,
             Executor executor,
@@ -143,7 +145,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         if (localUpAllTheWay != null || localDownAllTheWay != null) {
             int currentLevel = asyncContext.getCurrentLevel();
             
-            invokeOnProgress(this, currentLevel, allListenerHandles);
+            invokeOnProgress(this, currentLevel, allListenerHandles, OnProgressCallbackType.INITIAL);
         }
         
         go(localUpAllTheWay, localDownAllTheWay);
@@ -292,9 +294,10 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         return oldProposedVal;
     }
     
-    private void setInCallback(boolean inCallback) {
+    private void setInCallback(boolean inCallback, OnProgressCallbackType type) {
         synchronized (this) {
             this.inCallback = inCallback;
+            this.callbackType = type;
         }
     }
 
@@ -367,8 +370,8 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
     }
     
     private void invokeOnProgress(ChangeableRunLevelFuture job, int level,
-            List<ServiceHandle<RunLevelListener>> listeners) {
-        setInCallback(true);
+            List<ServiceHandle<RunLevelListener>> listeners, OnProgressCallbackType type) {
+        setInCallback(true, type);
         try {
             for (ServiceHandle<RunLevelListener> listener : listeners) {
                 try {
@@ -383,7 +386,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
             }
         }
         finally {
-            setInCallback(false);
+            setInCallback(false, OnProgressCallbackType.PROGRESSION);
         }
     }
     
@@ -618,7 +621,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
             }
             
             asyncContext.setCurrentLevel(workingOn);
-            invokeOnProgress(future, workingOn, listeners);
+            invokeOnProgress(future, workingOn, listeners, OnProgressCallbackType.PROGRESSION);
                 
             if (useThreads) {
                 go();
@@ -991,7 +994,7 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
                 workingOn--;
                 
                 if (future != null) {
-                    invokeOnProgress(future, proceedingTo, listeners);
+                    invokeOnProgress(future, proceedingTo, listeners, OnProgressCallbackType.PROGRESSION);
                 }
             }
             
@@ -1311,9 +1314,21 @@ public class CurrentTaskFuture implements ChangeableRunLevelFuture {
         return false;
     }
     
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.runlevel.ChangeableRunLevelFuture#getCallbackType()
+     */
+    @Override
+    public OnProgressCallbackType getCallbackType() {
+        synchronized (this) {
+            return callbackType;
+        }
+    }
+    
     @Override
     public String toString() {
         return "CurrentTaskFuture(proposedLevel=" + proposedLevel + "," +
           System.identityHashCode(this) + ")";
     }
+
+    
 }

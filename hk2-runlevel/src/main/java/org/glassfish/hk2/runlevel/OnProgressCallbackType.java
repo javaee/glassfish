@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2013-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,62 +37,19 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-package org.glassfish.hk2.runlevel.internal;
-
-import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.runlevel.ErrorInformation;
+package org.glassfish.hk2.runlevel;
 
 /**
+ * Indicates the type of callback has been done
+ * in the RunLevelListener
+ * 
  * @author jwells
  *
  */
-public class ErrorInformationImpl implements ErrorInformation {
-    private final Throwable error;
-    private ErrorAction action;
-    private final Descriptor descriptor;
+public enum OnProgressCallbackType {
+    /** This onProgress callback represents a progression either up or down of the level */
+    PROGRESSION,
     
-    /* package */ ErrorInformationImpl(Throwable error, ErrorAction action, Descriptor descriptor) {
-        this.error = error;
-        this.action = action;
-        this.descriptor = descriptor;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.runlevel.ErrorInformation#getError()
-     */
-    @Override
-    public Throwable getError() {
-        return error;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.runlevel.ErrorInformation#getAction()
-     */
-    @Override
-    public ErrorAction getAction() {
-        return action;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.runlevel.ErrorInformation#setAction(org.glassfish.hk2.runlevel.ErrorInformation.ErrorAction)
-     */
-    @Override
-    public void setAction(ErrorAction action) {
-        if (action == null) throw new IllegalArgumentException("action may not be null in setAction");
-        
-        this.action = action;
-    }
-
-    @Override
-    public Descriptor getFailedDescriptor() {
-        return descriptor;
-    }
-    
-    @Override
-    public String toString() {
-        String descriptorString = (descriptor == null) ? "null" : descriptor.getImplementation();
-        return "ErrorInformationImpl(" + action + "," + descriptorString + "," + System.identityHashCode(this) + ")";
-    }
-
+    /** this onProgress callback is the initial level prior to ANY change up or down */
+    INITIAL
 }

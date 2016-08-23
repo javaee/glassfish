@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2013-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,62 +37,37 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.hk2.runlevel.tests.listener2;
 
-package org.glassfish.hk2.runlevel.internal;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
-import org.glassfish.hk2.api.Descriptor;
-import org.glassfish.hk2.runlevel.ErrorInformation;
+import org.glassfish.hk2.runlevel.RunLevel;
 
 /**
  * @author jwells
  *
  */
-public class ErrorInformationImpl implements ErrorInformation {
-    private final Throwable error;
-    private ErrorAction action;
-    private final Descriptor descriptor;
+@RunLevel(10)
+public class ServiceAtTen {
+    private static boolean active = false;
     
-    /* package */ ErrorInformationImpl(Throwable error, ErrorAction action, Descriptor descriptor) {
-        this.error = error;
-        this.action = action;
-        this.descriptor = descriptor;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.runlevel.ErrorInformation#getError()
-     */
-    @Override
-    public Throwable getError() {
-        return error;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.runlevel.ErrorInformation#getAction()
-     */
-    @Override
-    public ErrorAction getAction() {
-        return action;
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.runlevel.ErrorInformation#setAction(org.glassfish.hk2.runlevel.ErrorInformation.ErrorAction)
-     */
-    @Override
-    public void setAction(ErrorAction action) {
-        if (action == null) throw new IllegalArgumentException("action may not be null in setAction");
-        
-        this.action = action;
-    }
-
-    @Override
-    public Descriptor getFailedDescriptor() {
-        return descriptor;
+    public synchronized static boolean isActive() {
+        return active;
     }
     
-    @Override
-    public String toString() {
-        String descriptorString = (descriptor == null) ? "null" : descriptor.getImplementation();
-        return "ErrorInformationImpl(" + action + "," + descriptorString + "," + System.identityHashCode(this) + ")";
+    private synchronized static void setActive(boolean isActive) {
+        active = isActive;
+    }
+    
+    @PostConstruct
+    private void postConstruct() {
+        setActive(true);
+    }
+    
+    @PreDestroy
+    private void preDestroy() {
+        setActive(false);
     }
 
 }

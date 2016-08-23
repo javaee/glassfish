@@ -64,6 +64,15 @@ public interface RunLevelListener {
      * {@link ChangeableRunLevelFuture#changeProposedLevel(int)} may be called
      * <p>
      * Any exception thrown from this method is ignored
+     * <p>
+     * onProgress is also called once at the start of any change with the
+     * current level of the RunLevelService.  When called at the start
+     * of a level the {@link OnProgressCallbackType} returned by the
+     * {@link ChangeableRunLevelFuture#getCallbackType()} method will be
+     * INITIAL.  If onProgress is being called back to to an actual
+     * progression of the system (up or down) then the 
+     * {@link ChangeableRunLevelFuture#getCallbackType()} method will
+     * return PROGRESSION.
      *
      * @param currentJob the job currently running
      * @param levelAchieved the level just achieved by the currentJob.  Note
