@@ -43,6 +43,7 @@ import javax.inject.Singleton;
 
 import org.glassfish.hk2.runlevel.ChangeableRunLevelFuture;
 import org.glassfish.hk2.runlevel.ErrorInformation;
+import org.glassfish.hk2.runlevel.ProgressStartedListener;
 import org.glassfish.hk2.runlevel.RunLevelFuture;
 import org.glassfish.hk2.runlevel.RunLevelListener;
 
@@ -51,7 +52,7 @@ import org.glassfish.hk2.runlevel.RunLevelListener;
  *
  */
 @Singleton
-public class ChangeLevelListener implements RunLevelListener {
+public class ChangeLevelListener implements RunLevelListener, ProgressStartedListener {
     public int setLevelTo = -3;
     public int setLevelFrom = -3;
     
@@ -103,6 +104,16 @@ public class ChangeLevelListener implements RunLevelListener {
     public void onError(RunLevelFuture currentJob,
             ErrorInformation errorInformation) {
 
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.runlevel.ProgressStartedListener#onProgressStarting(org.glassfish.hk2.runlevel.ChangeableRunLevelFuture, int)
+     */
+    @Override
+    public void onProgressStarting(ChangeableRunLevelFuture currentJob,
+            int currentLevel) {
+        onProgress(currentJob, currentLevel);
+        
     }
 
 }

@@ -39,17 +39,36 @@
  */
 package org.glassfish.hk2.runlevel;
 
+import org.jvnet.hk2.annotations.Contract;
+
 /**
- * Indicates the type of callback has been done
- * in the RunLevelListener
- * 
- * @author jwells
+ * Instances of classes implementing this contract can be registered with HK2
+ * to be informed when the system starts progressing to a new level, either
+ * upward or downward
+ * <p>
+ * Lengthy operations should not be performed in the listener since
+ * that may impact the performance of the RunLevelController calling the
+ * listener
  *
+ * @author jwells
  */
-public enum OnProgressCallbackType {
-    /** This onProgress callback represents a progression either up or down of the level */
-    PROGRESSION,
-    
-    /** this onProgress callback is the initial level prior to ANY change up or down */
-    INITIAL
+@Contract
+public interface ProgressStartedListener {
+    /**
+     * Called when the RunLevelController starts progressing to a new
+     * level but before any work has been done yet
+     * <p>
+     * Neither {@link RunLevelController#proceedTo(int)} nor
+     * {@link RunLevelController#proceedToAsync(int)} may be called from this method.  However,
+     * {@link ChangeableRunLevelFuture#changeProposedLevel(int)} may be called
+     * <p>
+     * Any exception thrown from this method is ignored
+     * <p>
+     *
+     * @param currentJob the job currently running
+     * @param currentLevel the level that the system is currently at before
+     * any work has been done to move the system up or down
+     */
+    public void onProgressStarting(ChangeableRunLevelFuture currentJob, int currentLevel);
+
 }

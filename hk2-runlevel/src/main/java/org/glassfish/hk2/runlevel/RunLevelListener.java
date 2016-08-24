@@ -65,25 +65,14 @@ public interface RunLevelListener {
      * <p>
      * Any exception thrown from this method is ignored
      * <p>
-     * onProgress is also called once at the start of any change with the
-     * current level of the RunLevelService.  When called at the start
-     * of a level the {@link OnProgressCallbackType} returned by the
-     * {@link ChangeableRunLevelFuture#getCallbackType()} method will be
-     * INITIAL.  If onProgress is being called back to to an actual
-     * progression of the system (up or down) then the 
-     * {@link ChangeableRunLevelFuture#getCallbackType()} method will
-     * return PROGRESSION.
      *
      * @param currentJob the job currently running
      * @param levelAchieved the level just achieved by the currentJob.  Note
      * that if the currentJob is going up then the levelAchieved will
      * be the level for which all the services in that level were just started.
      * When going down the levelAchieved will be the level for which
-     * all the services ABOVE that level have been shutdown.  
-     * If the callback type (see {@link ChangeableRunLevelFuture#getCallbackType()})
-     * is INITIAL then this will be the current level of the system when
-     * the {@link RunLevelController#proceedTo(int)} method was called.
-     * In all cases the levelAchieved represents the current level of the system.
+     * all the services ABOVE that level have been shutdown. In all cases the
+     * levelAchieved represents the current level of the system.
      */
     void onProgress(ChangeableRunLevelFuture currentJob, int levelAchieved);
     

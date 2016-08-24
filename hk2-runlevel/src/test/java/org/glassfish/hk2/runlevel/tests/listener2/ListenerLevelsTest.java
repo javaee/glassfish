@@ -49,7 +49,7 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.runlevel.ChangeableRunLevelFuture;
 import org.glassfish.hk2.runlevel.ErrorInformation;
 import org.glassfish.hk2.runlevel.ErrorInformation.ErrorAction;
-import org.glassfish.hk2.runlevel.OnProgressCallbackType;
+import org.glassfish.hk2.runlevel.ProgressStartedListener;
 import org.glassfish.hk2.runlevel.RunLevelController;
 import org.glassfish.hk2.runlevel.RunLevelFuture;
 import org.glassfish.hk2.runlevel.RunLevelListener;
@@ -63,16 +63,18 @@ import org.junit.Test;
  */
 public class ListenerLevelsTest {
     /**
-     * Tests that the OnProgressCallbackType works properly
-     * (including in the case of failures going up and down)
+     * Ensures the different listener types get the proper set of events
+     * even when there is a failure going up or down
      */
     @Test
-    public void testOnProgressCallbackType() {
-        ServiceLocator locator = Utilities.getServiceLocator(TestListener.class,
+    public void testDifferentRunLevelListenerTypes() {
+        ServiceLocator locator = Utilities.getServiceLocator(TestStartingListener.class,
+                TestProgressListener.class,
                 ServiceAtTen.class, SometimesFailsAtFiveService.class);
         
-        TestListener listener = locator.getService(TestListener.class);
-        listener.clear();
+        TestStartingListener listener = locator.getService(TestStartingListener.class);
+        TestProgressListener progressListener = locator.getService(TestProgressListener.class);
+        progressListener.clear();
         
         RunLevelController controller = locator.getService(RunLevelController.class);
         
@@ -88,79 +90,108 @@ public class ListenerLevelsTest {
         
         Assert.assertFalse(ServiceAtTen.isActive());
         
-        // Check we got the expected events
-        List<LevelAndType> events = listener.getEvents();
-        Assert.assertEquals(7, events.size());
+        Assert.assertEquals(-2, listener.getLastLevel());
         
-        Assert.assertEquals(new LevelAndType(-2, OnProgressCallbackType.INITIAL), events.get(0));
-        Assert.assertEquals(new LevelAndType(-1, OnProgressCallbackType.PROGRESSION), events.get(1));
-        Assert.assertEquals(new LevelAndType(0, OnProgressCallbackType.PROGRESSION), events.get(2));
-        Assert.assertEquals(new LevelAndType(1, OnProgressCallbackType.PROGRESSION), events.get(3));
-        Assert.assertEquals(new LevelAndType(2, OnProgressCallbackType.PROGRESSION), events.get(4));
-        Assert.assertEquals(new LevelAndType(3, OnProgressCallbackType.PROGRESSION), events.get(5));
-        Assert.assertEquals(new LevelAndType(4, OnProgressCallbackType.PROGRESSION), events.get(6));
+        List<Integer> levels = progressListener.getLevels();
+        
+        Assert.assertEquals(6, levels.size());
+        
+        Assert.assertEquals(-1, levels.get(0).intValue());
+        Assert.assertEquals(0, levels.get(1).intValue());
+        Assert.assertEquals(1, levels.get(2).intValue());
+        Assert.assertEquals(2, levels.get(3).intValue());
+        Assert.assertEquals(3, levels.get(4).intValue());
+        Assert.assertEquals(4, levels.get(5).intValue());
         
         // Now let it proceed
-        listener.clear();
         SometimesFailsAtFiveService.setBombAtFive(false);
         
+        progressListener.clear();
         controller.proceedTo(10);
         
         Assert.assertTrue(ServiceAtTen.isActive());
         
-        events = listener.getEvents();
-        Assert.assertEquals(7, events.size());
+        Assert.assertEquals(4, listener.getLastLevel());
         
-        Assert.assertEquals(new LevelAndType(4, OnProgressCallbackType.INITIAL), events.get(0));
-        Assert.assertEquals(new LevelAndType(5, OnProgressCallbackType.PROGRESSION), events.get(1));
-        Assert.assertEquals(new LevelAndType(6, OnProgressCallbackType.PROGRESSION), events.get(2));
-        Assert.assertEquals(new LevelAndType(7, OnProgressCallbackType.PROGRESSION), events.get(3));
-        Assert.assertEquals(new LevelAndType(8, OnProgressCallbackType.PROGRESSION), events.get(4));
-        Assert.assertEquals(new LevelAndType(9, OnProgressCallbackType.PROGRESSION), events.get(5));
-        Assert.assertEquals(new LevelAndType(10, OnProgressCallbackType.PROGRESSION), events.get(6));
+        levels = progressListener.getLevels();
+        
+        Assert.assertEquals(6, levels.size());
+        
+        Assert.assertEquals(5, levels.get(0).intValue());
+        Assert.assertEquals(6, levels.get(1).intValue());
+        Assert.assertEquals(7, levels.get(2).intValue());
+        Assert.assertEquals(8, levels.get(3).intValue());
+        Assert.assertEquals(9, levels.get(4).intValue());
+        Assert.assertEquals(10, levels.get(5).intValue());
         
         // Now the downward direction
-        listener.clear();
         SometimesFailsAtFiveService.setBombAtFive(true);
         
+        progressListener.clear();
+        
+        // Will halt at four due to value returned from progressListener
         controller.proceedTo(0);
         
         Assert.assertFalse(ServiceAtTen.isActive());
         
-        events = listener.getEvents();
-        Assert.assertEquals(7, events.size());
+        Assert.assertEquals(10, listener.getLastLevel());
+        Assert.assertEquals(4, controller.getCurrentRunLevel());
         
-        Assert.assertEquals(new LevelAndType(10, OnProgressCallbackType.INITIAL), events.get(0));
-        Assert.assertEquals(new LevelAndType(9, OnProgressCallbackType.PROGRESSION), events.get(1));
-        Assert.assertEquals(new LevelAndType(8, OnProgressCallbackType.PROGRESSION), events.get(2));
-        Assert.assertEquals(new LevelAndType(7, OnProgressCallbackType.PROGRESSION), events.get(3));
-        Assert.assertEquals(new LevelAndType(6, OnProgressCallbackType.PROGRESSION), events.get(4));
-        Assert.assertEquals(new LevelAndType(5, OnProgressCallbackType.PROGRESSION), events.get(5));
-        Assert.assertEquals(new LevelAndType(4, OnProgressCallbackType.PROGRESSION), events.get(6));
+        levels = progressListener.getLevels();
         
-        listener.clear();
+        Assert.assertEquals(6, levels.size());
+        
+        Assert.assertEquals(9, levels.get(0).intValue());
+        Assert.assertEquals(8, levels.get(1).intValue());
+        Assert.assertEquals(7, levels.get(2).intValue());
+        Assert.assertEquals(6, levels.get(3).intValue());
+        Assert.assertEquals(5, levels.get(4).intValue());
+        Assert.assertEquals(4, levels.get(5).intValue());
+        
+        // And all the way down now
+        progressListener.clear();
         controller.proceedTo(0);
         
-        events = listener.getEvents();
-        Assert.assertEquals(5, events.size());
+        Assert.assertFalse(ServiceAtTen.isActive());
         
-        Assert.assertEquals(new LevelAndType(4, OnProgressCallbackType.INITIAL), events.get(0));
-        Assert.assertEquals(new LevelAndType(3, OnProgressCallbackType.PROGRESSION), events.get(1));
-        Assert.assertEquals(new LevelAndType(2, OnProgressCallbackType.PROGRESSION), events.get(2));
-        Assert.assertEquals(new LevelAndType(1, OnProgressCallbackType.PROGRESSION), events.get(3));
-        Assert.assertEquals(new LevelAndType(0, OnProgressCallbackType.PROGRESSION), events.get(4));
+        Assert.assertEquals(4, listener.getLastLevel());
+        Assert.assertEquals(0, controller.getCurrentRunLevel());
+        
+        levels = progressListener.getLevels();
+        
+        Assert.assertEquals(4, levels.size());
+        
+        Assert.assertEquals(3, levels.get(0).intValue());
+        Assert.assertEquals(2, levels.get(1).intValue());
+        Assert.assertEquals(1, levels.get(2).intValue());
+        Assert.assertEquals(0, levels.get(3).intValue());
     }
     
     @Singleton
-    private static class TestListener implements RunLevelListener {
-        private final List<LevelAndType> onProgressEvents = new LinkedList<LevelAndType>();
-        
-        private void clear() {
-            onProgressEvents.clear();
+    private static class TestStartingListener implements ProgressStartedListener {
+        private int lastLevel = -3;
+
+        @Override
+        public void onProgressStarting(ChangeableRunLevelFuture currentJob,
+                int currentLevel) {
+            lastLevel = currentLevel;
         }
         
-        private List<LevelAndType> getEvents() {
-            return onProgressEvents;
+        public int getLastLevel() {
+            return lastLevel;
+        }
+    }
+    
+    @Singleton
+    private static class TestProgressListener implements RunLevelListener {
+        private final List<Integer> levels = new LinkedList<Integer>();
+        
+        public void clear() {
+            levels.clear();
+        }
+        
+        public List<Integer> getLevels() {
+            return levels;
         }
 
         /* (non-Javadoc)
@@ -169,7 +200,7 @@ public class ListenerLevelsTest {
         @Override
         public void onProgress(ChangeableRunLevelFuture currentJob,
                 int levelAchieved) {
-            onProgressEvents.add(new LevelAndType(levelAchieved, currentJob.getCallbackType()));
+            levels.add(levelAchieved);
             
         }
 
@@ -187,39 +218,13 @@ public class ListenerLevelsTest {
         @Override
         public void onError(RunLevelFuture currentJob,
                 ErrorInformation errorInformation) {
+            // Make it stop when going down
             errorInformation.setAction(ErrorAction.GO_TO_NEXT_LOWER_LEVEL_AND_STOP);
         }
+
         
     }
     
-    private static class LevelAndType {
-        private final int level;
-        private final OnProgressCallbackType type;
-        
-        private LevelAndType(int level, OnProgressCallbackType type) {
-            this.level = level;
-            this.type = type;
-        }
-        
-        @Override
-        public int hashCode() {
-            return level ^ type.hashCode();
-        }
-        
-        @Override
-        public boolean equals(Object o) {
-            if (o == null) return false;
-            if (!(o instanceof LevelAndType)) return false;
-            
-            LevelAndType lat = (LevelAndType) o;
-            
-            return (lat.level == level) && (lat.type.equals(type));
-        }
-        
-        @Override
-        public String toString() {
-            return "LevelAndType(" + level + "," + type + "," + System.identityHashCode(this) + ")";
-        }
-    }
+    
 
 }

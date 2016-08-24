@@ -57,16 +57,4 @@ public interface ChangeableRunLevelFuture extends RunLevelFuture {
      * @throws IllegalStateException if this is called on a future that is done
      */
     public int changeProposedLevel(int proposedLevel) throws IllegalStateException;
-    
-    /**
-     * Returns the type of the onProgress callback.
-     * Types include:<UL>
-     * <LI>PROGRESSION - The run-level service has gone up or down</LI>
-     * <LI>INITIAL - The run-level has gone neither up or down but has begun the process of moving</LI>
-     * </UL>
-     * 
-     * @return The type of callback that is currently being made
-     */
-    public OnProgressCallbackType getCallbackType();
-
 }

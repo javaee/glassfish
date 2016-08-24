@@ -46,6 +46,7 @@ import java.util.List;
 
 import org.glassfish.hk2.runlevel.ChangeableRunLevelFuture;
 import org.glassfish.hk2.runlevel.ErrorInformation;
+import org.glassfish.hk2.runlevel.ProgressStartedListener;
 import org.glassfish.hk2.runlevel.RunLevelFuture;
 import org.glassfish.hk2.runlevel.RunLevelListener;
 
@@ -53,7 +54,7 @@ import org.glassfish.hk2.runlevel.RunLevelListener;
  * @author jwells
  *
  */
-public abstract class AbstractRunLevelListener implements RunLevelListener {
+public abstract class AbstractRunLevelListener implements RunLevelListener, ProgressStartedListener {
     private List<Integer> progressedLevels;
     private List<Integer> cancelledLevels;
     private List<Throwable> reportedErrors;
@@ -101,6 +102,11 @@ public abstract class AbstractRunLevelListener implements RunLevelListener {
             progressedLevels.add(levelAchieved);
         }
 
+    }
+    
+    @Override
+    public void onProgressStarting(ChangeableRunLevelFuture currentJob, int currentLevel) {
+        onProgress(currentJob, currentLevel);
     }
     
     public List<Integer> getAndPurgeProgressedLevels() {
