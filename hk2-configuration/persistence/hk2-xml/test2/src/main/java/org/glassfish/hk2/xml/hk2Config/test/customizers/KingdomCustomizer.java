@@ -37,40 +37,36 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.config.types;
+package org.glassfish.hk2.xml.hk2Config.test.customizers;
 
-import org.glassfish.hk2.api.Customize;
-import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.config.DuckTyped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.xml.hk2Config.test.beans.KingdomConfig;
+import org.jvnet.hk2.config.types.Property;
+import org.jvnet.hk2.config.types.PropertyBagCustomizer;
 
 /**
  * @author jwells
  *
  */
-@Contract
-public interface PropertyBagCustomizer {
-    public static final String DEFAULT_IMPLEMENTATION = "system default";
+@Singleton
+public class KingdomCustomizer {
+    @Inject @Named(PropertyBagCustomizer.DEFAULT_IMPLEMENTATION)
+    private PropertyBagCustomizer pbc;
     
-    public Property getProperty(PropertyBag me, String name);
+    public Property getProperty(KingdomConfig me, String name) {
+        return pbc.getProperty(me, name);
+    }
+    
+    public String getPropertyValue(KingdomConfig me, String name) {
+        return pbc.getPropertyValue(me, name);
+    }
+    
+    public String getPropertyValue(KingdomConfig me, String name,
+            String defaultValue) {
+        return pbc.getPropertyValue(me, name, defaultValue);
+    }
 
-    /**
-     * Returns a property value if the bean has properties and one of its
-     * properties name is equal to the one passed.
-     *
-     * @param name the property name requested
-     * @return the property value or null if not found
-     */
-    public String getPropertyValue(PropertyBag me, String name);
-
-    /**
-     * Returns a property value if the bean has properties and one of its
-     * properties name is equal to the one passed. Otherwise return
-     * the default value.
-     *
-     * @param name the property name requested
-     * @param defaultValue is the default value to return in case the property
-     * of that name does not exist in this bag
-     * @return the property value
-     */
-    public String getPropertyValue(PropertyBag me, String name, String defaultValue);
 }

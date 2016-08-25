@@ -37,40 +37,50 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.config.types;
+package org.glassfish.hk2.hk2Config.xml.test.utilities;
 
-import org.glassfish.hk2.api.Customize;
-import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.config.DuckTyped;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.extension.ServiceLocatorGenerator;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.glassfish.hk2.xml.api.XmlServiceUtilities;
+import org.jvnet.hk2.external.generator.ServiceLocatorGeneratorImpl;
 
 /**
  * @author jwells
  *
  */
-@Contract
-public interface PropertyBagCustomizer {
-    public static final String DEFAULT_IMPLEMENTATION = "system default";
+public class LocatorUtilities {
+    private final static ServiceLocatorGenerator GENERATOR = new ServiceLocatorGeneratorImpl();
+
+    /**
+     * Creates a fresh service locator with the XmlService added
+     * 
+     * @return A service locator with the XmlService added
+     */
+    public static ServiceLocator createLocator(Class<?>... classes) {
+        ServiceLocator retVal = ServiceLocatorFactory.getInstance().create(null, null, GENERATOR);
+        
+        ServiceLocatorUtilities.addClasses(retVal, classes);
+        
+        XmlServiceUtilities.enableXmlService(retVal);
+        
+        return retVal;
+    }
     
-    public Property getProperty(PropertyBag me, String name);
-
     /**
-     * Returns a property value if the bean has properties and one of its
-     * properties name is equal to the one passed.
-     *
-     * @param name the property name requested
-     * @return the property value or null if not found
+     * Creates a fresh service locator with the XmlService added
+     * 
+     * @return A service locator with the XmlService added
      */
-    public String getPropertyValue(PropertyBag me, String name);
+    public static ServiceLocator createDomLocator(Class<?>... classes) {
+        ServiceLocator retVal = ServiceLocatorFactory.getInstance().create(null, null, GENERATOR);
+        
+        ServiceLocatorUtilities.addClasses(retVal, classes);
+        
+        XmlServiceUtilities.enableDomXmlService(retVal);
+        
+        return retVal;
+    }
 
-    /**
-     * Returns a property value if the bean has properties and one of its
-     * properties name is equal to the one passed. Otherwise return
-     * the default value.
-     *
-     * @param name the property name requested
-     * @param defaultValue is the default value to return in case the property
-     * of that name does not exist in this bag
-     * @return the property value
-     */
-    public String getPropertyValue(PropertyBag me, String name, String defaultValue);
 }

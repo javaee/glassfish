@@ -39,6 +39,7 @@
  */
 package org.jvnet.hk2.config.types;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.jvnet.hk2.annotations.Contract;
@@ -47,7 +48,9 @@ import org.jvnet.hk2.annotations.Contract;
  * @author jwells
  *
  */
-@Singleton @Contract
+@Singleton
+@Contract
+@Named(PropertyBagCustomizer.DEFAULT_IMPLEMENTATION)
 public class PropertyBagCustomizerImpl implements PropertyBagCustomizer {
 
     /* (non-Javadoc)

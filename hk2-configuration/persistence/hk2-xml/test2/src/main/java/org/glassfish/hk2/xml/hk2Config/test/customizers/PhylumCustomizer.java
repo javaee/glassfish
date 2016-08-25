@@ -37,40 +37,32 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.jvnet.hk2.config.types;
+package org.glassfish.hk2.xml.hk2Config.test.customizers;
 
-import org.glassfish.hk2.api.Customize;
-import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.config.DuckTyped;
+import javax.inject.Named;
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.xml.hk2Config.test.beans.Phylum;
+import org.jvnet.hk2.config.types.Property;
+import org.jvnet.hk2.config.types.PropertyBagCustomizerImpl;
 
 /**
  * @author jwells
  *
  */
-@Contract
-public interface PropertyBagCustomizer {
-    public static final String DEFAULT_IMPLEMENTATION = "system default";
+@Singleton @Named
+public class PhylumCustomizer extends PropertyBagCustomizerImpl {
+    public Property getProperty(Phylum me, String name) {
+        return super.getProperty(me, name);
+    }
     
-    public Property getProperty(PropertyBag me, String name);
+    public String getPropertyValue(Phylum me, String name) {
+        return super.getPropertyValue(me, name);
+    }
+    
+    public String getPropertyValue(Phylum me, String name,
+            String defaultValue) {
+        return super.getPropertyValue(me, name, defaultValue);
+    }
 
-    /**
-     * Returns a property value if the bean has properties and one of its
-     * properties name is equal to the one passed.
-     *
-     * @param name the property name requested
-     * @return the property value or null if not found
-     */
-    public String getPropertyValue(PropertyBag me, String name);
-
-    /**
-     * Returns a property value if the bean has properties and one of its
-     * properties name is equal to the one passed. Otherwise return
-     * the default value.
-     *
-     * @param name the property name requested
-     * @param defaultValue is the default value to return in case the property
-     * of that name does not exist in this bag
-     * @return the property value
-     */
-    public String getPropertyValue(PropertyBag me, String name, String defaultValue);
 }
