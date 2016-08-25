@@ -39,5 +39,10 @@
  */
 package org.glassfish.hk2.xml.hk2Config.test.beans;
 
-public interface NamedBean {
+/**
+ * @author jwells
+ *
+ */
+public interface PropertyValue {
+
 }

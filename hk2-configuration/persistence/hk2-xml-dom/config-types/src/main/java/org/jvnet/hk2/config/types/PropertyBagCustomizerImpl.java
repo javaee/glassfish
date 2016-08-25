@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,81 +37,51 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.jvnet.hk2.config.types;
 
-import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.ConfigBeanProxy;
+import javax.inject.Singleton;
 
-import java.beans.PropertyVetoException;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlID;
-
+import org.jvnet.hk2.annotations.Contract;
 
 /**
- * Property type definition.
+ * @author jwells
  *
- * @author Jerome Dochez
  */
-@Configured
-public interface Property extends ConfigBeanProxy  {
+@Singleton @Contract
+public class PropertyBagCustomizerImpl implements PropertyBagCustomizer {
 
-    /**
-     * Gets the value of the name property.
-     *
-     * @return possible object is
-     *         {@link String }
+    /* (non-Javadoc)
+     * @see org.jvnet.hk2.config.types.PropertyBagCustomizer#getProperty(org.jvnet.hk2.config.types.PropertyBag, java.lang.String)
      */
-    @XmlAttribute @XmlID
-    @Attribute(required = true, key=true)
-    public String getName();
+    @Override
+    public Property getProperty(PropertyBag me, String name) {
+        for (Property prop : me.getProperty()) {
+            if (prop.getName().equals(name)) {
+                return prop;
+            }
+        }
+        return null;
+    }
 
-    /**
-     * Sets the value of the name property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     * @throws PropertyVetoException if a listener vetoes the change
+    /* (non-Javadoc)
+     * @see org.jvnet.hk2.config.types.PropertyBagCustomizer#getPropertyValue(org.jvnet.hk2.config.types.PropertyBag, java.lang.String)
      */
-    public void setName(String value) throws PropertyVetoException;
+    @Override
+    public String getPropertyValue(PropertyBag me, String name) {
+        return getPropertyValue(me,name,null);
+    }
 
-    /**
-     * Gets the value of the value property.
-     *
-     * @return possible object is
-     *         {@link String }
+    /* (non-Javadoc)
+     * @see org.jvnet.hk2.config.types.PropertyBagCustomizer#getPropertyValue(org.jvnet.hk2.config.types.PropertyBag, java.lang.String, java.lang.String)
      */
-    @XmlAttribute
-    @Attribute(required = true)
-    public String getValue();
+    @Override
+    public String getPropertyValue(PropertyBag me, String name,
+            String defaultValue) {
+        Property prop = getProperty(me, name);
+        if (prop != null) {
+            return prop.getValue();
+        }
+        return defaultValue;
+    }
 
-    /**
-     * Sets the value of the value property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     * @throws PropertyVetoException if a listener vetoes the change
-     */
-    public void setValue(String value) throws PropertyVetoException;
-
-    /**
-     * Gets the value of the description property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    @XmlAttribute
-    @Attribute
-    public String getDescription();
-
-    /**
-     * Sets the value of the description property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     * @throws PropertyVetoException if a listener vetoes the change
-     */
-    public void setDescription(String value) throws PropertyVetoException;
 }

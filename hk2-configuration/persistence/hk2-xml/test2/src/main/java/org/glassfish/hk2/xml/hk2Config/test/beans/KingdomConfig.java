@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,81 +37,24 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.hk2.xml.hk2Config.test.beans;
 
-package org.jvnet.hk2.config.types;
+import javax.xml.bind.annotation.XmlRootElement;
 
-import org.jvnet.hk2.config.Attribute;
-import org.jvnet.hk2.config.Configured;
+import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
+import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.config.ConfigBeanProxy;
-
-import java.beans.PropertyVetoException;
-
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlID;
-
+import org.jvnet.hk2.config.Configured;
+import org.jvnet.hk2.config.types.PropertyBag;
 
 /**
- * Property type definition.
+ * @author jwells
  *
- * @author Jerome Dochez
  */
+@Hk2XmlPreGenerate
 @Configured
-public interface Property extends ConfigBeanProxy  {
+@XmlRootElement(name="kingdom")
+@Contract
+public interface KingdomConfig extends ConfigBeanProxy, PropertyBag {
 
-    /**
-     * Gets the value of the name property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    @XmlAttribute @XmlID
-    @Attribute(required = true, key=true)
-    public String getName();
-
-    /**
-     * Sets the value of the name property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     * @throws PropertyVetoException if a listener vetoes the change
-     */
-    public void setName(String value) throws PropertyVetoException;
-
-    /**
-     * Gets the value of the value property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    @XmlAttribute
-    @Attribute(required = true)
-    public String getValue();
-
-    /**
-     * Sets the value of the value property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     * @throws PropertyVetoException if a listener vetoes the change
-     */
-    public void setValue(String value) throws PropertyVetoException;
-
-    /**
-     * Gets the value of the description property.
-     *
-     * @return possible object is
-     *         {@link String }
-     */
-    @XmlAttribute
-    @Attribute
-    public String getDescription();
-
-    /**
-     * Sets the value of the description property.
-     *
-     * @param value allowed object is
-     *              {@link String }
-     * @throws PropertyVetoException if a listener vetoes the change
-     */
-    public void setDescription(String value) throws PropertyVetoException;
 }

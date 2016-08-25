@@ -258,6 +258,9 @@ public class Utilities {
             
             return new ArrayTypeAltClassImpl(at, processingEnv);
         }
+        if (TypeKind.TYPEVAR.equals(typeMirror.getKind())) {
+            return ClassAltClassImpl.OBJECT;
+        }
         
         throw new AssertionError("Unknown parameter kind: " + typeMirror.getKind());
     }
