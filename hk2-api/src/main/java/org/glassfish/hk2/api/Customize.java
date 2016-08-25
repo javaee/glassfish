@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,7 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.api.annotations;
+package org.glassfish.hk2.api;
 
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -56,6 +56,9 @@ import java.lang.annotation.Target;
  * is not.  It is an error for this to be placed on a method where
  * the class does not have a {@link Customizer} that will be detected
  * only at runtime
+ * <p>
+ * This annotation is for use with the hk2-xml configuration
+ * system
  * 
  * @author jwells
  *

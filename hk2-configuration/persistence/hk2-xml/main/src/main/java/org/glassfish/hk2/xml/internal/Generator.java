@@ -83,9 +83,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.glassfish.hk2.api.AnnotationLiteral;
+import org.glassfish.hk2.api.Customize;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.utilities.reflection.Logger;
-import org.glassfish.hk2.xml.api.annotations.Customize;
 import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
 import org.glassfish.hk2.xml.api.annotations.PluralOf;
 import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;

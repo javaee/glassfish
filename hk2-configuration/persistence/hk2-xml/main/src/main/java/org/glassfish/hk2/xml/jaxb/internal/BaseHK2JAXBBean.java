@@ -56,6 +56,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Customizer;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
@@ -67,7 +68,6 @@ import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlHubCommitMessage;
-import org.glassfish.hk2.xml.api.annotations.Customizer;
 import org.glassfish.hk2.xml.internal.ChildType;
 import org.glassfish.hk2.xml.internal.DynamicChangeInfo;
 import org.glassfish.hk2.xml.internal.ParentedModel;

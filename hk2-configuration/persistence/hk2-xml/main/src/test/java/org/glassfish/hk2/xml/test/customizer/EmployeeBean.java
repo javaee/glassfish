@@ -41,8 +41,8 @@ package org.glassfish.hk2.xml.test.customizer;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import org.glassfish.hk2.xml.api.annotations.Customize;
-import org.glassfish.hk2.xml.api.annotations.Customizer;
+import org.glassfish.hk2.api.Customize;
+import org.glassfish.hk2.api.Customizer;
 import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
 import org.jvnet.hk2.annotations.Contract;
 

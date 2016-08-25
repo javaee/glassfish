@@ -42,8 +42,8 @@ package org.glassfish.hk2.xml.test.precompile;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.glassfish.hk2.xml.api.annotations.Customize;
-import org.glassfish.hk2.xml.api.annotations.Customizer;
+import org.glassfish.hk2.api.Customize;
+import org.glassfish.hk2.api.Customizer;
 import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
 import org.glassfish.hk2.xml.test.precompile.anno.EverythingBagel;
 import org.glassfish.hk2.xml.test.precompile.anno.GreekEnum;
