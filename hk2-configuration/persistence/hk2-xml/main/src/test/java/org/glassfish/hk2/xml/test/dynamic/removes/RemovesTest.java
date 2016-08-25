@@ -40,6 +40,7 @@
 package org.glassfish.hk2.xml.test.dynamic.removes;
 
 import java.net.URL;
+import java.util.List;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Hub;
@@ -47,6 +48,7 @@ import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.basic.Employee;
 import org.glassfish.hk2.xml.test.basic.Employees;
+import org.glassfish.hk2.xml.test.basic.OtherData;
 import org.glassfish.hk2.xml.test.basic.UnmarshallTest;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
 import org.junit.Assert;
@@ -62,13 +64,20 @@ public class RemovesTest {
     public final static String EMPLOYEE_TYPE = "/employees/employee";
     public final static String BOB_EMPLOYEE_INSTANCE = "employees.Bob";
     
+    public final static String ACME3_FILE = "Acme3.xml";
+    
+    public final static String INDEX0 = "Index0";
+    public final static String INDEX1 = "Index1";
+    public final static String INDEX2 = "Index2";
+    public final static String INDEX3 = "Index3";
+    
     /**
      * Tests remove of a keyed child with no sub-children
      * 
      * @throws Exception
      */
     @Test // @org.junit.Ignore
-    public void testRemoveOfIndexedChild() throws Exception {
+    public void testRemoveOfNamedChild() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
         Hub hub = locator.getService(Hub.class);
@@ -92,6 +101,51 @@ public class RemovesTest {
         Assert.assertNull(bob);
         Assert.assertNull(locator.getService(Employee.class, UnmarshallTest.BOB));
         Assert.assertNull(hub.getCurrentDatabase().getInstance(EMPLOYEE_TYPE, BOB_EMPLOYEE_INSTANCE));
+    }
+    
+    /**
+     * Tests remove of an un-keyed child with no sub-children
+     * 
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testRemoveOfIndexedChild() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource(ACME3_FILE);
+        
+        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
+        Employees employees = rootHandle.getRoot();
+        
+        validateAcme3InitialState(employees, hub);
+        
+        employees.removeOtherData(2);
+        
+        List<OtherData> otherDatum = employees.getOtherData();
+        Assert.assertEquals(3, otherDatum.size());
+        
+        Assert.assertEquals(INDEX0, otherDatum.get(0).getData());
+        Assert.assertEquals(INDEX1, otherDatum.get(1).getData());
+        // Index 2 was removed!
+        Assert.assertEquals(INDEX2, otherDatum.get(2).getData());
+    }
+    
+    private static void validateAcme3InitialState(Employees employees, Hub hub) {
+        Assert.assertEquals(UnmarshallTest.ACME, employees.getCompanyName());
+        
+        List<OtherData> otherDatum = employees.getOtherData();
+        Assert.assertEquals(4, otherDatum.size());
+        
+        Assert.assertEquals(INDEX0, otherDatum.get(0).getData());
+        Assert.assertEquals(INDEX1, otherDatum.get(1).getData());
+        Assert.assertEquals(INDEX2, otherDatum.get(2).getData());
+        Assert.assertEquals(INDEX3, otherDatum.get(3).getData());
+        
+        
+        
     }
 
 }
