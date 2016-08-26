@@ -626,7 +626,10 @@ public class Utilities {
                 
                 if (removeFromList == null) return null;
                 
-                List<BaseHK2JAXBBean> listWithObjectRemoved = new ArrayList<BaseHK2JAXBBean>(removeFromList.size() - 1);
+                int minusOneSize = removeFromList.size() - 1;
+                if (minusOneSize < 0) return null;
+                
+                List<BaseHK2JAXBBean> listWithObjectRemoved = new ArrayList<BaseHK2JAXBBean>(minusOneSize + 1);
                 
                 if (childKey != null) {
                     for (BaseHK2JAXBBean candidate : removeFromList) {
@@ -646,7 +649,7 @@ public class Utilities {
                         return null;
                     }
                     
-                    for (int lcv = 0; lcv < index; lcv++) {
+                    for (int lcv = 0; lcv < removeFromList.size(); lcv++) {
                         if (lcv == index) {
                             rootForDeletion = removeFromList.get(lcv);
                         }

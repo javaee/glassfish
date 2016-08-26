@@ -47,6 +47,7 @@ import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -511,6 +512,11 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
     }
     
     public Object _invokeCustomizedMethod(String methodName, Class<?>[] params, Object[] values) {
+        if (DEBUG_GETS_AND_SETS) {
+            // Hidden behind static because of potential expensive toString costs
+            Logger.getLogger().debug("XmlService invoking customized method " + methodName +
+                    " with params " + Arrays.toString(params) + " adn values " + Arrays.toString(values));
+        }
         Class<?> tClass = getClass();
         Customizer customizer = tClass.getAnnotation(Customizer.class);
         if (customizer == null) {

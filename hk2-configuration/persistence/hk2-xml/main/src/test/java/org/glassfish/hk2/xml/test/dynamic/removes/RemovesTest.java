@@ -76,7 +76,8 @@ public class RemovesTest {
      * 
      * @throws Exception
      */
-    @Test // @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testRemoveOfNamedChild() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -109,7 +110,7 @@ public class RemovesTest {
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testRemoveOfIndexedChild() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -122,7 +123,7 @@ public class RemovesTest {
         
         validateAcme3InitialState(employees, hub);
         
-        employees.removeOtherData(2);
+        Assert.assertTrue(employees.removeOtherData(2));
         
         List<OtherData> otherDatum = employees.getOtherData();
         Assert.assertEquals(3, otherDatum.size());
@@ -130,7 +131,7 @@ public class RemovesTest {
         Assert.assertEquals(INDEX0, otherDatum.get(0).getData());
         Assert.assertEquals(INDEX1, otherDatum.get(1).getData());
         // Index 2 was removed!
-        Assert.assertEquals(INDEX2, otherDatum.get(2).getData());
+        Assert.assertEquals(INDEX3, otherDatum.get(2).getData());
     }
     
     private static void validateAcme3InitialState(Employees employees, Hub hub) {
