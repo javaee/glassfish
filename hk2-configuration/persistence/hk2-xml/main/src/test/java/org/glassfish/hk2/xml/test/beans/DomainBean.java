@@ -61,11 +61,11 @@ public interface DomainBean extends NamedBean {
     public List<MachineBean> getMachines();
     public void setMachines(List<MachineBean> machines);
     public void addMachine(MachineBean machine);
-    public void removeMachine(String machine);
+    public MachineBean removeMachine(String machine);
     
     @XmlElement(name="jms-server")
     public JMSServerBean[] getJMSServers();
     public void setJMSServers(JMSServerBean[] jmsServers);
     public void addJMSServer(JMSServerBean jmsServer);
-    public void removeJMSServer(String jmsServer);
+    public JMSServerBean removeJMSServer(String jmsServer);
 }

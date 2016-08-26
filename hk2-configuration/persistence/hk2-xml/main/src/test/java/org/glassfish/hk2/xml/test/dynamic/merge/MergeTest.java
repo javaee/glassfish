@@ -80,7 +80,7 @@ public class MergeTest {
     private final static String RSA_DOM_PFX = "rsa";
     private final static String ALICE_NAME = "Alice";
     private final static String BOB_NAME = "Bob";
-    private final static String CAROL_NAME = "Carol";
+    public final static String CAROL_NAME = "Carol";
     private final static String TOPIC0_NAME = "Topic0";
     private final static String TOPIC1_NAME = "Topic1";
     private final static String QUEUE0_NAME = "Queue0";
@@ -97,9 +97,9 @@ public class MergeTest {
     private final static String SERVER_TYPE = "/domain/machine/server";
     public final static String SECURITY_MANAGER_TYPE = "/domain/security-manager";
     public final static String AUTHORIZATION_PROVIDER_TYPE = "/domain/security-manager/authorization-provider";
-    private final static String JMS_SERVER_TYPE = "/domain/jms-server";
-    private final static String TOPIC_TYPE = "/domain/jms-server/topic";
-    private final static String QUEUE_TYPE = "/domain/jms-server/queue";
+    public final static String JMS_SERVER_TYPE = "/domain/jms-server";
+    public final static String TOPIC_TYPE = "/domain/jms-server/topic";
+    public final static String QUEUE_TYPE = "/domain/jms-server/queue";
     
     private final static String ALICE_INSTANCE = "domain.Alice";
     private final static String BOB_INSTANCE = "domain.Bob";

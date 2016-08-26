@@ -56,6 +56,7 @@ import org.glassfish.hk2.xml.test.basic.Financials;
 import org.glassfish.hk2.xml.test.basic.OtherData;
 import org.glassfish.hk2.xml.test.basic.UnmarshallTest;
 import org.glassfish.hk2.xml.test.beans.DomainBean;
+import org.glassfish.hk2.xml.test.beans.JMSServerBean;
 import org.glassfish.hk2.xml.test.dynamic.merge.MergeTest;
 import org.glassfish.hk2.xml.test.dynamic.rawsets.RawSetsTest.UpdateListener;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
@@ -267,6 +268,66 @@ public class RemovesTest {
             Map<String, Instance> atzProvidersInstances = atzProvidersType.getInstances();
             Assert.assertNotNull(atzProvidersInstances);
             Assert.assertTrue(atzProvidersInstances.isEmpty());
+        }
+    }
+    
+    /**
+     * Tests removing a child instance represented by arrays that
+     * itself has children of its own
+     * 
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testRemoveOfArrayNodeWithChildren() throws Exception {
+        ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
+        
+        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshall(url.toURI(), DomainBean.class);
+        
+        MergeTest.verifyDomain1Xml(rootHandle, hub);
+        
+        DomainBean domain = rootHandle.getRoot();
+        
+        JMSServerBean removed = domain.removeJMSServer(MergeTest.CAROL_NAME);
+        Assert.assertNotNull(removed);
+        Assert.assertEquals(MergeTest.CAROL_NAME, removed.getName());
+        
+        JMSServerBean jmsServers[] = domain.getJMSServers();
+        Assert.assertNotNull(jmsServers);
+        
+        Assert.assertEquals(0, jmsServers.length);
+        
+        BeanDatabase db = hub.getCurrentDatabase();
+        
+        {
+            Type jmsServerType = db.getType(MergeTest.SECURITY_MANAGER_TYPE);
+            Assert.assertNotNull(jmsServerType);
+        
+            Map<String, Instance> jmsServerInstances = jmsServerType.getInstances();
+            Assert.assertNotNull(jmsServerInstances);
+            Assert.assertTrue(jmsServerInstances.isEmpty());
+        }
+        
+        {
+            Type queueType = db.getType(MergeTest.QUEUE_TYPE);
+            Assert.assertNotNull(queueType);
+            
+            Map<String, Instance> queueInstances = queueType.getInstances();
+            Assert.assertNotNull(queueInstances);
+            Assert.assertTrue(queueInstances.isEmpty());
+        }
+        
+        {
+            Type topicType = db.getType(MergeTest.TOPIC_TYPE);
+            Assert.assertNotNull(topicType);
+            
+            Map<String, Instance> topicInstances = topicType.getInstances();
+            Assert.assertNotNull(topicInstances);
+            Assert.assertTrue(topicInstances.isEmpty());
         }
     }
     
