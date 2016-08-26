@@ -83,8 +83,8 @@ public class UnmarshallTest {
     public final static String DAVE = "Dave";
     public final static String ENGLEBERT = "Englebert";
     public final static String FRANK = "Frank";
-    private final static String ACME_SYMBOL = "acme";
-    private final static String NYSE = "NYSE";
+    public final static String ACME_SYMBOL = "acme";
+    public final static String NYSE = "NYSE";
     private final static String COKE_TENANT = "coke";
     private final static String HRPROD_SERVICE = "HRProd";
     
@@ -102,6 +102,8 @@ public class UnmarshallTest {
     public final static String NAME_TAG = "name";
     public final static String ID_TAG = "id";
     private final static String COKE_ENV = "cokeenv";
+    public final static String SYMBOL_TAG = "symbol";
+    public final static String EXCHANGE_TAG = "exchange";
     
     /**
      * Tests the most basic of xml files can be unmarshalled with an interface

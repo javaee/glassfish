@@ -57,6 +57,4 @@ public interface Financials extends FinancialsReadOnly, InternationalFinancials 
     @XmlElement
     public String getExchange();
     public void setExchange(String exchange);
-    
-
 }

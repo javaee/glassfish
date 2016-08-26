@@ -43,6 +43,11 @@
 <employees>
   <company-name>Acme</company-name>
   
+  <financials>
+    <symbol>acme</symbol>
+    <exchange>NYSE</exchange>
+  </financials>
+  
   <other-data data="Index0"/>
   <other-data data="Index1"/> 
   <other-data data="Index2"/> 

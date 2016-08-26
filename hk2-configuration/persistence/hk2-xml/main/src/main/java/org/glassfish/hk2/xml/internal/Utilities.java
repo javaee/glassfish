@@ -614,13 +614,13 @@ public class Utilities {
             DynamicConfiguration dynamicService) {
         if (childProperty == null) return null;
         
-        if (childKey == null && index < 0) return null;
-        
         ParentedModel removeMeParentedNode = myParent._getModel().getChild(childProperty);
         Model removeMeNode = removeMeParentedNode.getChildModel();
         BaseHK2JAXBBean rootForDeletion = null;
         
         if (!ChildType.DIRECT.equals(removeMeParentedNode.getChildType())) {
+            if (childKey == null && index < 0) return null;
+            
             if (ChildType.LIST.equals(removeMeParentedNode.getChildType())) {
                 List<BaseHK2JAXBBean> removeFromList = (List<BaseHK2JAXBBean>) myParent._getProperty(childProperty);
                 

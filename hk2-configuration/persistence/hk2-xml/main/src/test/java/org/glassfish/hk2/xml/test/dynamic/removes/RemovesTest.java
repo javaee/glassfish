@@ -52,6 +52,7 @@ import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.basic.Employee;
 import org.glassfish.hk2.xml.test.basic.Employees;
+import org.glassfish.hk2.xml.test.basic.Financials;
 import org.glassfish.hk2.xml.test.basic.OtherData;
 import org.glassfish.hk2.xml.test.basic.UnmarshallTest;
 import org.glassfish.hk2.xml.test.beans.DomainBean;
@@ -193,12 +194,39 @@ public class RemovesTest {
         Assert.assertTrue(otherDatum.isEmpty());
         
         checkHubDataInstanceOrder(hub);
-        
-        hub.getCurrentDatabase().dumpDatabase();
     }
     
     /**
-     * Tests a deep tree including all metadata
+     * Tests remove of a direct child without children
+     * 
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testRemoveOfDirectNodeWithoutChildren() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource(ACME3_FILE);
+        
+        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
+        Employees employees = rootHandle.getRoot();
+        
+        validateAcme3InitialState(employees, hub);
+        
+        Financials removed = employees.removeFinancials();
+        Assert.assertNotNull(removed);
+        
+        Assert.assertNull(employees.getFinancials());
+        
+        BeanDatabase db = hub.getCurrentDatabase();
+        Instance financialsInstance = db.getInstance(UnmarshallTest.FINANCIALS_TYPE, UnmarshallTest.FINANCIALS_INSTANCE);
+        Assert.assertNull(financialsInstance);
+    }
+    
+    /**
+     * Tests removing a direct node that has children of its own
      * 
      * @throws Exception
      */
@@ -242,8 +270,16 @@ public class RemovesTest {
         }
     }
     
+    @SuppressWarnings("unchecked")
     private static void validateAcme3InitialState(Employees employees, Hub hub) {
         Assert.assertEquals(UnmarshallTest.ACME, employees.getCompanyName());
+        
+        Financials financials = employees.getFinancials();
+        Assert.assertNotNull(financials);
+        
+        Assert.assertEquals(UnmarshallTest.ACME_SYMBOL, financials.getSymbol());
+        Assert.assertEquals(UnmarshallTest.NYSE, financials.getExchange());
+        Assert.assertNull(financials.getCountry());
         
         List<OtherData> otherDatum = employees.getOtherData();
         Assert.assertEquals(4, otherDatum.size());
@@ -254,6 +290,15 @@ public class RemovesTest {
         Assert.assertEquals(INDEX3, otherDatum.get(3).getData());
         
         checkHubDataInstanceOrder(hub, INDEX0, INDEX1, INDEX2, INDEX3);
+        
+        // Check that financials is in the hub
+        BeanDatabase db = hub.getCurrentDatabase();
+        Instance financialsInstance = db.getInstance(UnmarshallTest.FINANCIALS_TYPE, UnmarshallTest.FINANCIALS_INSTANCE);
+        Assert.assertNotNull(financialsInstance);
+        
+        Map<String, Object> financialsBean = (Map<String, Object>) financialsInstance.getBean();
+        Assert.assertEquals(UnmarshallTest.ACME_SYMBOL, financialsBean.get(UnmarshallTest.SYMBOL_TAG));
+        Assert.assertEquals(UnmarshallTest.NYSE, financialsBean.get(UnmarshallTest.EXCHANGE_TAG));
     }
     
     @SuppressWarnings("unchecked")
