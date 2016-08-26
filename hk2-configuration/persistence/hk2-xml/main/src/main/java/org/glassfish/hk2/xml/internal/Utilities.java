@@ -61,6 +61,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
@@ -725,11 +726,18 @@ public class Utilities {
                     myParent.changeInHub(childProperty, arrayWithObjectRemoved, writeableDatabase);
                 }
                 
-                myParent._setProperty(childProperty, arrayWithObjectRemoved);
+                myParent._setProperty(childProperty, arrayWithObjectRemoved, false);
             }
         }
         else {
-            throw new AssertionError("Remove of direct child not yet implemented");
+            rootForDeletion = (BaseHK2JAXBBean) myParent._getProperty(childProperty);
+            if (rootForDeletion == null) return null;
+            
+            if (writeableDatabase != null) {
+                myParent.changeInHub(childProperty, null, writeableDatabase);
+            }
+            
+            myParent._setProperty(childProperty, null, false);
         }
         
         if (dynamicService != null) {
@@ -755,7 +763,10 @@ public class Utilities {
                 Set<Type> allTypes = writeableDatabase.getAllTypes();
                 for (Type allType : allTypes) {
                     if (allType.getName().startsWith(typeRemovalIndicator)) {
-                        writeableDatabase.removeType(allType.getName());
+                        Map<String, Instance> allInstances = allType.getInstances();
+                        for (String iKey : allInstances.keySet()) {
+                            ((WriteableType) allType).removeInstance(iKey);
+                        }
                     }
                 }
             }

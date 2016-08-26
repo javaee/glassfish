@@ -202,7 +202,7 @@ public class RemovesTest {
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testRemoveOfDirectNodeWithoutChildren() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -231,7 +231,7 @@ public class RemovesTest {
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testRemoveOfDirectNodeWithChildren() throws Exception {
         ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
         XmlService xmlService = locator.getService(XmlService.class);
