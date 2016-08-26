@@ -41,15 +41,22 @@ package org.glassfish.hk2.xml.test.dynamic.removes;
 
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.configuration.hub.api.Instance;
+import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.basic.Employee;
 import org.glassfish.hk2.xml.test.basic.Employees;
 import org.glassfish.hk2.xml.test.basic.OtherData;
 import org.glassfish.hk2.xml.test.basic.UnmarshallTest;
+import org.glassfish.hk2.xml.test.beans.DomainBean;
+import org.glassfish.hk2.xml.test.dynamic.merge.MergeTest;
+import org.glassfish.hk2.xml.test.dynamic.rawsets.RawSetsTest.UpdateListener;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
 import org.junit.Assert;
 import org.junit.Test;
@@ -70,6 +77,9 @@ public class RemovesTest {
     public final static String INDEX1 = "Index1";
     public final static String INDEX2 = "Index2";
     public final static String INDEX3 = "Index3";
+    
+    public final static String OTHER_DATA_TYPE = "/employees/other-data";
+    private final static String DATA_KEY = "data";
     
     /**
      * Tests remove of a keyed child with no sub-children
@@ -123,6 +133,14 @@ public class RemovesTest {
         
         validateAcme3InitialState(employees, hub);
         
+        // Make sure bad indexes do not change anything.  Bad index negative
+        Assert.assertFalse(employees.removeOtherData(-1));
+        validateAcme3InitialState(employees, hub);
+        
+        // Bad index too high
+        Assert.assertFalse(employees.removeOtherData(4));
+        validateAcme3InitialState(employees, hub);
+        
         Assert.assertTrue(employees.removeOtherData(2));
         
         List<OtherData> otherDatum = employees.getOtherData();
@@ -132,6 +150,96 @@ public class RemovesTest {
         Assert.assertEquals(INDEX1, otherDatum.get(1).getData());
         // Index 2 was removed!
         Assert.assertEquals(INDEX3, otherDatum.get(2).getData());
+        
+        checkHubDataInstanceOrder(hub, INDEX0, INDEX1, INDEX3);
+        
+        // Remove the last thing in the list
+        Assert.assertTrue(employees.removeOtherData(2));
+        otherDatum = employees.getOtherData();
+        
+        Assert.assertEquals(INDEX0, otherDatum.get(0).getData());
+        Assert.assertEquals(INDEX1, otherDatum.get(1).getData());
+        // Index 2 was removed!
+        
+        checkHubDataInstanceOrder(hub, INDEX0, INDEX1);
+        
+        // Remove the first thing in the list
+        Assert.assertTrue(employees.removeOtherData(0));
+        otherDatum = employees.getOtherData();
+        
+        Assert.assertEquals(INDEX1, otherDatum.get(0).getData());
+        
+        checkHubDataInstanceOrder(hub, INDEX1);
+        
+        // Remove the last thing in the list
+        Assert.assertTrue(employees.removeOtherData(0));
+        otherDatum = employees.getOtherData();
+        
+        Assert.assertTrue(otherDatum.isEmpty());
+        
+        checkHubDataInstanceOrder(hub);
+        
+        // Make sure we can remove something we've added
+        employees.addOtherData(0);
+        otherDatum = employees.getOtherData();
+        OtherData zeroEntry = otherDatum.get(0);
+        zeroEntry.setData(INDEX0);
+        
+        checkHubDataInstanceOrder(hub, INDEX0);
+        
+        Assert.assertTrue(employees.removeOtherData(0));
+        otherDatum = employees.getOtherData();
+        
+        Assert.assertTrue(otherDatum.isEmpty());
+        
+        checkHubDataInstanceOrder(hub);
+        
+        hub.getCurrentDatabase().dumpDatabase();
+    }
+    
+    /**
+     * Tests a deep tree including all metadata
+     * 
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testRemoveOfDirectNodeWithChildren() throws Exception {
+        ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
+        
+        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshall(url.toURI(), DomainBean.class);
+        
+        MergeTest.verifyDomain1Xml(rootHandle, hub);
+        
+        DomainBean domain = rootHandle.getRoot();
+        
+        Assert.assertTrue(domain.removeSecurityManager());
+        
+        Assert.assertNull(domain.getSecurityManager());
+        
+        BeanDatabase db = hub.getCurrentDatabase();
+        
+        {
+            Type securityManagerType = db.getType(MergeTest.SECURITY_MANAGER_TYPE);
+            Assert.assertNotNull(securityManagerType);
+        
+            Map<String, Instance> securityManagerInstances = securityManagerType.getInstances();
+            Assert.assertNotNull(securityManagerInstances);
+            Assert.assertTrue(securityManagerInstances.isEmpty());
+        }
+        
+        {
+            Type atzProvidersType = db.getType(MergeTest.AUTHORIZATION_PROVIDER_TYPE);
+            Assert.assertNotNull(atzProvidersType);
+            
+            Map<String, Instance> atzProvidersInstances = atzProvidersType.getInstances();
+            Assert.assertNotNull(atzProvidersInstances);
+            Assert.assertTrue(atzProvidersInstances.isEmpty());
+        }
     }
     
     private static void validateAcme3InitialState(Employees employees, Hub hub) {
@@ -145,7 +253,27 @@ public class RemovesTest {
         Assert.assertEquals(INDEX2, otherDatum.get(2).getData());
         Assert.assertEquals(INDEX3, otherDatum.get(3).getData());
         
+        checkHubDataInstanceOrder(hub, INDEX0, INDEX1, INDEX2, INDEX3);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static void checkHubDataInstanceOrder(Hub hub, String... expecteds) {
+        BeanDatabase db = hub.getCurrentDatabase();
+        Type otherDataType = db.getType(OTHER_DATA_TYPE);
         
+        Map<String, Instance> instances = otherDataType.getInstances();
+        Assert.assertEquals(expecteds.length, instances.size());
+        
+        int lcv = 0;
+        for (Instance instance : instances.values()) {
+            Map<String, Object> beanLikeMap = (Map<String, Object>) instance.getBean();
+            String data = (String) beanLikeMap.get(DATA_KEY);
+            
+            String expected = expecteds[lcv];
+            Assert.assertEquals(expected, data);
+            
+            lcv++;
+        }
         
     }
 

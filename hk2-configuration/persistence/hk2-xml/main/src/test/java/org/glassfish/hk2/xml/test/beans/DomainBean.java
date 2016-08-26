@@ -55,6 +55,7 @@ public interface DomainBean extends NamedBean {
     @XmlElement(name="security-manager")
     public SecurityManagerBean getSecurityManager();
     public void setSecurityManager(SecurityManagerBean secBean);
+    public boolean removeSecurityManager();
     
     @XmlElement(name="machine")
     public List<MachineBean> getMachines();

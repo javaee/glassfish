@@ -75,7 +75,6 @@ import org.junit.Test;
 public class MergeTest {
     public final static String DOMAIN1_FILE = "domain1.xml";
     
-    
     private final static String DOMAIN1_NAME = "domain1";
     private final static String RSA_ATZ_PROV_NAME = "RSA";
     private final static String RSA_DOM_PFX = "rsa";
@@ -96,8 +95,8 @@ public class MergeTest {
     private final static String DOMAIN_INSTANCE = "domain";
     private final static String MACHINE_TYPE = "/domain/machine";
     private final static String SERVER_TYPE = "/domain/machine/server";
-    private final static String SECURITY_MANAGER_TYPE = "/domain/security-manager";
-    private final static String AUTHORIZATION_PROVIDER_TYPE = "/domain/security-manager/authorization-provider";
+    public final static String SECURITY_MANAGER_TYPE = "/domain/security-manager";
+    public final static String AUTHORIZATION_PROVIDER_TYPE = "/domain/security-manager/authorization-provider";
     private final static String JMS_SERVER_TYPE = "/domain/jms-server";
     private final static String TOPIC_TYPE = "/domain/jms-server/topic";
     private final static String QUEUE_TYPE = "/domain/jms-server/queue";
