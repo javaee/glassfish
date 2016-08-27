@@ -43,6 +43,8 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.jvnet.hk2.annotations.Contract;
+
 /**
  * This is a sub-bean that is a single-stanza sub-bean of DomainBean
  * which has both list children and non-list children
@@ -50,6 +52,7 @@ import javax.xml.bind.annotation.XmlElement;
  * @author jwells
  *
  */
+@Contract
 public interface SecurityManagerBean {
     @XmlElement(name="authorization-provider")
     public List<AuthorizationProviderBean> getAuthorizationProviders();

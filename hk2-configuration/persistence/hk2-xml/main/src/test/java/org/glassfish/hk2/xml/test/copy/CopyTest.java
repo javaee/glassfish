@@ -84,12 +84,12 @@ public class CopyTest {
         
         XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshall(url.toURI(), DomainBean.class);
         
-        MergeTest.verifyDomain1Xml(rootHandle, hub);
+        MergeTest.verifyDomain1Xml(rootHandle, hub, locator);
         
         // All above just verifying the pre-state
         XmlRootCopy<DomainBean> copy = rootHandle.getXmlRootCopy();
         
-        MergeTest.verifyDomain1Xml(rootHandle, copy, hub);
+        MergeTest.verifyDomain1Xml(rootHandle, copy, hub, locator);
         
         DomainBean domainCopy = copy.getChildRoot();
         DomainBean domainOriginal = rootHandle.getRoot();

@@ -247,7 +247,7 @@ public class RemovesTest {
         
         XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshall(url.toURI(), DomainBean.class);
         
-        MergeTest.verifyDomain1Xml(rootHandle, hub);
+        MergeTest.verifyDomain1Xml(rootHandle, hub, locator);
         
         DomainBean domain = rootHandle.getRoot();
         
@@ -294,7 +294,7 @@ public class RemovesTest {
         
         XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshall(url.toURI(), DomainBean.class);
         
-        MergeTest.verifyDomain1Xml(rootHandle, hub);
+        MergeTest.verifyDomain1Xml(rootHandle, hub, locator);
         
         DomainBean domain = rootHandle.getRoot();
         

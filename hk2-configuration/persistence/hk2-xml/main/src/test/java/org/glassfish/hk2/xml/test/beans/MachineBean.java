@@ -43,10 +43,13 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.jvnet.hk2.annotations.Contract;
+
 /**
  * @author jwells
  *
  */
+@Contract
 public interface MachineBean extends NamedBean {
     @XmlElement(name="server")
     public List<ServerBean> getServers();

@@ -41,10 +41,13 @@ package org.glassfish.hk2.xml.test.beans;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.jvnet.hk2.annotations.Contract;
+
 /**
  * @author jwells
  *
  */
+@Contract
 public interface AuthorizationProviderBean extends NamedBean {
     @XmlElement(name="domain-pfx")
     public String getAtzDomainPrefix();

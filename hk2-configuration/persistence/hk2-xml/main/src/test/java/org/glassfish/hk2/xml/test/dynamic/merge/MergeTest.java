@@ -49,6 +49,7 @@ import org.glassfish.hk2.configuration.hub.api.Change;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.Change.ChangeCategory;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.hk2.xml.api.XmlRootCopy;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
@@ -214,7 +215,7 @@ public class MergeTest {
         
         XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshall(url.toURI(), DomainBean.class);
         
-        verifyDomain1Xml(rootHandle, hub);
+        verifyDomain1Xml(rootHandle, hub, locator);
         
         // All above just verifying the pre-state
         XmlRootCopy<DomainBean> copy = rootHandle.getXmlRootCopy();
@@ -227,7 +228,7 @@ public class MergeTest {
         domainCopy.addMachine(addedBean);
         
         // Ensure that the modification of the copy did NOT affect the parent!
-        verifyDomain1Xml(rootHandle, hub);
+        verifyDomain1Xml(rootHandle, hub, locator);
         
         // Now do the merge
         copy.merge();
@@ -269,22 +270,23 @@ public class MergeTest {
         // TODO: Check that we have the proper set of changes (one modify, one add)
     }
     
-    public static void verifyDomain1Xml(XmlRootHandle<DomainBean> rootHandle, Hub hub) {
+    public static void verifyDomain1Xml(XmlRootHandle<DomainBean> rootHandle, Hub hub, ServiceLocator locator) {
         DomainBean root = rootHandle.getRoot();
         
-        verifyDomain1XmlDomain(root, hub);
+        verifyDomain1XmlDomain(root, hub, locator);
     }
     
-    public static void verifyDomain1Xml(XmlRootHandle<DomainBean> original, XmlRootCopy<DomainBean> rootHandle, Hub hub) {
+    public static void verifyDomain1Xml(XmlRootHandle<DomainBean> original, XmlRootCopy<DomainBean> rootHandle, Hub hub,
+            ServiceLocator locator) {
         Assert.assertEquals(original, rootHandle.getParent());
         
         DomainBean root = rootHandle.getChildRoot();
         
-        verifyDomain1XmlDomain(root, hub);
+        verifyDomain1XmlDomain(root, hub, locator);
     }
     
     @SuppressWarnings("unchecked")
-    private static void verifyDomain1XmlDomain(DomainBean root, Hub hub) {
+    private static void verifyDomain1XmlDomain(DomainBean root, Hub hub, ServiceLocator locator) {
         Assert.assertEquals("Failing bean is " + root, DOMAIN1_NAME, root.getName());
         
         SecurityManagerBean securityManager = root.getSecurityManager();
@@ -412,6 +414,59 @@ public class MergeTest {
         assertNameOnlyBean(hub, QUEUE_TYPE, QUEUE0_INSTANCE, QUEUE0_NAME);
         assertNameOnlyBean(hub, QUEUE_TYPE, QUEUE1_INSTANCE, QUEUE1_NAME);
         assertNameOnlyBean(hub, QUEUE_TYPE, QUEUE2_INSTANCE, QUEUE2_NAME);
+        
+        assertDomain1Services(locator);
+    }
+    
+    private static void assertDomain1Services(ServiceLocator locator) {
+        // TODO:  Why does root not have a name?
+        DomainBean db = locator.getService(DomainBean.class);
+        Assert.assertNotNull(db);
+        Assert.assertEquals(DOMAIN1_NAME, db.getName());
+        
+        SecurityManagerBean smb = locator.getService(SecurityManagerBean.class);
+        Assert.assertNotNull(smb);
+        
+        AuthorizationProviderBean rsa = locator.getService(AuthorizationProviderBean.class, RSA_ATZ_PROV_NAME);
+        Assert.assertNotNull(rsa);
+        Assert.assertEquals(RSA_ATZ_PROV_NAME, rsa.getName());
+        
+        MachineBean mb = locator.getService(MachineBean.class, ALICE_NAME);
+        Assert.assertNotNull(mb);
+        Assert.assertEquals(ALICE_NAME, mb.getName());
+        
+        ServerBean sb = locator.getService(ServerBean.class, ALICE_SERVER0_NAME);
+        Assert.assertNotNull(sb);
+        Assert.assertEquals(ALICE_SERVER0_NAME, sb.getName());
+        
+        JMSServerBean carolJMS = locator.getService(JMSServerBean.class, CAROL_NAME);
+        Assert.assertNotNull(carolJMS);
+        Assert.assertEquals(CAROL_NAME, carolJMS.getName());
+        
+        JMSServerBean daveJMS = locator.getService(JMSServerBean.class, DAVE_NAME);
+        Assert.assertNotNull(daveJMS);
+        Assert.assertEquals(DAVE_NAME, daveJMS.getName());
+        
+        assertTopicOfName(locator, TOPIC0_NAME);
+        assertTopicOfName(locator, TOPIC1_NAME);
+        assertTopicOfName(locator, TOPICD0_NAME);
+        
+        assertQueueOfName(locator, QUEUE0_NAME);
+        assertQueueOfName(locator, QUEUE1_NAME);
+        assertQueueOfName(locator, QUEUE2_NAME);
+        assertQueueOfName(locator, QUEUED0_NAME);
+    }
+    
+    private static void assertQueueOfName(ServiceLocator locator, String expectedName) {
+        QueueBean qb = locator.getService(QueueBean.class, expectedName);
+        Assert.assertNotNull(qb);
+        Assert.assertEquals(expectedName, qb.getName());
+    }
+    
+    private static void assertTopicOfName(ServiceLocator locator, String expectedName) {
+        TopicBean tb = locator.getService(TopicBean.class, expectedName);
+        Assert.assertNotNull(tb);
+        Assert.assertEquals(expectedName, tb.getName());
     }
     
     @SuppressWarnings("unchecked")
