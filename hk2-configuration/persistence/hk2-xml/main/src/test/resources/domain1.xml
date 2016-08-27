@@ -83,4 +83,16 @@
 			<name>Queue2</name>
 		</queue>
 	</jms-server>
+	
+	<jms-server>
+		<name>Dave</name>
+		
+		<topic>
+			<name>TopicD0</name>
+		</topic>
+		
+		<queue>
+			<name>QueueD0</name>
+		</queue>
+	</jms-server>
 </domain>

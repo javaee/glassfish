@@ -85,6 +85,9 @@ public class RemovesTest {
     public final static String OTHER_DATA_TYPE = "/employees/other-data";
     private final static String DATA_KEY = "data";
     
+    private final static String QUEUED0_INSTANCE_NAME = "domain.Dave.QueueD0";
+    private final static String TOPICD0_INSTANCE_NAME = "domain.Dave.TopicD0";
+    
     /**
      * Tests remove of a keyed child with no sub-children
      * 
@@ -279,6 +282,7 @@ public class RemovesTest {
      * 
      * @throws Exception
      */
+    @SuppressWarnings("unchecked")
     @Test
     // @org.junit.Ignore
     public void testRemoveOfArrayNodeWithChildren() throws Exception {
@@ -301,7 +305,8 @@ public class RemovesTest {
         JMSServerBean jmsServers[] = domain.getJMSServers();
         Assert.assertNotNull(jmsServers);
         
-        Assert.assertEquals(0, jmsServers.length);
+        Assert.assertEquals(1, jmsServers.length);
+        Assert.assertEquals(MergeTest.DAVE_NAME, jmsServers[0].getName());
         
         BeanDatabase db = hub.getCurrentDatabase();
         
@@ -311,7 +316,13 @@ public class RemovesTest {
         
             Map<String, Instance> jmsServerInstances = jmsServerType.getInstances();
             Assert.assertNotNull(jmsServerInstances);
-            Assert.assertTrue(jmsServerInstances.isEmpty());
+            Assert.assertEquals(1, jmsServerInstances.size());
+            
+            Instance daveInstance = jmsServerInstances.get(MergeTest.DAVE_INSTANCE);
+            Assert.assertNotNull(daveInstance);
+            
+            Map<String, Object> daveMap = (Map<String, Object>) daveInstance.getBean();
+            Assert.assertEquals(MergeTest.DAVE_NAME, daveMap.get(UnmarshallTest.NAME_TAG));
         }
         
         {
@@ -320,7 +331,13 @@ public class RemovesTest {
             
             Map<String, Instance> queueInstances = queueType.getInstances();
             Assert.assertNotNull(queueInstances);
-            Assert.assertTrue(queueInstances.isEmpty());
+            Assert.assertEquals(1, queueInstances.size());
+            
+            Instance queueInstance = queueInstances.get(QUEUED0_INSTANCE_NAME);
+            Assert.assertNotNull(queueInstance);
+            
+            Map<String, Object> beanLikeQueue = (Map<String, Object>) queueInstance.getBean();
+            Assert.assertEquals(MergeTest.QUEUED0_NAME, beanLikeQueue.get(UnmarshallTest.NAME_TAG));
         }
         
         {
@@ -329,7 +346,13 @@ public class RemovesTest {
             
             Map<String, Instance> topicInstances = topicType.getInstances();
             Assert.assertNotNull(topicInstances);
-            Assert.assertTrue(topicInstances.isEmpty());
+            Assert.assertEquals(1, topicInstances.size());
+            
+            Instance topicInstance = topicInstances.get(TOPICD0_INSTANCE_NAME);
+            Assert.assertNotNull(topicInstance);
+            
+            Map<String, Object> beanLikeQueue = (Map<String, Object>) topicInstance.getBean();
+            Assert.assertEquals(MergeTest.TOPICD0_NAME, beanLikeQueue.get(UnmarshallTest.NAME_TAG));
         }
     }
     

@@ -81,11 +81,16 @@ public class MergeTest {
     private final static String ALICE_NAME = "Alice";
     private final static String BOB_NAME = "Bob";
     public final static String CAROL_NAME = "Carol";
+    public final static String DAVE_NAME = "Dave";
+    
     private final static String TOPIC0_NAME = "Topic0";
     private final static String TOPIC1_NAME = "Topic1";
     private final static String QUEUE0_NAME = "Queue0";
     private final static String QUEUE1_NAME = "Queue1";
     private final static String QUEUE2_NAME = "Queue2";
+    
+    public final static String TOPICD0_NAME = "TopicD0";
+    public final static String QUEUED0_NAME = "QueueD0";
     
     private final static String ALICE_ADDRESS = "10.0.0.1";
     private final static String ALICE_SERVER0_NAME = "Server-0";
@@ -103,6 +108,7 @@ public class MergeTest {
     
     private final static String ALICE_INSTANCE = "domain.Alice";
     private final static String BOB_INSTANCE = "domain.Bob";
+    public final static String DAVE_INSTANCE = "domain.Dave";
     private final static String SERVER0_INSTANCE = "domain.Alice.Server-0";
     private final static String SECURITY_MANAGER_INSTANCE = "domain.security-manager";
     private final static String RSA_INSTANCE = "domain.security-manager.RSA";
@@ -314,22 +320,40 @@ public class MergeTest {
         }
         
         JMSServerBean jmsServers[] = root.getJMSServers();
-        Assert.assertEquals(1, jmsServers.length);
+        Assert.assertEquals(2, jmsServers.length);
         
+        int lcv = 0;
         for (JMSServerBean jmsServer : jmsServers) {
-            Assert.assertEquals("Did not find name in " + jmsServer, CAROL_NAME, jmsServer.getName());
+            if (lcv == 0) {
+                Assert.assertEquals("Did not find name in " + jmsServer, CAROL_NAME, jmsServer.getName());
             
-            List<TopicBean> topics = jmsServer.getTopics();
-            Assert.assertEquals(2, topics.size());
+                List<TopicBean> topics = jmsServer.getTopics();
+                Assert.assertEquals(2, topics.size());
             
-            Assert.assertEquals(TOPIC0_NAME, topics.get(0).getName());
-            Assert.assertEquals(TOPIC1_NAME, topics.get(1).getName());
+                Assert.assertEquals(TOPIC0_NAME, topics.get(0).getName());
+                Assert.assertEquals(TOPIC1_NAME, topics.get(1).getName());
             
-            QueueBean queues[] = jmsServer.getQueues();
+                QueueBean queues[] = jmsServer.getQueues();
+                Assert.assertEquals(3, queues.length);
             
-            Assert.assertEquals(QUEUE0_NAME, queues[0].getName());
-            Assert.assertEquals(QUEUE1_NAME, queues[1].getName());
-            Assert.assertEquals(QUEUE2_NAME, queues[2].getName());
+                Assert.assertEquals(QUEUE0_NAME, queues[0].getName());
+                Assert.assertEquals(QUEUE1_NAME, queues[1].getName());
+                Assert.assertEquals(QUEUE2_NAME, queues[2].getName());
+            }
+            else if (lcv == 1) {
+                Assert.assertEquals("Did not find name in " + jmsServer, DAVE_NAME, jmsServer.getName());
+                
+                List<TopicBean> topics = jmsServer.getTopics();
+                Assert.assertEquals(1, topics.size());
+            
+                Assert.assertEquals(TOPICD0_NAME, topics.get(0).getName());
+            
+                QueueBean queues[] = jmsServer.getQueues();
+                Assert.assertEquals(1, queues.length);
+            
+                Assert.assertEquals(QUEUED0_NAME, queues[0].getName());
+            }
+            lcv++;
         }
         
         // Below is the verification for the Hub versions of the beans
