@@ -83,6 +83,14 @@ public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase {
     public synchronized Set<Type> getAllTypes() {
         return Collections.unmodifiableSet(new HashSet<Type>(types.values()));
     }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase#getAllWriteableTypes()
+     */
+    @Override
+    public Set<WriteableType> getAllWriteableTypes() {
+        return Collections.unmodifiableSet(new HashSet<WriteableType>(types.values()));
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.configuration.hub.api.BeanDatabase#getType(java.lang.String)
@@ -234,5 +242,7 @@ public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase {
     public synchronized void dumpDatabase(PrintStream output) {
         Utilities.dumpDatabase(this, output);        
     }
+
+    
 
 }

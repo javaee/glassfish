@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -62,7 +63,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.configuration.hub.api.Instance;
-import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
@@ -760,12 +760,20 @@ public class Utilities {
             
                 String typeRemovalIndicator = rootXmlPath + BaseHK2JAXBBean.XML_PATH_SEPARATOR;
             
-                Set<Type> allTypes = writeableDatabase.getAllTypes();
-                for (Type allType : allTypes) {
+                Set<WriteableType> allTypes = writeableDatabase.getAllWriteableTypes();
+                for (WriteableType allType : allTypes) {
                     if (allType.getName().startsWith(typeRemovalIndicator)) {
+                        
                         Map<String, Instance> allInstances = allType.getInstances();
+                        
+                        Set<String> removeMe = new LinkedHashSet<String>();
                         for (String iKey : allInstances.keySet()) {
-                            ((WriteableType) allType).removeInstance(iKey);
+                            if (!iKey.startsWith(rootInstanceName)) continue;
+                            removeMe.add(iKey);
+                        }
+                        
+                        for (String iKey : removeMe) {
+                            allType.removeInstance(iKey);
                         }
                     }
                 }

@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.configuration.hub.api;
 
+import java.util.Set;
+
 import org.glassfish.hk2.api.MultiException;
 
 /**
@@ -49,6 +51,14 @@ import org.glassfish.hk2.api.MultiException;
  * 
  */
 public interface WriteableBeanDatabase extends BeanDatabase {
+    /**
+     * Gets an unmodifiable set of all the types in the bean database
+     * 
+     * @return A non-null unmodifiable and possibly empty set of
+     * all the types in the database
+     */
+    public Set<WriteableType> getAllWriteableTypes();
+    
     /**
      * Adds a type of the given name
      * 

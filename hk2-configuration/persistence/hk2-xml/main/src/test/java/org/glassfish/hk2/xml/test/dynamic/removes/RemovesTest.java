@@ -278,7 +278,7 @@ public class RemovesTest {
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testRemoveOfArrayNodeWithChildren() throws Exception {
         ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
         XmlService xmlService = locator.getService(XmlService.class);
@@ -304,7 +304,7 @@ public class RemovesTest {
         BeanDatabase db = hub.getCurrentDatabase();
         
         {
-            Type jmsServerType = db.getType(MergeTest.SECURITY_MANAGER_TYPE);
+            Type jmsServerType = db.getType(MergeTest.JMS_SERVER_TYPE);
             Assert.assertNotNull(jmsServerType);
         
             Map<String, Instance> jmsServerInstances = jmsServerType.getInstances();
