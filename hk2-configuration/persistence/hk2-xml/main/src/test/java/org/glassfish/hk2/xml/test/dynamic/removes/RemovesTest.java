@@ -40,8 +40,10 @@
 package org.glassfish.hk2.xml.test.dynamic.removes;
 
 import java.net.URL;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
@@ -367,18 +369,20 @@ public class RemovesTest {
         BeanDatabase db = hub.getCurrentDatabase();
         Type otherDataType = db.getType(OTHER_DATA_TYPE);
         
+        Set<String> hashedExpecteds = new HashSet<String>();
+        for (String expected : expecteds) {
+            hashedExpecteds.add(expected);
+        }
+        
         Map<String, Instance> instances = otherDataType.getInstances();
         Assert.assertEquals(expecteds.length, instances.size());
+        Assert.assertEquals(expecteds.length, hashedExpecteds.size());
         
-        int lcv = 0;
         for (Instance instance : instances.values()) {
             Map<String, Object> beanLikeMap = (Map<String, Object>) instance.getBean();
             String data = (String) beanLikeMap.get(DATA_KEY);
             
-            String expected = expecteds[lcv];
-            Assert.assertEquals(expected, data);
-            
-            lcv++;
+            Assert.assertTrue(hashedExpecteds.contains(data));
         }
         
     }
