@@ -57,8 +57,12 @@ import org.glassfish.hk2.xml.test.basic.Employees;
 import org.glassfish.hk2.xml.test.basic.Financials;
 import org.glassfish.hk2.xml.test.basic.OtherData;
 import org.glassfish.hk2.xml.test.basic.UnmarshallTest;
+import org.glassfish.hk2.xml.test.beans.AuthorizationProviderBean;
 import org.glassfish.hk2.xml.test.beans.DomainBean;
 import org.glassfish.hk2.xml.test.beans.JMSServerBean;
+import org.glassfish.hk2.xml.test.beans.QueueBean;
+import org.glassfish.hk2.xml.test.beans.SecurityManagerBean;
+import org.glassfish.hk2.xml.test.beans.TopicBean;
 import org.glassfish.hk2.xml.test.dynamic.merge.MergeTest;
 import org.glassfish.hk2.xml.test.dynamic.rawsets.RawSetsTest.UpdateListener;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
@@ -264,6 +268,8 @@ public class RemovesTest {
             Map<String, Instance> securityManagerInstances = securityManagerType.getInstances();
             Assert.assertNotNull(securityManagerInstances);
             Assert.assertTrue(securityManagerInstances.isEmpty());
+            
+            Assert.assertNull(locator.getService(SecurityManagerBean.class));
         }
         
         {
@@ -273,6 +279,8 @@ public class RemovesTest {
             Map<String, Instance> atzProvidersInstances = atzProvidersType.getInstances();
             Assert.assertNotNull(atzProvidersInstances);
             Assert.assertTrue(atzProvidersInstances.isEmpty());
+            
+            Assert.assertNull(locator.getService(AuthorizationProviderBean.class, MergeTest.RSA_ATZ_PROV_NAME));
         }
     }
     
@@ -323,6 +331,12 @@ public class RemovesTest {
             
             Map<String, Object> daveMap = (Map<String, Object>) daveInstance.getBean();
             Assert.assertEquals(MergeTest.DAVE_NAME, daveMap.get(UnmarshallTest.NAME_TAG));
+            
+            Assert.assertNull(locator.getService(JMSServerBean.class, MergeTest.CAROL_NAME));
+            
+            JMSServerBean daveJMS = locator.getService(JMSServerBean.class, MergeTest.DAVE_NAME);
+            Assert.assertNotNull(daveJMS);
+            Assert.assertEquals(MergeTest.DAVE_NAME, daveJMS.getName());
         }
         
         {
@@ -338,6 +352,12 @@ public class RemovesTest {
             
             Map<String, Object> beanLikeQueue = (Map<String, Object>) queueInstance.getBean();
             Assert.assertEquals(MergeTest.QUEUED0_NAME, beanLikeQueue.get(UnmarshallTest.NAME_TAG));
+            
+            Assert.assertNull(locator.getService(QueueBean.class, MergeTest.QUEUE0_NAME));
+            Assert.assertNull(locator.getService(QueueBean.class, MergeTest.QUEUE1_NAME));
+            Assert.assertNull(locator.getService(QueueBean.class, MergeTest.QUEUE2_NAME));
+            
+            MergeTest.assertQueueOfName(locator, MergeTest.QUEUED0_NAME);
         }
         
         {
@@ -353,6 +373,11 @@ public class RemovesTest {
             
             Map<String, Object> beanLikeQueue = (Map<String, Object>) topicInstance.getBean();
             Assert.assertEquals(MergeTest.TOPICD0_NAME, beanLikeQueue.get(UnmarshallTest.NAME_TAG));
+            
+            Assert.assertNull(locator.getService(TopicBean.class, MergeTest.TOPIC0_NAME));
+            Assert.assertNull(locator.getService(TopicBean.class, MergeTest.TOPIC1_NAME));
+            
+            MergeTest.assertTopicOfName(locator, MergeTest.TOPICD0_NAME);
         }
     }
     

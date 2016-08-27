@@ -77,18 +77,18 @@ public class MergeTest {
     public final static String DOMAIN1_FILE = "domain1.xml";
     
     private final static String DOMAIN1_NAME = "domain1";
-    private final static String RSA_ATZ_PROV_NAME = "RSA";
+    public final static String RSA_ATZ_PROV_NAME = "RSA";
     private final static String RSA_DOM_PFX = "rsa";
     private final static String ALICE_NAME = "Alice";
     private final static String BOB_NAME = "Bob";
     public final static String CAROL_NAME = "Carol";
     public final static String DAVE_NAME = "Dave";
     
-    private final static String TOPIC0_NAME = "Topic0";
-    private final static String TOPIC1_NAME = "Topic1";
-    private final static String QUEUE0_NAME = "Queue0";
-    private final static String QUEUE1_NAME = "Queue1";
-    private final static String QUEUE2_NAME = "Queue2";
+    public final static String TOPIC0_NAME = "Topic0";
+    public final static String TOPIC1_NAME = "Topic1";
+    public final static String QUEUE0_NAME = "Queue0";
+    public final static String QUEUE1_NAME = "Queue1";
+    public final static String QUEUE2_NAME = "Queue2";
     
     public final static String TOPICD0_NAME = "TopicD0";
     public final static String QUEUED0_NAME = "QueueD0";
@@ -457,13 +457,13 @@ public class MergeTest {
         assertQueueOfName(locator, QUEUED0_NAME);
     }
     
-    private static void assertQueueOfName(ServiceLocator locator, String expectedName) {
+    public static void assertQueueOfName(ServiceLocator locator, String expectedName) {
         QueueBean qb = locator.getService(QueueBean.class, expectedName);
         Assert.assertNotNull(qb);
         Assert.assertEquals(expectedName, qb.getName());
     }
     
-    private static void assertTopicOfName(ServiceLocator locator, String expectedName) {
+    public static void assertTopicOfName(ServiceLocator locator, String expectedName) {
         TopicBean tb = locator.getService(TopicBean.class, expectedName);
         Assert.assertNotNull(tb);
         Assert.assertEquals(expectedName, tb.getName());
