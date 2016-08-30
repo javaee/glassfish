@@ -71,9 +71,9 @@ public class ConfigurationUtilities {
         
         ManagerUtilities.enableConfigurationHub(locator);
         
-        ServiceLocatorUtilities.addClasses(locator, ConfiguredValidator.class);
+        ServiceLocatorUtilities.addClasses(locator, true, ConfiguredValidator.class);
         
-        ServiceLocatorUtilities.addClasses(locator,
+        ServiceLocatorUtilities.addClasses(locator, true,
                 ConfiguredByContext.class,
                 ConfigurationValidationService.class,
                 ConfiguredByInjectionResolver.class,

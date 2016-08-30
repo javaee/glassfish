@@ -42,16 +42,19 @@ package org.glassfish.hk2.configuration.internal;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.Operation;
 import org.glassfish.hk2.api.ValidationInformation;
 import org.glassfish.hk2.api.Validator;
+import org.glassfish.hk2.api.Visibility;
 
 /**
  * @author jwells
  *
  */
 @Singleton
+@Visibility(DescriptorVisibility.LOCAL)
 public class ConfiguredValidator implements Validator {
     private boolean validateLookup(ValidationInformation info) {
         ActiveDescriptor<?> candidate = info.getCandidate();

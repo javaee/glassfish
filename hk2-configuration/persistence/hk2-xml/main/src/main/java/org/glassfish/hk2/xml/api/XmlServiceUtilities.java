@@ -69,7 +69,7 @@ public class XmlServiceUtilities {
         
         ManagerUtilities.enableConfigurationHub(locator);
         
-        ServiceLocatorUtilities.addClasses(locator, JAXBXmlParser.class, XmlServiceImpl.class);
+        ServiceLocatorUtilities.addClasses(locator, true, JAXBXmlParser.class, XmlServiceImpl.class);
     }
     
     /**
@@ -87,6 +87,6 @@ public class XmlServiceUtilities {
         
         ManagerUtilities.enableConfigurationHub(locator);
         
-        ServiceLocatorUtilities.addClasses(locator, DomXmlParser.class, XmlServiceImpl.class);
+        ServiceLocatorUtilities.addClasses(locator, true, DomXmlParser.class, XmlServiceImpl.class);
     }
 }

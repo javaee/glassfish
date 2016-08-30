@@ -46,10 +46,12 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
@@ -67,6 +69,7 @@ import org.glassfish.hk2.xml.spi.XmlServiceParser;
  *
  */
 @Singleton
+@Visibility(DescriptorVisibility.LOCAL)
 public class XmlServiceImpl implements XmlService {
     @Inject
     private ServiceLocator serviceLocator;

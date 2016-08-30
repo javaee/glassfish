@@ -45,8 +45,10 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import javax.inject.Inject;
 
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener;
 import org.glassfish.hk2.configuration.hub.api.Change;
@@ -62,7 +64,9 @@ import org.jvnet.hk2.annotations.Service;
  * @author jwells
  *
  */
-@Service @ContractsProvided(Hub.class)
+@Service
+@ContractsProvided(Hub.class)
+@Visibility(DescriptorVisibility.LOCAL)
 public class HubImpl implements Hub {
     private static final AtomicLong revisionCounter = new AtomicLong(1);
     

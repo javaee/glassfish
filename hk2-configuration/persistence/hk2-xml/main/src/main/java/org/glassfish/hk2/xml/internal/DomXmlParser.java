@@ -56,6 +56,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.glassfish.hk2.api.DescriptorVisibility;
+import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 import org.glassfish.hk2.xml.spi.PreGenerationRequirement;
@@ -73,6 +75,7 @@ import org.w3c.dom.Text;
  *
  */
 @Singleton
+@Visibility(DescriptorVisibility.LOCAL)
 public class DomXmlParser implements XmlServiceParser {
     @Inject
     private Provider<XmlServiceImpl> xmlService;

@@ -52,10 +52,12 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.configuration.api.ChildInject;
 import org.glassfish.hk2.configuration.api.ChildIterable;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
@@ -65,6 +67,7 @@ import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
  *
  */
 @Singleton
+@Visibility(DescriptorVisibility.LOCAL)
 public class ChildInjectResolverImpl implements InjectionResolver<ChildInject> {
     @Inject
     private ServiceLocator locator;

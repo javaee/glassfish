@@ -62,7 +62,7 @@ public class ManagerUtilities {
             return;
         }
         
-        ServiceLocatorUtilities.addClasses(locator, HubImpl.class);
+        ServiceLocatorUtilities.addClasses(locator, true, HubImpl.class);
     }
 
 }

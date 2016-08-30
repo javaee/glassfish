@@ -59,12 +59,14 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationListener;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.configuration.api.ConfiguredBy;
 import org.glassfish.hk2.configuration.api.PostDynamicChange;
 import org.glassfish.hk2.configuration.api.PreDynamicChange;
@@ -85,6 +87,7 @@ import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl
  *
  */
 @Singleton
+@Visibility(DescriptorVisibility.LOCAL)
 public class ConfigurationListener implements BeanDatabaseUpdateListener {
     @Inject
     private Hub hub;

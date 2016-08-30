@@ -47,6 +47,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.Unmarshaller.Listener;
 
+import org.glassfish.hk2.api.DescriptorVisibility;
+import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.xml.spi.PreGenerationRequirement;
 import org.glassfish.hk2.xml.spi.XmlServiceParser;
 
@@ -55,7 +57,9 @@ import org.glassfish.hk2.xml.spi.XmlServiceParser;
  * 
  * @author jwells
  */
-@Singleton @Named(XmlServiceParser.DEFAULT_PARSING_SERVICE)
+@Singleton
+@Named(XmlServiceParser.DEFAULT_PARSING_SERVICE)
+@Visibility(DescriptorVisibility.LOCAL)
 public class JAXBXmlParser implements XmlServiceParser {
 
     /* (non-Javadoc)

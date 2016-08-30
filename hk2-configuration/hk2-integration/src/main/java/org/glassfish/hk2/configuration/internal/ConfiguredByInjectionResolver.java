@@ -51,9 +51,11 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.ServiceHandle;
+import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.configuration.api.Configured;
 
 /**
@@ -61,6 +63,7 @@ import org.glassfish.hk2.configuration.api.Configured;
  *
  */
 @Singleton
+@Visibility(DescriptorVisibility.LOCAL)
 public class ConfiguredByInjectionResolver implements
         InjectionResolver<Configured> {
     @Inject @Named(InjectionResolver.SYSTEM_RESOLVER_NAME)
