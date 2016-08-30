@@ -112,5 +112,9 @@
             <artifactId>hk2-junitrunner</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.glassfish.hk2</groupId>
+            <artifactId>config-generator</artifactId>
+        </dependency>
     </dependencies>
 </project>

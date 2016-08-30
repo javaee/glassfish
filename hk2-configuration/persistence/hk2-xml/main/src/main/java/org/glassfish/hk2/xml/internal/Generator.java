@@ -122,7 +122,8 @@ public class Generator {
     private final static Set<String> NO_COPY_ANNOTATIONS = new HashSet<String>(Arrays.asList(new String[] {
             Contract.class.getName(),
             XmlTransient.class.getName(),
-            Hk2XmlPreGenerate.class.getName()
+            Hk2XmlPreGenerate.class.getName(),
+            "org.jvnet.hk2.config.Configured"
     }));
     
     /**
