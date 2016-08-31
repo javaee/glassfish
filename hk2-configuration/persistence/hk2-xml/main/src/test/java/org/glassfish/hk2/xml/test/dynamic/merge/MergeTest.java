@@ -44,6 +44,8 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Change;
 import org.glassfish.hk2.configuration.hub.api.Hub;
@@ -418,6 +420,27 @@ public class MergeTest {
         assertDomain1Services(locator);
     }
     
+    public static void verifyDomain1XmlDomainNotThere(Hub hub, ServiceLocator locator) {
+        assertNotInHub(hub, DOMAIN_TYPE, DOMAIN_INSTANCE);
+        assertNotInHub(hub, MACHINE_TYPE, ALICE_INSTANCE);
+        assertNotInHub(hub, SERVER_TYPE, SERVER0_INSTANCE);
+        assertNotInHub(hub, SECURITY_MANAGER_TYPE, SECURITY_MANAGER_INSTANCE);
+        assertNotInHub(hub, AUTHORIZATION_PROVIDER_TYPE, RSA_INSTANCE);
+        assertNotInHub(hub, JMS_SERVER_TYPE, JMS_SERVER_INSTANCE);
+        assertNotInHub(hub, JMS_SERVER_TYPE, JMS_SERVER_INSTANCE);
+        assertNotInHub(hub, TOPIC_TYPE, TOPIC0_INSTANCE);
+        assertNotInHub(hub, TOPIC_TYPE, TOPIC1_INSTANCE);
+        assertNotInHub(hub, QUEUE_TYPE, QUEUE0_INSTANCE);
+        assertNotInHub(hub, QUEUE_TYPE, QUEUE1_INSTANCE);
+        assertNotInHub(hub, QUEUE_TYPE, QUEUE2_INSTANCE);
+        
+        assertNotDomain1Services(locator);
+    }
+    
+    private static void assertNotInHub(Hub hub, String type, String instance) {
+        Assert.assertNull(hub.getCurrentDatabase().getInstance(type, instance));
+    }
+    
     private static void assertDomain1Services(ServiceLocator locator) {
         // TODO:  Why does root not have a name?
         DomainBean db = locator.getService(DomainBean.class);
@@ -477,6 +500,75 @@ public class MergeTest {
         Map<String, Object> namedMap = (Map<String, Object>) namedInstance.getBean();
         
         Assert.assertEquals(expectedName, namedMap.get(UnmarshallTest.NAME_TAG));
+    }
+    
+    /**
+     * This is a slightly tricky method because it must ensure that the service NOT
+     * found is only not found in the current locator (there may be services
+     * of the same name and stuff in parents)
+     * 
+     * @param locator
+     */
+    private static void assertNotDomain1Services(ServiceLocator locator) {
+        assertLocalServiceNotThere(DomainBean.class, null, locator);
+        assertLocalServiceNotThere(SecurityManagerBean.class, null, locator);
+        assertLocalServiceNotThere(AuthorizationProviderBean.class, RSA_ATZ_PROV_NAME, locator);
+        assertLocalServiceNotThere(MachineBean.class, ALICE_NAME, locator);
+        assertLocalServiceNotThere(ServerBean.class, ALICE_SERVER0_NAME, locator);
+        assertLocalServiceNotThere(JMSServerBean.class, CAROL_NAME, locator);
+        assertLocalServiceNotThere(JMSServerBean.class, DAVE_NAME, locator);
+        assertLocalServiceNotThere(TopicBean.class, TOPIC0_NAME, locator);
+        assertLocalServiceNotThere(TopicBean.class, TOPIC1_NAME, locator);
+        assertLocalServiceNotThere(TopicBean.class, TOPICD0_NAME, locator);
+        assertLocalServiceNotThere(QueueBean.class, QUEUE0_NAME, locator);
+        assertLocalServiceNotThere(QueueBean.class, QUEUE1_NAME, locator);
+        assertLocalServiceNotThere(QueueBean.class, QUEUE2_NAME, locator);
+        assertLocalServiceNotThere(QueueBean.class, QUEUED0_NAME, locator);
+    }
+    
+    private static void assertLocalServiceNotThere(Class<?> serviceClass, String serviceName, ServiceLocator localLocator) {
+        IndexedFilter serviceFilter = new LocalServiceOnlyFilter(serviceClass, serviceName, localLocator);
+        List<?> allServices = localLocator.getAllServices(serviceFilter);
+        Assert.assertEquals(0, allServices.size());
+    }
+    
+    private final static class LocalServiceOnlyFilter implements IndexedFilter {
+        private final Class<?> serviceClass;
+        private final String name;
+        private final ServiceLocator localLocator;
+        
+        private LocalServiceOnlyFilter(Class<?> serviceClass, String name, ServiceLocator localLocator) {
+            this.serviceClass = serviceClass;
+            this.name = name;
+            this.localLocator = localLocator;
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.api.Filter#matches(org.glassfish.hk2.api.Descriptor)
+         */
+        @Override
+        public boolean matches(Descriptor d) {
+            if (!d.getLocatorId().equals(localLocator.getLocatorId())) return false;
+            
+            return true;
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.api.IndexedFilter#getAdvertisedContract()
+         */
+        @Override
+        public String getAdvertisedContract() {
+            return serviceClass.getName();
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.api.IndexedFilter#getName()
+         */
+        @Override
+        public String getName() {
+            return name;
+        }
+        
     }
 
 }

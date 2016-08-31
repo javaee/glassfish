@@ -83,5 +83,20 @@ public class Utilities {
         
         return retVal;
     }
+    
+    /**
+     * Creates a fresh service locator with the XmlService added
+     * 
+     * @return A service locator with the XmlService added
+     */
+    public static ServiceLocator createDomLocator(ServiceLocator parent, Class<?>... classes) {
+        ServiceLocator retVal = ServiceLocatorFactory.getInstance().create(null, parent, GENERATOR);
+        
+        ServiceLocatorUtilities.addClasses(retVal, classes);
+        
+        XmlServiceUtilities.enableDomXmlService(retVal);
+        
+        return retVal;
+    }
 
 }
