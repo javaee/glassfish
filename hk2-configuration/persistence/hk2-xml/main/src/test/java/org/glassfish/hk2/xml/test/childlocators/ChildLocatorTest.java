@@ -137,5 +137,55 @@ public class ChildLocatorTest {
         MergeTest.verifyDomain1Xml(rootHandle, childHub, childLocator);
         MergeTest.verifyDomain1XmlDomainNotThere(parentHub, parentLocator);
     }
+    
+    /**
+     * One parent, one child, both with XmlService started.
+     * Read in both child and parent, verify expected
+     * services were found
+     */
+    @Test
+    public void testReadingInChildAndParentWorks() throws Exception {
+        ServiceLocator parentLocator = Utilities.createDomLocator();
+        ServiceLocator childLocator = Utilities.createDomLocator(parentLocator);
+        
+        XmlService childXmlService = childLocator.getService(XmlService.class);
+        XmlService parentXmlService = parentLocator.getService(XmlService.class);
+        
+        Hub childHub = childLocator.getService(Hub.class);
+        Hub parentHub = parentLocator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
+        
+        XmlRootHandle<DomainBean> childHandle = childXmlService.unmarshall(url.toURI(), DomainBean.class);
+        XmlRootHandle<DomainBean> parentHandle = parentXmlService.unmarshall(url.toURI(), DomainBean.class);
+        
+        MergeTest.verifyDomain1Xml(parentHandle, parentHub, parentLocator);
+        MergeTest.verifyDomain1Xml(childHandle, childHub, childLocator);
+    }
+    
+    /**
+     * One parent, one child, both with XmlService started.
+     * Only read document in parent, ensure the services are
+     * in the child, but nothing else
+     */
+    @Test
+    public void testReadingInParentOnlyWorks() throws Exception {
+        ServiceLocator parentLocator = Utilities.createDomLocator();
+        ServiceLocator childLocator = Utilities.createDomLocator(parentLocator);
+        
+        XmlService parentXmlService = parentLocator.getService(XmlService.class);
+        
+        Hub childHub = childLocator.getService(Hub.class);
+        Hub parentHub = parentLocator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
+        
+        XmlRootHandle<DomainBean> parentHandle = parentXmlService.unmarshall(url.toURI(), DomainBean.class);
+        
+        MergeTest.verifyDomain1Xml(parentHandle, parentHub, parentLocator);
+        MergeTest.assertDomain1Services(childLocator, parentLocator);
+        
+        MergeTest.verifyDomain1XmlDomainNotThere(childHub, childLocator);
+    }
 
 }

@@ -44,6 +44,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.ServiceLocator;
@@ -52,6 +53,7 @@ import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.Change.ChangeCategory;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootCopy;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
@@ -441,55 +443,91 @@ public class MergeTest {
         Assert.assertNull(hub.getCurrentDatabase().getInstance(type, instance));
     }
     
-    private static void assertDomain1Services(ServiceLocator locator) {
+    public static void assertDomain1Services(ServiceLocator locator) {
+        assertDomain1Services(locator, locator);
+    }
+    
+    public static void assertDomain1Services(ServiceLocator locator, ServiceLocator fromLocator) {
         // TODO:  Why does root not have a name?
         DomainBean db = locator.getService(DomainBean.class);
         Assert.assertNotNull(db);
         Assert.assertEquals(DOMAIN1_NAME, db.getName());
+        assertServiceComesFromSameLocator(db, fromLocator);
         
         SecurityManagerBean smb = locator.getService(SecurityManagerBean.class);
         Assert.assertNotNull(smb);
+        assertServiceComesFromSameLocator(smb, fromLocator);
         
         AuthorizationProviderBean rsa = locator.getService(AuthorizationProviderBean.class, RSA_ATZ_PROV_NAME);
         Assert.assertNotNull(rsa);
         Assert.assertEquals(RSA_ATZ_PROV_NAME, rsa.getName());
+        assertServiceComesFromSameLocator(rsa, fromLocator);
         
         MachineBean mb = locator.getService(MachineBean.class, ALICE_NAME);
         Assert.assertNotNull(mb);
         Assert.assertEquals(ALICE_NAME, mb.getName());
+        assertServiceComesFromSameLocator(mb, fromLocator);
         
         ServerBean sb = locator.getService(ServerBean.class, ALICE_SERVER0_NAME);
         Assert.assertNotNull(sb);
         Assert.assertEquals(ALICE_SERVER0_NAME, sb.getName());
+        assertServiceComesFromSameLocator(sb, fromLocator);
         
         JMSServerBean carolJMS = locator.getService(JMSServerBean.class, CAROL_NAME);
         Assert.assertNotNull(carolJMS);
         Assert.assertEquals(CAROL_NAME, carolJMS.getName());
+        assertServiceComesFromSameLocator(carolJMS, fromLocator);
         
         JMSServerBean daveJMS = locator.getService(JMSServerBean.class, DAVE_NAME);
         Assert.assertNotNull(daveJMS);
         Assert.assertEquals(DAVE_NAME, daveJMS.getName());
+        assertServiceComesFromSameLocator(daveJMS, fromLocator);
         
-        assertTopicOfName(locator, TOPIC0_NAME);
-        assertTopicOfName(locator, TOPIC1_NAME);
-        assertTopicOfName(locator, TOPICD0_NAME);
+        assertTopicOfName(locator, fromLocator, TOPIC0_NAME);
+        assertTopicOfName(locator, fromLocator, TOPIC1_NAME);
+        assertTopicOfName(locator, fromLocator, TOPICD0_NAME);
         
-        assertQueueOfName(locator, QUEUE0_NAME);
-        assertQueueOfName(locator, QUEUE1_NAME);
-        assertQueueOfName(locator, QUEUE2_NAME);
-        assertQueueOfName(locator, QUEUED0_NAME);
+        assertQueueOfName(locator, fromLocator, QUEUE0_NAME);
+        assertQueueOfName(locator, fromLocator, QUEUE1_NAME);
+        assertQueueOfName(locator, fromLocator, QUEUE2_NAME);
+        assertQueueOfName(locator, fromLocator, QUEUED0_NAME);
+    }
+    
+    private static void assertServiceComesFromSameLocator(Object service, ServiceLocator locator) {
+        Assert.assertTrue(service instanceof XmlHk2ConfigurationBean);
+        XmlHk2ConfigurationBean configBean = (XmlHk2ConfigurationBean) service;
+        
+        ActiveDescriptor<?> descriptor = configBean._getSelfDescriptor();
+        Assert.assertNotNull(descriptor);
+        
+        Long locatorId = locator.getLocatorId();
+        Long serviceId = descriptor.getLocatorId();
+        
+        Assert.assertEquals(locatorId, serviceId);
     }
     
     public static void assertQueueOfName(ServiceLocator locator, String expectedName) {
+        assertQueueOfName(locator, locator, expectedName);
+    }
+    
+    public static void assertQueueOfName(ServiceLocator locator, ServiceLocator fromLocator, String expectedName) {
         QueueBean qb = locator.getService(QueueBean.class, expectedName);
         Assert.assertNotNull(qb);
         Assert.assertEquals(expectedName, qb.getName());
+        
+        assertServiceComesFromSameLocator(qb, fromLocator);
     }
     
     public static void assertTopicOfName(ServiceLocator locator, String expectedName) {
+        assertTopicOfName(locator, locator, expectedName);
+    }
+    
+    public static void assertTopicOfName(ServiceLocator locator, ServiceLocator fromLocator, String expectedName) {
         TopicBean tb = locator.getService(TopicBean.class, expectedName);
         Assert.assertNotNull(tb);
         Assert.assertEquals(expectedName, tb.getName());
+        
+        assertServiceComesFromSameLocator(tb, fromLocator);
     }
     
     @SuppressWarnings("unchecked")

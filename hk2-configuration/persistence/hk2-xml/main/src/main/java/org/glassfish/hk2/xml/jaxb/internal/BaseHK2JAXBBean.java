@@ -1006,6 +1006,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         this.selfDescriptor = selfDescriptor;
     }
     
+    @Override
     public ActiveDescriptor<?> _getSelfDescriptor() {
         return selfDescriptor;
     }
