@@ -329,6 +329,8 @@ public class Generator {
                     sb.append(paramTypes.get(0).getName() + " arg0, int arg1) { " + returnClause + "super._doAdd(\"" + mi.getRepresentedProperty() + "\",");
                     
                     if (paramTypes.get(0).isInterface()) {
+                        createInterfaceForAltClassIfNeeded(paramTypes.get(0), defaultClassPool);
+                        
                         sb.append("arg0, null, arg1); }");
                     }
                     else {
