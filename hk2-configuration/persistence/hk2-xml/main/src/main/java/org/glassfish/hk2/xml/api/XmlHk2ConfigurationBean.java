@@ -119,4 +119,14 @@ public interface XmlHk2ConfigurationBean {
      * if this service is not advertised in a ServiceLocator
      */
     public ActiveDescriptor<?> _getSelfDescriptor();
+    
+    /**
+     * Looks up the child with the given propertyName that has the
+     * given key value
+     * 
+     * @param propName The non-null property name to look for
+     * @param keyValue The non-null keyValue to look for
+     * @return The child or null if not found
+     */
+    public Object _lookupChild(String propName, String keyValue);
 }

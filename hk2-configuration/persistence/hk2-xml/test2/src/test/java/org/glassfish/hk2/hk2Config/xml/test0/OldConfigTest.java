@@ -40,7 +40,9 @@
 package org.glassfish.hk2.hk2Config.xml.test0;
 
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.hk2Config.xml.test.utilities.LocatorUtilities;
@@ -49,7 +51,10 @@ import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.hk2Config.test.beans.KingdomConfig;
 import org.glassfish.hk2.xml.hk2Config.test.beans.Phyla;
 import org.glassfish.hk2.xml.hk2Config.test.beans.Phylum;
+import org.glassfish.hk2.xml.hk2Config.test.beans.PropertyValue;
+import org.glassfish.hk2.xml.hk2Config.test.beans.pv.NamedPropertyValue;
 import org.glassfish.hk2.xml.hk2Config.test.customizers.KingdomCustomizer;
+import org.glassfish.hk2.xml.hk2Config.test.customizers.PhylaCustomizer;
 import org.glassfish.hk2.xml.hk2Config.test.customizers.PhylumCustomizer;
 import org.junit.Assert;
 import org.junit.Test;
@@ -59,6 +64,7 @@ public class OldConfigTest {
     private static final String KINGDOM_FILE = "kingdom1.xml";
     
     private static final String ALICE_NAME = "Alice";
+    private static final String BOB_NAME = "Bob";
     
     private static final String USERNAME_PROP_KEY = "username";
     private static final String USERNAME_PROP_VALUE = "sa";
@@ -75,11 +81,17 @@ public class OldConfigTest {
     private static final String V3 = "V3";
     private static final String V4 = "V4";
     
+    /**
+     * See that the simple names and methods work
+     * 
+     * @throws Exception
+     */
     @Test
     public void testSimplePropertiesAndNamesAreCallable() throws Exception {
         ServiceLocator locator = LocatorUtilities.createLocator(PhylumCustomizer.class,
                 PropertyBagCustomizerImpl.class,
-                KingdomCustomizer.class);
+                KingdomCustomizer.class,
+                PhylaCustomizer.class);
         
         XmlService xmlService = locator.getService(XmlService.class);
         
@@ -89,6 +101,65 @@ public class OldConfigTest {
         KingdomConfig kingdom1 = rootHandle.getRoot();
         
         assertOriginalStateKingdom1(kingdom1);
+    }
+    
+    @Test
+    public void testCustomizedMethodsAreCallable() throws Exception {
+        ServiceLocator locator = LocatorUtilities.createLocator(PhylumCustomizer.class,
+                PropertyBagCustomizerImpl.class,
+                KingdomCustomizer.class,
+                PhylaCustomizer.class);
+        
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(KINGDOM_FILE);
+        
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, false);
+        KingdomConfig kingdom1 = rootHandle.getRoot();
+        
+        Phyla phyla = kingdom1.getPhyla();
+        Phylum alice = phyla.getPhylumByName(ALICE_NAME);
+        Assert.assertNotNull(alice);
+        
+        Assert.assertEquals(USERNAME_PROP_VALUE, alice.getPropertyValue(USERNAME_PROP_KEY));
+        Assert.assertEquals(PASSWORD_PROP_VALUE, alice.getPropertyValue(PASSWORD_PROP_KEY));
+        
+        List<Phylum> all = phyla.getPhylumByType(Phylum.class);
+        Assert.assertEquals(1, all.size());
+        
+        for (Phylum phylum : all) {
+            Assert.assertEquals(ALICE_NAME, phylum.getName());
+            
+            Assert.assertEquals(USERNAME_PROP_VALUE, phylum.getPropertyValue(USERNAME_PROP_KEY));
+            Assert.assertEquals(PASSWORD_PROP_VALUE, phylum.getPropertyValue(PASSWORD_PROP_KEY));
+        }
+        
+        Map<String, PropertyValue> props = new HashMap<String, PropertyValue>();
+        props.put("name", new NamedPropertyValue(BOB_NAME));
+        
+        Phylum bob = phyla.createPhylum(props);
+        Assert.assertNotNull(bob);
+        Assert.assertEquals(BOB_NAME, bob.getName());
+        
+        all = phyla.getPhylum();
+        Assert.assertEquals(2, all.size());
+        
+        int lcv = 0;
+        for (Phylum phylum : all) {
+            if (lcv == 0) {
+                Assert.assertEquals(ALICE_NAME, phylum.getName());
+                
+                Assert.assertEquals(USERNAME_PROP_VALUE, phylum.getPropertyValue(USERNAME_PROP_KEY));
+                Assert.assertEquals(PASSWORD_PROP_VALUE, phylum.getPropertyValue(PASSWORD_PROP_KEY));
+            }
+            else if (lcv == 1) {
+                Assert.assertEquals(BOB_NAME, phylum.getName());
+                
+                Assert.assertNull(phylum.getPropertyValue(USERNAME_PROP_KEY));
+                Assert.assertNull(phylum.getPropertyValue(PASSWORD_PROP_KEY));
+            }
+            lcv++;
+        }
     }
     
     private static void assertOriginalStateKingdom1(KingdomConfig kingdom1) {

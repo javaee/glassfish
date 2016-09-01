@@ -58,6 +58,7 @@ import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.TypeVariable;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
@@ -260,6 +261,13 @@ public class Utilities {
             return new ArrayTypeAltClassImpl(at, processingEnv);
         }
         if (TypeKind.TYPEVAR.equals(typeMirror.getKind())) {
+            TypeVariable tv = (TypeVariable) typeMirror;
+            
+            TypeMirror upperBound = tv.getUpperBound();
+            if (upperBound != null && TypeKind.DECLARED.equals(upperBound.getKind())) {
+                return convertTypeMirror(upperBound, processingEnv);
+            }
+            
             return ClassAltClassImpl.OBJECT;
         }
         

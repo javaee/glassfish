@@ -311,6 +311,8 @@ public class Generator {
                     sb.append(") { " + returnClause + "super._doAdd(\"" + mi.getRepresentedProperty() + "\", null, null, -1); }");
                 }
                 else if (paramTypes.size() == 1) {
+                    createInterfaceForAltClassIfNeeded(paramTypes.get(0), defaultClassPool);
+                    
                     sb.append(paramTypes.get(0).getName() + " arg0) { " + returnClause + "super._doAdd(\"" + mi.getRepresentedProperty() + "\",");
                     
                     if (paramTypes.get(0).isInterface()) {

@@ -47,8 +47,9 @@ import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import org.glassfish.hk2.api.Customize;
+import org.glassfish.hk2.api.Customizer;
 import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
+import org.glassfish.hk2.xml.hk2Config.test.customizers.PhylaCustomizer;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigSupport;
@@ -65,27 +66,25 @@ import org.jvnet.hk2.config.TransactionFailure;
 @Configured
 @Contract
 @Hk2XmlPreGenerate
+@Customizer(PhylaCustomizer.class)
 public interface Phyla extends ConfigBeanProxy {
     @XmlElement
     @Element("*")
     List<Phylum> getPhylum();
     void setPhylum(List<Phylum> runtimes);
+    void addPhylum(Phylum addMe);
 
-    @Customize
     @DuckTyped
-    <T extends Phylum> List<T> getRuntimeByType(Class<T> type);
+    <T extends Phylum> List<T> getPhylumByType(Class<T> type);
 
-    @Customize
     @DuckTyped
-    <T extends Phylum> T getRuntimeByName(String name);
+    <T extends Phylum> T getPhylumByName(String name);
 
-    @Customize
     @DuckTyped
-    <T extends Phylum> T createRuntime(Map<String, PropertyValue> properties);
+    <T extends Phylum> T createPhylum(Map<String, PropertyValue> properties);
 
-    @Customize
     @DuckTyped
-    <T extends Phylum> T deleteRuntime(T runtime);
+    <T extends Phylum> T deletePhylum(T runtime);
     
     class Duck  {
         public static <T extends Runtime> List<T> getRuntimeByType(Phyla runtimes, Class<T> type) {
@@ -133,7 +132,7 @@ public interface Phyla extends ConfigBeanProxy {
             }, runtimes);
 
             // read-only view
-            return runtimes.getRuntimeByName(runtime.getName());
+            return runtimes.getPhylumByName(runtime.getName());
         }
         
         @SuppressWarnings("unchecked")

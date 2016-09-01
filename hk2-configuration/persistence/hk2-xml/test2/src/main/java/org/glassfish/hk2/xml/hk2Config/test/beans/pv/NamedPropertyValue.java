@@ -37,15 +37,23 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.hk2Config.test.beans;
+package org.glassfish.hk2.xml.hk2Config.test.beans.pv;
 
-import org.jvnet.hk2.annotations.Contract;
+import org.glassfish.hk2.xml.hk2Config.test.beans.PropertyValue;
 
 /**
  * @author jwells
  *
  */
-@Contract
-public interface PropertyValue {
+public class NamedPropertyValue implements PropertyValue {
+    private final String name;
+    
+    public NamedPropertyValue(String name) {
+        this.name = name;
+    }
+    
+    public String getName() {
+        return name;
+    }
 
 }
