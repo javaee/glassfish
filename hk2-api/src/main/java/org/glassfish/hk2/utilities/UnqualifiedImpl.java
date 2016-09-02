@@ -66,7 +66,7 @@ public class UnqualifiedImpl extends AnnotationLiteral<Unqualified> implements U
      * injection point.  A zero-length list indicates that 
      * no qualifier must be present on the matching service
      */
-    @SafeVarargs
+    // @SafeVarargs
     public UnqualifiedImpl(Class<? extends Annotation>... value) {
         this.value = Arrays.copyOf(value, value.length);
     }
