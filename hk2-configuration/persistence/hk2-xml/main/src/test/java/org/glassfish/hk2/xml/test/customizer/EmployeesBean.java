@@ -44,7 +44,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.glassfish.hk2.xml.test.basic.Financials;
+import org.glassfish.hk2.xml.test.basic.beans.Financials;
 import org.jvnet.hk2.annotations.Contract;
 
 /**

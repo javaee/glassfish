@@ -43,9 +43,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.glassfish.hk2.xml.api.annotations.PluralOf;
-import org.glassfish.hk2.xml.test.basic.Employee;
-import org.glassfish.hk2.xml.test.basic.Financials;
-import org.glassfish.hk2.xml.test.basic.OtherData;
+import org.glassfish.hk2.xml.test.basic.beans.Employee;
+import org.glassfish.hk2.xml.test.basic.beans.Financials;
+import org.glassfish.hk2.xml.test.basic.beans.OtherData;
 import org.jvnet.hk2.annotations.Contract;
 
 /**

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,10 +38,11 @@
  * holder.
  */
 
-package org.glassfish.hk2.xml.test.basic;
+package org.glassfish.hk2.xml.test.basic.beans;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -49,12 +50,15 @@ import org.jvnet.hk2.annotations.Contract;
  *
  */
 @Contract
-public interface Financials extends FinancialsReadOnly, InternationalFinancials {
-    @XmlElement
-    public String getSymbol();
-    public void setSymbol(String symbol);
+public interface Employee {
+    public String getName();
+    
+    @XmlElement @XmlIdentifier
+    public void setName(String name);
+    
+    public long getId();
     
     @XmlElement
-    public String getExchange();
-    public void setExchange(String exchange);
+    public void setId(long id);
+
 }

@@ -37,50 +37,22 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test.basic;
+package org.glassfish.hk2.xml.test.basic.beans;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import javax.xml.bind.annotation.XmlAttribute;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import javax.inject.Qualifier;
+import org.jvnet.hk2.annotations.Contract;
 
 /**
- * This annotation has one of everything
+ * This is a data bean that has no key
  * 
  * @author jwells
  *
  */
-@Qualifier
-@Retention(RUNTIME)
-@Target( { TYPE, METHOD, FIELD, PARAMETER })
-public @interface EverythingBagel {
-    public byte byteValue();
-    public boolean booleanValue();
-    public char charValue();
-    public short shortValue();
-    public int intValue();
-    public long longValue();
-    public float floatValue();
-    public double doubleValue();
-    public GreekEnum enumValue();
-    public String stringValue();
-    public Class<?> classValue();
-    
-    public byte[] byteArrayValue();
-    public boolean[] booleanArrayValue();
-    public char[] charArrayValue();
-    public short[] shortArrayValue();
-    public int[] intArrayValue();
-    public long[] longArrayValue();
-    public float[] floatArrayValue();
-    public double[] doubleArrayValue();
-    public GreekEnum[] enumArrayValue();
-    public String[] stringArrayValue();
-    public Class<?>[] classArrayValue();
+@Contract
+public interface OtherData {
+    @XmlAttribute
+    public String getData();
+    public void setData(String data);
+
 }

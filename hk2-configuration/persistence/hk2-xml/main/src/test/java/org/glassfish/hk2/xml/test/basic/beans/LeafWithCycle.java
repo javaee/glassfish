@@ -37,7 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test.basic;
+package org.glassfish.hk2.xml.test.basic.beans;
 
 import javax.xml.bind.annotation.XmlElement;
 
@@ -45,10 +45,9 @@ import javax.xml.bind.annotation.XmlElement;
  * @author jwells
  *
  */
-public interface FinancialsReadOnly {
-    public String getSymbol();
-    public String getExchange();
-    
-    @XmlElement
-    public String getCountry();
+public interface LeafWithCycle {
+    @XmlElement(name="root-with-cycle")
+    public RootWithCycle getRootWithCycle();
+    public void setRootWithCycle(RootWithCycle root);
+
 }

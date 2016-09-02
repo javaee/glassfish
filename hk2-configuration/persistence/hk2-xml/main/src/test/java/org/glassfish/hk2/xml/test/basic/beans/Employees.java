@@ -38,7 +38,7 @@
  * holder.
  */
 
-package org.glassfish.hk2.xml.test.basic;
+package org.glassfish.hk2.xml.test.basic.beans;
 
 import java.util.List;
 

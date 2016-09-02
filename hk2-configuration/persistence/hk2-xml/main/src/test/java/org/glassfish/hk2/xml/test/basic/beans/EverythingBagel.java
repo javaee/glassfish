@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,28 +37,50 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.hk2.xml.test.basic.beans;
 
-package org.glassfish.hk2.xml.test.basic;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import javax.xml.bind.annotation.XmlElement;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
 
-import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
-import org.jvnet.hk2.annotations.Contract;
+import javax.inject.Qualifier;
 
 /**
+ * This annotation has one of everything
+ * 
  * @author jwells
  *
  */
-@Contract
-public interface Employee {
-    public String getName();
+@Qualifier
+@Retention(RUNTIME)
+@Target( { TYPE, METHOD, FIELD, PARAMETER })
+public @interface EverythingBagel {
+    public byte byteValue();
+    public boolean booleanValue();
+    public char charValue();
+    public short shortValue();
+    public int intValue();
+    public long longValue();
+    public float floatValue();
+    public double doubleValue();
+    public GreekEnum enumValue();
+    public String stringValue();
+    public Class<?> classValue();
     
-    @XmlElement @XmlIdentifier
-    public void setName(String name);
-    
-    public long getId();
-    
-    @XmlElement
-    public void setId(long id);
-
+    public byte[] byteArrayValue();
+    public boolean[] booleanArrayValue();
+    public char[] charArrayValue();
+    public short[] shortArrayValue();
+    public int[] intArrayValue();
+    public long[] longArrayValue();
+    public float[] floatArrayValue();
+    public double[] doubleArrayValue();
+    public GreekEnum[] enumArrayValue();
+    public String[] stringArrayValue();
+    public Class<?>[] classArrayValue();
 }

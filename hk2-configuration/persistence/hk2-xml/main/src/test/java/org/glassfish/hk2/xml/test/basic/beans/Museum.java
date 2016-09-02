@@ -38,12 +38,32 @@
  * holder.
  */
 
-package org.glassfish.hk2.xml.test.basic;
+package org.glassfish.hk2.xml.test.basic.beans;
+
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.jvnet.hk2.annotations.Contract;
 
 /**
  * @author jwells
  *
  */
-public interface BarDataBean extends DataBean {
-
+@XmlRootElement @Contract
+public interface Museum {
+    public String getName();
+    
+    @XmlElement
+    public void setName(String name);
+    
+    public int getAge();
+    
+    @XmlElement
+    public void setAge(int age);
+    
+    public int getId();
+    
+    @XmlAttribute
+    public void setId(int id);
 }

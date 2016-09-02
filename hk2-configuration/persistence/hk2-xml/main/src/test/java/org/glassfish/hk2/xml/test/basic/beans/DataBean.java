@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,55 +37,20 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test.basic;
 
-import java.util.Set;
+package org.glassfish.hk2.xml.test.basic.beans;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlAttribute;
 
-import org.jvnet.hk2.annotations.Contract;
+import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
 
 /**
  * @author jwells
  *
  */
-@XmlRootElement(name="type-bean") @Contract
-public interface TypeBean {
-    @XmlElement(name="int")
-    public int getIType();
-    public void setIType(int i);
-    
-    @XmlElement(name="long")
-    public long getJType();
-    public void setJType(long i);
-    
-    @XmlElement(name="boolean")
-    public boolean getZType();
-    public void setZType(boolean i);
-    
-    @XmlElement(name="byte")
-    public byte getBType();
-    public void setBType(byte i);
-    
-    @XmlElement(name="char")
-    public char getCType();
-    public void setCType(char i);
-    
-    @XmlElement(name="short")
-    public short getSType();
-    public void setSType(short i);
-    
-    @XmlElement(name="float")
-    public float getFType();
-    public void setFType(float i);
-    
-    @XmlElement(name="double")
-    public double getDType();
-    public void setDType(double i);
-    
-    @XmlElement(name="set")
-    public Set<String> getSetType();
-    public void setSetType(Set<String> set);
+public interface DataBean {
+    @XmlAttribute @XmlIdentifier
+    public String getData();
+    public void setData(String data);
 
 }

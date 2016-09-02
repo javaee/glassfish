@@ -37,21 +37,13 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test.basic;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.jvnet.hk2.annotations.Contract;
+package org.glassfish.hk2.xml.test.basic.beans;
 
 /**
  * @author jwells
+ *
  */
-@XmlRootElement(name="root") @Contract
-public interface RootWithCycle {
-    @XmlElement(name="leaf-with-cycle")
-    public LeafWithCycle getLeafWithCycle();
-    public void setLeafWithCycle(LeafWithCycle leaf);
-    
+public interface InternationalFinancials {
+    public String getCountry();
 
 }

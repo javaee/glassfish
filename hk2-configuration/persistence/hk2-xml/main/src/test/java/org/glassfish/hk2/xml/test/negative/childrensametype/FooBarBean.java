@@ -45,7 +45,7 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.glassfish.hk2.xml.test.basic.DataBean;
+import org.glassfish.hk2.xml.test.basic.beans.DataBean;
 
 /**
  * @author jwells

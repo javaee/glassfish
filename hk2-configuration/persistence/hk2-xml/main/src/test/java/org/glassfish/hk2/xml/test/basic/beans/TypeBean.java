@@ -37,13 +37,55 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test.basic;
+package org.glassfish.hk2.xml.test.basic.beans;
+
+import java.util.Set;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.jvnet.hk2.annotations.Contract;
 
 /**
  * @author jwells
  *
  */
-public interface InternationalFinancials {
-    public String getCountry();
+@XmlRootElement(name="type-bean") @Contract
+public interface TypeBean {
+    @XmlElement(name="int")
+    public int getIType();
+    public void setIType(int i);
+    
+    @XmlElement(name="long")
+    public long getJType();
+    public void setJType(long i);
+    
+    @XmlElement(name="boolean")
+    public boolean getZType();
+    public void setZType(boolean i);
+    
+    @XmlElement(name="byte")
+    public byte getBType();
+    public void setBType(byte i);
+    
+    @XmlElement(name="char")
+    public char getCType();
+    public void setCType(char i);
+    
+    @XmlElement(name="short")
+    public short getSType();
+    public void setSType(short i);
+    
+    @XmlElement(name="float")
+    public float getFType();
+    public void setFType(float i);
+    
+    @XmlElement(name="double")
+    public double getDType();
+    public void setDType(double i);
+    
+    @XmlElement(name="set")
+    public Set<String> getSetType();
+    public void setSetType(Set<String> set);
 
 }

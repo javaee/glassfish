@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,20 +37,18 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.hk2.xml.test.basic.beans;
 
-package org.glassfish.hk2.xml.test.basic;
-
-import javax.xml.bind.annotation.XmlAttribute;
-
-import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
  * @author jwells
  *
  */
-public interface DataBean {
-    @XmlAttribute @XmlIdentifier
-    public String getData();
-    public void setData(String data);
-
+public interface FinancialsReadOnly {
+    public String getSymbol();
+    public String getExchange();
+    
+    @XmlElement
+    public String getCountry();
 }
