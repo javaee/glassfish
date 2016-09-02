@@ -219,7 +219,7 @@ public class BindingTest {
     /**
      * Makes sure this fails out with an NPE
      */
-    @Test(expected=NullPointerException.class)
+    @Test(expected=IllegalArgumentException.class)
     public void testNullPassedToCreateWithInstanceFails() {
         AbstractBindingBuilder.create(null);
     }

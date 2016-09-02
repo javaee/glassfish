@@ -44,7 +44,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 import javax.inject.Named;
@@ -276,7 +275,8 @@ abstract class AbstractBindingBuilder<T> implements
         private final T service;
 
         public InstanceBasedBindingBuilder(T service) {
-            this.service = Objects.requireNonNull(service);
+            if (service == null) throw new IllegalArgumentException();
+            this.service = service;
         }
 
         @Override
