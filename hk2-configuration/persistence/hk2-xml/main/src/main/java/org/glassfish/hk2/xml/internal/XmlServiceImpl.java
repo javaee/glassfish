@@ -45,6 +45,7 @@ import java.net.URI;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
+import javax.xml.stream.XMLStreamReader;
 
 import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.DynamicConfiguration;
@@ -119,7 +120,34 @@ public class XmlServiceImpl implements XmlService {
             
             Model model = jaUtilities.getModel(jaxbAnnotatedInterface);
                 
-            return unmarshallClass(uri, model, localParser, advertiseInRegistry, advertiseInHub);
+            return unmarshallClass(uri, model, localParser, null, advertiseInRegistry, advertiseInHub);
+        }
+        catch (RuntimeException re) {
+            throw re;
+        }
+        catch (Throwable e) {
+            throw new MultiException(e);
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlService#unmarshall(javax.xml.stream.XMLStreamReader, java.lang.Class, boolean, boolean)
+     */
+    @Override
+    public <T> XmlRootHandle<T> unmarshall(XMLStreamReader reader,
+            Class<T> jaxbAnnotatedInterface, boolean advertiseInRegistry,
+            boolean advertiseInHub) {
+        if (reader == null || jaxbAnnotatedInterface == null) throw new IllegalArgumentException();
+        if (!jaxbAnnotatedInterface.isInterface()) {
+            throw new IllegalArgumentException("Only an interface can be given to unmarshall: " + jaxbAnnotatedInterface.getName());
+        }
+        
+        try {
+            jaUtilities.convertRootAndLeaves(jaxbAnnotatedInterface, false);
+            
+            Model model = jaUtilities.getModel(jaxbAnnotatedInterface);
+                
+            return unmarshallClass(null, model, null, reader, advertiseInRegistry, advertiseInHub);
         }
         catch (RuntimeException re) {
             throw re;
@@ -131,13 +159,12 @@ public class XmlServiceImpl implements XmlService {
     
     @SuppressWarnings("unchecked")
     private <T> XmlRootHandle<T> unmarshallClass(URI uri, Model model,
-            XmlServiceParser localParser,
+            XmlServiceParser localParser, XMLStreamReader reader,
             boolean advertise, boolean advertiseInHub) throws Exception {
         long elapsedUpToJAXB = 0;
         if (JAUtilities.DEBUG_GENERATION_TIMING) {
             elapsedUpToJAXB = System.currentTimeMillis();
         }
-        
         
         Hk2JAXBUnmarshallerListener listener = new Hk2JAXBUnmarshallerListener(jaUtilities, classReflectionHelper);
         
@@ -148,7 +175,13 @@ public class XmlServiceImpl implements XmlService {
             Logger.getLogger().debug("Time up to parsing " + uri + " is " + elapsedUpToJAXB + " milliseconds");
         }
         
-        T root = localParser.parseRoot((Class<T>) model.getProxyAsClass(), uri, listener);
+        T root;
+        if (localParser != null) {
+            root = localParser.parseRoot((Class<T>) model.getProxyAsClass(), uri, listener);
+        }
+        else {
+            throw new AssertionError("XMLStreamReader implementation not yet implemented");
+        }
         
         long elapsedJAXBToAdvertisement = 0;
         if (JAUtilities.DEBUG_GENERATION_TIMING) {
@@ -293,5 +326,7 @@ public class XmlServiceImpl implements XmlService {
     public JAUtilities getJAUtilities() {
         return jaUtilities;
     }
+
+    
    
 }

@@ -42,6 +42,8 @@ package org.glassfish.hk2.xml.api;
 
 import java.net.URI;
 
+import javax.xml.stream.XMLStreamReader;
+
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -52,7 +54,9 @@ import org.jvnet.hk2.annotations.Contract;
 public interface XmlService {
     /**
      * Unmarshalls the given URI using the jaxb annotated interface.  The resulting
-     * JavaBean tree will be advertised in the ServiceLocator and in the Hub
+     * JavaBean tree will be advertised in the ServiceLocator and in the Hub.
+     * Will use the registered implementation of {@link org.glassfish.hk2.xml.spi.XmlServiceParser}
+     * to parse the file.
      * 
      * @param uri The non-null URI whereby to find the xml corresponding to the class
      * @param jaxbAnnotatedClassOrInterface The non-null class corresonding to the Xml to be parsed
@@ -62,7 +66,9 @@ public interface XmlService {
     public <T> XmlRootHandle<T> unmarshall(URI uri, Class<T> jaxbAnnotatedInterface);
     
     /**
-     * Unmarshalls the given URI using the jaxb annotated interface
+     * Unmarshalls the given URI using the jaxb annotated interface.
+     * Will use the registered implementation of {@link org.glassfish.hk2.xml.spi.XmlServiceParser}
+     * to parse the file.
      * 
      * @param uri The non-null URI whereby to find the xml corresponding to the class
      * @param jaxbAnnotatedClassOrInterface The non-null interface corresponding to the Xml to be parsed
@@ -74,6 +80,22 @@ public interface XmlService {
      * other tasks
      */
     public <T> XmlRootHandle<T> unmarshall(URI uri, Class<T> jaxbAnnotatedInterface,
+            boolean advertiseInRegistry, boolean advertiseInHub);
+    
+    /**
+     * Unmarshalls an XML stream using the jaxb annotated interface.
+     * Will use a built-in algorithm to read the stream
+     * 
+     * @param reader The non-null XMLStreamReader representing the XML to be read
+     * @param jaxbAnnotatedClassOrInterface The non-null interface corresponding to the Xml to be parsed
+     * @param advertiseInRegistry if true the entire tree of parsed xml will be added to the
+     * ServiceLocator
+     * @param advertiseInHub if true the entire tree of parsed xml will be added to the
+     * HK2 configuration Hub (as bean-like maps)
+     * @return A non-null handle that can be used to get the unmarshalled data or perform
+     * other tasks
+     */
+    public <T> XmlRootHandle<T> unmarshall(XMLStreamReader reader, Class<T> jaxbAnnotatedInterface,
             boolean advertiseInRegistry, boolean advertiseInHub);
     
     /**
