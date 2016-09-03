@@ -37,7 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test.basicdom;
+package org.glassfish.hk2.xml.test.basic;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.xml.test.basic.beans.Commons;
