@@ -77,10 +77,13 @@ public class UnmarshallTest {
      * 
      * @throws Exception
      */
-    @Test // @org.junit.Ignore
+    @Test @org.junit.Ignore
     public void testBeanLikeMapOfInterface() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
-        commons.testBeanLikeMapOfInterface(locator);
+        URL url = getClass().getClassLoader().getResource(Commons.ACME1_FILE);
+        URI uri = url.toURI();
+        
+        Commons.testBeanLikeMapOfInterface(locator, uri);
     }
     
     /**

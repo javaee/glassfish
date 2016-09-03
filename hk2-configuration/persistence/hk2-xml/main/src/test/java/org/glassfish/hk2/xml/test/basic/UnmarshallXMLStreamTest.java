@@ -39,9 +39,10 @@
  */
 package org.glassfish.hk2.xml.test.basic;
 
-import java.net.URI;
+import java.io.InputStream;
 import java.net.URL;
 
+import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
 
 import org.glassfish.hk2.api.ServiceLocator;
@@ -54,7 +55,15 @@ import org.junit.Test;
  *
  */
 public class UnmarshallXMLStreamTest {
-private final Commons commons = new Commons();
+    private final XMLInputFactory xif = XMLInputFactory.newInstance();
+    private final Commons commons = new Commons();
+    
+    private InputStream getStream(String fileName) throws Exception {
+        URL url = getClass().getClassLoader().getResource(fileName);
+        InputStream is = url.openStream();
+        
+        return is;
+    }
     
     /**
      * Tests the most basic of xml files can be unmarshalled with an interface
@@ -66,7 +75,19 @@ private final Commons commons = new Commons();
     public void testInterfaceJaxbUnmarshalling() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
         
-        Commons.testInterfaceJaxbUnmarshalling(locator, (XMLStreamReader) null);
+        InputStream is = getStream(Commons.MUSEUM1_FILE);
+        try {
+            XMLStreamReader reader = xif.createXMLStreamReader(is);
+            try {
+                Commons.testInterfaceJaxbUnmarshalling(locator, reader);
+            }
+            finally {
+                reader.close();
+            }
+        }
+        finally {
+            is.close();
+        }
     }
     
     /**
@@ -78,7 +99,20 @@ private final Commons commons = new Commons();
     @Test @org.junit.Ignore
     public void testBeanLikeMapOfInterface() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
-        commons.testBeanLikeMapOfInterface(locator);
+        
+        InputStream is = getStream(Commons.ACME1_FILE);
+        try {
+            XMLStreamReader reader = xif.createXMLStreamReader(is);
+            try {
+                Commons.testBeanLikeMapOfInterface(locator, reader);;
+            }
+            finally {
+                reader.close();
+            }
+        }
+        finally {
+            is.close();
+        }
     }
     
     /**

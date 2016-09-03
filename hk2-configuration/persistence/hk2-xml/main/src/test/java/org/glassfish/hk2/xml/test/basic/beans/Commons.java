@@ -140,6 +140,14 @@ public class Commons {
         Assert.assertEquals(museum, asService);
     }
     
+    public static void testBeanLikeMapOfInterface(ServiceLocator locator, URI uri) throws Exception {
+        testBeanLikeMapOfInterface(locator, uri, null);
+    }
+    
+    public static void testBeanLikeMapOfInterface(ServiceLocator locator, XMLStreamReader reader) throws Exception {
+        testBeanLikeMapOfInterface(locator, null, reader);
+    }
+    
     /**
      * Tests the most basic of xml files can be unmarshalled with an interface
      * annotated with jaxb annotations
@@ -147,12 +155,16 @@ public class Commons {
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    public void testBeanLikeMapOfInterface(ServiceLocator locator) throws Exception {
+    private static void testBeanLikeMapOfInterface(ServiceLocator locator, URI uri, XMLStreamReader reader) throws Exception {
         XmlService xmlService = locator.getService(XmlService.class);
         
-        URL url = getClass().getClassLoader().getResource(ACME1_FILE);
-        
-        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
+        XmlRootHandle<Employees> rootHandle;
+        if (uri != null) {
+            rootHandle = xmlService.unmarshall(uri, Employees.class);
+        }
+        else {
+            rootHandle = xmlService.unmarshall(reader, Employees.class, true, true);
+        }
         Employees employees = rootHandle.getRoot();
         
         Assert.assertTrue(employees instanceof XmlHk2ConfigurationBean);
@@ -189,8 +201,6 @@ public class Commons {
         Assert.assertNotNull(locator.getService(Employee.class, BOB));
         Assert.assertNotNull(locator.getService(Employee.class, CAROL));
     }
-    
-    
     
     /**
      * Tests the most basic of xml files can be unmarshalled with an interface
