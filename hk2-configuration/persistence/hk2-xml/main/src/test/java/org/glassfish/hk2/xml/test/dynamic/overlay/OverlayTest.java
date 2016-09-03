@@ -50,7 +50,7 @@ import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.Change.ChangeCategory;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
-import org.glassfish.hk2.xml.test.basic.UnmarshallTest;
+import org.glassfish.hk2.xml.test.basic.beans.Commons;
 import org.glassfish.hk2.xml.test.basic.beans.Museum;
 import org.glassfish.hk2.xml.test.dynamic.rawsets.RawSetsTest;
 import org.glassfish.hk2.xml.test.dynamic.rawsets.RawSetsTest.UpdateListener;
@@ -77,7 +77,7 @@ public class OverlayTest {
         Hub hub = locator.getService(Hub.class);
         UpdateListener listener = locator.getService(UpdateListener.class);
         
-        URL url = getClass().getClassLoader().getResource(UnmarshallTest.MUSEUM1_FILE);
+        URL url = getClass().getClassLoader().getResource(Commons.MUSEUM1_FILE);
         
         XmlRootHandle<Museum> rootHandle = xmlService.unmarshall(url.toURI(), Museum.class);
         
@@ -96,14 +96,14 @@ public class OverlayTest {
         
         // Now make sure new values show up
         Assert.assertEquals(RawSetsTest.ONE_OH_ONE_INT, museum.getId());
-        Assert.assertEquals(UnmarshallTest.BEN_FRANKLIN, museum.getName());
+        Assert.assertEquals(Commons.BEN_FRANKLIN, museum.getName());
         Assert.assertEquals(RawSetsTest.ONE_OH_ONE_INT, museum.getAge());
         
         Instance instance = hub.getCurrentDatabase().getInstance(RawSetsTest.MUSEUM_TYPE, RawSetsTest.MUSEUM_INSTANCE);
         Map<String, Object> beanLikeMap = (Map<String, Object>) instance.getBean();
         
-        Assert.assertEquals(UnmarshallTest.BEN_FRANKLIN, beanLikeMap.get(UnmarshallTest.NAME_TAG));
-        Assert.assertEquals(RawSetsTest.ONE_OH_ONE_INT, beanLikeMap.get(UnmarshallTest.ID_TAG));
+        Assert.assertEquals(Commons.BEN_FRANKLIN, beanLikeMap.get(Commons.NAME_TAG));
+        Assert.assertEquals(RawSetsTest.ONE_OH_ONE_INT, beanLikeMap.get(Commons.ID_TAG));
         Assert.assertEquals(RawSetsTest.ONE_OH_ONE_INT, beanLikeMap.get(RawSetsTest.AGE_TAG));  // The test
         
         List<Change> changes = listener.getChanges();

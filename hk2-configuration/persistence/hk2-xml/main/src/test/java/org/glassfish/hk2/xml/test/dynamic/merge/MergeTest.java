@@ -52,12 +52,11 @@ import org.glassfish.hk2.configuration.hub.api.Change;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.Change.ChangeCategory;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootCopy;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
-import org.glassfish.hk2.xml.test.basic.UnmarshallTest;
+import org.glassfish.hk2.xml.test.basic.beans.Commons;
 import org.glassfish.hk2.xml.test.basic.beans.Museum;
 import org.glassfish.hk2.xml.test.beans.AuthorizationProviderBean;
 import org.glassfish.hk2.xml.test.beans.DomainBean;
@@ -142,7 +141,7 @@ public class MergeTest {
         Hub hub = locator.getService(Hub.class);
         UpdateListener listener = locator.getService(UpdateListener.class);
         
-        URL url = getClass().getClassLoader().getResource(UnmarshallTest.MUSEUM1_FILE);
+        URL url = getClass().getClassLoader().getResource(Commons.MUSEUM1_FILE);
         
         XmlRootHandle<Museum> rootHandle = xmlService.unmarshall(url.toURI(), Museum.class);
         
@@ -164,14 +163,14 @@ public class MergeTest {
         
         // Now make sure new values show up
         Assert.assertEquals(RawSetsTest.ONE_OH_ONE_INT, museumOld.getId());
-        Assert.assertEquals(UnmarshallTest.BEN_FRANKLIN, museumOld.getName());
+        Assert.assertEquals(Commons.BEN_FRANKLIN, museumOld.getName());
         Assert.assertEquals(RawSetsTest.ONE_OH_ONE_INT, museumOld.getAge());
         
         Instance instance = hub.getCurrentDatabase().getInstance(RawSetsTest.MUSEUM_TYPE, RawSetsTest.MUSEUM_INSTANCE);
         Map<String, Object> beanLikeMap = (Map<String, Object>) instance.getBean();
         
-        Assert.assertEquals(UnmarshallTest.BEN_FRANKLIN, beanLikeMap.get(UnmarshallTest.NAME_TAG));
-        Assert.assertEquals(RawSetsTest.ONE_OH_ONE_INT, beanLikeMap.get(UnmarshallTest.ID_TAG));
+        Assert.assertEquals(Commons.BEN_FRANKLIN, beanLikeMap.get(Commons.NAME_TAG));
+        Assert.assertEquals(RawSetsTest.ONE_OH_ONE_INT, beanLikeMap.get(Commons.ID_TAG));
         Assert.assertEquals(RawSetsTest.ONE_OH_ONE_INT, beanLikeMap.get(RawSetsTest.AGE_TAG));  // The test
         
         List<Change> changes = listener.getChanges();
@@ -267,7 +266,7 @@ public class MergeTest {
             Assert.assertNotNull(machineBobInstance);
             
             Map<String, Object> bobMap = (Map<String, Object>) machineBobInstance.getBean();
-            Assert.assertEquals(BOB_NAME, bobMap.get(UnmarshallTest.NAME_TAG));
+            Assert.assertEquals(BOB_NAME, bobMap.get(Commons.NAME_TAG));
             Assert.assertNull(bobMap.get(ADDRESS_TAG));
         }
         
@@ -377,7 +376,7 @@ public class MergeTest {
             Assert.assertNotNull(machineAliceInstance);
             
             Map<String, Object> aliceMap = (Map<String, Object>) machineAliceInstance.getBean();
-            Assert.assertEquals(ALICE_NAME, aliceMap.get(UnmarshallTest.NAME_TAG));
+            Assert.assertEquals(ALICE_NAME, aliceMap.get(Commons.NAME_TAG));
             Assert.assertEquals(ALICE_ADDRESS, aliceMap.get(ADDRESS_TAG));
         }
         
@@ -386,7 +385,7 @@ public class MergeTest {
             Assert.assertNotNull(aliceServer0Instance);
             
             Map<String, Object> server0Map = (Map<String, Object>) aliceServer0Instance.getBean();
-            Assert.assertEquals(ALICE_SERVER0_NAME, server0Map.get(UnmarshallTest.NAME_TAG));
+            Assert.assertEquals(ALICE_SERVER0_NAME, server0Map.get(Commons.NAME_TAG));
             Assert.assertEquals(ALICE_SERVER0_PORT, server0Map.get(PORT_TAG));
         }
         
@@ -406,7 +405,7 @@ public class MergeTest {
             
             Map<String, Object> rsaMap = (Map<String, Object>) rsaInstance.getBean();
             
-            Assert.assertEquals(RSA_ATZ_PROV_NAME, rsaMap.get(UnmarshallTest.NAME_TAG));
+            Assert.assertEquals(RSA_ATZ_PROV_NAME, rsaMap.get(Commons.NAME_TAG));
             Assert.assertEquals(RSA_DOM_PFX, rsaMap.get(ATZ_DOMAIN_PFX_TAG));
         }
         
@@ -537,7 +536,7 @@ public class MergeTest {
         
         Map<String, Object> namedMap = (Map<String, Object>) namedInstance.getBean();
         
-        Assert.assertEquals(expectedName, namedMap.get(UnmarshallTest.NAME_TAG));
+        Assert.assertEquals(expectedName, namedMap.get(Commons.NAME_TAG));
     }
     
     /**

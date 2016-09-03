@@ -48,7 +48,7 @@ import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.arrays.Employees;
-import org.glassfish.hk2.xml.test.basic.UnmarshallTest;
+import org.glassfish.hk2.xml.test.basic.beans.Commons;
 import org.glassfish.hk2.xml.test.basic.beans.Employee;
 import org.glassfish.hk2.xml.test.basic.beans.Financials;
 import org.glassfish.hk2.xml.test.basic.beans.OtherData;
@@ -131,7 +131,7 @@ public class AddsArrayTest {
         XmlService xmlService = locator.getService(XmlService.class);
         Hub hub = locator.getService(Hub.class);
         
-        URL url = getClass().getClassLoader().getResource(UnmarshallTest.ACME1_FILE);
+        URL url = getClass().getClassLoader().getResource(Commons.ACME1_FILE);
         
         XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
         
@@ -148,7 +148,7 @@ public class AddsArrayTest {
         XmlService xmlService = locator.getService(XmlService.class);
         Hub hub = locator.getService(Hub.class);
         
-        URL url = getClass().getClassLoader().getResource(UnmarshallTest.ACME1_FILE);
+        URL url = getClass().getClassLoader().getResource(Commons.ACME1_FILE);
         
         XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class, true, false);
         
@@ -165,7 +165,7 @@ public class AddsArrayTest {
         XmlService xmlService = locator.getService(XmlService.class);
         Hub hub = locator.getService(Hub.class);
         
-        URL url = getClass().getClassLoader().getResource(UnmarshallTest.ACME1_FILE);
+        URL url = getClass().getClassLoader().getResource(Commons.ACME1_FILE);
         
         XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class, false, true);
         
@@ -183,7 +183,7 @@ public class AddsArrayTest {
         XmlService xmlService = locator.getService(XmlService.class);
         Hub hub = locator.getService(Hub.class);
         
-        URL url = getClass().getClassLoader().getResource(UnmarshallTest.ACME1_FILE);
+        URL url = getClass().getClassLoader().getResource(Commons.ACME1_FILE);
         
         XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class, false, false);
         
@@ -202,7 +202,7 @@ public class AddsArrayTest {
         XmlService xmlService = locator.getService(XmlService.class);
         Hub hub = locator.getService(Hub.class);
         
-        URL url = getClass().getClassLoader().getResource(UnmarshallTest.ACME1_FILE);
+        URL url = getClass().getClassLoader().getResource(Commons.ACME1_FILE);
         
         XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
         Employees employees = rootHandle.getRoot();
@@ -243,7 +243,7 @@ public class AddsArrayTest {
         XmlService xmlService = locator.getService(XmlService.class);
         Hub hub = locator.getService(Hub.class);
         
-        URL url = getClass().getClassLoader().getResource(UnmarshallTest.ACME2_FILE);
+        URL url = getClass().getClassLoader().getResource(Commons.ACME2_FILE);
         
         XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
         Employees employees = rootHandle.getRoot();
@@ -258,7 +258,7 @@ public class AddsArrayTest {
         Assert.assertNull(financials.getExchange());
         Assert.assertNull(financials.getSymbol());
         
-        Assert.assertNotNull(hub.getCurrentDatabase().getInstance(UnmarshallTest.FINANCIALS_TYPE, UnmarshallTest.FINANCIALS_INSTANCE));
+        Assert.assertNotNull(hub.getCurrentDatabase().getInstance(Commons.FINANCIALS_TYPE, Commons.FINANCIALS_INSTANCE));
     }
     
     private static Employee createEmployee(XmlService xmlService, String name, long id) {
@@ -315,9 +315,9 @@ public class AddsArrayTest {
         
         employees.setFinancials(financials);
         
-        Employee alice = createEmployee(xmlService, UnmarshallTest.ALICE, ALICE_ID);
-        Employee bob = createEmployee(xmlService, UnmarshallTest.BOB, BOB_ID);
-        Employee carol = createEmployee(xmlService, UnmarshallTest.CAROL, CAROL_ID);
+        Employee alice = createEmployee(xmlService, Commons.ALICE, ALICE_ID);
+        Employee bob = createEmployee(xmlService, Commons.BOB, BOB_ID);
+        Employee carol = createEmployee(xmlService, Commons.CAROL, CAROL_ID);
         
         employees.addEmployee(alice);
         employees.addEmployee(carol);
@@ -337,16 +337,16 @@ public class AddsArrayTest {
         
         checkFinancials(root.getFinancials(), NASDAQ, ATT_SYMBOL);
         
-        checkEmployee(root.getEmployees()[0], UnmarshallTest.ALICE, ALICE_ID);
-        checkEmployee(root.getEmployees()[1], UnmarshallTest.BOB, BOB_ID);
-        checkEmployee(root.getEmployees()[2], UnmarshallTest.CAROL, CAROL_ID);
+        checkEmployee(root.getEmployees()[0], Commons.ALICE, ALICE_ID);
+        checkEmployee(root.getEmployees()[1], Commons.BOB, BOB_ID);
+        checkEmployee(root.getEmployees()[2], Commons.CAROL, CAROL_ID);
         
         checkOtherData(root.getOtherData()[0], DATA1);
         checkOtherData(root.getOtherData()[1], DATA2);
         
-        checkEmployee(locator.getService(Employee.class, UnmarshallTest.ALICE), UnmarshallTest.ALICE, ALICE_ID);
-        checkEmployee(locator.getService(Employee.class, UnmarshallTest.BOB), UnmarshallTest.BOB, BOB_ID);
-        checkEmployee(locator.getService(Employee.class, UnmarshallTest.CAROL), UnmarshallTest.CAROL, CAROL_ID);
+        checkEmployee(locator.getService(Employee.class, Commons.ALICE), Commons.ALICE, ALICE_ID);
+        checkEmployee(locator.getService(Employee.class, Commons.BOB), Commons.BOB, BOB_ID);
+        checkEmployee(locator.getService(Employee.class, Commons.CAROL), Commons.CAROL, CAROL_ID);
         
         int lcv = 0;
         for (OtherData other : locator.getAllServices(OtherData.class)) {

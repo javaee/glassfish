@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,7 +37,6 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.hk2.xml.test.basic;
 
 import org.glassfish.hk2.api.ServiceLocator;
@@ -46,12 +45,11 @@ import org.glassfish.hk2.xml.test.utilities.Utilities;
 import org.junit.Test;
 
 /**
- * Tests for unmarshalling xml into the hk2 hub
- * 
  * @author jwells
+ *
  */
-public class UnmarshallTest {
-    private final Commons commons = new Commons();
+public class UnmarshallXMLStreamTest {
+private final Commons commons = new Commons();
     
     /**
      * Tests the most basic of xml files can be unmarshalled with an interface
@@ -59,9 +57,9 @@ public class UnmarshallTest {
      * 
      * @throws Exception
      */
-    @Test // @org.junit.Ignore
+    @Test @org.junit.Ignore
     public void testInterfaceJaxbUnmarshalling() throws Exception {
-        ServiceLocator locator = Utilities.createLocator();
+        ServiceLocator locator = Utilities.createDomLocator();
         commons.testInterfaceJaxbUnmarshalling(locator);
     }
     
@@ -71,9 +69,9 @@ public class UnmarshallTest {
      * 
      * @throws Exception
      */
-    @Test // @org.junit.Ignore
+    @Test @org.junit.Ignore
     public void testBeanLikeMapOfInterface() throws Exception {
-        ServiceLocator locator = Utilities.createLocator();
+        ServiceLocator locator = Utilities.createDomLocator();
         commons.testBeanLikeMapOfInterface(locator);
     }
     
@@ -83,9 +81,9 @@ public class UnmarshallTest {
      * 
      * @throws Exception
      */
-    @Test // @org.junit.Ignore
+    @Test @org.junit.Ignore
     public void testInterfaceJaxbUnmarshallingWithChildren() throws Exception {
-        ServiceLocator locator = Utilities.createLocator();
+        ServiceLocator locator = Utilities.createDomLocator();
         commons.testInterfaceJaxbUnmarshallingWithChildren(locator);
     }
     
@@ -95,9 +93,9 @@ public class UnmarshallTest {
      * 
      * @throws Exception
      */
-    @Test // @org.junit.Ignore
+    @Test @org.junit.Ignore
     public void testComplexUnmarshalling() throws Exception {
-        ServiceLocator locator = Utilities.createLocator();
+        ServiceLocator locator = Utilities.createDomLocator();
         commons.testComplexUnmarshalling(locator);
     }
     
@@ -108,9 +106,9 @@ public class UnmarshallTest {
      * 
      * @throws Exception
      */
-    @Test // @org.junit.Ignore
+    @Test @org.junit.Ignore
     public void testUnkeyedChildren() throws Exception {
-        ServiceLocator locator = Utilities.createLocator();
+        ServiceLocator locator = Utilities.createDomLocator();
         commons.testUnkeyedChildren(locator);
     }
     
@@ -119,9 +117,9 @@ public class UnmarshallTest {
      * 
      * @throws Exception
      */
-    @Test // @org.junit.Ignore
+    @Test @org.junit.Ignore
     public void testSameClassTwoChildren() throws Exception {
-        ServiceLocator locator = Utilities.createLocator();
+        ServiceLocator locator = Utilities.createDomLocator();
         commons.testSameClassTwoChildren(locator);
     }
     
@@ -130,9 +128,9 @@ public class UnmarshallTest {
      * 
      * @throws Exception
      */
-    @Test
+    @Test @org.junit.Ignore
     public void testBeanCycle() throws Exception {
-        ServiceLocator locator = Utilities.createLocator();
+        ServiceLocator locator = Utilities.createDomLocator();
         commons.testBeanCycle(locator);
     }
     
@@ -141,9 +139,9 @@ public class UnmarshallTest {
      * 
      * @throws Exception
      */
-    @Test
+    @Test @org.junit.Ignore
     public void testEveryType() throws Exception {
-        ServiceLocator locator = Utilities.createLocator();
+        ServiceLocator locator = Utilities.createDomLocator();
         commons.testEveryType(locator);
     }
     
@@ -152,9 +150,9 @@ public class UnmarshallTest {
      * 
      * @throws Exception
      */
-    @Test // @org.junit.Ignore
+    @Test @org.junit.Ignore
     public void testAnnotationWithEverythingCopied() throws Exception {
-        ServiceLocator locator = Utilities.createLocator();
+        ServiceLocator locator = Utilities.createDomLocator();
         commons.testAnnotationWithEverythingCopied(locator);
     }
     
@@ -163,9 +161,9 @@ public class UnmarshallTest {
      * 
      * @throws Exception
      */
-    @Test // @org.junit.Ignore
+    @Test @org.junit.Ignore
     public void testEmptyListChildReturnsEmptyList() throws Exception {
-        ServiceLocator locator = Utilities.createLocator();
+        ServiceLocator locator = Utilities.createDomLocator();
         commons.testEmptyListChildReturnsEmptyList(locator);
     }
     
@@ -174,9 +172,9 @@ public class UnmarshallTest {
      * 
      * @throws Exception
      */
-    @Test // @org.junit.Ignore
+    @Test @org.junit.Ignore
     public void testEmptyArrayChildReturnsEmptyArray() throws Exception {
-        ServiceLocator locator = Utilities.createLocator();
+        ServiceLocator locator = Utilities.createDomLocator();
         commons.testEmptyArrayChildReturnsEmptyArray(locator);
     }
     
@@ -188,7 +186,8 @@ public class UnmarshallTest {
      */
     @Test @org.junit.Ignore
     public void testByteArrayNonChild() throws Exception {
-        ServiceLocator locator = Utilities.createLocator();
+        ServiceLocator locator = Utilities.createDomLocator();
         commons.testByteArrayNonChild(locator);
     }
+
 }

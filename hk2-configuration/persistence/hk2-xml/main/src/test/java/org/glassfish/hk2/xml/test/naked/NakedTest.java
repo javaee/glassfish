@@ -44,7 +44,7 @@ import java.net.URL;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
-import org.glassfish.hk2.xml.test.basic.UnmarshallTest;
+import org.glassfish.hk2.xml.test.basic.beans.Commons;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
 import org.junit.Assert;
 import org.junit.Test;
@@ -94,13 +94,13 @@ public class NakedTest {
             
             switch(lcv) {
             case 0 : 
-                Assert.assertEquals(UnmarshallTest.ALICE, child.getName());
+                Assert.assertEquals(Commons.ALICE, child.getName());
                 break;
             case 1:
-                Assert.assertEquals(UnmarshallTest.BOB, child.getName());
+                Assert.assertEquals(Commons.BOB, child.getName());
                 break;
             case 2:
-                Assert.assertEquals(UnmarshallTest.CAROL, child.getName());
+                Assert.assertEquals(Commons.CAROL, child.getName());
                 break;
             default:
                 Assert.fail();
@@ -115,7 +115,7 @@ public class NakedTest {
             switch(lcv) {
             case 0 : 
                 Assert.assertEquals("d3", child3.getData());
-                Assert.assertEquals(UnmarshallTest.DAVE, child4.getName());
+                Assert.assertEquals(Commons.DAVE, child4.getName());
                 break;
             default:
                 Assert.fail();
@@ -124,10 +124,10 @@ public class NakedTest {
         }
         
         Assert.assertEquals("d4", parentBean.getFive().getData());
-        Assert.assertEquals(UnmarshallTest.ENGLEBERT, parentBean.getFive().getName());
+        Assert.assertEquals(Commons.ENGLEBERT, parentBean.getFive().getName());
         
         Assert.assertEquals("d5", parentBean.getSix().getData());
-        Assert.assertEquals(UnmarshallTest.FRANK, parentBean.getSix().getName());
+        Assert.assertEquals(Commons.FRANK, parentBean.getSix().getName());
     }
 
 }

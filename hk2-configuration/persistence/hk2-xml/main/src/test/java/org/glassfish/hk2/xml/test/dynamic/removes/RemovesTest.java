@@ -52,7 +52,7 @@ import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
-import org.glassfish.hk2.xml.test.basic.UnmarshallTest;
+import org.glassfish.hk2.xml.test.basic.beans.Commons;
 import org.glassfish.hk2.xml.test.basic.beans.Employee;
 import org.glassfish.hk2.xml.test.basic.beans.Employees;
 import org.glassfish.hk2.xml.test.basic.beans.Financials;
@@ -104,24 +104,24 @@ public class RemovesTest {
         XmlService xmlService = locator.getService(XmlService.class);
         Hub hub = locator.getService(Hub.class);
         
-        URL url = getClass().getClassLoader().getResource(UnmarshallTest.ACME1_FILE);
+        URL url = getClass().getClassLoader().getResource(Commons.ACME1_FILE);
         
         XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
         Employees employees = rootHandle.getRoot();
         
-        Employee bob = employees.lookupEmployee(UnmarshallTest.BOB);
+        Employee bob = employees.lookupEmployee(Commons.BOB);
         
         // Make sure it is truly there
         Assert.assertNotNull(bob);  
-        Assert.assertNotNull(locator.getService(Employee.class, UnmarshallTest.BOB));
+        Assert.assertNotNull(locator.getService(Employee.class, Commons.BOB));
         Assert.assertNotNull(hub.getCurrentDatabase().getInstance(EMPLOYEE_TYPE, BOB_EMPLOYEE_INSTANCE));
         
-        employees.removeEmployee(UnmarshallTest.BOB);
+        employees.removeEmployee(Commons.BOB);
         
-        bob = employees.lookupEmployee(UnmarshallTest.BOB);
+        bob = employees.lookupEmployee(Commons.BOB);
         
         Assert.assertNull(bob);
-        Assert.assertNull(locator.getService(Employee.class, UnmarshallTest.BOB));
+        Assert.assertNull(locator.getService(Employee.class, Commons.BOB));
         Assert.assertNull(hub.getCurrentDatabase().getInstance(EMPLOYEE_TYPE, BOB_EMPLOYEE_INSTANCE));
     }
     
@@ -231,7 +231,7 @@ public class RemovesTest {
         Assert.assertNull(employees.getFinancials());
         
         BeanDatabase db = hub.getCurrentDatabase();
-        Instance financialsInstance = db.getInstance(UnmarshallTest.FINANCIALS_TYPE, UnmarshallTest.FINANCIALS_INSTANCE);
+        Instance financialsInstance = db.getInstance(Commons.FINANCIALS_TYPE, Commons.FINANCIALS_INSTANCE);
         Assert.assertNull(financialsInstance);
     }
     
@@ -330,7 +330,7 @@ public class RemovesTest {
             Assert.assertNotNull(daveInstance);
             
             Map<String, Object> daveMap = (Map<String, Object>) daveInstance.getBean();
-            Assert.assertEquals(MergeTest.DAVE_NAME, daveMap.get(UnmarshallTest.NAME_TAG));
+            Assert.assertEquals(MergeTest.DAVE_NAME, daveMap.get(Commons.NAME_TAG));
             
             Assert.assertNull(locator.getService(JMSServerBean.class, MergeTest.CAROL_NAME));
             
@@ -351,7 +351,7 @@ public class RemovesTest {
             Assert.assertNotNull(queueInstance);
             
             Map<String, Object> beanLikeQueue = (Map<String, Object>) queueInstance.getBean();
-            Assert.assertEquals(MergeTest.QUEUED0_NAME, beanLikeQueue.get(UnmarshallTest.NAME_TAG));
+            Assert.assertEquals(MergeTest.QUEUED0_NAME, beanLikeQueue.get(Commons.NAME_TAG));
             
             Assert.assertNull(locator.getService(QueueBean.class, MergeTest.QUEUE0_NAME));
             Assert.assertNull(locator.getService(QueueBean.class, MergeTest.QUEUE1_NAME));
@@ -372,7 +372,7 @@ public class RemovesTest {
             Assert.assertNotNull(topicInstance);
             
             Map<String, Object> beanLikeQueue = (Map<String, Object>) topicInstance.getBean();
-            Assert.assertEquals(MergeTest.TOPICD0_NAME, beanLikeQueue.get(UnmarshallTest.NAME_TAG));
+            Assert.assertEquals(MergeTest.TOPICD0_NAME, beanLikeQueue.get(Commons.NAME_TAG));
             
             Assert.assertNull(locator.getService(TopicBean.class, MergeTest.TOPIC0_NAME));
             Assert.assertNull(locator.getService(TopicBean.class, MergeTest.TOPIC1_NAME));
@@ -383,13 +383,13 @@ public class RemovesTest {
     
     @SuppressWarnings("unchecked")
     private static void validateAcme3InitialState(Employees employees, Hub hub) {
-        Assert.assertEquals(UnmarshallTest.ACME, employees.getCompanyName());
+        Assert.assertEquals(Commons.ACME, employees.getCompanyName());
         
         Financials financials = employees.getFinancials();
         Assert.assertNotNull(financials);
         
-        Assert.assertEquals(UnmarshallTest.ACME_SYMBOL, financials.getSymbol());
-        Assert.assertEquals(UnmarshallTest.NYSE, financials.getExchange());
+        Assert.assertEquals(Commons.ACME_SYMBOL, financials.getSymbol());
+        Assert.assertEquals(Commons.NYSE, financials.getExchange());
         Assert.assertNull(financials.getCountry());
         
         List<OtherData> otherDatum = employees.getOtherData();
@@ -404,12 +404,12 @@ public class RemovesTest {
         
         // Check that financials is in the hub
         BeanDatabase db = hub.getCurrentDatabase();
-        Instance financialsInstance = db.getInstance(UnmarshallTest.FINANCIALS_TYPE, UnmarshallTest.FINANCIALS_INSTANCE);
+        Instance financialsInstance = db.getInstance(Commons.FINANCIALS_TYPE, Commons.FINANCIALS_INSTANCE);
         Assert.assertNotNull(financialsInstance);
         
         Map<String, Object> financialsBean = (Map<String, Object>) financialsInstance.getBean();
-        Assert.assertEquals(UnmarshallTest.ACME_SYMBOL, financialsBean.get(UnmarshallTest.SYMBOL_TAG));
-        Assert.assertEquals(UnmarshallTest.NYSE, financialsBean.get(UnmarshallTest.EXCHANGE_TAG));
+        Assert.assertEquals(Commons.ACME_SYMBOL, financialsBean.get(Commons.SYMBOL_TAG));
+        Assert.assertEquals(Commons.NYSE, financialsBean.get(Commons.EXCHANGE_TAG));
     }
     
     @SuppressWarnings("unchecked")

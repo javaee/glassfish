@@ -55,7 +55,7 @@ import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
-import org.glassfish.hk2.xml.test.basic.UnmarshallTest;
+import org.glassfish.hk2.xml.test.basic.beans.Commons;
 import org.glassfish.hk2.xml.test.basic.beans.Museum;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
 import org.junit.Assert;
@@ -83,16 +83,16 @@ public class RawSetsTest {
     public static void verifyPreState(XmlRootHandle<Museum> rootHandle, Hub hub) {
         Museum museum = rootHandle.getRoot();
         
-        Assert.assertEquals(UnmarshallTest.HUNDRED_INT, museum.getId());
-        Assert.assertEquals(UnmarshallTest.BEN_FRANKLIN, museum.getName());
-        Assert.assertEquals(UnmarshallTest.HUNDRED_TEN_INT, museum.getAge());
+        Assert.assertEquals(Commons.HUNDRED_INT, museum.getId());
+        Assert.assertEquals(Commons.BEN_FRANKLIN, museum.getName());
+        Assert.assertEquals(Commons.HUNDRED_TEN_INT, museum.getAge());
         
         Instance instance = hub.getCurrentDatabase().getInstance(MUSEUM_TYPE, MUSEUM_INSTANCE);
         Map<String, Object> beanLikeMap = (Map<String, Object>) instance.getBean();
         
-        Assert.assertEquals(UnmarshallTest.BEN_FRANKLIN, beanLikeMap.get(UnmarshallTest.NAME_TAG));
-        Assert.assertEquals(UnmarshallTest.HUNDRED_INT, beanLikeMap.get(UnmarshallTest.ID_TAG));
-        Assert.assertEquals(UnmarshallTest.HUNDRED_TEN_INT, beanLikeMap.get(AGE_TAG));
+        Assert.assertEquals(Commons.BEN_FRANKLIN, beanLikeMap.get(Commons.NAME_TAG));
+        Assert.assertEquals(Commons.HUNDRED_INT, beanLikeMap.get(Commons.ID_TAG));
+        Assert.assertEquals(Commons.HUNDRED_TEN_INT, beanLikeMap.get(AGE_TAG));
     }
     
     /**
@@ -108,7 +108,7 @@ public class RawSetsTest {
         Hub hub = locator.getService(Hub.class);
         UpdateListener listener = locator.getService(UpdateListener.class);
         
-        URL url = getClass().getClassLoader().getResource(UnmarshallTest.MUSEUM1_FILE);
+        URL url = getClass().getClassLoader().getResource(Commons.MUSEUM1_FILE);
         
         XmlRootHandle<Museum> rootHandle = xmlService.unmarshall(url.toURI(), Museum.class);
         
@@ -119,15 +119,15 @@ public class RawSetsTest {
         // All above just verifying the pre-state
         museum.setAge(ONE_OH_ONE_INT);  // getting younger?
         
-        Assert.assertEquals(UnmarshallTest.HUNDRED_INT, museum.getId());
-        Assert.assertEquals(UnmarshallTest.BEN_FRANKLIN, museum.getName());
+        Assert.assertEquals(Commons.HUNDRED_INT, museum.getId());
+        Assert.assertEquals(Commons.BEN_FRANKLIN, museum.getName());
         Assert.assertEquals(ONE_OH_ONE_INT, museum.getAge());
         
         Instance instance = hub.getCurrentDatabase().getInstance(MUSEUM_TYPE, MUSEUM_INSTANCE);
         Map<String, Object> beanLikeMap = (Map<String, Object>) instance.getBean();
         
-        Assert.assertEquals(UnmarshallTest.BEN_FRANKLIN, beanLikeMap.get(UnmarshallTest.NAME_TAG));
-        Assert.assertEquals(UnmarshallTest.HUNDRED_INT, beanLikeMap.get(UnmarshallTest.ID_TAG));
+        Assert.assertEquals(Commons.BEN_FRANKLIN, beanLikeMap.get(Commons.NAME_TAG));
+        Assert.assertEquals(Commons.HUNDRED_INT, beanLikeMap.get(Commons.ID_TAG));
         Assert.assertEquals(ONE_OH_ONE_INT, beanLikeMap.get(AGE_TAG));  // The test
         
         List<Change> changes = listener.changes;

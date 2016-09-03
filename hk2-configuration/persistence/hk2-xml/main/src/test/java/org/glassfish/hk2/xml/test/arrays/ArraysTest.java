@@ -46,7 +46,7 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
-import org.glassfish.hk2.xml.test.basic.UnmarshallTest;
+import org.glassfish.hk2.xml.test.basic.beans.Commons;
 import org.glassfish.hk2.xml.test.basic.beans.Employee;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
 import org.junit.Assert;
@@ -69,7 +69,7 @@ public class ArraysTest {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
         
-        URL url = getClass().getClassLoader().getResource(UnmarshallTest.ACME1_FILE);
+        URL url = getClass().getClassLoader().getResource(Commons.ACME1_FILE);
         
         XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
         Employees employees = rootHandle.getRoot();
@@ -78,9 +78,9 @@ public class ArraysTest {
         XmlHk2ConfigurationBean hk2Configuration = (XmlHk2ConfigurationBean) employees;
         
         Map<String, Object> beanLikeMap = hk2Configuration._getBeanLikeMap();
-        Assert.assertEquals(UnmarshallTest.ACME, beanLikeMap.get(UnmarshallTest.COMPANY_NAME_TAG));
+        Assert.assertEquals(Commons.ACME, beanLikeMap.get(Commons.COMPANY_NAME_TAG));
         
-        Employee employeeChildList[] = (Employee[]) beanLikeMap.get(UnmarshallTest.EMPLOYEE_TAG);
+        Employee employeeChildList[] = (Employee[]) beanLikeMap.get(Commons.EMPLOYEE_TAG);
         Assert.assertNotNull(employeeChildList);
         Assert.assertEquals(2, employeeChildList.length);
         
@@ -94,19 +94,19 @@ public class ArraysTest {
             if (first) {
                 first = false;
                 
-                Assert.assertEquals(UnmarshallTest.HUNDRED_LONG, employeeBeanLikeMap.get(UnmarshallTest.ID_TAG));
-                Assert.assertEquals(UnmarshallTest.BOB, employeeBeanLikeMap.get(UnmarshallTest.NAME_TAG));
+                Assert.assertEquals(Commons.HUNDRED_LONG, employeeBeanLikeMap.get(Commons.ID_TAG));
+                Assert.assertEquals(Commons.BOB, employeeBeanLikeMap.get(Commons.NAME_TAG));
             }
             else {
-                Assert.assertEquals(UnmarshallTest.HUNDRED_ONE_LONG, employeeBeanLikeMap.get(UnmarshallTest.ID_TAG));
-                Assert.assertEquals(UnmarshallTest.CAROL, employeeBeanLikeMap.get(UnmarshallTest.NAME_TAG));
+                Assert.assertEquals(Commons.HUNDRED_ONE_LONG, employeeBeanLikeMap.get(Commons.ID_TAG));
+                Assert.assertEquals(Commons.CAROL, employeeBeanLikeMap.get(Commons.NAME_TAG));
             }
         }
         
         Assert.assertNotNull(locator.getService(Employees.class));
         
-        Assert.assertNotNull(locator.getService(Employee.class, UnmarshallTest.BOB));
-        Assert.assertNotNull(locator.getService(Employee.class, UnmarshallTest.CAROL));
+        Assert.assertNotNull(locator.getService(Employee.class, Commons.BOB));
+        Assert.assertNotNull(locator.getService(Employee.class, Commons.CAROL));
         
     }
 

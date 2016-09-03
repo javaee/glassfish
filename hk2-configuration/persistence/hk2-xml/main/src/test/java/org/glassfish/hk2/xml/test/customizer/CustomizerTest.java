@@ -44,7 +44,7 @@ import java.net.URL;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
-import org.glassfish.hk2.xml.test.basic.UnmarshallTest;
+import org.glassfish.hk2.xml.test.basic.beans.Commons;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
 import org.junit.Assert;
 import org.junit.Test;
@@ -74,13 +74,13 @@ public class CustomizerTest {
         ServiceLocator locator = Utilities.createLocator(CustomizerOne.class);
         XmlService xmlService = locator.getService(XmlService.class);
         
-        URL url = getClass().getClassLoader().getResource(UnmarshallTest.MUSEUM1_FILE);
+        URL url = getClass().getClassLoader().getResource(Commons.MUSEUM1_FILE);
         
         XmlRootHandle<MuseumBean> rootHandle = xmlService.unmarshall(url.toURI(), MuseumBean.class);
         MuseumBean museum = rootHandle.getRoot();
         
         String retVal = museum.customizer1(PREFIX, POSTFIX);
-        Assert.assertEquals(retVal, PREFIX + UnmarshallTest.BEN_FRANKLIN + POSTFIX);
+        Assert.assertEquals(retVal, PREFIX + Commons.BEN_FRANKLIN + POSTFIX);
         
         CustomizerOne customizer = locator.getService(CustomizerOne.class);
         Assert.assertFalse(customizer.getCustomizer2Called());
@@ -134,20 +134,20 @@ public class CustomizerTest {
         ServiceLocator locator = Utilities.createLocator(SpecializedEmployeeCustomizer.class);
         XmlService xmlService = locator.getService(XmlService.class);
         
-        URL url = getClass().getClassLoader().getResource(UnmarshallTest.ACME1_FILE);
+        URL url = getClass().getClassLoader().getResource(Commons.ACME1_FILE);
         
         XmlRootHandle<EmployeesBean> rootHandle = xmlService.unmarshall(url.toURI(), EmployeesBean.class);
         EmployeesBean employees = rootHandle.getRoot();
         Assert.assertNotNull(employees);
         
-        EmployeeBean bob = locator.getService(EmployeeBean.class, UnmarshallTest.BOB);
-        EmployeeBean carol = locator.getService(EmployeeBean.class, UnmarshallTest.CAROL);
+        EmployeeBean bob = locator.getService(EmployeeBean.class, Commons.BOB);
+        EmployeeBean carol = locator.getService(EmployeeBean.class, Commons.CAROL);
         
         Assert.assertNotNull(bob);
         Assert.assertNotNull(carol);
         
-        Assert.assertEquals(TEST_STRING + UnmarshallTest.BOB, bob.doACustomThing(TEST_STRING));
-        Assert.assertEquals(TEST_STRING + UnmarshallTest.CAROL, carol.doACustomThing(TEST_STRING));
+        Assert.assertEquals(TEST_STRING + Commons.BOB, bob.doACustomThing(TEST_STRING));
+        Assert.assertEquals(TEST_STRING + Commons.CAROL, carol.doACustomThing(TEST_STRING));
     }
 
 }

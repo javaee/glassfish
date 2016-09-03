@@ -44,7 +44,7 @@ import java.net.URL;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 
-import org.glassfish.hk2.xml.test.basic.UnmarshallTest;
+import org.glassfish.hk2.xml.test.basic.beans.Commons;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -63,7 +63,7 @@ public class RawJAXBTest {
      */
     @Test
     public void testArrayChildren() throws Exception {
-        URL url = getClass().getClassLoader().getResource(UnmarshallTest.ACME1_FILE);
+        URL url = getClass().getClassLoader().getResource(Commons.ACME1_FILE);
         
         JAXBContext context = JAXBContext.newInstance(EmployeesImpl.class);
         Unmarshaller unmarshaller = context.createUnmarshaller();
@@ -72,8 +72,8 @@ public class RawJAXBTest {
         Employee employee[] = employees.getEmployees();
         Assert.assertEquals(2, employee.length);
         
-        Assert.assertEquals(UnmarshallTest.BOB, employee[0].getName());
-        Assert.assertEquals(UnmarshallTest.CAROL, employee[1].getName());
+        Assert.assertEquals(Commons.BOB, employee[0].getName());
+        Assert.assertEquals(Commons.CAROL, employee[1].getName());
     }
 
 }
