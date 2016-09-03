@@ -54,8 +54,6 @@ import org.junit.Test;
  * @author jwells
  */
 public class UnmarshallTest {
-    private final Commons commons = new Commons();
-    
     /**
      * Tests the most basic of xml files can be unmarshalled with an interface
      * annotated with jaxb annotations
@@ -95,7 +93,11 @@ public class UnmarshallTest {
     @Test // @org.junit.Ignore
     public void testInterfaceJaxbUnmarshallingWithChildren() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
-        commons.testInterfaceJaxbUnmarshallingWithChildren(locator);
+        
+        URL url = getClass().getClassLoader().getResource(Commons.ACME1_FILE);
+        URI uri = url.toURI();
+        
+        Commons.testInterfaceJaxbUnmarshallingWithChildren(locator, uri);
     }
     
     /**
@@ -107,7 +109,11 @@ public class UnmarshallTest {
     @Test // @org.junit.Ignore
     public void testComplexUnmarshalling() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
-        commons.testComplexUnmarshalling(locator);
+        
+        URL url = getClass().getClassLoader().getResource(Commons.SAMPLE_CONFIG_FILE);
+        URI uri = url.toURI();
+        
+        Commons.testComplexUnmarshalling(locator, uri);
     }
     
     /**
@@ -120,7 +126,11 @@ public class UnmarshallTest {
     @Test // @org.junit.Ignore
     public void testUnkeyedChildren() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
-        commons.testUnkeyedChildren(locator);
+        
+        URL url = getClass().getClassLoader().getResource(Commons.SAMPLE_CONFIG_FILE);
+        URI uri = url.toURI();
+        
+        Commons.testUnkeyedChildren(locator, uri);
     }
     
     /**
@@ -131,7 +141,11 @@ public class UnmarshallTest {
     @Test // @org.junit.Ignore
     public void testSameClassTwoChildren() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
-        commons.testSameClassTwoChildren(locator);
+        
+        URL url = getClass().getClassLoader().getResource(Commons.FOOBAR_FILE);
+        URI uri = url.toURI();
+        
+        Commons.testSameClassTwoChildren(locator, uri);
     }
     
     /**
@@ -142,7 +156,11 @@ public class UnmarshallTest {
     @Test
     public void testBeanCycle() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
-        commons.testBeanCycle(locator);
+        
+        URL url = getClass().getClassLoader().getResource(Commons.CYCLE_FILE);
+        URI uri = url.toURI();
+        
+        Commons.testBeanCycle(locator, uri);
     }
     
     /**
@@ -153,7 +171,11 @@ public class UnmarshallTest {
     @Test
     public void testEveryType() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
-        commons.testEveryType(locator);
+        
+        URL url = getClass().getClassLoader().getResource(Commons.TYPE1_FILE);
+        URI uri = url.toURI();
+        
+        Commons.testEveryType(locator, uri);
     }
     
     /**
@@ -164,7 +186,11 @@ public class UnmarshallTest {
     @Test // @org.junit.Ignore
     public void testAnnotationWithEverythingCopied() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
-        commons.testAnnotationWithEverythingCopied(locator);
+        
+        URL url = getClass().getClassLoader().getResource(Commons.ACME1_FILE);
+        URI uri = url.toURI();
+        
+        Commons.testAnnotationWithEverythingCopied(locator, uri);
     }
     
     /**
@@ -175,7 +201,11 @@ public class UnmarshallTest {
     @Test // @org.junit.Ignore
     public void testEmptyListChildReturnsEmptyList() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
-        commons.testEmptyListChildReturnsEmptyList(locator);
+        
+        URL url = getClass().getClassLoader().getResource(Commons.ACME1_FILE);
+        URI uri = url.toURI();
+        
+        Commons.testEmptyListChildReturnsEmptyList(locator, uri);
     }
     
     /**
@@ -186,7 +216,11 @@ public class UnmarshallTest {
     @Test // @org.junit.Ignore
     public void testEmptyArrayChildReturnsEmptyArray() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
-        commons.testEmptyArrayChildReturnsEmptyArray(locator);
+        
+        URL url = getClass().getClassLoader().getResource(Commons.ACME1_FILE);
+        URI uri = url.toURI();
+        
+        Commons.testEmptyArrayChildReturnsEmptyArray(locator, uri);
     }
     
     /**
@@ -198,6 +232,10 @@ public class UnmarshallTest {
     @Test @org.junit.Ignore
     public void testByteArrayNonChild() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
-        commons.testByteArrayNonChild(locator);
+        
+        URL url = getClass().getClassLoader().getResource(Commons.ACME2_FILE);
+        URI uri = url.toURI();
+        
+        Commons.testByteArrayNonChild(locator, uri);
     }
 }

@@ -56,7 +56,6 @@ import org.junit.Test;
  */
 public class UnmarshallXMLStreamTest {
     private final XMLInputFactory xif = XMLInputFactory.newInstance();
-    private final Commons commons = new Commons();
     
     private InputStream getStream(String fileName) throws Exception {
         URL url = getClass().getClassLoader().getResource(fileName);
@@ -124,7 +123,20 @@ public class UnmarshallXMLStreamTest {
     @Test @org.junit.Ignore
     public void testInterfaceJaxbUnmarshallingWithChildren() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
-        commons.testInterfaceJaxbUnmarshallingWithChildren(locator);
+        
+        InputStream is = getStream(Commons.ACME1_FILE);
+        try {
+            XMLStreamReader reader = xif.createXMLStreamReader(is);
+            try {
+                Commons.testInterfaceJaxbUnmarshallingWithChildren(locator, reader);;
+            }
+            finally {
+                reader.close();
+            }
+        }
+        finally {
+            is.close();
+        }
     }
     
     /**
@@ -136,7 +148,20 @@ public class UnmarshallXMLStreamTest {
     @Test @org.junit.Ignore
     public void testComplexUnmarshalling() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
-        commons.testComplexUnmarshalling(locator);
+        
+        InputStream is = getStream(Commons.SAMPLE_CONFIG_FILE);
+        try {
+            XMLStreamReader reader = xif.createXMLStreamReader(is);
+            try {
+                Commons.testComplexUnmarshalling(locator, reader);;
+            }
+            finally {
+                reader.close();
+            }
+        }
+        finally {
+            is.close();
+        }
     }
     
     /**
@@ -149,7 +174,20 @@ public class UnmarshallXMLStreamTest {
     @Test @org.junit.Ignore
     public void testUnkeyedChildren() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
-        commons.testUnkeyedChildren(locator);
+        
+        InputStream is = getStream(Commons.SAMPLE_CONFIG_FILE);
+        try {
+            XMLStreamReader reader = xif.createXMLStreamReader(is);
+            try {
+                Commons.testUnkeyedChildren(locator, reader);;
+            }
+            finally {
+                reader.close();
+            }
+        }
+        finally {
+            is.close();
+        }
     }
     
     /**
@@ -160,7 +198,20 @@ public class UnmarshallXMLStreamTest {
     @Test @org.junit.Ignore
     public void testSameClassTwoChildren() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
-        commons.testSameClassTwoChildren(locator);
+        
+        InputStream is = getStream(Commons.FOOBAR_FILE);
+        try {
+            XMLStreamReader reader = xif.createXMLStreamReader(is);
+            try {
+                Commons.testSameClassTwoChildren(locator, reader);;
+            }
+            finally {
+                reader.close();
+            }
+        }
+        finally {
+            is.close();
+        }
     }
     
     /**
@@ -171,7 +222,20 @@ public class UnmarshallXMLStreamTest {
     @Test @org.junit.Ignore
     public void testBeanCycle() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
-        commons.testBeanCycle(locator);
+        
+        InputStream is = getStream(Commons.CYCLE_FILE);
+        try {
+            XMLStreamReader reader = xif.createXMLStreamReader(is);
+            try {
+                Commons.testBeanCycle(locator, reader);;
+            }
+            finally {
+                reader.close();
+            }
+        }
+        finally {
+            is.close();
+        }
     }
     
     /**
@@ -182,7 +246,20 @@ public class UnmarshallXMLStreamTest {
     @Test @org.junit.Ignore
     public void testEveryType() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
-        commons.testEveryType(locator);
+        
+        InputStream is = getStream(Commons.TYPE1_FILE);
+        try {
+            XMLStreamReader reader = xif.createXMLStreamReader(is);
+            try {
+                Commons.testEveryType(locator, reader);;
+            }
+            finally {
+                reader.close();
+            }
+        }
+        finally {
+            is.close();
+        }
     }
     
     /**
@@ -193,7 +270,20 @@ public class UnmarshallXMLStreamTest {
     @Test @org.junit.Ignore
     public void testAnnotationWithEverythingCopied() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
-        commons.testAnnotationWithEverythingCopied(locator);
+        
+        InputStream is = getStream(Commons.ACME1_FILE);
+        try {
+            XMLStreamReader reader = xif.createXMLStreamReader(is);
+            try {
+                Commons.testAnnotationWithEverythingCopied(locator, reader);
+            }
+            finally {
+                reader.close();
+            }
+        }
+        finally {
+            is.close();
+        }
     }
     
     /**
@@ -204,7 +294,20 @@ public class UnmarshallXMLStreamTest {
     @Test @org.junit.Ignore
     public void testEmptyListChildReturnsEmptyList() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
-        commons.testEmptyListChildReturnsEmptyList(locator);
+        
+        InputStream is = getStream(Commons.ACME1_FILE);
+        try {
+            XMLStreamReader reader = xif.createXMLStreamReader(is);
+            try {
+                Commons.testEmptyListChildReturnsEmptyList(locator, reader);
+            }
+            finally {
+                reader.close();
+            }
+        }
+        finally {
+            is.close();
+        }
     }
     
     /**
@@ -215,7 +318,20 @@ public class UnmarshallXMLStreamTest {
     @Test @org.junit.Ignore
     public void testEmptyArrayChildReturnsEmptyArray() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
-        commons.testEmptyArrayChildReturnsEmptyArray(locator);
+        
+        InputStream is = getStream(Commons.ACME1_FILE);
+        try {
+            XMLStreamReader reader = xif.createXMLStreamReader(is);
+            try {
+                Commons.testEmptyArrayChildReturnsEmptyArray(locator, reader);
+            }
+            finally {
+                reader.close();
+            }
+        }
+        finally {
+            is.close();
+        }
     }
     
     /**
@@ -227,7 +343,20 @@ public class UnmarshallXMLStreamTest {
     @Test @org.junit.Ignore
     public void testByteArrayNonChild() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
-        commons.testByteArrayNonChild(locator);
+        
+        InputStream is = getStream(Commons.ACME2_FILE);
+        try {
+            XMLStreamReader reader = xif.createXMLStreamReader(is);
+            try {
+                Commons.testByteArrayNonChild(locator, reader);
+            }
+            finally {
+                reader.close();
+            }
+        }
+        finally {
+            is.close();
+        }
     }
 
 }

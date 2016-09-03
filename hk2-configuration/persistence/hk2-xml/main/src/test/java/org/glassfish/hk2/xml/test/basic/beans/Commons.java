@@ -41,7 +41,6 @@ package org.glassfish.hk2.xml.test.basic.beans;
 
 import java.lang.reflect.Method;
 import java.net.URI;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -70,9 +69,10 @@ public class Commons {
     public final static String MUSEUM1_FILE = "museum1.xml";
     public final static String ACME1_FILE = "Acme1.xml";
     public final static String ACME2_FILE = "Acme2.xml";
-    private final static String SAMPLE_CONFIG_FILE = "sample-config.xml";
-    private final static String CYCLE = "cycle.xml";
-    private final static String TYPE1_FILE = "type1.xml";
+    public final static String SAMPLE_CONFIG_FILE = "sample-config.xml";
+    public final static String CYCLE_FILE = "cycle.xml";
+    public final static String TYPE1_FILE = "type1.xml";
+    public final static String FOOBAR_FILE = "foobar.xml";
     
     public final static String BEN_FRANKLIN = "Ben Franklin";
     public final static String ACME = "Acme";
@@ -103,6 +103,8 @@ public class Commons {
     private final static String COKE_ENV = "cokeenv";
     public final static String SYMBOL_TAG = "symbol";
     public final static String EXCHANGE_TAG = "exchange";
+    
+    private Commons() {}
     
     public static void testInterfaceJaxbUnmarshalling(ServiceLocator locator, URI uri) throws Exception {
         testInterfaceJaxbUnmarshalling(locator, uri, null);
@@ -202,19 +204,31 @@ public class Commons {
         Assert.assertNotNull(locator.getService(Employee.class, CAROL));
     }
     
+    public static void testInterfaceJaxbUnmarshallingWithChildren(ServiceLocator locator, URI uri) throws Exception {
+        testInterfaceJaxbUnmarshallingWithChildren(locator, uri, null);
+    }
+    
+    public static void testInterfaceJaxbUnmarshallingWithChildren(ServiceLocator locator, XMLStreamReader reader) throws Exception {
+        testInterfaceJaxbUnmarshallingWithChildren(locator, null, reader);
+    }
+    
     /**
      * Tests the most basic of xml files can be unmarshalled with an interface
      * annotated with jaxb annotations
      * 
      * @throws Exception
      */
-    public void testInterfaceJaxbUnmarshallingWithChildren(ServiceLocator locator) throws Exception {
+    private static void testInterfaceJaxbUnmarshallingWithChildren(ServiceLocator locator, URI uri, XMLStreamReader reader) throws Exception {
         XmlService xmlService = locator.getService(XmlService.class);
         Hub hub = locator.getService(Hub.class);
         
-        URL url = getClass().getClassLoader().getResource(ACME1_FILE);
-        
-        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
+        XmlRootHandle<Employees> rootHandle;
+        if (uri != null) {
+            rootHandle = xmlService.unmarshall(uri, Employees.class);
+        }
+        else {
+            rootHandle = xmlService.unmarshall(reader, Employees.class, true, true);
+        }
         Employees employees = rootHandle.getRoot();
         
         Assert.assertEquals(ACME, employees.getCompanyName());
@@ -241,7 +255,12 @@ public class Commons {
         Assert.assertEquals(NYSE, financials.getExchange());
         
         Assert.assertEquals(Employees.class, rootHandle.getRootClass());
-        Assert.assertEquals(url, rootHandle.getURI().toURL());
+        if (uri != null) {
+            Assert.assertEquals(uri, rootHandle.getURI());
+        }
+        else {
+            Assert.assertNull(rootHandle.getURI());
+        }
         
         Assert.assertNotNull(hub.getCurrentDatabase().getInstance(FINANCIALS_TYPE, FINANCIALS_INSTANCE));
     }
@@ -259,19 +278,31 @@ public class Commons {
     private final static String LIFECYCLE_RUNTIME_wlsRuntime_INSTANCE = "lifecycle-config.runtimes.wlsRuntime";
     private final static String LIFECYCLE_RUNTIME_DatabaseTestRuntime_INSTANCE = "lifecycle-config.runtimes.DatabaseTestRuntime";
     
+    public static void testComplexUnmarshalling(ServiceLocator locator, URI uri) throws Exception {
+        testComplexUnmarshalling(locator, uri, null);
+    }
+    
+    public static void testComplexUnmarshalling(ServiceLocator locator, XMLStreamReader reader) throws Exception {
+        testComplexUnmarshalling(locator, null, reader);
+    }
+    
     /**
      * Tests a more complex XML format.  This test will ensure
      * all elements are in the Hub with expected names
      * 
      * @throws Exception
      */
-    public void testComplexUnmarshalling(ServiceLocator locator) throws Exception {
+    private static void testComplexUnmarshalling(ServiceLocator locator, URI uri, XMLStreamReader reader) throws Exception {
         XmlService xmlService = locator.getService(XmlService.class);
         Hub hub = locator.getService(Hub.class);
         
-        URL url = getClass().getClassLoader().getResource(SAMPLE_CONFIG_FILE);
-        
-        XmlRootHandle<LifecycleConfig> rootHandle = xmlService.unmarshall(url.toURI(), LifecycleConfig.class);
+        XmlRootHandle<LifecycleConfig> rootHandle;
+        if (uri != null) {
+            rootHandle = xmlService.unmarshall(uri, LifecycleConfig.class);
+        }
+        else {
+            rootHandle = xmlService.unmarshall(reader, LifecycleConfig.class, true, true);
+        }
         LifecycleConfig lifecycleConfig = rootHandle.getRoot();
         Assert.assertNotNull(lifecycleConfig);
         
@@ -305,6 +336,14 @@ public class Commons {
     private final static String PART1_1_NAME = "part1-1";
     private final static String PART2_1_NAME = "part2-1";
     
+    public static void testUnkeyedChildren(ServiceLocator locator, URI uri) throws Exception {
+        testUnkeyedChildren(locator, uri, null);
+    }
+    
+    public static void testUnkeyedChildren(ServiceLocator locator, XMLStreamReader reader) throws Exception {
+        testUnkeyedChildren(locator, null, reader);
+    }
+    
     /**
      * Associations has unkeyed children of type Association.  We
      * get them and make sure they have unique keys generated
@@ -313,13 +352,17 @@ public class Commons {
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    public void testUnkeyedChildren(ServiceLocator locator) throws Exception {
+    private static void testUnkeyedChildren(ServiceLocator locator, URI uri, XMLStreamReader reader) throws Exception {
         XmlService xmlService = locator.getService(XmlService.class);
         Hub hub = locator.getService(Hub.class);
         
-        URL url = getClass().getClassLoader().getResource(SAMPLE_CONFIG_FILE);
-        
-        XmlRootHandle<LifecycleConfig> rootHandle = xmlService.unmarshall(url.toURI(), LifecycleConfig.class);
+        XmlRootHandle<LifecycleConfig> rootHandle;
+        if (uri != null) {
+            rootHandle = xmlService.unmarshall(uri, LifecycleConfig.class);
+        }
+        else {
+            rootHandle = xmlService.unmarshall(reader, LifecycleConfig.class, true, true);
+        }
         LifecycleConfig lifecycleConfig = rootHandle.getRoot();
         Assert.assertNotNull(lifecycleConfig);
         
@@ -392,19 +435,30 @@ public class Commons {
     private final static String FOOBAR_BAR1_INSTANCE = "foobar.bar1";
     private final static String FOOBAR_BAR2_INSTANCE = "foobar.bar2";
     
+    public static void testSameClassTwoChildren(ServiceLocator locator, URI uri) throws Exception {
+        testSameClassTwoChildren(locator, uri, null);
+    }
+    
+    public static void testSameClassTwoChildren(ServiceLocator locator, XMLStreamReader reader) throws Exception {
+        testSameClassTwoChildren(locator, null, reader);
+    }
     
     /**
      * Foobar has two children, foo and bar, both of which are of type DataBean
      * 
      * @throws Exception
      */
-    public void testSameClassTwoChildren(ServiceLocator locator) throws Exception {
+    private static void testSameClassTwoChildren(ServiceLocator locator, URI uri, XMLStreamReader reader) throws Exception {
         XmlService xmlService = locator.getService(XmlService.class);
         Hub hub = locator.getService(Hub.class);
         
-        URL url = getClass().getClassLoader().getResource("foobar.xml");
-        
-        XmlRootHandle<FooBarBean> rootHandle = xmlService.unmarshall(url.toURI(), FooBarBean.class);
+        XmlRootHandle<FooBarBean> rootHandle;
+        if (uri != null) {
+            rootHandle = xmlService.unmarshall(uri, FooBarBean.class);
+        }
+        else {
+            rootHandle = xmlService.unmarshall(reader, FooBarBean.class, true, true);
+        }
         FooBarBean foobar = rootHandle.getRoot();
         Assert.assertNotNull(foobar);
         
@@ -415,17 +469,29 @@ public class Commons {
         Assert.assertNotNull(hub.getCurrentDatabase().getInstance(FOOBAR_BAR_TYPE, FOOBAR_BAR2_INSTANCE));
     }
     
+    public static void testBeanCycle(ServiceLocator locator, URI uri) throws Exception {
+        testBeanCycle(locator, uri, null);
+    }
+    
+    public static void testBeanCycle(ServiceLocator locator, XMLStreamReader reader) throws Exception {
+        testBeanCycle(locator, null, reader);
+    }
+    
     /**
      * Tests that an xml hierarchy with a cycle can be unmarshalled
      * 
      * @throws Exception
      */
-    public void testBeanCycle(ServiceLocator locator) throws Exception {
+    private static void testBeanCycle(ServiceLocator locator, URI uri, XMLStreamReader reader) throws Exception {
         XmlService xmlService = locator.getService(XmlService.class);
         
-        URL url = getClass().getClassLoader().getResource(CYCLE);
-        
-        XmlRootHandle<RootWithCycle> rootHandle = xmlService.unmarshall(url.toURI(), RootWithCycle.class);
+        XmlRootHandle<RootWithCycle> rootHandle;
+        if (uri != null) {
+            rootHandle = xmlService.unmarshall(uri, RootWithCycle.class);
+        }
+        else {
+            rootHandle = xmlService.unmarshall(reader, RootWithCycle.class, true, true);
+        }
         RootWithCycle cycle = rootHandle.getRoot();
         
         Assert.assertNotNull(cycle);
@@ -434,17 +500,29 @@ public class Commons {
         Assert.assertNull(cycle.getLeafWithCycle().getRootWithCycle().getLeafWithCycle());
     }
     
+    public static void testEveryType(ServiceLocator locator, URI uri) throws Exception {
+        testEveryType(locator, uri, null);
+    }
+    
+    public static void testEveryType(ServiceLocator locator, XMLStreamReader reader) throws Exception {
+        testEveryType(locator, null, reader);
+    }
+    
     /**
      * Tests every scalar type that can be read
      * 
      * @throws Exception
      */
-    public void testEveryType(ServiceLocator locator) throws Exception {
+    private static void testEveryType(ServiceLocator locator, URI uri, XMLStreamReader reader) throws Exception {
         XmlService xmlService = locator.getService(XmlService.class);
         
-        URL url = getClass().getClassLoader().getResource(TYPE1_FILE);
-        
-        XmlRootHandle<TypeBean> rootHandle = xmlService.unmarshall(url.toURI(), TypeBean.class);
+        XmlRootHandle<TypeBean> rootHandle;
+        if (uri != null) {
+            rootHandle = xmlService.unmarshall(uri, TypeBean.class);
+        }
+        else {
+            rootHandle = xmlService.unmarshall(reader, TypeBean.class, true, true);
+        }
         TypeBean types = rootHandle.getRoot();
         
         Assert.assertNotNull(types);
@@ -457,17 +535,29 @@ public class Commons {
         Assert.assertEquals(0, Double.compare(2.71828, types.getDType()));
     }
     
+    public static void testAnnotationWithEverythingCopied(ServiceLocator locator, URI uri) throws Exception {
+        testAnnotationWithEverythingCopied(locator, uri, null);
+    }
+    
+    public static void testAnnotationWithEverythingCopied(ServiceLocator locator, XMLStreamReader reader) throws Exception {
+        testAnnotationWithEverythingCopied(locator, null, reader);
+    }
+    
     /**
      * Tests that the annotation is fully copied over on the method
      * 
      * @throws Exception
      */
-    public void testAnnotationWithEverythingCopied(ServiceLocator locator) throws Exception {
+    private static void testAnnotationWithEverythingCopied(ServiceLocator locator, URI uri, XMLStreamReader reader) throws Exception {
         XmlService xmlService = locator.getService(XmlService.class);
         
-        URL url = getClass().getClassLoader().getResource(ACME1_FILE);
-        
-        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
+        XmlRootHandle<Employees> rootHandle;
+        if (uri != null) {
+            rootHandle = xmlService.unmarshall(uri, Employees.class);
+        }
+        else {
+            rootHandle = xmlService.unmarshall(reader, Employees.class, true, true);
+        }
         Employees employees = rootHandle.getRoot();
         
         Method setBagelMethod = employees.getClass().getMethod("setBagelPreference", new Class<?>[] { int.class });
@@ -503,17 +593,29 @@ public class Commons {
         Assert.assertEquals(0, Double.compare(14.00, bagel.doubleArrayValue()[1]));
     }
     
+    public static void testEmptyListChildReturnsEmptyList(ServiceLocator locator, URI uri) throws Exception {
+        testEmptyListChildReturnsEmptyList(locator, uri, null);
+    }
+    
+    public static void testEmptyListChildReturnsEmptyList(ServiceLocator locator, XMLStreamReader reader) throws Exception {
+        testEmptyListChildReturnsEmptyList(locator, null, reader);
+    }
+    
     /**
      * Tests that a list child with no elements returns an empty list (not null)
      * 
      * @throws Exception
      */
-    public void testEmptyListChildReturnsEmptyList(ServiceLocator locator) throws Exception {
+    private static void testEmptyListChildReturnsEmptyList(ServiceLocator locator, URI uri, XMLStreamReader reader) throws Exception {
         XmlService xmlService = locator.getService(XmlService.class);
         
-        URL url = getClass().getClassLoader().getResource(ACME1_FILE);
-        
-        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
+        XmlRootHandle<Employees> rootHandle;
+        if (uri != null) {
+            rootHandle = xmlService.unmarshall(uri, Employees.class);
+        }
+        else {
+            rootHandle = xmlService.unmarshall(reader, Employees.class, true, true);
+        }
         Employees employees = rootHandle.getRoot();
         
         List<OtherData> noChildrenList = employees.getNoChildList();
@@ -521,22 +623,42 @@ public class Commons {
         Assert.assertTrue(noChildrenList.isEmpty());
     }
     
+    public static void testEmptyArrayChildReturnsEmptyArray(ServiceLocator locator, URI uri) throws Exception {
+        testEmptyArrayChildReturnsEmptyArray(locator, uri, null);
+    }
+    
+    public static void testEmptyArrayChildReturnsEmptyArray(ServiceLocator locator, XMLStreamReader reader) throws Exception {
+        testEmptyArrayChildReturnsEmptyArray(locator, null, reader);
+    }
+    
     /**
      * Tests that a list child with no elements returns an empty array (not null)
      * 
      * @throws Exception
      */
-    public void testEmptyArrayChildReturnsEmptyArray(ServiceLocator locator) throws Exception {
+    private static void testEmptyArrayChildReturnsEmptyArray(ServiceLocator locator, URI uri, XMLStreamReader reader) throws Exception {
         XmlService xmlService = locator.getService(XmlService.class);
         
-        URL url = getClass().getClassLoader().getResource(ACME1_FILE);
-        
-        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
+        XmlRootHandle<Employees> rootHandle;
+        if (uri != null) {
+            rootHandle = xmlService.unmarshall(uri, Employees.class);
+        }
+        else {
+            rootHandle = xmlService.unmarshall(reader, Employees.class, true, true);
+        }
         Employees employees = rootHandle.getRoot();
         
         OtherData[] noChildrenList = employees.getNoChildArray();
         Assert.assertNotNull(noChildrenList);
         Assert.assertEquals(0, noChildrenList.length);
+    }
+    
+    public static void testByteArrayNonChild(ServiceLocator locator, URI uri) throws Exception {
+        testByteArrayNonChild(locator, uri, null);
+    }
+    
+    public static void testByteArrayNonChild(ServiceLocator locator, XMLStreamReader reader) throws Exception {
+        testByteArrayNonChild(locator, null, reader);
     }
     
     /**
@@ -545,12 +667,18 @@ public class Commons {
      * 
      * @throws Exception
      */
-    public void testByteArrayNonChild(ServiceLocator locator) throws Exception {
+    private static void testByteArrayNonChild(ServiceLocator locator, URI uri, XMLStreamReader reader) throws Exception {
         XmlService xmlService = locator.getService(XmlService.class);
         
-        URL url = getClass().getClassLoader().getResource(ACME2_FILE);
+        // URL url = getClass().getClassLoader().getResource(ACME2_FILE);
         
-        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
+        XmlRootHandle<Employees> rootHandle;
+        if (uri != null) {
+            rootHandle = xmlService.unmarshall(uri, Employees.class);
+        }
+        else {
+            rootHandle = xmlService.unmarshall(reader, Employees.class, true, true);
+        }
         Employees employees = rootHandle.getRoot();
         
         byte[] encrypted = employees.getEncryptedCredentials();
