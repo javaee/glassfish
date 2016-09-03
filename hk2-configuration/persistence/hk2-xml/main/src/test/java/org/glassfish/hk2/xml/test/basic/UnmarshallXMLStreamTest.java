@@ -39,6 +39,11 @@
  */
 package org.glassfish.hk2.xml.test.basic;
 
+import java.net.URI;
+import java.net.URL;
+
+import javax.xml.stream.XMLStreamReader;
+
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.xml.test.basic.beans.Commons;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
@@ -60,7 +65,8 @@ private final Commons commons = new Commons();
     @Test @org.junit.Ignore
     public void testInterfaceJaxbUnmarshalling() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
-        commons.testInterfaceJaxbUnmarshalling(locator);
+        
+        Commons.testInterfaceJaxbUnmarshalling(locator, (XMLStreamReader) null);
     }
     
     /**

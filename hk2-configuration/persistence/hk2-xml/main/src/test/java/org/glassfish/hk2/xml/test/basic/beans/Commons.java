@@ -40,10 +40,13 @@
 package org.glassfish.hk2.xml.test.basic.beans;
 
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import javax.xml.stream.XMLStreamReader;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Hub;
@@ -101,18 +104,30 @@ public class Commons {
     public final static String SYMBOL_TAG = "symbol";
     public final static String EXCHANGE_TAG = "exchange";
     
+    public static void testInterfaceJaxbUnmarshalling(ServiceLocator locator, URI uri) throws Exception {
+        testInterfaceJaxbUnmarshalling(locator, uri, null);
+    }
+    
+    public static void testInterfaceJaxbUnmarshalling(ServiceLocator locator, XMLStreamReader reader) throws Exception {
+        testInterfaceJaxbUnmarshalling(locator, null, reader);
+    }
+    
     /**
      * Tests the most basic of xml files can be unmarshalled with an interface
      * annotated with jaxb annotations
      * 
      * @throws Exception
      */
-    public void testInterfaceJaxbUnmarshalling(ServiceLocator locator) throws Exception {
+    private static void testInterfaceJaxbUnmarshalling(ServiceLocator locator, URI uri, XMLStreamReader reader) throws Exception {
         XmlService xmlService = locator.getService(XmlService.class);
         
-        URL url = getClass().getClassLoader().getResource(MUSEUM1_FILE);
-        
-        XmlRootHandle<Museum> rootHandle = xmlService.unmarshall(url.toURI(), Museum.class);
+        XmlRootHandle<Museum> rootHandle;
+        if (uri != null) {
+            rootHandle = xmlService.unmarshall(uri, Museum.class);
+        }
+        else {
+            rootHandle = xmlService.unmarshall(reader, Museum.class, true, true);
+        }
         Museum museum = rootHandle.getRoot();
         
         Assert.assertEquals(HUNDRED_INT, museum.getId());

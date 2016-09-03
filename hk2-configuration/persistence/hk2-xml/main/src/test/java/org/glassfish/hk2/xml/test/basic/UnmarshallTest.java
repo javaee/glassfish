@@ -40,6 +40,9 @@
 
 package org.glassfish.hk2.xml.test.basic;
 
+import java.net.URI;
+import java.net.URL;
+
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.xml.test.basic.beans.Commons;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
@@ -62,7 +65,10 @@ public class UnmarshallTest {
     @Test // @org.junit.Ignore
     public void testInterfaceJaxbUnmarshalling() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
-        commons.testInterfaceJaxbUnmarshalling(locator);
+        URL url = getClass().getClassLoader().getResource(Commons.MUSEUM1_FILE);
+        URI uri = url.toURI();
+        
+        Commons.testInterfaceJaxbUnmarshalling(locator, uri);
     }
     
     /**
