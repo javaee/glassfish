@@ -129,4 +129,8 @@ public interface Employees {
     @XmlElement(name="set-to-null-string")
     public void setAStringThatWillBeSetToNull(String setMe);
     public String getAStringThatWillBeSetToNull();
+    
+    @XmlElement(name="encrypted-credentials")
+    public byte[] getEncryptedCredentials();
+    public void setEncryptedCredentials(byte[] creds);
 }
