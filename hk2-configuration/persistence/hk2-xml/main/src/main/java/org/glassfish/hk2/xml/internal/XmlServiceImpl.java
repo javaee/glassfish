@@ -180,7 +180,7 @@ public class XmlServiceImpl implements XmlService {
             root = localParser.parseRoot((Class<T>) model.getProxyAsClass(), uri, listener);
         }
         else {
-            throw new AssertionError("XMLStreamReader implementation not yet implemented");
+            root = XmlStreamImpl.parseRoot(this, model, reader, listener);
         }
         
         long elapsedJAXBToAdvertisement = 0;

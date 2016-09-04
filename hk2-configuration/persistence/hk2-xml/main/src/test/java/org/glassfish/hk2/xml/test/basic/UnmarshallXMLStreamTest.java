@@ -70,7 +70,8 @@ public class UnmarshallXMLStreamTest {
      * 
      * @throws Exception
      */
-    @Test @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testInterfaceJaxbUnmarshalling() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
         
@@ -95,7 +96,8 @@ public class UnmarshallXMLStreamTest {
      * 
      * @throws Exception
      */
-    @Test @org.junit.Ignore
+    @Test 
+    // @org.junit.Ignore
     public void testBeanLikeMapOfInterface() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
         
@@ -120,7 +122,8 @@ public class UnmarshallXMLStreamTest {
      * 
      * @throws Exception
      */
-    @Test @org.junit.Ignore
+    @Test 
+    // @org.junit.Ignore
     public void testInterfaceJaxbUnmarshallingWithChildren() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
         
@@ -145,7 +148,8 @@ public class UnmarshallXMLStreamTest {
      * 
      * @throws Exception
      */
-    @Test @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testComplexUnmarshalling() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
         
@@ -171,7 +175,8 @@ public class UnmarshallXMLStreamTest {
      * 
      * @throws Exception
      */
-    @Test @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testUnkeyedChildren() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
         
@@ -195,7 +200,8 @@ public class UnmarshallXMLStreamTest {
      * 
      * @throws Exception
      */
-    @Test @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testSameClassTwoChildren() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
         
@@ -219,7 +225,8 @@ public class UnmarshallXMLStreamTest {
      * 
      * @throws Exception
      */
-    @Test @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testBeanCycle() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
         
@@ -243,7 +250,8 @@ public class UnmarshallXMLStreamTest {
      * 
      * @throws Exception
      */
-    @Test @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testEveryType() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
         
@@ -267,7 +275,8 @@ public class UnmarshallXMLStreamTest {
      * 
      * @throws Exception
      */
-    @Test @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testAnnotationWithEverythingCopied() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
         
@@ -291,7 +300,8 @@ public class UnmarshallXMLStreamTest {
      * 
      * @throws Exception
      */
-    @Test @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testEmptyListChildReturnsEmptyList() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
         
@@ -315,7 +325,8 @@ public class UnmarshallXMLStreamTest {
      * 
      * @throws Exception
      */
-    @Test @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testEmptyArrayChildReturnsEmptyArray() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
         
@@ -340,7 +351,8 @@ public class UnmarshallXMLStreamTest {
      * 
      * @throws Exception
      */
-    @Test @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testByteArrayNonChild() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
         

@@ -39,10 +39,194 @@
  */
 package org.glassfish.hk2.xml.internal;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.Unmarshaller.Listener;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamReader;
+
+import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
+import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
+
 /**
  * @author jwells
  *
  */
 public class XmlStreamImpl {
+    @SuppressWarnings("unchecked")
+    public static <T> T parseRoot(XmlServiceImpl xmlService,
+            Model rootModel,
+            XMLStreamReader reader,
+            Unmarshaller.Listener listener) throws Exception {
+        Class<?> rootProxyClass = rootModel.getProxyAsClass();
+        
+        ClassReflectionHelper classReflectionHelper = xmlService.getClassReflectionHelper();
+        
+        BaseHK2JAXBBean hk2Root = Utilities.createBean(rootProxyClass);
+        hk2Root._setClassReflectionHelper(classReflectionHelper);
+        
+        while(reader.hasNext()) {
+            int event = reader.next();
+            
+            switch(event) {
+            case XMLStreamConstants.START_ELEMENT:
+                handleElement(hk2Root, null, reader, classReflectionHelper, listener);
+                
+                break;
+            case XMLStreamConstants.END_DOCUMENT:
+                return (T) hk2Root;
+            default:
+                // Do nothing
+            }
+            
+        }
+        
+        throw new IllegalStateException("Unexpected end of XMLReaderStream");
+    }
+    
+    private static <T> void handleElement(BaseHK2JAXBBean target, BaseHK2JAXBBean parent,
+            XMLStreamReader reader, ClassReflectionHelper classReflectionHelper, Listener listener) throws Exception {
+        listener.beforeUnmarshal(target, parent);
+        
+        Map<String, List<BaseHK2JAXBBean>> listChildren = new HashMap<String, List<BaseHK2JAXBBean>>();
+        Map<String, List<BaseHK2JAXBBean>> arrayChildren = new HashMap<String, List<BaseHK2JAXBBean>>();
+        
+        Model targetModel = target._getModel();
+        Map<String, ChildDataModel> nonChildProperties = targetModel.getNonChildProperties();
+        Map<String, ParentedModel> childProperties = targetModel.getChildrenByName();
+        
+        int numAttributes = reader.getAttributeCount();
+        for (int lcv = 0; lcv < numAttributes; lcv++) {
+            String attributeName = reader.getAttributeLocalName(lcv);
+            String attributeValue = reader.getAttributeValue(lcv);
+            
+            ChildDataModel childDataModel = nonChildProperties.get(attributeName);
+            if (childDataModel == null) continue;
+            
+            Class<?> childType = targetModel.getNonChildType(attributeName);
+            
+            Object convertedValue = Utilities.getDefaultValue(attributeValue, childType);
+            target._setProperty(attributeName, convertedValue);
+        }
+        
+        while(reader.hasNext()) {
+            int event = reader.next();
+            
+            switch(event) {
+            case XMLStreamConstants.START_ELEMENT:
+                String elementTag = reader.getName().getLocalPart();
+                
+                ChildDataModel cdm = nonChildProperties.get(elementTag);
+                if (cdm != null) {
+                    String elementValue = advanceNonChildElement(reader);
+                    
+                    Class<?> childType = cdm.getChildTypeAsClass();
+                    
+                    Object convertedValue = Utilities.getDefaultValue(elementValue, childType);
+                    target._setProperty(elementTag, convertedValue);
+                    
+                    break;
+                }
+                
+                ParentedModel informedChild = childProperties.get(elementTag);
+                if (informedChild != null) {
+                    Model grandChild = informedChild.getChildModel();
+                    
+                    BaseHK2JAXBBean hk2Root = Utilities.createBean(grandChild.getProxyAsClass());
+                    hk2Root._setClassReflectionHelper(classReflectionHelper);
+                    
+                    handleElement(hk2Root, target, reader, classReflectionHelper, listener);
+                    
+                    if (informedChild.getChildType().equals(ChildType.DIRECT)) {
+                        target._setProperty(elementTag, hk2Root);
+                    }
+                    else if (informedChild.getChildType().equals(ChildType.LIST)) {
+                        List<BaseHK2JAXBBean> cList = listChildren.get(elementTag);
+                        if (cList == null) {
+                            cList = new ArrayList<BaseHK2JAXBBean>();
+                            listChildren.put(elementTag, cList);
+                        }
+                        cList.add(hk2Root);
+                    }
+                    else if (informedChild.getChildType().equals(ChildType.ARRAY)) {
+                        List<BaseHK2JAXBBean> cList = arrayChildren.get(elementTag);
+                        if (cList == null) {
+                            cList = new LinkedList<BaseHK2JAXBBean>();
+                            arrayChildren.put(elementTag, cList);
+                        }
+                        cList.add(hk2Root);
+                    }
+                    
+                    break;
+                }
+                
+                break;
+            case XMLStreamConstants.CHARACTERS:
+                // Do nothing
+                break;
+            case XMLStreamConstants.END_ELEMENT:
+                for (Map.Entry<String, List<BaseHK2JAXBBean>> entry : listChildren.entrySet()) {
+                    // Kind of cheating with the erasure, but hey, it works!
+                    target._setProperty(entry.getKey(), entry.getValue());
+                }
+                
+                for (Map.Entry<String, List<BaseHK2JAXBBean>> entry : arrayChildren.entrySet()) {
+                    String childTag = entry.getKey();
+                    ParentedModel pn = targetModel.getChild(childTag);
+                    Class<?> childType = pn.getChildModel().getOriginalInterfaceAsClass();
+                    
+                    List<BaseHK2JAXBBean> individuals = entry.getValue();
+                    
+                    Object actualArray = Array.newInstance(childType, individuals.size());
+                    
+                    int index = 0;
+                    for (BaseHK2JAXBBean individual : individuals) {
+                        Array.set(actualArray, index++, individual);
+                    }
+                    
+                    target._setProperty(childTag, actualArray);
+                    
+                }
+                
+                listener.afterUnmarshal(target, parent);
+                return;
+            case XMLStreamConstants.COMMENT:
+                break;
+            default:
+                // Do nothing
+            }
+            
+        }
+        
+        
+    }
+    
+    private static String advanceNonChildElement(XMLStreamReader reader) throws Exception {
+        String retVal = null;
+        
+        while (reader.hasNext()) {
+            int nextEvent = reader.next();
+            switch (nextEvent) {
+            case XMLStreamConstants.CHARACTERS:
+                String text = reader.getText();
+                // TODO:  To trim or not to trim
+                retVal = text.trim();
+                break;
+            case XMLStreamConstants.END_ELEMENT:
+                return retVal;
+            default:
+                // Everything else would be comments or other stuff
+                // If not we have a bigger problem
+            }
+        }
+        
+        return retVal;
+    }
 
 }
