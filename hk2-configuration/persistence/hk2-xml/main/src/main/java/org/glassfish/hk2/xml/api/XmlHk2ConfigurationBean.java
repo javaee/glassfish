@@ -43,7 +43,7 @@ package org.glassfish.hk2.xml.api;
 import java.util.Map;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
-import org.glassfish.hk2.xml.internal.Model;
+import org.glassfish.hk2.xml.internal.ModelImpl;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -109,7 +109,7 @@ public interface XmlHk2ConfigurationBean {
      * 
      * @return The model for the bean
      */
-    public Model _getModel();
+    public ModelImpl _getModel();
     
     /**
      * Gets the descriptor with which this service was created.  May be

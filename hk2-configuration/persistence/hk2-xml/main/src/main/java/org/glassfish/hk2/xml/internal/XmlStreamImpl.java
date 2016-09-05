@@ -53,6 +53,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
+import org.glassfish.hk2.xml.spi.Model;
 
 /**
  * @author jwells
@@ -97,7 +98,7 @@ public class XmlStreamImpl {
         Map<String, List<BaseHK2JAXBBean>> listChildren = new HashMap<String, List<BaseHK2JAXBBean>>();
         Map<String, List<BaseHK2JAXBBean>> arrayChildren = new HashMap<String, List<BaseHK2JAXBBean>>();
         
-        Model targetModel = target._getModel();
+        ModelImpl targetModel = target._getModel();
         Map<String, ChildDataModel> nonChildProperties = targetModel.getNonChildProperties();
         Map<String, ParentedModel> childProperties = targetModel.getChildrenByName();
         
@@ -136,7 +137,7 @@ public class XmlStreamImpl {
                 
                 ParentedModel informedChild = childProperties.get(elementTag);
                 if (informedChild != null) {
-                    Model grandChild = informedChild.getChildModel();
+                    ModelImpl grandChild = informedChild.getChildModel();
                     
                     BaseHK2JAXBBean hk2Root = Utilities.createBean(grandChild.getProxyAsClass());
                     hk2Root._setClassReflectionHelper(classReflectionHelper);

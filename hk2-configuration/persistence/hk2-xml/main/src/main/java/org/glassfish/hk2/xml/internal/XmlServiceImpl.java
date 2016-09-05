@@ -118,7 +118,7 @@ public class XmlServiceImpl implements XmlService {
             boolean generateAll = PreGenerationRequirement.MUST_PREGENERATE.equals(localParser.getPreGenerationRequirement());
             jaUtilities.convertRootAndLeaves(jaxbAnnotatedInterface, generateAll);
             
-            Model model = jaUtilities.getModel(jaxbAnnotatedInterface);
+            ModelImpl model = jaUtilities.getModel(jaxbAnnotatedInterface);
                 
             return unmarshallClass(uri, model, localParser, null, advertiseInRegistry, advertiseInHub);
         }
@@ -145,7 +145,7 @@ public class XmlServiceImpl implements XmlService {
         try {
             jaUtilities.convertRootAndLeaves(jaxbAnnotatedInterface, false);
             
-            Model model = jaUtilities.getModel(jaxbAnnotatedInterface);
+            ModelImpl model = jaUtilities.getModel(jaxbAnnotatedInterface);
                 
             return unmarshallClass(null, model, null, reader, advertiseInRegistry, advertiseInHub);
         }
@@ -157,7 +157,7 @@ public class XmlServiceImpl implements XmlService {
         }
     }
     
-    private <T> XmlRootHandle<T> unmarshallClass(URI uri, Model model,
+    private <T> XmlRootHandle<T> unmarshallClass(URI uri, ModelImpl model,
             XmlServiceParser localParser, XMLStreamReader reader,
             boolean advertise, boolean advertiseInHub) throws Exception {
         long elapsedUpToJAXB = 0;
@@ -263,7 +263,7 @@ public class XmlServiceImpl implements XmlService {
         try {
             jaUtilities.convertRootAndLeaves(jaxbAnnotatedInterface, true);
             
-            Model model = jaUtilities.getModel(jaxbAnnotatedInterface);
+            ModelImpl model = jaUtilities.getModel(jaxbAnnotatedInterface);
         
             return new XmlRootHandleImpl<T>(this, hub, null, model, null, advertiseInRegistry, advertiseInHub,
                     new DynamicChangeInfo(jaUtilities,
@@ -301,7 +301,7 @@ public class XmlServiceImpl implements XmlService {
         
         jaUtilities.convertRootAndLeaves(beanInterface, true);
         
-        Model model = jaUtilities.getModel(beanInterface);
+        ModelImpl model = jaUtilities.getModel(beanInterface);
         
         T retVal = (T) Utilities.createBean(model.getProxyAsClass());
         

@@ -49,7 +49,7 @@ import javax.xml.bind.Unmarshaller.Listener;
 
 import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.Visibility;
-import org.glassfish.hk2.xml.internal.Model;
+import org.glassfish.hk2.xml.spi.Model;
 import org.glassfish.hk2.xml.spi.PreGenerationRequirement;
 import org.glassfish.hk2.xml.spi.XmlServiceParser;
 

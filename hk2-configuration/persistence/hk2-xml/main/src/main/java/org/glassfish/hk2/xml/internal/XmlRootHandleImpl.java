@@ -62,7 +62,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
     private final XmlServiceImpl parent;
     private final Hub hub;
     private T root;
-    private final Model rootNode;
+    private final ModelImpl rootNode;
     private URI rootURI;
     private final boolean advertised;
     private final boolean advertisedInHub;
@@ -72,7 +72,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
             XmlServiceImpl parent,
             Hub hub,
             T root,
-            Model rootNode,
+            ModelImpl rootNode,
             URI rootURI,
             boolean advertised,
             boolean inHub,
@@ -232,9 +232,9 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
             else if (child.getClass().isArray()) {
                 int length = Array.getLength(child);
                 
-                Model myModel = retVal._getModel();
+                ModelImpl myModel = retVal._getModel();
                 ParentedModel pm = myModel.getChild(childProp);
-                Model childModel = pm.getChildModel();
+                ModelImpl childModel = pm.getChildModel();
                 
                 Class<?> childInterface = childModel.getOriginalInterfaceAsClass();
                 

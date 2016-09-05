@@ -102,7 +102,7 @@ public class JAUtilities {
     private final CtClass superClazz;
     
     private final Computer computer;
-    private final LRUHybridCache<Class<?>, Model> interface2ModelCache;
+    private final LRUHybridCache<Class<?>, ModelImpl> interface2ModelCache;
     
     private final AtomicLong idGenerator = new AtomicLong();
     
@@ -116,7 +116,7 @@ public class JAUtilities {
         }
         
         computer = new Computer(this);
-        interface2ModelCache = new LRUHybridCache<Class<?>, Model>(Integer.MAX_VALUE - 1, computer);
+        interface2ModelCache = new LRUHybridCache<Class<?>, ModelImpl>(Integer.MAX_VALUE - 1, computer);
     }
     
     /**
@@ -133,8 +133,8 @@ public class JAUtilities {
      * @param iFace Fully qualified interface name (not proxy)
      * @return The Model for the interface
      */
-    public Model getModel(Class<?> iFace) {
-        HybridCacheEntry<Model> entry = interface2ModelCache.compute(iFace);
+    public ModelImpl getModel(Class<?> iFace) {
+        HybridCacheEntry<ModelImpl> entry = interface2ModelCache.compute(iFace);
         return entry.getValue();
     }
     
@@ -147,7 +147,7 @@ public class JAUtilities {
             currentTime = System.currentTimeMillis();
         }
         
-        Model rootModel = interface2ModelCache.compute(root).getValue();
+        ModelImpl rootModel = interface2ModelCache.compute(root).getValue();
         if (!mustConvertAll) {
             if (DEBUG_GENERATION_TIMING) {
                 currentTime = System.currentTimeMillis() - currentTime;
@@ -173,7 +173,7 @@ public class JAUtilities {
         }
     }
     
-    private void convertAllRootAndLeaves(Model rootModel, HashSet<Class<?>> cycles) {
+    private void convertAllRootAndLeaves(ModelImpl rootModel, HashSet<Class<?>> cycles) {
         for (ParentedModel parentModel : rootModel.getAllChildren()) {
             Class<?> convertMe = parentModel.getChildModel().getOriginalInterfaceAsClass();
             
@@ -181,7 +181,7 @@ public class JAUtilities {
             if (cycles.contains(convertMe)) continue;
             cycles.add(convertMe);
             
-            Model childModel = interface2ModelCache.compute(convertMe).getValue();
+            ModelImpl childModel = interface2ModelCache.compute(convertMe).getValue();
             
             convertAllRootAndLeaves(childModel, cycles);
         }
@@ -235,7 +235,7 @@ public class JAUtilities {
         return computer.numPreGenerated;
     }
     
-    private final class Computer implements Computable<Class<?>, HybridCacheEntry<Model>> {
+    private final class Computer implements Computable<Class<?>, HybridCacheEntry<ModelImpl>> {
         private final JAUtilities jaUtilities;
         private int numGenerated;
         private int numPreGenerated;
@@ -248,7 +248,7 @@ public class JAUtilities {
          * @see org.glassfish.hk2.utilities.cache.Computable#compute(java.lang.Object)
          */
         @Override
-        public HybridCacheEntry<Model> compute(Class<?> key) {
+        public HybridCacheEntry<ModelImpl> compute(Class<?> key) {
             String iFaceName = key.getName();
             String proxyName = Utilities.getProxyNameFromInterfaceName(iFaceName);
             
@@ -293,9 +293,9 @@ public class JAUtilities {
                 throw new AssertionError("This proxy must have been generated with an old generator, it has no __getModel method for " + key.getName());
             }
             
-            Model retVal;
+            ModelImpl retVal;
             try {
-                retVal = (Model) ReflectionHelper.invoke(null, getModelMethod, new Object[0], false);
+                retVal = (ModelImpl) ReflectionHelper.invoke(null, getModelMethod, new Object[0], false);
             }
             catch (RuntimeException re) {
                 throw re;

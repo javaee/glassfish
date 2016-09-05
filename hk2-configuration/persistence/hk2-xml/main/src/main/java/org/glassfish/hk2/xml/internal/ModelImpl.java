@@ -39,7 +39,6 @@
  */
 package org.glassfish.hk2.xml.internal;
 
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -48,6 +47,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
+import org.glassfish.hk2.xml.spi.Model;
 
 /**
  * This model is a description of the children and non-children nodes
@@ -58,7 +58,7 @@ import org.glassfish.hk2.utilities.general.GeneralUtilities;
  * @author jwells
  *
  */
-public class Model implements Serializable {
+public class ModelImpl implements Model {
     private static final long serialVersionUID = 752816761552710497L;
     
     /** For thread safety on the computed fields */
@@ -96,10 +96,10 @@ public class Model implements Serializable {
     private transient JAUtilities jaUtilities = null;
     private ClassLoader myLoader;
     
-    public Model() {
+    public ModelImpl() {
     }
     
-    public Model(String originalInterface,
+    public ModelImpl(String originalInterface,
         String translatedClass) {
         this.originalInterface = originalInterface;
         this.translatedClass = translatedClass;
@@ -129,6 +129,7 @@ public class Model implements Serializable {
     /**
      * @return the originalInterface
      */
+    @Override
     public String getOriginalInterface() {
         return originalInterface;
     }
@@ -136,6 +137,7 @@ public class Model implements Serializable {
     /**
      * @return the translatedClass
      */
+    @Override
     public String getTranslatedClass() {
         return translatedClass;
     }
@@ -143,6 +145,7 @@ public class Model implements Serializable {
     /**
      * @return the rootName
      */
+    @Override
     public String getRootName() {
         return rootName;
     }
@@ -150,6 +153,7 @@ public class Model implements Serializable {
     /**
      * @return the keyProperty
      */
+    @Override
     public String getKeyProperty() {
         return keyProperty;
     }
@@ -240,6 +244,7 @@ public class Model implements Serializable {
         }
     }
     
+    @Override
     public Class<?> getOriginalInterfaceAsClass() {
         if (originalInterfaceAsClass != null) return originalInterfaceAsClass;
         
@@ -252,6 +257,7 @@ public class Model implements Serializable {
         }
     }
     
+    @Override
     public Class<?> getProxyAsClass() {
         if (translatedClassAsClass != null) return translatedClassAsClass;
         
@@ -284,9 +290,9 @@ public class Model implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (o == null) return false;
-        if (!(o instanceof Model)) return false;
+        if (!(o instanceof ModelImpl)) return false;
         
-        return translatedClass.equals(((Model) o).getTranslatedClass());
+        return translatedClass.equals(((ModelImpl) o).getTranslatedClass());
     }
     
     @Override

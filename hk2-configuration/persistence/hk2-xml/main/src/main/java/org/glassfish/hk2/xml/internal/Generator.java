@@ -150,7 +150,7 @@ public class Generator {
         targetClassFile.setVersionToJava5();
         ConstPool targetConstPool = targetClassFile.getConstPool();
         
-        Model compiledModel = new Model(modelOriginalInterface, modelTranslatedClass);
+        ModelImpl compiledModel = new ModelImpl(modelOriginalInterface, modelTranslatedClass);
         AnnotationsAttribute ctAnnotations = null;
         for (AltAnnotation convertMeAnnotation : convertMe.getAnnotations()) {
             if (NO_COPY_ANNOTATIONS.contains(convertMeAnnotation.annotationType())) {
@@ -568,12 +568,12 @@ public class Generator {
     }
     
     private static void generateStaticModelFieldAndAbstractMethodImpl(CtClass targetCtClass,
-            Model model,
+            ModelImpl model,
             ClassPool defaultClassPool) throws CannotCompileException, NotFoundException {
         StringBuffer sb = new StringBuffer();
         
-        sb.append("private static final org.glassfish.hk2.xml.internal.Model INIT_MODEL() {\n");
-        sb.append("org.glassfish.hk2.xml.internal.Model retVal = new org.glassfish.hk2.xml.internal.Model(\"");
+        sb.append("private static final org.glassfish.hk2.xml.internal.ModelImpl INIT_MODEL() {\n");
+        sb.append("org.glassfish.hk2.xml.internal.ModelImpl retVal = new org.glassfish.hk2.xml.internal.ModelImpl(\"");
         
         sb.append(model.getOriginalInterface() + "\",\"" + model.getTranslatedClass() + "\");\n");
         
@@ -614,7 +614,7 @@ public class Generator {
         
         targetCtClass.addMethod(CtNewMethod.make(sb.toString(), targetCtClass));
         
-        CtClass modelCt = defaultClassPool.get(Model.class.getName());
+        CtClass modelCt = defaultClassPool.get(ModelImpl.class.getName());
         
         CtField sField = new CtField(modelCt, "MODEL", targetCtClass);
         sField.setModifiers(Modifier.STATIC | Modifier.FINAL | Modifier.PRIVATE);
@@ -622,12 +622,12 @@ public class Generator {
         targetCtClass.addField(sField, CtField.Initializer.byCall(targetCtClass, "INIT_MODEL"));
         
         CtMethod aMethod = CtNewMethod.make(
-                "public org.glassfish.hk2.xml.internal.Model _getModel() { return MODEL; }" , targetCtClass);
+                "public org.glassfish.hk2.xml.internal.ModelImpl _getModel() { return MODEL; }" , targetCtClass);
         
         targetCtClass.addMethod(aMethod);
         
         CtMethod sMethod = CtNewMethod.make(
-                "public static final org.glassfish.hk2.xml.internal.Model __getModel() { return MODEL; }" , targetCtClass);
+                "public static final org.glassfish.hk2.xml.internal.ModelImpl __getModel() { return MODEL; }" , targetCtClass);
         
         targetCtClass.addMethod(sMethod);
     }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,44 +39,42 @@
  */
 package org.glassfish.hk2.xml.spi;
 
-import java.net.URI;
-
-import javax.xml.bind.Unmarshaller;
-
-import org.jvnet.hk2.annotations.Contract;
+import java.io.Serializable;
 
 /**
- * If an implementation of this exists it will be used to parse the XML file rather
- * than the default implementation which uses JAXB
- * 
  * @author jwells
+ *
  */
-@Contract
-public interface XmlServiceParser {
+public interface Model extends Serializable {
     /**
-     * The default Xml parsing service will have this name
+     * @return the originalInterface
      */
-    public static final String DEFAULT_PARSING_SERVICE = "DefaultJAXBXmlParsingService";
+    public String getOriginalInterface();
     
     /**
-     * This method must return an instance of the given class as the root of
-     * an XML graph
-     * 
-     * @param rootModel The Model object of the root to be parsed
-     * @param location The location of the file to parse
-     * @param listener A listener that must be called via the contract of Unmarshaller.Listener
-     * @return The root object with all fields filled in from the given document
+     * @return the original interface as a class
      */
-    public <T> T parseRoot(Model rootModel, URI location, Unmarshaller.Listener listener) throws Exception;
-    
-    
-    /**
-     * This tells the system whether or not it needs to pregenerate all proxies
-     * prior to parsing a document or if the proxies can be generated lazily
-     * 
-     * @return The value that indicates whether or not the proxies can be
-     * loaded lazily or must be pre-generated prior to parsing a document
-     */
-    public PreGenerationRequirement getPreGenerationRequirement();
+    public Class<?> getOriginalInterfaceAsClass();
 
+    /**
+     * @return the translatedClass
+     */
+    public String getTranslatedClass();
+
+    /**
+     * @return the rootName
+     */
+    public String getRootName();
+
+    /**
+     * @return the keyProperty
+     */
+    public String getKeyProperty();
+    
+    /**
+     * Gets the class of the proxy for this bean
+     * 
+     * @return The class of the generated proxy
+     */
+    public Class<?> getProxyAsClass();
 }

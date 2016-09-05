@@ -562,7 +562,7 @@ public class Utilities {
      * @param dynamicService
      * @return
      */
-    public static BaseHK2JAXBBean _addRoot(Model rootNode,
+    public static BaseHK2JAXBBean _addRoot(ModelImpl rootNode,
             Object rawRoot,
             DynamicChangeInfo changeInfo,
             ClassReflectionHelper helper,
@@ -624,7 +624,7 @@ public class Utilities {
         if (childProperty == null) return null;
         
         ParentedModel removeMeParentedNode = myParent._getModel().getChild(childProperty);
-        Model removeMeNode = removeMeParentedNode.getChildModel();
+        ModelImpl removeMeNode = removeMeParentedNode.getChildModel();
         BaseHK2JAXBBean rootForDeletion = null;
         
         if (!ChildType.DIRECT.equals(removeMeParentedNode.getChildType())) {
@@ -798,7 +798,7 @@ public class Utilities {
         
         descriptorsToRemove.add(fromMeDescriptor);
         
-        Model model = fromMe._getModel();
+        ModelImpl model = fromMe._getModel();
         if (model == null) return;
         
         for (ParentedModel parentedChild : model.getAllChildren()) {

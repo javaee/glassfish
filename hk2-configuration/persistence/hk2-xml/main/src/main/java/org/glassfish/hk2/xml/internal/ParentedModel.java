@@ -70,7 +70,7 @@ public class ParentedModel implements Serializable {
     private transient JAUtilities jaUtilities;
     
     /** Calculated lazily */
-    private Model childModel;
+    private ModelImpl childModel;
     
     public ParentedModel() {
     }
@@ -98,7 +98,7 @@ public class ParentedModel implements Serializable {
         return givenDefault;
     }
     
-    public Model getChildModel() {
+    public ModelImpl getChildModel() {
         synchronized (lock) {
             if (myLoader == null) {
                 throw new IllegalStateException("Cannot call getChildModel before the classloader has been determined");
