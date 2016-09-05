@@ -122,8 +122,8 @@ public class ModelImpl implements Model {
         childrenByName.put(xmlTag, pm);
     }
     
-    public void addNonChild(String xmlTag, String defaultValue, String childType) {
-        nonChildProperty.put(xmlTag, new ChildDataModel(childType, defaultValue));
+    public void addNonChild(String xmlTag, String defaultValue, String childType, boolean isReference) {
+        nonChildProperty.put(xmlTag, new ChildDataModel(childType, defaultValue, isReference));
     }
 
     /**

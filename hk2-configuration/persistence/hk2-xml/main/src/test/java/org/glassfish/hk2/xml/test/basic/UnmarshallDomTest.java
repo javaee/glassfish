@@ -245,7 +245,7 @@ public class UnmarshallDomTest {
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testJaxbStyleReference() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
         

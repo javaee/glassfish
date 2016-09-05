@@ -51,6 +51,7 @@ import javax.xml.bind.Unmarshaller.Listener;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
 
+import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 import org.glassfish.hk2.xml.spi.Model;
@@ -72,15 +73,30 @@ public class XmlStreamImpl {
         BaseHK2JAXBBean hk2Root = Utilities.createBean(rootProxyClass);
         hk2Root._setClassReflectionHelper(classReflectionHelper);
         
+        Map<ReferenceKey, BaseHK2JAXBBean> referenceMap = new HashMap<ReferenceKey, BaseHK2JAXBBean>();
+        List<UnresolvedReference> unresolved = new LinkedList<UnresolvedReference>();
+        
         while(reader.hasNext()) {
             int event = reader.next();
             
             switch(event) {
             case XMLStreamConstants.START_ELEMENT:
-                handleElement(hk2Root, null, reader, classReflectionHelper, listener);
+                handleElement(hk2Root, null, reader, classReflectionHelper, listener, referenceMap, unresolved);
                 
                 break;
             case XMLStreamConstants.END_DOCUMENT:
+                // Resolve any forward references
+                for (UnresolvedReference unresolvedRef : unresolved) {
+                    ReferenceKey key = new ReferenceKey(unresolvedRef.type, unresolvedRef.xmlID);
+                    BaseHK2JAXBBean reference = referenceMap.get(key);
+                    if (reference == null) {
+                        throw new IllegalStateException("No Reference was found for " + unresolvedRef);
+                    }
+                    
+                    BaseHK2JAXBBean unfinished = unresolvedRef.unfinished;
+                    unfinished._setProperty(unresolvedRef.propertyName, reference);
+                }
+                
                 return (T) hk2Root;
             default:
                 // Do nothing
@@ -91,8 +107,13 @@ public class XmlStreamImpl {
         throw new IllegalStateException("Unexpected end of XMLReaderStream");
     }
     
-    private static <T> void handleElement(BaseHK2JAXBBean target, BaseHK2JAXBBean parent,
-            XMLStreamReader reader, ClassReflectionHelper classReflectionHelper, Listener listener) throws Exception {
+    private static <T> void handleElement(BaseHK2JAXBBean target,
+            BaseHK2JAXBBean parent,
+            XMLStreamReader reader,
+            ClassReflectionHelper classReflectionHelper,
+            Listener listener,
+            Map<ReferenceKey, BaseHK2JAXBBean> referenceMap,
+            List<UnresolvedReference> unresolved) throws Exception {
         listener.beforeUnmarshal(target, parent);
         
         Map<String, List<BaseHK2JAXBBean>> listChildren = new HashMap<String, List<BaseHK2JAXBBean>>();
@@ -129,8 +150,23 @@ public class XmlStreamImpl {
                     
                     Class<?> childType = cdm.getChildTypeAsClass();
                     
-                    Object convertedValue = Utilities.getDefaultValue(elementValue, childType);
-                    target._setProperty(elementTag, convertedValue);
+                    if (!cdm.isReference()) {
+                        Object convertedValue = Utilities.getDefaultValue(elementValue, childType);
+                        
+                        target._setProperty(elementTag, convertedValue);
+                    }
+                    else {
+                        ReferenceKey referenceKey = new ReferenceKey(cdm.getChildType(), elementValue);
+                        BaseHK2JAXBBean reference = referenceMap.get(referenceKey);
+                        
+                        if (reference != null) {
+                            target._setProperty(elementTag, reference);
+                        }
+                        else {
+                            unresolved.add(new UnresolvedReference(cdm.getChildType(),
+                                    elementValue, elementTag, target));
+                        }
+                    }
                     
                     break;
                 }
@@ -142,7 +178,7 @@ public class XmlStreamImpl {
                     BaseHK2JAXBBean hk2Root = Utilities.createBean(grandChild.getProxyAsClass());
                     hk2Root._setClassReflectionHelper(classReflectionHelper);
                     
-                    handleElement(hk2Root, target, reader, classReflectionHelper, listener);
+                    handleElement(hk2Root, target, reader, classReflectionHelper, listener, referenceMap, unresolved);
                     
                     if (informedChild.getChildType().equals(ChildType.DIRECT)) {
                         target._setProperty(elementTag, hk2Root);
@@ -196,6 +232,17 @@ public class XmlStreamImpl {
                 }
                 
                 listener.afterUnmarshal(target, parent);
+                
+                // Put the finished product into the reference map
+                String keyProp = target._getKeyPropertyName();
+                if (keyProp != null) {
+                    String keyVal = (String) target._getProperty(keyProp);
+                    String myType = target._getModel().getOriginalInterface();
+                    if (keyVal != null && myType != null) {
+                        referenceMap.put(new ReferenceKey(myType, keyVal), target);
+                    }
+                }
+                
                 return;
             case XMLStreamConstants.COMMENT:
                 break;
@@ -228,6 +275,55 @@ public class XmlStreamImpl {
         }
         
         return retVal;
+    }
+    
+    private static class ReferenceKey {
+        private final String type;
+        private final String xmlID;
+        
+        private ReferenceKey(String type, String xmlID) {
+            this.type = type;
+            this.xmlID = xmlID;
+        }
+        
+        @Override
+        public int hashCode() {
+            return type.hashCode() ^ xmlID.hashCode();
+        }
+        
+        @Override
+        public boolean equals(Object o) {
+            if (o == null) return false;
+            if (!(o instanceof ReferenceKey)) return false;
+            ReferenceKey other = (ReferenceKey) o;
+            
+            return GeneralUtilities.safeEquals(type, other.type) && GeneralUtilities.safeEquals(xmlID, other.xmlID);
+        }
+        
+        @Override
+        public String toString() {
+            return "ReferenceKey(" + type + "," + xmlID + "," + System.identityHashCode(this) + ")";
+        }
+    }
+    
+    private static class UnresolvedReference {
+        private final String type;
+        private final String xmlID;
+        private final String propertyName;
+        private final BaseHK2JAXBBean unfinished;
+        
+        private UnresolvedReference(String type, String xmlID, String propertyName, BaseHK2JAXBBean unfinished) {
+            this.type = type;
+            this.xmlID = xmlID;
+            this.propertyName = propertyName;
+            this.unfinished = unfinished;
+        }
+        
+        @Override
+        public String toString() {
+            return "UnresolvedReference(" + type + "," + xmlID + "," + propertyName + "," + unfinished + "," + System.identityHashCode(this) + ")";
+        }
+        
     }
 
 }

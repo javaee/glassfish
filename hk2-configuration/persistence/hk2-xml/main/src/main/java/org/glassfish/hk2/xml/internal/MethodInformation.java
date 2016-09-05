@@ -99,6 +99,11 @@ public class MethodInformation {
      */
     private final boolean isArray;
     
+    /**
+     * True if this is a setter or getter for a reference
+     */
+    private final boolean isReference;
+    
     public MethodInformation(AltMethod originalMethod,
             MethodType methodType,
             String decapitalizedMethodProperty,
@@ -108,7 +113,8 @@ public class MethodInformation {
             AltClass gsType,
             boolean key,
             boolean isList,
-            boolean isArray) {
+            boolean isArray,
+            boolean isReference) {
         this.originalMethod = originalMethod;
         this.methodType = methodType;
         this.decapitalizedMethodProperty = decapitalizedMethodProperty;
@@ -119,6 +125,7 @@ public class MethodInformation {
         this.key = key;
         this.isList = isList;
         this.isArray = isArray;
+        this.isReference = isReference;
     }
     
     /**
@@ -184,6 +191,10 @@ public class MethodInformation {
         return isArray;
     }
     
+    public boolean isReference() {
+        return isReference;
+    }
+    
     public String getDecapitalizedMethodProperty() {
         return decapitalizedMethodProperty;
     }
@@ -200,6 +211,7 @@ public class MethodInformation {
           "key=" + key + "," +
           "isList=" + isList + "," +
           "isArray=" + isArray + "," +
+          "isReference=" + isReference + "," +
           System.identityHashCode(this) + ")";
           
     }

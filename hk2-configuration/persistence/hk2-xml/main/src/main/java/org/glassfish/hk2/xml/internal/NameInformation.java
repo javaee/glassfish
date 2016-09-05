@@ -55,17 +55,20 @@ public class NameInformation {
     private final Map<String, String> addMethodToVariableName;
     private final Map<String, String> removeMethodToVariableName;
     private final Map<String, String> lookupMethodToVariableName;
+    private final Set<String> referenceSet;
     
     NameInformation(Map<String, XmlElementData> nameMapping,
             Set<String> unmappedNames,
             Map<String, String> addMethodToVariableName,
             Map<String, String> removeMethodToVariableName,
-            Map<String, String> lookupMethodToVariableName) {
+            Map<String, String> lookupMethodToVariableName,
+            Set<String> referenceSet) {
         this.nameMapping = nameMapping;
         this.noXmlElement = unmappedNames;
         this.addMethodToVariableName = addMethodToVariableName;
         this.removeMethodToVariableName = removeMethodToVariableName;
         this.lookupMethodToVariableName = lookupMethodToVariableName;
+        this.referenceSet = referenceSet;
     }
     
     String getNameMap(String mapMe) {
@@ -83,6 +86,11 @@ public class NameInformation {
     boolean hasNoXmlElement(String variableName) {
         if (variableName == null) return true;
         return noXmlElement.contains(variableName);
+    }
+    
+    boolean isReference(String variableName) {
+        if (variableName == null) return false;
+        return referenceSet.contains(variableName);
     }
     
     String getAddVariableName(String methodName) {

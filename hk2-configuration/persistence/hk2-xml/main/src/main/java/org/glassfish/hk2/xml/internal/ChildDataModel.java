@@ -64,15 +64,12 @@ public class ChildDataModel implements Serializable {
         TYPE_MAP.put("boolean", boolean.class);
     };
     
-    
-    
-    
-    
     private final Object lock = new Object();
     
     /** Set at compile time, the type of the thing */
     private String childType;
     private String defaultAsString;
+    private boolean isReference;
     
     private ClassLoader myLoader;
     private Class<?> childTypeAsClass;
@@ -80,9 +77,10 @@ public class ChildDataModel implements Serializable {
     public ChildDataModel() {
     }
     
-    public ChildDataModel(String childType, String defaultAsString) {
+    public ChildDataModel(String childType, String defaultAsString, boolean isReference) {
         this.childType = childType;
         this.defaultAsString = defaultAsString;
+        this.isReference = isReference;
     }
     
     public String getChildType() {
@@ -91,6 +89,10 @@ public class ChildDataModel implements Serializable {
     
     public String getDefaultAsString() {
         return defaultAsString;
+    }
+    
+    public boolean isReference() {
+        return isReference;
     }
     
     public void setLoader(ClassLoader myLoader) {
@@ -115,7 +117,7 @@ public class ChildDataModel implements Serializable {
     
     @Override
     public String toString() {
-        return "ChildDataModel(" + childType + "," + defaultAsString + ")";
+        return "ChildDataModel(" + childType + "," + defaultAsString + "," + isReference + "," + System.identityHashCode(this) + ")";
     }
 
 }

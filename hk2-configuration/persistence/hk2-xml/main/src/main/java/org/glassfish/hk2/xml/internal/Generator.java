@@ -79,6 +79,7 @@ import javassist.bytecode.annotation.StringMemberValue;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -247,11 +248,14 @@ public class Generator {
             
             AltClass childType = null;
             boolean getterOrSetter = false;
+            boolean isReference = false;
             if (MethodType.SETTER.equals(mi.getMethodType())) {
                 getterOrSetter = true;
                 setters.add(mi.getRepresentedProperty());
                 
                 childType = mi.getBaseChildType();
+                
+                isReference = mi.isReference();
                 
                 sb.append(getCompilableClass(mi.getGetterSetterType()) + " arg0) { super._setProperty(\"" + mi.getRepresentedProperty() + "\", arg0); }");
             }
@@ -260,6 +264,8 @@ public class Generator {
                 getters.put(mi.getRepresentedProperty(), mi);
                 
                 childType = mi.getBaseChildType();
+                
+                isReference = mi.isReference();
                 
                 String cast = "";
                 String superMethodName = "_getProperty";
@@ -497,15 +503,21 @@ public class Generator {
             
             if (getterOrSetter) {
                 if (childType != null) {
-                    compiledModel.addChild(
+                    if (!isReference) {
+                        compiledModel.addChild(
                             childType.getName(),
                             mi.getRepresentedProperty(),
                             getChildType(mi.isList(), mi.isArray()),
                             mi.getDefaultValue());
+                    }
+                    else {
+                        compiledModel.addNonChild(mi.getRepresentedProperty(), mi.getDefaultValue(),
+                                mi.getGetterSetterType().getName(), true);
+                    }
                 }
                 else {
                     compiledModel.addNonChild(mi.getRepresentedProperty(), mi.getDefaultValue(),
-                            mi.getGetterSetterType().getName());
+                            mi.getGetterSetterType().getName(), false);
                 }
             }
             
@@ -601,7 +613,8 @@ public class Generator {
             sb.append("retVal.addNonChild(" +
               asParameter(entry.getKey()) + "," +
               asParameter(entry.getValue().getDefaultAsString()) + "," +
-              asParameter(entry.getValue().getChildType()) + ");\n");
+              asParameter(entry.getValue().getChildType()) + "," +
+              asBoolean(entry.getValue().isReference()) + ");\n");
         }
         
         sb.append("return retVal; }");
@@ -639,6 +652,10 @@ public class Generator {
         }
         
         return QUOTE + me + QUOTE;
+    }
+    
+    private static String asBoolean(boolean bool) {
+        return bool ? "true" : "false" ;
     }
     
     private static String asParameter(ChildType ct) {
@@ -907,18 +924,23 @@ public class Generator {
         
     }
     
-    /* package */ static NameInformation getXmlNameMap(AltClass convertMe) {
+    private static NameInformation getXmlNameMap(AltClass convertMe) {
         Map<String, XmlElementData> xmlNameMap = new HashMap<String, XmlElementData>();
         HashSet<String> unmappedNames = new HashSet<String>();
         Map<String, String> addMethodToVariableMap = new HashMap<String, String>();
         Map<String, String> removeMethodToVariableMap = new HashMap<String, String>();
         Map<String, String> lookupMethodToVariableMap = new HashMap<String, String>();
+        HashSet<String> referenceSet = new HashSet<String>();
         
         for (AltMethod originalMethod : convertMe.getMethods()) {
             String setterVariable = isSetter(originalMethod);
             if (setterVariable == null) {
                 setterVariable = isGetter(originalMethod);
                 if (setterVariable == null) continue;
+            }
+            
+            if (isSpecifiedReference(originalMethod)) {
+                referenceSet.add(setterVariable);
             }
             
             AltAnnotation pluralOf = null;
@@ -970,10 +992,11 @@ public class Generator {
         return new NameInformation(xmlNameMap, noXmlElementNames,
                 addMethodToVariableMap,
                 removeMethodToVariableMap,
-                lookupMethodToVariableMap);
+                lookupMethodToVariableMap,
+                referenceSet);
     }
     
-    /* package */ static MethodInformation getMethodInformation(AltMethod m, NameInformation xmlNameMap) {
+    private static MethodInformation getMethodInformation(AltMethod m, NameInformation xmlNameMap) {
         boolean isCustom = isSpecifiedCustom(m);
         String setterVariable = null;
         String getterVariable = null;
@@ -1091,6 +1114,8 @@ public class Generator {
             key = true;
         }
         
+        boolean isReference = xmlNameMap.isReference(variable);
+        
         return new MethodInformation(m,
                 methodType,
                 variable,
@@ -1100,7 +1125,8 @@ public class Generator {
                 gsType,
                 key,
                 isList,
-                isArray);
+                isArray,
+                isReference);
     }
     
     private static String convertXmlRootElementName(AltAnnotation root, AltClass clazz) {
@@ -1179,7 +1205,11 @@ public class Generator {
     private static boolean isSpecifiedCustom(AltMethod method) {
         AltAnnotation customAnnotation = method.getAnnotation(Customize.class.getName());
         return (customAnnotation != null);
-        
+    }
+    
+    private static boolean isSpecifiedReference(AltMethod method) {
+        AltAnnotation customAnnotation = method.getAnnotation(XmlIDREF.class.getName());
+        return (customAnnotation != null);
     }
     
     private static String isSetter(AltMethod method) {
