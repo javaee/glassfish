@@ -43,6 +43,7 @@ import java.net.URI;
 
 import javax.xml.bind.Unmarshaller;
 
+import org.glassfish.hk2.xml.internal.Model;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -62,13 +63,12 @@ public interface XmlServiceParser {
      * This method must return an instance of the given class as the root of
      * an XML graph
      * 
-     * @param clazz The class that can be used to set and get values.  This class
-     * will extend {@link org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean}
+     * @param rootModel The Model object of the root to be parsed
      * @param location The location of the file to parse
      * @param listener A listener that must be called via the contract of Unmarshaller.Listener
      * @return The root object with all fields filled in from the given document
      */
-    public <T> T parseRoot(Class<T> clazz, URI location, Unmarshaller.Listener listener) throws Exception;
+    public <T> T parseRoot(Model rootModel, URI location, Unmarshaller.Listener listener) throws Exception;
     
     
     /**

@@ -157,7 +157,6 @@ public class XmlServiceImpl implements XmlService {
         }
     }
     
-    @SuppressWarnings("unchecked")
     private <T> XmlRootHandle<T> unmarshallClass(URI uri, Model model,
             XmlServiceParser localParser, XMLStreamReader reader,
             boolean advertise, boolean advertiseInHub) throws Exception {
@@ -177,7 +176,7 @@ public class XmlServiceImpl implements XmlService {
         
         T root;
         if (localParser != null) {
-            root = localParser.parseRoot((Class<T>) model.getProxyAsClass(), uri, listener);
+            root = localParser.parseRoot(model, uri, listener);
         }
         else {
             root = XmlStreamImpl.parseRoot(this, model, reader, listener);

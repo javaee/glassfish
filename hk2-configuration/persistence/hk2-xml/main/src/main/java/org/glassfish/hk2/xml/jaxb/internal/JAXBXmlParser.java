@@ -49,6 +49,7 @@ import javax.xml.bind.Unmarshaller.Listener;
 
 import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.Visibility;
+import org.glassfish.hk2.xml.internal.Model;
 import org.glassfish.hk2.xml.spi.PreGenerationRequirement;
 import org.glassfish.hk2.xml.spi.XmlServiceParser;
 
@@ -67,7 +68,9 @@ public class JAXBXmlParser implements XmlServiceParser {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T parseRoot(Class<T> clazz, URI location, Listener listener) throws Exception {
+    public <T> T parseRoot(Model rootModel, URI location, Listener listener) throws Exception {
+        Class<?> clazz = rootModel.getProxyAsClass();
+        
         JAXBContext context = JAXBContext.newInstance(clazz);
         
         Unmarshaller unmarshaller = context.createUnmarshaller();
