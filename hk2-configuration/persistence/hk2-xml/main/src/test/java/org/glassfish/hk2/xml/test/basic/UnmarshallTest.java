@@ -75,7 +75,7 @@ public class UnmarshallTest {
      * 
      * @throws Exception
      */
-    @Test @org.junit.Ignore
+    @Test // @org.junit.Ignore
     public void testBeanLikeMapOfInterface() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         URL url = getClass().getClassLoader().getResource(Commons.ACME1_FILE);

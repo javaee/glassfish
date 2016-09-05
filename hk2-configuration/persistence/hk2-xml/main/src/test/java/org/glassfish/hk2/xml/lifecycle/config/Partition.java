@@ -43,8 +43,8 @@ package org.glassfish.hk2.xml.lifecycle.config;
 import java.beans.PropertyVetoException;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlID;
 
-import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
 import org.jvnet.hk2.annotations.Contract;
 
 //import javax.validation.constraints.NotNull;
@@ -52,6 +52,7 @@ import org.jvnet.hk2.annotations.Contract;
 @Contract
 public interface Partition extends PropertyBag, Auditable {
 
+  @XmlID
   @XmlAttribute(required=true /*, key=true */)
   // @NotNull
   void setId(String id);
@@ -59,7 +60,6 @@ public interface Partition extends PropertyBag, Auditable {
   
   
   @XmlAttribute(required=true /*, key=false */)
-  @XmlIdentifier
   // @NotNull
   void setName(String value) throws PropertyVetoException;
   String getName();

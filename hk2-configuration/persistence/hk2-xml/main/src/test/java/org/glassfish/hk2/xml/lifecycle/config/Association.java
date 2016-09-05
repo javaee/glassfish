@@ -41,18 +41,21 @@
 package org.glassfish.hk2.xml.lifecycle.config;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlIDREF;
 
 import org.jvnet.hk2.annotations.Contract;
 
 @Contract
 public interface Association extends Auditable {
   
+  @XmlIDREF
   @XmlElement(required=true /*, reference=true */)
-  Partition1 getPartition1();
-  void setPartition1(Partition1 partition);
+  Partition getPartition1();
+  void setPartition1(Partition partition);
   
+  @XmlIDREF
   @XmlElement(required=true /* reference=true */)
-  Partition2 getPartition2();
-  void setPartition2(Partition2 partition);
+  Partition getPartition2();
+  void setPartition2(Partition partition);
 
 }

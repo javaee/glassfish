@@ -68,12 +68,12 @@
     <environment name="cokeenv">
         <associations>
           <association>
-            <partition1 name="part1-0" />
-            <partition2 name="part2-0" />
+            <partition1>222</partition1>
+            <partition2>333</partition2>
           </association>
           <association>
-            <partition1 name="part1-1" />
-            <partition2 name="part2-1" />
+            <partition1>555</partition1>
+            <partition2>777</partition2>
           </association>
         </associations>
         <partition-ref id="222" runtime-ref="wlsRuntime"/>

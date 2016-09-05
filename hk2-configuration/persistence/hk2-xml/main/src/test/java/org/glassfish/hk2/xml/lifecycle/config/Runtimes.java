@@ -48,6 +48,8 @@ public interface Runtimes {
     @XmlElement(name="runtime")
     List<Runtime> getRuntimes();
     void setRuntimes(List<Runtime> runtimes);
+    Runtime lookupRuntime(String runtime);
+    
 
     /*
     @DuckTyped
