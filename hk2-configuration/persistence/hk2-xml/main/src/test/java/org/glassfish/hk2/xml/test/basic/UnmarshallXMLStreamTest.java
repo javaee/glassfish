@@ -370,5 +370,31 @@ public class UnmarshallXMLStreamTest {
             is.close();
         }
     }
+    
+    /**
+     * Tests that JaxB style references work.
+     * These are references that use XmlID and XmlIDREF
+     * 
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testJaxbStyleReference() throws Exception {
+        ServiceLocator locator = Utilities.createDomLocator();
+        
+        InputStream is = getStream(Commons.SAMPLE_CONFIG_FILE);
+        try {
+            XMLStreamReader reader = xif.createXMLStreamReader(is);
+            try {
+                Commons.testJaxbStyleReference(locator, reader);;
+            }
+            finally {
+                reader.close();
+            }
+        }
+        finally {
+            is.close();
+        }
+    }
 
 }

@@ -237,4 +237,21 @@ public class UnmarshallDomTest {
         
         Commons.testByteArrayNonChild(locator, uri);
     }
+    
+    /**
+     * Tests that JaxB style references work.
+     * These are references that use XmlID and XmlIDREF
+     * 
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testJaxbStyleReference() throws Exception {
+        ServiceLocator locator = Utilities.createDomLocator();
+        
+        URL url = getClass().getClassLoader().getResource(Commons.SAMPLE_CONFIG_FILE);
+        URI uri = url.toURI();
+        
+        Commons.testJaxbStyleReference(locator, uri);
+    }
 }

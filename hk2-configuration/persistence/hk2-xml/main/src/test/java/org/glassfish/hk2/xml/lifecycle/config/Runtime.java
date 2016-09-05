@@ -61,6 +61,7 @@ public interface Runtime extends Named, PropertyBag, Auditable {
     @XmlElement(name="partition")
     List<Partition> getPartitions();
     void setPartitions(List<Partition> Partitions);
+    Partition lookupPartition(String id);
 
     /*
     @DuckTyped

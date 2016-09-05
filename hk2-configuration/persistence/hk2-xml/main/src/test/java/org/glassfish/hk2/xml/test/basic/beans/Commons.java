@@ -57,6 +57,9 @@ import org.glassfish.hk2.xml.lifecycle.config.Association;
 import org.glassfish.hk2.xml.lifecycle.config.Associations;
 import org.glassfish.hk2.xml.lifecycle.config.Environment;
 import org.glassfish.hk2.xml.lifecycle.config.LifecycleConfig;
+import org.glassfish.hk2.xml.lifecycle.config.Partition;
+import org.glassfish.hk2.xml.lifecycle.config.Runtime;
+import org.glassfish.hk2.xml.lifecycle.config.Runtimes;
 import org.glassfish.hk2.xml.lifecycle.config.Service;
 import org.glassfish.hk2.xml.lifecycle.config.Tenant;
 import org.junit.Assert;
@@ -277,6 +280,8 @@ public class Commons {
     private final static String LIFECYCLE_RUNTIME_TYPE = "/lifecycle-config/runtimes/runtime";
     private final static String LIFECYCLE_RUNTIME_wlsRuntime_INSTANCE = "lifecycle-config.runtimes.wlsRuntime";
     private final static String LIFECYCLE_RUNTIME_DatabaseTestRuntime_INSTANCE = "lifecycle-config.runtimes.DatabaseTestRuntime";
+    
+    private final static String WLS_RUNTIME_NAME = "wlsRuntime";
     
     public static void testComplexUnmarshalling(ServiceLocator locator, URI uri) throws Exception {
         testComplexUnmarshalling(locator, uri, null);
@@ -659,6 +664,78 @@ public class Commons {
         String asString = new String(encrypted);
         
         Assert.assertEquals("Garbledeguk", asString);
+    }
+    
+    public static void testJaxbStyleReference(ServiceLocator locator, URI uri) throws Exception {
+        testJaxbStyleReference(locator, uri, null);
+    }
+    
+    public static void testJaxbStyleReference(ServiceLocator locator, XMLStreamReader reader) throws Exception {
+        testJaxbStyleReference(locator, null, reader);
+    }
+    
+    /**
+     * Tests references that use the JAXB XmlID and XmlIDRef annotations
+     * 
+     * @throws Exception
+     */
+    private static void testJaxbStyleReference(ServiceLocator locator, URI uri, XMLStreamReader reader) throws Exception {
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        XmlRootHandle<LifecycleConfig> rootHandle;
+        if (uri != null) {
+            rootHandle = xmlService.unmarshall(uri, LifecycleConfig.class);
+        }
+        else {
+            rootHandle = xmlService.unmarshall(reader, LifecycleConfig.class, true, true);
+        }
+        LifecycleConfig lifecycleConfig = rootHandle.getRoot();
+        Assert.assertNotNull(lifecycleConfig);
+        
+        // Lets look at an unkeyed child
+        Environment cokeEnv = locator.getService(Environment.class, COKE_ENV);
+        Assert.assertNotNull(cokeEnv);
+        
+        // Lets get the generated unique IDs for the unkeyed children
+        Associations associations = cokeEnv.getAssociations();
+        Assert.assertNotNull(associations);
+        
+        Assert.assertEquals(2, associations.getAssociations().size());
+        Association association0 = associations.getAssociations().get(0);
+        Association association1 = associations.getAssociations().get(1);
+        
+        Assert.assertNotNull(association0);
+        Assert.assertNotNull(association1);
+        
+        Runtimes runtimes = lifecycleConfig.getRuntimes();
+        Runtime runtime = runtimes.lookupRuntime(WLS_RUNTIME_NAME);
+        
+        Partition allTwos = runtime.lookupPartition("222");
+        Partition allThrees = runtime.lookupPartition("333");
+        Partition allFives = runtime.lookupPartition("555");
+        Partition allSevens = runtime.lookupPartition("777");
+        
+        Assert.assertNotNull(allTwos);
+        Assert.assertNotNull(allThrees);
+        Assert.assertNotNull(allFives);
+        Assert.assertNotNull(allSevens);
+        
+        Partition a0_p1 = association0.getPartition1();
+        Partition a0_p2 = association0.getPartition2();
+        
+        Partition a1_p1 = association1.getPartition1();
+        Partition a1_p2 = association1.getPartition2();
+        
+        Assert.assertNotNull(a0_p1);
+        Assert.assertNotNull(a0_p2);
+        Assert.assertNotNull(a1_p1);
+        Assert.assertNotNull(a1_p2);
+        
+        // Here is the actual test, make sure the references refer to their referee
+        Assert.assertEquals(a0_p1, allTwos);
+        Assert.assertEquals(a0_p2, allThrees);
+        Assert.assertEquals(a1_p1, allFives);
+        Assert.assertEquals(a1_p2, allSevens);
     }
 
 }
