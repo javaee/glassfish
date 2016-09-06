@@ -796,6 +796,28 @@ public class Commons {
             Assert.assertEquals(dave, daveFromTie);
         }
         
+        {
+            BackwardTiesBean tie2 = referenceMaster.getBackwardTies().get(0);
+        
+            AboveBean aliceFromTie = tie2.getAbove();
+            BelowBean daveFromTie = tie2.getBelow();
+        
+            Assert.assertEquals(alice, aliceFromTie);
+            Assert.assertEquals(dave, daveFromTie);
+        }
+        
+        {
+            BackwardTiesBean tie3 = referenceMaster.getBackwardTies().get(1);
+        
+            AboveBean bobFromTie = tie3.getAbove();
+            BelowBean carolFromTie = tie3.getBelow();
+        
+            Assert.assertEquals(bob, bobFromTie);
+            Assert.assertEquals(carol, carolFromTie);
+        }
+        
+        
+        
     }
 
 }

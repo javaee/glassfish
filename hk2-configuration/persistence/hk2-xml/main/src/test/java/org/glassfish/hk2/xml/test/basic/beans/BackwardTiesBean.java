@@ -39,10 +39,8 @@
  */
 package org.glassfish.hk2.xml.test.basic.beans;
 
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlIDREF;
 
 import org.jvnet.hk2.annotations.Contract;
 
@@ -50,18 +48,14 @@ import org.jvnet.hk2.annotations.Contract;
  * @author jwells
  *
  */
-@XmlRootElement(name="reference-master") @Contract
-public interface ReferenceMaster {
-    @XmlElement(name="above")
-    public List<AboveBean> getAboves();
+@Contract
+public interface BackwardTiesBean {
+    @XmlIDREF
+    @XmlAttribute
+    public AboveBean getAbove();
     
-    @XmlElement(name="tie")
-    public List<TiesBean> getTies();
-    
-    @XmlElement(name="backward-tie")
-    public List<BackwardTiesBean> getBackwardTies();
-    
-    @XmlElement(name="below")
-    public List<BelowBean> getBelows();
+    @XmlIDREF
+    @XmlAttribute
+    public BelowBean getBelow();
 
 }

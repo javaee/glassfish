@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.xml.test.basic.beans;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlIDREF;
 
@@ -51,7 +52,7 @@ import org.jvnet.hk2.annotations.Contract;
 @Contract
 public interface TiesBean {
     @XmlIDREF
-    @XmlElement
+    @XmlAttribute
     public AboveBean getAbove();
     
     @XmlIDREF

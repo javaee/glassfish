@@ -44,14 +44,15 @@
 	<above id="Alice"/>
     <above id="Bob"/>
     
-    <tie>
-    	<above>Alice</above>
+    <tie above="Alice">
     	<below>Carol</below>
     </tie>  
-    <tie>
-    	<above>Bob</above>
+    <tie above="Bob">
     	<below>Dave</below>
     </tie>
+    
+    <backward-tie above="Alice" below="Dave"/>
+    <backward-tie above="Bob" below="Carol"/>    
     
     <below name="Carol"/>
     <below name="Dave"/>

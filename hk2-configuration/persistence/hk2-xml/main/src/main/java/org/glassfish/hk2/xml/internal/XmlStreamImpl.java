@@ -123,8 +123,21 @@ public class XmlStreamImpl {
             
             Class<?> childType = targetModel.getNonChildType(attributeName);
             
-            Object convertedValue = Utilities.getDefaultValue(attributeValue, childType);
-            target._setProperty(attributeName, convertedValue);
+            if (!childDataModel.isReference()) {
+                Object convertedValue = Utilities.getDefaultValue(attributeValue, childType);
+                target._setProperty(attributeName, convertedValue);
+            }
+            else {
+                // Reference
+                ReferenceKey rk = new ReferenceKey(childDataModel.getChildType(), attributeValue);
+                BaseHK2JAXBBean reference = referenceMap.get(rk);
+                if (reference != null) {
+                    target._setProperty(attributeName, reference);
+                }
+                else {
+                    unresolved.add(new UnresolvedReference(childDataModel.getChildType(), attributeValue, attributeName, target));
+                }
+            }
         }
         
         while(reader.hasNext()) {
