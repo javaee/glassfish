@@ -47,6 +47,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -63,6 +64,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
@@ -921,15 +923,21 @@ public class Utilities {
     
     public static void fillInUnfinishedReferences(Map<ReferenceKey, BaseHK2JAXBBean> referenceMap,
             List<UnresolvedReference> unresolved) {
+        List<Throwable> errors = new LinkedList<Throwable>();
+        
         for (UnresolvedReference unresolvedRef : unresolved) {
             ReferenceKey key = new ReferenceKey(unresolvedRef.getType(), unresolvedRef.getXmlID());
             BaseHK2JAXBBean reference = referenceMap.get(key);
             if (reference == null) {
-                throw new IllegalStateException("No Reference was found for " + unresolvedRef);
+                errors.add(new IllegalStateException("No Reference was found for " + unresolvedRef));
             }
             
             BaseHK2JAXBBean unfinished = unresolvedRef.getUnfinished();
             unfinished._setProperty(unresolvedRef.getPropertyName(), reference);
+        }
+        
+        if (!errors.isEmpty()) {
+            throw new MultiException(errors);
         }
     }
 }
