@@ -76,6 +76,7 @@ public class Commons {
     public final static String CYCLE_FILE = "cycle.xml";
     public final static String TYPE1_FILE = "type1.xml";
     public final static String FOOBAR_FILE = "foobar.xml";
+    public final static String REFERENCE1_FILE = "reference1.xml";
     
     public final static String BEN_FRANKLIN = "Ben Franklin";
     public final static String ACME = "Acme";
@@ -736,6 +737,65 @@ public class Commons {
         Assert.assertEquals(a0_p2, allThrees);
         Assert.assertEquals(a1_p1, allFives);
         Assert.assertEquals(a1_p2, allSevens);
+    }
+    
+    public static void testJaxbStyleForwardReference(ServiceLocator locator, URI uri) throws Exception {
+        testJaxbStyleForwardReference(locator, uri, null);
+    }
+    
+    public static void testJaxbStyleForwardReference(ServiceLocator locator, XMLStreamReader reader) throws Exception {
+        testJaxbStyleForwardReference(locator, null, reader);
+    }
+    
+    /**
+     * Tests references before and after the reference
+     * 
+     * @throws Exception
+     */
+    private static void testJaxbStyleForwardReference(ServiceLocator locator, URI uri, XMLStreamReader reader) throws Exception {
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        XmlRootHandle<ReferenceMaster> rootHandle;
+        if (uri != null) {
+            rootHandle = xmlService.unmarshall(uri, ReferenceMaster.class);
+        }
+        else {
+            rootHandle = xmlService.unmarshall(reader, ReferenceMaster.class, true, true);
+        }
+        ReferenceMaster referenceMaster = rootHandle.getRoot();
+        Assert.assertNotNull(referenceMaster);
+        
+        AboveBean alice = referenceMaster.getAboves().get(0);
+        AboveBean bob = referenceMaster.getAboves().get(1);
+        
+        BelowBean carol = referenceMaster.getBelows().get(0);
+        BelowBean dave = referenceMaster.getBelows().get(1);
+        
+        Assert.assertNotNull(alice);
+        Assert.assertNotNull(bob);
+        Assert.assertNotNull(carol);
+        Assert.assertNotNull(dave);
+        
+        {
+            TiesBean tie0 = referenceMaster.getTies().get(0);
+        
+            AboveBean aliceFromTie = tie0.getAbove();
+            BelowBean carolFromTie = tie0.getBelow();
+        
+            Assert.assertEquals(alice, aliceFromTie);
+            Assert.assertEquals(carol, carolFromTie);
+        }
+        
+        {
+            TiesBean tie1 = referenceMaster.getTies().get(1);
+        
+            AboveBean bobFromTie = tie1.getAbove();
+            BelowBean daveFromTie = tie1.getBelow();
+        
+            Assert.assertEquals(bob, bobFromTie);
+            Assert.assertEquals(dave, daveFromTie);
+        }
+        
     }
 
 }

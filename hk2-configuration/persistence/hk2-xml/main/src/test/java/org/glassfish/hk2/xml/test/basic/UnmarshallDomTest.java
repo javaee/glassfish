@@ -254,4 +254,23 @@ public class UnmarshallDomTest {
         
         Commons.testJaxbStyleReference(locator, uri);
     }
+    
+    /**
+     * Tests that JaxB style references work
+     * even if the referenced object is AFTER the stanza
+     * being referenced
+     * 
+     * These are references that use XmlID and XmlIDREF
+     * 
+     * @throws Exception
+     */
+    @Test // @org.junit.Ignore
+    public void testJaxbStyleForwardReference() throws Exception {
+        ServiceLocator locator = Utilities.createDomLocator();
+        
+        URL url = getClass().getClassLoader().getResource(Commons.REFERENCE1_FILE);
+        URI uri = url.toURI();
+        
+        Commons.testJaxbStyleForwardReference(locator, uri);
+    }
 }
