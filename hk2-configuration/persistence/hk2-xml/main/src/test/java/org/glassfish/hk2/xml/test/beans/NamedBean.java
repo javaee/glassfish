@@ -40,8 +40,8 @@
 package org.glassfish.hk2.xml.test.beans;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlID;
 
-import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -50,7 +50,7 @@ import org.jvnet.hk2.annotations.Contract;
  */
 @Contract
 public interface NamedBean {
-    @XmlElement @XmlIdentifier
+    @XmlElement @XmlID
     public String getName();
     public void setName(String name);
 

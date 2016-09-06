@@ -51,7 +51,6 @@ import javax.xml.bind.Unmarshaller.Listener;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
 
-import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 import org.glassfish.hk2.xml.spi.Model;
@@ -86,16 +85,7 @@ public class XmlStreamImpl {
                 break;
             case XMLStreamConstants.END_DOCUMENT:
                 // Resolve any forward references
-                for (UnresolvedReference unresolvedRef : unresolved) {
-                    ReferenceKey key = new ReferenceKey(unresolvedRef.type, unresolvedRef.xmlID);
-                    BaseHK2JAXBBean reference = referenceMap.get(key);
-                    if (reference == null) {
-                        throw new IllegalStateException("No Reference was found for " + unresolvedRef);
-                    }
-                    
-                    BaseHK2JAXBBean unfinished = unresolvedRef.unfinished;
-                    unfinished._setProperty(unresolvedRef.propertyName, reference);
-                }
+                Utilities.fillInUnfinishedReferences(referenceMap, unresolved);
                 
                 return (T) hk2Root;
             default:
@@ -275,55 +265,6 @@ public class XmlStreamImpl {
         }
         
         return retVal;
-    }
-    
-    private static class ReferenceKey {
-        private final String type;
-        private final String xmlID;
-        
-        private ReferenceKey(String type, String xmlID) {
-            this.type = type;
-            this.xmlID = xmlID;
-        }
-        
-        @Override
-        public int hashCode() {
-            return type.hashCode() ^ xmlID.hashCode();
-        }
-        
-        @Override
-        public boolean equals(Object o) {
-            if (o == null) return false;
-            if (!(o instanceof ReferenceKey)) return false;
-            ReferenceKey other = (ReferenceKey) o;
-            
-            return GeneralUtilities.safeEquals(type, other.type) && GeneralUtilities.safeEquals(xmlID, other.xmlID);
-        }
-        
-        @Override
-        public String toString() {
-            return "ReferenceKey(" + type + "," + xmlID + "," + System.identityHashCode(this) + ")";
-        }
-    }
-    
-    private static class UnresolvedReference {
-        private final String type;
-        private final String xmlID;
-        private final String propertyName;
-        private final BaseHK2JAXBBean unfinished;
-        
-        private UnresolvedReference(String type, String xmlID, String propertyName, BaseHK2JAXBBean unfinished) {
-            this.type = type;
-            this.xmlID = xmlID;
-            this.propertyName = propertyName;
-            this.unfinished = unfinished;
-        }
-        
-        @Override
-        public String toString() {
-            return "UnresolvedReference(" + type + "," + xmlID + "," + propertyName + "," + unfinished + "," + System.identityHashCode(this) + ")";
-        }
-        
     }
 
 }

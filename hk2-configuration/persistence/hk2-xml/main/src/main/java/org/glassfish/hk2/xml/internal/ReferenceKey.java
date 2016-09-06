@@ -37,24 +37,35 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test.beans;
+package org.glassfish.hk2.xml.internal;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlIDREF;
+import org.glassfish.hk2.utilities.general.GeneralUtilities;
 
-import org.jvnet.hk2.annotations.Contract;
-
-/**
- * @author jwells
- *
- */
-@Contract
-public interface AuthorizationProviderBean extends NamedBean {
-    @XmlElement(name="domain-pfx")
-    public String getAtzDomainPrefix();
-    public void setAtzDomainPrefix(String domainPfx);
+class ReferenceKey {
+    private final String type;
+    private final String xmlID;
     
-    @XmlElement @XmlIDREF
-    public MachineBean getMachine();
-
+    ReferenceKey(String type, String xmlID) {
+        this.type = type;
+        this.xmlID = xmlID;
+    }
+    
+    @Override
+    public int hashCode() {
+        return type.hashCode() ^ xmlID.hashCode();
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        if (!(o instanceof ReferenceKey)) return false;
+        ReferenceKey other = (ReferenceKey) o;
+        
+        return GeneralUtilities.safeEquals(type, other.type) && GeneralUtilities.safeEquals(xmlID, other.xmlID);
+    }
+    
+    @Override
+    public String toString() {
+        return "ReferenceKey(" + type + "," + xmlID + "," + System.identityHashCode(this) + ")";
+    }
 }

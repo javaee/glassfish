@@ -299,9 +299,11 @@ public class MergeTest {
         Assert.assertNotNull(atzProviders);
         Assert.assertEquals(1, atzProviders.size());
         
+        MachineBean aliceRef = null;
         for (AuthorizationProviderBean atzProvider : atzProviders) {
             Assert.assertEquals(RSA_ATZ_PROV_NAME, atzProvider.getName());
             Assert.assertEquals(RSA_DOM_PFX, atzProvider.getAtzDomainPrefix());
+            aliceRef = atzProvider.getMachine();
         }
         
         Assert.assertNull(securityManager.getSSLManager());
@@ -310,7 +312,10 @@ public class MergeTest {
         Assert.assertNotNull(machines);
         Assert.assertEquals(1, machines.size());
         
+        ServerBean myReference = null;
         for (MachineBean machine : machines) {
+            Assert.assertEquals(aliceRef, machine);
+            
             Assert.assertEquals(ALICE_NAME, machine.getName());
             Assert.assertEquals(ALICE_ADDRESS, machine.getAddress());
             
@@ -320,7 +325,8 @@ public class MergeTest {
             
             for (ServerBean server : servers) {
                 Assert.assertEquals(ALICE_SERVER0_NAME, server.getName());
-                Assert.assertEquals(ALICE_SERVER0_PORT, server.getPort());   
+                Assert.assertEquals(ALICE_SERVER0_PORT, server.getPort());
+                myReference = server;
             }
         }
         
@@ -331,6 +337,9 @@ public class MergeTest {
         for (JMSServerBean jmsServer : jmsServers) {
             if (lcv == 0) {
                 Assert.assertEquals("Did not find name in " + jmsServer, CAROL_NAME, jmsServer.getName());
+                
+                ServerBean serverReference = jmsServer.getServer();
+                Assert.assertEquals(myReference, serverReference);
             
                 List<TopicBean> topics = jmsServer.getTopics();
                 Assert.assertEquals(2, topics.size());

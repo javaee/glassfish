@@ -69,9 +69,12 @@ import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlHubCommitMessage;
+import org.glassfish.hk2.xml.internal.ChildDataModel;
 import org.glassfish.hk2.xml.internal.ChildType;
 import org.glassfish.hk2.xml.internal.DynamicChangeInfo;
+import org.glassfish.hk2.xml.internal.ModelImpl;
 import org.glassfish.hk2.xml.internal.ParentedModel;
+import org.glassfish.hk2.xml.internal.UnresolvedReference;
 import org.glassfish.hk2.xml.internal.Utilities;
 
 /**
@@ -840,12 +843,12 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
     }
     
     /**
-     * This copy method ONLY copies NON child and
-     * non parent fields, and so is not a full copy.  The
-     * children and parent and lock information need to
-     * be filled in later so as not to have links from
-     * one tree into another.  The read lock of copyMe
-     * should be held
+     * This copy method ONLY copies non-child and
+     * non-parent and non-reference fields and so is
+     * not a full copy.  The children and parent and
+     * reference and lock information need to be filled
+     * in later so as not to have links from one tree into
+     * another.  The read lock of copyMe should be held
      * 
      * @param copyMe The non-null bean to copy FROM
      */
@@ -857,10 +860,16 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         
         Map<String, Object> copyBeanLikeMap = copyMe._getBeanLikeMap();
         
+        ModelImpl copyModel = copyMe._getModel();
         for (Map.Entry<String, Object> entrySet : copyBeanLikeMap.entrySet()) {
             String xmlTag = entrySet.getKey();
             
-            if (copyMe._getModel().getKeyedChildren().contains(xmlTag) || copyMe._getModel().getUnKeyedChildren().contains(xmlTag)) continue;
+            if (copyModel.getKeyedChildren().contains(xmlTag) || copyMe._getModel().getUnKeyedChildren().contains(xmlTag)) continue;
+            
+            ChildDataModel cdm = copyModel.getNonChildProperties().get(xmlTag);
+            if (cdm != null && cdm.isReference()) {
+                continue;
+            }
             
             beanLikeMap.put(entrySet.getKey(), entrySet.getValue());
         }

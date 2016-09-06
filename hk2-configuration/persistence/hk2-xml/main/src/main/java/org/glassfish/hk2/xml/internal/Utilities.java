@@ -918,4 +918,18 @@ public class Utilities {
         
         throw new AssertionError("Default for type " + expectedClass.getName() + " not implemented");
     }
+    
+    public static void fillInUnfinishedReferences(Map<ReferenceKey, BaseHK2JAXBBean> referenceMap,
+            List<UnresolvedReference> unresolved) {
+        for (UnresolvedReference unresolvedRef : unresolved) {
+            ReferenceKey key = new ReferenceKey(unresolvedRef.getType(), unresolvedRef.getXmlID());
+            BaseHK2JAXBBean reference = referenceMap.get(key);
+            if (reference == null) {
+                throw new IllegalStateException("No Reference was found for " + unresolvedRef);
+            }
+            
+            BaseHK2JAXBBean unfinished = unresolvedRef.getUnfinished();
+            unfinished._setProperty(unresolvedRef.getPropertyName(), reference);
+        }
+    }
 }

@@ -42,6 +42,7 @@ package org.glassfish.hk2.xml.test.beans;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlIDREF;
 
 import org.jvnet.hk2.annotations.Contract;
 
@@ -51,6 +52,9 @@ import org.jvnet.hk2.annotations.Contract;
  */
 @Contract
 public interface JMSServerBean extends NamedBean {
+    @XmlIDREF @XmlElement
+    public ServerBean getServer();
+    
     @XmlElement(name="topic")
     public List<TopicBean> getTopics();
     public void setTopics(List<TopicBean> topics);

@@ -47,6 +47,7 @@
 		<authorization-provider>
 			<name>RSA</name>
 			<domain-pfx>rsa</domain-pfx>
+			<machine>Alice</machine>
 		</authorization-provider>
 	</security-manager>
 	
@@ -62,6 +63,8 @@
 	
 	<jms-server>
 		<name>Carol</name>
+		
+		<server>Server-0</server>
 		
 		<topic>
 			<name>Topic0</name>

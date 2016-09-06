@@ -37,24 +37,54 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test.beans;
+package org.glassfish.hk2.xml.internal;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlIDREF;
+import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 
-import org.jvnet.hk2.annotations.Contract;
-
-/**
- * @author jwells
- *
- */
-@Contract
-public interface AuthorizationProviderBean extends NamedBean {
-    @XmlElement(name="domain-pfx")
-    public String getAtzDomainPrefix();
-    public void setAtzDomainPrefix(String domainPfx);
+public class UnresolvedReference {
+    private final String type;
+    private final String xmlID;
+    private final String propertyName;
+    private final BaseHK2JAXBBean unfinished;
     
-    @XmlElement @XmlIDREF
-    public MachineBean getMachine();
+    UnresolvedReference(String type, String xmlID, String propertyName, BaseHK2JAXBBean unfinished) {
+        this.type = type;
+        this.xmlID = xmlID;
+        this.propertyName = propertyName;
+        this.unfinished = unfinished;
+    }
+    
+    /**
+     * @return the type
+     */
+    public String getType() {
+        return type;
+    }
 
+    /**
+     * @return the xmlID
+     */
+    public String getXmlID() {
+        return xmlID;
+    }
+
+    /**
+     * @return the propertyName
+     */
+    public String getPropertyName() {
+        return propertyName;
+    }
+
+    /**
+     * @return the unfinished
+     */
+    public BaseHK2JAXBBean getUnfinished() {
+        return unfinished;
+    }
+    
+    @Override
+    public String toString() {
+        return "UnresolvedReference(" + type + "," + xmlID + "," + propertyName + "," + unfinished + "," + System.identityHashCode(this) + ")";
+    }
+    
 }

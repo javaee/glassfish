@@ -43,7 +43,10 @@ package org.glassfish.hk2.xml.internal;
 import java.lang.reflect.Array;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.glassfish.hk2.api.DynamicConfiguration;
@@ -186,7 +189,12 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
         
             BaseHK2JAXBBean copy;
             try {
-                copy = doCopy(bean, copyController, null);
+                Map<ReferenceKey, BaseHK2JAXBBean> referenceMap = new HashMap<ReferenceKey, BaseHK2JAXBBean>();
+                List<UnresolvedReference> unresolved = new LinkedList<UnresolvedReference>();
+                
+                copy = doCopy(bean, copyController, null, referenceMap, unresolved);
+                
+                Utilities.fillInUnfinishedReferences(referenceMap, unresolved);
             }
             catch (RuntimeException re) {
                 throw re;
@@ -204,11 +212,15 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
     
     private static BaseHK2JAXBBean doCopy(BaseHK2JAXBBean copyMe,
             DynamicChangeInfo copyController,
-            BaseHK2JAXBBean theCopiedParent) throws Throwable {
+            BaseHK2JAXBBean theCopiedParent,
+            Map<ReferenceKey, BaseHK2JAXBBean> referenceMap,
+            List<UnresolvedReference> unresolved) throws Throwable {
         if (copyMe == null) return null;
         
         BaseHK2JAXBBean retVal = Utilities.createBean(copyMe.getClass());
         retVal._shallowCopyFrom(copyMe);
+        
+        ModelImpl myModel = retVal._getModel();
         
         Set<String> childrenProps = copyMe._getChildrenXmlTags();
         for (String childProp : childrenProps) {
@@ -221,7 +233,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
                 ArrayList<Object> toSetChildList = new ArrayList<Object>(childList.size());
                 
                 for (Object subChild : childList) {
-                    BaseHK2JAXBBean copiedChild = doCopy((BaseHK2JAXBBean) subChild, copyController, retVal);
+                    BaseHK2JAXBBean copiedChild = doCopy((BaseHK2JAXBBean) subChild, copyController, retVal, referenceMap, unresolved);
                     
                     toSetChildList.add(copiedChild);
                 }
@@ -232,7 +244,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
             else if (child.getClass().isArray()) {
                 int length = Array.getLength(child);
                 
-                ModelImpl myModel = retVal._getModel();
+                
                 ParentedModel pm = myModel.getChild(childProp);
                 ModelImpl childModel = pm.getChildModel();
                 
@@ -243,7 +255,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
                 for (int lcv = 0; lcv < length; lcv++) {
                     Object subChild = Array.get(child, lcv);
                     
-                    BaseHK2JAXBBean copiedChild = doCopy((BaseHK2JAXBBean) subChild, copyController, retVal);
+                    BaseHK2JAXBBean copiedChild = doCopy((BaseHK2JAXBBean) subChild, copyController, retVal, referenceMap, unresolved);
                     
                     Array.set(toSetChildArray, lcv, copiedChild);
                 }
@@ -253,7 +265,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
             }
             else {
                 // A direct child
-                BaseHK2JAXBBean copiedChild = doCopy((BaseHK2JAXBBean) child, copyController, retVal);
+                BaseHK2JAXBBean copiedChild = doCopy((BaseHK2JAXBBean) child, copyController, retVal, referenceMap, unresolved);
                 
                 retVal._setProperty(childProp, copiedChild);
             }
@@ -262,7 +274,45 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
         if (theCopiedParent != null) {
             retVal._setParent(theCopiedParent);
         }
+        
+        
+        String keyPropertyName = retVal._getKeyPropertyName();
+        if (keyPropertyName != null) {
+            String keyProperty = retVal._getKeyValue();
+            if (keyProperty != null) {
+                referenceMap.put(new ReferenceKey(myModel.getOriginalInterface(), keyProperty), retVal);
+            }
+            
+            // Now try to resolve any references, and if we can not add them to the unfinished list
+            Map<String, ChildDataModel> nonChildrenProps = myModel.getNonChildProperties();
+            for (Map.Entry<String, ChildDataModel> nonChild : nonChildrenProps.entrySet()) {
+                String xmlTag = nonChild.getKey();
+                ChildDataModel cdm = nonChild.getValue();
+                
+                if (!cdm.isReference()) continue;
+                
+                Object fromReferenceRaw = copyMe._getProperty(xmlTag);
+                if (fromReferenceRaw == null) continue;
+                if (!(fromReferenceRaw instanceof BaseHK2JAXBBean)) continue;
+                BaseHK2JAXBBean fromReference = (BaseHK2JAXBBean) fromReferenceRaw;
+                
+                String fromKeyValue = fromReference._getKeyValue();
+                
+                ReferenceKey rk = new ReferenceKey(cdm.getChildType(), fromKeyValue);
+                
+                BaseHK2JAXBBean toReference = referenceMap.get(rk);
+                if (toReference != null) {
+                    retVal._setProperty(xmlTag, toReference);
+                }
+                else {
+                    // Must go in unfinished list
+                    unresolved.add(new UnresolvedReference(cdm.getChildType(), fromKeyValue, xmlTag, retVal));
+                }
+            }
+        }
+        
         retVal._setDynamicChangeInfo(copyController, false);
+        
         return retVal;
     }
     
