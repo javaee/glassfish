@@ -58,12 +58,7 @@ public class PropertyBagCustomizerImpl implements PropertyBagCustomizer {
      */
     @Override
     public Property getProperty(PropertyBag me, String name) {
-        for (Property prop : me.getProperty()) {
-            if (prop.getName().equals(name)) {
-                return prop;
-            }
-        }
-        return null;
+        return me.lookupProperty(name);
     }
 
     /* (non-Javadoc)

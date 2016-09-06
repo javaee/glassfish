@@ -78,6 +78,9 @@ public interface PropertyBag {
     @XmlElement(name="property")
     @Element("property")
     List<Property> getProperty();
+    Property addProperty(Property property);
+    Property lookupProperty(String name);
+    Property removeProperty(String name);
 
     @Customize
     @DuckTyped

@@ -58,6 +58,7 @@ import org.glassfish.hk2.xml.hk2Config.test.customizers.PhylaCustomizer;
 import org.glassfish.hk2.xml.hk2Config.test.customizers.PhylumCustomizer;
 import org.junit.Assert;
 import org.junit.Test;
+import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBagCustomizerImpl;
 
 public class OldConfigTest {
@@ -103,6 +104,11 @@ public class OldConfigTest {
         assertOriginalStateKingdom1(kingdom1);
     }
     
+    /**
+     * Tests that the duck-type customizers can be called
+     * 
+     * @throws Exception
+     */
     @Test
     public void testCustomizedMethodsAreCallable() throws Exception {
         ServiceLocator locator = LocatorUtilities.createLocator(PhylumCustomizer.class,
@@ -116,6 +122,8 @@ public class OldConfigTest {
         
         XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, false);
         KingdomConfig kingdom1 = rootHandle.getRoot();
+        
+        assertOriginalStateKingdom1(kingdom1);
         
         Phyla phyla = kingdom1.getPhyla();
         Phylum alice = phyla.getPhylumByName(ALICE_NAME);
@@ -160,6 +168,64 @@ public class OldConfigTest {
             }
             lcv++;
         }
+    }
+    
+    private final static String ADDED_NAME = "added";
+    private final static String ADDED_VALUE = "added value";
+    
+    /**
+     * Tests that the duck-type customizers can be called
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testAddRemoveAndLookupOfProperty() throws Exception {
+        ServiceLocator locator = LocatorUtilities.createLocator(PhylumCustomizer.class,
+                PropertyBagCustomizerImpl.class,
+                KingdomCustomizer.class,
+                PhylaCustomizer.class);
+        
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(KINGDOM_FILE);
+        
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, false);
+        KingdomConfig kingdom1 = rootHandle.getRoot();
+        
+        assertOriginalStateKingdom1(kingdom1);
+        
+        Assert.assertNull(kingdom1.lookupProperty(ADDED_NAME));
+        
+        List<Property> allProps = kingdom1.getProperty();
+        Assert.assertEquals(3, allProps.size());
+        
+        Property property = xmlService.createBean(Property.class);
+        property.setName(ADDED_NAME);
+        property.setValue(ADDED_VALUE);
+        
+        kingdom1.addProperty(property);
+        
+        Property found = kingdom1.lookupProperty(ADDED_NAME);
+        Assert.assertNotNull(found);
+        
+        Assert.assertEquals(ADDED_NAME, found.getName());
+        Assert.assertEquals(ADDED_VALUE, found.getValue());
+        Assert.assertNull(found.getDescription());
+        
+        allProps = kingdom1.getProperty();
+        Assert.assertEquals(4, allProps.size());
+        
+        Assert.assertEquals(found, allProps.get(3));
+        
+        Property removed = kingdom1.removeProperty(ADDED_NAME);
+        Assert.assertNotNull(removed);
+        
+        Assert.assertEquals(found, removed);
+        
+        Assert.assertNull(kingdom1.lookupProperty(ADDED_NAME));
+        
+        allProps = kingdom1.getProperty();
+        Assert.assertEquals(3, allProps.size());
     }
     
     private static void assertOriginalStateKingdom1(KingdomConfig kingdom1) {

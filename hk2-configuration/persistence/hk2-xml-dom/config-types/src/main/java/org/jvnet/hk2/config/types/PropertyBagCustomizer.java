@@ -39,9 +39,7 @@
  */
 package org.jvnet.hk2.config.types;
 
-import org.glassfish.hk2.api.Customize;
 import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.config.DuckTyped;
 
 /**
  * @author jwells
