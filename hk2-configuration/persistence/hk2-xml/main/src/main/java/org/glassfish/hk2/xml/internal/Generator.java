@@ -109,7 +109,7 @@ public class Generator {
         @Override
         public Boolean run() {
             return Boolean.parseBoolean(
-                System.getProperty("org.jvnet.hk2.properties.xmlservice.jaxb.methods", "false"));
+                System.getProperty("org.jvnet.hk2.xmlservice.compiler.methods", "false"));
         }
             
     });

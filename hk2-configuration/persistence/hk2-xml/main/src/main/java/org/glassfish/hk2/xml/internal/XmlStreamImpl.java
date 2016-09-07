@@ -52,6 +52,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
 
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
+import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 import org.glassfish.hk2.xml.spi.Model;
 
@@ -60,6 +61,8 @@ import org.glassfish.hk2.xml.spi.Model;
  *
  */
 public class XmlStreamImpl {
+    private final static boolean DEBUG_PARSING = XmlServiceImpl.DEBUG_PARSING;
+    
     @SuppressWarnings("unchecked")
     public static <T> T parseRoot(XmlServiceImpl xmlService,
             Model rootModel,
@@ -71,21 +74,35 @@ public class XmlStreamImpl {
         
         BaseHK2JAXBBean hk2Root = Utilities.createBean(rootProxyClass);
         hk2Root._setClassReflectionHelper(classReflectionHelper);
+        if (DEBUG_PARSING) {
+            Logger.getLogger().debug("XmlServiceDebug Created root bean with model " + hk2Root._getModel());
+        }
         
         Map<ReferenceKey, BaseHK2JAXBBean> referenceMap = new HashMap<ReferenceKey, BaseHK2JAXBBean>();
         List<UnresolvedReference> unresolved = new LinkedList<UnresolvedReference>();
         
         while(reader.hasNext()) {
             int event = reader.next();
+            if (DEBUG_PARSING) {
+                Logger.getLogger().debug("XmlServiceDebug got xml event (A) " + eventToString(event));
+            }
             
             switch(event) {
             case XMLStreamConstants.START_ELEMENT:
-                handleElement(hk2Root, null, reader, classReflectionHelper, listener, referenceMap, unresolved);
+                String elementTag = reader.getName().getLocalPart();
+                if (DEBUG_PARSING) {
+                    Logger.getLogger().debug("XmlServiceDebug starting document tag " + elementTag);
+                }
+                handleElement(hk2Root, null, reader, classReflectionHelper, listener, referenceMap, unresolved, elementTag);
                 
                 break;
             case XMLStreamConstants.END_DOCUMENT:
                 // Resolve any forward references
                 Utilities.fillInUnfinishedReferences(referenceMap, unresolved);
+                
+                if (DEBUG_PARSING) {
+                    Logger.getLogger().debug("XmlServiceDebug finished reading document");
+                }
                 
                 return (T) hk2Root;
             default:
@@ -103,7 +120,8 @@ public class XmlStreamImpl {
             ClassReflectionHelper classReflectionHelper,
             Listener listener,
             Map<ReferenceKey, BaseHK2JAXBBean> referenceMap,
-            List<UnresolvedReference> unresolved) throws Exception {
+            List<UnresolvedReference> unresolved,
+            String outerElementTag) throws Exception {
         listener.beforeUnmarshal(target, parent);
         
         Map<String, List<BaseHK2JAXBBean>> listChildren = new HashMap<String, List<BaseHK2JAXBBean>>();
@@ -118,6 +136,10 @@ public class XmlStreamImpl {
             String attributeName = reader.getAttributeLocalName(lcv);
             String attributeValue = reader.getAttributeValue(lcv);
             
+            if (DEBUG_PARSING) {
+                Logger.getLogger().debug("XmlServiceDebug handling attribute " + attributeName + " with value " + attributeValue);
+            }
+            
             ChildDataModel childDataModel = nonChildProperties.get(attributeName);
             if (childDataModel == null) continue;
             
@@ -128,6 +150,10 @@ public class XmlStreamImpl {
                 target._setProperty(attributeName, convertedValue);
             }
             else {
+                if (DEBUG_PARSING) {
+                    Logger.getLogger().debug("XmlServiceDebug attribute " + attributeName + " is a reference");
+                }
+                
                 // Reference
                 ReferenceKey rk = new ReferenceKey(childDataModel.getChildType(), attributeValue);
                 BaseHK2JAXBBean reference = referenceMap.get(rk);
@@ -142,14 +168,21 @@ public class XmlStreamImpl {
         
         while(reader.hasNext()) {
             int event = reader.next();
+            if (DEBUG_PARSING) {
+                Logger.getLogger().debug("XmlServiceDebug got xml event (B) " + eventToString(event));
+            }
             
             switch(event) {
             case XMLStreamConstants.START_ELEMENT:
                 String elementTag = reader.getName().getLocalPart();
                 
+                if (DEBUG_PARSING) {
+                    Logger.getLogger().debug("XmlServiceDebug starting parse of element " + elementTag);
+                }
+                
                 ChildDataModel cdm = nonChildProperties.get(elementTag);
                 if (cdm != null) {
-                    String elementValue = advanceNonChildElement(reader);
+                    String elementValue = advanceNonChildElement(reader, elementTag);
                     
                     Class<?> childType = cdm.getChildTypeAsClass();
                     
@@ -180,8 +213,11 @@ public class XmlStreamImpl {
                     
                     BaseHK2JAXBBean hk2Root = Utilities.createBean(grandChild.getProxyAsClass());
                     hk2Root._setClassReflectionHelper(classReflectionHelper);
+                    if (DEBUG_PARSING) {
+                        Logger.getLogger().debug("XmlServiceBean created child bean of " + outerElementTag + " with model " + hk2Root._getModel());
+                    }
                     
-                    handleElement(hk2Root, target, reader, classReflectionHelper, listener, referenceMap, unresolved);
+                    handleElement(hk2Root, target, reader, classReflectionHelper, listener, referenceMap, unresolved, elementTag);
                     
                     if (informedChild.getChildType().equals(ChildType.DIRECT)) {
                         target._setProperty(elementTag, hk2Root);
@@ -205,6 +241,13 @@ public class XmlStreamImpl {
                     
                     break;
                 }
+                
+                // If here we have an unknown stanza, just skip it
+                if (DEBUG_PARSING) {
+                    Logger.getLogger().debug("XmlServiceBean found unknown element in " + outerElementTag + " named " + elementTag + " skipping");
+                }
+                
+                skip(reader, elementTag);
                 
                 break;
             case XMLStreamConstants.CHARACTERS:
@@ -246,6 +289,10 @@ public class XmlStreamImpl {
                     }
                 }
                 
+                if (DEBUG_PARSING) {
+                    Logger.getLogger().debug("XmlServiceDebug ending parse of element " + outerElementTag);
+                }
+                
                 return;
             case XMLStreamConstants.COMMENT:
                 break;
@@ -258,18 +305,30 @@ public class XmlStreamImpl {
         
     }
     
-    private static String advanceNonChildElement(XMLStreamReader reader) throws Exception {
+    private static String advanceNonChildElement(XMLStreamReader reader, String outerTag) throws Exception {
         String retVal = null;
         
         while (reader.hasNext()) {
             int nextEvent = reader.next();
+            if (DEBUG_PARSING) {
+                Logger.getLogger().debug("XmlServiceDebug got xml event (C) " + eventToString(nextEvent));
+            }
+            
             switch (nextEvent) {
             case XMLStreamConstants.CHARACTERS:
                 String text = reader.getText();
-                // TODO:  To trim or not to trim
                 retVal = text.trim();
+                
+                if (DEBUG_PARSING) {
+                    Logger.getLogger().debug("XmlServiceDebug characters of tag " + outerTag + " is " + retVal);
+                }
+                
                 break;
             case XMLStreamConstants.END_ELEMENT:
+                if (DEBUG_PARSING) {
+                    Logger.getLogger().debug("XmlServiceDebug ending parse of non-child element " + outerTag);
+                }
+                
                 return retVal;
             default:
                 // Everything else would be comments or other stuff
@@ -278,6 +337,47 @@ public class XmlStreamImpl {
         }
         
         return retVal;
+    }
+    
+    private static void skip(XMLStreamReader reader, String skipOverTag) throws Exception {
+        while (reader.hasNext()) {
+            int event = reader.next();
+            if (DEBUG_PARSING) {
+                String name = null;
+                
+                if (reader.hasName()) {
+                    name = reader.getName().getLocalPart();
+                }
+                
+                Logger.getLogger().debug("XmlServiceDebug got xml event (D) " + eventToString(event) + " with name " + name);
+            }
+            
+            if (XMLStreamConstants.END_ELEMENT != event) continue;
+                
+            String elementTag = reader.getName().getLocalPart();
+            if (skipOverTag.equals(elementTag)) return;
+        }
+    }
+    
+    private static String eventToString(int event) {
+        switch (event) {
+        case XMLStreamConstants.START_ELEMENT : return "START_ELEMENT" ;
+        case XMLStreamConstants.END_ELEMENT : return "END_ELEMENT" ;
+        case XMLStreamConstants.PROCESSING_INSTRUCTION : return "PROCESSING_INSTRUCTION" ;
+        case XMLStreamConstants.CHARACTERS : return "CHARACTERS" ;
+        case XMLStreamConstants.COMMENT : return "COMMENT" ;
+        case XMLStreamConstants.SPACE : return "SPACE" ;
+        case XMLStreamConstants.START_DOCUMENT : return "START_DOCUMENT" ;
+        case XMLStreamConstants.END_DOCUMENT : return "END_DOCUMENT" ;
+        case XMLStreamConstants.ENTITY_REFERENCE : return "ENTITY_REFERENCE" ;
+        case XMLStreamConstants.ATTRIBUTE : return "ATTRIBUTE" ;
+        case XMLStreamConstants.DTD : return "DTD" ;
+        case XMLStreamConstants.CDATA : return "CDATA" ;
+        case XMLStreamConstants.NAMESPACE : return "NAMESPACE" ;
+        case XMLStreamConstants.NOTATION_DECLARATION : return "NOTATION_DECLARATION" ;
+        case XMLStreamConstants.ENTITY_DECLARATION : return "ENTITY_DECLARATION" ;
+        default : return "UNKNOWN EVENT: " + event;
+        }
     }
 
 }

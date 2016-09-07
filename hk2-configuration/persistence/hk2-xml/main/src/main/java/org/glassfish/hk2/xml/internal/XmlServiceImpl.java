@@ -41,6 +41,8 @@
 package org.glassfish.hk2.xml.internal;
 
 import java.net.URI;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -72,6 +74,15 @@ import org.glassfish.hk2.xml.spi.XmlServiceParser;
 @Singleton
 @Visibility(DescriptorVisibility.LOCAL)
 public class XmlServiceImpl implements XmlService {
+    public final static boolean DEBUG_PARSING = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+        @Override
+        public Boolean run() {
+            return Boolean.parseBoolean(
+                System.getProperty("org.jvnet.hk2.xmlservice.parser.stream", "false"));
+        }
+            
+    });
+    
     @Inject
     private ServiceLocator serviceLocator;
     
@@ -202,6 +213,13 @@ public class XmlServiceImpl implements XmlService {
             base._setInstanceName(instanceName);
             
             base._setDynamicChangeInfo(changeControl);
+            
+            if (DEBUG_PARSING) {
+                Logger.getLogger().debug("XmlServiceDebug found bean " + base);
+            }
+        }
+        if (DEBUG_PARSING) {
+            Logger.getLogger().debug("XmlServiceDebug after parsing all beans in " + uri);
         }
         
         long elapsedPreAdvertisement = 0L;

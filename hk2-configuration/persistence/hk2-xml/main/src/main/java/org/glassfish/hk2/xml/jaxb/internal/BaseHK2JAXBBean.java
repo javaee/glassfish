@@ -1024,7 +1024,8 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
     public String toString() {
         return "BaseHK2JAXBBean(XmlPath=" + xmlPath +
                 ",instanceName=" + instanceName +
-                ",keyValue=" + keyValue + "," +
-                System.identityHashCode(this) + ")";
+                ",keyValue=" + keyValue +
+                ",model=" + _getModel() + 
+                "," + System.identityHashCode(this) + ")";
     }
 }

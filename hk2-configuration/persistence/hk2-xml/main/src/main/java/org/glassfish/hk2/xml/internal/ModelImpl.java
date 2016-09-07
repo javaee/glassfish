@@ -297,7 +297,7 @@ public class ModelImpl implements Model {
     
     @Override
     public String toString() {
-        return "Model(" + originalInterface + "," + translatedClass + "," + rootName + "," + keyProperty + ")";
+        return "ModelImpl(interface=" + originalInterface + ",class=" + translatedClass + ",root=" + rootName + ",keyProperty=" + keyProperty + ")";
     }
     
 }
