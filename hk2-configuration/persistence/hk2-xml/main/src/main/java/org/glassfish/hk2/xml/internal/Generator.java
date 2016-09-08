@@ -348,22 +348,34 @@ public class Generator {
                 List<AltClass> paramTypes = wrapper.getParameterTypes();
                 String cast = "";
                 String function = "super._doRemoveZ(\"";
+                String doReturn = "return";
                 if (!boolean.class.getName().equals(originalRetType.getName())) {
-                    cast = "(" + getCompilableClass(originalRetType) + ") ";
+                    if (void.class.getName().equals(originalRetType.getName())) {
+                        doReturn = "";
+                    }
+                    else {
+                        cast = "(" + getCompilableClass(originalRetType) + ") ";
+                        
+                    }
+                    
                     function = "super._doRemove(\"";
                 }
                 
                 if (paramTypes.size() == 0) {
-                    sb.append(") { return " + cast + function +
-                            mi.getRepresentedProperty() + "\", null, -1); }");
+                    sb.append(") { " + doReturn + " " + cast + function +
+                            mi.getRepresentedProperty() + "\", null, -1, null); }");
                 }
                 else if (String.class.getName().equals(paramTypes.get(0).getName())) {
-                    sb.append("java.lang.String arg0) { return " + cast  + function +
-                            mi.getRepresentedProperty() + "\", arg0, -1); }");
+                    sb.append("java.lang.String arg0) { " + doReturn + " " + cast  + function +
+                            mi.getRepresentedProperty() + "\", arg0, -1, null); }");
+                }
+                else if (int.class.getName().equals(paramTypes.get(0).getName())) {
+                    sb.append("int arg0) { " + doReturn + " " + cast + function +
+                            mi.getRepresentedProperty() + "\", null, arg0, null); }");
                 }
                 else {
-                    sb.append("int arg0) { return " + cast + function +
-                            mi.getRepresentedProperty() + "\", null, arg0); }");
+                    sb.append(paramTypes.get(0).getName() + " arg0) { " + doReturn + " " + cast + function +
+                            mi.getRepresentedProperty() + "\", null, -1, arg0); }");
                 }
             }
             else if (MethodType.CUSTOM.equals(mi.getMethodType())) {
@@ -1299,7 +1311,11 @@ public class Generator {
         if (method.getReturnType() == null || void.class.getName().equals(method.getReturnType().getName())) return null;
         
         AltClass returnType = method.getReturnType();
-        if (!boolean.class.getName().equals(returnType.getName()) && !returnType.isInterface()) return null;
+        if (returnType == null) returnType = ClassAltClassImpl.VOID;
+        
+        if (!boolean.class.getName().equals(returnType.getName()) &&
+                !returnType.isInterface() &&
+                !void.class.getName().equals(returnType.getName())) return null;
         
         List<AltClass> parameterTypes = method.getParameterTypes();
         if (parameterTypes.size() > 1) return null;
@@ -1310,6 +1326,9 @@ public class Generator {
         
         if (String.class.getName().equals(param0.getName()) ||
                 int.class.getName().equals(param0.getName())) return retVal;
+        if (param0.equals(returnType)) {
+            return retVal;
+        }
         return null;
     }
     

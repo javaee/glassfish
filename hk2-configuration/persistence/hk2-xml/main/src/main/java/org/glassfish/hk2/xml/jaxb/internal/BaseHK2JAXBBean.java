@@ -635,15 +635,15 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         return ((Double) _invokeCustomizedMethod(methodName, params, values)).doubleValue();
     }
     
-    public Object _doRemove(String childProperty, String childKey, int index) {
+    public Object _doRemove(String childProperty, String childKey, int index, Object child) {
         if (changeControl == null) {
-            Object retVal = Utilities.internalRemove(this, childProperty, childKey, index, null, null, null);
+            Object retVal = Utilities.internalRemove(this, childProperty, childKey, index, child, null, null, null);
             
             if (retVal != null) {
                 keyedChildrenCache.remove(childProperty);
             }
             
-            return Utilities.internalRemove(this, childProperty, childKey, index, null, null, null);
+            return Utilities.internalRemove(this, childProperty, childKey, index, child, null, null, null);
         }
         
         changeControl.getWriteLock().lock();
@@ -653,7 +653,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
             DynamicConfiguration config = (changeControl.getDynamicConfigurationService() == null) ? null :
                 changeControl.getDynamicConfigurationService().createDynamicConfiguration();
             
-            Object retVal = Utilities.internalRemove(this, childProperty, childKey, index, changeControl, wbd, config);
+            Object retVal = Utilities.internalRemove(this, childProperty, childKey, index, child, changeControl, wbd, config);
             
             if (retVal != null) {
                 if (config != null) {
@@ -674,8 +674,8 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         }
     }
     
-    public boolean _doRemoveZ(String childProperty, String childKey, int index) {
-        Object retVal = _doRemove(childProperty, childKey, index);
+    public boolean _doRemoveZ(String childProperty, String childKey, int index, Object child) {
+        Object retVal = _doRemove(childProperty, childKey, index, child);
         return (retVal != null);
     }
 

@@ -70,9 +70,15 @@ public interface DomainBean extends NamedBean {
     public void addJMSServer(JMSServerBean jmsServer);
     public JMSServerBean removeJMSServer(String jmsServer);
     
-    @XmlElement(name="http-factory") @PluralOf("factory")
+    @XmlElement(name="http-factory") @PluralOf("HTTPFactory")
     public List<HttpFactoryBean> getHTTPFactories();
     public void setHTTPFactories(List<HttpFactoryBean> httpFactories);
     public HttpFactoryBean addHTTPFactory(HttpFactoryBean factory);
     public HttpFactoryBean removeHTTPFactory(HttpFactoryBean factory);
+    
+    @XmlElement(name="https-factory") @PluralOf("HTTPSFactory")
+    public HttpFactoryBean[] getHTTPSFactories();
+    public void setHTTPSFactories(HttpFactoryBean[] httpsFactories);
+    public HttpFactoryBean addHTTPSFactory(HttpFactoryBean factory);
+    public void removeHTTPSFactory(HttpFactoryBean factory);
 }

@@ -620,17 +620,41 @@ public class Utilities {
             String childProperty,
             String childKey,
             int index,
+            Object childToRemove,
             DynamicChangeInfo changeInformation,
             WriteableBeanDatabase writeableDatabase,
             DynamicConfiguration dynamicService) {
         if (childProperty == null) return null;
+        
+        String instanceToRemove = null;
+        if (childKey == null && index < 0 && childToRemove != null) {
+            // Need to check that the parent is the same as me
+            if (!(childToRemove instanceof BaseHK2JAXBBean)) {
+                throw new IllegalArgumentException("Removed child must be a child of the parent " + myParent + " but is not of the correct type " +
+                  childToRemove.getClass().getName());
+            }
+            
+            BaseHK2JAXBBean childToRemoveBean = (BaseHK2JAXBBean) childToRemove;
+            BaseHK2JAXBBean childToRemoveParent = (BaseHK2JAXBBean) childToRemoveBean._getParent();
+            
+            if (childToRemoveParent == null) {
+                throw new IllegalArgumentException("Removed child must be a child of the parent " + myParent + " but has no parent of its own");
+            }
+            
+            if (!childToRemoveParent.equals(myParent)) {
+                throw new IllegalArgumentException("Removed child must be a child of the parent " + myParent + " but has a different parent " +
+                  childToRemoveParent);
+            }
+            
+            instanceToRemove = childToRemoveBean._getInstanceName();
+        }
         
         ParentedModel removeMeParentedNode = myParent._getModel().getChild(childProperty);
         ModelImpl removeMeNode = removeMeParentedNode.getChildModel();
         BaseHK2JAXBBean rootForDeletion = null;
         
         if (!ChildType.DIRECT.equals(removeMeParentedNode.getChildType())) {
-            if (childKey == null && index < 0) return null;
+            if (childKey == null && index < 0 && instanceToRemove == null) return null;
             
             if (ChildType.LIST.equals(removeMeParentedNode.getChildType())) {
                 List<BaseHK2JAXBBean> removeFromList = (List<BaseHK2JAXBBean>) myParent._getProperty(childProperty);
@@ -642,11 +666,19 @@ public class Utilities {
                 
                 List<BaseHK2JAXBBean> listWithObjectRemoved = new ArrayList<BaseHK2JAXBBean>(minusOneSize + 1);
                 
-                if (childKey != null) {
+                if (childKey != null || instanceToRemove != null) {
+                    String comparisonKey = (childKey != null) ? childKey : instanceToRemove ;
+                    
                     for (BaseHK2JAXBBean candidate : removeFromList) {
-                        String candidateKeyValue = candidate._getKeyValue();
+                        String candidateKeyValue;
+                        if (childKey != null) {
+                            candidateKeyValue = candidate._getKeyValue();
+                        }
+                        else {
+                            candidateKeyValue = candidate._getInstanceName();
+                        }
                         
-                        if (GeneralUtilities.safeEquals(candidateKeyValue, childKey)) {
+                        if (GeneralUtilities.safeEquals(candidateKeyValue, comparisonKey)) {
                             rootForDeletion = candidate;
                         }
                         else {
@@ -691,14 +723,22 @@ public class Utilities {
                 
                 Object arrayWithObjectRemoved = Array.newInstance(arrayType, removeFromArrayLength - 1);
                 
-                if (childKey != null) {
+                if (childKey != null || instanceToRemove != null) {
+                    String comparisonKey = (childKey != null) ? childKey : instanceToRemove ;
+                    
                     int removeIndex = -1;
                     for (int lcv = 0; lcv < removeFromArrayLength; lcv++) {
                         BaseHK2JAXBBean candidate = (BaseHK2JAXBBean) Array.get(removeFromArray, lcv);
                         
-                        String candidateKeyValue = candidate._getKeyValue();
+                        String candidateKeyValue;
+                        if (childKey != null) {
+                            candidateKeyValue = candidate._getKeyValue();
+                        }
+                        else {
+                            candidateKeyValue = candidate._getInstanceName();
+                        }
                         
-                        if (GeneralUtilities.safeEquals(candidateKeyValue, childKey)) {
+                        if (GeneralUtilities.safeEquals(candidateKeyValue, comparisonKey)) {
                             rootForDeletion = candidate;
                             removeIndex = lcv;
                             break;
@@ -714,7 +754,7 @@ public class Utilities {
                         Array.set(arrayWithObjectRemoved, addIndex++, Array.get(removeFromArray, lcv));
                     }
                 }
-                else {
+                else if (index >= 0) {
                     // unkeyed, index >= 0
                     if (index >= removeFromArrayLength) {
                         return null;
@@ -728,6 +768,30 @@ public class Utilities {
                         
                         Array.set(arrayWithObjectRemoved, addIndex++, Array.get(removeFromArray, lcv));
                     }
+                }
+                else {
+                    int removeIndex = -1;
+                    for (int lcv = 0; lcv < removeFromArrayLength; lcv++) {
+                        BaseHK2JAXBBean candidate = (BaseHK2JAXBBean) Array.get(removeFromArray, lcv);
+                        
+                        String candidateKeyValue = candidate._getInstanceName();
+                        
+                        if (GeneralUtilities.safeEquals(candidateKeyValue, instanceToRemove)) {
+                            rootForDeletion = candidate;
+                            removeIndex = lcv;
+                            break;
+                        }
+                    }
+                    
+                    if (rootForDeletion == null) return null;
+                    
+                    int addIndex = 0;
+                    for (int lcv = 0; lcv < removeFromArrayLength; lcv++) {
+                        if (lcv == removeIndex) continue;
+                        
+                        Array.set(arrayWithObjectRemoved, addIndex++, Array.get(removeFromArray, lcv));
+                    }
+                    
                 }
                 
                 if (rootForDeletion == null) return null;
