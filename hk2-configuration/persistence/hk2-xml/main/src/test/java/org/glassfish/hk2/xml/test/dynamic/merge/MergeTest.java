@@ -60,6 +60,8 @@ import org.glassfish.hk2.xml.test.basic.beans.Commons;
 import org.glassfish.hk2.xml.test.basic.beans.Museum;
 import org.glassfish.hk2.xml.test.beans.AuthorizationProviderBean;
 import org.glassfish.hk2.xml.test.beans.DomainBean;
+import org.glassfish.hk2.xml.test.beans.HttpFactoryBean;
+import org.glassfish.hk2.xml.test.beans.HttpServerBean;
 import org.glassfish.hk2.xml.test.beans.JMSServerBean;
 import org.glassfish.hk2.xml.test.beans.MachineBean;
 import org.glassfish.hk2.xml.test.beans.QueueBean;
@@ -96,6 +98,12 @@ public class MergeTest {
     public final static String TOPICD0_NAME = "TopicD0";
     public final static String QUEUED0_NAME = "QueueD0";
     
+    public final static String ESSEX_NAME = "Essex";
+    public final static String FAIRVIEW_NAME = "Fairview";
+    public final static String GLENDOLA_NAME = "Glendola";
+    public final static String HOLYOKE_NAME = "Holyoke";
+    public final static String IROQUIS_NAME = "Iroquis";
+    
     private final static String ALICE_ADDRESS = "10.0.0.1";
     private final static String ALICE_SERVER0_NAME = "Server-0";
     private final static int ALICE_SERVER0_PORT = 12345;
@@ -109,6 +117,8 @@ public class MergeTest {
     public final static String JMS_SERVER_TYPE = "/domain/jms-server";
     public final static String TOPIC_TYPE = "/domain/jms-server/topic";
     public final static String QUEUE_TYPE = "/domain/jms-server/queue";
+    public final static String HTTP_FACTORY_TYPE = "/domain/http-factory";
+    public final static String HTTP_SERVER_TYPE = "/domain/http-factory/http-server";
     
     private final static String ALICE_INSTANCE = "domain.Alice";
     private final static String BOB_INSTANCE = "domain.Bob";
@@ -370,6 +380,53 @@ public class MergeTest {
             lcv++;
         }
         
+        List<HttpFactoryBean> httpFactories = root.getHTTPFactories();
+        Assert.assertEquals(2, httpFactories.size());
+        
+        String factory0Identifier = null;
+        String factory1Identifier = null;
+        
+        lcv = 0;
+        for (HttpFactoryBean httpFactory : httpFactories) {
+            if (lcv == 0) {
+                factory0Identifier = ((XmlHk2ConfigurationBean) httpFactory)._getInstanceName();
+                
+                Assert.assertEquals(ESSEX_NAME, httpFactory.getNonKeyIdentifier());
+                
+                List<HttpServerBean> httpServers = httpFactory.getHttpServers();
+                Assert.assertEquals(1, httpServers.size());
+                
+                for (HttpServerBean httpServer : httpServers) {
+                    Assert.assertEquals(FAIRVIEW_NAME, httpServer.getName());
+                    Assert.assertEquals(1234, httpServer.getPort());
+                }
+            }
+            else {
+                factory1Identifier = ((XmlHk2ConfigurationBean) httpFactory)._getInstanceName();
+                
+                Assert.assertEquals(GLENDOLA_NAME, httpFactory.getNonKeyIdentifier());
+                
+                List<HttpServerBean> httpServers = httpFactory.getHttpServers();
+                Assert.assertEquals(2, httpServers.size());
+                
+                int lcv2 = 0;
+                for (HttpServerBean httpServer : httpServers) {
+                    if (lcv2 == 0) {
+                        Assert.assertEquals(HOLYOKE_NAME, httpServer.getName());
+                        Assert.assertEquals(5678, httpServer.getPort());
+                    }
+                    else {
+                        Assert.assertEquals(IROQUIS_NAME, httpServer.getName());
+                        Assert.assertEquals(5679, httpServer.getPort());
+                    }
+                    lcv2++;
+                }
+                
+            }
+            
+            lcv++;
+        }
+        
         // Below is the verification for the Hub versions of the beans
         
         {
@@ -426,6 +483,48 @@ public class MergeTest {
         assertNameOnlyBean(hub, QUEUE_TYPE, QUEUE0_INSTANCE, QUEUE0_NAME);
         assertNameOnlyBean(hub, QUEUE_TYPE, QUEUE1_INSTANCE, QUEUE1_NAME);
         assertNameOnlyBean(hub, QUEUE_TYPE, QUEUE2_INSTANCE, QUEUE2_NAME);
+        
+        {
+            Instance f0 = hub.getCurrentDatabase().getInstance(HTTP_FACTORY_TYPE, factory0Identifier);
+            Assert.assertNotNull(f0);
+            
+            Map<String, Object> beanLike = (Map<String, Object>) f0.getBean();
+            
+            Assert.assertEquals(ESSEX_NAME, beanLike.get(Commons.NON_KEY_TAG));
+        }
+        
+        {
+            Instance f1 = hub.getCurrentDatabase().getInstance(HTTP_FACTORY_TYPE, factory1Identifier);
+            Assert.assertNotNull(f1);
+            
+            Map<String, Object> beanLike = (Map<String, Object>) f1.getBean();
+            
+            Assert.assertEquals(GLENDOLA_NAME, beanLike.get(Commons.NON_KEY_TAG));
+        }
+        
+        {
+            Instance s1 = assertNameOnlyBean(hub, HTTP_SERVER_TYPE, factory0Identifier + "." + FAIRVIEW_NAME, FAIRVIEW_NAME);
+            
+            Map<String, Object> beanLike = (Map<String, Object>) s1.getBean();
+            
+            Assert.assertEquals(new Integer(1234), beanLike.get(Commons.PORT_TAG));
+        }
+        
+        {
+            Instance s1 = assertNameOnlyBean(hub, HTTP_SERVER_TYPE, factory1Identifier + "." + HOLYOKE_NAME, HOLYOKE_NAME);
+            
+            Map<String, Object> beanLike = (Map<String, Object>) s1.getBean();
+            
+            Assert.assertEquals(new Integer(5678), beanLike.get(Commons.PORT_TAG));
+        }
+        
+        {
+            Instance s1 = assertNameOnlyBean(hub, HTTP_SERVER_TYPE, factory1Identifier + "." + IROQUIS_NAME, IROQUIS_NAME);
+            
+            Map<String, Object> beanLike = (Map<String, Object>) s1.getBean();
+            
+            Assert.assertEquals(new Integer(5679), beanLike.get(Commons.PORT_TAG));
+        }
         
         assertDomain1Services(locator);
     }
@@ -499,6 +598,36 @@ public class MergeTest {
         assertQueueOfName(locator, fromLocator, QUEUE1_NAME);
         assertQueueOfName(locator, fromLocator, QUEUE2_NAME);
         assertQueueOfName(locator, fromLocator, QUEUED0_NAME);
+        
+        List<HttpFactoryBean> httpFactories = locator.getAllServices(HttpFactoryBean.class);
+        Assert.assertTrue(2 == httpFactories.size() || 4 == httpFactories.size());
+        
+        HttpFactoryBean essexFactory = null;
+        HttpFactoryBean glendolaFactory = null;
+        int lcv = 0;
+        for (HttpFactoryBean httpFactory : httpFactories) {
+            assertServiceComesFromSameLocator(httpFactory, fromLocator);
+            
+            if (httpFactory.getNonKeyIdentifier().equals(ESSEX_NAME)) {
+                essexFactory = httpFactory;
+            }
+            else if (httpFactory.getNonKeyIdentifier().equals(GLENDOLA_NAME)) {
+                glendolaFactory = httpFactory;
+            }
+            else {
+                Assert.fail("Unknown factory: " + httpFactory);
+            }
+            
+            lcv++;
+            if (lcv >= 2) break;
+        }
+        
+        Assert.assertNotNull(essexFactory);
+        Assert.assertNotNull(glendolaFactory);
+        
+        assertHttpServerOfName(locator, fromLocator, FAIRVIEW_NAME, 1234);
+        assertHttpServerOfName(locator, fromLocator, HOLYOKE_NAME, 5678);
+        assertHttpServerOfName(locator, fromLocator, IROQUIS_NAME, 5679);
     }
     
     private static void assertServiceComesFromSameLocator(Object service, ServiceLocator locator) {
@@ -526,6 +655,15 @@ public class MergeTest {
         assertServiceComesFromSameLocator(qb, fromLocator);
     }
     
+    public static void assertHttpServerOfName(ServiceLocator locator, ServiceLocator fromLocator, String expectedName, int expectedPort) {
+        HttpServerBean hsb = locator.getService(HttpServerBean.class, expectedName);
+        Assert.assertNotNull(hsb);
+        Assert.assertEquals(expectedName, hsb.getName());
+        Assert.assertEquals(expectedPort, hsb.getPort());
+        
+        assertServiceComesFromSameLocator(hsb, fromLocator);
+    }
+    
     public static void assertTopicOfName(ServiceLocator locator, String expectedName) {
         assertTopicOfName(locator, locator, expectedName);
     }
@@ -539,13 +677,15 @@ public class MergeTest {
     }
     
     @SuppressWarnings("unchecked")
-    private static void assertNameOnlyBean(Hub hub, String type, String instance, String expectedName) {
+    private static Instance assertNameOnlyBean(Hub hub, String type, String instance, String expectedName) {
         Instance namedInstance = hub.getCurrentDatabase().getInstance(type, instance);
         Assert.assertNotNull("Could not find instance of " + type + "," + instance, namedInstance);
         
         Map<String, Object> namedMap = (Map<String, Object>) namedInstance.getBean();
         
         Assert.assertEquals(expectedName, namedMap.get(Commons.NAME_TAG));
+        
+        return namedInstance;
     }
     
     /**

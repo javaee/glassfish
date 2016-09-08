@@ -41,38 +41,26 @@ package org.glassfish.hk2.xml.test.beans;
 
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
-import org.glassfish.hk2.xml.api.annotations.PluralOf;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
+ * This bean has children with names but does
+ * not have a key itself
+ * 
  * @author jwells
  *
  */
-@XmlRootElement(name="domain") @Contract
-public interface DomainBean extends NamedBean {
-    @XmlElement(name="security-manager")
-    public SecurityManagerBean getSecurityManager();
-    public void setSecurityManager(SecurityManagerBean secBean);
-    public boolean removeSecurityManager();
+@Contract
+public interface HttpFactoryBean {
+    @XmlAttribute(name="non-key-identifier")
+    public String getNonKeyIdentifier();
     
-    @XmlElement(name="machine")
-    public List<MachineBean> getMachines();
-    public void setMachines(List<MachineBean> machines);
-    public void addMachine(MachineBean machine);
-    public MachineBean removeMachine(String machine);
-    
-    @XmlElement(name="jms-server")
-    public JMSServerBean[] getJMSServers();
-    public void setJMSServers(JMSServerBean[] jmsServers);
-    public void addJMSServer(JMSServerBean jmsServer);
-    public JMSServerBean removeJMSServer(String jmsServer);
-    
-    @XmlElement(name="http-factory") @PluralOf("factory")
-    public List<HttpFactoryBean> getHTTPFactories();
-    public void setHTTPFactories(List<HttpFactoryBean> httpFactories);
-    public HttpFactoryBean addHTTPFactory(HttpFactoryBean factory);
-    public HttpFactoryBean removeHTTPFactory(HttpFactoryBean factory);
+    @XmlElement(name="http-server")
+    public List<HttpServerBean> getHttpServers();
+    public void addHttpServer(String name);
+    public void removeHttpServer(String name);
+
 }

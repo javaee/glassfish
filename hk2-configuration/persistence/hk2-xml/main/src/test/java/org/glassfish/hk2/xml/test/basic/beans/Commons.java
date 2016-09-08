@@ -107,6 +107,8 @@ public class Commons {
     private final static String COKE_ENV = "cokeenv";
     public final static String SYMBOL_TAG = "symbol";
     public final static String EXCHANGE_TAG = "exchange";
+    public final static String NON_KEY_TAG = "non-key-identifier";
+    public final static String PORT_TAG = "port";
     
     private Commons() {}
     

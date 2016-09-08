@@ -98,4 +98,22 @@
 			<name>QueueD0</name>
 		</queue>
 	</jms-server>
+	
+	<http-factory non-key-identifier="Essex">
+		<http-server>
+			<name>Fairview</name>
+			<port>1234</port>
+		</http-server>
+	</http-factory>
+	
+	<http-factory non-key-identifier="Glendola">
+		<http-server>
+			<name>Holyoke</name>
+			<port>5678</port>
+		</http-server>
+		<http-server>
+			<name>Iroquis</name>
+			<port>5679</port>
+		</http-server>
+	</http-factory>
 </domain>
