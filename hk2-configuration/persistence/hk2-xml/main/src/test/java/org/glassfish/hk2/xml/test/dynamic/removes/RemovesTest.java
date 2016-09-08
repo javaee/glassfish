@@ -59,6 +59,8 @@ import org.glassfish.hk2.xml.test.basic.beans.Financials;
 import org.glassfish.hk2.xml.test.basic.beans.OtherData;
 import org.glassfish.hk2.xml.test.beans.AuthorizationProviderBean;
 import org.glassfish.hk2.xml.test.beans.DomainBean;
+import org.glassfish.hk2.xml.test.beans.HttpFactoryBean;
+import org.glassfish.hk2.xml.test.beans.HttpServerBean;
 import org.glassfish.hk2.xml.test.beans.JMSServerBean;
 import org.glassfish.hk2.xml.test.beans.QueueBean;
 import org.glassfish.hk2.xml.test.beans.SecurityManagerBean;
@@ -378,6 +380,112 @@ public class RemovesTest {
             Assert.assertNull(locator.getService(TopicBean.class, MergeTest.TOPIC1_NAME));
             
             MergeTest.assertTopicOfName(locator, MergeTest.TOPICD0_NAME);
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    @org.junit.Ignore
+    public void testRemoveOfUnkeyedListChildWithChildren() throws Exception {
+        ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
+        
+        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshall(url.toURI(), DomainBean.class);
+        
+        MergeTest.verifyDomain1Xml(rootHandle, hub, locator);
+        
+        DomainBean domain = rootHandle.getRoot();
+        
+        List<HttpFactoryBean> factories = domain.getHTTPFactories();
+        
+        HttpFactoryBean killMe = null;
+        for (HttpFactoryBean factory : factories) {
+            if (factory.getNonKeyIdentifier().equals(MergeTest.GLENDOLA_NAME)) {
+                killMe = factory;
+            }
+        }
+        
+        Assert.assertNotNull(killMe);
+        
+        // This is the test
+        HttpFactoryBean killed = domain.removeHTTPFactory(killMe);
+        Assert.assertEquals(killMe, killed);
+        
+        factories = domain.getHTTPFactories();
+        Assert.assertEquals(1, factories.size());
+        
+        for (HttpFactoryBean factory : factories) {
+            Assert.assertEquals(MergeTest.ESSEX_NAME, factory.getNonKeyIdentifier());
+            
+            List<HttpServerBean> servers = factory.getHttpServers();
+            Assert.assertEquals(1, servers.size());
+            
+            for (HttpServerBean server : servers) {
+                Assert.assertEquals(MergeTest.FAIRVIEW_NAME, server.getName());
+                Assert.assertEquals(1234, server.getPort());
+            }
+        }
+        
+        BeanDatabase db = hub.getCurrentDatabase();
+        
+        {
+            Type httpFactoryType = db.getType(MergeTest.HTTP_FACTORY_TYPE);
+            Assert.assertNotNull(httpFactoryType);
+        
+            Map<String, Instance> httpFactoryInstances = httpFactoryType.getInstances();
+            Assert.assertNotNull(httpFactoryInstances);
+            Assert.assertEquals(1, httpFactoryInstances.size());
+            
+            Instance essexInstance = null;
+            for (Instance i : httpFactoryInstances.values()) {
+                essexInstance = i;
+            }
+            Assert.assertNotNull(essexInstance);
+            
+            Map<String, Object> essexMap = (Map<String, Object>) essexInstance.getBean();
+            Assert.assertEquals(MergeTest.ESSEX_NAME, essexMap.get(Commons.NON_KEY_TAG));
+            
+            List<HttpFactoryBean> asServices = locator.getAllServices(HttpFactoryBean.class);
+            Assert.assertEquals(1, asServices.size());
+            
+            HttpFactoryBean foundBean = null;
+            for (HttpFactoryBean a : asServices) {
+                foundBean = a;
+            }
+            Assert.assertNotNull(foundBean);
+            
+            Assert.assertEquals(MergeTest.ESSEX_NAME, foundBean.getNonKeyIdentifier());
+        }
+        
+        {
+            Type httpServerType = db.getType(MergeTest.HTTP_SERVER_TYPE);
+            Assert.assertNotNull(httpServerType);
+            
+            Map<String, Instance> httpServerInstances = httpServerType.getInstances();
+            Assert.assertNotNull(httpServerInstances);
+            Assert.assertEquals(1, httpServerInstances.size());
+            
+            Instance httpServerInstance = null;
+            for (Instance a : httpServerInstances.values()) {
+                httpServerInstance = a;
+            }
+            Assert.assertNotNull(httpServerInstance);
+            
+            Map<String, Object> beanLike = (Map<String, Object>) httpServerInstance.getBean();
+            Assert.assertEquals(MergeTest.FAIRVIEW_NAME, beanLike.get(Commons.NAME_TAG));
+            Assert.assertEquals(new Integer(1234), beanLike.get(Commons.PORT_TAG));
+            
+            Assert.assertNull(locator.getService(HttpServerBean.class, MergeTest.HOLYOKE_NAME));
+            Assert.assertNull(locator.getService(HttpServerBean.class, MergeTest.IROQUIS_NAME));
+            
+            HttpServerBean hsb = locator.getService(HttpServerBean.class, MergeTest.FAIRVIEW_NAME);
+            Assert.assertNotNull(hsb);
+            
+            Assert.assertEquals(MergeTest.FAIRVIEW_NAME, hsb.getName());
+            Assert.assertEquals(1234, hsb.getPort());
         }
     }
     
