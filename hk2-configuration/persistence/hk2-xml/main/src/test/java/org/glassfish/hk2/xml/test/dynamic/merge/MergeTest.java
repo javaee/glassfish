@@ -62,6 +62,7 @@ import org.glassfish.hk2.xml.test.beans.AuthorizationProviderBean;
 import org.glassfish.hk2.xml.test.beans.DomainBean;
 import org.glassfish.hk2.xml.test.beans.HttpFactoryBean;
 import org.glassfish.hk2.xml.test.beans.HttpServerBean;
+import org.glassfish.hk2.xml.test.beans.HttpsFactoryBean;
 import org.glassfish.hk2.xml.test.beans.JMSServerBean;
 import org.glassfish.hk2.xml.test.beans.MachineBean;
 import org.glassfish.hk2.xml.test.beans.QueueBean;
@@ -103,6 +104,7 @@ public class MergeTest {
     public final static String GLENDOLA_NAME = "Glendola";
     public final static String HOLYOKE_NAME = "Holyoke";
     public final static String IROQUIS_NAME = "Iroquis";
+    public final static String LIBERTY_NAME = "Liberty";
     
     private final static String ALICE_ADDRESS = "10.0.0.1";
     private final static String ALICE_SERVER0_NAME = "Server-0";
@@ -119,6 +121,7 @@ public class MergeTest {
     public final static String QUEUE_TYPE = "/domain/jms-server/queue";
     public final static String HTTP_FACTORY_TYPE = "/domain/http-factory";
     public final static String HTTP_SERVER_TYPE = "/domain/http-factory/http-server";
+    public final static String HTTPS_FACTORY_TYPE = "/domain/https-factory";
     
     private final static String ALICE_INSTANCE = "domain.Alice";
     private final static String BOB_INSTANCE = "domain.Bob";
@@ -427,6 +430,13 @@ public class MergeTest {
             lcv++;
         }
         
+        HttpsFactoryBean httpsFactories[] = root.getHTTPSFactories();
+        Assert.assertEquals(1, httpsFactories.length);
+        
+        Assert.assertEquals(LIBERTY_NAME, httpsFactories[0].getNonKeyIdentifier());
+        
+        String httpsInstanceName = ((XmlHk2ConfigurationBean) httpsFactories[0])._getInstanceName();
+        
         // Below is the verification for the Hub versions of the beans
         
         {
@@ -524,6 +534,15 @@ public class MergeTest {
             Map<String, Object> beanLike = (Map<String, Object>) s1.getBean();
             
             Assert.assertEquals(new Integer(5679), beanLike.get(Commons.PORT_TAG));
+        }
+        
+        {
+            Instance f1 = hub.getCurrentDatabase().getInstance(HTTPS_FACTORY_TYPE, httpsInstanceName);
+            Assert.assertNotNull(f1);
+            
+            Map<String, Object> beanLike = (Map<String, Object>) f1.getBean();
+            
+            Assert.assertEquals(LIBERTY_NAME, beanLike.get(Commons.NON_KEY_TAG));
         }
         
         assertDomain1Services(locator);
@@ -628,6 +647,13 @@ public class MergeTest {
         assertHttpServerOfName(locator, fromLocator, FAIRVIEW_NAME, 1234);
         assertHttpServerOfName(locator, fromLocator, HOLYOKE_NAME, 5678);
         assertHttpServerOfName(locator, fromLocator, IROQUIS_NAME, 5679);
+        
+        // There is only one https-factory in the standard document so we can just use the single service
+        HttpsFactoryBean httpsFactory = locator.getService(HttpsFactoryBean.class);
+        Assert.assertNotNull(httpsFactory);
+        
+        Assert.assertEquals(LIBERTY_NAME, httpsFactory.getNonKeyIdentifier());
+        assertServiceComesFromSameLocator(httpsFactory, fromLocator);
     }
     
     private static void assertServiceComesFromSameLocator(Object service, ServiceLocator locator) {

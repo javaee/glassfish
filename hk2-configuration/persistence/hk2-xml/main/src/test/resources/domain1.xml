@@ -116,4 +116,6 @@
 			<port>5679</port>
 		</http-server>
 	</http-factory>
+	
+	<https-factory non-key-identifier="Liberty" />
 </domain>
