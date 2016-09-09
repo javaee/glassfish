@@ -1308,8 +1308,6 @@ public class Generator {
         String retVal = nameInformation.getRemoveVariableName(name);
         if (retVal == null) return null;
         
-        if (method.getReturnType() == null || void.class.getName().equals(method.getReturnType().getName())) return null;
-        
         AltClass returnType = method.getReturnType();
         if (returnType == null) returnType = ClassAltClassImpl.VOID;
         
@@ -1325,10 +1323,9 @@ public class Generator {
         AltClass param0 = parameterTypes.get(0);
         
         if (String.class.getName().equals(param0.getName()) ||
-                int.class.getName().equals(param0.getName())) return retVal;
-        if (param0.equals(returnType)) {
-            return retVal;
-        }
+                int.class.getName().equals(param0.getName())||
+                param0.isInterface()) return retVal;
+        
         return null;
     }
     

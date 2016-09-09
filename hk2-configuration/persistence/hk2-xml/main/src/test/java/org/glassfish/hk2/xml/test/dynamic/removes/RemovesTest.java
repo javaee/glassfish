@@ -61,6 +61,7 @@ import org.glassfish.hk2.xml.test.beans.AuthorizationProviderBean;
 import org.glassfish.hk2.xml.test.beans.DomainBean;
 import org.glassfish.hk2.xml.test.beans.HttpFactoryBean;
 import org.glassfish.hk2.xml.test.beans.HttpServerBean;
+import org.glassfish.hk2.xml.test.beans.HttpsFactoryBean;
 import org.glassfish.hk2.xml.test.beans.JMSServerBean;
 import org.glassfish.hk2.xml.test.beans.QueueBean;
 import org.glassfish.hk2.xml.test.beans.SecurityManagerBean;
@@ -100,7 +101,7 @@ public class RemovesTest {
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testRemoveOfNamedChild() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -133,7 +134,7 @@ public class RemovesTest {
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testRemoveOfIndexedChild() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -214,7 +215,7 @@ public class RemovesTest {
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testRemoveOfDirectNodeWithoutChildren() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -491,6 +492,152 @@ public class RemovesTest {
             Assert.assertEquals(MergeTest.FAIRVIEW_NAME, hsb.getName());
             Assert.assertEquals(1234, hsb.getPort());
         }
+    }
+    
+    /**
+     * Removes an unkeyed child that has children of its own
+     * @throws Exception
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testRemoveOfUnkeyedArrayChild() throws Exception {
+        ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
+        
+        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshall(url.toURI(), DomainBean.class);
+        
+        MergeTest.verifyDomain1Xml(rootHandle, hub, locator);
+        
+        DomainBean domain = rootHandle.getRoot();
+        
+        HttpsFactoryBean factories[] = domain.getHTTPSFactories();
+        HttpsFactoryBean factory = factories[0];
+        
+        // This is the test
+        domain.removeHTTPSFactory(factory);
+        
+        factories = domain.getHTTPSFactories();
+        Assert.assertEquals(0, factories.length);
+        
+        BeanDatabase db = hub.getCurrentDatabase();
+        
+        {
+            Type httpFactoryType = db.getType(MergeTest.HTTPS_FACTORY_TYPE);
+            Assert.assertNotNull(httpFactoryType);
+        
+            Map<String, Instance> httpFactoryInstances = httpFactoryType.getInstances();
+            Assert.assertNotNull(httpFactoryInstances);
+            Assert.assertEquals(0, httpFactoryInstances.size());
+        }
+        
+        Assert.assertNull(locator.getService(HttpsFactoryBean.class));
+    }
+    
+    /**
+     * Removes a keyed child from an unkeyed parent (list)
+     * @throws Exception
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    // @org.junit.Ignore
+    public void testRemoveOfKeyedChildOfUnkeyedParent() throws Exception {
+        ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
+        
+        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshall(url.toURI(), DomainBean.class);
+        
+        MergeTest.verifyDomain1Xml(rootHandle, hub, locator);
+        
+        DomainBean domain = rootHandle.getRoot();
+        
+        HttpFactoryBean glendolaFactory = domain.getHTTPFactories().get(1);
+        glendolaFactory.removeHttpServer(MergeTest.IROQUIS_NAME);
+        
+        List<HttpServerBean> glendolaServers = glendolaFactory.getHttpServers();
+        Assert.assertEquals(1, glendolaServers.size());
+        
+        for (HttpServerBean one : glendolaServers) {
+            Assert.assertEquals(MergeTest.HOLYOKE_NAME, one.getName());
+            Assert.assertEquals(5678, one.getPort());
+        }
+        
+        BeanDatabase db = hub.getCurrentDatabase();
+        
+        {
+            Type httpServerType = db.getType(MergeTest.HTTP_SERVER_TYPE);
+            Assert.assertNotNull(httpServerType);
+        
+            Map<String, Instance> httpServerInstances = httpServerType.getInstances();
+            Assert.assertNotNull(httpServerInstances);
+            Assert.assertEquals(2, httpServerInstances.size());
+            
+            Instance fairviewInstance = null;
+            Instance holyokeInstance = null;
+            for (Instance value : httpServerInstances.values()) {
+                Map<String, Object> bean = (Map<String, Object>) value.getBean();
+                Assert.assertNotNull(bean);
+                
+                String httpServerName = (String) bean.get(Commons.NAME_TAG);
+                if (MergeTest.FAIRVIEW_NAME.equals(httpServerName)) {
+                    fairviewInstance = value;
+                }
+                else if (MergeTest.HOLYOKE_NAME.equals(httpServerName)) {
+                    holyokeInstance = value;
+                }
+                else {
+                    Assert.fail("After deletion the instance should not be there " + httpServerName);
+                }
+            }
+            Assert.assertNotNull(fairviewInstance);
+            Assert.assertNotNull(holyokeInstance);
+        }
+        
+        Assert.assertNull(locator.getService(HttpServerBean.class, MergeTest.IROQUIS_NAME));
+    }
+    
+    /**
+     * Removes an unkeyed child that has children of its own with an index
+     * @throws Exception
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testRemoveOfUnkeyedArrayChildUsingIndex() throws Exception {
+        ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
+        
+        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshall(url.toURI(), DomainBean.class);
+        
+        MergeTest.verifyDomain1Xml(rootHandle, hub, locator);
+        
+        DomainBean domain = rootHandle.getRoot();
+        
+        // This is the test
+        domain.removeHTTPSFactory(0);
+        
+        HttpsFactoryBean factories[] = domain.getHTTPSFactories();
+        Assert.assertEquals(0, factories.length);
+        
+        BeanDatabase db = hub.getCurrentDatabase();
+        
+        {
+            Type httpFactoryType = db.getType(MergeTest.HTTPS_FACTORY_TYPE);
+            Assert.assertNotNull(httpFactoryType);
+        
+            Map<String, Instance> httpFactoryInstances = httpFactoryType.getInstances();
+            Assert.assertNotNull(httpFactoryInstances);
+            Assert.assertEquals(0, httpFactoryInstances.size());
+        }
+        
+        Assert.assertNull(locator.getService(HttpsFactoryBean.class));
     }
     
     @SuppressWarnings("unchecked")
