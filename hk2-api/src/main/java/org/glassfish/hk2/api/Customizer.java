@@ -81,7 +81,12 @@ public @interface Customizer {
     /**
      * If true then if a bean method is not mirrored in
      * the customizer a RuntimeException will be thrown.
-     * Otherwise unknown methods are treated as a no-op
+     * Otherwise unknown methods are treated as a no-op.
+     * Setting this to false must be used with care as
+     * any method with a scalar return will throw a null
+     * pointer exception if no method can be found in the
+     * customizer methods since converting null to a
+     * scalar value does not work
      * 
      * @return true if an unknown method called on a bean
      * at runtime which does not have a mirrored method

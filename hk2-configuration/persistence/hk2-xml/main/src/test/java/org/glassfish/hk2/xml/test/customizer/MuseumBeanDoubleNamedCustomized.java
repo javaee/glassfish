@@ -50,7 +50,8 @@ import org.jvnet.hk2.annotations.Contract;
  */
 @XmlRootElement(name="museum") @Contract
 @Customizer(value={CustomOne.class, CustomTwo.class},
-            name={CustomizerTest.CAROL_NAME, CustomizerTest.DAVE_NAME})
+            name={CustomizerTest.CAROL_NAME, CustomizerTest.DAVE_NAME},
+            failWhenMethodNotFound=false)
 public interface MuseumBeanDoubleNamedCustomized extends MuseumBean {
 
 }

@@ -88,7 +88,7 @@ public class CustomizerTest {
         CustomOne custom1 = locator.getService(CustomOne.class);
         CustomTwo custom2 = locator.getService(CustomTwo.class);
         
-        verifyBasicCustomizersWorked(museum, custom1, custom2);
+        verifyBasicCustomizersWorked(museum, custom1, custom2, true);
     }
     
     /**
@@ -108,7 +108,7 @@ public class CustomizerTest {
         CustomOne custom1 = locator.getService(CustomOne.class);
         CustomTwo custom2 = locator.getService(CustomTwo.class);
         
-        verifyBasicCustomizersWorked(museum, custom1, custom2);
+        verifyBasicCustomizersWorked(museum, custom1, custom2, true);
     }
     
     /**
@@ -130,7 +130,7 @@ public class CustomizerTest {
         CustomOne custom1 = locator.getService(CustomOne.class, CAROL_NAME);
         CustomTwo custom2 = locator.getService(CustomTwo.class, DAVE_NAME);
         
-        verifyBasicCustomizersWorked(museum, custom1, custom2);
+        verifyBasicCustomizersWorked(museum, custom1, custom2, false);
         
         CustomOne custom1_neg = locator.getService(CustomOne.class, ALICE_NAME);
         CustomTwo custom2_neg = locator.getService(CustomTwo.class, BOB_NAME);
@@ -139,7 +139,7 @@ public class CustomizerTest {
         Assert.assertFalse(custom2_neg.getFauxAddCalled());
     }
     
-    private void verifyBasicCustomizersWorked(MuseumBean museum, CustomOne custom1, CustomTwo custom2) throws Exception {
+    private void verifyBasicCustomizersWorked(MuseumBean museum, CustomOne custom1, CustomTwo custom2, boolean badFails) throws Exception {
         
         String retVal = museum.customizer1(PREFIX, POSTFIX);
         Assert.assertEquals(retVal, PREFIX + Commons.BEN_FRANKLIN + POSTFIX);
@@ -183,10 +183,14 @@ public class CustomizerTest {
         
         try {
           museum.theVeryBadNotGoodMethod();
-          Assert.fail("The verby bad not good method should not have worked");
+          if (badFails) {
+              Assert.fail("The verby bad not good method should not have worked");
+          }
         }
         catch (MultiException me) {
-            // Expected, there is no customizer for it
+            if (!badFails) {
+                throw me;
+            }
         }
     }
     
