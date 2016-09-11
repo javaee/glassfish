@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,87 +39,29 @@
  */
 package org.glassfish.hk2.xml.test.customizer;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 import org.jvnet.hk2.annotations.Contract;
 
 /**
  * @author jwells
  *
  */
-@Contract @Singleton
-public class CustomizerOne implements CustomOne, CustomTwo {
-    @Inject
-    private MuseumBean customized;
+@Contract
+public interface CustomTwo {
+    public int customizer5();
+    public long customizer6();
+    public float customizer7();
+    public double customizer8();
     
-    private boolean customizer2Called = false;
-    private boolean fauxAddCalled = false;
+    public byte customizer9();
+    public short customizer10();
+    public char customizer11();
     
-    public String customizer1(String prefix, String postfix) {
-        return prefix + customized.getName() + postfix;
-    }
+    public int customizer12(boolean z, int i, long j, float f, double d, byte b, short s, char c, int[]... var);
     
-    public void customizer2() {
-        customizer2Called = true;
-    }
-    
-    public boolean getCustomizer2Called() {
-        return customizer2Called;
-    }
-    
-    public long[] customizer3(String[][] anArray) {
-        return new long[0];
-    }
-    
-    public boolean customizer4() {
-        return CustomizerTest.C4;
-    }
-    public int customizer5(){
-        return CustomizerTest.C5;
-    }
-    public long customizer6(){
-        return CustomizerTest.C6;
-    }
-    public float customizer7(){
-        return CustomizerTest.C7;
-    }
-    public double customizer8(){
-        return CustomizerTest.C8;
-    }
-    
-    public byte customizer9(){
-        return CustomizerTest.C9;
-    }
-    public short customizer10(){
-        return CustomizerTest.C10;
-    }
-    public char customizer11(){
-        return CustomizerTest.C11;
-    }
-    
-    public int customizer12(boolean z, int i, long j, float f, double d, byte b, short s, char c, int[]... var) {
-        return var.length;
-    }
-    
-    public String[] toUpper(String lowers[]) {
-        if (lowers == null) return null;
-        
-        String[] retVal = new String[lowers.length];
-        
-        int lcv = 0;
-        for (String lower : lowers) {
-            retVal[lcv++] = lower.toUpperCase();
-        }
-        
-        return retVal;
-    }
+    public String[] toUpper(String lowers[]);
 
-    public void addListener(BeanListener listener) {
-        fauxAddCalled = true;
-    }
+    public void addListener(BeanListener listener);
     
-    public boolean getFauxAddCalled() {
-        return fauxAddCalled;
-    }
+    public boolean getFauxAddCalled();
+
 }

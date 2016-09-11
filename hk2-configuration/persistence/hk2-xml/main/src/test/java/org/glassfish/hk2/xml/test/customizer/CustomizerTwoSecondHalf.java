@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,42 +39,17 @@
  */
 package org.glassfish.hk2.xml.test.customizer;
 
-import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
-
-import org.jvnet.hk2.annotations.Contract;
 
 /**
  * @author jwells
  *
  */
-@Contract @Singleton
-public class CustomizerOne implements CustomOne, CustomTwo {
-    @Inject
-    private MuseumBean customized;
-    
-    private boolean customizer2Called = false;
+@Singleton @Named(CustomizerTest.BOB_NAME)
+public class CustomizerTwoSecondHalf implements CustomTwo {
     private boolean fauxAddCalled = false;
     
-    public String customizer1(String prefix, String postfix) {
-        return prefix + customized.getName() + postfix;
-    }
-    
-    public void customizer2() {
-        customizer2Called = true;
-    }
-    
-    public boolean getCustomizer2Called() {
-        return customizer2Called;
-    }
-    
-    public long[] customizer3(String[][] anArray) {
-        return new long[0];
-    }
-    
-    public boolean customizer4() {
-        return CustomizerTest.C4;
-    }
     public int customizer5(){
         return CustomizerTest.C5;
     }
@@ -122,4 +97,5 @@ public class CustomizerOne implements CustomOne, CustomTwo {
     public boolean getFauxAddCalled() {
         return fauxAddCalled;
     }
+
 }

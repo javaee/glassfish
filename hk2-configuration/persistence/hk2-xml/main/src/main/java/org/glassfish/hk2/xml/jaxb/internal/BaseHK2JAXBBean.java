@@ -528,7 +528,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         }
         
         Class<?> cClassArray[] = customizer.value();
-        String cNameArray[] = (customizer.name().equals("")) ? null : customizer.name() ;
+        String cNameArray[] = customizer.name();
         
         if (cNameArray.length > 0 && cClassArray.length != cNameArray.length) {
             throw new RuntimeException("The @Customizer annotation must have the value and name arrays be of equal size.  " +

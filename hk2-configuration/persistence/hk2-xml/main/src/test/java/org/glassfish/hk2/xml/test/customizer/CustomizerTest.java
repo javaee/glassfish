@@ -66,6 +66,11 @@ public class CustomizerTest {
     public final static short C10 = 10;
     public final static char C11 = 'E';
     
+    public final static String ALICE_NAME = "Alice";
+    public final static String BOB_NAME = "Bob";
+    public final static String CAROL_NAME = "Carol";
+    public final static String DAVE_NAME = "Dave";
+    
     /**
      * Tests that a basic customizer works properly
      */
@@ -79,15 +84,70 @@ public class CustomizerTest {
         XmlRootHandle<MuseumBean> rootHandle = xmlService.unmarshall(url.toURI(), MuseumBean.class);
         MuseumBean museum = rootHandle.getRoot();
         
+        CustomOne custom1 = locator.getService(CustomOne.class);
+        CustomTwo custom2 = locator.getService(CustomTwo.class);
+        
+        verifyBasicCustomizersWorked(museum, custom1, custom2);
+    }
+    
+    /**
+     * Tests that multiple customizers works
+     */
+    @Test // @org.junit.Ignore
+    public void testTwoCustomizersWorks() throws Exception {
+        ServiceLocator locator = Utilities.createLocator(CustomizerTwoFirstHalf.class,
+                CustomizerTwoSecondHalf.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(Commons.MUSEUM1_FILE);
+        
+        XmlRootHandle<MuseumBeanDoubleCustomized> rootHandle = xmlService.unmarshall(url.toURI(), MuseumBeanDoubleCustomized.class);
+        MuseumBeanDoubleCustomized museum = rootHandle.getRoot();
+        
+        CustomOne custom1 = locator.getService(CustomOne.class);
+        CustomTwo custom2 = locator.getService(CustomTwo.class);
+        
+        verifyBasicCustomizersWorked(museum, custom1, custom2);
+    }
+    
+    /**
+     * Tests that multiple named customizers works
+     */
+    @Test // @org.junit.Ignore
+    public void testTwoNamedCustomizersWorks() throws Exception {
+        ServiceLocator locator = Utilities.createLocator(CustomizerTwoFirstHalf.class,
+                CustomizerTwoSecondHalf.class,
+                CustomizerThreeFirstHalf.class,
+                CustomizerThreeSecondHalf.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(Commons.MUSEUM1_FILE);
+        
+        XmlRootHandle<MuseumBeanDoubleNamedCustomized> rootHandle = xmlService.unmarshall(url.toURI(), MuseumBeanDoubleNamedCustomized.class);
+        MuseumBeanDoubleNamedCustomized museum = rootHandle.getRoot();
+        
+        CustomOne custom1 = locator.getService(CustomOne.class, CAROL_NAME);
+        CustomTwo custom2 = locator.getService(CustomTwo.class, DAVE_NAME);
+        
+        verifyBasicCustomizersWorked(museum, custom1, custom2);
+        
+        CustomOne custom1_neg = locator.getService(CustomOne.class, ALICE_NAME);
+        CustomTwo custom2_neg = locator.getService(CustomTwo.class, BOB_NAME);
+        
+        Assert.assertFalse(custom1_neg.getCustomizer2Called());
+        Assert.assertFalse(custom2_neg.getFauxAddCalled());
+    }
+    
+    private void verifyBasicCustomizersWorked(MuseumBean museum, CustomOne custom1, CustomTwo custom2) throws Exception {
+        
         String retVal = museum.customizer1(PREFIX, POSTFIX);
         Assert.assertEquals(retVal, PREFIX + Commons.BEN_FRANKLIN + POSTFIX);
         
-        CustomizerOne customizer = locator.getService(CustomizerOne.class);
-        Assert.assertFalse(customizer.getCustomizer2Called());
+        Assert.assertFalse(custom1.getCustomizer2Called());
         
         museum.customizer2();
         
-        Assert.assertTrue(customizer.getCustomizer2Called());
+        Assert.assertTrue(custom1.getCustomizer2Called());
         
         long[] c3 = museum.customizer3(null);
         Assert.assertNotNull(c3);
@@ -111,9 +171,9 @@ public class CustomizerTest {
         
         Assert.assertEquals(2, varSize);
         
-        Assert.assertFalse(customizer.getFauxAddCalled());
+        Assert.assertFalse(custom2.getFauxAddCalled());
         museum.addListener(null);
-        Assert.assertTrue(customizer.getFauxAddCalled());
+        Assert.assertTrue(custom2.getFauxAddCalled());
         
         String[] uppers = museum.toUpper(new String[] { "Go", "Eagles" });
         Assert.assertEquals("GO", uppers[0]);
