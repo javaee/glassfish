@@ -87,5 +87,8 @@ public interface MuseumBean {
     
     @Customize
     public void addListener(BeanListener listener);
+    
+    @Customize
+    public void theVeryBadNotGoodMethod();
 
 }

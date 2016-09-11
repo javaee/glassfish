@@ -565,8 +565,8 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
             Method cMethod = Utilities.findSuitableCustomizerMethod(cClass, methodName, params, topInterface);
             if (cMethod == null) {
                 if (customizer.failWhenMethodNotFound()) {
-                    errors.add(new RuntimeException("No customizer method with name " + methodName + " was found on class " + tClass.getName() +
-                            " with parameters " + Arrays.toString(params)));
+                    errors.add(new RuntimeException("No customizer method with name " + methodName + " was found on customizer " + cClass.getName() +
+                            " with parameters " + Arrays.toString(params) + " for bean " + tClass.getName()));
                 }
                 
                 continue;

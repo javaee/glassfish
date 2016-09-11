@@ -41,6 +41,7 @@ package org.glassfish.hk2.xml.test.customizer;
 
 import java.net.URL;
 
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
@@ -179,6 +180,14 @@ public class CustomizerTest {
         Assert.assertEquals("GO", uppers[0]);
         Assert.assertEquals("EAGLES", uppers[1]);
         Assert.assertEquals(2, uppers.length);
+        
+        try {
+          museum.theVeryBadNotGoodMethod();
+          Assert.fail("The verby bad not good method should not have worked");
+        }
+        catch (MultiException me) {
+            // Expected, there is no customizer for it
+        }
     }
     
     private final static String TEST_STRING = "TestString for ";
