@@ -59,6 +59,7 @@ import java.util.Set;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Customizer;
 import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
@@ -74,7 +75,6 @@ import org.glassfish.hk2.xml.internal.ChildType;
 import org.glassfish.hk2.xml.internal.DynamicChangeInfo;
 import org.glassfish.hk2.xml.internal.ModelImpl;
 import org.glassfish.hk2.xml.internal.ParentedModel;
-import org.glassfish.hk2.xml.internal.UnresolvedReference;
 import org.glassfish.hk2.xml.internal.Utilities;
 
 /**
@@ -527,80 +527,80 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
                     " with no customizer, failing");
         }
         
-        Class<?> cClass = customizer.value();
-        String cName = (customizer.name().equals("")) ? null : customizer.name() ;
+        Class<?> cClassArray[] = customizer.value();
+        String cNameArray[] = (customizer.name().equals("")) ? null : customizer.name() ;
         
-        Object cService = null;
-        if (cName == null) {
-            cService = changeControl.getServiceLocator().getService(cClass);
-        }
-        else {
-            cService = changeControl.getServiceLocator().getService(cClass, cName);
+        if (cNameArray.length > 0 && cClassArray.length != cNameArray.length) {
+            throw new RuntimeException("The @Customizer annotation must have the value and name arrays be of equal size.  " +
+              "The class array is of size " + cClassArray.length + " while the name array is of size " + cNameArray.length +
+              " for class " + tClass.getName());
         }
         
-        if (cService == null) {
-            if (customizer.failWhenMethodNotFound()) {
-                throw new RuntimeException("Method " + methodName + " was called on class " + tClass.getName() +
-                        " but service " + cClass.getName() + " with name " + cName + " was not found");
-            }
+        LinkedList<Throwable> errors = new LinkedList<Throwable>();
+        for (int lcv = 0; lcv < cClassArray.length; lcv++) {
+            Class<?> cClass = cClassArray[lcv];
+            String cName = (cNameArray.length == 0) ? null : cNameArray[lcv] ;
             
+            Object cService = null;
+            if (cName == null) {
+                cService = changeControl.getServiceLocator().getService(cClass);
+            }
+            else {
+                cService = changeControl.getServiceLocator().getService(cClass, cName);
+            }
+        
+            if (cService == null) {
+                if (customizer.failWhenMethodNotFound()) {
+                    errors.add(new RuntimeException("Method " + methodName + " was called on class " + tClass.getName() +
+                        " but service " + cClass.getName() + " with name " + cName + " was not found"));
+                }
+            
+                continue;
+            }
+        
+            
+            ModelImpl model = _getModel();
+            Class<?> topInterface = (model == null) ? null : model.getOriginalInterfaceAsClass() ;
+            
+            Method cMethod = Utilities.findSuitableCustomizerMethod(cClass, methodName, params, topInterface);
+            if (cMethod == null) {
+                if (customizer.failWhenMethodNotFound()) {
+                    errors.add(new RuntimeException("No customizer method with name " + methodName + " was found on class " + tClass.getName() +
+                            " with parameters " + Arrays.toString(params)));
+                }
+                
+                continue;
+            }
+             
+            boolean useAlt = false;
+            if (cMethod.getParameterTypes().length == (params.length + 1)) useAlt = true;
+            
+            if (useAlt) {
+                Object altValues[] = new Object[values.length + 1];
+                altValues[0] = this;
+                for (int lcv2 = 0; lcv2 < values.length; lcv2++) {
+                    altValues[lcv2 + 1] = values[lcv2];
+                }
+            
+                values = altValues;
+            }
+        
+            try {
+                return ReflectionHelper.invoke(cService, cMethod, values, false);
+            }
+            catch (RuntimeException re) {
+                throw re;
+            }
+            catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
+        }
+        
+        if (errors.isEmpty()) {
             return null;
         }
         
-        boolean useAlt = false;
-        Method cMethod;
-        try {
-            cMethod = cClass.getMethod(methodName, params);
-        }
-        catch (NoSuchMethodException nsme) {
-            if (_getModel() != null) {
-                Class<?> altParams[] = new Class<?>[params.length + 1];
-                altParams[0] = _getModel().getOriginalInterfaceAsClass();
-                for (int lcv = 0; lcv < params.length; lcv++) {
-                    altParams[lcv+1] = params[lcv];
-                }
-            
-                try {
-                    cMethod = cClass.getMethod(methodName, altParams);
-                    useAlt = true;
-                }
-                catch (NoSuchMethodException nsme2) {
-                    if (customizer.failWhenMethodNotFound()) {
-                        throw new RuntimeException(nsme2);
-                    }
-            
-                    return null;
-                }
-            }
-            else {
-                if (customizer.failWhenMethodNotFound()) {
-                    throw new RuntimeException(nsme);
-                }
-        
-                return null;
-                
-            }
-        }
-        
-        if (useAlt) {
-            Object altValues[] = new Object[values.length + 1];
-            altValues[0] = this;
-            for (int lcv = 0; lcv < values.length; lcv++) {
-                altValues[lcv + 1] = values[lcv];
-            }
-            
-            values = altValues;
-        }
-        
-        try {
-            return ReflectionHelper.invoke(cService, cMethod, values, false);
-        }
-        catch (RuntimeException re) {
-            throw re;
-        }
-        catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
+        throw new MultiException(errors);
     }
     
     public int _invokeCustomizedMethodI(String methodName, Class<?>[] params, Object[] values) {

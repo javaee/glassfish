@@ -55,7 +55,6 @@ import org.glassfish.hk2.xml.hk2Config.test.beans.PropertyValue;
 import org.glassfish.hk2.xml.hk2Config.test.beans.pv.NamedPropertyValue;
 import org.glassfish.hk2.xml.hk2Config.test.customizers.KingdomCustomizer;
 import org.glassfish.hk2.xml.hk2Config.test.customizers.PhylaCustomizer;
-import org.glassfish.hk2.xml.hk2Config.test.customizers.PhylumCustomizer;
 import org.junit.Assert;
 import org.junit.Test;
 import org.jvnet.hk2.config.types.Property;
@@ -89,7 +88,7 @@ public class OldConfigTest {
      */
     @Test
     public void testSimplePropertiesAndNamesAreCallable() throws Exception {
-        ServiceLocator locator = LocatorUtilities.createLocator(PhylumCustomizer.class,
+        ServiceLocator locator = LocatorUtilities.createLocator(
                 PropertyBagCustomizerImpl.class,
                 KingdomCustomizer.class,
                 PhylaCustomizer.class);
@@ -111,7 +110,7 @@ public class OldConfigTest {
      */
     @Test
     public void testCustomizedMethodsAreCallable() throws Exception {
-        ServiceLocator locator = LocatorUtilities.createLocator(PhylumCustomizer.class,
+        ServiceLocator locator = LocatorUtilities.createLocator(
                 PropertyBagCustomizerImpl.class,
                 KingdomCustomizer.class,
                 PhylaCustomizer.class);
@@ -180,7 +179,7 @@ public class OldConfigTest {
      */
     @Test
     public void testAddRemoveAndLookupOfProperty() throws Exception {
-        ServiceLocator locator = LocatorUtilities.createLocator(PhylumCustomizer.class,
+        ServiceLocator locator = LocatorUtilities.createLocator(
                 PropertyBagCustomizerImpl.class,
                 KingdomCustomizer.class,
                 PhylaCustomizer.class);

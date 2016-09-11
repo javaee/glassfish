@@ -42,6 +42,7 @@ package org.glassfish.hk2.xml.internal;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -1003,5 +1004,42 @@ public class Utilities {
         if (!errors.isEmpty()) {
             throw new MultiException(errors);
         }
+    }
+    
+    public static Method findSuitableCustomizerMethod(Class<?> cClass, String methodName, Class<?>[] params, Class<?> topInterface) {
+        try {
+            return cClass.getMethod(methodName, params);
+        }
+        catch (NoSuchMethodException nsme) {
+            // Go on
+        }
+        
+        if (topInterface == null) return null;
+        
+        for (Method candidate : cClass.getMethods()) {
+            if (!methodName.equals(candidate.getName())) continue;
+            
+            int altParamsLength = params.length + 1;
+            Class<?> candidateParams[] = candidate.getParameterTypes();
+            
+            if (candidateParams.length != altParamsLength) continue;
+            
+            if (!candidateParams[0].isAssignableFrom(topInterface)) continue;
+            
+            // Now check all the other params
+            boolean found = true;
+            for (int lcv = 1; lcv < altParamsLength; lcv++) {
+                if (!candidateParams[lcv].equals(params[lcv - 1])) {
+                    found = false;
+                    break;
+                }
+            }
+            if (!found) continue;
+            
+            return candidate;
+            
+        }
+        
+        return null;
     }
 }

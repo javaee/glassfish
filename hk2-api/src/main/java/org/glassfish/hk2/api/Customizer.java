@@ -68,7 +68,7 @@ public @interface Customizer {
      * 
      * @return the class of the customizer for this bean
      */
-    public Class<?> value();
+    public Class<?>[] value();
     
     /**
      * The name of the customizer to lookup for
@@ -76,7 +76,7 @@ public @interface Customizer {
      * 
      * @return the name of the customizer for this bean
      */
-    public String name() default "";
+    public String[] name() default {};
     
     /**
      * If true then if a bean method is not mirrored in

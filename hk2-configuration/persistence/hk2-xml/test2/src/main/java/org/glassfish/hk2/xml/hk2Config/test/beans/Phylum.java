@@ -41,10 +41,10 @@ package org.glassfish.hk2.xml.hk2Config.test.beans;
 
 import org.glassfish.hk2.api.Customizer;
 import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
-import org.glassfish.hk2.xml.hk2Config.test.customizers.PhylumCustomizer;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.types.PropertyBag;
+import org.jvnet.hk2.config.types.PropertyBagCustomizer;
 
 /**
  * @author jwells
@@ -53,7 +53,7 @@ import org.jvnet.hk2.config.types.PropertyBag;
 @Contract
 @Configured
 @Hk2XmlPreGenerate
-@Customizer(PhylumCustomizer.class)
+@Customizer(PropertyBagCustomizer.class)
 public interface Phylum extends Named, PropertyBag {
 
 }
