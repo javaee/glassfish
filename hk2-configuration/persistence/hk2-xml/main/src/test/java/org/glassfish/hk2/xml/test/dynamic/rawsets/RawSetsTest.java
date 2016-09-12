@@ -224,6 +224,102 @@ public class RawSetsTest {
         Assert.assertNull(hub.getCurrentDatabase().getInstance(MergeTest.AUTHORIZATION_PROVIDER_TYPE, MergeTest.RSA_ATZ_PROV_NAME));
     }
     
+    /**
+     * Tests that an attempt to set an already set direct child will
+     * fail.  Note this test should be removed if we ever decide to
+     * support some sort of automatic merge in this case
+     * 
+     * @throws Exception
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testChangeDirectTypeWithSetFails() throws Exception {
+        ServiceLocator locator = Utilities.createLocator(UpdateListener.class,
+                SSLManagerBeanCustomizer.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
+        
+        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshall(url.toURI(), DomainBean.class);
+        
+        MergeTest.verifyDomain1Xml(rootHandle, hub, locator);
+        
+        DomainBean domain = rootHandle.getRoot();
+        
+        SecurityManagerBean newOne = xmlService.createBean(SecurityManagerBean.class);
+        
+        try {
+            domain.setSecurityManager(newOne);
+            Assert.fail("Should have failed trying to change an existing bean");
+        }
+        catch (IllegalStateException ise) {
+            // Expected
+        }
+        
+        // Verify nothing was changed
+        MergeTest.verifyDomain1Xml(rootHandle, hub, locator);
+    }
+    
+    /**
+     * Tests that setting null back to null works
+     * 
+     * @throws Exception
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testNullToNull() throws Exception {
+        ServiceLocator locator = Utilities.createLocator(UpdateListener.class,
+                SSLManagerBeanCustomizer.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
+        
+        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshall(url.toURI(), DomainBean.class);
+        
+        MergeTest.verifyDomain1Xml(rootHandle, hub, locator);
+        
+        DomainBean domain = rootHandle.getRoot();
+        SecurityManagerBean securityManagerBean = domain.getSecurityManager();
+        
+        // Null to null
+        securityManagerBean.setSSLManager(null);
+        
+        // Verify nothing was changed
+        MergeTest.verifyDomain1Xml(rootHandle, hub, locator);
+    }
+    
+    /**
+     * Tests that setting a bean to itself is ok (one
+     * case of set to set that works)
+     * 
+     * @throws Exception
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testSameToSame() throws Exception {
+        ServiceLocator locator = Utilities.createLocator(UpdateListener.class,
+                SSLManagerBeanCustomizer.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
+        
+        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshall(url.toURI(), DomainBean.class);
+        
+        MergeTest.verifyDomain1Xml(rootHandle, hub, locator);
+        
+        DomainBean domain = rootHandle.getRoot();
+        SecurityManagerBean securityManagerBean = domain.getSecurityManager();
+        
+        // Setting it back to itself
+        domain.setSecurityManager(securityManagerBean);
+        
+        // Verify nothing was changed
+        MergeTest.verifyDomain1Xml(rootHandle, hub, locator);
+    }
+    
     @Singleton
     public static class UpdateListener implements BeanDatabaseUpdateListener {
         private List<Change> changes;
