@@ -197,9 +197,8 @@ public class RawSetsTest {
      * 
      * @throws Exception
      */
-    @SuppressWarnings("unchecked")
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testRemoveDirectTypeWithSet() throws Exception {
         ServiceLocator locator = Utilities.createLocator(UpdateListener.class,
                 SSLManagerBeanCustomizer.class);

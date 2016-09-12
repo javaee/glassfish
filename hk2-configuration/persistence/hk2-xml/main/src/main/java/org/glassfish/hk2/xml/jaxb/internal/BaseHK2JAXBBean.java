@@ -198,11 +198,12 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
             boolean doAdd = false;
             boolean doRemove = false;
             boolean doModify = false;
+            Object currentValue = null;
             
             if (!rawSet) {
                 changeControl.getReadLock().lock();
                 try {
-                    Object currentValue = beanLikeMap.get(propName);
+                    currentValue = beanLikeMap.get(propName);
                 
                     // If both null this goes, or if they are somehow exactly the same
                     if (currentValue == propValue) return;
@@ -232,15 +233,15 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
             }
             
             if (doAdd) {
-                // JRW JRW JRW
                 _doAdd(propName, propValue, null, -1);
                 return;
             }
             if (doRemove) {
-                throw new AssertionError("A set version of remove is not yet implemented");
+                _doRemove(propName, null, -1, currentValue);
+                return;
             }
             if (doModify) {
-                throw new AssertionError("A set version of modify is not yet implemented");
+                throw new IllegalStateException("A bean may not be modified with a set method, instead directly manipulate the fields of the existing bean");
             }
             
             changeControl.getWriteLock().lock();
