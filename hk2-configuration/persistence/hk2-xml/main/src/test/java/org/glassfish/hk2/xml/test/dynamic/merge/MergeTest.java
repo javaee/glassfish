@@ -127,7 +127,7 @@ public class MergeTest {
     private final static String BOB_INSTANCE = "domain.Bob";
     public final static String DAVE_INSTANCE = "domain.Dave";
     private final static String SERVER0_INSTANCE = "domain.Alice.Server-0";
-    private final static String SECURITY_MANAGER_INSTANCE = "domain.security-manager";
+    public final static String SECURITY_MANAGER_INSTANCE = "domain.security-manager";
     private final static String RSA_INSTANCE = "domain.security-manager.RSA";
     private final static String JMS_SERVER_INSTANCE = "domain.Carol";
     private final static String TOPIC0_INSTANCE = "domain.Carol.Topic0";

@@ -58,6 +58,7 @@ import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.basic.beans.Commons;
 import org.glassfish.hk2.xml.test.basic.beans.Museum;
+import org.glassfish.hk2.xml.test.beans.AuthorizationProviderBean;
 import org.glassfish.hk2.xml.test.beans.DomainBean;
 import org.glassfish.hk2.xml.test.beans.SSLManagerBean;
 import org.glassfish.hk2.xml.test.beans.SSLManagerBeanCustomizer;
@@ -76,6 +77,9 @@ public class RawSetsTest {
     
     public final static String MUSEUM_TYPE = "/museum";
     public final static String MUSEUM_INSTANCE = "museum";
+    
+    public final static String SSL_MANAGER_TYPE = "/domain/security-manager/ssl-manager";
+    public final static String SSL_MANAGER_INSTANCE_NAME = "domain.security-manager.ssl-manager";
     
     public final static String AGE_TAG = "age";
     
@@ -148,13 +152,14 @@ public class RawSetsTest {
     }
     
     /**
-     * Tests that a direct type can be set and then used dynamically
+     * Tests that a direct type can be added via set and then used dynamically
      * 
      * @throws Exception
      */
+    @SuppressWarnings("unchecked")
     @Test
     // @org.junit.Ignore
-    public void addDirectTypeWithSet() throws Exception {
+    public void testAddDirectTypeWithSet() throws Exception {
         ServiceLocator locator = Utilities.createLocator(UpdateListener.class,
                 SSLManagerBeanCustomizer.class);
         XmlService xmlService = locator.getService(XmlService.class);
@@ -178,6 +183,46 @@ public class RawSetsTest {
         Assert.assertEquals(securityManager, ((XmlHk2ConfigurationBean) sslManager)._getParent());
         Assert.assertEquals(SSLManagerBean.FORT_KNOX, sslManager.getSSLPrivateKeyLocation());
         
+        Assert.assertEquals(sslManager, locator.getService(SSLManagerBean.class));
+        
+        Instance instance = hub.getCurrentDatabase().getInstance(SSL_MANAGER_TYPE, SSL_MANAGER_INSTANCE_NAME);
+        Map<String, Object> beanLikeMap = (Map<String, Object>) instance.getBean();
+        
+        Assert.assertNotNull(beanLikeMap);
+        Assert.assertTrue(beanLikeMap.isEmpty());
+    }
+    
+    /**
+     * Tests that a direct type can be removed via set
+     * 
+     * @throws Exception
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    @org.junit.Ignore
+    public void testRemoveDirectTypeWithSet() throws Exception {
+        ServiceLocator locator = Utilities.createLocator(UpdateListener.class,
+                SSLManagerBeanCustomizer.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
+        
+        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshall(url.toURI(), DomainBean.class);
+        
+        MergeTest.verifyDomain1Xml(rootHandle, hub, locator);
+        
+        DomainBean domain = rootHandle.getRoot();
+        
+        domain.setSecurityManager(null);
+        
+        Assert.assertNull(domain.getSecurityManager());
+        Assert.assertNull(locator.getService(SecurityManagerBean.class));
+        
+        Assert.assertNull(locator.getService(AuthorizationProviderBean.class));
+        
+        Assert.assertNull(hub.getCurrentDatabase().getInstance(MergeTest.SECURITY_MANAGER_TYPE, MergeTest.SECURITY_MANAGER_INSTANCE));
+        Assert.assertNull(hub.getCurrentDatabase().getInstance(MergeTest.AUTHORIZATION_PROVIDER_TYPE, MergeTest.RSA_ATZ_PROV_NAME));
     }
     
     @Singleton
