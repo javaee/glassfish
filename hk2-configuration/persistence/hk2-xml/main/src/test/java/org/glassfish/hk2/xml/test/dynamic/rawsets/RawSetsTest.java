@@ -57,6 +57,10 @@ import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.basic.beans.Commons;
 import org.glassfish.hk2.xml.test.basic.beans.Museum;
+import org.glassfish.hk2.xml.test.beans.DomainBean;
+import org.glassfish.hk2.xml.test.beans.SSLManagerBean;
+import org.glassfish.hk2.xml.test.beans.SecurityManagerBean;
+import org.glassfish.hk2.xml.test.dynamic.merge.MergeTest;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
 import org.junit.Assert;
 import org.junit.Test;
@@ -138,6 +142,36 @@ public class RawSetsTest {
         for (Change change : changes) {
             Assert.assertEquals(ChangeCategory.MODIFY_INSTANCE, change.getChangeCategory());
         }
+    }
+    
+    /**
+     * Tests that a direct type can be set and then used dynamically
+     * 
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void addDirectTypeWithSet() throws Exception {
+        ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
+        
+        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshall(url.toURI(), DomainBean.class);
+        
+        MergeTest.verifyDomain1Xml(rootHandle, hub, locator);
+        
+        DomainBean domain = rootHandle.getRoot();
+        SecurityManagerBean securityManager = domain.getSecurityManager();
+        
+        SSLManagerBean sslManager = xmlService.createBean(SSLManagerBean.class);
+        
+        securityManager.setSSLManager(sslManager);
+        
+        Assert.assertEquals(sslManager, securityManager.getSSLManager());
+        Assert.assertEquals(SSLManagerBean.FORT_KNOX, sslManager.getSSLPrivateKeyLocation());
+        
     }
     
     @Singleton

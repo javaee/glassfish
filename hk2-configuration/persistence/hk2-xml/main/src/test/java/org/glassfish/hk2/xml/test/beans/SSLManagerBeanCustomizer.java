@@ -39,26 +39,11 @@
  */
 package org.glassfish.hk2.xml.test.beans;
 
-import javax.xml.bind.annotation.XmlElement;
+import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.Customize;
-import org.glassfish.hk2.api.Customizer;
-import org.jvnet.hk2.annotations.Contract;
-
-/**
- * @author jwells
- *
- */
-@Contract
-@Customizer(SSLManagerBeanCustomizer.class)
-public interface SSLManagerBean {
-    public static String FORT_KNOX = "Fort Knox";
-    
-    @XmlElement(name="public-key-location")
-    public String getPublicKeyLocation();
-    public void setPublicKeyLocation(String location);
-    
-    @Customize
-    public String getSSLPrivateKeyLocation();
-
+@Singleton
+public class SSLManagerBeanCustomizer {
+    public String getSSLPrivateKeyLocation() {
+        return SSLManagerBean.FORT_KNOX;
+    }
 }

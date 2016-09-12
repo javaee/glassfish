@@ -419,9 +419,5 @@ public class AddsTest {
         Assert.assertEquals(dosBean, allBeans[1]);
         Assert.assertEquals(tresBean, allBeans[2]);
         Assert.assertEquals(quatroBean, allBeans[3]);
-        
-        
-        
-        
     }
 }
