@@ -161,13 +161,17 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         _setProperty(propName, propValue, true);
     }
     
-    @SuppressWarnings("unchecked")
     public void _setProperty(String propName, Object propValue, boolean changeInHub) {
+        _setProperty(propName, propValue, changeInHub, false);
+    }
+    
+    @SuppressWarnings("unchecked")
+    public void _setProperty(String propName, Object propValue, boolean changeInHub, boolean rawSet) {
         if (propName == null) throw new IllegalArgumentException("properyName may not be null");
         
         if (DEBUG_GETS_AND_SETS) {
             // Hidden behind static because of potential expensive toString costs
-            Logger.getLogger().debug("XmlService setting property " + propName + " to " + propValue + " in " + this);
+            Logger.getLogger().debug("XmlService setting property " + propName + " to " + propValue + " in " + this + " rawSet=" + rawSet);
         }
         
         if (propValue != null && (propValue instanceof List)) {
@@ -191,6 +195,54 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
             }
         }
         else {
+            boolean doAdd = false;
+            boolean doRemove = false;
+            boolean doModify = false;
+            
+            if (!rawSet) {
+                changeControl.getReadLock().lock();
+                try {
+                    Object currentValue = beanLikeMap.get(propName);
+                
+                    // If both null this goes, or if they are somehow exactly the same
+                    if (currentValue == propValue) return;
+                
+                    ModelImpl model = _getModel();
+                    ParentedModel childModel = model.getChild(propName);
+                    if (childModel != null) {
+                        if (ChildType.DIRECT.equals(childModel.getChildType())) {
+                            if (currentValue == null && propValue != null) {
+                                // This is an add
+                                doAdd = true;
+                            }
+                            else if (currentValue != null && propValue == null) {
+                                // This is a remove
+                                doRemove = true;
+                            }
+                            else {
+                                // Both beans are different
+                                doModify = true;
+                            }
+                        }
+                    }
+                }
+                finally {
+                    changeControl.getReadLock().unlock();
+                }
+            }
+            
+            if (doAdd) {
+                // JRW JRW JRW
+                _doAdd(propName, propValue, null, -1);
+                return;
+            }
+            if (doRemove) {
+                throw new AssertionError("A set version of remove is not yet implemented");
+            }
+            if (doModify) {
+                throw new AssertionError("A set version of modify is not yet implemented");
+            }
+            
             changeControl.getWriteLock().lock();
             try {
                 if (changeInHub) {

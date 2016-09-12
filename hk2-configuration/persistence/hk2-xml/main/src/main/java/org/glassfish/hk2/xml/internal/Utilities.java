@@ -341,7 +341,7 @@ public class Utilities {
                 Object value = childToCopy._getProperty(nonChildProperty);
                 if (value == null) continue;
                 
-                child._setProperty(nonChildProperty, value, false);
+                child._setProperty(nonChildProperty, value, false, true);
             }
         }
         
@@ -377,7 +377,7 @@ public class Utilities {
                 throw new IllegalArgumentException("Attempted to add an unkeyed child with key " + childKey + " in " + myParent);
             }
                 
-            child._setProperty(childNode.getChildModel().getKeyProperty(), childKey, false);
+            child._setProperty(childNode.getChildModel().getKeyProperty(), childKey, false, true);
             child._setKeyValue(childKey);
         }
         
@@ -421,14 +421,14 @@ public class Utilities {
                 myParent.changeInHub(childProperty, finalChildList, writeableDatabase);
             }
             
-            myParent._setProperty(childProperty, finalChildList, false);
+            myParent._setProperty(childProperty, finalChildList, false, true);
         }
         else {
             if (writeableDatabase != null){
                 myParent.changeInHub(childProperty, child, writeableDatabase);
             }
             
-            myParent._setProperty(childProperty, child, false);
+            myParent._setProperty(childProperty, child, false, true);
         }
         
         return child;
@@ -709,7 +709,7 @@ public class Utilities {
                     myParent.changeInHub(childProperty, listWithObjectRemoved, writeableDatabase);
                 }
                 
-                myParent._setProperty(childProperty, listWithObjectRemoved, false);
+                myParent._setProperty(childProperty, listWithObjectRemoved, false, true);
             }
             else {
                 // array children
@@ -801,7 +801,7 @@ public class Utilities {
                     myParent.changeInHub(childProperty, arrayWithObjectRemoved, writeableDatabase);
                 }
                 
-                myParent._setProperty(childProperty, arrayWithObjectRemoved, false);
+                myParent._setProperty(childProperty, arrayWithObjectRemoved, false, true);
             }
         }
         else {
@@ -812,7 +812,7 @@ public class Utilities {
                 myParent.changeInHub(childProperty, null, writeableDatabase);
             }
             
-            myParent._setProperty(childProperty, null, false);
+            myParent._setProperty(childProperty, null, false, true);
         }
         
         if (dynamicService != null) {

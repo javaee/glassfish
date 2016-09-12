@@ -53,12 +53,14 @@ import org.glassfish.hk2.configuration.hub.api.Change;
 import org.glassfish.hk2.configuration.hub.api.Change.ChangeCategory;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
+import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.basic.beans.Commons;
 import org.glassfish.hk2.xml.test.basic.beans.Museum;
 import org.glassfish.hk2.xml.test.beans.DomainBean;
 import org.glassfish.hk2.xml.test.beans.SSLManagerBean;
+import org.glassfish.hk2.xml.test.beans.SSLManagerBeanCustomizer;
 import org.glassfish.hk2.xml.test.beans.SecurityManagerBean;
 import org.glassfish.hk2.xml.test.dynamic.merge.MergeTest;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
@@ -105,7 +107,8 @@ public class RawSetsTest {
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
-    @Test // @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testModifySingleProperty() throws Exception {
         ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
         XmlService xmlService = locator.getService(XmlService.class);
@@ -150,9 +153,10 @@ public class RawSetsTest {
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void addDirectTypeWithSet() throws Exception {
-        ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
+        ServiceLocator locator = Utilities.createLocator(UpdateListener.class,
+                SSLManagerBeanCustomizer.class);
         XmlService xmlService = locator.getService(XmlService.class);
         Hub hub = locator.getService(Hub.class);
         
@@ -169,7 +173,9 @@ public class RawSetsTest {
         
         securityManager.setSSLManager(sslManager);
         
-        Assert.assertEquals(sslManager, securityManager.getSSLManager());
+        sslManager = securityManager.getSSLManager();
+        
+        Assert.assertEquals(securityManager, ((XmlHk2ConfigurationBean) sslManager)._getParent());
         Assert.assertEquals(SSLManagerBean.FORT_KNOX, sslManager.getSSLPrivateKeyLocation());
         
     }
