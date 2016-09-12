@@ -81,6 +81,7 @@ public interface PropertyBag {
     Property addProperty(Property property);
     Property lookupProperty(String name);
     Property removeProperty(String name);
+    Property removeProperty(Property removeMe);
 
     @Customize
     @DuckTyped

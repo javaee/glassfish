@@ -37,38 +37,60 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.hk2Config.test.beans;
+package org.jvnet.hk2.config;
 
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.glassfish.hk2.api.Customizer;
-import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
-import org.glassfish.hk2.xml.hk2Config.test.customizers.KingdomCustomizer;
 import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.config.ConfigBeanProxy;
-import org.jvnet.hk2.config.ConfigBeanProxyCustomizer;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.types.PropertyBag;
-import org.jvnet.hk2.config.types.PropertyBagCustomizer;
 
 /**
  * @author jwells
  *
  */
-@Hk2XmlPreGenerate
-@Configured
-@XmlRootElement(name="kingdom")
 @Contract
-@Customizer(value = {KingdomCustomizer.class, ConfigBeanProxyCustomizer.class},
-            name  = {"", ConfigBeanProxyCustomizer.DEFAULT_IMPLEMENTATION})
-public interface KingdomConfig extends ConfigBeanProxy, PropertyBag {
-    @Element
-    @XmlElement
-    @NotNull
-    Phyla getPhyla();
-    void setPhyla(Phyla phyla);
+public interface ConfigBeanProxyCustomizer {
+    public static final String DEFAULT_IMPLEMENTATION = "system default";
+    
+    /**                      
+     * Returns the parent element of this configuration element.
+     *
+     * It is possible to return a not null parent while the parent knows nothing of this
+     * child element. This could happen when the child element was removed
+     * from the configuration tree, yet it's parent would not have been reset.
+     *
+     * @return the parent configuration node.
+     */
+    public ConfigBeanProxy getParent(ConfigBeanProxy me);
+
+    /**
+     * Returns the typed parent element of this configuration element.
+     *
+     * It is possible to return a not null parent while the parent knows nothing of this
+     * child element. This could happen when the child element was removed
+     * from the configuration tree, yet it's parent would not have been reset.
+     *
+     * @param type parent's type
+     * @return the parent configuration node.
+     */
+    public ConfigBeanProxy getParent(ConfigBeanProxy me, Class<?> type);
+
+    /**
+     * Creates a child element of this configuration element
+     *
+     * @param type the child element type
+     * @return the newly created child instance
+     * @throws TransactionFailure when called outside the boundaries of a transaction 
+     */
+    public ConfigBeanProxy createChild(ConfigBeanProxy me, Class<?> type);
+
+
+    /**
+     * Performs a deep copy of this configuration element and returns it.
+     * The parent of this configuration must be locked in a transaction and the newly created
+     * child will be automatically enrolled in the parent's transaction.
+     *
+     * @param parent the writable copy of the parent
+     * @return a deep copy of itself.
+     * @throws TransactionFailure if the transaction cannot be completed.
+     */
+    public ConfigBeanProxy deepCopy(ConfigBeanProxy me, ConfigBeanProxy parent);
 
 }

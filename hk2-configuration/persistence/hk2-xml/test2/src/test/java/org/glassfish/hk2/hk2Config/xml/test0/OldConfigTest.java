@@ -55,6 +55,7 @@ import org.glassfish.hk2.xml.hk2Config.test.beans.PropertyValue;
 import org.glassfish.hk2.xml.hk2Config.test.beans.pv.NamedPropertyValue;
 import org.glassfish.hk2.xml.hk2Config.test.customizers.KingdomCustomizer;
 import org.glassfish.hk2.xml.hk2Config.test.customizers.PhylaCustomizer;
+import org.glassfish.hk2.xml.spi.ConfigBeanProxyCustomizerImpl;
 import org.junit.Assert;
 import org.junit.Test;
 import org.jvnet.hk2.config.types.Property;
@@ -113,7 +114,8 @@ public class OldConfigTest {
         ServiceLocator locator = LocatorUtilities.createLocator(
                 PropertyBagCustomizerImpl.class,
                 KingdomCustomizer.class,
-                PhylaCustomizer.class);
+                PhylaCustomizer.class,
+                ConfigBeanProxyCustomizerImpl.class);
         
         XmlService xmlService = locator.getService(XmlService.class);
         
@@ -124,9 +126,42 @@ public class OldConfigTest {
         
         assertOriginalStateKingdom1(kingdom1);
         
+        Assert.assertNull(kingdom1.getParent());
+        Assert.assertNull(kingdom1.getParent(KingdomConfig.class));
+        Assert.assertNotNull(kingdom1.createChild(Phyla.class));
+        try {
+           kingdom1.deepCopy(kingdom1);
+           Assert.fail("Not implemented");
+        }
+        catch (IllegalStateException ae) {
+            // expected
+        }
+        
         Phyla phyla = kingdom1.getPhyla();
+        
+        Assert.assertEquals(kingdom1, phyla.getParent());
+        Assert.assertEquals(kingdom1, phyla.getParent(KingdomConfig.class));
+        Assert.assertNotNull(phyla.createChild(Phylum.class));
+        try {
+           phyla.deepCopy(kingdom1);
+           Assert.fail("Not implemented");
+        }
+        catch (IllegalStateException ae) {
+            // expected
+        }
+        
         Phylum alice = phyla.getPhylumByName(ALICE_NAME);
         Assert.assertNotNull(alice);
+        
+        Assert.assertEquals(phyla, alice.getParent());
+        Assert.assertEquals(phyla, alice.getParent(Phyla.class));
+        try {
+           alice.deepCopy(kingdom1);
+           Assert.fail("Not implemented");
+        }
+        catch (IllegalStateException ae) {
+            // expected
+        }
         
         Assert.assertEquals(USERNAME_PROP_VALUE, alice.getPropertyValue(USERNAME_PROP_KEY));
         Assert.assertEquals(PASSWORD_PROP_VALUE, alice.getPropertyValue(PASSWORD_PROP_KEY));

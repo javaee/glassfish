@@ -42,6 +42,9 @@ package org.jvnet.hk2.config;
 
 import java.lang.reflect.Proxy;
 
+import org.glassfish.hk2.api.Customize;
+import org.glassfish.hk2.api.Customizer;
+
 /**
  * Marker interface that signifies that the interface
  * is meant to be used as a strongly-typed proxy to
@@ -58,6 +61,7 @@ import java.lang.reflect.Proxy;
  * @see Element
  * @see Attribute
  */
+@Customizer(ConfigBeanProxyCustomizer.class)
 public interface ConfigBeanProxy {
 
     /**                      
@@ -69,7 +73,7 @@ public interface ConfigBeanProxy {
      *
      * @return the parent configuration node.
      */
-    @DuckTyped
+    @DuckTyped @Customize
     public ConfigBeanProxy getParent();
 
     /**
@@ -82,7 +86,7 @@ public interface ConfigBeanProxy {
      * @param type parent's type
      * @return the parent configuration node.
      */
-    @DuckTyped
+    @DuckTyped @Customize
     public <T extends ConfigBeanProxy> T getParent(Class<T> type);
 
     /**
@@ -92,7 +96,7 @@ public interface ConfigBeanProxy {
      * @return the newly created child instance
      * @throws TransactionFailure when called outside the boundaries of a transaction 
      */
-    @DuckTyped
+    @DuckTyped @Customize
     public <T extends ConfigBeanProxy> T createChild(Class<T> type) throws TransactionFailure;
 
 
@@ -105,7 +109,7 @@ public interface ConfigBeanProxy {
      * @return a deep copy of itself.
      * @throws TransactionFailure if the transaction cannot be completed.
      */
-    @DuckTyped
+    @DuckTyped @Customize
     public ConfigBeanProxy deepCopy(ConfigBeanProxy parent) throws TransactionFailure;
 
     public class Duck {

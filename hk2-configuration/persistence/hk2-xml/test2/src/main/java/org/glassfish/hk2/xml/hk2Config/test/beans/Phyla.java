@@ -52,6 +52,7 @@ import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
 import org.glassfish.hk2.xml.hk2Config.test.customizers.PhylaCustomizer;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.config.ConfigBeanProxy;
+import org.jvnet.hk2.config.ConfigBeanProxyCustomizer;
 import org.jvnet.hk2.config.ConfigSupport;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.DuckTyped;
@@ -66,7 +67,7 @@ import org.jvnet.hk2.config.TransactionFailure;
 @Configured
 @Contract
 @Hk2XmlPreGenerate
-@Customizer(PhylaCustomizer.class)
+@Customizer({PhylaCustomizer.class, ConfigBeanProxyCustomizer.class})
 public interface Phyla extends ConfigBeanProxy {
     @XmlElement
     @Element("*")

@@ -37,38 +37,59 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.hk2Config.test.beans;
+package org.glassfish.hk2.xml.spi;
 
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 
-import org.glassfish.hk2.api.Customizer;
-import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
-import org.glassfish.hk2.xml.hk2Config.test.customizers.KingdomCustomizer;
+import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
+import org.glassfish.hk2.xml.api.XmlService;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigBeanProxyCustomizer;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.types.PropertyBag;
-import org.jvnet.hk2.config.types.PropertyBagCustomizer;
 
 /**
  * @author jwells
  *
  */
-@Hk2XmlPreGenerate
-@Configured
-@XmlRootElement(name="kingdom")
+@Singleton
 @Contract
-@Customizer(value = {KingdomCustomizer.class, ConfigBeanProxyCustomizer.class},
-            name  = {"", ConfigBeanProxyCustomizer.DEFAULT_IMPLEMENTATION})
-public interface KingdomConfig extends ConfigBeanProxy, PropertyBag {
-    @Element
-    @XmlElement
-    @NotNull
-    Phyla getPhyla();
-    void setPhyla(Phyla phyla);
+@Named(ConfigBeanProxyCustomizer.DEFAULT_IMPLEMENTATION)
+public class ConfigBeanProxyCustomizerImpl implements ConfigBeanProxyCustomizer {
+    @Inject
+    private XmlService xmlService;
+
+    /* (non-Javadoc)
+     * @see org.jvnet.hk2.config.ConfigBeanProxyCustomizer#getParent(org.jvnet.hk2.config.ConfigBeanProxy)
+     */
+    @Override
+    public ConfigBeanProxy getParent(ConfigBeanProxy me) {
+        return (ConfigBeanProxy) ((XmlHk2ConfigurationBean) me)._getParent();
+    }
+
+    /* (non-Javadoc)
+     * @see org.jvnet.hk2.config.ConfigBeanProxyCustomizer#getParent(org.jvnet.hk2.config.ConfigBeanProxy, java.lang.Class)
+     */
+    @Override
+    public ConfigBeanProxy getParent(ConfigBeanProxy me, Class<?> type) {
+        return (ConfigBeanProxy) ((XmlHk2ConfigurationBean) me)._getParent();
+    }
+
+    /* (non-Javadoc)
+     * @see org.jvnet.hk2.config.ConfigBeanProxyCustomizer#createChild(org.jvnet.hk2.config.ConfigBeanProxy, java.lang.Class)
+     */
+    @Override
+    public ConfigBeanProxy createChild(ConfigBeanProxy me, Class<?> type) {
+        return (ConfigBeanProxy) xmlService.createBean(type);
+    }
+
+    /* (non-Javadoc)
+     * @see org.jvnet.hk2.config.ConfigBeanProxyCustomizer#deepCopy(org.jvnet.hk2.config.ConfigBeanProxy, org.jvnet.hk2.config.ConfigBeanProxy)
+     */
+    @Override
+    public ConfigBeanProxy deepCopy(ConfigBeanProxy me, ConfigBeanProxy parent) {
+        throw new IllegalStateException("deepCopy is not implemented");
+    }
 
 }

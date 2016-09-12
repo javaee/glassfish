@@ -542,7 +542,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
             String cName = (cNameArray.length == 0) ? null : cNameArray[lcv] ;
             
             Object cService = null;
-            if (cName == null) {
+            if (cName == null || "".equals(cName)) {
                 cService = changeControl.getServiceLocator().getService(cClass);
             }
             else {
