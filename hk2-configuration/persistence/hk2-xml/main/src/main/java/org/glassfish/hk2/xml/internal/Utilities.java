@@ -1016,6 +1016,25 @@ public class Utilities {
         
         if (topInterface == null) return null;
         
+        {
+            // First look for an exact match which should be prioritized over others
+            int altParamsLength = params.length + 1;
+            Class<?> exactParams[] = new Class<?>[altParamsLength];
+            
+            exactParams[0] = topInterface;
+            for (int lcv = 0; lcv < params.length; lcv++) {
+                exactParams[lcv+1] = params[lcv];
+            }
+            
+            try {
+                return cClass.getMethod(methodName, exactParams);
+            }
+            catch (NoSuchMethodException nsme) {
+                // Go on
+            }
+        }
+        
+        
         for (Method candidate : cClass.getMethods()) {
             if (!methodName.equals(candidate.getName())) continue;
             
