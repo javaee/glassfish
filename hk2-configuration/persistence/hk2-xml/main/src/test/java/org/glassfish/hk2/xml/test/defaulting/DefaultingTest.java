@@ -170,5 +170,49 @@ public class DefaultingTest {
         
         Assert.assertNotNull(locator.getService(SSLManagerBean.class));
     }
+    
+    /**
+     * Ensures that we can default beans via an InstanceLifecycleListener
+     * 
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testDefaultingViaAddWorks() throws Exception {
+        ServiceLocator locator = Utilities.createLocator(
+                SSLManagerBeanCustomizer.class,
+                SecurityManagerBeanDefaulter.class);
+        
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
+        
+        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshall(url.toURI(), DomainBean.class);
+        
+        MergeTest.verifyDomain1Xml(rootHandle, hub, locator, true);
+        
+        DomainBean domain = rootHandle.getRoot();
+        
+        // Removes the securityManager
+        domain.setSecurityManager(null);
+        
+        // Just makes sure the SSLManager added as a default is gone
+        Assert.assertNull(locator.getService(SSLManagerBean.class));
+        
+        SecurityManagerBean smb = xmlService.createBean(SecurityManagerBean.class);
+        
+        domain.setSecurityManager(smb);
+        
+        smb = domain.getSecurityManager();
+        Assert.assertNotNull(smb);
+        
+        // For this test to fail properly this MUST be before the lookup in the locator
+        Assert.assertNotNull(smb.getSSLManager());
+        Assert.assertNotNull(locator.getService(SecurityManagerBean.class));
+        
+        Assert.assertNotNull(smb.getSSLManager());
+        Assert.assertNotNull(locator.getService(SSLManagerBean.class));
+    }
 
 }
