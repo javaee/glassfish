@@ -175,13 +175,14 @@ public class Utilities {
         return createInstanceName((BaseHK2JAXBBean) bean._getParent()) + INSTANCE_PATH_SEPARATOR + getKeySegment(bean);
     }
     
-    public static void advertise(WriteableBeanDatabase wbd, DynamicConfiguration config, BaseHK2JAXBBean bean) {
+    public static ActiveDescriptor<?> advertise(WriteableBeanDatabase wbd, DynamicConfiguration config, BaseHK2JAXBBean bean) {
+        ActiveDescriptor<?> selfDescriptor = null;
         if (config != null) {
             AbstractActiveDescriptor<?> cDesc = BuilderHelper.createConstantDescriptor(bean);
             if (bean._getKeyValue() != null) {
                 cDesc.setName(bean._getKeyValue());
             }
-            ActiveDescriptor<?> selfDescriptor = config.addActiveDescriptor(cDesc);
+            selfDescriptor = config.addActiveDescriptor(cDesc);
             
             bean._setSelfDescriptor(selfDescriptor);
         }
@@ -190,6 +191,8 @@ public class Utilities {
             WriteableType wt = wbd.findOrAddWriteableType(bean._getXmlPath());
             wt.addInstance(bean._getInstanceName(), bean._getBeanLikeMap());
         }
+        
+        return selfDescriptor;
     }
     
     /**

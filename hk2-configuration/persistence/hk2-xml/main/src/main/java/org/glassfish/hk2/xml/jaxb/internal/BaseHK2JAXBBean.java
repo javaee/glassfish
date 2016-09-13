@@ -245,7 +245,8 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
                 return;
             }
             if (doModify) {
-                throw new IllegalStateException("A bean may not be modified with a set method, instead directly manipulate the fields of the existing bean");
+                throw new IllegalStateException(
+                        "A bean may not be modified with a set method, instead directly manipulate the fields of the existing bean or use add and remove methods");
             }
             
             changeControl.getWriteLock().lock();

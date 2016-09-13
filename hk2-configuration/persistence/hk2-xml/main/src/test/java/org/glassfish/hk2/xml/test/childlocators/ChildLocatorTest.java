@@ -183,7 +183,7 @@ public class ChildLocatorTest {
         XmlRootHandle<DomainBean> parentHandle = parentXmlService.unmarshall(url.toURI(), DomainBean.class);
         
         MergeTest.verifyDomain1Xml(parentHandle, parentHub, parentLocator);
-        MergeTest.assertDomain1Services(childLocator, parentLocator);
+        MergeTest.assertDomain1Services(childLocator, parentLocator, false);
         
         MergeTest.verifyDomain1XmlDomainNotThere(childHub, childLocator);
     }

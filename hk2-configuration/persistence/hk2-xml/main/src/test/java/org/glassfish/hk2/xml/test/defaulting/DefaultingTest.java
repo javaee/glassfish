@@ -42,8 +42,13 @@ package org.glassfish.hk2.xml.test.defaulting;
 import java.net.URL;
 
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
+import org.glassfish.hk2.xml.test.beans.DomainBean;
+import org.glassfish.hk2.xml.test.beans.SSLManagerBeanCustomizer;
+import org.glassfish.hk2.xml.test.beans.SecurityManagerBean;
+import org.glassfish.hk2.xml.test.dynamic.merge.MergeTest;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
 import org.junit.Assert;
 import org.junit.Test;
@@ -134,6 +139,31 @@ public class DefaultingTest {
         Assert.assertEquals(0, Float.compare((float) 0.00, db.getDefaultFloatProp()));
         Assert.assertEquals(0, Double.compare(0.00, db.getDefaultDoubleProp()));
         Assert.assertEquals(null, db.getDefaultStringProp());
+        
+    }
+    
+    /**
+     * Ensures that we can default beans via an InstanceLifecycleListener
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testDefaultingViaServiceWorks() throws Exception {
+        ServiceLocator locator = Utilities.createLocator(
+                SSLManagerBeanCustomizer.class,
+                SecurityManagerBeanDefaulter.class);
+        
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
+        
+        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshall(url.toURI(), DomainBean.class);
+        
+        MergeTest.verifyDomain1Xml(rootHandle, hub, locator, true);
+        
+        SecurityManagerBean smb = locator.getService(SecurityManagerBean.class);
+        Assert.assertNotNull(smb);
         
     }
 

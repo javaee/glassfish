@@ -43,12 +43,16 @@ package org.glassfish.hk2.xml.internal;
 import java.net.URI;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.xml.stream.XMLStreamReader;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
@@ -232,8 +236,13 @@ public class XmlServiceImpl implements XmlService {
         DynamicConfiguration config = (advertise) ? dynamicConfigurationService.createDynamicConfiguration() : null ;
         WriteableBeanDatabase wdb = (advertiseInHub) ? hub.getWriteableDatabaseCopy() : null ;
         
-        for (BaseHK2JAXBBean bean : listener.getAllBeans()) {
-            Utilities.advertise(wdb, config, bean);
+        LinkedList<BaseHK2JAXBBean> allBeans = listener.getAllBeans();
+        List<ActiveDescriptor<?>> addedDescriptors = new ArrayList<ActiveDescriptor<?>>(allBeans.size());
+        for (BaseHK2JAXBBean bean : allBeans) {
+            ActiveDescriptor<?> added = Utilities.advertise(wdb, config, bean);
+            if (added != null) {
+                addedDescriptors.add(added);
+            }
         }
         
         long elapsedHK2Advertisement = 0L;
@@ -256,6 +265,13 @@ public class XmlServiceImpl implements XmlService {
         
         if (wdb != null) {
             wdb.commit(new XmlHubCommitMessage() {});
+        }
+        
+        // The following is put here so that InstanceLifecycleListeners will get invoked at this time
+        // rather than later so that defaulting can be done now.  It doesn't hurt because these are
+        // all constant descriptors
+        for (ActiveDescriptor<?> ad : addedDescriptors) {
+            serviceLocator.getServiceHandle(ad).getService();
         }
         
         if (JAUtilities.DEBUG_GENERATION_TIMING) {

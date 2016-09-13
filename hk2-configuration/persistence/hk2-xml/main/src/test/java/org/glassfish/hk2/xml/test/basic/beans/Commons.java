@@ -109,6 +109,7 @@ public class Commons {
     public final static String EXCHANGE_TAG = "exchange";
     public final static String NON_KEY_TAG = "non-key-identifier";
     public final static String PORT_TAG = "port";
+    public final static String PUBLIC_KEY_TAG = "public-key-location";
     
     private Commons() {}
     

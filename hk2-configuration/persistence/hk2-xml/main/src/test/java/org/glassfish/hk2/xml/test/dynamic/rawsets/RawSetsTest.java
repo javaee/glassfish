@@ -80,8 +80,7 @@ public class RawSetsTest {
     public final static String MUSEUM_TYPE = "/museum";
     public final static String MUSEUM_INSTANCE = "museum";
     
-    public final static String SSL_MANAGER_TYPE = "/domain/security-manager/ssl-manager";
-    public final static String SSL_MANAGER_INSTANCE_NAME = "domain.security-manager.ssl-manager";
+    
     
     public final static String AGE_TAG = "age";
     
@@ -187,7 +186,7 @@ public class RawSetsTest {
         
         Assert.assertEquals(sslManager, locator.getService(SSLManagerBean.class));
         
-        Instance instance = hub.getCurrentDatabase().getInstance(SSL_MANAGER_TYPE, SSL_MANAGER_INSTANCE_NAME);
+        Instance instance = hub.getCurrentDatabase().getInstance(MergeTest.SSL_MANAGER_TYPE, MergeTest.SSL_MANAGER_INSTANCE_NAME);
         Map<String, Object> beanLikeMap = (Map<String, Object>) instance.getBean();
         
         Assert.assertNotNull(beanLikeMap);

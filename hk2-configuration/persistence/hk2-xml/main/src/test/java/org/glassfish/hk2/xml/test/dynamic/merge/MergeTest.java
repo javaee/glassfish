@@ -66,6 +66,7 @@ import org.glassfish.hk2.xml.test.beans.HttpsFactoryBean;
 import org.glassfish.hk2.xml.test.beans.JMSServerBean;
 import org.glassfish.hk2.xml.test.beans.MachineBean;
 import org.glassfish.hk2.xml.test.beans.QueueBean;
+import org.glassfish.hk2.xml.test.beans.SSLManagerBean;
 import org.glassfish.hk2.xml.test.beans.SecurityManagerBean;
 import org.glassfish.hk2.xml.test.beans.ServerBean;
 import org.glassfish.hk2.xml.test.beans.TopicBean;
@@ -122,6 +123,8 @@ public class MergeTest {
     public final static String HTTP_FACTORY_TYPE = "/domain/http-factory";
     public final static String HTTP_SERVER_TYPE = "/domain/http-factory/http-server";
     public final static String HTTPS_FACTORY_TYPE = "/domain/https-factory";
+    public final static String SSL_MANAGER_TYPE = "/domain/security-manager/ssl-manager";
+    
     
     private final static String ALICE_INSTANCE = "domain.Alice";
     private final static String BOB_INSTANCE = "domain.Bob";
@@ -135,6 +138,7 @@ public class MergeTest {
     private final static String QUEUE0_INSTANCE = "domain.Carol.Queue0";
     private final static String QUEUE1_INSTANCE = "domain.Carol.Queue1";
     private final static String QUEUE2_INSTANCE = "domain.Carol.Queue2";
+    public final static String SSL_MANAGER_INSTANCE_NAME = "domain.security-manager.ssl-manager";
     
     private final static String ADDRESS_TAG = "address";
     private final static String PORT_TAG = "port";
@@ -286,10 +290,16 @@ public class MergeTest {
         // TODO: Check that we have the proper set of changes (one modify, one add)
     }
     
+    public static void verifyDomain1Xml(XmlRootHandle<DomainBean> rootHandle, Hub hub, ServiceLocator locator, boolean didDefault) {
+        DomainBean root = rootHandle.getRoot();
+        
+        verifyDomain1XmlDomain(root, hub, locator, didDefault);
+    }
+    
     public static void verifyDomain1Xml(XmlRootHandle<DomainBean> rootHandle, Hub hub, ServiceLocator locator) {
         DomainBean root = rootHandle.getRoot();
         
-        verifyDomain1XmlDomain(root, hub, locator);
+        verifyDomain1XmlDomain(root, hub, locator, false);
     }
     
     public static void verifyDomain1Xml(XmlRootHandle<DomainBean> original, XmlRootCopy<DomainBean> rootHandle, Hub hub,
@@ -298,11 +308,11 @@ public class MergeTest {
         
         DomainBean root = rootHandle.getChildRoot();
         
-        verifyDomain1XmlDomain(root, hub, locator);
+        verifyDomain1XmlDomain(root, hub, locator, false);
     }
     
     @SuppressWarnings("unchecked")
-    private static void verifyDomain1XmlDomain(DomainBean root, Hub hub, ServiceLocator locator) {
+    private static void verifyDomain1XmlDomain(DomainBean root, Hub hub, ServiceLocator locator, boolean didDefault) {
         Assert.assertEquals("Failing bean is " + root, DOMAIN1_NAME, root.getName());
         
         SecurityManagerBean securityManager = root.getSecurityManager();
@@ -312,14 +322,23 @@ public class MergeTest {
         Assert.assertNotNull(atzProviders);
         Assert.assertEquals(1, atzProviders.size());
         
+        if (!didDefault) {
+            Assert.assertNull(securityManager.getSSLManager());
+        }
+        else {
+            SSLManagerBean sslManager = securityManager.getSSLManager();
+            Assert.assertNotNull(sslManager);
+            
+            Assert.assertNull(sslManager.getPublicKeyLocation());
+            Assert.assertEquals(SSLManagerBean.FORT_KNOX, sslManager.getSSLPrivateKeyLocation());
+        }
+        
         MachineBean aliceRef = null;
         for (AuthorizationProviderBean atzProvider : atzProviders) {
             Assert.assertEquals(RSA_ATZ_PROV_NAME, atzProvider.getName());
             Assert.assertEquals(RSA_DOM_PFX, atzProvider.getAtzDomainPrefix());
             aliceRef = atzProvider.getMachine();
         }
-        
-        Assert.assertNull(securityManager.getSSLManager());
         
         List<MachineBean> machines = root.getMachines();
         Assert.assertNotNull(machines);
@@ -485,6 +504,20 @@ public class MergeTest {
             Assert.assertEquals(RSA_DOM_PFX, rsaMap.get(ATZ_DOMAIN_PFX_TAG));
         }
         
+        {
+            Instance sslManagerInstance = hub.getCurrentDatabase().getInstance(SSL_MANAGER_TYPE, SSL_MANAGER_INSTANCE_NAME);
+            if (didDefault) {
+                Assert.assertNotNull(sslManagerInstance);
+                
+                Map<String, Object> sslManagerMap = (Map<String, Object>) sslManagerInstance.getBean();
+                
+                Assert.assertNull(sslManagerMap.get(Commons.PUBLIC_KEY_TAG));
+            }
+            else {
+                Assert.assertNull(sslManagerInstance);
+            }
+        }
+        
         assertNameOnlyBean(hub, JMS_SERVER_TYPE, JMS_SERVER_INSTANCE, CAROL_NAME);
         
         assertNameOnlyBean(hub, TOPIC_TYPE, TOPIC0_INSTANCE, TOPIC0_NAME);
@@ -545,7 +578,7 @@ public class MergeTest {
             Assert.assertEquals(LIBERTY_NAME, beanLike.get(Commons.NON_KEY_TAG));
         }
         
-        assertDomain1Services(locator);
+        assertDomain1Services(locator, locator, didDefault);
     }
     
     public static void verifyDomain1XmlDomainNotThere(Hub hub, ServiceLocator locator) {
@@ -570,10 +603,10 @@ public class MergeTest {
     }
     
     public static void assertDomain1Services(ServiceLocator locator) {
-        assertDomain1Services(locator, locator);
+        assertDomain1Services(locator, locator, false);
     }
     
-    public static void assertDomain1Services(ServiceLocator locator, ServiceLocator fromLocator) {
+    public static void assertDomain1Services(ServiceLocator locator, ServiceLocator fromLocator, boolean didDefault) {
         // TODO:  Why does root not have a name?
         DomainBean db = locator.getService(DomainBean.class);
         Assert.assertNotNull(db);
@@ -654,6 +687,19 @@ public class MergeTest {
         
         Assert.assertEquals(LIBERTY_NAME, httpsFactory.getNonKeyIdentifier());
         assertServiceComesFromSameLocator(httpsFactory, fromLocator);
+        
+        SSLManagerBean sslManager = locator.getService(SSLManagerBean.class);
+        if (didDefault) {
+            Assert.assertNotNull(sslManager);
+            
+            Assert.assertNull(sslManager.getPublicKeyLocation());
+            Assert.assertEquals(SSLManagerBean.FORT_KNOX, sslManager.getSSLPrivateKeyLocation());
+            
+            assertServiceComesFromSameLocator(sslManager, fromLocator);
+        }
+        else {
+            Assert.assertNull(sslManager);
+        }
     }
     
     private static void assertServiceComesFromSameLocator(Object service, ServiceLocator locator) {
