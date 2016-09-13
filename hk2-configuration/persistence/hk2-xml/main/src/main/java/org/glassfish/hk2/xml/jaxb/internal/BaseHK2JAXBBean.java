@@ -60,6 +60,7 @@ import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Customizer;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
@@ -545,7 +546,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
     
     public Object _doAdd(String childProperty, Object rawChild, String childKey, int index) {
         if (changeControl == null) {
-            return Utilities.internalAdd(this, childProperty, rawChild, childKey, index, null, null, null);
+            return Utilities.internalAdd(this, childProperty, rawChild, childKey, index, null, null, null, new LinkedList<ActiveDescriptor<?>>());
         }
         
         changeControl.getWriteLock().lock();
@@ -555,7 +556,8 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
             DynamicConfiguration config = (changeControl.getDynamicConfigurationService() == null) ? null :
                 changeControl.getDynamicConfigurationService().createDynamicConfiguration();
             
-            Object retVal = Utilities.internalAdd(this, childProperty, rawChild, childKey, index, changeControl, wbd, config);
+            LinkedList<ActiveDescriptor<?>> addedServices = new LinkedList<ActiveDescriptor<?>>();
+            Object retVal = Utilities.internalAdd(this, childProperty, rawChild, childKey, index, changeControl, wbd, config, addedServices);
             
             if (config != null) {
                 config.commit();
@@ -563,6 +565,12 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
             
             if (wbd != null) {
                 wbd.commit(new XmlHubCommitMessage() {});
+            }
+            
+            ServiceLocator locator = changeControl.getServiceLocator();
+            for (ActiveDescriptor<?> added : addedServices) {
+                // Ensures that any defaulting listeners are run
+                locator.getServiceHandle(added).getService();
             }
             
             return retVal;

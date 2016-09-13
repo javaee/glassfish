@@ -49,7 +49,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.xml.api.XmlHubCommitMessage;
@@ -345,12 +347,14 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
                 config = parent.getDynamicConfigurationService().createDynamicConfiguration();
             }
             
+            List<ActiveDescriptor<?>> addedServices = new LinkedList<ActiveDescriptor<?>>();
             BaseHK2JAXBBean copiedRoot = Utilities._addRoot(rootNode,
                     newRoot,
                     changeControl,
                     parent.getClassReflectionHelper(),
                     wbd,
-                    config);
+                    config,
+                    addedServices);
             
             if (config != null) {
                 config.commit();
@@ -361,6 +365,12 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
             }
             
             root = (T) copiedRoot;
+            
+            ServiceLocator locator = parent.getServiceLocator();
+            for (ActiveDescriptor<?> added : addedServices) {
+                // Ensures that the defaulters will run right away
+                locator.getServiceHandle(added).getService();
+            }
         }
         finally {
             changeControl.getWriteLock().unlock();

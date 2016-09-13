@@ -360,6 +360,7 @@ public class XmlServiceImpl implements XmlService {
         return jaUtilities;
     }
 
-    
-   
+    public ServiceLocator getServiceLocator() {
+        return serviceLocator;
+    }
 }

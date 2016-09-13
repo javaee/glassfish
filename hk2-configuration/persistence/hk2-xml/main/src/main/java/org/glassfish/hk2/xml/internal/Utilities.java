@@ -67,6 +67,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
@@ -295,7 +296,8 @@ public class Utilities {
             int index,
             DynamicChangeInfo changeInformation,
             WriteableBeanDatabase writeableDatabase,
-            DynamicConfiguration dynamicService) {
+            DynamicConfiguration dynamicService,
+            List<ActiveDescriptor<?>> addedServices) {
         if (index < -1) {
             throw new IllegalArgumentException("Unknown index " + index);
         }
@@ -402,13 +404,13 @@ public class Utilities {
         
         if (rawChild != null) {
             // Now we handle the children
-            handleChildren(child, (BaseHK2JAXBBean) rawChild, changeInformation);
+            handleChildren(child, (BaseHK2JAXBBean) rawChild, changeInformation, addedServices);
         }
             
         // Now freeze it
         child._setDynamicChangeInfo(changeInformation);
         
-        externalAdd(child, dynamicService, writeableDatabase);
+        externalAdd(child, dynamicService, writeableDatabase, addedServices);
         
         // Now modify the actual list
         if (multiChildren != null) {
@@ -455,7 +457,7 @@ public class Utilities {
     }
     
     @SuppressWarnings("unchecked")
-    private static void handleChildren(BaseHK2JAXBBean child, BaseHK2JAXBBean childToCopy, DynamicChangeInfo changeInformation) {
+    private static void handleChildren(BaseHK2JAXBBean child, BaseHK2JAXBBean childToCopy, DynamicChangeInfo changeInformation, List<ActiveDescriptor<?>> addedServices) {
         Map<String, ParentedModel> childrenMap = childToCopy._getModel().getChildrenProperties();
         
         for (Map.Entry<String, ParentedModel> childsChildrenEntry : childrenMap.entrySet()) {
@@ -486,7 +488,7 @@ public class Utilities {
                 int lcv = 0;
                 for (BaseHK2JAXBBean childsChild : childsChildren) {
                     BaseHK2JAXBBean grandchild = internalAdd(child, childsChildProperty,
-                            childsChild, null, -1, changeInformation, null, null);
+                            childsChild, null, -1, changeInformation, null, null, addedServices);
                     
                     copiedChildArray.add(grandchild);
                     Array.set(asArray, lcv++, grandchild);
@@ -504,7 +506,7 @@ public class Utilities {
                 if (childsChild == null) continue;
                 
                 BaseHK2JAXBBean grandchild = internalAdd(child, childsChildProperty,
-                        childsChild, null, -1, changeInformation, null, null);
+                        childsChild, null, -1, changeInformation, null, null, addedServices);
                 
                 child._setProperty(childsChildProperty, grandchild, false);
             }
@@ -512,10 +514,13 @@ public class Utilities {
     }
     
     @SuppressWarnings("unchecked")
-    private static void externalAdd(BaseHK2JAXBBean root, DynamicConfiguration config, WriteableBeanDatabase writeableDatabase) {
+    private static void externalAdd(BaseHK2JAXBBean root, DynamicConfiguration config, WriteableBeanDatabase writeableDatabase, List<ActiveDescriptor<?>> addedDescriptors) {
         if (config == null && writeableDatabase == null) return;
         
-        Utilities.advertise(writeableDatabase, config, root);
+        ActiveDescriptor<?> added = Utilities.advertise(writeableDatabase, config, root);
+        if (added != null) {
+            addedDescriptors.add(added);
+        }
         
         for (String keyedChildProperty : root._getModel().getKeyedChildren()) {
             Object keyedRawChild = root._getProperty(keyedChildProperty);
@@ -524,19 +529,19 @@ public class Utilities {
             if (keyedRawChild instanceof Iterable) {
                 Iterable<BaseHK2JAXBBean> iterable = (Iterable<BaseHK2JAXBBean>) keyedRawChild;
                 for (BaseHK2JAXBBean child : iterable) {
-                    externalAdd(child, config, writeableDatabase);
+                    externalAdd(child, config, writeableDatabase, addedDescriptors);
                 }
             }
             else if (keyedRawChild.getClass().isArray()) {
                 int aLength = Array.getLength(keyedRawChild);
                 for (int lcv = 0; lcv < aLength; lcv++) {
                     BaseHK2JAXBBean child = (BaseHK2JAXBBean) Array.get(keyedRawChild, lcv);
-                    externalAdd(child, config, writeableDatabase);
+                    externalAdd(child, config, writeableDatabase, addedDescriptors);
                 }
                 
             }
             else {
-                externalAdd((BaseHK2JAXBBean) keyedRawChild, config, writeableDatabase);
+                externalAdd((BaseHK2JAXBBean) keyedRawChild, config, writeableDatabase, addedDescriptors);
             }
         }
         
@@ -547,18 +552,18 @@ public class Utilities {
             if (unkeyedRawChild instanceof Iterable) {
                 Iterable<BaseHK2JAXBBean> unkeyedMultiChildren = (Iterable<BaseHK2JAXBBean>) unkeyedRawChild;
                 for (BaseHK2JAXBBean child : unkeyedMultiChildren) {
-                    externalAdd(child, config, writeableDatabase);
+                    externalAdd(child, config, writeableDatabase, addedDescriptors);
                 }
             }
             else if (unkeyedRawChild.getClass().isArray()) {
                 int aLength = Array.getLength(unkeyedRawChild);
                 for (int lcv = 0; lcv < aLength; lcv++) {
                     BaseHK2JAXBBean child = (BaseHK2JAXBBean) Array.get(unkeyedRawChild, lcv);
-                    externalAdd(child, config, writeableDatabase);
+                    externalAdd(child, config, writeableDatabase, addedDescriptors);
                 }
             }
             else {
-                externalAdd((BaseHK2JAXBBean) unkeyedRawChild, config, writeableDatabase);
+                externalAdd((BaseHK2JAXBBean) unkeyedRawChild, config, writeableDatabase, addedDescriptors);
             }
             
         }
@@ -579,7 +584,8 @@ public class Utilities {
             DynamicChangeInfo changeInfo,
             ClassReflectionHelper helper,
             WriteableBeanDatabase writeableDatabase,
-            DynamicConfiguration dynamicService) {
+            DynamicConfiguration dynamicService,
+            List<ActiveDescriptor<?>> addedServices) {
         if (!(rawRoot instanceof BaseHK2JAXBBean)) {
             throw new IllegalArgumentException("The root added must be from XmlService.createBean");
         }
@@ -603,12 +609,12 @@ public class Utilities {
         child._setSelfXmlTag(rootNode.getRootName());
         child._setInstanceName(rootNode.getRootName());
         
-        handleChildren(child, childToCopy, changeInfo);
+        handleChildren(child, childToCopy, changeInfo, addedServices);
             
         // Now freeze it
         child._setDynamicChangeInfo(changeInfo);
         
-        externalAdd(child, dynamicService, writeableDatabase);
+        externalAdd(child, dynamicService, writeableDatabase, addedServices);
         
         return child;
     }
