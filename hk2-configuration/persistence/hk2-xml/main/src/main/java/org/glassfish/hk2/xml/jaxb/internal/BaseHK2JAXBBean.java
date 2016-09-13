@@ -225,6 +225,10 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
                                 doModify = true;
                             }
                         }
+                        else {
+                            // Just not going to work
+                            doModify = true;
+                        }
                     }
                 }
                 finally {

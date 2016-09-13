@@ -41,6 +41,7 @@
 package org.glassfish.hk2.xml.test.dynamic.rawsets;
 
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -60,6 +61,7 @@ import org.glassfish.hk2.xml.test.basic.beans.Commons;
 import org.glassfish.hk2.xml.test.basic.beans.Museum;
 import org.glassfish.hk2.xml.test.beans.AuthorizationProviderBean;
 import org.glassfish.hk2.xml.test.beans.DomainBean;
+import org.glassfish.hk2.xml.test.beans.MachineBean;
 import org.glassfish.hk2.xml.test.beans.SSLManagerBean;
 import org.glassfish.hk2.xml.test.beans.SSLManagerBeanCustomizer;
 import org.glassfish.hk2.xml.test.beans.SecurityManagerBean;
@@ -318,6 +320,56 @@ public class RawSetsTest {
         
         // Verify nothing was changed
         MergeTest.verifyDomain1Xml(rootHandle, hub, locator);
+    }
+    
+    /**
+     * Tests that setting a bean to itself is ok (one
+     * case of set to set that works)
+     * 
+     * @throws Exception
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testListSetToDifferentFails() throws Exception {
+        ServiceLocator locator = Utilities.createLocator(UpdateListener.class,
+                SSLManagerBeanCustomizer.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
+        
+        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshall(url.toURI(), DomainBean.class);
+        DomainBean domain = rootHandle.getRoot();
+        
+        MergeTest.verifyDomain1Xml(rootHandle, hub, locator);
+        
+        List<MachineBean> newBeans = new LinkedList<MachineBean>();
+        
+        try {
+           domain.setMachines(newBeans);
+           Assert.fail("Should not be able to set machines at this time");
+        }
+        catch (IllegalStateException ise) {
+            // expected
+        }
+        
+        try {
+            domain.setMachines(null);
+            Assert.fail("Should not be able to set machines at this time");
+        }
+        catch (IllegalStateException ise) {
+            // expected
+        }
+        
+        List<MachineBean> oldBeans = domain.getMachines();
+         
+        try {
+            domain.setMachines(oldBeans);
+            Assert.fail("Should not be able to set machines at this time");
+        }
+        catch (IllegalStateException ise) {
+            // expected
+        }
     }
     
     @Singleton
