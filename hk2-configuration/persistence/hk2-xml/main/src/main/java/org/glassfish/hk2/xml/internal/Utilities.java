@@ -54,6 +54,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.inject.Singleton;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.ArrayType;
@@ -71,6 +72,7 @@ import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
@@ -179,6 +181,10 @@ public class Utilities {
         ActiveDescriptor<?> selfDescriptor = null;
         if (config != null) {
             AbstractActiveDescriptor<?> cDesc = BuilderHelper.createConstantDescriptor(bean);
+            
+            // We make these singletons to ensure that any InstanceLifecycleListeners will only be called once
+            cDesc.setScopeAsAnnotation(ServiceLocatorUtilities.getSingletonAnnotation());
+            
             if (bean._getKeyValue() != null) {
                 cDesc.setName(bean._getKeyValue());
             }

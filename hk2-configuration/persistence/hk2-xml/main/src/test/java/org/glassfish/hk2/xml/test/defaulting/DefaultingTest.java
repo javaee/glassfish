@@ -46,6 +46,7 @@ import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.beans.DomainBean;
+import org.glassfish.hk2.xml.test.beans.SSLManagerBean;
 import org.glassfish.hk2.xml.test.beans.SSLManagerBeanCustomizer;
 import org.glassfish.hk2.xml.test.beans.SecurityManagerBean;
 import org.glassfish.hk2.xml.test.dynamic.merge.MergeTest;
@@ -165,6 +166,9 @@ public class DefaultingTest {
         SecurityManagerBean smb = locator.getService(SecurityManagerBean.class);
         Assert.assertNotNull(smb);
         
+        Assert.assertNotNull(smb.getSSLManager());
+        
+        Assert.assertNotNull(locator.getService(SSLManagerBean.class));
     }
 
 }
