@@ -40,7 +40,9 @@
 
 package org.glassfish.hk2.xml.api;
 
+import java.beans.VetoableChangeListener;
 import java.net.URI;
+import java.util.List;
 
 /**
  * This represents XML data and a JavaBean tree
@@ -187,4 +189,33 @@ public interface XmlRootHandle<T> {
      * if the root was already null
      */
     public T removeRoot();
+    
+    /**
+     * Adds a change listener to be invoked before any property is
+     * set or a bean is added.  The listener must be suitable for
+     * storage in a HashSet
+     * 
+     * @param listener A non-null listener to be called whenever
+     * a property is changed in any bean in this root.  Must be
+     * suitable for storage in a HashSet
+     */
+    public void addChangeListener(VetoableChangeListener listener);
+    
+    /**
+     * Removes a change listener.  The listener must be suitable for
+     * lookup in a HashSet
+     * 
+     * @param listener A non-null listener to be removed. Must be
+     * suitable for lookup in a HashSet
+     */
+    public void removeChangeListener(VetoableChangeListener listener);
+    
+    /**
+     * Gets the current list of change listeners
+     * 
+     * @return The non-null but possibly empty list of change
+     * listeners to be called when a bean is added, removed
+     * or modified
+     */
+    public List<VetoableChangeListener> getChangeListeners();
 }

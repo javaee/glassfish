@@ -37,33 +37,59 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.hk2Config.test.beans;
+package org.glassfish.hk2.hk2Config.xml.test.listeners;
 
-import javax.xml.bind.annotation.XmlElement;
+import java.net.URL;
 
-import org.glassfish.hk2.api.Customizer;
-import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
-import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.config.ConfigBeanProxyCustomizer;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.types.PropertyBag;
-import org.jvnet.hk2.config.types.PropertyBagCustomizer;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.hk2Config.xml.test.utilities.LocatorUtilities;
+import org.glassfish.hk2.hk2Config.xml.test0.OldConfigTest;
+import org.glassfish.hk2.xml.api.XmlRootHandle;
+import org.glassfish.hk2.xml.api.XmlService;
+import org.glassfish.hk2.xml.hk2Config.test.beans.KingdomConfig;
+import org.glassfish.hk2.xml.hk2Config.test.beans.Phylum;
+import org.glassfish.hk2.xml.hk2Config.test.customizers.AuditableListener;
+import org.glassfish.hk2.xml.hk2Config.test.customizers.KingdomCustomizer;
+import org.glassfish.hk2.xml.hk2Config.test.customizers.PhylaCustomizer;
+import org.junit.Assert;
+import org.junit.Test;
+import org.jvnet.hk2.config.types.PropertyBagCustomizerImpl;
 
 /**
  * @author jwells
  *
  */
-@Contract
-@Configured
-@Hk2XmlPreGenerate
-@Customizer({PropertyBagCustomizer.class, ConfigBeanProxyCustomizer.class})
-public interface Phylum extends Named, PropertyBag, AuditableBean {
-    @XmlElement(name="num-germ-layers", defaultValue="2")
-    public void setNumGermLayers(int numLayers);
-    public int getNumGermLayers();
-    
-    @XmlElement(name="soft-bodied", defaultValue="true")
-    public void setSoftBodied(boolean soft);
-    public boolean isSoftBodied();
+public class ListenersTest {
+    /**
+     * Tests a basic listener
+     */
+    @Test
+    @org.junit.Ignore
+    public void testBasicUpdate() throws Exception {
+        ServiceLocator locator = LocatorUtilities.createLocator(
+                PropertyBagCustomizerImpl.class,
+                KingdomCustomizer.class,
+                PhylaCustomizer.class);
+        
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
+        
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, false);
+        rootHandle.addChangeListener(new AuditableListener());
+        
+        KingdomConfig kingdom = rootHandle.getRoot();
+        OldConfigTest.assertOriginalStateKingdom1(kingdom);
+        
+        Phylum ph = locator.getService(Phylum.class, OldConfigTest.ALICE_NAME);
+        
+        long originalUpdated = ph.getUpdatedOn();
+        
+        ph.setNumGermLayers(15);
+        
+        long newUpdated = ph.getUpdatedOn();
+        
+        Assert.assertTrue(newUpdated > originalUpdated);
+    }
 
 }

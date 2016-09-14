@@ -40,10 +40,12 @@
 
 package org.glassfish.hk2.xml.internal;
 
+import java.beans.VetoableChangeListener;
 import java.lang.reflect.Array;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -72,6 +74,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
     private final boolean advertised;
     private final boolean advertisedInHub;
     private final DynamicChangeInfo changeControl;
+    
     
     /* package */ XmlRootHandleImpl(
             XmlServiceImpl parent,
@@ -406,10 +409,32 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
         return changeControl;
     }
     
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlRootHandle#addChangeListener(java.beans.VetoableChangeListener)
+     */
+    @Override
+    public void addChangeListener(VetoableChangeListener listener) {
+        changeControl.addChangeListener(listener);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlRootHandle#removeChangeListener(java.beans.VetoableChangeListener)
+     */
+    @Override
+    public void removeChangeListener(VetoableChangeListener listener) {
+        changeControl.removeChangeListener(listener);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlRootHandle#getChangeListeners()
+     */
+    @Override
+    public List<VetoableChangeListener> getChangeListeners() {
+        return changeControl.getChangeListeners();
+    }
+    
     @Override
     public String toString() {
         return "XmlRootHandleImpl(" + root + "," + rootNode + "," + rootURI + "," + System.identityHashCode(this) + ")";
     }
-
-    
 }

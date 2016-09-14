@@ -40,6 +40,11 @@
 
 package org.glassfish.hk2.xml.internal;
 
+import java.beans.VetoableChangeListener;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
@@ -62,6 +67,7 @@ public class DynamicChangeInfo {
     private final XmlServiceImpl idGenerator;
     private final DynamicConfigurationService dynamicService;
     private final ServiceLocator locator;
+    private final LinkedHashSet<VetoableChangeListener> listeners = new LinkedHashSet<VetoableChangeListener>();
     
     /* package */ DynamicChangeInfo(JAUtilities jaUtilities,
             Hub hub,
@@ -125,5 +131,36 @@ public class DynamicChangeInfo {
     
     public ServiceLocator getServiceLocator() {
         return locator;
+    }
+    
+    public void addChangeListener(VetoableChangeListener listener) {
+        writeTreeLock.lock();
+        try {
+            listeners.add(listener);
+        }
+        finally {
+            writeTreeLock.unlock();
+        }
+    }
+
+    
+    public void removeChangeListener(VetoableChangeListener listener) {
+        writeTreeLock.lock();
+        try {
+            listeners.remove(listener);
+        }
+        finally {
+            writeTreeLock.unlock();
+        }
+    }
+
+    public List<VetoableChangeListener> getChangeListeners() {
+        readTreeLock.lock();
+        try {
+            return Collections.unmodifiableList(new ArrayList<VetoableChangeListener>(listeners));
+        }
+        finally {
+            readTreeLock.unlock();
+        }
     }
 }

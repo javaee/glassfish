@@ -62,9 +62,9 @@ import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBagCustomizerImpl;
 
 public class OldConfigTest {
-    private static final String KINGDOM_FILE = "kingdom1.xml";
+    public static final String KINGDOM_FILE = "kingdom1.xml";
     
-    private static final String ALICE_NAME = "Alice";
+    public static final String ALICE_NAME = "Alice";
     private static final String BOB_NAME = "Bob";
     
     private static final String USERNAME_PROP_KEY = "username";
@@ -262,7 +262,7 @@ public class OldConfigTest {
         Assert.assertEquals(3, allProps.size());
     }
     
-    private static void assertOriginalStateKingdom1(KingdomConfig kingdom1) {
+    public static void assertOriginalStateKingdom1(KingdomConfig kingdom1) {
         Assert.assertNotNull(kingdom1);
         
         Phyla phyla = kingdom1.getPhyla();
@@ -276,6 +276,10 @@ public class OldConfigTest {
             
             Assert.assertEquals(USERNAME_PROP_VALUE, phylum.getPropertyValue(USERNAME_PROP_KEY));
             Assert.assertEquals(PASSWORD_PROP_VALUE, phylum.getPropertyValue(PASSWORD_PROP_KEY));
+            Assert.assertEquals(2, phylum.getNumGermLayers());
+            Assert.assertEquals(true, phylum.isSoftBodied());
+            Assert.assertEquals(0L, phylum.getCreatedOn());
+            Assert.assertEquals(0L, phylum.getUpdatedOn());
         }
         
         Assert.assertEquals(P1, kingdom1.getProperty().get(0).getName());

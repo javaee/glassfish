@@ -41,29 +41,15 @@ package org.glassfish.hk2.xml.hk2Config.test.beans;
 
 import javax.xml.bind.annotation.XmlElement;
 
-import org.glassfish.hk2.api.Customizer;
-import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
-import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.config.ConfigBeanProxyCustomizer;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.types.PropertyBag;
-import org.jvnet.hk2.config.types.PropertyBagCustomizer;
-
 /**
  * @author jwells
  *
  */
-@Contract
-@Configured
-@Hk2XmlPreGenerate
-@Customizer({PropertyBagCustomizer.class, ConfigBeanProxyCustomizer.class})
-public interface Phylum extends Named, PropertyBag, AuditableBean {
-    @XmlElement(name="num-germ-layers", defaultValue="2")
-    public void setNumGermLayers(int numLayers);
-    public int getNumGermLayers();
+public interface AuditableBean {
+    @XmlElement(name="created-on")
+    public long getCreatedOn();
     
-    @XmlElement(name="soft-bodied", defaultValue="true")
-    public void setSoftBodied(boolean soft);
-    public boolean isSoftBodied();
+    @XmlElement(name="updated-on")
+    public long getUpdatedOn();
 
 }

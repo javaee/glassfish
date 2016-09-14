@@ -37,33 +37,35 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.hk2Config.test.beans;
+package org.glassfish.hk2.xml.hk2Config.test.customizers;
 
-import javax.xml.bind.annotation.XmlElement;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
 
-import org.glassfish.hk2.api.Customizer;
-import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
-import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.config.ConfigBeanProxyCustomizer;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.types.PropertyBag;
-import org.jvnet.hk2.config.types.PropertyBagCustomizer;
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.xml.hk2Config.test.beans.AuditableBean;
 
 /**
  * @author jwells
  *
  */
-@Contract
-@Configured
-@Hk2XmlPreGenerate
-@Customizer({PropertyBagCustomizer.class, ConfigBeanProxyCustomizer.class})
-public interface Phylum extends Named, PropertyBag, AuditableBean {
-    @XmlElement(name="num-germ-layers", defaultValue="2")
-    public void setNumGermLayers(int numLayers);
-    public int getNumGermLayers();
+@Singleton
+public class AuditableListener implements VetoableChangeListener {
+
+    /* (non-Javadoc)
+     * @see java.beans.VetoableChangeListener#vetoableChange(java.beans.PropertyChangeEvent)
+     */
+    @Override
+    public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
+        System.out.println("JRW(10) AuditableListener evt=" + evt);
+        
+        if (!(evt.getSource()  instanceof AuditableBean)) return;
+        
+        
+    }
+
     
-    @XmlElement(name="soft-bodied", defaultValue="true")
-    public void setSoftBodied(boolean soft);
-    public boolean isSoftBodied();
 
 }

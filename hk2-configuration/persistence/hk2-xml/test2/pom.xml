@@ -109,6 +109,14 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.hk2</groupId>
+            <artifactId>hk2-extras</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.hk2.external</groupId>
+            <artifactId>aopalliance-repackaged</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.hk2</groupId>
             <artifactId>hk2-junitrunner</artifactId>
             <scope>test</scope>
         </dependency>
