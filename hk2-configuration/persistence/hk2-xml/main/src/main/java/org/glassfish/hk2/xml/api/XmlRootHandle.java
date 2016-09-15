@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -193,7 +193,15 @@ public interface XmlRootHandle<T> {
     /**
      * Adds a change listener to be invoked before any property is
      * set or a bean is added.  The listener must be suitable for
-     * storage in a HashSet
+     * storage in a HashSet.
+     * <p>
+     * Rules for change listener:
+     * <UL>
+     * <LI>Adds of beans with children will get called back for each child and sub-child added</LI>
+     * <LI>Add listener callbacks will happen depth first but children at the same level are handled in any order</LI>
+     * <LI>Removes of beans with children will ONLY get called back for the root bean removed</LI>
+     * <LI>The List or Array or Direct child of a removed child will be called with a modify since that element was modified</LI>
+     * </UL>
      * 
      * @param listener A non-null listener to be called whenever
      * a property is changed in any bean in this root.  Must be

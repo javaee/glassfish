@@ -407,10 +407,10 @@ public class Utilities {
             handleChildren(child, (BaseHK2JAXBBean) rawChild, changeInformation, addedServices);
         }
         
-        Utilities.invokeVetoableChangeListeners(changeInformation, child, null, child, childNode.getChildXmlTag());
-            
         // Now freeze it
         child._setDynamicChangeInfo(changeInformation);
+        
+        Utilities.invokeVetoableChangeListeners(changeInformation, child, null, child, childNode.getChildXmlTag());
         
         externalAdd(child, dynamicService, writeableDatabase, addedServices);
         

@@ -154,5 +154,62 @@ public class ListenersTest {
         
         Assert.assertTrue(alice.getDeletedOn() > 0L);
     }
+    
+    /**
+     * Tests a multi-tier listener for remove and add
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testMultiTierRemoveAndAdd() throws Exception {
+        ServiceLocator locator = LocatorUtilities.createLocator(
+                PropertyBagCustomizerImpl.class,
+                KingdomCustomizer.class,
+                PhylaCustomizer.class);
+        
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
+        
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, false);
+        rootHandle.addChangeListener(new AuditableListener());
+        
+        KingdomConfig kingdom = rootHandle.getRoot();
+        OldConfigTest.assertOriginalStateKingdom1(kingdom);
+        
+        {
+            Phylum alice = kingdom.getPhyla().getPhylumByName(OldConfigTest.ALICE_NAME);
+            Phyla phyla = kingdom.getPhyla();
+        
+            kingdom.setPhyla(null);
+        
+            // Alice was never truly deleted, so no event for it
+            Assert.assertEquals(0, alice.getDeletedOn());
+        
+            // But phyla truly was
+            Assert.assertTrue(phyla.getDeletedOn() > 0L);
+        }
+        
+        {
+            Phylum bob = xmlService.createBean(Phylum.class);
+            bob.setName(OldConfigTest.BOB_NAME);
+            
+            Phyla phyla = xmlService.createBean(Phyla.class);
+            phyla.addPhylum(bob);
+        
+            kingdom.setPhyla(phyla);
+            
+            phyla = kingdom.getPhyla();
+            bob = phyla.getPhylumByName(OldConfigTest.BOB_NAME);
+        
+            // Bob was added so it also gets a high created on
+            Assert.assertTrue(bob.getCreatedOn() > 0L);
+        
+            // But phyla truly was
+            Assert.assertTrue(phyla.getCreatedOn() > 0L);
+        }
+        
+        
+        
+    }
 
 }

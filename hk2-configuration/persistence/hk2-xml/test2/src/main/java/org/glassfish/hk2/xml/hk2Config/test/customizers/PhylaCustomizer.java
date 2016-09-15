@@ -79,7 +79,7 @@ public class PhylaCustomizer {
         return retVal;
     }
 
-    public Phylum getPhylumByName(String name) {
+    public Phylum getPhylumByName(Phyla phyla, String name) {
         XmlHk2ConfigurationBean configBean = (XmlHk2ConfigurationBean) phyla;
         
         Object retVal = configBean._lookupChild("phylum", name);

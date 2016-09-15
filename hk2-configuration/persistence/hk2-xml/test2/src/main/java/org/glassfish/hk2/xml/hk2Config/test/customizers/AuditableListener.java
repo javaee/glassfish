@@ -61,9 +61,13 @@ public class AuditableListener implements VetoableChangeListener {
     public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
         if ("created-on".equals(evt.getPropertyName()) ||
             "updated-on".equals(evt.getPropertyName()) ||
-            "deleted-on".equals(evt.getPropertyName())) return;
+            "deleted-on".equals(evt.getPropertyName())) {
+            return;
+        }
         
-        if (!(evt.getSource() instanceof AuditableBean)) return;
+        if (!(evt.getSource() instanceof AuditableBean)) {
+            return;
+        }
         
         AuditableBean auditable = (AuditableBean) evt.getSource();
         
