@@ -45,7 +45,6 @@ import java.lang.reflect.Array;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -413,16 +412,16 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
      * @see org.glassfish.hk2.xml.api.XmlRootHandle#addChangeListener(java.beans.VetoableChangeListener)
      */
     @Override
-    public void addChangeListener(VetoableChangeListener listener) {
-        changeControl.addChangeListener(listener);
+    public void addChangeListener(VetoableChangeListener... listeners) {
+        changeControl.addChangeListener(listeners);
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.api.XmlRootHandle#removeChangeListener(java.beans.VetoableChangeListener)
      */
     @Override
-    public void removeChangeListener(VetoableChangeListener listener) {
-        changeControl.removeChangeListener(listener);
+    public void removeChangeListener(VetoableChangeListener... listeners) {
+        changeControl.removeChangeListener(listeners);
     }
 
     /* (non-Javadoc)

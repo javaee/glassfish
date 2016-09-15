@@ -203,20 +203,20 @@ public interface XmlRootHandle<T> {
      * <LI>The List or Array or Direct child of a removed child will be called with a modify since that element was modified</LI>
      * </UL>
      * 
-     * @param listener A non-null listener to be called whenever
+     * @param listeners non-null listeners to be called whenever
      * a property is changed in any bean in this root.  Must be
      * suitable for storage in a HashSet
      */
-    public void addChangeListener(VetoableChangeListener listener);
+    public void addChangeListener(VetoableChangeListener... listeners);
     
     /**
      * Removes a change listener.  The listener must be suitable for
      * lookup in a HashSet
      * 
-     * @param listener A non-null listener to be removed. Must be
+     * @param listener non-null listeners to be removed. Must be
      * suitable for lookup in a HashSet
      */
-    public void removeChangeListener(VetoableChangeListener listener);
+    public void removeChangeListener(VetoableChangeListener... listeners);
     
     /**
      * Gets the current list of change listeners

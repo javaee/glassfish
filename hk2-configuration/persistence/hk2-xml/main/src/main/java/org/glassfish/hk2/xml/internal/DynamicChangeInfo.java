@@ -133,10 +133,14 @@ public class DynamicChangeInfo {
         return locator;
     }
     
-    public void addChangeListener(VetoableChangeListener listener) {
+    public void addChangeListener(VetoableChangeListener... allAdds) {
+        if (allAdds == null) return;
+        
         writeTreeLock.lock();
         try {
-            listeners.add(listener);
+            for (VetoableChangeListener add : allAdds) {
+                listeners.add(add);
+            }
         }
         finally {
             writeTreeLock.unlock();
@@ -144,10 +148,14 @@ public class DynamicChangeInfo {
     }
 
     
-    public void removeChangeListener(VetoableChangeListener listener) {
+    public void removeChangeListener(VetoableChangeListener... allRemoves) {
+        if (allRemoves == null) return;
+        
         writeTreeLock.lock();
         try {
-            listeners.remove(listener);
+            for (VetoableChangeListener remove : allRemoves) {
+                listeners.remove(remove);
+            }
         }
         finally {
             writeTreeLock.unlock();

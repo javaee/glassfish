@@ -41,6 +41,7 @@ package org.glassfish.hk2.hk2Config.xml.test.listeners;
 
 import java.net.URL;
 
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.hk2Config.xml.test.utilities.LocatorUtilities;
 import org.glassfish.hk2.hk2Config.xml.test0.OldConfigTest;
@@ -61,12 +62,15 @@ import org.jvnet.hk2.config.types.PropertyBagCustomizerImpl;
  *
  */
 public class ListenersTest {
+    public static final String DAVE_NAME = "Dave";
+    public static final String EXPECTED_MESSAGE = "I hate Dave";
+    
     /**
      * Tests a basic listener for update
      */
     @Test
     // @org.junit.Ignore
-    public void testBasicUpdate() throws Exception {
+    public void testBasicUpdate() throws Exception {    
         ServiceLocator locator = LocatorUtilities.createLocator(
                 PropertyBagCustomizerImpl.class,
                 KingdomCustomizer.class,
@@ -109,7 +113,7 @@ public class ListenersTest {
         URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
         
         XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, false);
-        rootHandle.addChangeListener(new AuditableListener());
+        rootHandle.addChangeListener(new AuditableListener(), new DaveHatingListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
         OldConfigTest.assertOriginalStateKingdom1(kingdom);
@@ -207,9 +211,45 @@ public class ListenersTest {
             // But phyla truly was
             Assert.assertTrue(phyla.getCreatedOn() > 0L);
         }
+    }
+    
+    /**
+     * Tests that when Dave is added nothing happens (because of the listener)
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testFailedCreate() throws Exception {
+        ServiceLocator locator = LocatorUtilities.createLocator(
+                PropertyBagCustomizerImpl.class,
+                KingdomCustomizer.class,
+                PhylaCustomizer.class,
+                DaveHatingListener.class);
         
+        XmlService xmlService = locator.getService(XmlService.class);
         
+        URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
         
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, false);
+        rootHandle.addChangeListener(new AuditableListener(), new DaveHatingListener());
+        
+        KingdomConfig kingdom = rootHandle.getRoot();
+        OldConfigTest.assertOriginalStateKingdom1(kingdom);
+        
+        Phylum bob = xmlService.createBean(Phylum.class);
+        bob.setName(DAVE_NAME);
+        
+        Phyla phyla = kingdom.getPhyla();
+        
+        try {
+            phyla.addPhylum(bob);
+            Assert.fail("Should not have succeeded");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage(), me.getMessage().contains(EXPECTED_MESSAGE));
+        }
+        
+        // Nothing should have happened
+        OldConfigTest.assertOriginalStateKingdom1(kingdom);
     }
 
 }
