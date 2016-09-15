@@ -48,8 +48,14 @@ import javax.xml.bind.annotation.XmlElement;
 public interface AuditableBean {
     @XmlElement(name="created-on")
     public long getCreatedOn();
+    public void setCreatedOn(long createdOn);
     
     @XmlElement(name="updated-on")
     public long getUpdatedOn();
+    public void setUpdatedOn(long updatedOn);
+    
+    @XmlElement(name="deleted-on")
+    public long getDeletedOn();
+    public void setDeletedOn(long updatedOn);
 
 }

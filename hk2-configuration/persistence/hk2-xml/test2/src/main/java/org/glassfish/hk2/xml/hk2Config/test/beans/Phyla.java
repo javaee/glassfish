@@ -68,12 +68,13 @@ import org.jvnet.hk2.config.TransactionFailure;
 @Contract
 @Hk2XmlPreGenerate
 @Customizer({PhylaCustomizer.class, ConfigBeanProxyCustomizer.class})
-public interface Phyla extends ConfigBeanProxy {
+public interface Phyla extends ConfigBeanProxy, AuditableBean {
     @XmlElement
     @Element("*")
     List<Phylum> getPhylum();
     void setPhylum(List<Phylum> runtimes);
     void addPhylum(Phylum addMe);
+    Phylum removePhylum(Phylum removeMe);
 
     @DuckTyped
     <T extends Phylum> List<T> getPhylumByType(Class<T> type);

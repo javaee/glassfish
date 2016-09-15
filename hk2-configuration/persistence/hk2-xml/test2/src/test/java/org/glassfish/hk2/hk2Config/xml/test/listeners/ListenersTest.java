@@ -47,6 +47,7 @@ import org.glassfish.hk2.hk2Config.xml.test0.OldConfigTest;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.hk2Config.test.beans.KingdomConfig;
+import org.glassfish.hk2.xml.hk2Config.test.beans.Phyla;
 import org.glassfish.hk2.xml.hk2Config.test.beans.Phylum;
 import org.glassfish.hk2.xml.hk2Config.test.customizers.AuditableListener;
 import org.glassfish.hk2.xml.hk2Config.test.customizers.KingdomCustomizer;
@@ -61,10 +62,10 @@ import org.jvnet.hk2.config.types.PropertyBagCustomizerImpl;
  */
 public class ListenersTest {
     /**
-     * Tests a basic listener
+     * Tests a basic listener for update
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testBasicUpdate() throws Exception {
         ServiceLocator locator = LocatorUtilities.createLocator(
                 PropertyBagCustomizerImpl.class,
@@ -90,6 +91,68 @@ public class ListenersTest {
         long newUpdated = ph.getUpdatedOn();
         
         Assert.assertTrue(newUpdated > originalUpdated);
+    }
+    
+    /**
+     * Tests a basic listener for create
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testBasicCreate() throws Exception {
+        ServiceLocator locator = LocatorUtilities.createLocator(
+                PropertyBagCustomizerImpl.class,
+                KingdomCustomizer.class,
+                PhylaCustomizer.class);
+        
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
+        
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, false);
+        rootHandle.addChangeListener(new AuditableListener());
+        
+        KingdomConfig kingdom = rootHandle.getRoot();
+        OldConfigTest.assertOriginalStateKingdom1(kingdom);
+        
+        Phylum bob = xmlService.createBean(Phylum.class);
+        bob.setName(OldConfigTest.BOB_NAME);
+        
+        Phyla phyla = kingdom.getPhyla();
+        phyla.addPhylum(bob);
+        
+        bob = phyla.getPhylumByName(OldConfigTest.BOB_NAME);
+        
+        Assert.assertTrue(bob.getCreatedOn() > 0L);
+    }
+    
+    /**
+     * Tests a basic listener for remove
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testBasicRemove() throws Exception {
+        ServiceLocator locator = LocatorUtilities.createLocator(
+                PropertyBagCustomizerImpl.class,
+                KingdomCustomizer.class,
+                PhylaCustomizer.class);
+        
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
+        
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, false);
+        rootHandle.addChangeListener(new AuditableListener());
+        
+        KingdomConfig kingdom = rootHandle.getRoot();
+        OldConfigTest.assertOriginalStateKingdom1(kingdom);
+        
+        Phylum alice = kingdom.getPhyla().getPhylumByName(OldConfigTest.ALICE_NAME);
+        Phyla phyla = kingdom.getPhyla();
+        
+        alice = phyla.deletePhylum(alice);
+        Assert.assertNotNull(alice);
+        
+        Assert.assertTrue(alice.getDeletedOn() > 0L);
     }
 
 }

@@ -65,7 +65,7 @@ public class OldConfigTest {
     public static final String KINGDOM_FILE = "kingdom1.xml";
     
     public static final String ALICE_NAME = "Alice";
-    private static final String BOB_NAME = "Bob";
+    public static final String BOB_NAME = "Bob";
     
     private static final String USERNAME_PROP_KEY = "username";
     private static final String USERNAME_PROP_VALUE = "sa";
@@ -280,6 +280,7 @@ public class OldConfigTest {
             Assert.assertEquals(true, phylum.isSoftBodied());
             Assert.assertEquals(0L, phylum.getCreatedOn());
             Assert.assertEquals(0L, phylum.getUpdatedOn());
+            Assert.assertEquals(0L, phylum.getDeletedOn());
         }
         
         Assert.assertEquals(P1, kingdom1.getProperty().get(0).getName());

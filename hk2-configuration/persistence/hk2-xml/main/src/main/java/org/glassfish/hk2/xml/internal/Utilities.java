@@ -40,6 +40,8 @@
 
 package org.glassfish.hk2.xml.internal;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.VetoableChangeListener;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -54,7 +56,6 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.inject.Singleton;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.ArrayType;
@@ -67,7 +68,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.MultiException;
-import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
@@ -406,6 +406,8 @@ public class Utilities {
             // Now we handle the children
             handleChildren(child, (BaseHK2JAXBBean) rawChild, changeInformation, addedServices);
         }
+        
+        Utilities.invokeVetoableChangeListeners(changeInformation, child, null, child, childNode.getChildXmlTag());
             
         // Now freeze it
         child._setDynamicChangeInfo(changeInformation);
@@ -720,6 +722,9 @@ public class Utilities {
                 
                 if (rootForDeletion == null) return null;
                 
+                invokeVetoableChangeListeners(changeInformation, rootForDeletion, rootForDeletion, null,
+                        removeMeParentedNode.getChildXmlTag());
+                
                 if (writeableDatabase != null) {
                     myParent.changeInHub(childProperty, listWithObjectRemoved, writeableDatabase);
                 }
@@ -812,6 +817,9 @@ public class Utilities {
                 
                 if (rootForDeletion == null) return null;
                 
+                invokeVetoableChangeListeners(changeInformation, rootForDeletion, rootForDeletion, null,
+                        removeMeParentedNode.getChildXmlTag());
+                
                 if (writeableDatabase != null) {
                     myParent.changeInHub(childProperty, arrayWithObjectRemoved, writeableDatabase);
                 }
@@ -822,6 +830,9 @@ public class Utilities {
         else {
             rootForDeletion = (BaseHK2JAXBBean) myParent._getProperty(childProperty);
             if (rootForDeletion == null) return null;
+            
+            invokeVetoableChangeListeners(changeInformation, rootForDeletion, rootForDeletion, null,
+                    removeMeParentedNode.getChildXmlTag());
             
             if (writeableDatabase != null) {
                 myParent.changeInHub(childProperty, null, writeableDatabase);
@@ -1075,5 +1086,27 @@ public class Utilities {
         }
         
         return null;
+    }
+    
+    public static void invokeVetoableChangeListeners(DynamicChangeInfo control, Object source, Object oldValue, Object newValue, String propertyName) {
+        if (control == null) return;
+        
+        List<VetoableChangeListener> vetoers = control.getChangeListeners();
+            
+        PropertyChangeEvent event = new PropertyChangeEvent(source,
+                    propertyName, oldValue, newValue);
+            
+        List<Throwable> errors = new LinkedList<Throwable>();
+        for (VetoableChangeListener listener : vetoers) {
+            try {
+                listener.vetoableChange(event);
+            }
+            catch (Throwable th) {
+                errors.add(th);
+            }
+        }
+        if (!errors.isEmpty()) {
+            throw new MultiException(errors);
+        }
     }
 }

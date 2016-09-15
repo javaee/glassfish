@@ -111,8 +111,8 @@ public class PhylaCustomizer {
         return retVal;
     }
 
-    Phylum deletePhylum(Object runtime) {
-        throw new AssertionError();
+    public Phylum deletePhylum(Phylum removeMe) {
+        return phyla.removePhylum(removeMe);
     }
 
 }

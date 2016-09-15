@@ -59,13 +59,29 @@ public class AuditableListener implements VetoableChangeListener {
      */
     @Override
     public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
-        System.out.println("JRW(10) AuditableListener evt=" + evt);
+        if ("created-on".equals(evt.getPropertyName()) ||
+            "updated-on".equals(evt.getPropertyName()) ||
+            "deleted-on".equals(evt.getPropertyName())) return;
         
-        if (!(evt.getSource()  instanceof AuditableBean)) return;
+        if (!(evt.getSource() instanceof AuditableBean)) return;
         
+        AuditableBean auditable = (AuditableBean) evt.getSource();
         
+        if (evt.getOldValue() == null && evt.getNewValue() != null &&
+                (evt.getNewValue() instanceof AuditableBean)) {
+            // This is a new
+            auditable.setCreatedOn(System.currentTimeMillis());
+            return;
+        }
+        
+        if (evt.getOldValue() != null && evt.getNewValue() == null &&
+                (evt.getOldValue() instanceof AuditableBean)) {
+            // This is a delete
+            auditable.setDeletedOn(System.currentTimeMillis());
+            return;
+        }
+        
+        // This is some other random property on an Auditable
+        auditable.setUpdatedOn(System.currentTimeMillis());
     }
-
-    
-
 }

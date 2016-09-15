@@ -41,6 +41,7 @@
 package org.glassfish.hk2.xml.jaxb.internal;
 
 import java.beans.PropertyChangeEvent;
+import java.beans.VetoableChangeListener;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
@@ -252,6 +253,9 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
             
             changeControl.getWriteLock().lock();
             try {
+                Utilities.invokeVetoableChangeListeners(changeControl, this,
+                        beanLikeMap.get(propName), propValue, propName);
+                
                 if (changeInHub) {
                     changeInHub(propName, propValue);
                 }
