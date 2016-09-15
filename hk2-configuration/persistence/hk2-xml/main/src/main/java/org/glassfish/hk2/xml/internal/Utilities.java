@@ -41,6 +41,7 @@
 package org.glassfish.hk2.xml.internal;
 
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
@@ -1101,7 +1102,14 @@ public class Utilities {
             try {
                 listener.vetoableChange(event);
             }
+            catch (PropertyVetoException pve) {
+                // In this case we do NOT run the subsequent listeners
+                errors.add(pve);
+                throw new MultiException(errors);
+            }
             catch (Throwable th) {
+                // In this case we DO run the subsequent listeners but will
+                // report all the errors in the end
                 errors.add(th);
             }
         }

@@ -72,6 +72,8 @@ public class OldConfigTest {
     private static final String PASSWORD_PROP_KEY = "password";
     private static final String PASSWORD_PROP_VALUE = "sp";
     
+    private static final String SHELL_TYPE_CHITIN = "chitin";
+    
     private static final String P1 = "P1";
     private static final String P2 = "P2";
     private static final String P3 = "P3";
@@ -281,6 +283,7 @@ public class OldConfigTest {
             Assert.assertEquals(0L, phylum.getCreatedOn());
             Assert.assertEquals(0L, phylum.getUpdatedOn());
             Assert.assertEquals(0L, phylum.getDeletedOn());
+            Assert.assertEquals(SHELL_TYPE_CHITIN, phylum.getShellType());
         }
         
         Assert.assertEquals(P1, kingdom1.getProperty().get(0).getName());

@@ -65,5 +65,9 @@ public interface Phylum extends Named, PropertyBag, AuditableBean {
     @XmlElement(name="soft-bodied", defaultValue="true")
     public void setSoftBodied(boolean soft);
     public boolean isSoftBodied();
+    
+    @XmlElement(name="shell-type")
+    public String getShellType();
+    public void setShellType(String shellType);
 
 }

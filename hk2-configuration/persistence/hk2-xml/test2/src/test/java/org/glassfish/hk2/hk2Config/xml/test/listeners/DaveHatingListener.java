@@ -60,6 +60,19 @@ public class DaveHatingListener implements VetoableChangeListener {
         if (evt.getSource() == null) return;
         if (!(evt.getSource() instanceof Phylum)) return;
         
+        if ((evt.getNewValue() != null) && (evt.getNewValue() instanceof String)) {
+            String newValue = (String) evt.getNewValue();
+            if (ListenersTest.DAVE_NAME.equals(newValue)) {
+                throw new PropertyVetoException(ListenersTest.EXPECTED_MESSAGE, evt);
+            }
+            if (ListenersTest.CAROL_NAME.equals(newValue)) {
+                // In this case we throw something OTHER than PVE
+                throw new IllegalStateException(ListenersTest.EXPECTED_MESSAGE2);
+            }
+            
+            return;
+        }
+        
         if ((evt.getOldValue() == null) && (evt.getNewValue() != null) &&
                 (evt.getNewValue() instanceof Phylum)) {
             // What?!? Trying to add a Dave? How dare you!

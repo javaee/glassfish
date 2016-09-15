@@ -44,6 +44,7 @@
     <phylum name="Alice">
       <property name="username" value="sa" />
       <property name="password" value="sp" />
+      <shell-type>chitin</shell-type>
     </phylum>
   </phyla>
 

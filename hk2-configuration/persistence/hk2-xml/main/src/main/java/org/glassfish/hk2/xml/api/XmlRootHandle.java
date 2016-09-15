@@ -201,6 +201,10 @@ public interface XmlRootHandle<T> {
      * <LI>Add listener callbacks will happen depth first but children at the same level are handled in any order</LI>
      * <LI>Removes of beans with children will ONLY get called back for the root bean removed</LI>
      * <LI>The List or Array or Direct child of a removed child will be called with a modify since that element was modified</LI>
+     * <LI>Listeners are run in the order in which they are added</LI>
+     * <LI>If a listener throws a PropertyVetoException subsequent listeners are NOT called and the update will not happen</LI>
+     * <LI>If a listener throws any other exception subsequent listeners WILL be called and the update will not happen</LI>
+     * <LI>If any exceptions happen in any listeners they will end up all being reported in a MultiException</LI>
      * </UL>
      * 
      * @param listeners non-null listeners to be called whenever

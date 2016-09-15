@@ -62,8 +62,10 @@ import org.jvnet.hk2.config.types.PropertyBagCustomizerImpl;
  *
  */
 public class ListenersTest {
+    public static final String CAROL_NAME = "Carol";
     public static final String DAVE_NAME = "Dave";
     public static final String EXPECTED_MESSAGE = "I hate Dave";
+    public static final String EXPECTED_MESSAGE2 = "Carol fails with IllegalStateException";
     
     /**
      * Tests a basic listener for update
@@ -250,6 +252,83 @@ public class ListenersTest {
         
         // Nothing should have happened
         OldConfigTest.assertOriginalStateKingdom1(kingdom);
+    }
+    
+    /**
+     * Tests that when a field is updated with Dave it doesn't happen
+     * and subsequent listeners are not called
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testFailedUpdate() throws Exception {
+        ServiceLocator locator = LocatorUtilities.createLocator(
+                PropertyBagCustomizerImpl.class,
+                KingdomCustomizer.class,
+                PhylaCustomizer.class,
+                DaveHatingListener.class);
+        
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
+        
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, false);
+        rootHandle.addChangeListener(new DaveHatingListener(), new AuditableListener());
+        
+        KingdomConfig kingdom = rootHandle.getRoot();
+        OldConfigTest.assertOriginalStateKingdom1(kingdom);
+        
+        Phyla phyla = kingdom.getPhyla();
+        Phylum alice = phyla.getPhylumByName(OldConfigTest.ALICE_NAME);
+        
+        try {
+            alice.setShellType(DAVE_NAME);
+            Assert.fail("Should not have succeeded");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage(), me.getMessage().contains(EXPECTED_MESSAGE));
+        }
+        
+        // Nothing should have happened
+        OldConfigTest.assertOriginalStateKingdom1(kingdom);
+    }
+    
+    /**
+     * Tests that when a field is updated with Carol it doesn't happen
+     * and subsequent listeners are called because it failed with a different
+     * exception
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testFailedUpdateOtherListenersCalled() throws Exception {
+        ServiceLocator locator = LocatorUtilities.createLocator(
+                PropertyBagCustomizerImpl.class,
+                KingdomCustomizer.class,
+                PhylaCustomizer.class,
+                DaveHatingListener.class);
+        
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
+        
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, false);
+        rootHandle.addChangeListener(new DaveHatingListener(), new AuditableListener());
+        
+        KingdomConfig kingdom = rootHandle.getRoot();
+        OldConfigTest.assertOriginalStateKingdom1(kingdom);
+        
+        Phyla phyla = kingdom.getPhyla();
+        Phylum alice = phyla.getPhylumByName(OldConfigTest.ALICE_NAME);
+        
+        try {
+            alice.setShellType(CAROL_NAME);
+            Assert.fail("Should not have succeeded");
+        }
+        catch (MultiException me) {
+            Assert.assertTrue(me.getMessage(), me.getMessage().contains(EXPECTED_MESSAGE2));
+        }
+        
+        // This shows that the subsequent listener (auditable) was invoked
+        Assert.assertTrue(alice.getUpdatedOn() > 0);
     }
 
 }
