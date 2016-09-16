@@ -140,7 +140,7 @@ public class ListenersTest {
      */
     @Test
     // @org.junit.Ignore
-    public void testBasicCreateAndArray() throws Exception {
+    public void testBasicCreateAnArray() throws Exception {
         ServiceLocator locator = LocatorUtilities.createLocator(
                 PropertyBagCustomizerImpl.class,
                 KingdomCustomizer.class,
@@ -203,6 +203,42 @@ public class ListenersTest {
         Assert.assertNotNull(alice);
         
         Assert.assertTrue(alice.getDeletedOn() > 0L);
+        Assert.assertTrue(phyla.getUpdatedOn() > 0L);
+    }
+    
+    /**
+     * Tests a remove and re-add of a direct child
+     */
+    @Test
+    @org.junit.Ignore
+    public void testBasicRemoveAndAddOfDirectChild() throws Exception {
+        ServiceLocator locator = LocatorUtilities.createLocator(
+                PropertyBagCustomizerImpl.class,
+                KingdomCustomizer.class,
+                PhylaCustomizer.class);
+        
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
+        
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, false);
+        rootHandle.addChangeListener(new AuditableListener());
+        
+        KingdomConfig kingdom = rootHandle.getRoot();
+        OldConfigTest.assertOriginalStateKingdom1(kingdom);
+        
+        Phyla phyla = kingdom.getPhyla();
+        kingdom.setPhyla(null);
+        
+        Assert.assertTrue(phyla.getDeletedOn() > 0L);
+        Assert.assertTrue(kingdom.getUpdatedOn() > 0L);
+        
+        phyla = xmlService.createBean(Phyla.class);
+        kingdom.setPhyla(phyla);
+        phyla = kingdom.getPhyla();
+        
+        Assert.assertTrue(phyla.getCreatedOn() > 0L);
+        Assert.assertTrue(kingdom.getUpdatedOn() > 0L);
     }
     
     /**

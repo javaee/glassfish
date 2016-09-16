@@ -52,7 +52,6 @@ import org.jvnet.hk2.config.ConfigBeanProxyCustomizer;
 import org.jvnet.hk2.config.Configured;
 import org.jvnet.hk2.config.Element;
 import org.jvnet.hk2.config.types.PropertyBag;
-import org.jvnet.hk2.config.types.PropertyBagCustomizer;
 
 /**
  * @author jwells
