@@ -52,6 +52,7 @@ import org.glassfish.hk2.xml.hk2Config.test.beans.KingdomConfig;
 import org.glassfish.hk2.xml.hk2Config.test.beans.Phyla;
 import org.glassfish.hk2.xml.hk2Config.test.beans.Phylum;
 import org.glassfish.hk2.xml.hk2Config.test.beans.PropertyValue;
+import org.glassfish.hk2.xml.hk2Config.test.beans.ScientistBean;
 import org.glassfish.hk2.xml.hk2Config.test.beans.pv.NamedPropertyValue;
 import org.glassfish.hk2.xml.hk2Config.test.customizers.KingdomCustomizer;
 import org.glassfish.hk2.xml.hk2Config.test.customizers.PhylaCustomizer;
@@ -66,6 +67,9 @@ public class OldConfigTest {
     
     public static final String ALICE_NAME = "Alice";
     public static final String BOB_NAME = "Bob";
+    public static final String DARWIN_NAME = "Darwin";
+    
+    public static final String NATURALIST_FIELD = "naturalist";
     
     private static final String USERNAME_PROP_KEY = "username";
     private static final String USERNAME_PROP_VALUE = "sa";
@@ -301,5 +305,13 @@ public class OldConfigTest {
         
         // Check that "defaulting" works
         Assert.assertEquals(V4, kingdom1.getPropertyValue(P4, V4));
+        
+        ScientistBean scientists[] = kingdom1.getScientists();
+        Assert.assertEquals(1, scientists.length);
+        
+        for (ScientistBean scientist : scientists) {
+            Assert.assertEquals(DARWIN_NAME, scientist.getName());
+            Assert.assertEquals(NATURALIST_FIELD, scientist.getField());
+        }
     }
 }

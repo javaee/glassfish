@@ -50,6 +50,7 @@ import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.hk2Config.test.beans.KingdomConfig;
 import org.glassfish.hk2.xml.hk2Config.test.beans.Phyla;
 import org.glassfish.hk2.xml.hk2Config.test.beans.Phylum;
+import org.glassfish.hk2.xml.hk2Config.test.beans.ScientistBean;
 import org.glassfish.hk2.xml.hk2Config.test.customizers.AuditableListener;
 import org.glassfish.hk2.xml.hk2Config.test.customizers.KingdomCustomizer;
 import org.glassfish.hk2.xml.hk2Config.test.customizers.PhylaCustomizer;
@@ -159,6 +160,37 @@ public class ListenersTest {
         Assert.assertNotNull(alice);
         
         Assert.assertTrue(alice.getDeletedOn() > 0L);
+    }
+    
+    /**
+     * Tests a basic listener for remove
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testBasicRemoveArray() throws Exception {
+        ServiceLocator locator = LocatorUtilities.createLocator(
+                PropertyBagCustomizerImpl.class,
+                KingdomCustomizer.class,
+                PhylaCustomizer.class);
+        
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
+        
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, false);
+        rootHandle.addChangeListener(new AuditableListener());
+        
+        KingdomConfig kingdom = rootHandle.getRoot();
+        OldConfigTest.assertOriginalStateKingdom1(kingdom);
+        
+        ScientistBean darwin = kingdom.lookupScientist(OldConfigTest.DARWIN_NAME);
+        ScientistBean removed = kingdom.removeScientist(kingdom.getScientists()[0]);
+        
+        Assert.assertNotNull(removed);
+        Assert.assertEquals(darwin, removed);
+        Assert.assertEquals(0, kingdom.getScientists().length);
+        
+        Assert.assertTrue(darwin.getDeletedOn() > 0L);
     }
     
     /**
@@ -300,7 +332,7 @@ public class ListenersTest {
     @Test
     // @org.junit.Ignore
     public void testFailedUpdateOtherListenersCalled() throws Exception {
-        ServiceLocator locator = LocatorUtilities.createLocator(
+        ServiceLocator locator = LocatorUtilities.createDomLocator(
                 PropertyBagCustomizerImpl.class,
                 KingdomCustomizer.class,
                 PhylaCustomizer.class,

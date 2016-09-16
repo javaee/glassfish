@@ -51,4 +51,10 @@
   <property name="P1" value="V1" />
   <property name="P2" value="V2" />
   <property name="P3" value="V3" />
-</kingdom>
+  
+  <scientist name="Darwin">
+  	<field>naturalist</field>
+  </scientist>  
+  
+
+ </kingdom>

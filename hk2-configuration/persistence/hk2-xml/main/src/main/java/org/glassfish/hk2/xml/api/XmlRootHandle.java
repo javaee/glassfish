@@ -203,7 +203,7 @@ public interface XmlRootHandle<T> {
      * <LI>The List or Array or Direct child of a removed child will be called with a modify since that element was modified</LI>
      * <LI>Listeners are run in the order in which they are added</LI>
      * <LI>If a listener throws a PropertyVetoException subsequent listeners are NOT called and the update will not happen</LI>
-     * <LI>If a listener throws any other exception subsequent listeners WILL be called and the update will not happen</LI>
+     * <LI>If a listener throws any exception other than PropertyVertoException subsequent listeners WILL be called and the update will not happen</LI>
      * <LI>If any exceptions happen in any listeners they will end up all being reported in a MultiException</LI>
      * </UL>
      * 

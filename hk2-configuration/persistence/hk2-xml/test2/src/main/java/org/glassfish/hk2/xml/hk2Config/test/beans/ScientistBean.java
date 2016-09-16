@@ -39,44 +39,26 @@
  */
 package org.glassfish.hk2.xml.hk2Config.test.beans;
 
-import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import org.glassfish.hk2.api.Customizer;
-import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
-import org.glassfish.hk2.xml.hk2Config.test.customizers.KingdomCustomizer;
 import org.jvnet.hk2.annotations.Contract;
 import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.ConfigBeanProxyCustomizer;
 import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.Element;
-import org.jvnet.hk2.config.types.PropertyBag;
-import org.jvnet.hk2.config.types.PropertyBagCustomizer;
 
 /**
+ * Not pre-generated
+ * 
  * @author jwells
  *
  */
-@Hk2XmlPreGenerate
 @Configured
-@XmlRootElement(name="kingdom")
 @Contract
-@Customizer(value = {KingdomCustomizer.class, ConfigBeanProxyCustomizer.class},
-            name  = {"", ConfigBeanProxyCustomizer.DEFAULT_IMPLEMENTATION})
-public interface KingdomConfig extends ConfigBeanProxy, PropertyBag {
-    @Element
-    @XmlElement
-    @NotNull
-    Phyla getPhyla();
-    void setPhyla(Phyla phyla);
-    
-    @Element("*")
-    @XmlElement(name="scientist")
-    ScientistBean[] getScientists();
-    void setScientists(ScientistBean[] smartGuys);
-    ScientistBean addScientist(ScientistBean addMe);
-    ScientistBean removeScientist(ScientistBean removeMe);
-    ScientistBean lookupScientist(String name);
+@Customizer(ConfigBeanProxyCustomizer.class)
+public interface ScientistBean extends Named, ConfigBeanProxy, AuditableBean {
+    @XmlElement(name="field")
+    public String getField();
+    public void setField(String field);
 
 }
