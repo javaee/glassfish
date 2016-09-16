@@ -65,6 +65,9 @@ import org.jvnet.hk2.config.types.PropertyBagCustomizerImpl;
 public class ListenersTest {
     public static final String CAROL_NAME = "Carol";
     public static final String DAVE_NAME = "Dave";
+    public static final String LINN_NAME = "Linnaeus";
+    public static final String BIOLOGY_FIELD = "Biology";
+    
     public static final String EXPECTED_MESSAGE = "I hate Dave";
     public static final String EXPECTED_MESSAGE2 = "Carol fails with IllegalStateException";
     
@@ -130,6 +133,46 @@ public class ListenersTest {
         bob = phyla.getPhylumByName(OldConfigTest.BOB_NAME);
         
         Assert.assertTrue(bob.getCreatedOn() > 0L);
+    }
+    
+    /**
+     * Tests a basic listener for create for array child
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testBasicCreateAndArray() throws Exception {
+        ServiceLocator locator = LocatorUtilities.createLocator(
+                PropertyBagCustomizerImpl.class,
+                KingdomCustomizer.class,
+                PhylaCustomizer.class);
+        
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
+        
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, false);
+        rootHandle.addChangeListener(new AuditableListener(), new DaveHatingListener());
+        
+        KingdomConfig kingdom = rootHandle.getRoot();
+        OldConfigTest.assertOriginalStateKingdom1(kingdom);
+        
+        ScientistBean linnaeus = xmlService.createBean(ScientistBean.class);
+        linnaeus.setName(LINN_NAME);
+        
+        linnaeus = kingdom.addScientist(linnaeus);
+        
+        Assert.assertTrue(linnaeus.getCreatedOn() > 0L);
+        Assert.assertEquals(0L, linnaeus.getUpdatedOn());
+        
+        long kingdomUpdated = kingdom.getUpdatedOn();
+        Assert.assertTrue(kingdomUpdated > 0L);
+        
+        linnaeus.setField(BIOLOGY_FIELD);
+        
+        Assert.assertTrue(linnaeus.getUpdatedOn() > 0);
+        
+        // A spot check to make sure this hasn't moved when a child was modified
+        Assert.assertEquals(kingdomUpdated, kingdom.getUpdatedOn());
     }
     
     /**

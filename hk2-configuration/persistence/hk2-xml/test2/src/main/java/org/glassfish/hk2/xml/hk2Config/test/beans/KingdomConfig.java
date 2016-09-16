@@ -64,7 +64,7 @@ import org.jvnet.hk2.config.types.PropertyBagCustomizer;
 @Contract
 @Customizer(value = {KingdomCustomizer.class, ConfigBeanProxyCustomizer.class},
             name  = {"", ConfigBeanProxyCustomizer.DEFAULT_IMPLEMENTATION})
-public interface KingdomConfig extends ConfigBeanProxy, PropertyBag {
+public interface KingdomConfig extends ConfigBeanProxy, PropertyBag, AuditableBean {
     @Element
     @XmlElement
     @NotNull

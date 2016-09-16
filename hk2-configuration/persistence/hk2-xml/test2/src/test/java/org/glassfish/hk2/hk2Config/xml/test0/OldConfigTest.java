@@ -271,6 +271,10 @@ public class OldConfigTest {
     public static void assertOriginalStateKingdom1(KingdomConfig kingdom1) {
         Assert.assertNotNull(kingdom1);
         
+        Assert.assertEquals(0, kingdom1.getCreatedOn());
+        Assert.assertEquals(0, kingdom1.getUpdatedOn());
+        Assert.assertEquals(0, kingdom1.getDeletedOn());
+        
         Phyla phyla = kingdom1.getPhyla();
         Assert.assertNotNull(phyla);
         
