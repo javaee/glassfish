@@ -210,7 +210,7 @@ public class ListenersTest {
      * Tests a remove and re-add of a direct child
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testBasicRemoveAndAddOfDirectChild() throws Exception {
         ServiceLocator locator = LocatorUtilities.createLocator(
                 PropertyBagCustomizerImpl.class,

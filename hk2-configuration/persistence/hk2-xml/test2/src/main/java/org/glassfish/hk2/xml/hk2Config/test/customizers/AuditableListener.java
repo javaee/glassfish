@@ -72,14 +72,16 @@ public class AuditableListener implements VetoableChangeListener {
         AuditableBean auditable = (AuditableBean) evt.getSource();
         
         if (evt.getOldValue() == null && evt.getNewValue() != null &&
-                (evt.getNewValue() instanceof AuditableBean)) {
+                (evt.getNewValue() instanceof AuditableBean) &&
+                auditable.equals(evt.getNewValue())) {
             // This is a new
             auditable.setCreatedOn(System.currentTimeMillis());
             return;
         }
         
         if (evt.getOldValue() != null && evt.getNewValue() == null &&
-                (evt.getOldValue() instanceof AuditableBean)) {
+                (evt.getOldValue() instanceof AuditableBean) &&
+                (auditable.equals(evt.getOldValue()))) {
             // This is a delete
             auditable.setDeletedOn(System.currentTimeMillis());
             return;
