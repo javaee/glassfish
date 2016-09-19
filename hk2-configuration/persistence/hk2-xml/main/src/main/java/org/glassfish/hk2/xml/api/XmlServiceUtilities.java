@@ -65,7 +65,7 @@ public class XmlServiceUtilities {
      * the {@link XmlService}
      */
     public static void enableXmlService(ServiceLocator locator) {
-        if (locator.getService(XmlService.class) != null) return;
+        if (locator.getServiceHandle(XmlService.class) != null) return;
         
         ManagerUtilities.enableConfigurationHub(locator);
         
@@ -83,7 +83,7 @@ public class XmlServiceUtilities {
      * the {@link XmlService}
      */
     public static void enableDomXmlService(ServiceLocator locator) {
-        if (locator.getService(XmlService.class) != null) return;
+        if (locator.getServiceHandle(XmlService.class) != null) return;
         
         ManagerUtilities.enableConfigurationHub(locator);
         

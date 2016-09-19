@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -225,8 +225,9 @@ public interface ServiceLocator {
      * or concrete implementation to get the best instance of
      * @param qualifiers The set of qualifiers that must match this service
      * definition
-     * @return Will return root as a convenience
-     * @throws MultiException if there was an error during service creation
+     * @return Will return the service handle corresponding to the service or
+     * null if none were found
+     * @throws MultiException if there was an issue during lookup
      */
     public <T> ServiceHandle<T> getServiceHandle(Class<T> contractOrImpl, Annotation... qualifiers) throws MultiException;
     
@@ -238,8 +239,9 @@ public interface ServiceLocator {
      * or concrete implementation to get the best instance of
      * @param qualifiers The set of qualifiers that must match this service
      * definition
-     * @return Will return root as a convenience
-     * @throws MultiException if there was an error during service creation
+     * @return Will return the service handle corresponding to the service or
+     * null if none were found
+     * @throws MultiException if there was an issue during lookup
      */
     public <T> ServiceHandle<T> getServiceHandle(Type contractOrImpl, Annotation... qualifiers) throws MultiException;
     
@@ -255,7 +257,7 @@ public interface ServiceLocator {
      * definition
      * @return Will the service handle for the best service matching the
      * given criteria, or null if no matching service could be found
-     * @throws MultiException if there was an error during service creation
+     * @throws MultiException if there was an error during lookup
      * @throws IllegalArgumentException if contractOrImpl is null
      */
     public <T> ServiceHandle<T> getServiceHandle(Class<T> contractOrImpl, String name,
@@ -273,7 +275,7 @@ public interface ServiceLocator {
      * definition
      * @return Will the service handle for the best service matching the
      * given criteria, or null if no matching service could be found
-     * @throws MultiException if there was an error during service creation
+     * @throws MultiException if there was an error during service lookup
      * @throws IllegalArgumentException if contractOrImpl is null
      */
     public <T> ServiceHandle<T> getServiceHandle(Type contractOrImpl, String name,
@@ -289,7 +291,7 @@ public interface ServiceLocator {
      * definition
      * @return A non-null but possibly empty list of service handles matching
      * the given criteria
-     * @throws MultiException if there was an error during service creation
+     * @throws MultiException if there was an error during service lookup
      * @throws IllegalArgumentException if contractOrImpl is null
      */
     public <T> List<ServiceHandle<T>> getAllServiceHandles(Class<T> contractOrImpl,
@@ -305,7 +307,7 @@ public interface ServiceLocator {
      * definition
      * @return A non-null but possibly empty list of service handles matching
      * the given criteria
-     * @throws MultiException if there was an error during service creation
+     * @throws MultiException if there was an error during service lookup
      * @throws IllegalArgumentException if contractOrImpl is null
      */
     public List<ServiceHandle<?>> getAllServiceHandles(Type contractOrImpl,
@@ -321,7 +323,7 @@ public interface ServiceLocator {
      * definition
      * @return A non-null but possibly empty list of service handles matching
      * the given criteria
-     * @throws MultiException if there was an error during service creation
+     * @throws MultiException if there was an error during service lookup
      * @throws IllegalArgumentException if contractOrImpl is null
      */
     public List<ServiceHandle<?>> getAllServiceHandles(Annotation qualifier,
@@ -333,7 +335,7 @@ public interface ServiceLocator {
      * get or destroy the services associated with the matching descriptors
      * 
      * @param searchCriteria A filter to use when determining which descriptors should apply 
-     * @return A list of service handles in ranked order that match the given filter
+     * @return A non-null but possibly empty list of service handles that match the given filter
      * @throws MultiException if there was an error during service handle creation
      */
     public List<ServiceHandle<?>> getAllServiceHandles(Filter searchCriteria) throws MultiException;
@@ -342,7 +344,8 @@ public interface ServiceLocator {
      * Gets the list of descriptors that match the given filter
      * 
      * @param filter A filter to use when determining which services should apply
-     * @return A list of descriptors in ranked order that match the given filter
+     * @return A non-null but possibly empty list of descriptors in ranked order
+     * that match the given filter
      */
     public List<ActiveDescriptor<?>> getDescriptors(Filter filter);
     
