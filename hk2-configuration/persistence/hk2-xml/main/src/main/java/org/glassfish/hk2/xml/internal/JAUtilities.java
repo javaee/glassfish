@@ -44,12 +44,13 @@ import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javassist.ClassPool;
 import javassist.CtClass;
+import javassist.LoaderClassPath;
 import javassist.NotFoundException;
 
 import org.glassfish.hk2.api.MultiException;
@@ -98,7 +99,7 @@ public class JAUtilities {
     public final static String JAXB_DEFAULT_DEFAULT = "\u0000";
     
     private final ClassReflectionHelper classReflectionHelper;
-    private final ClassPool defaultClassPool = ClassPool.getDefault(); // TODO:  We probably need to be more sophisticated about this
+    private final ClassPool defaultClassPool;
     private final CtClass superClazz;
     
     private final Computer computer;
@@ -106,7 +107,34 @@ public class JAUtilities {
     
     private final AtomicLong idGenerator = new AtomicLong();
     
+    private static Set<ClassLoader> getClassLoaders(final Class<?> myClass) {
+        return AccessController.doPrivileged(new PrivilegedAction<Set<ClassLoader>>() {
+
+            @Override
+            public Set<ClassLoader> run() {
+                Set<ClassLoader> retVal = new LinkedHashSet<ClassLoader>();
+                
+                ClassLoader ccl = Thread.currentThread().getContextClassLoader();
+                if (ccl != null) {
+                    retVal.add(ccl);
+                }
+                
+                retVal.add(myClass.getClassLoader());
+                
+                return retVal;
+            }
+            
+            
+        });
+    }
+    
     /* package */ JAUtilities(ClassReflectionHelper classReflectionHelper) {
+        defaultClassPool = ClassPool.getDefault();
+        
+        for (ClassLoader cl : getClassLoaders(this.getClass())) {
+            defaultClassPool.appendClassPath(new LoaderClassPath(cl));
+        }
+        
         this.classReflectionHelper = classReflectionHelper;
         try {
             superClazz = defaultClassPool.get(BaseHK2JAXBBean.class.getName());
@@ -185,38 +213,6 @@ public class JAUtilities {
             
             convertAllRootAndLeaves(childModel, cycles);
         }
-    }
-    
-    private static Map<String, String> convertDefaultChildValueArray(String[] values) {
-        LinkedHashMap<String, String> retVal = new LinkedHashMap<String, String>();
-        if (values == null) return retVal;
-        for (String value : values) {
-            value = value.trim();
-            if ("".equals(value)) continue;
-            if (value.charAt(0) == '=') {
-                throw new AssertionError("First character of " + value + " may not be an =");
-            }
-            
-            int indexOfEquals = value.indexOf('=');
-            if (indexOfEquals < 0) {
-                retVal.put(value, null);
-            }
-            else {
-                String key = value.substring(0, indexOfEquals);
-                
-                String attValue;
-                if (indexOfEquals >= (value.length() - 1)) {
-                    attValue = null;
-                }
-                else {
-                    attValue = value.substring(indexOfEquals + 1);
-                }
-                
-                retVal.put(key, attValue);
-            }
-        }
-        
-        return retVal;
     }
     
     private CtClass getBaseClass() {
