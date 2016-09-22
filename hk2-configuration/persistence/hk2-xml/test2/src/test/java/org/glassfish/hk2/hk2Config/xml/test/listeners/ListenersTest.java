@@ -73,6 +73,7 @@ public class ListenersTest {
     
     public static final String EXPECTED_MESSAGE = "I hate Dave";
     public static final String EXPECTED_MESSAGE2 = "Carol fails with IllegalStateException";
+    public static final String EXPECTED_MESSAGE3 = "The proverbial hater shall always hate";
     
     /**
      * Tests a basic listener for update
@@ -394,13 +395,13 @@ public class ListenersTest {
         KingdomConfig kingdom = rootHandle.getRoot();
         OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
         
-        Phylum bob = xmlService.createBean(Phylum.class);
-        bob.setName(DAVE_NAME);
+        Phylum dave = xmlService.createBean(Phylum.class);
+        dave.setName(DAVE_NAME);
         
         Phyla phyla = kingdom.getPhyla();
         
         try {
-            phyla.addPhylum(bob);
+            phyla.addPhylum(dave);
             Assert.fail("Should not have succeeded");
         }
         catch (MultiException me) {
@@ -488,6 +489,55 @@ public class ListenersTest {
         
         // This shows that the subsequent listener (auditable) was invoked
         Assert.assertTrue(alice.getUpdatedOn() > 0);
+    }
+    
+    /**
+     * Tests that when a field is updated with Carol it doesn't happen
+     * and subsequent listeners are called because it failed with a different
+     * exception
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    @org.junit.Ignore
+    public void testPropertyNotChangedOnVeto() throws Exception {
+        ServiceLocator locator = LocatorUtilities.createDomLocator(
+                PropertyBagCustomizerImpl.class,
+                KingdomCustomizer.class,
+                PhylaCustomizer.class);
+        
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
+        
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, true);
+        rootHandle.addChangeListener(new AuditableListener(), new HaterGonnaHate());
+        
+        KingdomConfig kingdom = rootHandle.getRoot();
+        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
+        
+        ScientistBean darwin = kingdom.getScientists()[0];
+        
+        try {
+            darwin.setField(BIOLOGY_FIELD);
+            Assert.fail("Should have failed because hater gonna hate");
+        }
+        catch (MultiException expected) {
+            // expected
+        }
+        
+        {
+            Instance scienceInstance = hub.getCurrentDatabase().getInstance(OldConfigTest.SCIENTIST_TYPE, OldConfigTest.DARWIN_INSTANCE);
+            Assert.assertNotNull(scienceInstance);
+            
+            Map<String, Object> propMap = (Map<String, Object>) scienceInstance.getBean();
+            Assert.assertEquals(OldConfigTest.DARWIN_NAME, propMap.get(OldConfigTest.NAME_TAG));
+            Assert.assertEquals(OldConfigTest.NATURALIST_FIELD, propMap.get(OldConfigTest.FIELD_TAG));
+            Assert.assertEquals(new Long(0), propMap.get("updated-on"));
+        }
+        
+        Assert.assertEquals(OldConfigTest.NATURALIST_FIELD, darwin.getField());
+        Assert.assertEquals(0L, darwin.getUpdatedOn());
     }
 
 }
