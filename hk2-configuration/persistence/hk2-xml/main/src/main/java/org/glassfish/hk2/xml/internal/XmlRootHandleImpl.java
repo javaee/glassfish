@@ -180,8 +180,10 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
         DynamicChangeInfo copyController =
                 new DynamicChangeInfo(changeControl.getJAUtilities(),
                         null,
+                        false,
                         changeControl.getIdGenerator(),
                         null,
+                        false,
                         changeControl.getServiceLocator());
         
         changeControl.getReadLock().lock();

@@ -41,7 +41,6 @@
 package org.glassfish.hk2.xml.jaxb.internal;
 
 import java.beans.PropertyChangeEvent;
-import java.beans.VetoableChangeListener;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
@@ -78,6 +77,7 @@ import org.glassfish.hk2.xml.internal.DynamicChangeInfo;
 import org.glassfish.hk2.xml.internal.ModelImpl;
 import org.glassfish.hk2.xml.internal.ParentedModel;
 import org.glassfish.hk2.xml.internal.Utilities;
+import org.glassfish.hk2.xml.internal.XmlDynamicChange;
 
 /**
  * @author jwells
@@ -257,7 +257,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
                         beanLikeMap.get(propName), propValue, propName);
                 
                 if (changeInHub) {
-                    changeInHub(propName, propValue);
+                    changeInHubDirect(propName, propValue);
                 }
                 
                 beanLikeMap.put(propName, propValue);
@@ -550,25 +550,22 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
     
     public Object _doAdd(String childProperty, Object rawChild, String childKey, int index) {
         if (changeControl == null) {
-            return Utilities.internalAdd(this, childProperty, rawChild, childKey, index, null, null, null, new LinkedList<ActiveDescriptor<?>>());
+            return Utilities.internalAdd(this, childProperty, rawChild, childKey, index, null, XmlDynamicChange.EMPTY, new LinkedList<ActiveDescriptor<?>>());
         }
         
         changeControl.getWriteLock().lock();
         try {
-            Hub hub = changeControl.getHub();
-            WriteableBeanDatabase wbd = (hub == null) ? null : hub.getWriteableDatabaseCopy();
-            DynamicConfiguration config = (changeControl.getDynamicConfigurationService() == null) ? null :
-                changeControl.getDynamicConfigurationService().createDynamicConfiguration();
+            XmlDynamicChange change = changeControl.startOrContinueChange();
             
             LinkedList<ActiveDescriptor<?>> addedServices = new LinkedList<ActiveDescriptor<?>>();
-            Object retVal = Utilities.internalAdd(this, childProperty, rawChild, childKey, index, changeControl, wbd, config, addedServices);
-            
-            if (config != null) {
-                config.commit();
+            Object retVal;
+            boolean success = false;
+            try {
+                retVal = Utilities.internalAdd(this, childProperty, rawChild, childKey, index, changeControl, change, addedServices);
+                success = true;
             }
-            
-            if (wbd != null) {
-                wbd.commit(new XmlHubCommitMessage() {});
+            finally {
+                changeControl.endOrDeferChange(success);
             }
             
             ServiceLocator locator = changeControl.getServiceLocator();
@@ -707,33 +704,30 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
     
     public Object _doRemove(String childProperty, String childKey, int index, Object child) {
         if (changeControl == null) {
-            Object retVal = Utilities.internalRemove(this, childProperty, childKey, index, child, null, null, null);
+            Object retVal = Utilities.internalRemove(this, childProperty, childKey, index, child, null, XmlDynamicChange.EMPTY);
             
             if (retVal != null) {
                 keyedChildrenCache.remove(childProperty);
             }
             
-            return Utilities.internalRemove(this, childProperty, childKey, index, child, null, null, null);
+            return Utilities.internalRemove(this, childProperty, childKey, index, child, null, XmlDynamicChange.EMPTY);
         }
         
         changeControl.getWriteLock().lock();
         try {
-            Hub hub = changeControl.getHub();
-            WriteableBeanDatabase wbd = (hub == null) ? null : hub.getWriteableDatabaseCopy();
-            DynamicConfiguration config = (changeControl.getDynamicConfigurationService() == null) ? null :
-                changeControl.getDynamicConfigurationService().createDynamicConfiguration();
+            XmlDynamicChange xmlDynamicChange = changeControl.startOrContinueChange();
             
-            Object retVal = Utilities.internalRemove(this, childProperty, childKey, index, child, changeControl, wbd, config);
+            Object retVal;
+            boolean success = false;
+            try {
+                retVal = Utilities.internalRemove(this, childProperty, childKey, index, child, changeControl, xmlDynamicChange);
+                success = true;
+            }
+            finally {
+                changeControl.endOrDeferChange(success);
+            }
             
             if (retVal != null) {
-                if (config != null) {
-                    config.commit();
-                }
-            
-                if (wbd != null) {
-                    wbd.commit(new XmlHubCommitMessage() {});
-                }
-                
                 keyedChildrenCache.remove(childProperty);
             }
             
@@ -1043,24 +1037,36 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         
         HashMap<String, Object> modified = new HashMap<String, Object>(beanLikeMap);
         modified.put(propName, propValue);
-        
+            
         wt.modifyInstance(instanceName, modified);
-        
+            
         return true;
     }
     
-    private void changeInHub(String propName, Object propValue) {
-        Hub hub = (changeControl != null) ? changeControl.getHub() : null;
-        if (hub == null) return;
+    /**
+     * Write lock MUST be held
+     * @param propName
+     * @param propValue
+     */
+    private void changeInHubDirect(String propName, Object propValue) {
+        if (changeControl == null) return;
         
-        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
-        boolean changed = changeInHub(propName, propValue, wbd);
+        XmlDynamicChange xmlDynamicChange = changeControl.startOrContinueChange();
         
-        if (changed) {
-            wbd.commit(new XmlHubCommitMessage() {});
-        
-            changeControl.incrementChangeNumber();
+        boolean success = false;
+        try {
+            WriteableBeanDatabase wbd = xmlDynamicChange.getBeanDatabase();
+            
+            if (wbd == null) return;
+            
+            boolean changed = changeInHub(propName, propValue, wbd);
+            
+            success = true;
         }
+        finally {
+            changeControl.endOrDeferChange(success);
+        }
+        
     }
     
     /**

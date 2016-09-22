@@ -40,9 +40,12 @@
 package org.glassfish.hk2.hk2Config.xml.test.listeners;
 
 import java.net.URL;
+import java.util.Map;
 
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.hk2Config.xml.test.utilities.LocatorUtilities;
 import org.glassfish.hk2.hk2Config.xml.test0.OldConfigTest;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
@@ -83,6 +86,7 @@ public class ListenersTest {
                 PhylaCustomizer.class);
         
         XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
         
         URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
         
@@ -90,7 +94,7 @@ public class ListenersTest {
         rootHandle.addChangeListener(new AuditableListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
-        OldConfigTest.assertOriginalStateKingdom1(kingdom);
+        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
         
         Phylum ph = locator.getService(Phylum.class, OldConfigTest.ALICE_NAME);
         
@@ -106,8 +110,9 @@ public class ListenersTest {
     /**
      * Tests a basic listener for create
      */
+    @SuppressWarnings("unchecked")
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testBasicCreate() throws Exception {
         ServiceLocator locator = LocatorUtilities.createLocator(
                 PropertyBagCustomizerImpl.class,
@@ -115,6 +120,7 @@ public class ListenersTest {
                 PhylaCustomizer.class);
         
         XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
         
         URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
         
@@ -122,7 +128,7 @@ public class ListenersTest {
         rootHandle.addChangeListener(new AuditableListener(), new DaveHatingListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
-        OldConfigTest.assertOriginalStateKingdom1(kingdom);
+        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
         
         Phylum bob = xmlService.createBean(Phylum.class);
         bob.setName(OldConfigTest.BOB_NAME);
@@ -133,6 +139,15 @@ public class ListenersTest {
         bob = phyla.getPhylumByName(OldConfigTest.BOB_NAME);
         
         Assert.assertTrue(bob.getCreatedOn() > 0L);
+        
+        // Check that its there in the hub
+        {
+            Instance bobInstance = hub.getCurrentDatabase().getInstance(OldConfigTest.PHYLUM_TYPE, OldConfigTest.BOB_INSTANCE);
+            Assert.assertNotNull(bobInstance);
+            
+            Map<String, Object> aliceMap = (Map<String, Object>) bobInstance.getBean();
+            Assert.assertEquals(OldConfigTest.BOB_NAME, aliceMap.get(OldConfigTest.NAME_TAG));
+        }
     }
     
     /**
@@ -147,14 +162,15 @@ public class ListenersTest {
                 PhylaCustomizer.class);
         
         XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
         
         URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
         
-        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, false);
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, true);
         rootHandle.addChangeListener(new AuditableListener(), new DaveHatingListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
-        OldConfigTest.assertOriginalStateKingdom1(kingdom);
+        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
         
         ScientistBean linnaeus = xmlService.createBean(ScientistBean.class);
         linnaeus.setName(LINN_NAME);
@@ -187,14 +203,15 @@ public class ListenersTest {
                 PhylaCustomizer.class);
         
         XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
         
         URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
         
-        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, false);
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, true);
         rootHandle.addChangeListener(new AuditableListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
-        OldConfigTest.assertOriginalStateKingdom1(kingdom);
+        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
         
         Phylum alice = kingdom.getPhyla().getPhylumByName(OldConfigTest.ALICE_NAME);
         Phyla phyla = kingdom.getPhyla();
@@ -218,14 +235,15 @@ public class ListenersTest {
                 PhylaCustomizer.class);
         
         XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
         
         URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
         
-        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, false);
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, true);
         rootHandle.addChangeListener(new AuditableListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
-        OldConfigTest.assertOriginalStateKingdom1(kingdom);
+        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
         
         Phyla phyla = kingdom.getPhyla();
         kingdom.setPhyla(null);
@@ -253,14 +271,15 @@ public class ListenersTest {
                 PhylaCustomizer.class);
         
         XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
         
         URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
         
-        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, false);
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, true);
         rootHandle.addChangeListener(new AuditableListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
-        OldConfigTest.assertOriginalStateKingdom1(kingdom);
+        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
         
         ScientistBean darwin = kingdom.lookupScientist(OldConfigTest.DARWIN_NAME);
         ScientistBean removed = kingdom.removeScientist(kingdom.getScientists()[0]);
@@ -275,6 +294,7 @@ public class ListenersTest {
     /**
      * Tests a multi-tier listener for remove and add
      */
+    @SuppressWarnings("unchecked")
     @Test
     // @org.junit.Ignore
     public void testMultiTierRemoveAndAdd() throws Exception {
@@ -284,14 +304,15 @@ public class ListenersTest {
                 PhylaCustomizer.class);
         
         XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
         
         URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
         
-        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, false);
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, true);
         rootHandle.addChangeListener(new AuditableListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
-        OldConfigTest.assertOriginalStateKingdom1(kingdom);
+        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
         
         {
             Phylum alice = kingdom.getPhyla().getPhylumByName(OldConfigTest.ALICE_NAME);
@@ -304,6 +325,16 @@ public class ListenersTest {
         
             // But phyla truly was
             Assert.assertTrue(phyla.getDeletedOn() > 0L);
+        }
+        
+        {
+            Instance phylaInstance = hub.getCurrentDatabase().getInstance(OldConfigTest.PHYLA_TYPE, OldConfigTest.PHYLA_INSTANCE);
+            Assert.assertNull(phylaInstance);
+        }
+        
+        {
+            Instance aliceInstance = hub.getCurrentDatabase().getInstance(OldConfigTest.PHYLUM_TYPE, OldConfigTest.ALICE_INSTANCE);
+            Assert.assertNull(aliceInstance);
         }
         
         {
@@ -324,6 +355,20 @@ public class ListenersTest {
             // But phyla truly was
             Assert.assertTrue(phyla.getCreatedOn() > 0L);
         }
+        
+        {
+            Instance phylaInstance = hub.getCurrentDatabase().getInstance(OldConfigTest.PHYLA_TYPE, OldConfigTest.PHYLA_INSTANCE);
+            Assert.assertNotNull(phylaInstance);
+        }
+        
+        {
+            Instance bobInstance = hub.getCurrentDatabase().getInstance(OldConfigTest.PHYLUM_TYPE, OldConfigTest.BOB_INSTANCE);
+            Assert.assertNotNull(bobInstance);
+            
+            Map<String, Object> bobMap = (Map<String, Object>) bobInstance.getBean();
+            Assert.assertEquals(OldConfigTest.BOB_NAME, bobMap.get(OldConfigTest.NAME_TAG));
+            Assert.assertNull(bobMap.get(OldConfigTest.SHELL_TAG));
+        }
     }
     
     /**
@@ -339,14 +384,15 @@ public class ListenersTest {
                 DaveHatingListener.class);
         
         XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
         
         URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
         
-        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, false);
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, true);
         rootHandle.addChangeListener(new AuditableListener(), new DaveHatingListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
-        OldConfigTest.assertOriginalStateKingdom1(kingdom);
+        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
         
         Phylum bob = xmlService.createBean(Phylum.class);
         bob.setName(DAVE_NAME);
@@ -362,7 +408,7 @@ public class ListenersTest {
         }
         
         // Nothing should have happened
-        OldConfigTest.assertOriginalStateKingdom1(kingdom);
+        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
     }
     
     /**
@@ -379,14 +425,15 @@ public class ListenersTest {
                 DaveHatingListener.class);
         
         XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
         
         URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
         
-        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, false);
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, true);
         rootHandle.addChangeListener(new DaveHatingListener(), new AuditableListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
-        OldConfigTest.assertOriginalStateKingdom1(kingdom);
+        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
         
         Phyla phyla = kingdom.getPhyla();
         Phylum alice = phyla.getPhylumByName(OldConfigTest.ALICE_NAME);
@@ -400,7 +447,7 @@ public class ListenersTest {
         }
         
         // Nothing should have happened
-        OldConfigTest.assertOriginalStateKingdom1(kingdom);
+        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
     }
     
     /**
@@ -418,14 +465,15 @@ public class ListenersTest {
                 DaveHatingListener.class);
         
         XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
         
         URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
         
-        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, false);
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, true);
         rootHandle.addChangeListener(new DaveHatingListener(), new AuditableListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
-        OldConfigTest.assertOriginalStateKingdom1(kingdom);
+        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
         
         Phyla phyla = kingdom.getPhyla();
         Phylum alice = phyla.getPhylumByName(OldConfigTest.ALICE_NAME);

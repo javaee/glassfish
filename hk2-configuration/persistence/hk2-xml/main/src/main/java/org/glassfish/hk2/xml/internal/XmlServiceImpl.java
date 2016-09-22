@@ -207,9 +207,11 @@ public class XmlServiceImpl implements XmlService {
         }
         
         DynamicChangeInfo changeControl = new DynamicChangeInfo(jaUtilities,
-                ((advertiseInHub) ? hub : null),
+                hub,
+                advertiseInHub,
                 this,
-                ((advertise) ? dynamicConfigurationService : null),
+                dynamicConfigurationService,
+                advertise,
                 serviceLocator);
         
         for (BaseHK2JAXBBean base : listener.getAllBeans()) {
@@ -302,8 +304,10 @@ public class XmlServiceImpl implements XmlService {
             return new XmlRootHandleImpl<T>(this, hub, null, model, null, advertiseInRegistry, advertiseInHub,
                     new DynamicChangeInfo(jaUtilities,
                             hub,
+                            advertiseInHub,
                             this,
-                            ((advertiseInRegistry) ? dynamicConfigurationService : null),
+                            dynamicConfigurationService,
+                            advertiseInRegistry,
                             serviceLocator));
         }
         catch (RuntimeException re) {

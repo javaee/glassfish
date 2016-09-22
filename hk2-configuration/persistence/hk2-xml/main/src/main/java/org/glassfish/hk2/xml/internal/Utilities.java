@@ -296,8 +296,7 @@ public class Utilities {
             String childKey,
             int index,
             DynamicChangeInfo changeInformation,
-            WriteableBeanDatabase writeableDatabase,
-            DynamicConfiguration dynamicService,
+            XmlDynamicChange xmlDynamicChange,
             List<ActiveDescriptor<?>> addedServices) {
         if (index < -1) {
             throw new IllegalArgumentException("Unknown index " + index);
@@ -403,17 +402,17 @@ public class Utilities {
             child._setInstanceName(myParent._getInstanceName() + Utilities.INSTANCE_PATH_SEPARATOR + childNode.getChildXmlTag());
         }
         
-        if (rawChild != null) {
-            // Now we handle the children
-            handleChildren(child, (BaseHK2JAXBBean) rawChild, changeInformation, addedServices);
-        }
-        
         // Now freeze it
         child._setDynamicChangeInfo(changeInformation);
         
-        Utilities.invokeVetoableChangeListeners(changeInformation, child, null, child, childNode.getChildXmlTag());
+        externalAdd(child, xmlDynamicChange.getDynamicConfiguration(), xmlDynamicChange.getBeanDatabase(), addedServices);
         
-        externalAdd(child, dynamicService, writeableDatabase, addedServices);
+        if (rawChild != null) {
+            // Now we handle the children
+            handleChildren(child, (BaseHK2JAXBBean) rawChild, changeInformation, addedServices, xmlDynamicChange);
+        }
+        
+        Utilities.invokeVetoableChangeListeners(changeInformation, child, null, child, childNode.getChildXmlTag());
         
         // Now modify the actual list
         if (multiChildren != null) {
@@ -431,15 +430,15 @@ public class Utilities {
                 }
             }
             
-            if (writeableDatabase != null) {
-                myParent.changeInHub(childProperty, finalChildList, writeableDatabase);
+            if (xmlDynamicChange.getBeanDatabase() != null) {
+                myParent.changeInHub(childProperty, finalChildList, xmlDynamicChange.getBeanDatabase());
             }
             
             myParent._setProperty(childProperty, finalChildList, false, true);
         }
         else {
-            if (writeableDatabase != null){
-                myParent.changeInHub(childProperty, child, writeableDatabase);
+            if (xmlDynamicChange.getBeanDatabase() != null){
+                myParent.changeInHub(childProperty, child, xmlDynamicChange.getBeanDatabase());
             }
             
             myParent._setProperty(childProperty, child, false, true);
@@ -460,7 +459,11 @@ public class Utilities {
     }
     
     @SuppressWarnings("unchecked")
-    private static void handleChildren(BaseHK2JAXBBean child, BaseHK2JAXBBean childToCopy, DynamicChangeInfo changeInformation, List<ActiveDescriptor<?>> addedServices) {
+    private static void handleChildren(BaseHK2JAXBBean child,
+            BaseHK2JAXBBean childToCopy,
+            DynamicChangeInfo changeInformation,
+            List<ActiveDescriptor<?>> addedServices,
+            XmlDynamicChange xmlDynamicChange) {
         Map<String, ParentedModel> childrenMap = childToCopy._getModel().getChildrenProperties();
         
         for (Map.Entry<String, ParentedModel> childsChildrenEntry : childrenMap.entrySet()) {
@@ -491,17 +494,17 @@ public class Utilities {
                 int lcv = 0;
                 for (BaseHK2JAXBBean childsChild : childsChildren) {
                     BaseHK2JAXBBean grandchild = internalAdd(child, childsChildProperty,
-                            childsChild, null, -1, changeInformation, null, null, addedServices);
+                            childsChild, null, -1, changeInformation, xmlDynamicChange, addedServices);
                     
                     copiedChildArray.add(grandchild);
                     Array.set(asArray, lcv++, grandchild);
                 }
                 
                 if (ChildType.LIST.equals(childsChildParentNode.getChildType())) {
-                    child._setProperty(childsChildProperty, copiedChildArray, false);
+                    child._setProperty(childsChildProperty, copiedChildArray, false, true);
                 }
                 else {
-                    child._setProperty(childsChildProperty, asArray, false);
+                    child._setProperty(childsChildProperty, asArray, false, true);
                 }
             }
             else {
@@ -509,9 +512,9 @@ public class Utilities {
                 if (childsChild == null) continue;
                 
                 BaseHK2JAXBBean grandchild = internalAdd(child, childsChildProperty,
-                        childsChild, null, -1, changeInformation, null, null, addedServices);
+                        childsChild, null, -1, changeInformation, xmlDynamicChange, addedServices);
                 
-                child._setProperty(childsChildProperty, grandchild, false);
+                child._setProperty(childsChildProperty, grandchild, false, true);
             }
         }
     }
@@ -612,7 +615,7 @@ public class Utilities {
         child._setSelfXmlTag(rootNode.getRootName());
         child._setInstanceName(rootNode.getRootName());
         
-        handleChildren(child, childToCopy, changeInfo, addedServices);
+        handleChildren(child, childToCopy, changeInfo, addedServices, XmlDynamicChange.EMPTY);
             
         // Now freeze it
         child._setDynamicChangeInfo(changeInfo);
@@ -641,8 +644,7 @@ public class Utilities {
             int index,
             Object childToRemove,
             DynamicChangeInfo changeInformation,
-            WriteableBeanDatabase writeableDatabase,
-            DynamicConfiguration dynamicService) {
+            XmlDynamicChange xmlDynamicChange) {
         if (childProperty == null) return null;
         
         String instanceToRemove = null;
@@ -726,8 +728,8 @@ public class Utilities {
                 invokeVetoableChangeListeners(changeInformation, rootForDeletion, rootForDeletion, null,
                         removeMeParentedNode.getChildXmlTag());
                 
-                if (writeableDatabase != null) {
-                    myParent.changeInHub(childProperty, listWithObjectRemoved, writeableDatabase);
+                if (xmlDynamicChange.getBeanDatabase() != null) {
+                    myParent.changeInHub(childProperty, listWithObjectRemoved, xmlDynamicChange.getBeanDatabase());
                 }
                 
                 myParent._setProperty(childProperty, listWithObjectRemoved, false, true);
@@ -821,8 +823,8 @@ public class Utilities {
                 invokeVetoableChangeListeners(changeInformation, rootForDeletion, rootForDeletion, null,
                         removeMeParentedNode.getChildXmlTag());
                 
-                if (writeableDatabase != null) {
-                    myParent.changeInHub(childProperty, arrayWithObjectRemoved, writeableDatabase);
+                if (xmlDynamicChange.getBeanDatabase() != null) {
+                    myParent.changeInHub(childProperty, arrayWithObjectRemoved, xmlDynamicChange.getBeanDatabase());
                 }
                 
                 myParent._setProperty(childProperty, arrayWithObjectRemoved, false, true);
@@ -835,34 +837,34 @@ public class Utilities {
             invokeVetoableChangeListeners(changeInformation, rootForDeletion, rootForDeletion, null,
                     removeMeParentedNode.getChildXmlTag());
             
-            if (writeableDatabase != null) {
-                myParent.changeInHub(childProperty, null, writeableDatabase);
+            if (xmlDynamicChange.getBeanDatabase() != null) {
+                myParent.changeInHub(childProperty, null, xmlDynamicChange.getBeanDatabase());
             }
             
             myParent._setProperty(childProperty, null, false, true);
         }
         
-        if (dynamicService != null) {
+        if (xmlDynamicChange.getDynamicConfiguration() != null) {
             HashSet<ActiveDescriptor<?>> descriptorsToRemove = new HashSet<ActiveDescriptor<?>>();
             
             getDescriptorsToRemove(rootForDeletion, descriptorsToRemove);
             
             for (ActiveDescriptor<?> descriptorToRemove : descriptorsToRemove) {
-                dynamicService.addUnbindFilter(BuilderHelper.createSpecificDescriptorFilter(descriptorToRemove));
+                xmlDynamicChange.getDynamicConfiguration().addUnbindFilter(BuilderHelper.createSpecificDescriptorFilter(descriptorToRemove));
             }
         }
         
-        if (writeableDatabase != null) {
+        if (xmlDynamicChange.getBeanDatabase() != null) {
             String rootXmlPath = rootForDeletion._getXmlPath();
             String rootInstanceName = rootForDeletion._getInstanceName();
             
-            WriteableType rootType = writeableDatabase.getWriteableType(rootXmlPath);
+            WriteableType rootType = xmlDynamicChange.getBeanDatabase().getWriteableType(rootXmlPath);
             if (rootType != null) {
                 rootType.removeInstance(rootInstanceName);
             
                 String typeRemovalIndicator = rootXmlPath + BaseHK2JAXBBean.XML_PATH_SEPARATOR;
             
-                Set<WriteableType> allTypes = writeableDatabase.getAllWriteableTypes();
+                Set<WriteableType> allTypes = xmlDynamicChange.getBeanDatabase().getAllWriteableTypes();
                 for (WriteableType allType : allTypes) {
                     if (allType.getName().startsWith(typeRemovalIndicator)) {
                         

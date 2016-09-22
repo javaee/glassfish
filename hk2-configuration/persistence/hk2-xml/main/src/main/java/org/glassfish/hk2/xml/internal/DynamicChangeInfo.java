@@ -49,9 +49,13 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
+import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
+import org.glassfish.hk2.xml.api.XmlHubCommitMessage;
 
 /**
  * @author jwells
@@ -65,24 +69,29 @@ public class DynamicChangeInfo {
     private long changeNumber = 0;
     private final Hub hub;
     private final XmlServiceImpl idGenerator;
+    private final boolean advertiseInLocator;
+    private final boolean advertiseInHub;
     private final DynamicConfigurationService dynamicService;
     private final ServiceLocator locator;
     private final LinkedHashSet<VetoableChangeListener> listeners = new LinkedHashSet<VetoableChangeListener>();
     
+    private XmlDynamicChange dynamicChange = null;
+    private int changeDepth = 0;
+    
     /* package */ DynamicChangeInfo(JAUtilities jaUtilities,
             Hub hub,
+            boolean advertiseInHub,
             XmlServiceImpl idGenerator,
             DynamicConfigurationService dynamicService,
+            boolean advertiseInLocator,
             ServiceLocator locator) {
         this.jaUtilities = jaUtilities;
         this.hub = hub;
+        this.advertiseInHub = advertiseInHub;
         this.idGenerator = idGenerator;
+        this.advertiseInLocator = advertiseInLocator;
         this.dynamicService = dynamicService;
         this.locator = locator;
-    }
-    
-    public Hub getHub() {
-        return hub;
     }
     
     public ReadLock getReadLock() {
@@ -125,8 +134,77 @@ public class DynamicChangeInfo {
         return idGenerator;
     }
     
-    public DynamicConfigurationService getDynamicConfigurationService() {
-        return dynamicService;
+    /**
+     * Write lock MUST be held!
+     * 
+     * @return
+     */
+    public XmlDynamicChange startOrContinueChange() {
+        changeDepth++;
+        
+        if (dynamicChange != null) return dynamicChange;
+        
+        DynamicConfiguration change = null;
+        DynamicConfiguration systemChange = null;
+        if (dynamicService != null) {
+            systemChange = dynamicService.createDynamicConfiguration();
+            if (advertiseInLocator) {
+                change = systemChange;
+            }
+        }
+        
+        WriteableBeanDatabase wbd = null;
+        if (hub != null && advertiseInHub) {
+            wbd = hub.getWriteableDatabaseCopy();
+            
+            wbd.setCommitMessage(new XmlHubCommitMessage() {});
+            
+            if (systemChange != null) {
+                systemChange.registerTwoPhaseResources(wbd.getTwoPhaseResource());
+                
+                // Now the hub transaction is tied to the registry transaction
+            }
+        }
+        
+        dynamicChange = new XmlDynamicChange(wbd, change, systemChange);
+        return dynamicChange;
+    }
+    
+    private boolean globalSuccess = true;
+    
+    /**
+     * Write lock MUST be held!
+     * 
+     * @return
+     */
+    public void endOrDeferChange(boolean success) throws MultiException {
+        changeDepth--;
+        if (changeDepth < 0) changeDepth = 0;
+        
+        if (!success) globalSuccess = false;
+        
+        if (changeDepth > 0) return;
+        
+        XmlDynamicChange localDynamicChange = dynamicChange;
+        dynamicChange = null;
+        
+        if (localDynamicChange == null) return;
+        
+        if (!globalSuccess) return;
+        
+        DynamicConfiguration systemChange = localDynamicChange.getSystemDynamicConfiguration();
+        WriteableBeanDatabase wbd = localDynamicChange.getBeanDatabase();
+        
+        if (systemChange == null && wbd != null) {
+            // Weird case, can it happen?
+            wbd.commit(new XmlHubCommitMessage() {});
+            return;
+        }
+        
+        if (systemChange == null) return;
+        
+        // Can definitely throw, for example if a listener fails
+        systemChange.commit();
     }
     
     public ServiceLocator getServiceLocator() {

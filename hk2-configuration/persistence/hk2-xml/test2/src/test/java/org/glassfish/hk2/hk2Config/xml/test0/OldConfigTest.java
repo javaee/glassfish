@@ -45,6 +45,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
+import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.hk2Config.xml.test.utilities.LocatorUtilities;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
@@ -107,7 +110,7 @@ public class OldConfigTest {
         XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, false);
         KingdomConfig kingdom1 = rootHandle.getRoot();
         
-        assertOriginalStateKingdom1(kingdom1);
+        assertOriginalStateKingdom1(kingdom1, null);
     }
     
     /**
@@ -130,7 +133,7 @@ public class OldConfigTest {
         XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, false);
         KingdomConfig kingdom1 = rootHandle.getRoot();
         
-        assertOriginalStateKingdom1(kingdom1);
+        assertOriginalStateKingdom1(kingdom1, null);
         
         Assert.assertNull(kingdom1.getParent());
         Assert.assertNull(kingdom1.getParent(KingdomConfig.class));
@@ -232,7 +235,7 @@ public class OldConfigTest {
         XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, false);
         KingdomConfig kingdom1 = rootHandle.getRoot();
         
-        assertOriginalStateKingdom1(kingdom1);
+        assertOriginalStateKingdom1(kingdom1, null);
         
         Assert.assertNull(kingdom1.lookupProperty(ADDED_NAME));
         
@@ -268,7 +271,36 @@ public class OldConfigTest {
         Assert.assertEquals(3, allProps.size());
     }
     
-    public static void assertOriginalStateKingdom1(KingdomConfig kingdom1) {
+    public static String KINGDOM_TYPE = "/kingdom";
+    public static String PHYLA_TYPE = "/kingdom/phyla";
+    public static String PHYLUM_TYPE = "/kingdom/phyla/phylum";
+    public static String PHYLUM_PROP_TYPE = "/kingdom/phyla/phylum/property";
+    public static String KINGDOM_PROP_TYPE = "/kingdom/property";
+    public static String SCIENTIST_TYPE = "/kingdom/scientist";
+    
+    public static String KINGDOM_INSTANCE = "kingdom";
+    public static String PHYLA_INSTANCE = "kingdom.phyla";
+    public static String ALICE_INSTANCE = "kingdom.phyla.Alice";
+    public static String BOB_INSTANCE = "kingdom.phyla.Bob";
+    public static String PHYLUM_ALICE_PASSWORD_INSTANCE = "kingdom.phyla.Alice.password";
+    public static String PHYLUM_ALICE_USERNAME_INSTANCE = "kingdom.phyla.Alice.username";
+    public static String P1_INSTANCE = "kingdom.P1";
+    public static String P2_INSTANCE = "kingdom.P2";
+    public static String P3_INSTANCE = "kingdom.P3";
+    public static String DARWIN_INSTANCE = "kingdom.Darwin";
+    
+    public static String NAME_TAG = "name";
+    public static String SHELL_TAG = "shell-type";
+    public static String VALUE_TAG = "value";
+    public static String FIELD_TAG = "field";
+    
+    public static String PASSWORD_KEY = "password";
+    public static String PASSWORD_VALUE = "sp";
+    public static String USERNAME_KEY = "username";
+    public static String USERNAME_VALUE = "sa";
+    
+    @SuppressWarnings("unchecked")
+    public static void assertOriginalStateKingdom1(KingdomConfig kingdom1, Hub hub) {
         Assert.assertNotNull(kingdom1);
         
         Assert.assertEquals(0L, kingdom1.getCreatedOn());
@@ -316,6 +348,84 @@ public class OldConfigTest {
         for (ScientistBean scientist : scientists) {
             Assert.assertEquals(DARWIN_NAME, scientist.getName());
             Assert.assertEquals(NATURALIST_FIELD, scientist.getField());
+        }
+        
+        if (hub == null) return;
+        BeanDatabase db = hub.getCurrentDatabase();
+        
+        // Below is the verification for the Hub versions of the beans
+       
+        {
+            Instance domainInstance = db.getInstance(KINGDOM_TYPE, KINGDOM_INSTANCE);
+            Assert.assertNotNull(domainInstance);
+        }
+        
+        {
+            Instance phylaInstance = db.getInstance(PHYLA_TYPE, PHYLA_INSTANCE);
+            Assert.assertNotNull(phylaInstance);
+        }
+        
+        {
+            Instance aliceInstance = hub.getCurrentDatabase().getInstance(PHYLUM_TYPE, ALICE_INSTANCE);
+            Assert.assertNotNull(aliceInstance);
+            
+            Map<String, Object> aliceMap = (Map<String, Object>) aliceInstance.getBean();
+            Assert.assertEquals(ALICE_NAME, aliceMap.get(NAME_TAG));
+            Assert.assertEquals(SHELL_TYPE_CHITIN, aliceMap.get(SHELL_TAG));
+        }
+        
+        {
+            Instance alicePWInstance = hub.getCurrentDatabase().getInstance(PHYLUM_PROP_TYPE, PHYLUM_ALICE_PASSWORD_INSTANCE);
+            Assert.assertNotNull(alicePWInstance);
+            
+            Map<String, Object> aliceMap = (Map<String, Object>) alicePWInstance.getBean();
+            Assert.assertEquals(PASSWORD_KEY, aliceMap.get(NAME_TAG));
+            Assert.assertEquals(PASSWORD_VALUE, aliceMap.get(VALUE_TAG));
+        }
+        
+        {
+            Instance aliceUNInstance = hub.getCurrentDatabase().getInstance(PHYLUM_PROP_TYPE, PHYLUM_ALICE_USERNAME_INSTANCE);
+            Assert.assertNotNull(aliceUNInstance);
+            
+            Map<String, Object> aliceMap = (Map<String, Object>) aliceUNInstance.getBean();
+            Assert.assertEquals(USERNAME_KEY, aliceMap.get(NAME_TAG));
+            Assert.assertEquals(USERNAME_VALUE, aliceMap.get(VALUE_TAG));
+        }
+        
+        {
+            Instance p1Instance = hub.getCurrentDatabase().getInstance(KINGDOM_PROP_TYPE, P1_INSTANCE);
+            Assert.assertNotNull(p1Instance);
+            
+            Map<String, Object> propMap = (Map<String, Object>) p1Instance.getBean();
+            Assert.assertEquals(P1, propMap.get(NAME_TAG));
+            Assert.assertEquals(V1, propMap.get(VALUE_TAG));
+        }
+        
+        {
+            Instance p2Instance = hub.getCurrentDatabase().getInstance(KINGDOM_PROP_TYPE, P2_INSTANCE);
+            Assert.assertNotNull(p2Instance);
+            
+            Map<String, Object> propMap = (Map<String, Object>) p2Instance.getBean();
+            Assert.assertEquals(P2, propMap.get(NAME_TAG));
+            Assert.assertEquals(V2, propMap.get(VALUE_TAG));
+        }
+        
+        {
+            Instance p2Instance = hub.getCurrentDatabase().getInstance(KINGDOM_PROP_TYPE, P3_INSTANCE);
+            Assert.assertNotNull(p2Instance);
+            
+            Map<String, Object> propMap = (Map<String, Object>) p2Instance.getBean();
+            Assert.assertEquals(P3, propMap.get(NAME_TAG));
+            Assert.assertEquals(V3, propMap.get(VALUE_TAG));
+        }
+        
+        {
+            Instance scienceInstance = hub.getCurrentDatabase().getInstance(SCIENTIST_TYPE, DARWIN_INSTANCE);
+            Assert.assertNotNull(scienceInstance);
+            
+            Map<String, Object> propMap = (Map<String, Object>) scienceInstance.getBean();
+            Assert.assertEquals(DARWIN_NAME, propMap.get(NAME_TAG));
+            Assert.assertEquals(NATURALIST_FIELD, propMap.get(FIELD_TAG));
         }
     }
 }
