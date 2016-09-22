@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -50,6 +50,7 @@ import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.FactoryDescriptors;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.TwoPhaseResource;
 import org.glassfish.hk2.utilities.FactoryDescriptorsImpl;
 import org.glassfish.hk2.utilities.reflection.Pretty;
 
@@ -301,6 +302,14 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
     /* package */ LinkedList<Filter> getIdempotentFilters() {
         return allIdempotentFilters;
     }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.DynamicConfiguration#registerTwoPhaseResources(org.glassfish.hk2.api.TwoPhaseResource[])
+     */
+    @Override
+    public void registerTwoPhaseResources(TwoPhaseResource... resources) {
+        throw new AssertionError("registerTwoPhaseResources not yet implemented");
+    }
     
     public String toString() {
         return "DynamicConfigurationImpl(" + locator + "," +
@@ -308,8 +317,4 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
             Pretty.collection(allUnbindFilters) + "," +
             System.identityHashCode(this) + ")";
     }
-
-    
-
-    
 }

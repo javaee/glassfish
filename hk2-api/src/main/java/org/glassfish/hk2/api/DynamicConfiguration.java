@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -237,6 +237,14 @@ public interface DynamicConfiguration {
      * @throws IllegalArgumentException If any of the filters are null
      */
     public void addIdempotentFilter(Filter... idempotentFilter) throws IllegalArgumentException;
+    
+    /**
+     * Registers two-phase resources in the order in which they are to run.  Subsequent calls
+     * to this method will add resources at the end of the existing list
+     * 
+     * @param resources A list of resources to add to this dynamic configuration
+     */
+    public void registerTwoPhaseResources(TwoPhaseResource... resources);
     
     /**
      * This causes the configuration to get committed.  This
