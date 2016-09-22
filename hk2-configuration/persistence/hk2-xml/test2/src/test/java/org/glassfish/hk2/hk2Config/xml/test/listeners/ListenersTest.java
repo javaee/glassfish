@@ -86,7 +86,7 @@ public class ListenersTest {
         
         URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
         
-        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, false);
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, true);
         rootHandle.addChangeListener(new AuditableListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
@@ -107,7 +107,7 @@ public class ListenersTest {
      * Tests a basic listener for create
      */
     @Test
-    // @org.junit.Ignore
+    @org.junit.Ignore
     public void testBasicCreate() throws Exception {
         ServiceLocator locator = LocatorUtilities.createLocator(
                 PropertyBagCustomizerImpl.class,
@@ -118,7 +118,7 @@ public class ListenersTest {
         
         URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
         
-        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, false);
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, true);
         rootHandle.addChangeListener(new AuditableListener(), new DaveHatingListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
