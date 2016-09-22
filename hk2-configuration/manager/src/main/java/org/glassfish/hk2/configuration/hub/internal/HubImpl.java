@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.configuration.hub.internal;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -96,8 +97,14 @@ public class HubImpl implements Hub {
         }
     }
     
-    /* package */ void setCurrentDatabase(WriteableBeanDatabaseImpl writeableDatabase, Object commitMessage, List<Change> changes) {
+    private int inTransaction = 0;
+    
+    /* package */ LinkedList<BeanDatabaseUpdateListener> prepareCurrentDatabase(WriteableBeanDatabaseImpl writeableDatabase, Object commitMessage, List<Change> changes) {
         synchronized (lock) {
+            if (inTransaction > 0) {
+                throw new IllegalStateException("This Hub is already in a transaction");
+            }
+            
             long currentRevision = currentDatabase.getRevision();
             long writeRevision = writeableDatabase.getBaseRevision();
             
@@ -128,12 +135,29 @@ public class HubImpl implements Hub {
                 }
             }
             
+            inTransaction++;
+            
+            return completedListeners;
+        }
+    }
+    
+    /* package */ void activateCurrentDatabase(WriteableBeanDatabaseImpl writeableDatabase, Object commitMessage, List<Change> changes,
+            LinkedList<BeanDatabaseUpdateListener> completedListeners) {
+        synchronized (lock) {
+            inTransaction--;
+            if (inTransaction < 0) inTransaction = 0;
+            
+            List<BeanDatabaseUpdateListener> completed = completedListeners;
+            completedListeners = null;
+            
+            if (completed == null) completed = Collections.emptyList();
+            
             // success!
             BeanDatabaseImpl oldDatabase = currentDatabase;
             currentDatabase = new BeanDatabaseImpl(revisionCounter.getAndIncrement(), writeableDatabase);
             
             MultiException commitError = null;
-            for (BeanDatabaseUpdateListener completedListener : completedListeners) {
+            for (BeanDatabaseUpdateListener completedListener : completed) {
                 try {
                     completedListener.commitDatabaseChange(oldDatabase, currentDatabase, commitMessage, changes);
                 }
@@ -149,7 +173,40 @@ public class HubImpl implements Hub {
             
             if (commitError != null) throw commitError;
         }
-        
-        
+    }
+    
+    /* package */ void rollbackCurrentDatabase(WriteableBeanDatabaseImpl writeableDatabase, Object commitMessage, List<Change> changes,
+            LinkedList<BeanDatabaseUpdateListener> completedListeners) {
+        synchronized (lock) {
+            inTransaction--;
+            if (inTransaction < 0) inTransaction = 0;
+            
+            List<BeanDatabaseUpdateListener> completed = completedListeners;
+            completedListeners = null;
+            
+            if (completed == null) completed = Collections.emptyList();
+            
+            MultiException rollbackError = null;
+            for (BeanDatabaseUpdateListener completedListener : completed) {
+                try {
+                    completedListener.rollbackDatabaseChange(currentDatabase, writeableDatabase, commitMessage, changes);
+                }
+                catch (Throwable th) {
+                    if (rollbackError == null) {
+                        rollbackError = new MultiException(new RollbackFailedException(th));
+                    }
+                    else {
+                        rollbackError.addError(new RollbackFailedException(th));
+                    }
+                }
+            }
+            
+            if (rollbackError != null) throw rollbackError;
+        }
+    }
+    
+    /* package */ void setCurrentDatabase(WriteableBeanDatabaseImpl writeableDatabase, Object commitMessage, List<Change> changes) {
+        LinkedList<BeanDatabaseUpdateListener> completedListeners = prepareCurrentDatabase(writeableDatabase, commitMessage, changes);
+        activateCurrentDatabase(writeableDatabase, commitMessage, changes, completedListeners);
     }
 }

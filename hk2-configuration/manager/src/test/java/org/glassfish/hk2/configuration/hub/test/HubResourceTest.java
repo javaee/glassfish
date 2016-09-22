@@ -39,25 +39,17 @@
  */
 package org.glassfish.hk2.configuration.hub.test;
 
-import java.beans.PropertyChangeEvent;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.MultiException;
-import org.glassfish.hk2.configuration.hub.api.Change;
-import org.glassfish.hk2.configuration.hub.api.CommitFailedException;
-import org.glassfish.hk2.configuration.hub.api.Hub;
-import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.PrepareFailedException;
 import org.glassfish.hk2.configuration.hub.api.RollbackFailedException;
 import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
-import org.glassfish.hk2.configuration.hub.api.WriteableType;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Before;
@@ -74,8 +66,6 @@ public class HubResourceTest extends HubTestBase {
     private final static String NAME_PROPERTY = "name";
     
     private final static String ALICE = "Alice";
-    private final static String BOB = "Bob";
-    private final static String CAROL = "Carol";
     private final static String DAVE = "Dave";
     
     public final static String PREPARE_FAIL_MESSAGE = "Expected prepare exception";
@@ -94,7 +84,7 @@ public class HubResourceTest extends HubTestBase {
      * Tests we can add an empty type to the database
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testAddEmptyType() {
         Assert.assertNull(hub.getCurrentDatabase().getType(EMPTY_TYPE));
         
@@ -122,20 +112,11 @@ public class HubResourceTest extends HubTestBase {
         
     }
     
-    private static void checkInstances(HashSet<String> checkMe) {
-        Assert.assertTrue(checkMe.contains(ALICE));
-        Assert.assertTrue(checkMe.contains(BOB));
-        Assert.assertTrue(checkMe.contains(CAROL));
-        Assert.assertEquals(3, checkMe.size());
-        
-        checkMe.clear();
-    }
-    
     /**
      * Tests that all listeners are called, sunny day scenario
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testAllListenersPrepareAndCommitInvoked() {
         AbstractCountingListener listener1 = new AbstractCountingListener();
         AbstractCountingListener listener2 = new AbstractCountingListener();
@@ -177,7 +158,7 @@ public class HubResourceTest extends HubTestBase {
      * Tests that all listeners are called, sunny day scenario
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testMiddleListenerThrowsExceptionInPrepare() {
         AbstractCountingListener listener1 = new AbstractCountingListener();
         PrepareFailListener listener2 = new PrepareFailListener();
@@ -234,7 +215,7 @@ public class HubResourceTest extends HubTestBase {
      * Tests that all listeners are called when one fails in commit
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testMiddleListenerThrowsExceptionInCommit() {
         AbstractCountingListener listener1 = new AbstractCountingListener();
         CommitFailListener listener2 = new CommitFailListener();
@@ -248,23 +229,8 @@ public class HubResourceTest extends HubTestBase {
         try {
             GenericJavaBean newBean = new GenericJavaBean();
             
-            try {
-                addTypeAndInstance(TYPE_TWELVE, DAVE, newBean, true);
-                Assert.fail("Commit threw exception, but commit succeeded");
-            }
-            catch (MultiException me) {
-                Assert.assertTrue(me.toString().contains(COMMIT_FAIL_MESSAGE));
-                
-                boolean found = false;
-                for (Throwable inner : me.getErrors()) {
-                    if (inner instanceof CommitFailedException) {
-                        Assert.assertFalse("Should only be ONE instance of CommitFailedException, but there is at least two in " + me, found);
-                        found = true;
-                    }
-                }
-                
-                Assert.assertTrue(found);
-            }
+            // Activate failures do NOT get thrown up by DynamicConfiguration.commit
+            addTypeAndInstance(TYPE_TWELVE, DAVE, newBean, true);
             
             Assert.assertEquals(1, listener1.getNumPreparesCalled());
             Assert.assertEquals(1, listener1.getNumCommitsCalled());
@@ -292,7 +258,7 @@ public class HubResourceTest extends HubTestBase {
      * several others fail in rollback
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testAnExceptionInPrepareAndSeveralRollbacksAllGetReported() {
         RollbackFailListener listener1 = new RollbackFailListener();
         AbstractCountingListener listener2 = new AbstractCountingListener();
@@ -360,7 +326,7 @@ public class HubResourceTest extends HubTestBase {
      * Tests that all commit errors are reported
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testMultipleCommitErrorsAllGetReported() {
         CommitFailListener listener1 = new CommitFailListener();
         CommitFailListener listener2 = new CommitFailListener();
@@ -372,22 +338,7 @@ public class HubResourceTest extends HubTestBase {
         try {
             GenericJavaBean newBean = new GenericJavaBean();
             
-            try {
-                addTypeAndInstance(TYPE_TWELVE, DAVE, newBean, true);
-                Assert.fail("Prepare threw exception, but commit succeeded");
-            }
-            catch (MultiException me) {
-                Assert.assertTrue(me.toString().contains(COMMIT_FAIL_MESSAGE));
-                
-                int commitErrorsReported = 0;
-                for (Throwable inner : me.getErrors()) {
-                    if (inner instanceof CommitFailedException) {
-                        commitErrorsReported++;
-                    }
-                }
-                
-                Assert.assertEquals(2, commitErrorsReported);
-            }
+            addTypeAndInstance(TYPE_TWELVE, DAVE, newBean, true);
             
             Assert.assertEquals(1, listener1.getNumPreparesCalled());
             Assert.assertEquals(1, listener1.getNumCommitsCalled());

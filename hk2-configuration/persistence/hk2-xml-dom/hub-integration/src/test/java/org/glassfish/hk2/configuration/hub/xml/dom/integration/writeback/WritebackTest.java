@@ -129,7 +129,8 @@ public class WritebackTest {
     
     
     @SuppressWarnings("unchecked")
-    @Test // @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testWritebackAnAttribute() {
         ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
         XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
@@ -172,7 +173,8 @@ public class WritebackTest {
     /**
      * Tests we can add an instance and have it reflected back in the hk2-config beans
      */
-    @Test // @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testWritebackANewChildBean() {
         ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
         XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
@@ -207,7 +209,8 @@ public class WritebackTest {
     /**
      * Tests we can remove an instance and have it reflected back in the hk2-config beans
      */
-    @Test // @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testWritebackAndRemoveAChildBean() {
         ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
         XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
@@ -237,7 +240,8 @@ public class WritebackTest {
     /**
      * Tests we can add a single complex child bean
      */
-    @Test // @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testWritebackSingleComplexChildBean() {
         ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
         XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
@@ -276,7 +280,8 @@ public class WritebackTest {
     /**
      * Tests we can remove a single complex child bean
      */
-    @Test // @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testWritebackRemoveSingleComplexChildBean() {
         ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
         XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
@@ -317,7 +322,8 @@ public class WritebackTest {
      * Adds children with grand-children and non-related beans
      * as well all in on nasty database transaction
      */
-    @Test // @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testMultipleBeansAddedRelatedAndNotRelated() {
         ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
         XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
@@ -379,7 +385,8 @@ public class WritebackTest {
      * Removes children with grand-children and non-related beans
      * as well all in on nasty database transaction
      */
-    @Test // @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testMultipleBeansRemoveRelatedAndNotRelated() {
         ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
         XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
@@ -440,7 +447,8 @@ public class WritebackTest {
      * does an add of l-bean just for grins)
      */
     @SuppressWarnings("unchecked")
-    @Test // @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testMultipleBeansAddRemoveAndModify() {
         ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
         XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
@@ -529,7 +537,8 @@ public class WritebackTest {
     /**
      * Tests adding beans that have some properties that are not Strings
      */
-    @Test // @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testBeansAddedWithMoreComplexProperties() {
         ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
         XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
@@ -578,7 +587,8 @@ public class WritebackTest {
      * not seem to properly support two @Element("*") fields.
      * See OBean for an example
      */
-    @Test @org.junit.Ignore
+    @Test
+    @org.junit.Ignore
     public void testBeanWithMultipleStarElements() {
         ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
         XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
@@ -624,7 +634,8 @@ public class WritebackTest {
      * Tests that we can add properties to a bean that is a PropertyBag, and
      * that we can also modify that bean by modifying the Hub
      */
-    @Test // @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testPropertyBagAddAndModify() {
         ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
         XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
@@ -694,7 +705,8 @@ public class WritebackTest {
     /**
      * Ensures we get one set of callbacks for bean and children
      */
-    @Test // @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testAddPropertyBagWithTransactionEnsureNotTooManyCallbacks() {
         ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit(NBeanListener.class);
         XmlDomIntegrationUtilities.enableMapTranslator(testLocator);
@@ -745,7 +757,8 @@ public class WritebackTest {
     /**
      * Adds a root bean via writeback
      */
-    @Test @org.junit.Ignore
+    @Test 
+    @org.junit.Ignore
     public void testAddRootBean() {
         ServiceLocator testLocator = ConfigHubIntegrationUtilities.createPopulateAndConfigInit();
         XmlDomIntegrationUtilities.enableMapTranslator(testLocator);

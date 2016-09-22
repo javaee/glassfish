@@ -50,6 +50,7 @@ import java.util.Set;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.TwoPhaseResource;
 import org.glassfish.hk2.api.TwoPhaseTransactionData;
+import org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener;
 import org.glassfish.hk2.configuration.hub.api.Change;
 import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.Type;
@@ -60,14 +61,16 @@ import org.glassfish.hk2.configuration.hub.api.WriteableType;
  * @author jwells
  *
  */
-public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase, TwoPhaseResource {
+public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase {
     private final long baseRevision;
     private final HashMap<String, WriteableTypeImpl> types = new HashMap<String, WriteableTypeImpl>();
     private final HubImpl hub;
+    private final TwoPhaseResourceImpl resource = new TwoPhaseResourceImpl();
     
     private final LinkedList<Change> changes = new LinkedList<Change>();
     private final LinkedList<WriteableTypeImpl> removedTypes = new LinkedList<WriteableTypeImpl>();
     private boolean committed = false;
+    private Object commitMessage = null;
     
     /* package */ WriteableBeanDatabaseImpl(HubImpl hub, BeanDatabaseImpl currentDatabase) {
         this.hub = hub;
@@ -198,7 +201,12 @@ public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase, TwoPhas
      */
     @Override
     public void commit() {
-        commit(null);
+        Object defaultCommit;
+        synchronized (this) {
+            defaultCommit = commitMessage;
+        }
+        
+        commit(defaultCommit);
     }
 
     /* (non-Javadoc)
@@ -245,42 +253,29 @@ public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase, TwoPhas
     public synchronized void dumpDatabase(PrintStream output) {
         Utilities.dumpDatabase(this, output);        
     }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.TwoPhaseResource#prepareDynamicConfiguration(org.glassfish.hk2.api.TwoPhaseTransactionData)
-     */
-    @Override
-    public void prepareDynamicConfiguration(
-            TwoPhaseTransactionData dynamicConfiguration) throws MultiException {
-        throw new AssertionError("prepareDynamicConfiguration not yet implemented");
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.TwoPhaseResource#activateDynamicConfiguration(org.glassfish.hk2.api.TwoPhaseTransactionData)
-     */
-    @Override
-    public void activateDynamicConfiguration(
-            TwoPhaseTransactionData dynamicConfiguration) {
-        throw new AssertionError("activateDynamicConfiguration not yet implemented");
-        
-    }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.TwoPhaseResource#rollbackDynamicConfiguration(org.glassfish.hk2.api.TwoPhaseTransactionData)
-     */
-    @Override
-    public void rollbackDynamicConfiguration(
-            TwoPhaseTransactionData dynamicConfiguration) {
-        throw new AssertionError("rollbackDynamicConfiguration not yet implemented");
-        
-    }
     
     /* (non-Javadoc)
      * @see org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase#getTwoPhaseResource()
      */
     @Override
     public TwoPhaseResource getTwoPhaseResource() {
-        return this;
+        return resource;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase#getCommitMessage()
+     */
+    @Override
+    public synchronized Object getCommitMessage() {
+        return commitMessage;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase#setCommitMessage(java.lang.Object)
+     */
+    @Override
+    public synchronized void setCommitMessage(Object commitMessage) {
+        this.commitMessage = commitMessage;
     }
 
     @Override
@@ -288,5 +283,75 @@ public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase, TwoPhas
         return "WriteableBeanDatabaseImpl(" + baseRevision + "," + System.identityHashCode(this) + ")";
     }
 
-    
+    private class TwoPhaseResourceImpl implements TwoPhaseResource {
+        private LinkedList<BeanDatabaseUpdateListener> completedListeners;
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.api.TwoPhaseResource#prepareDynamicConfiguration(org.glassfish.hk2.api.TwoPhaseTransactionData)
+         */
+        @Override
+        public void prepareDynamicConfiguration(
+                TwoPhaseTransactionData dynamicConfiguration)
+                throws MultiException {
+            Object defaultCommit;
+            synchronized (WriteableBeanDatabaseImpl.this) {
+                checkState();
+                
+                committed = true;
+                
+                defaultCommit = commitMessage;
+            }
+            
+            // Outside of lock
+            completedListeners = hub.prepareCurrentDatabase(WriteableBeanDatabaseImpl.this, defaultCommit, changes);
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.api.TwoPhaseResource#activateDynamicConfiguration(org.glassfish.hk2.api.TwoPhaseTransactionData)
+         */
+        @Override
+        public void activateDynamicConfiguration(
+                TwoPhaseTransactionData dynamicConfiguration) {
+            LinkedList<BeanDatabaseUpdateListener> completedListeners = this.completedListeners;
+            this.completedListeners = null;
+            
+            Object defaultCommit;
+            synchronized (WriteableBeanDatabaseImpl.this) {
+                defaultCommit = commitMessage;
+            }
+            
+            hub.activateCurrentDatabase(WriteableBeanDatabaseImpl.this, defaultCommit, changes, completedListeners);
+            
+            for (WriteableTypeImpl removedType : removedTypes) {
+                removedType.getHelper().dispose();
+            }
+            
+            removedTypes.clear();
+            
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.api.TwoPhaseResource#rollbackDynamicConfiguration(org.glassfish.hk2.api.TwoPhaseTransactionData)
+         */
+        @Override
+        public void rollbackDynamicConfiguration(
+                TwoPhaseTransactionData dynamicConfiguration) {
+            LinkedList<BeanDatabaseUpdateListener> completedListeners = this.completedListeners;
+            this.completedListeners = null;
+            
+            Object defaultCommit;
+            synchronized (WriteableBeanDatabaseImpl.this) {
+                defaultCommit = commitMessage;
+            }
+            
+            hub.rollbackCurrentDatabase(WriteableBeanDatabaseImpl.this, defaultCommit, changes, completedListeners);
+            
+            for (WriteableTypeImpl removedType : removedTypes) {
+                removedType.getHelper().dispose();
+            }
+            
+            removedTypes.clear();
+        }
+        
+    }
 }

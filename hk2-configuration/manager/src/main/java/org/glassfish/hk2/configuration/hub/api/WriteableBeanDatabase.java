@@ -99,6 +99,20 @@ public interface WriteableBeanDatabase extends BeanDatabase {
     public WriteableType findOrAddWriteableType(String typeName);
     
     /**
+     * Gets the commit message for this writeable bean database
+     * @return The possibly null commit message for this
+     * writeable bean database
+     */
+    public Object getCommitMessage();
+    
+    /**
+     * Sets the commit message for this writeable bean database
+     * @param commitMessage The possibly null commit message
+     * for this writeable bean database
+     */
+    public void setCommitMessage(Object commitMessage);
+    
+    /**
      * Returns a two-phase resource that can be used by a
      * DynamicConfiguration to tie the transaction done by
      * this WriteableBeanDatabase into a commit done by the
@@ -115,7 +129,10 @@ public interface WriteableBeanDatabase extends BeanDatabase {
      * This method should be called when the writeable database should become
      * the current database. All changes will be communicated to the listeners.
      * If the current database has been modified since this writeable database
-     * was created then this method will throw an IllegalStateException
+     * was created then this method will throw an IllegalStateException.
+     * This version of commit will use the commit message set on this writeable
+     * bean database
+     * 
      * @throws IllegalStateException if the current database has been modified
      * since this writeable database copy was created
      * @throws MultiException if there were user implementations of {@link BeanDatabaseUpdateListener}
@@ -127,7 +144,10 @@ public interface WriteableBeanDatabase extends BeanDatabase {
      * This method should be called when the writeable database should become
      * the current database. All changes will be communicated to the listeners.
      * If the current database has been modified since this writeable database
-     * was created then this method will throw an IllegalStateException
+     * was created then this method will throw an IllegalStateException.
+     * This version of commit will use the commit message passed in rather than the
+     * one set on this writeable bean database
+     * 
      * @param commitMessage An object to pass to any {@link BeanDatabaseUpdateListener}
      * that is registered
      * @throws IllegalStateException if the current database has been modified
