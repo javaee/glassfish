@@ -42,6 +42,7 @@ package org.glassfish.hk2.configuration.hub.api;
 import java.util.Set;
 
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.TwoPhaseResource;
 
 /**
  * A writeable version of a {@link BeanDatabase}. Types and instances can be
@@ -96,6 +97,19 @@ public interface WriteableBeanDatabase extends BeanDatabase {
      * @return The non-null writeable type that was created or found
      */
     public WriteableType findOrAddWriteableType(String typeName);
+    
+    /**
+     * Returns a two-phase resource that can be used by a
+     * DynamicConfiguration to tie the transaction done by
+     * this WriteableBeanDatabase into a commit done by the
+     * DynamicConfiguration.  When the DynamicConfiguration
+     * calls commit this WriteableBeanDatabase will be part
+     * of the transaction
+     * 
+     * @return A non-null TwoPhaseResource to be used by a
+     * DynamicConfiguration
+     */
+    public TwoPhaseResource getTwoPhaseResource();
 
     /**
      * This method should be called when the writeable database should become

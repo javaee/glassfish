@@ -47,6 +47,9 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
+import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.TwoPhaseResource;
+import org.glassfish.hk2.api.TwoPhaseTransactionData;
 import org.glassfish.hk2.configuration.hub.api.Change;
 import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.Type;
@@ -57,7 +60,7 @@ import org.glassfish.hk2.configuration.hub.api.WriteableType;
  * @author jwells
  *
  */
-public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase {
+public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase, TwoPhaseResource {
     private final long baseRevision;
     private final HashMap<String, WriteableTypeImpl> types = new HashMap<String, WriteableTypeImpl>();
     private final HubImpl hub;
@@ -243,6 +246,47 @@ public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase {
         Utilities.dumpDatabase(this, output);        
     }
 
-    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.TwoPhaseResource#prepareDynamicConfiguration(org.glassfish.hk2.api.TwoPhaseTransactionData)
+     */
+    @Override
+    public void prepareDynamicConfiguration(
+            TwoPhaseTransactionData dynamicConfiguration) throws MultiException {
+        throw new AssertionError("prepareDynamicConfiguration not yet implemented");
+    }
 
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.TwoPhaseResource#activateDynamicConfiguration(org.glassfish.hk2.api.TwoPhaseTransactionData)
+     */
+    @Override
+    public void activateDynamicConfiguration(
+            TwoPhaseTransactionData dynamicConfiguration) {
+        throw new AssertionError("activateDynamicConfiguration not yet implemented");
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.TwoPhaseResource#rollbackDynamicConfiguration(org.glassfish.hk2.api.TwoPhaseTransactionData)
+     */
+    @Override
+    public void rollbackDynamicConfiguration(
+            TwoPhaseTransactionData dynamicConfiguration) {
+        throw new AssertionError("rollbackDynamicConfiguration not yet implemented");
+        
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase#getTwoPhaseResource()
+     */
+    @Override
+    public TwoPhaseResource getTwoPhaseResource() {
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return "WriteableBeanDatabaseImpl(" + baseRevision + "," + System.identityHashCode(this) + ")";
+    }
+
+    
 }

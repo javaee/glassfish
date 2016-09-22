@@ -52,7 +52,6 @@ import org.glassfish.hk2.configuration.hub.api.Change;
 import org.glassfish.hk2.configuration.hub.api.CommitFailedException;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
-import org.glassfish.hk2.configuration.hub.api.ManagerUtilities;
 import org.glassfish.hk2.configuration.hub.api.PrepareFailedException;
 import org.glassfish.hk2.configuration.hub.api.RollbackFailedException;
 import org.glassfish.hk2.configuration.hub.api.Type;
@@ -62,13 +61,12 @@ import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.jvnet.hk2.testing.junit.HK2Runner;
 
 /**
  * @author jwells
  *
  */
-public class HubTest extends HK2Runner {
+public class HubTest extends HubTestBase {
     private final static String EMPTY_TYPE = "EmptyType";
     private final static String ONE_INSTANCE_TYPE = "OneInstanceType";
     private final static String TYPE_TWO = "TypeTwo";
@@ -97,17 +95,11 @@ public class HubTest extends HK2Runner {
     public final static String PREPARE_FAIL_MESSAGE = "Expected prepare exception";
     public final static String COMMIT_FAIL_MESSAGE = "Expected commit exception";
     
-    private Hub hub;
     private Map<String, Object> oneFieldBeanLikeMap = new HashMap<String, Object>();
     
     @Before
     public void before() {
         super.before();
-        
-        // This is necessary to make running in an IDE easier
-        ManagerUtilities.enableConfigurationHub(testLocator);
-        
-        this.hub = testLocator.getService(Hub.class);
         
         oneFieldBeanLikeMap.put(NAME_PROPERTY, ALICE);
     }
@@ -255,41 +247,7 @@ public class HubTest extends HK2Runner {
         
     }
     
-    private void addType(String typeName) {
-        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
-        
-        wbd.addType(typeName);
-        
-        wbd.commit();
-    }
     
-    private void addTypeAndInstance(String typeName, String instanceKey, Object instanceValue) {
-        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
-        
-        WriteableType wt = wbd.findOrAddWriteableType(typeName);
-        
-        wt.addInstance(instanceKey, instanceValue);
-        
-        wbd.commit();
-    }
-    
-    private void addTypeAndInstance(String typeName, String instanceKey, Object instanceValue, Object metadata) {
-        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
-        
-        WriteableType wt = wbd.findOrAddWriteableType(typeName);
-        
-        wt.addInstance(instanceKey, instanceValue, metadata);
-        
-        wbd.commit();
-    }
-    
-    private void removeType(String typeName) {
-        WriteableBeanDatabase wbd = hub.getWriteableDatabaseCopy();
-        
-        wbd.removeType(typeName);
-        
-        wbd.commit();
-    }
     
     /**
      * Tests adding an instance to an existing a type
