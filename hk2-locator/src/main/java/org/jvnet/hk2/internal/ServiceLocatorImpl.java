@@ -99,6 +99,8 @@ import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.api.ServiceLocatorState;
+import org.glassfish.hk2.api.TwoPhaseResource;
+import org.glassfish.hk2.api.TwoPhaseTransactionData;
 import org.glassfish.hk2.api.Unqualified;
 import org.glassfish.hk2.api.ValidationInformation;
 import org.glassfish.hk2.api.ValidationService;
@@ -1188,7 +1190,6 @@ public class ServiceLocatorImpl implements ServiceLocator {
         return defaultUnqualified;
     }
 
-    @SuppressWarnings("unchecked")
     private <T> ActiveDescriptor<T> internalGetDescriptor(Injectee onBehalfOf, Type contractOrImpl,
             String name,
             Unqualified unqualified,
@@ -1591,6 +1592,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         boolean addOrRemoveOfConfigListener = false;
         boolean addOrRemoveOfInterceptionService = false;
         HashSet<String> affectedContracts = new HashSet<String>();
+        TwoPhaseTransactionDataImpl transactionData = new TwoPhaseTransactionDataImpl();
 
         for (Filter unbindFilter : dci.getUnbindFilters()) {
             List<SystemDescriptor<?>> results = getDescriptors(unbindFilter, null, false, false, true);
@@ -1628,10 +1630,13 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 }
 
                 retVal.add(candidate);
+                transactionData.toRemove(candidate);
             }
         }
 
         for (SystemDescriptor<?> sd : dci.getAllDescriptors()) {
+            transactionData.toAdd(sd);
+            
             affectedContracts.addAll(getAllContracts(sd));
 
             boolean checkScope = false;
@@ -1728,6 +1733,32 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 throw new MultiException(idempotentFailures);
             }
         }
+        
+        LinkedList<TwoPhaseResource> resources = dci.getResources();
+        List<TwoPhaseResource> completedPrepares = new LinkedList<TwoPhaseResource>();
+        
+        for (TwoPhaseResource resource : resources) {
+            try {
+                resource.prepareDynamicConfiguration(transactionData);
+                completedPrepares.add(resource);
+            }
+            catch (Throwable th) {
+                for (TwoPhaseResource rollMe : completedPrepares) {
+                    try {
+                        rollMe.rollbackDynamicConfiguration(transactionData);
+                    }
+                    catch (Throwable ignore) {
+                        Logger.getLogger().debug("Rollback of TwoPhaseResource " + resource + " failed with exception", ignore);
+                    }
+                }
+                
+                if (th instanceof RuntimeException) {
+                    throw (RuntimeException) th;
+                }
+                
+                throw new RuntimeException(th);
+            }
+        }
 
         return new CheckConfigurationData(retVal,
                 addOrRemoveOfInstanceListener,
@@ -1736,7 +1767,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 addOrRemoveOfClazzAnalyzer,
                 addOrRemoveOfConfigListener,
                 affectedContracts,
-                addOrRemoveOfInterceptionService);
+                addOrRemoveOfInterceptionService,
+                transactionData);
     }
 
     private static List<String> getAllContracts(ActiveDescriptor<?> desc) {
@@ -2113,6 +2145,16 @@ public class ServiceLocatorImpl implements ServiceLocator {
         }
         
         callAllConfigurationListeners(allConfigurationListeners);
+        
+        LinkedList<TwoPhaseResource> resources = dci.getResources();
+        for (TwoPhaseResource resource : resources) {
+            try {
+                resource.activateDynamicConfiguration(checkData.getTransactionData());
+            }
+            catch (Throwable ignore) {
+                Logger.getLogger().debug("Activate of TwoPhaseResource " + resource + " failed with exception", ignore);
+            }
+        }
     }
 
     /* package */ boolean isInjectAnnotation(Annotation annotation) {
@@ -2413,6 +2455,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
         private final boolean dynamicConfigurationListenerModificationMade;
         private final HashSet<String> affectedContracts;
         private final boolean interceptionServiceModificationMade;
+        private final TwoPhaseTransactionData transactionData;
 
         private CheckConfigurationData(List<SystemDescriptor<?>> unbinds,
                 boolean instanceLifecycleModificationMade,
@@ -2421,7 +2464,8 @@ public class ServiceLocatorImpl implements ServiceLocator {
                 boolean classAnalyzerModificationMade,
                 boolean dynamicConfigurationListenerModificationMade,
                 HashSet<String> affectedContracts,
-                boolean interceptionServiceModificationMade) {
+                boolean interceptionServiceModificationMade,
+                TwoPhaseTransactionData transactionData) {
             this.unbinds = unbinds;
             this.instanceLifeycleModificationMade = instanceLifecycleModificationMade;
             this.injectionResolverModificationMade = injectionResolverModificationMade;
@@ -2430,6 +2474,7 @@ public class ServiceLocatorImpl implements ServiceLocator {
             this.dynamicConfigurationListenerModificationMade = dynamicConfigurationListenerModificationMade;
             this.affectedContracts = affectedContracts;
             this.interceptionServiceModificationMade = interceptionServiceModificationMade;
+            this.transactionData = transactionData;
         }
 
         private List<SystemDescriptor<?>> getUnbinds() {
@@ -2462,6 +2507,10 @@ public class ServiceLocatorImpl implements ServiceLocator {
         
         private boolean getInterceptionServiceModificationMade() {
             return interceptionServiceModificationMade;
+        }
+        
+        private TwoPhaseTransactionData getTransactionData() {
+            return transactionData;
         }
     }
 

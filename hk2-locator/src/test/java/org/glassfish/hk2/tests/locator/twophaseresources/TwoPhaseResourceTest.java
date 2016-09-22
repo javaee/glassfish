@@ -64,7 +64,7 @@ public class TwoPhaseResourceTest {
      * and removed lists are accurate
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testAllResourcesSuccess() {
         ServiceLocator locator = LocatorHelper.getServiceLocator(SimpleService2.class);
         DynamicConfiguration dc = getDC(locator);
@@ -138,7 +138,7 @@ public class TwoPhaseResourceTest {
      * Tests that when the first resource fails the second is not called
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testFirstResourcePrepareFail() {
         ServiceLocator locator = LocatorHelper.getServiceLocator(SimpleService2.class);
         DynamicConfiguration dc = getDC(locator);
@@ -210,7 +210,7 @@ public class TwoPhaseResourceTest {
      * is called on the first
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testSecondResourcePrepareFail() {
         ServiceLocator locator = LocatorHelper.getServiceLocator(SimpleService2.class);
         DynamicConfiguration dc = getDC(locator);
@@ -288,7 +288,7 @@ public class TwoPhaseResourceTest {
      * transaction is successful
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testBothResourcesFailInActivateOk() {
         ServiceLocator locator = LocatorHelper.getServiceLocator(SimpleService2.class);
         DynamicConfiguration dc = getDC(locator);
@@ -363,7 +363,7 @@ public class TwoPhaseResourceTest {
      * transaction is successful
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testResourceFailsInRollbackOk() {
         ServiceLocator locator = LocatorHelper.getServiceLocator(SimpleService2.class);
         DynamicConfiguration dc = getDC(locator);
@@ -448,7 +448,7 @@ public class TwoPhaseResourceTest {
         }
         
         {
-            List<TwoPhaseTransactionData> rr3r = rr2.getRollbacks();
+            List<TwoPhaseTransactionData> rr3r = rr3.getRollbacks();
             Assert.assertEquals(0, rr3r.size());
         }
         
@@ -464,7 +464,7 @@ public class TwoPhaseResourceTest {
      * and removed lists are accurate
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testOnlyAddSuccess() {
         ServiceLocator locator = LocatorHelper.getServiceLocator(SimpleService2.class);
         DynamicConfiguration dc = getDC(locator);
@@ -539,7 +539,7 @@ public class TwoPhaseResourceTest {
      * and removed lists are accurate
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testOnlyRemoveSuccess() {
         ServiceLocator locator = LocatorHelper.getServiceLocator(SimpleService2.class);
         DynamicConfiguration dc = getDC(locator);

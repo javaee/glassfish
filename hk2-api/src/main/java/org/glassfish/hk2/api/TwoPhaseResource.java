@@ -39,8 +39,6 @@
  */
 package org.glassfish.hk2.api;
 
-import org.jvnet.hk2.annotations.Contract;
-
 /**
  * Implementations of this interface can be added to a {@link DynamicConfiguration}
  * in order to atomically participate in the changes being made to the
@@ -51,7 +49,6 @@ import org.jvnet.hk2.annotations.Contract;
  * @author jwells
  *
  */
-@Contract
 public interface TwoPhaseResource {
     /**
      * This method is called prior to any changes being made to the {@link ServiceLocator}
@@ -59,7 +56,7 @@ public interface TwoPhaseResource {
      * entire transaction will not go forward and the thrown exception will be thrown back
      * to the caller.  If this method completes successfully then either the commit or rollback
      * methods will be called eventually once the final outcome of the transaction has been
-     * established
+     * established.  This method is called with the write lock of the ServiceLocator held
      * 
      * @param dynamicConfiguration Information about the dynamic configuration for which this resource
      * was registered
@@ -74,6 +71,8 @@ public interface TwoPhaseResource {
      * Once all TwoPhaseResource prepare methods have completed successfully the activate method
      * will be called on all registered TwoPhaseResource implementations.  Any exception from
      * this method will be ignored (though they will be logged if debug logging is turned on).
+     * This method is called after the write lock has been released and all other listeners
+     * have been called
      * 
      * @param dynamicConfiguration Information about the dynamic configuration for which this resource
      * was registered
@@ -83,7 +82,8 @@ public interface TwoPhaseResource {
     /**
      * If any TwoPhaseResource fails then all TwoPhaseResources that successfully completed their
      * prepare method will get this method invoked.  Any exceptions from this method will be ignored
-     * (though they will be logged if debugging is turned on).
+     * (though they will be logged if debugging is turned on). This method is called with the write
+     * lock of the ServiceLocator held
      * 
      * @param dynamicConfiguration Information about the dynamic configuration for which this resource
      * was registered

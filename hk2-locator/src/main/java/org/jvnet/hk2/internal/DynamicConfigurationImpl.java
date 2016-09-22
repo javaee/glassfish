@@ -64,6 +64,7 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
     private final LinkedList<SystemDescriptor<?>> allDescriptors = new LinkedList<SystemDescriptor<?>>();
     private final LinkedList<Filter> allUnbindFilters = new LinkedList<Filter>();
     private final LinkedList<Filter> allIdempotentFilters = new LinkedList<Filter>();
+    private final LinkedList<TwoPhaseResource> allResources = new LinkedList<TwoPhaseResource>();
     
     private final Object lock = new Object();
     private boolean committed = false;
@@ -231,6 +232,8 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
             throws IllegalArgumentException {
         if (unbindFilter == null) throw new IllegalArgumentException();
         
+        checkState();
+        
         allUnbindFilters.add(unbindFilter);
     }
     
@@ -241,12 +244,31 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
     public void addIdempotentFilter(Filter... idempotentFilter)
             throws IllegalArgumentException {
         if (idempotentFilter == null) throw new IllegalArgumentException();
+        checkState();
+        
         for (Filter iFilter : idempotentFilter) {
             if (iFilter == null) throw new IllegalArgumentException();
         }
         
         for (Filter iFilter : idempotentFilter) {
             allIdempotentFilters.add(iFilter);
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.DynamicConfiguration#registerTwoPhaseResources(org.glassfish.hk2.api.TwoPhaseResource[])
+     */
+    @Override
+    public void registerTwoPhaseResources(TwoPhaseResource... resources) {
+        checkState();
+        
+        if (resources == null) return;
+        
+        for (int lcv = 0; lcv < resources.length; lcv++) {
+            TwoPhaseResource resource = resources[lcv];
+            if (resource == null) continue;
+            
+            allResources.add(resource);
         }
     }
 
@@ -302,19 +324,18 @@ public class DynamicConfigurationImpl implements DynamicConfiguration {
     /* package */ LinkedList<Filter> getIdempotentFilters() {
         return allIdempotentFilters;
     }
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.DynamicConfiguration#registerTwoPhaseResources(org.glassfish.hk2.api.TwoPhaseResource[])
-     */
-    @Override
-    public void registerTwoPhaseResources(TwoPhaseResource... resources) {
-        throw new AssertionError("registerTwoPhaseResources not yet implemented");
+    
+    /* package */ LinkedList<TwoPhaseResource> getResources() {
+        return allResources;
     }
+
+    
     
     public String toString() {
         return "DynamicConfigurationImpl(" + locator + "," +
             Pretty.collection(allDescriptors) + "," +
             Pretty.collection(allUnbindFilters) + "," +
+            Pretty.collection(allResources) + "," +
             System.identityHashCode(this) + ")";
     }
 }
