@@ -442,13 +442,11 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
             throws IllegalStateException {
         if (changeControl == null) throw new IllegalStateException();
         
-        throw new AssertionError("not yet implemented");
+        return new XmlHandleTransactionImpl<T>(this, changeControl);
     }
     
     @Override
     public String toString() {
         return "XmlRootHandleImpl(" + root + "," + rootNode + "," + rootURI + "," + System.identityHashCode(this) + ")";
-    }
-
-    
+    }    
 }

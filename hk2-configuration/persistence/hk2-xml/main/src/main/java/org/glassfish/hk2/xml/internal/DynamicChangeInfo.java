@@ -144,7 +144,10 @@ public class DynamicChangeInfo {
      */
     public XmlDynamicChange startOrContinueChange(BaseHK2JAXBBean participant) {
         changeDepth++;
-        participants.add(participant);
+        
+        if (participant != null) {
+            participants.add(participant);
+        }
         
         if (dynamicChange != null) return dynamicChange;
         globalSuccess = true;

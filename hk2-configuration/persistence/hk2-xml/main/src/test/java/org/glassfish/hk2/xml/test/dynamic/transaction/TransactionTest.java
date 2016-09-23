@@ -68,7 +68,7 @@ public class TransactionTest {
      */
     @SuppressWarnings("unchecked")
     @Test 
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testModifyTwoPropertiesInOneTransaction() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -102,7 +102,7 @@ public class TransactionTest {
         
             Map<String, Object> domainMap = (Map<String, Object>) domainInstance.getBean();
             Assert.assertEquals(ALT_SUBNET, domainMap.get(MergeTest.SUBNET_TAG));
-            Assert.assertNull(MIXED_METAPHOR, domainMap.get(MergeTest.TAXONOMY_TAG));
+            Assert.assertEquals(MIXED_METAPHOR, domainMap.get(MergeTest.TAXONOMY_TAG));
         }
     }
     
@@ -112,7 +112,7 @@ public class TransactionTest {
      * @throws Exception
      */
     @Test 
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testModifyTwoPropertiesInOneTransactionAbandon() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
