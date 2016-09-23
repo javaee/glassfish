@@ -44,6 +44,8 @@ import java.beans.VetoableChangeListener;
 import java.net.URI;
 import java.util.List;
 
+import org.glassfish.hk2.api.MultiException;
+
 /**
  * This represents XML data and a JavaBean tree
  * 
@@ -258,4 +260,13 @@ public interface XmlRootHandle<T> {
      * a transaction started on it
      */
     public XmlHandleTransaction<T> lockForTransaction() throws IllegalStateException;
+    
+    /**
+     * Does javax validation on the root bean from the root.  This will not
+     * validate any further modifications to this bean.  During validation
+     * the write lock will be held
+     * 
+     * @throws MultiException
+     */
+    public void validate() throws MultiException;
 }

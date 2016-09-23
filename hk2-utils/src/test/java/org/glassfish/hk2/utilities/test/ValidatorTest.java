@@ -37,39 +37,24 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.api;
+package org.glassfish.hk2.utilities.test;
 
-import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.utilities.general.ValidatorUtilities;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
- * Represents a transaction that must eventually
- * be committed in order to release the write lock
- * on the beans in the XmlRootHandle
- * 
  * @author jwells
  *
  */
-public interface XmlHandleTransaction<T> {
+public class ValidatorTest {
     /**
-     * Gets the root handle that started this transaction
-     * 
-     * @return The root handle that began the transaction
+     * Ensures we can get a validator
      */
-    public XmlRootHandle<T> getRootHandle();
-    
-    /**
-     * Attempts to commit all the changes in this
-     * transaction and will release the write lock
-     * 
-     * @throws MultiException if there was an error when committing
-     * the transaction (normally because some validator or
-     * PropertyVetoListener failed)
-     */
-    public void commit() throws MultiException;
-    
-    /**
-     * Abandons this transaction and will release the write lock
-     */
-    public void abandon();
+    @Test
+    public void testCanGetValidator() {
+        Assert.assertNotNull(ValidatorUtilities.getValidator());
+        
+    }
 
 }

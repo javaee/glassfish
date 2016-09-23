@@ -37,39 +37,28 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.api;
+package org.glassfish.hk2.xml.test.validation;
 
-import org.glassfish.hk2.api.MultiException;
+import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.jvnet.hk2.annotations.Contract;
 
 /**
- * Represents a transaction that must eventually
- * be committed in order to release the write lock
- * on the beans in the XmlRootHandle
- * 
  * @author jwells
  *
  */
-public interface XmlHandleTransaction<T> {
-    /**
-     * Gets the root handle that started this transaction
-     * 
-     * @return The root handle that began the transaction
-     */
-    public XmlRootHandle<T> getRootHandle();
+@XmlRootElement(name="validation") @Contract
+public interface ValidationRootBean {
+    @XmlElement @NotNull @XmlID
+    public String getName();
+    public void setName(String name);
     
-    /**
-     * Attempts to commit all the changes in this
-     * transaction and will release the write lock
-     * 
-     * @throws MultiException if there was an error when committing
-     * the transaction (normally because some validator or
-     * PropertyVetoListener failed)
-     */
-    public void commit() throws MultiException;
-    
-    /**
-     * Abandons this transaction and will release the write lock
-     */
-    public void abandon();
+    @XmlElement(name="element-one")
+    @NotNull
+    public String getElementOne();
+    public void setElementOne(String elementOne);
 
 }

@@ -446,6 +446,11 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
     }
     
     @Override
+    public void validate() {
+        throw new AssertionError("validate not yet implemented");
+    }
+    
+    @Override
     public String toString() {
         return "XmlRootHandleImpl(" + root + "," + rootNode + "," + rootURI + "," + System.identityHashCode(this) + ")";
     }    

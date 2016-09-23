@@ -37,39 +37,65 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.api;
+package org.glassfish.hk2.xml.test.validation;
+
+import java.net.URL;
 
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.xml.api.XmlRootHandle;
+import org.glassfish.hk2.xml.api.XmlService;
+import org.glassfish.hk2.xml.test.utilities.Utilities;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
- * Represents a transaction that must eventually
- * be committed in order to release the write lock
- * on the beans in the XmlRootHandle
- * 
  * @author jwells
  *
  */
-public interface XmlHandleTransaction<T> {
-    /**
-     * Gets the root handle that started this transaction
-     * 
-     * @return The root handle that began the transaction
-     */
-    public XmlRootHandle<T> getRootHandle();
+public class ValidationTest {
+    private final static String VALID1_FILE = "valid1.xml";
+    private final static String INVALID1_FILE = "invalid1.xml";
     
     /**
-     * Attempts to commit all the changes in this
-     * transaction and will release the write lock
-     * 
-     * @throws MultiException if there was an error when committing
-     * the transaction (normally because some validator or
-     * PropertyVetoListener failed)
+     * Tests that validation on a valid file works
+     * @throws Exception
      */
-    public void commit() throws MultiException;
+    @Test
+    @org.junit.Ignore
+    public void testValidDocument() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(VALID1_FILE);
+        
+        XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshall(url.toURI(), ValidationRootBean.class);
+        
+        rootHandle.validate();
+    }
     
     /**
-     * Abandons this transaction and will release the write lock
+     * Tests that validation on a valid file works
+     * @throws Exception
      */
-    public void abandon();
+    @Test
+    @org.junit.Ignore
+    public void testInvalidDocument() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(INVALID1_FILE);
+        
+        XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshall(url.toURI(), ValidationRootBean.class);
+        
+        try {
+            rootHandle.validate();
+            Assert.fail("Should have failed");
+        }
+        catch (MultiException me) {
+            // Expected
+        }
+    }
 
 }
