@@ -65,6 +65,10 @@ public interface JMSServerBean extends NamedBean {
     public QueueBean[] getQueues();
     public void setQueues(QueueBean[] queues);
     public void addQueue(QueueBean queue);
-    public void removeQueue(String queueu);
+    public void removeQueue(String queue);
+    
+    @XmlElement(name="compression-algorithm")
+    public String getCompressionAlgorithm();
+    public void setCompressionAlgorithm(String algorithm);
 
 }

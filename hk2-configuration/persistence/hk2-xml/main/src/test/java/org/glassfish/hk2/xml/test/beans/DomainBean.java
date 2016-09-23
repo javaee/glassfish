@@ -63,12 +63,14 @@ public interface DomainBean extends NamedBean {
     public void setMachines(List<MachineBean> machines);
     public void addMachine(MachineBean machine);
     public MachineBean removeMachine(String machine);
+    public MachineBean lookupMachine(String machine);
     
     @XmlElement(name="jms-server")
     public JMSServerBean[] getJMSServers();
     public void setJMSServers(JMSServerBean[] jmsServers);
     public void addJMSServer(JMSServerBean jmsServer);
     public JMSServerBean removeJMSServer(String jmsServer);
+    public JMSServerBean lookupJMSServer(String name);
     
     @XmlElement(name="http-factory") @PluralOf("HTTPFactory")
     public List<HttpFactoryBean> getHTTPFactories();

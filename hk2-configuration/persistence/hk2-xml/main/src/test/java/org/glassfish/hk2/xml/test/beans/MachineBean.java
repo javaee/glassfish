@@ -56,6 +56,7 @@ public interface MachineBean extends NamedBean {
     public void setServers(List<ServerBean> servers);
     public void addServer(ServerBean server);
     public void removeServer(String server);
+    public ServerBean lookupServer(String server);
     
     @XmlElement(name="address")
     public String getAddress();

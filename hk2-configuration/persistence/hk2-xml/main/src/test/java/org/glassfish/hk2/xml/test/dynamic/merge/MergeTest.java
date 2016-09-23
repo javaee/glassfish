@@ -90,6 +90,7 @@ public class MergeTest {
     private final static String BOB_NAME = "Bob";
     public final static String CAROL_NAME = "Carol";
     public final static String DAVE_NAME = "Dave";
+    public final static String EDDIE_NAME = "Eddie";
     
     public final static String TOPIC0_NAME = "Topic0";
     public final static String TOPIC1_NAME = "Topic1";
@@ -111,11 +112,12 @@ public class MergeTest {
     private final static String ALICE_SERVER0_NAME = "Server-0";
     private final static int ALICE_SERVER0_PORT = 12345;
     private final static String DEFAULT_SUBNET = "0.0.0.255";
+    public final static String SERVER1_NAME = "Server-1";
     
     public final static String DOMAIN_TYPE = "/domain";
     public final static String DOMAIN_INSTANCE = "domain";
-    private final static String MACHINE_TYPE = "/domain/machine";
-    private final static String SERVER_TYPE = "/domain/machine/server";
+    public final static String MACHINE_TYPE = "/domain/machine";
+    public final static String SERVER_TYPE = "/domain/machine/server";
     public final static String SECURITY_MANAGER_TYPE = "/domain/security-manager";
     public final static String AUTHORIZATION_PROVIDER_TYPE = "/domain/security-manager/authorization-provider";
     public final static String JMS_SERVER_TYPE = "/domain/jms-server";
@@ -130,10 +132,12 @@ public class MergeTest {
     private final static String ALICE_INSTANCE = "domain.Alice";
     private final static String BOB_INSTANCE = "domain.Bob";
     public final static String DAVE_INSTANCE = "domain.Dave";
+    public final static String EDDIE_INSTANCE = "domain.Eddie";
     private final static String SERVER0_INSTANCE = "domain.Alice.Server-0";
+    public final static String SERVER1_INSTANCE = "domain.Eddie.Server-1";
     public final static String SECURITY_MANAGER_INSTANCE = "domain.security-manager";
     private final static String RSA_INSTANCE = "domain.security-manager.RSA";
-    private final static String JMS_SERVER_INSTANCE = "domain.Carol";
+    public final static String JMS_SERVER_CAROL_INSTANCE = "domain.Carol";
     private final static String TOPIC0_INSTANCE = "domain.Carol.Topic0";
     private final static String TOPIC1_INSTANCE = "domain.Carol.Topic1";
     private final static String QUEUE0_INSTANCE = "domain.Carol.Queue0";
@@ -146,6 +150,9 @@ public class MergeTest {
     private final static String ATZ_DOMAIN_PFX_TAG = "domain-pfx";
     public final static String SUBNET_TAG = "subnetwork";
     public final static String TAXONOMY_TAG = "taxonomy";
+    public final static String COMPRESSION_TAG = "compression-algorithm";
+    
+    public final static String LZ_COMPRESSION = "LZ";
     
     /**
      * Modifies two properties with one transaction in a merge
@@ -392,6 +399,8 @@ public class MergeTest {
                 Assert.assertEquals(QUEUE0_NAME, queues[0].getName());
                 Assert.assertEquals(QUEUE1_NAME, queues[1].getName());
                 Assert.assertEquals(QUEUE2_NAME, queues[2].getName());
+                
+                Assert.assertNull(jmsServer.getCompressionAlgorithm());
             }
             else if (lcv == 1) {
                 Assert.assertEquals("Did not find name in " + jmsServer, DAVE_NAME, jmsServer.getName());
@@ -405,6 +414,8 @@ public class MergeTest {
                 Assert.assertEquals(1, queues.length);
             
                 Assert.assertEquals(QUEUED0_NAME, queues[0].getName());
+                
+                Assert.assertNull(jmsServer.getCompressionAlgorithm());
             }
             lcv++;
         }
@@ -526,7 +537,7 @@ public class MergeTest {
             }
         }
         
-        assertNameOnlyBean(hub, JMS_SERVER_TYPE, JMS_SERVER_INSTANCE, CAROL_NAME);
+        assertNameOnlyBean(hub, JMS_SERVER_TYPE, JMS_SERVER_CAROL_INSTANCE, CAROL_NAME);
         
         assertNameOnlyBean(hub, TOPIC_TYPE, TOPIC0_INSTANCE, TOPIC0_NAME);
         assertNameOnlyBean(hub, TOPIC_TYPE, TOPIC1_INSTANCE, TOPIC1_NAME);
@@ -595,8 +606,8 @@ public class MergeTest {
         assertNotInHub(hub, SERVER_TYPE, SERVER0_INSTANCE);
         assertNotInHub(hub, SECURITY_MANAGER_TYPE, SECURITY_MANAGER_INSTANCE);
         assertNotInHub(hub, AUTHORIZATION_PROVIDER_TYPE, RSA_INSTANCE);
-        assertNotInHub(hub, JMS_SERVER_TYPE, JMS_SERVER_INSTANCE);
-        assertNotInHub(hub, JMS_SERVER_TYPE, JMS_SERVER_INSTANCE);
+        assertNotInHub(hub, JMS_SERVER_TYPE, JMS_SERVER_CAROL_INSTANCE);
+        assertNotInHub(hub, JMS_SERVER_TYPE, JMS_SERVER_CAROL_INSTANCE);
         assertNotInHub(hub, TOPIC_TYPE, TOPIC0_INSTANCE);
         assertNotInHub(hub, TOPIC_TYPE, TOPIC1_INSTANCE);
         assertNotInHub(hub, QUEUE_TYPE, QUEUE0_INSTANCE);
@@ -757,7 +768,7 @@ public class MergeTest {
     }
     
     @SuppressWarnings("unchecked")
-    private static Instance assertNameOnlyBean(Hub hub, String type, String instance, String expectedName) {
+    public static Instance assertNameOnlyBean(Hub hub, String type, String instance, String expectedName) {
         Instance namedInstance = hub.getCurrentDatabase().getInstance(type, instance);
         Assert.assertNotNull("Could not find instance of " + type + "," + instance, namedInstance);
         
