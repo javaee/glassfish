@@ -37,64 +37,38 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.hk2Config.test.customizers;
+package org.glassfish.hk2.xml.internal;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeListener;
-
-import javax.inject.Singleton;
-
-import org.glassfish.hk2.xml.hk2Config.test.beans.AuditableBean;
+import org.glassfish.hk2.api.DynamicConfiguration;
+import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 
 /**
  * @author jwells
  *
  */
-@Singleton
-public class AuditableListener implements VetoableChangeListener {
-    private int numTimesCalled = 0;
-
-    /* (non-Javadoc)
-     * @see java.beans.VetoableChangeListener#vetoableChange(java.beans.PropertyChangeEvent)
-     */
-    @Override
-    public void vetoableChange(PropertyChangeEvent evt) throws PropertyVetoException {
-        numTimesCalled++;
-        
-        if ("created-on".equals(evt.getPropertyName()) ||
-            "updated-on".equals(evt.getPropertyName()) ||
-            "deleted-on".equals(evt.getPropertyName())) {
-            return;
-        }
-        
-        if (!(evt.getSource() instanceof AuditableBean)) {
-            return;
-        }
-        
-        AuditableBean auditable = (AuditableBean) evt.getSource();
-        
-        if (evt.getOldValue() == null && evt.getNewValue() != null &&
-                (evt.getNewValue() instanceof AuditableBean) &&
-                auditable.equals(evt.getNewValue())) {
-            // This is a new
-            auditable.setCreatedOn(System.currentTimeMillis());
-            return;
-        }
-        
-        if (evt.getOldValue() != null && evt.getNewValue() == null &&
-                (evt.getOldValue() instanceof AuditableBean) &&
-                (auditable.equals(evt.getOldValue()))) {
-            // This is a delete
-            auditable.setDeletedOn(System.currentTimeMillis());
-            return;
-        }
-        
-        // This is some other random property on an Auditable
-        auditable.setUpdatedOn(System.currentTimeMillis());
+public class XmlDynamicChange {
+    public static XmlDynamicChange EMPTY = new XmlDynamicChange(null, null, null);
+    
+    private final WriteableBeanDatabase userDatabase;
+    private final DynamicConfiguration userDynamicConfiguration;
+    private final DynamicConfiguration systemDynamicConfiguration;
+    
+    public XmlDynamicChange(WriteableBeanDatabase userDatabase, DynamicConfiguration userDynamicConfiguration, DynamicConfiguration systemDynamicConfiguration) {
+        this.userDatabase = userDatabase;
+        this.userDynamicConfiguration = userDynamicConfiguration;
+        this.systemDynamicConfiguration = systemDynamicConfiguration;
     }
     
-    public int getNumTimesCalled() {
-        return numTimesCalled;
+    public WriteableBeanDatabase getBeanDatabase() {
+        return userDatabase;
     }
+    
+    public DynamicConfiguration getDynamicConfiguration() {
+        return userDynamicConfiguration;
+    }
+    
+    public DynamicConfiguration getSystemDynamicConfiguration() {
+        return systemDynamicConfiguration;
+    }
+
 }

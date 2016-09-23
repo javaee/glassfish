@@ -281,7 +281,6 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
             retVal._setParent(theCopiedParent);
         }
         
-        
         String keyPropertyName = retVal._getKeyPropertyName();
         if (keyPropertyName != null) {
             String keyProperty = retVal._getKeyValue();

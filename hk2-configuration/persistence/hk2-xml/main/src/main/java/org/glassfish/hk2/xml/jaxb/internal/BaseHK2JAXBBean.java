@@ -58,10 +58,8 @@ import java.util.Set;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Customizer;
-import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
@@ -70,7 +68,6 @@ import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
-import org.glassfish.hk2.xml.api.XmlHubCommitMessage;
 import org.glassfish.hk2.xml.internal.ChildDataModel;
 import org.glassfish.hk2.xml.internal.ChildType;
 import org.glassfish.hk2.xml.internal.DynamicChangeInfo;
@@ -101,7 +98,9 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
     /**
      * All fields, including child lists and direct children
      */
-    private final HashMap<String, Object> beanLikeMap = new HashMap<String, Object>();
+    private HashMap<String, Object> beanLikeMap = new HashMap<String, Object>();
+    
+    private HashMap<String, Object> backupMap = null;
     
     /**
      * All children whose type has an identifier.  First key is the xml parameter name, second
@@ -253,14 +252,28 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
             
             changeControl.getWriteLock().lock();
             try {
-                Utilities.invokeVetoableChangeListeners(changeControl, this,
+                changeControl.startOrContinueChange(this);
+                boolean success = false;
+                
+                try {
+                    Utilities.invokeVetoableChangeListeners(changeControl, this,
                         beanLikeMap.get(propName), propValue, propName);
                 
-                if (changeInHub) {
-                    changeInHubDirect(propName, propValue);
-                }
+                    if (changeInHub) {
+                        changeInHubDirect(propName, propValue);
+                    }
                 
-                beanLikeMap.put(propName, propValue);
+                    if (backupMap == null) {
+                        backupMap = new HashMap<String, Object>(beanLikeMap);
+                    }
+                
+                    beanLikeMap.put(propName, propValue);
+                    
+                    success = true;
+                }
+                finally {
+                    changeControl.endOrDeferChange(success);
+                }
             }
             finally {
                 changeControl.getWriteLock().unlock();
@@ -555,7 +568,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         
         changeControl.getWriteLock().lock();
         try {
-            XmlDynamicChange change = changeControl.startOrContinueChange();
+            XmlDynamicChange change = changeControl.startOrContinueChange(this);
             
             LinkedList<ActiveDescriptor<?>> addedServices = new LinkedList<ActiveDescriptor<?>>();
             Object retVal;
@@ -715,7 +728,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         
         changeControl.getWriteLock().lock();
         try {
-            XmlDynamicChange xmlDynamicChange = changeControl.startOrContinueChange();
+            XmlDynamicChange xmlDynamicChange = changeControl.startOrContinueChange(this);
             
             Object retVal;
             boolean success = false;
@@ -771,15 +784,15 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         if (changeControl == null) {
             if (active) {
                 synchronized (this) {
-                    return Collections.unmodifiableMap(beanLikeMap);
+                    return Collections.unmodifiableMap(new HashMap<String, Object>(beanLikeMap));
                 }
             }
-            return Collections.unmodifiableMap(beanLikeMap);
+            return Collections.unmodifiableMap(new HashMap<String, Object>(beanLikeMap));
         }
         
         changeControl.getReadLock().lock();
         try {
-            return Collections.unmodifiableMap(beanLikeMap);
+            return Collections.unmodifiableMap(new HashMap<String, Object>(beanLikeMap));
         }
         finally {
             changeControl.getReadLock().unlock();
@@ -1051,15 +1064,18 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
     private void changeInHubDirect(String propName, Object propValue) {
         if (changeControl == null) return;
         
-        XmlDynamicChange xmlDynamicChange = changeControl.startOrContinueChange();
+        XmlDynamicChange xmlDynamicChange = changeControl.startOrContinueChange(this);
         
         boolean success = false;
         try {
             WriteableBeanDatabase wbd = xmlDynamicChange.getBeanDatabase();
             
-            if (wbd == null) return;
+            if (wbd == null) {
+                success = true;
+                return;
+            }
             
-            boolean changed = changeInHub(propName, propValue, wbd);
+            changeInHub(propName, propValue, wbd);
             
             success = true;
         }
@@ -1094,6 +1110,23 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
     @Override
     public ActiveDescriptor<?> _getSelfDescriptor() {
         return selfDescriptor;
+    }
+    
+    /**
+     * Write lock must be held
+     */
+    public void __activateChange() {
+        backupMap = null;
+    }
+    
+    /**
+     * Write lock must be held
+     */
+    public void __rollbackChange() {
+        if (backupMap == null) return;
+        
+        beanLikeMap = backupMap;
+        backupMap = null;
     }
     
     @Override

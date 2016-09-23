@@ -56,6 +56,7 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.xml.api.XmlHubCommitMessage;
+import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 
 /**
  * @author jwells
@@ -74,6 +75,7 @@ public class DynamicChangeInfo {
     private final DynamicConfigurationService dynamicService;
     private final ServiceLocator locator;
     private final LinkedHashSet<VetoableChangeListener> listeners = new LinkedHashSet<VetoableChangeListener>();
+    private final LinkedHashSet<BaseHK2JAXBBean> participants = new LinkedHashSet<BaseHK2JAXBBean>();
     
     private XmlDynamicChange dynamicChange = null;
     private int changeDepth = 0;
@@ -139,8 +141,9 @@ public class DynamicChangeInfo {
      * 
      * @return
      */
-    public XmlDynamicChange startOrContinueChange() {
+    public XmlDynamicChange startOrContinueChange(BaseHK2JAXBBean participant) {
         changeDepth++;
+        participants.add(participant);
         
         if (dynamicChange != null) return dynamicChange;
         
@@ -185,12 +188,24 @@ public class DynamicChangeInfo {
         
         if (changeDepth > 0) return;
         
+        List<BaseHK2JAXBBean> localParticipants = new ArrayList<BaseHK2JAXBBean>(participants);
+        participants.clear();
+        
         XmlDynamicChange localDynamicChange = dynamicChange;
         dynamicChange = null;
         
         if (localDynamicChange == null) return;
         
-        if (!globalSuccess) return;
+        if (!globalSuccess) {
+            for (BaseHK2JAXBBean participant : localParticipants) {
+                participant.__rollbackChange();
+            }
+            return;
+        }
+        
+        for (BaseHK2JAXBBean participant : localParticipants) {
+            participant.__activateChange();
+        }
         
         DynamicConfiguration systemChange = localDynamicChange.getSystemDynamicConfiguration();
         WriteableBeanDatabase wbd = localDynamicChange.getBeanDatabase();
@@ -248,5 +263,10 @@ public class DynamicChangeInfo {
         finally {
             readTreeLock.unlock();
         }
+    }
+    
+    @Override
+    public String toString() {
+        return "DynamicChangeInfo(inLocator=" + advertiseInLocator + ",inHub=" + advertiseInHub + "," + System.identityHashCode(this) + ")";
     }
 }

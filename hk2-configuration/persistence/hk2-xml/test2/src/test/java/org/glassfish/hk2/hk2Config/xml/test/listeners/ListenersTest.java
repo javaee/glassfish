@@ -462,8 +462,7 @@ public class ListenersTest {
         ServiceLocator locator = LocatorUtilities.createDomLocator(
                 PropertyBagCustomizerImpl.class,
                 KingdomCustomizer.class,
-                PhylaCustomizer.class,
-                DaveHatingListener.class);
+                PhylaCustomizer.class);
         
         XmlService xmlService = locator.getService(XmlService.class);
         Hub hub = locator.getService(Hub.class);
@@ -471,7 +470,9 @@ public class ListenersTest {
         URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
         
         XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, true);
-        rootHandle.addChangeListener(new DaveHatingListener(), new AuditableListener());
+        
+        AuditableListener auditableListener = new AuditableListener();
+        rootHandle.addChangeListener(new DaveHatingListener(), auditableListener);
         
         KingdomConfig kingdom = rootHandle.getRoot();
         OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
@@ -487,8 +488,14 @@ public class ListenersTest {
             Assert.assertTrue(me.getMessage(), me.getMessage().contains(EXPECTED_MESSAGE2));
         }
         
-        // This shows that the subsequent listener (auditable) was invoked
-        Assert.assertTrue(alice.getUpdatedOn() > 0);
+        // This shows that no change was made to the bean at all
+        Assert.assertEquals(0L, alice.getUpdatedOn());
+        
+        // This shows that the subsequent listener WAS called since the DaveHatingListener
+        // did not throw a PropertyVetoException
+        // 1.  For the "updated-on" property
+        // 2.  For the "shell-type" property
+        Assert.assertEquals(2, auditableListener.getNumTimesCalled());
     }
     
     /**
@@ -498,13 +505,12 @@ public class ListenersTest {
      */
     @SuppressWarnings("unchecked")
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testPropertyNotChangedOnVeto() throws Exception {
         ServiceLocator locator = LocatorUtilities.createDomLocator(
                 PropertyBagCustomizerImpl.class,
                 KingdomCustomizer.class,
                 PhylaCustomizer.class);
-        
         XmlService xmlService = locator.getService(XmlService.class);
         Hub hub = locator.getService(Hub.class);
         
@@ -533,7 +539,7 @@ public class ListenersTest {
             Map<String, Object> propMap = (Map<String, Object>) scienceInstance.getBean();
             Assert.assertEquals(OldConfigTest.DARWIN_NAME, propMap.get(OldConfigTest.NAME_TAG));
             Assert.assertEquals(OldConfigTest.NATURALIST_FIELD, propMap.get(OldConfigTest.FIELD_TAG));
-            Assert.assertEquals(new Long(0), propMap.get("updated-on"));
+            Assert.assertNull(propMap.get("updated-on"));
         }
         
         Assert.assertEquals(OldConfigTest.NATURALIST_FIELD, darwin.getField());

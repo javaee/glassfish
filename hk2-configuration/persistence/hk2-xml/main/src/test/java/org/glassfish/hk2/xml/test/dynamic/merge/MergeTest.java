@@ -339,6 +339,7 @@ public class MergeTest {
             Assert.assertEquals(RSA_DOM_PFX, atzProvider.getAtzDomainPrefix());
             aliceRef = atzProvider.getMachine();
         }
+        Assert.assertNotNull(aliceRef);
         
         List<MachineBean> machines = root.getMachines();
         Assert.assertNotNull(machines);

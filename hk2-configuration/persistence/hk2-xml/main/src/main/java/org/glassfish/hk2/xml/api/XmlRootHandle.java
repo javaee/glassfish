@@ -198,7 +198,7 @@ public interface XmlRootHandle<T> {
      * Rules for change listener:
      * <UL>
      * <LI>Adds of beans with children will get called back for each child and sub-child added</LI>
-     * <LI>Add listener callbacks will happen depth first but children at the same level are handled in any order</LI>
+     * <LI>Add listener callbacks will happen parent first but children at the same level are handled in any order</LI>
      * <LI>Removes of beans with children will ONLY get called back for the root bean removed</LI>
      * <LI>The List or Array or Direct child of a removed child will be called with a modify since that element was modified</LI>
      * <LI>Listeners are run in the order in which they are added</LI>
