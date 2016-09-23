@@ -37,38 +37,38 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.internal;
+package org.glassfish.hk2.xml.api;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
+import org.glassfish.hk2.api.MultiException;
 
 /**
+ * Represents a transaction that must eventually
+ * be committed in order to release the write lock
+ * on the beans in the XmlRootHandle
+ * 
  * @author jwells
  *
  */
-public class XmlDynamicChange {
-    public static final XmlDynamicChange EMPTY = new XmlDynamicChange(null, null, null);
+public interface XmlHandleTransaction<T> {
+    /**
+     * Gets the root handle that started this transaction
+     * 
+     * @return The root handle that began the transaction
+     */
+    public XmlRootHandle<T> getRootHandle();
     
-    private final WriteableBeanDatabase userDatabase;
-    private final DynamicConfiguration userDynamicConfiguration;
-    private final DynamicConfiguration systemDynamicConfiguration;
+    /**
+     * Attempts to commit all the changes in this
+     * transaction and will release the write lock
+     * @throws MultiException if there was an error when committing
+     * the transaction (normally because some validator or
+     * PropertyVetoListener failed)
+     */
+    public void commit() throws MultiException;
     
-    public XmlDynamicChange(WriteableBeanDatabase userDatabase, DynamicConfiguration userDynamicConfiguration, DynamicConfiguration systemDynamicConfiguration) {
-        this.userDatabase = userDatabase;
-        this.userDynamicConfiguration = userDynamicConfiguration;
-        this.systemDynamicConfiguration = systemDynamicConfiguration;
-    }
-    
-    public WriteableBeanDatabase getBeanDatabase() {
-        return userDatabase;
-    }
-    
-    public DynamicConfiguration getDynamicConfiguration() {
-        return userDynamicConfiguration;
-    }
-    
-    public DynamicConfiguration getSystemDynamicConfiguration() {
-        return systemDynamicConfiguration;
-    }
+    /**
+     * Abandons this transaction and will release the write lock
+     */
+    public void abandon();
 
 }

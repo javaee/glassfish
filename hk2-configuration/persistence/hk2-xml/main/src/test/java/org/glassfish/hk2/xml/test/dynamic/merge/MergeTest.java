@@ -110,9 +110,10 @@ public class MergeTest {
     private final static String ALICE_ADDRESS = "10.0.0.1";
     private final static String ALICE_SERVER0_NAME = "Server-0";
     private final static int ALICE_SERVER0_PORT = 12345;
+    private final static String DEFAULT_SUBNET = "0.0.0.255";
     
-    private final static String DOMAIN_TYPE = "/domain";
-    private final static String DOMAIN_INSTANCE = "domain";
+    public final static String DOMAIN_TYPE = "/domain";
+    public final static String DOMAIN_INSTANCE = "domain";
     private final static String MACHINE_TYPE = "/domain/machine";
     private final static String SERVER_TYPE = "/domain/machine/server";
     public final static String SECURITY_MANAGER_TYPE = "/domain/security-manager";
@@ -143,6 +144,8 @@ public class MergeTest {
     private final static String ADDRESS_TAG = "address";
     private final static String PORT_TAG = "port";
     private final static String ATZ_DOMAIN_PFX_TAG = "domain-pfx";
+    public final static String SUBNET_TAG = "subnetwork";
+    public final static String TAXONOMY_TAG = "taxonomy";
     
     /**
      * Modifies two properties with one transaction in a merge
@@ -315,6 +318,9 @@ public class MergeTest {
     private static void verifyDomain1XmlDomain(DomainBean root, Hub hub, ServiceLocator locator, boolean didDefault) {
         Assert.assertEquals("Failing bean is " + root, DOMAIN1_NAME, root.getName());
         
+        Assert.assertEquals(DEFAULT_SUBNET, root.getSubnetwork());
+        Assert.assertNull(root.getTaxonomy());
+        
         SecurityManagerBean securityManager = root.getSecurityManager();
         Assert.assertNotNull(securityManager);
         
@@ -463,8 +469,9 @@ public class MergeTest {
             Instance domainInstance = hub.getCurrentDatabase().getInstance(DOMAIN_TYPE, DOMAIN_INSTANCE);
             Assert.assertNotNull(domainInstance);
         
-            // TODO: When domain has attributes check them here
-            // Map<String, Object> domainMap = (Map<String, Object>) domainInstance.getBean();
+            Map<String, Object> domainMap = (Map<String, Object>) domainInstance.getBean();
+            Assert.assertNull(domainMap.get(SUBNET_TAG));
+            Assert.assertNull(domainMap.get(TAXONOMY_TAG));
         }
         
         {

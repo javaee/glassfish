@@ -82,4 +82,12 @@ public interface DomainBean extends NamedBean {
     public HttpsFactoryBean addHTTPSFactory(HttpFactoryBean factory);
     public void removeHTTPSFactory(HttpsFactoryBean factory);
     public void removeHTTPSFactory(int index);
+    
+    @XmlElement(name="subnetwork", defaultValue="0.0.0.255")
+    public String getSubnetwork();
+    public void setSubnetwork(String subnetwork);
+    
+    @XmlElement(name="taxonomy")
+    public String getTaxonomy();
+    public void setTaxonomy(String taxonomy);
 }

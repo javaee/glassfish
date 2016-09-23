@@ -230,4 +230,32 @@ public interface XmlRootHandle<T> {
      * or modified
      */
     public List<VetoableChangeListener> getChangeListeners();
+    
+    /**
+     * This method will lock the bean tree represented by
+     * this XmlRootHandle and start a transaction.  Any changes
+     * made while this transaction is in-flight will not be
+     * visible to any other thread until this transaction is
+     * committed.  This transaction MUST be committed or abandoned
+     * before any other thread can get access to any beans in
+     * this tree.
+     * <p>
+     * In particular, the code using this transaction should logically
+     * behave like the following code:
+     * <pre>
+     * XmlHandleTransaction<Foo> transaction = root.lockForTransaction();
+     * try {
+     *   // Do many many edits all at once
+     * }
+     * finally {
+     *   transaction.commit();
+     * }
+     * </code>
+     * 
+     * @return The never null transaction object that must either be abandoned
+     * or committed before the write lock on this bean tree is released
+     * @throws IllegalStateException if this bean tree is not allowed to have
+     * a transaction started on it
+     */
+    public XmlHandleTransaction<T> lockForTransaction() throws IllegalStateException;
 }

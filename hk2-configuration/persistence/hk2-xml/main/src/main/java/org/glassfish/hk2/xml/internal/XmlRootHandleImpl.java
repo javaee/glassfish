@@ -55,6 +55,7 @@ import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
+import org.glassfish.hk2.xml.api.XmlHandleTransaction;
 import org.glassfish.hk2.xml.api.XmlHubCommitMessage;
 import org.glassfish.hk2.xml.api.XmlRootCopy;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
@@ -433,8 +434,21 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
         return changeControl.getChangeListeners();
     }
     
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlRootHandle#lockForTransaction()
+     */
+    @Override
+    public XmlHandleTransaction<T> lockForTransaction()
+            throws IllegalStateException {
+        if (changeControl == null) throw new IllegalStateException();
+        
+        throw new AssertionError("not yet implemented");
+    }
+    
     @Override
     public String toString() {
         return "XmlRootHandleImpl(" + root + "," + rootNode + "," + rootURI + "," + System.identityHashCode(this) + ")";
     }
+
+    
 }

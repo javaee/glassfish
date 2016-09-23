@@ -79,6 +79,7 @@ public class DynamicChangeInfo {
     
     private XmlDynamicChange dynamicChange = null;
     private int changeDepth = 0;
+    private boolean globalSuccess = true;
     
     /* package */ DynamicChangeInfo(JAUtilities jaUtilities,
             Hub hub,
@@ -146,6 +147,7 @@ public class DynamicChangeInfo {
         participants.add(participant);
         
         if (dynamicChange != null) return dynamicChange;
+        globalSuccess = true;
         
         DynamicConfiguration change = null;
         DynamicConfiguration systemChange = null;
@@ -173,7 +175,7 @@ public class DynamicChangeInfo {
         return dynamicChange;
     }
     
-    private boolean globalSuccess = true;
+    
     
     /**
      * Write lock MUST be held!
