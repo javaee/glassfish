@@ -242,5 +242,35 @@ public class ValidationTest {
             // Expected
         }
     }
+    
+    /**
+     * Tests that validation on a valid file works
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testAddInvalidListChild() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(VALID2_FILE);
+        
+        XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshall(url.toURI(), ValidationRootBean.class);
+        
+        rootHandle.startValidating();
+        
+        ValidationChildBean listChild = xmlService.createBean(ValidationChildBean.class);
+        
+        // Do NOT fill in ElementTwo
+        ValidationRootBean root = rootHandle.getRoot();
+        
+        try {
+            root.addListChild(listChild);
+            Assert.fail("Add of invalid bean should have failed");
+        }
+        catch (ConstraintViolationException me) {
+            // Expected
+        }
+    }
 
 }
