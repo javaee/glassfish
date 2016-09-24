@@ -406,7 +406,7 @@ public class Utilities {
         }
         
         // Now freeze it
-        child._setDynamicChangeInfo(changeInformation);
+        child._setDynamicChangeInfo((XmlRootHandleImpl<?>) myParent._getRoot(), changeInformation);
         
         externalAdd(child, xmlDynamicChange.getDynamicConfiguration(), xmlDynamicChange.getBeanDatabase(), addedServices);
         
@@ -595,7 +595,8 @@ public class Utilities {
             ClassReflectionHelper helper,
             WriteableBeanDatabase writeableDatabase,
             DynamicConfiguration dynamicService,
-            List<ActiveDescriptor<?>> addedServices) {
+            List<ActiveDescriptor<?>> addedServices,
+            XmlRootHandleImpl<?> xmlRootHandle) {
         if (!(rawRoot instanceof BaseHK2JAXBBean)) {
             throw new IllegalArgumentException("The root added must be from XmlService.createBean");
         }
@@ -622,7 +623,7 @@ public class Utilities {
         handleChildren(child, childToCopy, changeInfo, addedServices, XmlDynamicChange.EMPTY);
             
         // Now freeze it
-        child._setDynamicChangeInfo(changeInfo);
+        child._setDynamicChangeInfo(xmlRootHandle, changeInfo);
         
         externalAdd(child, dynamicService, writeableDatabase, addedServices);
         

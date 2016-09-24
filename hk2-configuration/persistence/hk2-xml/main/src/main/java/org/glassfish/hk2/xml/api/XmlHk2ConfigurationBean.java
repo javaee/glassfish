@@ -129,4 +129,13 @@ public interface XmlHk2ConfigurationBean {
      * @return The child or null if not found
      */
     public Object _lookupChild(String propName, String keyValue);
+    
+    /**
+     * Gets the root associated with this bean.  If this bean
+     * has no associated root this will return null
+     * 
+     * @return The root of this bean, or null if this bean
+     * is not associated with a root
+     */
+    public XmlRootHandle<?> _getRoot();
 }

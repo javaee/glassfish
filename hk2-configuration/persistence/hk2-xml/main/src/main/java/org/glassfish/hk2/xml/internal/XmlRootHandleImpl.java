@@ -59,7 +59,6 @@ import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
-import org.glassfish.hk2.utilities.general.ValidatorUtilities;
 import org.glassfish.hk2.xml.api.XmlHandleTransaction;
 import org.glassfish.hk2.xml.api.XmlHubCommitMessage;
 import org.glassfish.hk2.xml.api.XmlRootCopy;
@@ -221,7 +220,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
         }
     }
     
-    private static BaseHK2JAXBBean doCopy(BaseHK2JAXBBean copyMe,
+    private BaseHK2JAXBBean doCopy(BaseHK2JAXBBean copyMe,
             DynamicChangeInfo copyController,
             BaseHK2JAXBBean theCopiedParent,
             Map<ReferenceKey, BaseHK2JAXBBean> referenceMap,
@@ -321,7 +320,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
             }
         }
         
-        retVal._setDynamicChangeInfo(copyController, false);
+        retVal._setDynamicChangeInfo(this, copyController, false);
         
         return retVal;
     }
@@ -362,7 +361,8 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
                     parent.getClassReflectionHelper(),
                     wbd,
                     config,
-                    addedServices);
+                    addedServices,
+                    this);
             
             if (config != null) {
                 config.commit();

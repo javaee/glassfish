@@ -214,11 +214,13 @@ public class XmlServiceImpl implements XmlService {
                 advertise,
                 serviceLocator);
         
+        XmlRootHandleImpl<T> retVal = new XmlRootHandleImpl<T>(this, hub, root, model, uri, advertise, advertiseInHub, changeControl);
+        
         for (BaseHK2JAXBBean base : listener.getAllBeans()) {
             String instanceName = Utilities.createInstanceName(base);
             base._setInstanceName(instanceName);
             
-            base._setDynamicChangeInfo(changeControl);
+            base._setDynamicChangeInfo(retVal, changeControl);
             
             if (DEBUG_PARSING) {
                 Logger.getLogger().debug("XmlServiceDebug found bean " + base);
@@ -237,6 +239,15 @@ public class XmlServiceImpl implements XmlService {
         
         DynamicConfiguration config = (advertise) ? dynamicConfigurationService.createDynamicConfiguration() : null ;
         WriteableBeanDatabase wdb = (advertiseInHub) ? hub.getWriteableDatabaseCopy() : null ;
+        
+        boolean attachedTransaction = false;
+        if (config != null && wdb != null) {
+            attachedTransaction = true;
+            
+            wdb.setCommitMessage(new XmlHubCommitMessage() {});
+            
+            config.registerTwoPhaseResources(wdb.getTwoPhaseResource());
+        }
         
         LinkedList<BaseHK2JAXBBean> allBeans = listener.getAllBeans();
         List<ActiveDescriptor<?>> addedDescriptors = new ArrayList<ActiveDescriptor<?>>(allBeans.size());
@@ -265,7 +276,7 @@ public class XmlServiceImpl implements XmlService {
             Logger.getLogger().debug("Time to advertise " + uri + " in HK2 is " + elapsedHK2Advertisement + " milliseconds");
         }
         
-        if (wdb != null) {
+        if (wdb != null && !attachedTransaction) {
             wdb.commit(new XmlHubCommitMessage() {});
         }
         
@@ -281,7 +292,7 @@ public class XmlServiceImpl implements XmlService {
             Logger.getLogger().debug("Time to advertise " + uri + " in Hub is " + elapsedHubAdvertisement + " milliseconds");
         }
         
-        return new XmlRootHandleImpl<T>(this, hub, root, model, uri, advertise, advertiseInHub, changeControl);
+        return retVal;
     }
     
     

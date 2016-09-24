@@ -68,6 +68,7 @@ import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
+import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.internal.ChildDataModel;
 import org.glassfish.hk2.xml.internal.ChildType;
 import org.glassfish.hk2.xml.internal.DynamicChangeInfo;
@@ -75,6 +76,7 @@ import org.glassfish.hk2.xml.internal.ModelImpl;
 import org.glassfish.hk2.xml.internal.ParentedModel;
 import org.glassfish.hk2.xml.internal.Utilities;
 import org.glassfish.hk2.xml.internal.XmlDynamicChange;
+import org.glassfish.hk2.xml.internal.XmlRootHandleImpl;
 
 /**
  * @author jwells
@@ -138,6 +140,12 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * in-memory node in a tree hierarchy
      */
     private volatile transient DynamicChangeInfo changeControl;
+    
+    /**
+     * The root of this bean, or null if there is no root
+     * for this bean
+     */
+    private volatile transient XmlRootHandleImpl<?> root;
     
     /**
      * If true this bean has been given to the user to
@@ -876,8 +884,8 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         return sb.toString();
     }
     
-    public void _setDynamicChangeInfo(DynamicChangeInfo change) {
-        _setDynamicChangeInfo(change, true);
+    public void _setDynamicChangeInfo(XmlRootHandleImpl<?> root, DynamicChangeInfo change) {
+        _setDynamicChangeInfo(root, change, true);
     }
     
     /**
@@ -890,12 +898,13 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * is some sort of copy operation where the xmlPath has been pre-calculated and does not
      * need to be modified
      */
-    public void _setDynamicChangeInfo(DynamicChangeInfo change, boolean doXmlPathCalculation) {
+    public void _setDynamicChangeInfo(XmlRootHandleImpl<?> root, DynamicChangeInfo change, boolean doXmlPathCalculation) {
         if (doXmlPathCalculation) {
             xmlPath = calculateXmlPath(this);
         }
         
         changeControl = change;
+        this.root = root;
         if (changeControl != null) active = true;
     }
     
@@ -1127,6 +1136,17 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         
         beanLikeMap = backupMap;
         backupMap = null;
+    }
+    
+    /**
+     * Gets the root associated with this bean.  If this bean
+     * has no associated root this will return null
+     * 
+     * @return The root of this bean, or null if this bean
+     * is not associated with a root
+     */
+    public XmlRootHandle<?> _getRoot() {
+        return root;
     }
     
     @Override
