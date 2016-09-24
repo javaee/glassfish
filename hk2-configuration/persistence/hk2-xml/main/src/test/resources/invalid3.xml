@@ -44,15 +44,15 @@
   <name>Alice</name>
   <element-one>E1</element-one>
   
-  <list-child/>
+  <list-child>
+  	<element-two>E2</element-two>
+  </list-child>
   
   <array-child>
   	<element-three>E3</element-three>
   </array-child>
   
-  <array-child>
-  	<element-three>E3</element-three>
-  </array-child>
+  <array-child/>
   
   <direct-child>
   	<element-four>E4</element-four>

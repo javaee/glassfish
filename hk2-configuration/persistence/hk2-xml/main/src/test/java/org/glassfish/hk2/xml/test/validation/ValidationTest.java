@@ -61,6 +61,8 @@ public class ValidationTest {
     private final static String VALID2_FILE = "valid2.xml";
     private final static String INVALID1_FILE = "invalid1.xml";
     private final static String INVALID2_FILE = "invalid2.xml";
+    private final static String INVALID3_FILE = "invalid3.xml";
+    private final static String INVALID4_FILE = "invalid4.xml";
     
     private final static String E1 = "E1";
     
@@ -183,6 +185,52 @@ public class ValidationTest {
         XmlService xmlService = locator.getService(XmlService.class);
         
         URL url = getClass().getClassLoader().getResource(INVALID2_FILE);
+        
+        XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshall(url.toURI(), ValidationRootBean.class);
+        
+        try {
+            rootHandle.startValidating();
+            Assert.fail("Should have failed");
+        }
+        catch (ConstraintViolationException me) {
+            // Expected
+        }
+    }
+    
+    /**
+     * Tests that validation on an invalid list child fails
+     * @throws Exception
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testValidDocumentWithInvalidArrayChild() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(INVALID3_FILE);
+        
+        XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshall(url.toURI(), ValidationRootBean.class);
+        
+        try {
+            rootHandle.startValidating();
+            Assert.fail("Should have failed");
+        }
+        catch (ConstraintViolationException me) {
+            // Expected
+        }
+    }
+    
+    /**
+     * Tests that validation on an invalid list child fails
+     * @throws Exception
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testValidDocumentWithInvalidDirectChild() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(INVALID4_FILE);
         
         XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshall(url.toURI(), ValidationRootBean.class);
         
