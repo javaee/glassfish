@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.xml.internal;
 
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -46,7 +47,14 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
+import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
+import org.glassfish.hk2.utilities.reflection.MethodWrapper;
+import org.glassfish.hk2.xml.internal.alt.AltMethod;
+import org.glassfish.hk2.xml.internal.alt.clazz.MethodAltMethodImpl;
 import org.glassfish.hk2.xml.spi.Model;
 
 /**
@@ -95,6 +103,7 @@ public class ModelImpl implements Model {
     private Set<String> keyedChildren = null;
     private transient JAUtilities jaUtilities = null;
     private ClassLoader myLoader;
+    private Map<String, String> keyToJavaNameMap = null;
     
     public ModelImpl() {
     }
@@ -280,6 +289,63 @@ public class ModelImpl implements Model {
         synchronized (lock) {
             return Collections.unmodifiableMap(childrenByName);
         }
+    }
+    
+    public synchronized String getJavaNameFromKey(String key, ClassReflectionHelper reflectionHelper) {
+        if (keyToJavaNameMap == null) {
+            keyToJavaNameMap = new HashMap<String, String>();
+        }
+        
+        String result = keyToJavaNameMap.get(key);
+        if (result != null) return result;
+        
+        if (reflectionHelper == null) return null;
+        
+        Class<?> originalInterface = getOriginalInterfaceAsClass();
+        
+        for (MethodWrapper wrapper : reflectionHelper.getAllMethods(originalInterface)) {
+            Method m = wrapper.getMethod();
+            
+            String xmlName;
+            
+            XmlElement element = m.getAnnotation(XmlElement.class);
+            if (element == null) {
+                XmlAttribute attribute = m.getAnnotation(XmlAttribute.class);
+                if (attribute == null) continue;
+                
+                xmlName = attribute.name();
+            }
+            else {
+                xmlName =  element.name();
+            }
+            
+            String keyName;
+            String javaName = getJavaNameFromGetterOrSetter(m, reflectionHelper);
+            
+            if ("##default".equals(xmlName)) {
+                keyName = javaName;
+            }
+            else {
+                keyName = xmlName;
+            }
+            
+            if (!key.equals(keyName)) continue;
+            
+            // Found it!
+            keyToJavaNameMap.put(key, javaName);
+            return javaName;
+        }
+        
+        return null;
+    }
+    
+    private static String getJavaNameFromGetterOrSetter(Method m, ClassReflectionHelper reflectionHelper) {
+        AltMethod alt = new MethodAltMethodImpl(m, reflectionHelper);
+        
+        String retVal = Generator.isGetter(alt);
+        if (retVal != null) return retVal;
+        
+        return Generator.isSetter(alt);
     }
     
     @Override

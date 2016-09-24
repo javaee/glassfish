@@ -257,7 +257,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
                 
                 try {
                     Utilities.invokeVetoableChangeListeners(changeControl, this,
-                        beanLikeMap.get(propName), propValue, propName);
+                        beanLikeMap.get(propName), propValue, propName, classReflectionHelper);
                 
                     if (changeInHub) {
                         changeInHubDirect(propName, propValue);

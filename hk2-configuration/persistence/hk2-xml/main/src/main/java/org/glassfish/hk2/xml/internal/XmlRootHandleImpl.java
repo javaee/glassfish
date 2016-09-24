@@ -50,11 +50,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validator;
+
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
+import org.glassfish.hk2.utilities.general.ValidatorUtilities;
 import org.glassfish.hk2.xml.api.XmlHandleTransaction;
 import org.glassfish.hk2.xml.api.XmlHubCommitMessage;
 import org.glassfish.hk2.xml.api.XmlRootCopy;
@@ -74,7 +79,6 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
     private final boolean advertised;
     private final boolean advertisedInHub;
     private final DynamicChangeInfo changeControl;
-    
     
     /* package */ XmlRootHandleImpl(
             XmlServiceImpl parent,
@@ -446,12 +450,40 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
     }
     
     @Override
-    public void validate() {
-        throw new AssertionError("validate not yet implemented");
+    public void startValidating() {
+        if (changeControl == null) throw new IllegalStateException();
+        
+        Validator validator = changeControl.findOrCreateValidator();
+        
+        if (root == null) return;
+        
+        Set<ConstraintViolation<Object>> violations = validator.<Object>validate(root);
+        if (violations == null || violations.isEmpty()) return;
+        
+        throw new ConstraintViolationException(violations);
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlRootHandle#stopValidating()
+     */
+    @Override
+    public void stopValidating() {
+        if (changeControl == null) throw new IllegalStateException();
+        changeControl.deleteValidator();
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlRootHandle#isValidating()
+     */
+    @Override
+    public boolean isValidating() {
+        if (changeControl == null) throw new IllegalStateException();
+        
+        return (changeControl.findValidator() != null);
     }
     
     @Override
     public String toString() {
         return "XmlRootHandleImpl(" + root + "," + rootNode + "," + rootURI + "," + System.identityHashCode(this) + ")";
-    }    
+    }
 }

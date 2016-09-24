@@ -262,11 +262,22 @@ public interface XmlRootHandle<T> {
     public XmlHandleTransaction<T> lockForTransaction() throws IllegalStateException;
     
     /**
-     * Does javax validation on the root bean from the root.  This will not
-     * validate any further modifications to this bean.  During validation
-     * the write lock will be held
+     * Does javax validation on the root bean from the root.  This will
+     * cause every change hereafter to be validated
      * 
-     * @throws MultiException
+     * @throws ConstraintViolationException
      */
-    public void validate() throws MultiException;
+    public void startValidating();
+    
+    /**
+     * Stops this root handle from doing javax validation
+     * on modifications
+     */
+    public void stopValidating();
+    
+    /**
+     * True if this handle is currently validating
+     * changes
+     */
+    public boolean isValidating();
 }

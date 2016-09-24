@@ -124,7 +124,12 @@ public class Generator {
             Contract.class.getName(),
             XmlTransient.class.getName(),
             Hk2XmlPreGenerate.class.getName(),
-            "org.jvnet.hk2.config.Configured"
+            "org.jvnet.hk2.config.Configured",
+    }));
+    
+    private final static Set<String> NO_COPY_ANNOTATIONS_METHOD = new HashSet<String>(Arrays.asList(new String[] {
+            // Done as a String so that javax.annotation need not be on compiler classpath
+            "javax.validation.Valid"
     }));
     
     /**
@@ -491,6 +496,10 @@ public class Generator {
            
             ctAnnotations = null;
             for (AltAnnotation convertMeAnnotation : wrapper.getAnnotations()) {
+                if (NO_COPY_ANNOTATIONS_METHOD.contains(convertMeAnnotation.annotationType())) {
+                    continue;
+                }
+                
                 if (ctAnnotations == null) {
                     ctAnnotations = new AnnotationsAttribute(methodConstPool, AnnotationsAttribute.visibleTag);
                 }
@@ -1224,7 +1233,7 @@ public class Generator {
         return (customAnnotation != null);
     }
     
-    private static String isSetter(AltMethod method) {
+    /* package */ static String isSetter(AltMethod method) {
         String name = method.getName();
         
         if (name.startsWith(JAUtilities.SET)) {

@@ -64,6 +64,9 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Validator;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
@@ -412,7 +415,8 @@ public class Utilities {
             handleChildren(child, (BaseHK2JAXBBean) rawChild, changeInformation, addedServices, xmlDynamicChange);
         }
         
-        Utilities.invokeVetoableChangeListeners(changeInformation, child, null, child, childNode.getChildXmlTag());
+        Utilities.invokeVetoableChangeListeners(changeInformation, child, null, child, childNode.getChildXmlTag(),
+                myParent._getClassReflectionHelper());
         
         // Now modify the actual list
         if (multiChildren != null) {
@@ -726,7 +730,7 @@ public class Utilities {
                 if (rootForDeletion == null) return null;
                 
                 invokeVetoableChangeListeners(changeInformation, rootForDeletion, rootForDeletion, null,
-                        removeMeParentedNode.getChildXmlTag());
+                        removeMeParentedNode.getChildXmlTag(), myParent._getClassReflectionHelper());
                 
                 if (xmlDynamicChange.getBeanDatabase() != null) {
                     myParent.changeInHub(childProperty, listWithObjectRemoved, xmlDynamicChange.getBeanDatabase());
@@ -821,7 +825,7 @@ public class Utilities {
                 if (rootForDeletion == null) return null;
                 
                 invokeVetoableChangeListeners(changeInformation, rootForDeletion, rootForDeletion, null,
-                        removeMeParentedNode.getChildXmlTag());
+                        removeMeParentedNode.getChildXmlTag(), myParent._getClassReflectionHelper());
                 
                 if (xmlDynamicChange.getBeanDatabase() != null) {
                     myParent.changeInHub(childProperty, arrayWithObjectRemoved, xmlDynamicChange.getBeanDatabase());
@@ -835,7 +839,7 @@ public class Utilities {
             if (rootForDeletion == null) return null;
             
             invokeVetoableChangeListeners(changeInformation, rootForDeletion, rootForDeletion, null,
-                    removeMeParentedNode.getChildXmlTag());
+                    removeMeParentedNode.getChildXmlTag(), myParent._getClassReflectionHelper());
             
             if (xmlDynamicChange.getBeanDatabase() != null) {
                 myParent.changeInHub(childProperty, null, xmlDynamicChange.getBeanDatabase());
@@ -1091,8 +1095,29 @@ public class Utilities {
         return null;
     }
     
-    public static void invokeVetoableChangeListeners(DynamicChangeInfo control, Object source, Object oldValue, Object newValue, String propertyName) {
+    @SuppressWarnings("unchecked")
+    public static void invokeVetoableChangeListeners(DynamicChangeInfo control,
+            BaseHK2JAXBBean source,
+            Object oldValue,
+            Object newValue,
+            String propertyName,
+            ClassReflectionHelper helper) {
         if (control == null) return;
+        
+        Validator validator = control.findValidator();
+        if (validator != null) {
+            ModelImpl model = source._getModel();
+            
+            String javaName = model.getJavaNameFromKey(propertyName, helper);
+            
+            if (javaName != null) {
+                Set<ConstraintViolation<BaseHK2JAXBBean>> violations =
+                    validator.<BaseHK2JAXBBean>validateValue((Class<BaseHK2JAXBBean>) source.getClass(), javaName, newValue);
+                if (violations != null && !violations.isEmpty()) {
+                    throw new MultiException(new ConstraintViolationException(violations));
+                }
+            }
+        }
         
         List<VetoableChangeListener> vetoers = control.getChangeListeners();
             

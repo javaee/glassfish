@@ -41,6 +41,8 @@ package org.glassfish.hk2.xml.test.validation;
 
 import java.net.URL;
 
+import javax.validation.ConstraintViolationException;
+
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Hub;
@@ -56,14 +58,18 @@ import org.junit.Test;
  */
 public class ValidationTest {
     private final static String VALID1_FILE = "valid1.xml";
+    private final static String VALID2_FILE = "valid2.xml";
     private final static String INVALID1_FILE = "invalid1.xml";
+    private final static String INVALID2_FILE = "invalid2.xml";
+    
+    private final static String E1 = "E1";
     
     /**
      * Tests that validation on a valid file works
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testValidDocument() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -72,7 +78,15 @@ public class ValidationTest {
         
         XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshall(url.toURI(), ValidationRootBean.class);
         
-        rootHandle.validate();
+        Assert.assertFalse(rootHandle.isValidating());
+        
+        rootHandle.startValidating();
+        
+        Assert.assertTrue(rootHandle.isValidating());
+        
+        rootHandle.stopValidating();
+        
+        Assert.assertFalse(rootHandle.isValidating());
     }
     
     /**
@@ -80,7 +94,7 @@ public class ValidationTest {
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testInvalidDocument() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -89,11 +103,94 @@ public class ValidationTest {
         
         XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshall(url.toURI(), ValidationRootBean.class);
         
+        ValidationRootBean validationRoot = rootHandle.getRoot();
+        Assert.assertNull(validationRoot.getElementOne());
+        
         try {
-            rootHandle.validate();
+            rootHandle.startValidating();
             Assert.fail("Should have failed");
         }
-        catch (MultiException me) {
+        catch (ConstraintViolationException me) {
+            // Expected
+        }
+    }
+    
+    /**
+     * Tests that validation happens on a bad set
+     * @throws Exception
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testBadSet() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(VALID1_FILE);
+        
+        XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshall(url.toURI(), ValidationRootBean.class);
+        
+        rootHandle.startValidating();
+        
+        ValidationRootBean root = rootHandle.getRoot();
+        Assert.assertEquals(E1, root.getElementOne());
+        
+        try {
+            root.setElementOne(null);
+            Assert.fail("Should not have worked because validation is on");
+        }
+        catch (MultiException e) {
+            boolean found = false;
+            for (Throwable th : e.getErrors()) {
+                if (th instanceof ConstraintViolationException) {
+                    found = true;
+                    break;
+                }
+            }
+            
+            Assert.assertTrue("Did not find expected exception in " + e, found);
+        }
+        
+        // Nothing should have changed
+        Assert.assertEquals(E1, root.getElementOne());
+        
+    }
+    
+    /**
+     * Tests that validation on a valid file works
+     * @throws Exception
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testValidDocumentWithChildren() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(VALID2_FILE);
+        
+        XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshall(url.toURI(), ValidationRootBean.class);
+        
+        rootHandle.startValidating();
+    }
+    
+    /**
+     * Tests that validation on an invalid list child fails
+     * @throws Exception
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testValidDocumentWithInvalidListChild() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(INVALID2_FILE);
+        
+        XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshall(url.toURI(), ValidationRootBean.class);
+        
+        try {
+            rootHandle.startValidating();
+            Assert.fail("Should have failed");
+        }
+        catch (ConstraintViolationException me) {
             // Expected
         }
     }

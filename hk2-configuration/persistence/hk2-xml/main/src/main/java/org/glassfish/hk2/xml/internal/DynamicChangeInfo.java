@@ -49,12 +49,15 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
+import javax.validation.Validator;
+
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
+import org.glassfish.hk2.utilities.general.ValidatorUtilities;
 import org.glassfish.hk2.xml.api.XmlHubCommitMessage;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 
@@ -80,6 +83,8 @@ public class DynamicChangeInfo {
     private XmlDynamicChange dynamicChange = null;
     private int changeDepth = 0;
     private boolean globalSuccess = true;
+    
+    private Validator validator;
     
     /* package */ DynamicChangeInfo(JAUtilities jaUtilities,
             Hub hub,
@@ -264,6 +269,39 @@ public class DynamicChangeInfo {
         readTreeLock.lock();
         try {
             return Collections.unmodifiableList(new ArrayList<VetoableChangeListener>(listeners));
+        }
+        finally {
+            readTreeLock.unlock();
+        }
+    }
+    
+    public Validator findOrCreateValidator() {
+        writeTreeLock.lock();
+        try {
+            if (validator != null) return validator;
+            
+            validator = ValidatorUtilities.getValidator();
+            return validator;
+        }
+        finally {
+            writeTreeLock.unlock();
+        }
+    }
+    
+    public void deleteValidator() {
+        writeTreeLock.lock();
+        try {
+            validator = null;
+        }
+        finally {
+            writeTreeLock.unlock();
+        }
+    }
+    
+    public Validator findValidator() {
+        readTreeLock.lock();
+        try {
+            return validator;
         }
         finally {
             readTreeLock.unlock();
