@@ -40,6 +40,7 @@
 package org.glassfish.hk2.xml.test.validation;
 
 import java.net.URL;
+import java.util.List;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
@@ -276,6 +277,9 @@ public class ValidationTest {
                 Assert.assertEquals("may not be null", violation.getMessage());
             }
         }
+        
+        List<ValidationChildBean> listChildren = root.getListChildren();
+        Assert.assertEquals(1, listChildren.size());
     }
     
     /**
@@ -310,6 +314,10 @@ public class ValidationTest {
                 Assert.assertEquals("may not be null", violation.getMessage());
             }
         }
+        
+        // Make sure we didn't actually add it
+        ValidationChildArrayBean arrayChildren[] = root.getArrayChildren();
+        Assert.assertEquals(2, arrayChildren.length);
     }
     
     /**
@@ -347,6 +355,8 @@ public class ValidationTest {
                 Assert.assertEquals("may not be null", violation.getMessage());
             }
         }
+        
+        Assert.assertNull(root.getDirectChild());
     }
 
 }
