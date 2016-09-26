@@ -139,7 +139,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * and at that point this object is ready for its life as an
      * in-memory node in a tree hierarchy
      */
-    private volatile transient DynamicChangeInfo changeControl;
+    private volatile transient DynamicChangeInfo<?> changeControl;
     
     /**
      * The root of this bean, or null if there is no root
@@ -884,7 +884,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         return sb.toString();
     }
     
-    public void _setDynamicChangeInfo(XmlRootHandleImpl<?> root, DynamicChangeInfo change) {
+    public void _setDynamicChangeInfo(XmlRootHandleImpl<?> root, DynamicChangeInfo<?> change) {
         _setDynamicChangeInfo(root, change, true);
     }
     
@@ -898,7 +898,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * is some sort of copy operation where the xmlPath has been pre-calculated and does not
      * need to be modified
      */
-    public void _setDynamicChangeInfo(XmlRootHandleImpl<?> root, DynamicChangeInfo change, boolean doXmlPathCalculation) {
+    public void _setDynamicChangeInfo(XmlRootHandleImpl<?> root, DynamicChangeInfo<?> change, boolean doXmlPathCalculation) {
         if (doXmlPathCalculation) {
             xmlPath = calculateXmlPath(this);
         }
@@ -1099,7 +1099,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * 
      * @return the change control information for this bean
      */
-    public DynamicChangeInfo _getChangeControl() {
+    public DynamicChangeInfo<?> _getChangeControl() {
         return changeControl;
     }
     

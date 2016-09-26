@@ -40,12 +40,13 @@
 package org.glassfish.hk2.xml.test.validation;
 
 import java.net.URL;
+import java.util.Set;
 
+import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
@@ -248,7 +249,7 @@ public class ValidationTest {
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testAddInvalidListChild() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -270,6 +271,81 @@ public class ValidationTest {
         }
         catch (ConstraintViolationException me) {
             // Expected
+            Set<ConstraintViolation<?>> violations = me.getConstraintViolations();
+            for (ConstraintViolation<?> violation : violations) {
+                Assert.assertEquals("may not be null", violation.getMessage());
+            }
+        }
+    }
+    
+    /**
+     * Tests that validation on a valid file works
+     * @throws Exception
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testAddInvalidArrayChild() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(VALID2_FILE);
+        
+        XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshall(url.toURI(), ValidationRootBean.class);
+        
+        rootHandle.startValidating();
+        
+        ValidationChildArrayBean arrayChild = xmlService.createBean(ValidationChildArrayBean.class);
+        
+        // Do NOT fill in ElementTwo
+        ValidationRootBean root = rootHandle.getRoot();
+        
+        try {
+            root.addArrayChild(arrayChild);
+            Assert.fail("Add of invalid array child should have failed");
+        }
+        catch (ConstraintViolationException me) {
+            // Expected
+            Set<ConstraintViolation<?>> violations = me.getConstraintViolations();
+            for (ConstraintViolation<?> violation : violations) {
+                Assert.assertEquals("may not be null", violation.getMessage());
+            }
+        }
+    }
+    
+    /**
+     * Tests that validation on a valid file works
+     * @throws Exception
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testAddInvalidDirectChild() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(VALID2_FILE);
+        
+        XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshall(url.toURI(), ValidationRootBean.class);
+        
+        rootHandle.startValidating();
+        
+        ValidationChildDirectBean directChild = xmlService.createBean(ValidationChildDirectBean.class);
+        
+        // Do NOT fill in ElementTwo
+        ValidationRootBean root = rootHandle.getRoot();
+        
+        // First remove the child before setting it to something bad
+        root.setDirectChild(null);
+        
+        try {
+            root.setDirectChild(directChild);
+            Assert.fail("Add of invalid array child should have failed");
+        }
+        catch (ConstraintViolationException me) {
+            // Expected
+            Set<ConstraintViolation<?>> violations = me.getConstraintViolations();
+            for (ConstraintViolation<?> violation : violations) {
+                Assert.assertEquals("may not be null", violation.getMessage());
+            }
         }
     }
 

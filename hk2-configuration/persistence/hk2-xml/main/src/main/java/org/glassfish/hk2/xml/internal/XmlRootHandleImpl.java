@@ -77,7 +77,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
     private URI rootURI;
     private final boolean advertised;
     private final boolean advertisedInHub;
-    private final DynamicChangeInfo changeControl;
+    private final DynamicChangeInfo<T> changeControl;
     
     /* package */ XmlRootHandleImpl(
             XmlServiceImpl parent,
@@ -87,7 +87,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
             URI rootURI,
             boolean advertised,
             boolean inHub,
-            DynamicChangeInfo changes) {
+            DynamicChangeInfo<T> changes) {
         this.parent = parent;
         this.hub = hub;
         this.root = root;
@@ -181,8 +181,8 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
         
         // In any case, the child should not be directly given the hub, as
         // it is not reflected in the hub
-        DynamicChangeInfo copyController =
-                new DynamicChangeInfo(changeControl.getJAUtilities(),
+        DynamicChangeInfo<T> copyController =
+                new DynamicChangeInfo<T>(changeControl.getJAUtilities(),
                         null,
                         false,
                         changeControl.getIdGenerator(),
@@ -221,7 +221,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
     }
     
     private BaseHK2JAXBBean doCopy(BaseHK2JAXBBean copyMe,
-            DynamicChangeInfo copyController,
+            DynamicChangeInfo<T> copyController,
             BaseHK2JAXBBean theCopiedParent,
             Map<ReferenceKey, BaseHK2JAXBBean> referenceMap,
             List<UnresolvedReference> unresolved) throws Throwable {
@@ -410,7 +410,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
         throw new AssertionError("getReadOnlyRoot not implemented");
     }
     
-    /* package */ DynamicChangeInfo getChangeInfo() {
+    /* package */ DynamicChangeInfo<T> getChangeInfo() {
         return changeControl;
     }
     

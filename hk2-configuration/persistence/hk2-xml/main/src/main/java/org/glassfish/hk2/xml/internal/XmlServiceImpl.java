@@ -206,7 +206,7 @@ public class XmlServiceImpl implements XmlService {
                     jaUtilities.getNumPreGenerated() + " pre generated proxies loaded");
         }
         
-        DynamicChangeInfo changeControl = new DynamicChangeInfo(jaUtilities,
+        DynamicChangeInfo<T> changeControl = new DynamicChangeInfo<T>(jaUtilities,
                 hub,
                 advertiseInHub,
                 this,
@@ -215,6 +215,8 @@ public class XmlServiceImpl implements XmlService {
                 serviceLocator);
         
         XmlRootHandleImpl<T> retVal = new XmlRootHandleImpl<T>(this, hub, root, model, uri, advertise, advertiseInHub, changeControl);
+        
+        changeControl.setRoot(retVal);
         
         for (BaseHK2JAXBBean base : listener.getAllBeans()) {
             String instanceName = Utilities.createInstanceName(base);
@@ -311,15 +313,22 @@ public class XmlServiceImpl implements XmlService {
             jaUtilities.convertRootAndLeaves(jaxbAnnotatedInterface, true);
             
             ModelImpl model = jaUtilities.getModel(jaxbAnnotatedInterface);
+            
+            DynamicChangeInfo<T> change = new DynamicChangeInfo<T>(jaUtilities,
+                    hub,
+                    advertiseInHub,
+                    this,
+                    dynamicConfigurationService,
+                    advertiseInRegistry,
+                    serviceLocator);
         
-            return new XmlRootHandleImpl<T>(this, hub, null, model, null, advertiseInRegistry, advertiseInHub,
-                    new DynamicChangeInfo(jaUtilities,
-                            hub,
-                            advertiseInHub,
-                            this,
-                            dynamicConfigurationService,
-                            advertiseInRegistry,
-                            serviceLocator));
+            XmlRootHandleImpl<T> retVal = new XmlRootHandleImpl<T>(this,
+                    hub, null, model, null, advertiseInRegistry,
+                    advertiseInHub, change);
+            
+            change.setRoot(retVal);
+            
+            return retVal;
         }
         catch (RuntimeException re) {
             throw re;

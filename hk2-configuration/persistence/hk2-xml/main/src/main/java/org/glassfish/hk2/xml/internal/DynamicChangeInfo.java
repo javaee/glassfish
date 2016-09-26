@@ -45,10 +45,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
 
 import org.glassfish.hk2.api.DynamicConfiguration;
@@ -65,7 +68,7 @@ import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
  * @author jwells
  *
  */
-public class DynamicChangeInfo {
+public class DynamicChangeInfo<T> {
     private final JAUtilities jaUtilities;
     private final ReentrantReadWriteLock treeLock = new ReentrantReadWriteLock();
     private final WriteLock writeTreeLock = treeLock.writeLock();
@@ -79,6 +82,7 @@ public class DynamicChangeInfo {
     private final ServiceLocator locator;
     private final LinkedHashSet<VetoableChangeListener> listeners = new LinkedHashSet<VetoableChangeListener>();
     private final LinkedHashSet<BaseHK2JAXBBean> participants = new LinkedHashSet<BaseHK2JAXBBean>();
+    private XmlRootHandleImpl<T> root;
     
     private XmlDynamicChange dynamicChange = null;
     private int changeDepth = 0;
@@ -100,6 +104,10 @@ public class DynamicChangeInfo {
         this.advertiseInLocator = advertiseInLocator;
         this.dynamicService = dynamicService;
         this.locator = locator;
+    }
+    
+    /* package */ void setRoot(XmlRootHandleImpl<T> root) {
+        this.root = root;
     }
     
     public ReadLock getReadLock() {
@@ -206,9 +214,22 @@ public class DynamicChangeInfo {
         
         if (localDynamicChange == null) return;
         
-        if (!globalSuccess) {
+        ConstraintViolationException validationException = null;
+        if (globalSuccess && (validator != null) && (root != null)) {
+            // Validate root if validation is on
+            Set<ConstraintViolation<Object>> violations = validator.<Object>validate(root.getRoot());
+            if (violations != null & !violations.isEmpty()) {
+                validationException = new ConstraintViolationException(violations);
+            }
+        }
+        
+        if (!globalSuccess || (validationException != null)) {
             for (BaseHK2JAXBBean participant : localParticipants) {
                 participant.__rollbackChange();
+            }
+            
+            if (validationException != null) {
+                throw validationException;
             }
             return;
         }
