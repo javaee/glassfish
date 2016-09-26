@@ -218,7 +218,7 @@ public class DynamicChangeInfo<T> {
         if (globalSuccess && (validator != null) && (root != null)) {
             // Validate root if validation is on
             Set<ConstraintViolation<Object>> violations = validator.<Object>validate(root.getRoot());
-            if (violations != null & !violations.isEmpty()) {
+            if (violations != null && !violations.isEmpty()) {
                 validationException = new ConstraintViolationException(violations);
             }
         }
