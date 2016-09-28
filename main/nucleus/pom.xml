@@ -646,6 +646,7 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
                     <detectOfflineLinks>false</detectOfflineLinks>
+                    <additionalparam>-Xdoclint:none</additionalparam>
                     <skip>${javadoc.skip}</skip>
                 </configuration>
             </plugin>
