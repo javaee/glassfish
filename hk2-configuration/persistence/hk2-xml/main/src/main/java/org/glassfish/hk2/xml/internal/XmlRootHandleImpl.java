@@ -41,6 +41,8 @@
 package org.glassfish.hk2.xml.internal;
 
 import java.beans.VetoableChangeListener;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.Array;
 import java.net.URI;
 import java.util.ArrayList;
@@ -64,6 +66,7 @@ import org.glassfish.hk2.xml.api.XmlHubCommitMessage;
 import org.glassfish.hk2.xml.api.XmlRootCopy;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
+import org.glassfish.hk2.xml.spi.XmlServiceParser;
 
 /**
  * @author jwells
@@ -482,8 +485,36 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
         return (changeControl.findValidator() != null);
     }
     
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlRootHandle#marshall(java.io.OutputStream)
+     */
+    @Override
+    public void marshall(OutputStream outputStream) throws IOException {
+        boolean didLock = false;
+        if (changeControl != null) {
+            changeControl.getWriteLock().lock();
+            didLock = true;
+        }
+        try {
+            XmlServiceParser parser = parent.getParser();
+            if (parser == null) {
+                XmlStreamImpl.marshall(outputStream, this);
+                return;
+            }
+        
+            parser.marshall(outputStream, this);
+        }
+        finally {
+            if (didLock) {
+                changeControl.getWriteLock().unlock();
+            }
+        }
+    }
+    
     @Override
     public String toString() {
         return "XmlRootHandleImpl(" + root + "," + rootNode + "," + rootURI + "," + System.identityHashCode(this) + ")";
     }
+
+    
 }

@@ -41,6 +41,8 @@
 package org.glassfish.hk2.xml.api;
 
 import java.beans.VetoableChangeListener;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
 import java.util.List;
 
@@ -278,4 +280,16 @@ public interface XmlRootHandle<T> {
      * changes
      */
     public boolean isValidating();
+    
+    /**
+     * Marshalls this tree into the given stream.  Will hold the WRITE
+     * lock of this tree while it does so that the tree cannot change
+     * underneath while it is being written out.  It will use a basic
+     * indentation and new-line scheme
+     * 
+     * @param outputStream A non-closed output stream.  This method will
+     * not close the output stream
+     * @throws IOException On any exception that might happen
+     */
+    public void marshall(OutputStream outputStream) throws IOException;
 }

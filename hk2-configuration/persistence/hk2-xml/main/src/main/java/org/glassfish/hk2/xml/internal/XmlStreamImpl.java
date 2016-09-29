@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.xml.internal;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,6 +55,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.Logger;
+import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 import org.glassfish.hk2.xml.spi.Model;
 
@@ -378,6 +381,10 @@ public class XmlStreamImpl {
         case XMLStreamConstants.ENTITY_DECLARATION : return "ENTITY_DECLARATION" ;
         default : return "UNKNOWN EVENT: " + event;
         }
+    }
+    
+    public static <T> void marshall(OutputStream outputStream, XmlRootHandle<T> root) throws IOException {
+        
     }
 
 }

@@ -39,10 +39,13 @@
  */
 package org.glassfish.hk2.xml.spi;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
 
 import javax.xml.bind.Unmarshaller;
 
+import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.jvnet.hk2.annotations.Contract;
 
 /**
@@ -78,5 +81,18 @@ public interface XmlServiceParser {
      * loaded lazily or must be pre-generated prior to parsing a document
      */
     public PreGenerationRequirement getPreGenerationRequirement();
+    
+    /**
+     * Marshalls this tree into the given stream.  Will hold the WRITE
+     * lock of this tree while it does so that the tree cannot change
+     * underneath while it is being written out.  It will use a basic
+     * indentation and new-line scheme
+     * 
+     * @param outputStream A non-closed output stream.  This method will
+     * not close the output stream
+     * @param root The root of the tree to marshall
+     * @throws IOException On any exception that might happen
+     */
+    public <T> void marshall(OutputStream outputStream, XmlRootHandle<T> root) throws IOException;
 
 }

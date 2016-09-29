@@ -387,4 +387,8 @@ public class XmlServiceImpl implements XmlService {
     public ServiceLocator getServiceLocator() {
         return serviceLocator;
     }
+    
+    public XmlServiceParser getParser() {
+        return parser.get();
+    }
 }

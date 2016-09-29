@@ -56,7 +56,7 @@ import org.jvnet.hk2.annotations.Contract;
 public interface SecurityManagerBean {
     @XmlElement(name="authorization-provider")
     public List<AuthorizationProviderBean> getAuthorizationProviders();
-    public void setAuthhorizationProviders(List<AuthorizationProviderBean> providers);
+    public void setAuthorizationProviders(List<AuthorizationProviderBean> providers);
     public void addAuthorizationProvider(AuthorizationProviderBean provider);
     public void removeAuthorizationProvider(String name);
     

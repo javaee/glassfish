@@ -39,7 +39,9 @@
  */
 package org.glassfish.hk2.xml.internal;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 
 import javax.inject.Inject;
@@ -51,6 +53,7 @@ import javax.xml.stream.XMLStreamReader;
 
 import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.Visibility;
+import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.spi.Model;
 import org.glassfish.hk2.xml.spi.PreGenerationRequirement;
 import org.glassfish.hk2.xml.spi.XmlServiceParser;
@@ -95,5 +98,14 @@ public class DomXmlParser implements XmlServiceParser {
     @Override
     public PreGenerationRequirement getPreGenerationRequirement() {
         return PreGenerationRequirement.LAZY_PREGENERATION;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.spi.XmlServiceParser#marshall(java.io.OutputStream, org.glassfish.hk2.xml.api.XmlRootHandle)
+     */
+    @Override
+    public <T> void marshall(OutputStream outputStream, XmlRootHandle<T> root)
+            throws IOException {
+        XmlStreamImpl.marshall(outputStream, root);
     }
 }

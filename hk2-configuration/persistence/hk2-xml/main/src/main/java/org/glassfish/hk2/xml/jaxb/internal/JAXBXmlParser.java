@@ -39,16 +39,21 @@
  */
 package org.glassfish.hk2.xml.jaxb.internal;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URI;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.Unmarshaller.Listener;
 
 import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.Visibility;
+import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
+import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.spi.Model;
 import org.glassfish.hk2.xml.spi.PreGenerationRequirement;
 import org.glassfish.hk2.xml.spi.XmlServiceParser;
@@ -87,6 +92,36 @@ public class JAXBXmlParser implements XmlServiceParser {
     @Override
     public PreGenerationRequirement getPreGenerationRequirement() {
         return PreGenerationRequirement.MUST_PREGENERATE;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.spi.XmlServiceParser#marshall(java.io.OutputStream, org.glassfish.hk2.xml.api.XmlRootHandle)
+     */
+    @Override
+    public <T> void marshall(OutputStream outputStream, XmlRootHandle<T> rootHandle)
+            throws IOException {
+        T root = rootHandle.getRoot();
+        if (root == null) return;
+        
+        XmlHk2ConfigurationBean xmlBean = (XmlHk2ConfigurationBean) root;
+        Model model = xmlBean._getModel();
+        
+        Class<?> clazz = model.getProxyAsClass();
+        
+        try {
+            JAXBContext context = JAXBContext.newInstance(clazz);
+            
+            Marshaller marshaller = context.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+            
+            marshaller.marshal(root, outputStream);
+        }
+        catch (RuntimeException re) {
+            throw new IOException(re);
+        }
+        catch (Exception e) {
+            throw new IOException(e);
+        }
     }
 
 }
