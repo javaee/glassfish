@@ -191,10 +191,30 @@ public class AnnotationAltAnnotationImpl implements AltAnnotation {
         return values;
     }
     
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(AltAnnotation o) {
+        return annotationType().compareTo(o.annotationType());
+    }
+    
+    @Override
+    public int hashCode() {
+        return annotationType().hashCode();
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        if (!(o instanceof AltAnnotation)) return false;
+        AltAnnotation other = (AltAnnotation) o;
+        
+        return annotationType().equals(other.annotationType());
+    }
+    
     @Override
     public String toString() {
         return "AnnotationAltAnnotationImpl(" + annotation + "," + System.identityHashCode(this) + ")";
     }
-
-    
 }

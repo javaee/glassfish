@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.MethodWrapper;
@@ -108,12 +109,12 @@ public class ClassAltClassImpl implements AltClass {
         
         Annotation annotationz[] = clazz.getAnnotations();
         
-        List<AltAnnotation> retVal = new ArrayList<AltAnnotation>(annotationz.length);
+        TreeSet<AltAnnotation> retVal = new TreeSet<AltAnnotation>();
         for (Annotation annotation : annotationz) {
             retVal.add(new AnnotationAltAnnotationImpl(annotation, helper));
         }
         
-        annotations = Collections.unmodifiableList(retVal);
+        annotations = Collections.unmodifiableList(new ArrayList<AltAnnotation>(retVal));
         return annotations;
     }
 
@@ -125,13 +126,13 @@ public class ClassAltClassImpl implements AltClass {
         if (methods != null) return methods;
         
         Set<MethodWrapper> wrappers = helper.getAllMethods(clazz);
-        List<AltMethod> retVal = new ArrayList<AltMethod>(wrappers.size());
+        TreeSet<AltMethod> retVal = new TreeSet<AltMethod>();
         
         for (MethodWrapper method : wrappers) {
             retVal.add(new MethodAltMethodImpl(method.getMethod(), helper));
         }
         
-        methods = Collections.unmodifiableList(retVal);
+        methods = Collections.unmodifiableList(new ArrayList<AltMethod>(retVal));
         return methods;
     }
 

@@ -41,9 +41,9 @@ package org.glassfish.hk2.xml.internal.alt.papi;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
@@ -192,7 +192,7 @@ public class ElementAltMethodImpl implements AltMethod {
             return Collections.unmodifiableList(new ArrayList<AltAnnotation>(annotations.values()));
         }
         
-        Map<String, AltAnnotation> retVal = new HashMap<String, AltAnnotation>();
+        Map<String, AltAnnotation> retVal = new TreeMap<String, AltAnnotation>();
         
         for (AnnotationMirror annoMirror : method.getAnnotationMirrors()) {
             AnnotationMirrorAltAnnotationImpl addMe = new AnnotationMirrorAltAnnotationImpl(annoMirror, processingEnv);
@@ -210,6 +210,69 @@ public class ElementAltMethodImpl implements AltMethod {
     @Override
     public boolean isVarArgs() {
         return method.isVarArgs();
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(AltMethod o) {
+        int retVal = getName().compareTo(o.getName());
+        if (retVal != 0) return retVal;
+        
+        List<AltClass> thisParams = getParameterTypes();
+        List<AltClass> oParams = o.getParameterTypes();
+        
+        retVal = thisParams.size() - oParams.size();
+        if (retVal != 0) return retVal;
+        
+        // Params have same size
+        for (int lcv = 0; lcv < thisParams.size(); lcv++) {
+            AltClass thisParam = thisParams.get(lcv);
+            AltClass oParam = oParams.get(lcv);
+            
+            retVal = thisParam.getName().compareTo(oParam.getName());
+            if (retVal != 0) return retVal;
+        }
+        
+        return 0;
+    }
+    
+    @Override
+    public int hashCode() {
+        int retVal = getName().hashCode();
+        
+        for (AltClass param : getParameterTypes()) {
+            retVal ^= param.getName().hashCode();
+        }
+        
+        return retVal;
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        if (!(o instanceof AltMethod)) return false;
+        AltMethod other = (AltMethod) o;
+        
+        boolean retVal = getName().equals(other.getName());
+        if (!retVal) return false;
+        
+        List<AltClass> thisParams = getParameterTypes();
+        List<AltClass> oParams = other.getParameterTypes();
+        
+        if (thisParams.size() != oParams.size()) return false;
+        
+        // Params have same size
+        for (int lcv = 0; lcv < thisParams.size(); lcv++) {
+            AltClass thisParam = thisParams.get(lcv);
+            AltClass oParam = oParams.get(lcv);
+            
+            retVal = thisParam.getName().equals(oParam.getName());
+            if (!retVal) return false;
+        }
+        
+        return true;
     }
 
     @Override

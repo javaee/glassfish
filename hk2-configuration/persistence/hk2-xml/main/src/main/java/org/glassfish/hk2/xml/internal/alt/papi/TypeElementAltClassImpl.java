@@ -45,6 +45,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
@@ -53,7 +54,6 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.ExecutableType;
-import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
 import org.glassfish.hk2.xml.internal.Utilities;
@@ -103,7 +103,7 @@ public class TypeElementAltClassImpl implements AltClass {
         
         List<? extends AnnotationMirror> annoMirrors = processingEnv.getElementUtils().getAllAnnotationMirrors(clazz);
         
-        List<AltAnnotation> retVal = new ArrayList<AltAnnotation>(annoMirrors.size());
+        TreeSet<AltAnnotation> retVal = new TreeSet<AltAnnotation>();
         
         for (AnnotationMirror annoMirror : annoMirrors) {
             AnnotationMirrorAltAnnotationImpl anno = new AnnotationMirrorAltAnnotationImpl(annoMirror, processingEnv);
@@ -111,7 +111,7 @@ public class TypeElementAltClassImpl implements AltClass {
             retVal.add(anno);
         }
         
-        annotations = Collections.unmodifiableList(retVal);
+        annotations = Collections.unmodifiableList(new ArrayList<AltAnnotation>(retVal));
         return annotations;
     }
     
@@ -185,7 +185,7 @@ public class TypeElementAltClassImpl implements AltClass {
         if (methods != null) return methods;
         
         List<? extends Element> innerElements = processingEnv.getElementUtils().getAllMembers(clazz);
-        List<AltMethod> retVal = new ArrayList<AltMethod>(innerElements.size());
+        TreeSet<AltMethod> retVal = new TreeSet<AltMethod>();
         
         for (Element innerElementElement : innerElements) {
             if (isMethodToGenerate(innerElementElement)) {
@@ -193,7 +193,7 @@ public class TypeElementAltClassImpl implements AltClass {
             }
         }
         
-        methods = Collections.unmodifiableList(retVal);
+        methods = Collections.unmodifiableList(new ArrayList<AltMethod>(retVal));
         return methods;
     }
 

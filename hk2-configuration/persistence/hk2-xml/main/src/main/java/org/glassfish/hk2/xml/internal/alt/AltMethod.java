@@ -45,7 +45,7 @@ import java.util.List;
  * @author jwells
  *
  */
-public interface AltMethod {
+public interface AltMethod extends Comparable<AltMethod> {
     /**
      * Returns the name of the method
      * 

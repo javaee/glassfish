@@ -45,7 +45,7 @@ import java.util.Map;
  * @author jwells
  *
  */
-public interface AltAnnotation {
+public interface AltAnnotation extends Comparable<AltAnnotation> {
     public String annotationType();
     
     public String getStringValue(String methodName);
