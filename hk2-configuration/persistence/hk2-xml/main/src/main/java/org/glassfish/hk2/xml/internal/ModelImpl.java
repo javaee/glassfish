@@ -316,6 +316,29 @@ public class ModelImpl implements Model {
         return retVal;
     }
     
+    public Map<String, ChildDescriptor> getAllElementChildren() {
+        Map<String, ChildDescriptor> retVal = new LinkedHashMap<String, ChildDescriptor>();
+        
+        for (Map.Entry<String, ChildDescriptor> candidate : allChildren.entrySet()) {
+            String xmlKey = candidate.getKey();
+            ChildDescriptor childDescriptor = candidate.getValue();
+            
+            if (childDescriptor.getParentedModel() != null) {
+                // Is an element since it is a child!
+                retVal.put(xmlKey, childDescriptor);
+                continue;
+            }
+            
+            ChildDataModel childDataModel = childDescriptor.getChildDataModel();
+            
+            if (!childDataModel.isElement()) continue;
+            
+            retVal.put(xmlKey, childDescriptor);
+        }
+        
+        return retVal;
+    }
+    
     public synchronized String getJavaNameFromKey(String key, ClassReflectionHelper reflectionHelper) {
         if (keyToJavaNameMap == null) {
             keyToJavaNameMap = new LinkedHashMap<String, String>();

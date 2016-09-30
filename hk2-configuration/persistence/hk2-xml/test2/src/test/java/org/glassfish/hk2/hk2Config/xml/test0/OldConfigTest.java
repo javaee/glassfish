@@ -39,6 +39,10 @@
  */
 package org.glassfish.hk2.hk2Config.xml.test0;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
@@ -60,7 +64,9 @@ import org.glassfish.hk2.xml.hk2Config.test.beans.pv.NamedPropertyValue;
 import org.glassfish.hk2.xml.hk2Config.test.customizers.KingdomCustomizer;
 import org.glassfish.hk2.xml.hk2Config.test.customizers.PhylaCustomizer;
 import org.glassfish.hk2.xml.spi.ConfigBeanProxyCustomizerImpl;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.jvnet.hk2.config.types.Property;
 import org.jvnet.hk2.config.types.PropertyBagCustomizerImpl;
@@ -90,6 +96,24 @@ public class OldConfigTest {
     private static final String V2 = "V2";
     private static final String V3 = "V3";
     private static final String V4 = "V4";
+    
+    private final static File OUTPUT_FILE = new File("output.xml");
+    private final static String LOOK_FOR_ME = "<attribution>ama</attribution>";
+    
+    @Before
+    public void before() {
+        if (OUTPUT_FILE.exists()) {
+            boolean didDelete = OUTPUT_FILE.delete();
+            Assert.assertTrue(didDelete);
+        }
+    }
+    
+    @After
+    public void after() {
+        if (OUTPUT_FILE.exists()) {
+            OUTPUT_FILE.delete();
+        }
+    }
     
     /**
      * See that the simple names and methods work
@@ -269,6 +293,64 @@ public class OldConfigTest {
         
         allProps = kingdom1.getProperty();
         Assert.assertEquals(3, allProps.size());
+    }
+    
+    private final static String AMA = "ama";
+    
+    /**
+     * Tests that the file can be marshalled
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testMarshall() throws Exception {
+        ServiceLocator locator = LocatorUtilities.createDomLocator(
+                PropertyBagCustomizerImpl.class,
+                KingdomCustomizer.class,
+                PhylaCustomizer.class);
+        
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource(KINGDOM_FILE);
+        
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, true);
+        KingdomConfig kingdom1 = rootHandle.getRoot();
+        
+        assertOriginalStateKingdom1(kingdom1, hub);
+        
+        kingdom1.setAttribution(AMA);
+        
+        FileOutputStream fos = new FileOutputStream(OUTPUT_FILE);
+        try {
+          rootHandle.marshall(fos);
+        }
+        finally {
+            fos.close();
+        }
+        
+        checkFile();
+    }
+    
+    private void checkFile() throws Exception {
+        boolean found = false;
+        FileReader reader = new FileReader(OUTPUT_FILE);
+        BufferedReader buffered = new BufferedReader(reader);
+        
+        try {
+            String line;
+            while ((line = buffered.readLine()) != null) {
+                if (line.contains(LOOK_FOR_ME)) {
+                    found = true;
+                }
+            }
+        }
+        finally {
+            buffered.close();
+            reader.close();
+        }
+        
+        Assert.assertTrue(found);
     }
     
     public static String KINGDOM_TYPE = "/kingdom";

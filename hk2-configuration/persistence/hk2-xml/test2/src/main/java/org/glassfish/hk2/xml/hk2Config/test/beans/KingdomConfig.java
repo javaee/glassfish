@@ -72,6 +72,7 @@ public interface KingdomConfig extends ConfigBeanProxy, PropertyBag, AuditableBe
     
     @XmlElement
     public String getAttribution();
+    public void setAttribution(String att);
     
     @Element("*")
     @XmlElement(name="scientist")

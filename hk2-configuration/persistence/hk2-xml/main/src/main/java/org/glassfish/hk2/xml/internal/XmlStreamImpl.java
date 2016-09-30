@@ -406,6 +406,11 @@ public class XmlStreamImpl {
         try {
             indenter.writeStartDocument();
             
+            XmlHk2ConfigurationBean bean = (XmlHk2ConfigurationBean) root.getRoot();
+            if (bean != null) {
+                marshallElement(indenter, bean, null);
+            }
+            
             indenter.writeEndDocument();
         }
         finally {
@@ -413,6 +418,7 @@ public class XmlStreamImpl {
         }
     }
     
+    @SuppressWarnings("unchecked")
     private static void marshallElement(XMLStreamWriter indenter, XmlHk2ConfigurationBean bean, ParentedModel parented) throws XMLStreamException {
         ModelImpl model = bean._getModel();
         Map<String, Object> beanLikeMap = bean._getBeanLikeMap();
@@ -439,6 +445,62 @@ public class XmlStreamImpl {
             if (GeneralUtilities.safeEquals(valueAsString, childDataModel.getDefaultAsString())) continue;
             
             indenter.writeAttribute(attributeTag, valueAsString);
+        }
+        
+        Map<String, ChildDescriptor> elementDescriptors = model.getAllElementChildren();
+        for (Map.Entry<String, ChildDescriptor> entry : elementDescriptors.entrySet()) {
+            String elementTag = entry.getKey();
+            ChildDescriptor descriptor = entry.getValue();
+            
+            Object value = beanLikeMap.get(elementTag);
+            if (value == null) continue;
+            
+            ParentedModel parentedChild = descriptor.getParentedModel();
+            if (parentedChild != null) {
+                if (ChildType.LIST.equals(parentedChild.getChildType())) {
+                    List<XmlHk2ConfigurationBean> asList = (List<XmlHk2ConfigurationBean>) value;
+                    if (asList.isEmpty()) continue;
+                    
+                    for (XmlHk2ConfigurationBean child : asList) {
+                        marshallElement(indenter, child, parentedChild);
+                    }
+                }
+                else if (ChildType.ARRAY.equals(parentedChild.getChildType())) {
+                    int length = Array.getLength(value);
+                    if (length <= 0) continue;
+                    
+                    for (int lcv = 0; lcv < length; lcv++) {
+                        XmlHk2ConfigurationBean child = (XmlHk2ConfigurationBean) Array.get(value, lcv);
+                        
+                        marshallElement(indenter, child, parentedChild);
+                    }
+                }
+                else {
+                    // Direct
+                    marshallElement(indenter, (XmlHk2ConfigurationBean) value, parentedChild);
+                }
+            }
+            else {
+                ChildDataModel childDataModel = descriptor.getChildDataModel();
+                
+                if (!childDataModel.isReference()) {
+                    String valueAsString = value.toString();
+                    if (GeneralUtilities.safeEquals(valueAsString, childDataModel.getDefaultAsString())) continue;
+                    
+                    indenter.writeStartElement(elementTag);
+                    indenter.writeCharacters(valueAsString);
+                    indenter.writeEndElement();
+                }
+                else {
+                    XmlHk2ConfigurationBean reference = (XmlHk2ConfigurationBean) value;
+                    String keyValue = reference._getKeyValue();
+                    
+                    indenter.writeStartElement(elementTag);
+                    indenter.writeCharacters(keyValue);
+                    indenter.writeEndElement();
+                    
+                }
+            }
         }
         
         indenter.writeEndElement();

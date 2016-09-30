@@ -52,6 +52,7 @@ import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.beans.DomainBean;
 import org.glassfish.hk2.xml.test.dynamic.merge.MergeTest;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,6 +65,8 @@ public class MarshallTest {
     private final static File OUTPUT_FILE = new File("output.xml");
     private final static String LOOK_FOR_ME = "0.255.255.255";
     
+    private final static String REF1 = "<machine>Alice</machine>";
+    
     @Before
     public void before() {
         if (OUTPUT_FILE.exists()) {
@@ -72,10 +75,18 @@ public class MarshallTest {
         }
     }
     
+    @After
+    public void after() {
+        if (OUTPUT_FILE.exists()) {
+            OUTPUT_FILE.delete();
+        }
+    }
+    
     /**
      * Tests that the output contains nice output
      */
     @Test
+    // @org.junit.Ignore
     public void testMarshallBackAfterUpdate() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -98,7 +109,12 @@ public class MarshallTest {
             fos.close();
         }
         
+        checkFile();
+    }
+    
+    private void checkFile() throws Exception {
         boolean found = false;
+        boolean foundRef = false;
         FileReader reader = new FileReader(OUTPUT_FILE);
         BufferedReader buffered = new BufferedReader(reader);
         
@@ -107,7 +123,9 @@ public class MarshallTest {
             while ((line = buffered.readLine()) != null) {
                 if (line.contains("<subnetwork>" + LOOK_FOR_ME + "</subnetwork>")) {
                     found = true;
-                    break;
+                }
+                if (line.contains(REF1)) {
+                    foundRef = true;
                 }
             }
         }
@@ -117,13 +135,15 @@ public class MarshallTest {
         }
         
         Assert.assertTrue(found);
+        Assert.assertTrue(foundRef);
+        
     }
     
     /**
      * Tests that the output contains nice output
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testMarshallBackAfterUpdateDom() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -146,25 +166,7 @@ public class MarshallTest {
             fos.close();
         }
         
-        boolean found = false;
-        FileReader reader = new FileReader(OUTPUT_FILE);
-        BufferedReader buffered = new BufferedReader(reader);
-        
-        try {
-            String line;
-            while ((line = buffered.readLine()) != null) {
-                if (line.contains("<subnetwork>" + LOOK_FOR_ME + "</subnetwork>")) {
-                    found = true;
-                    break;
-                }
-            }
-        }
-        finally {
-            buffered.close();
-            reader.close();
-        }
-        
-        Assert.assertTrue(found);
+        checkFile();
     }
 
 }
