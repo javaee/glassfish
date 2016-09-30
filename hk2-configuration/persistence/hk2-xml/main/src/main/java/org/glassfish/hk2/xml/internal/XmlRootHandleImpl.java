@@ -490,11 +490,11 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
      */
     @Override
     public void marshall(OutputStream outputStream) throws IOException {
-        boolean didLock = false;
-        if (changeControl != null) {
-            changeControl.getWriteLock().lock();
-            didLock = true;
+        if (changeControl == null) {
+            throw new IllegalStateException("marshall May only be called on a fully initialized root handle " + this);
         }
+        
+        changeControl.getWriteLock().lock();
         try {
             XmlServiceParser parser = parent.getParser();
             if (parser == null) {
@@ -505,9 +505,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
             parser.marshall(outputStream, this);
         }
         finally {
-            if (didLock) {
-                changeControl.getWriteLock().unlock();
-            }
+            changeControl.getWriteLock().unlock();
         }
     }
     

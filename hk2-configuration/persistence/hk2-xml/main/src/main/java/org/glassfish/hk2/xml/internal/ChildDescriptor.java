@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.xml.internal;
 
+import java.io.Serializable;
+
 /**
  * This represents either a ParentedModel or a
  * ChildDataModel but not both
@@ -46,9 +48,14 @@ package org.glassfish.hk2.xml.internal;
  * @author jwells
  *
  */
-public class ChildDescriptor {
-    public final ParentedModel parented;
-    public final ChildDataModel childData;
+public class ChildDescriptor implements Serializable {
+    private static final long serialVersionUID = 4427931173669631514L;
+    
+    public ParentedModel parented;
+    public ChildDataModel childData;
+    
+    public ChildDescriptor() {
+    }
     
     public ChildDescriptor(ParentedModel parented) {
         this(parented, null);
