@@ -70,6 +70,9 @@ public interface KingdomConfig extends ConfigBeanProxy, PropertyBag, AuditableBe
     Phyla getPhyla();
     void setPhyla(Phyla phyla);
     
+    @XmlElement
+    public String getAttribution();
+    
     @Element("*")
     @XmlElement(name="scientist")
     ScientistBean[] getScientists();

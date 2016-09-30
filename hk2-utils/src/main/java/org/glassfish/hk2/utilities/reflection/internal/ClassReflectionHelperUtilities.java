@@ -44,7 +44,7 @@ import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -69,7 +69,7 @@ public class ClassReflectionHelperUtilities {
 
             @Override
             public Set<MethodWrapper> run() {
-                Set<MethodWrapper> retVal = new HashSet<MethodWrapper>();
+                Set<MethodWrapper> retVal = new LinkedHashSet<MethodWrapper>();
                 
                 for (Method method : Object.class.getDeclaredMethods()) {
                     retVal.add(new MethodWrapperImpl(method));                   
@@ -87,7 +87,7 @@ public class ClassReflectionHelperUtilities {
 
             @Override
             public Set<Field> run() {
-                Set<Field> retVal = new HashSet<Field>();
+                Set<Field> retVal = new LinkedHashSet<Field>();
                 
                 for (Field field : Object.class.getDeclaredFields()) {
                     retVal.add(field);                   
@@ -132,7 +132,7 @@ public class ClassReflectionHelperUtilities {
     private static Set<MethodWrapper> getDeclaredMethodWrappers(final Class<?> clazz) {
         Method declaredMethods[] = secureGetDeclaredMethods(clazz);
         
-        Set<MethodWrapper> retVal = new HashSet<MethodWrapper>();
+        Set<MethodWrapper> retVal = new LinkedHashSet<MethodWrapper>();
         for (Method method : declaredMethods) {
             retVal.add(new MethodWrapperImpl(method));
         }
@@ -150,7 +150,7 @@ public class ClassReflectionHelperUtilities {
     private static Set<Field> getDeclaredFieldWrappers(final Class<?> clazz) {
         Field declaredFields[] = secureGetDeclaredFields(clazz);
         
-        Set<Field> retVal = new HashSet<Field>();
+        Set<Field> retVal = new LinkedHashSet<Field>();
         for (Field field : declaredFields) {
             retVal.add(field);
         }
@@ -163,7 +163,7 @@ public class ClassReflectionHelperUtilities {
         if (Object.class.equals(clazz)) return OBJECT_FIELDS;
         if (clazz.isInterface()) return Collections.emptySet();
         
-        Set<Field> retVal = new HashSet<Field>();
+        Set<Field> retVal = new LinkedHashSet<Field>();
         
         retVal.addAll(getDeclaredFieldWrappers(clazz));
         retVal.addAll(getAllFieldWrappers(clazz.getSuperclass()));
@@ -175,7 +175,7 @@ public class ClassReflectionHelperUtilities {
         if (clazz == null) return Collections.emptySet();
         if (Object.class.equals(clazz)) return OBJECT_METHODS;
         
-        Set<MethodWrapper> retVal = new HashSet<MethodWrapper>();
+        Set<MethodWrapper> retVal = new LinkedHashSet<MethodWrapper>();
         
         if (clazz.isInterface()) {
             for (Method m : clazz.getDeclaredMethods()) {

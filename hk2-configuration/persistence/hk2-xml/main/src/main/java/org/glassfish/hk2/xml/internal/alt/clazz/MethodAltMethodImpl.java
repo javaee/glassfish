@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -45,7 +45,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.TreeSet;
 
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
@@ -169,13 +168,13 @@ public class MethodAltMethodImpl implements AltMethod {
         if (altAnnotations != null) return altAnnotations;
         
         Annotation annotations[] = method.getAnnotations();
-        TreeSet<AltAnnotation> retVal = new TreeSet<AltAnnotation>();
+        ArrayList<AltAnnotation> retVal = new ArrayList<AltAnnotation>(annotations.length);
         
         for (Annotation annotation : annotations) {
             retVal.add(new AnnotationAltAnnotationImpl(annotation, helper));
         }
         
-        altAnnotations = Collections.unmodifiableList(new ArrayList<AltAnnotation>(retVal));
+        altAnnotations = Collections.unmodifiableList(retVal);
         return altAnnotations;
     }
 
@@ -185,69 +184,6 @@ public class MethodAltMethodImpl implements AltMethod {
     @Override
     public boolean isVarArgs() {
         return method.isVarArgs();
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
-    @Override
-    public int compareTo(AltMethod o) {
-        int retVal = method.getName().compareTo(o.getName());
-        if (retVal != 0) return retVal;
-        
-        List<AltClass> thisParams = getParameterTypes();
-        List<AltClass> oParams = o.getParameterTypes();
-        
-        retVal = thisParams.size() - oParams.size();
-        if (retVal != 0) return retVal;
-        
-        // Params have same size
-        for (int lcv = 0; lcv < thisParams.size(); lcv++) {
-            AltClass thisParam = thisParams.get(lcv);
-            AltClass oParam = oParams.get(lcv);
-            
-            retVal = thisParam.getName().compareTo(oParam.getName());
-            if (retVal != 0) return retVal;
-        }
-        
-        return 0;
-    }
-    
-    @Override
-    public int hashCode() {
-        int retVal = method.getName().hashCode();
-        
-        for (AltClass param : getParameterTypes()) {
-            retVal ^= param.getName().hashCode();
-        }
-        
-        return retVal;
-    }
-    
-    @Override
-    public boolean equals(Object o) {
-        if (o == null) return false;
-        if (!(o instanceof AltMethod)) return false;
-        AltMethod other = (AltMethod) o;
-        
-        boolean retVal = method.getName().equals(other.getName());
-        if (!retVal) return false;
-        
-        List<AltClass> thisParams = getParameterTypes();
-        List<AltClass> oParams = other.getParameterTypes();
-        
-        if (thisParams.size() != oParams.size()) return false;
-        
-        // Params have same size
-        for (int lcv = 0; lcv < thisParams.size(); lcv++) {
-            AltClass thisParam = thisParams.get(lcv);
-            AltClass oParam = oParams.get(lcv);
-            
-            retVal = thisParam.getName().equals(oParam.getName());
-            if (!retVal) return false;
-        }
-        
-        return true;
     }
     
     @Override

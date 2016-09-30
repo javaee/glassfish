@@ -50,11 +50,17 @@ import java.util.Map;
 
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.Unmarshaller.Listener;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
 
+import org.glassfish.hk2.utilities.general.GeneralUtilities;
+import org.glassfish.hk2.utilities.general.IndentingXMLStreamWriter;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.Logger;
+import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 import org.glassfish.hk2.xml.spi.Model;
@@ -384,7 +390,60 @@ public class XmlStreamImpl {
     }
     
     public static <T> void marshall(OutputStream outputStream, XmlRootHandle<T> root) throws IOException {
+        try {
+            marshallXmlStream(outputStream, root);
+        }
+        catch (XMLStreamException xse) {
+            throw new IOException(xse);
+        }
+        
         
     }
+    
+    private static <T> void marshallXmlStream(OutputStream outputStream, XmlRootHandle<T> root) throws XMLStreamException {
+        XMLStreamWriter rawWriter = XMLOutputFactory.newInstance().createXMLStreamWriter(outputStream);
+        IndentingXMLStreamWriter indenter = new IndentingXMLStreamWriter(rawWriter);
+        try {
+            indenter.writeStartDocument();
+            
+            indenter.writeEndDocument();
+        }
+        finally {
+            rawWriter.close();
+        }
+    }
+    
+    private static void marshallElement(XMLStreamWriter indenter, XmlHk2ConfigurationBean bean, ParentedModel parented) throws XMLStreamException {
+        ModelImpl model = bean._getModel();
+        Map<String, Object> beanLikeMap = bean._getBeanLikeMap();
+        
+        String xmlTag;
+        if (parented == null) {
+            xmlTag = model.getRootName();
+        }
+        else {
+            xmlTag = parented.getChildXmlTag();
+        }
+        
+        indenter.writeStartElement(xmlTag);
+        
+        Map<String, ChildDataModel> attributeModels = model.getAllAttributeChildren();
+        for (Map.Entry<String, ChildDataModel> entry : attributeModels.entrySet()) {
+            String attributeTag = entry.getKey();
+            ChildDataModel childDataModel = entry.getValue();
+            
+            Object value = beanLikeMap.get(attributeTag);
+            if (value == null) continue;
+            
+            String valueAsString = value.toString();
+            if (GeneralUtilities.safeEquals(valueAsString, childDataModel.getDefaultAsString())) continue;
+            
+            indenter.writeAttribute(attributeTag, valueAsString);
+        }
+        
+        indenter.writeEndElement();
+    }
+    
+    
 
 }

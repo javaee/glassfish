@@ -70,6 +70,7 @@ public class ChildDataModel implements Serializable {
     private String childType;
     private String defaultAsString;
     private boolean isReference;
+    private boolean isElement;
     
     private ClassLoader myLoader;
     private Class<?> childTypeAsClass;
@@ -77,10 +78,11 @@ public class ChildDataModel implements Serializable {
     public ChildDataModel() {
     }
     
-    public ChildDataModel(String childType, String defaultAsString, boolean isReference) {
+    public ChildDataModel(String childType, String defaultAsString, boolean isReference, boolean isElement) {
         this.childType = childType;
         this.defaultAsString = defaultAsString;
         this.isReference = isReference;
+        this.isElement = isElement;
     }
     
     public String getChildType() {
@@ -93,6 +95,10 @@ public class ChildDataModel implements Serializable {
     
     public boolean isReference() {
         return isReference;
+    }
+    
+    public boolean isElement() {
+        return isElement;
     }
     
     public void setLoader(ClassLoader myLoader) {

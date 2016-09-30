@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,9 +43,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
@@ -103,7 +103,7 @@ public class TypeElementAltClassImpl implements AltClass {
         
         List<? extends AnnotationMirror> annoMirrors = processingEnv.getElementUtils().getAllAnnotationMirrors(clazz);
         
-        TreeSet<AltAnnotation> retVal = new TreeSet<AltAnnotation>();
+        ArrayList<AltAnnotation> retVal = new ArrayList<AltAnnotation>(annoMirrors.size());
         
         for (AnnotationMirror annoMirror : annoMirrors) {
             AnnotationMirrorAltAnnotationImpl anno = new AnnotationMirrorAltAnnotationImpl(annoMirror, processingEnv);
@@ -185,15 +185,40 @@ public class TypeElementAltClassImpl implements AltClass {
         if (methods != null) return methods;
         
         List<? extends Element> innerElements = processingEnv.getElementUtils().getAllMembers(clazz);
-        TreeSet<AltMethod> retVal = new TreeSet<AltMethod>();
+        
+        
+        LinkedList<List<Element>> reorderByEnclosingClass = new LinkedList<List<Element>>();
+        Element currentEnclosingElement = null;
+        List<Element> addedList = null;
         
         for (Element innerElementElement : innerElements) {
+            if (isMethodToGenerate(innerElementElement)) {
+                Element enclosingElement = innerElementElement.getEnclosingElement();
+                
+                if (currentEnclosingElement == null || !enclosingElement.equals(currentEnclosingElement)) {
+                    currentEnclosingElement = enclosingElement;
+                    
+                    addedList = new LinkedList<Element>();
+                    reorderByEnclosingClass.addFirst(addedList);
+                }
+                
+                addedList.add(innerElementElement);
+            }
+        }
+        
+        List<Element> innerElementsReordered = new ArrayList<Element>(innerElements.size());
+        for (List<Element> listByEnclosing : reorderByEnclosingClass) {
+            innerElementsReordered.addAll(listByEnclosing);
+        }
+        
+        ArrayList<AltMethod> retVal = new ArrayList<AltMethod>(innerElementsReordered.size());
+        for (Element innerElementElement : innerElementsReordered) {
             if (isMethodToGenerate(innerElementElement)) {
                 retVal.add(new ElementAltMethodImpl(innerElementElement, processingEnv));
             }
         }
         
-        methods = Collections.unmodifiableList(new ArrayList<AltMethod>(retVal));
+        methods = Collections.unmodifiableList(retVal);
         return methods;
     }
 

@@ -48,12 +48,15 @@ package org.glassfish.hk2.xml.internal;
 public class XmlElementData {
     private final String name;
     private final String defaultValue;
+    private final boolean isElement;
     
-    XmlElementData(String name, String defaultValue) {
+    XmlElementData(String name, String defaultValue, boolean isElement) {
         this.name = name;
         this.defaultValue = defaultValue;
+        this.isElement = isElement;
     }
     
     public String getName() { return name; }
     public String getDefaultValue() { return defaultValue; }
+    public boolean isElement() { return isElement; }
 }

@@ -104,6 +104,11 @@ public class MethodInformation {
      */
     private final boolean isReference;
     
+    /**
+     * True if this is considered an element, false if it is an attribute
+     */
+    private final boolean isElement;
+    
     public MethodInformation(AltMethod originalMethod,
             MethodType methodType,
             String decapitalizedMethodProperty,
@@ -114,7 +119,8 @@ public class MethodInformation {
             boolean key,
             boolean isList,
             boolean isArray,
-            boolean isReference) {
+            boolean isReference,
+            boolean isElement) {
         this.originalMethod = originalMethod;
         this.methodType = methodType;
         this.decapitalizedMethodProperty = decapitalizedMethodProperty;
@@ -126,6 +132,7 @@ public class MethodInformation {
         this.isList = isList;
         this.isArray = isArray;
         this.isReference = isReference;
+        this.isElement = isElement;
     }
     
     /**
@@ -199,6 +206,10 @@ public class MethodInformation {
         return decapitalizedMethodProperty;
     }
     
+    public boolean isElement() {
+        return isElement;
+    }
+    
     @Override
     public String toString() {
         return "MethodInformation(name=" + originalMethod.getName() + "," +
@@ -212,6 +223,7 @@ public class MethodInformation {
           "isList=" + isList + "," +
           "isArray=" + isArray + "," +
           "isReference=" + isReference + "," +
+          "isElement=" + isElement + "," +
           System.identityHashCode(this) + ")";
           
     }

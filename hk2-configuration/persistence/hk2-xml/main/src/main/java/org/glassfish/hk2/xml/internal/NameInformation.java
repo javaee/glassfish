@@ -93,6 +93,12 @@ public class NameInformation {
         return referenceSet.contains(variableName);
     }
     
+    boolean isElement(String variableName) {
+        if (variableName == null) return false;
+        if (!nameMapping.containsKey(variableName)) return false;
+        return nameMapping.get(variableName).isElement();
+    }
+    
     String getAddVariableName(String methodName) {
         return addMethodToVariableName.get(methodName);
     }

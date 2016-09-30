@@ -42,8 +42,8 @@ package org.glassfish.hk2.xml.internal;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -88,10 +88,13 @@ public class ModelImpl implements Model {
     private String rootName;
     
     /** A map from the xml tag to the parented child node */
-    private final Map<String, ParentedModel> childrenByName = new HashMap<String, ParentedModel>();
+    private final Map<String, ParentedModel> childrenByName = new LinkedHashMap<String, ParentedModel>();
     
     /** A map from xml tag to information about the non-child property */
-    private final Map<String, ChildDataModel> nonChildProperty = new HashMap<String, ChildDataModel>();
+    private final Map<String, ChildDataModel> nonChildProperty = new LinkedHashMap<String, ChildDataModel>();
+    
+    /** A map from xml tag to child data, ordered */
+    private final Map<String, ChildDescriptor> allChildren = new LinkedHashMap<String, ChildDescriptor>();
     
     /** If this node has a key, this is the property name of the key */
     private String keyProperty;
@@ -129,10 +132,13 @@ public class ModelImpl implements Model {
             String givenDefault) {
         ParentedModel pm = new ParentedModel(childInterface, xmlTag, childType, givenDefault);
         childrenByName.put(xmlTag, pm);
+        allChildren.put(xmlTag, new ChildDescriptor(pm));
     }
     
-    public void addNonChild(String xmlTag, String defaultValue, String childType, boolean isReference) {
-        nonChildProperty.put(xmlTag, new ChildDataModel(childType, defaultValue, isReference));
+    public void addNonChild(String xmlTag, String defaultValue, String childType, boolean isReference, boolean isElement) {
+        ChildDataModel cdm = new ChildDataModel(childType, defaultValue, isReference, isElement);
+        nonChildProperty.put(xmlTag, cdm);
+        allChildren.put(xmlTag, new ChildDescriptor(cdm));
     }
 
     /**
@@ -173,6 +179,10 @@ public class ModelImpl implements Model {
     
     public Map<String, ChildDataModel> getNonChildProperties() {
         return nonChildProperty;
+    }
+    
+    public Map<String, ChildDescriptor> getAllChildrenDescriptors() {
+        return allChildren;
     }
     
     public Set<String> getUnKeyedChildren() {
@@ -291,9 +301,24 @@ public class ModelImpl implements Model {
         }
     }
     
+    public Map<String, ChildDataModel> getAllAttributeChildren() {
+        Map<String, ChildDataModel> retVal = new LinkedHashMap<String, ChildDataModel>();
+        
+        for (Map.Entry<String, ChildDataModel> candidate : nonChildProperty.entrySet()) {
+            String xmlKey = candidate.getKey();
+            ChildDataModel childDataModel = candidate.getValue();
+            
+            if (childDataModel.isElement()) continue;
+            
+            retVal.put(xmlKey, childDataModel);
+        }
+        
+        return retVal;
+    }
+    
     public synchronized String getJavaNameFromKey(String key, ClassReflectionHelper reflectionHelper) {
         if (keyToJavaNameMap == null) {
-            keyToJavaNameMap = new HashMap<String, String>();
+            keyToJavaNameMap = new LinkedHashMap<String, String>();
         }
         
         String result = keyToJavaNameMap.get(key);
@@ -347,6 +372,7 @@ public class ModelImpl implements Model {
         
         return Generator.isSetter(alt);
     }
+    
     
     @Override
     public int hashCode() {

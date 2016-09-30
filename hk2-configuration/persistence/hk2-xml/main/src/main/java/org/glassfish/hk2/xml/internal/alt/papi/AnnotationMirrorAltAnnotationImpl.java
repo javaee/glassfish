@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -302,28 +302,6 @@ public class AnnotationMirrorAltAnnotationImpl implements AltAnnotation {
         
         values = Collections.unmodifiableMap(retVal);
         return values;
-    }
-    
-    /* (non-Javadoc)
-     * @see java.lang.Comparable#compareTo(java.lang.Object)
-     */
-    @Override
-    public int compareTo(AltAnnotation o) {
-        return annotationType().compareTo(o.annotationType());
-    }
-    
-    @Override
-    public int hashCode() {
-        return annotationType().hashCode();
-    }
-    
-    @Override
-    public boolean equals(Object o) {
-        if (o == null) return false;
-        if (!(o instanceof AltAnnotation)) return false;
-        AltAnnotation other = (AltAnnotation) o;
-        
-        return annotationType().equals(other.annotationType());
     }
     
     @Override

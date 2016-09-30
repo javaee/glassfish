@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015-2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,21 +37,37 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.internal.alt;
-
-import java.util.Map;
+package org.glassfish.hk2.xml.internal;
 
 /**
+ * This represents either a ParentedModel or a
+ * ChildDataModel but not both
+ * 
  * @author jwells
  *
  */
-public interface AltAnnotation {
-    public String annotationType();
+public class ChildDescriptor {
+    public final ParentedModel parented;
+    public final ChildDataModel childData;
     
-    public String getStringValue(String methodName);
-    public boolean getBooleanValue(String methodName);
-    public String[] getStringArrayValue(String methodName);
+    public ChildDescriptor(ParentedModel parented) {
+        this(parented, null);
+    }
     
-    public Map<String, Object> getAnnotationValues();
-
+    public ChildDescriptor(ChildDataModel childData) {
+        this(null, childData);
+    }
+    
+    private ChildDescriptor(ParentedModel parented, ChildDataModel childData) {
+        this.parented = parented;
+        this.childData = childData;
+    }
+    
+    public ParentedModel getParentedModel() { return parented; }
+    public ChildDataModel getChildDataModel() { return childData; }
+    
+    @Override
+    public String toString() {
+        return "ChildDescriptor(" + parented + "," + childData + "," + System.identityHashCode(this) + ")";
+    }
 }

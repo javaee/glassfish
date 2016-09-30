@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,7 +44,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.MethodWrapper;
@@ -109,12 +108,12 @@ public class ClassAltClassImpl implements AltClass {
         
         Annotation annotationz[] = clazz.getAnnotations();
         
-        TreeSet<AltAnnotation> retVal = new TreeSet<AltAnnotation>();
+        ArrayList<AltAnnotation> retVal = new ArrayList<AltAnnotation>(annotationz.length);
         for (Annotation annotation : annotationz) {
             retVal.add(new AnnotationAltAnnotationImpl(annotation, helper));
         }
         
-        annotations = Collections.unmodifiableList(new ArrayList<AltAnnotation>(retVal));
+        annotations = Collections.unmodifiableList(retVal);
         return annotations;
     }
 
@@ -126,13 +125,13 @@ public class ClassAltClassImpl implements AltClass {
         if (methods != null) return methods;
         
         Set<MethodWrapper> wrappers = helper.getAllMethods(clazz);
-        TreeSet<AltMethod> retVal = new TreeSet<AltMethod>();
+        ArrayList<AltMethod> retVal = new ArrayList<AltMethod>(wrappers.size());
         
         for (MethodWrapper method : wrappers) {
             retVal.add(new MethodAltMethodImpl(method.getMethod(), helper));
         }
         
-        methods = Collections.unmodifiableList(new ArrayList<AltMethod>(retVal));
+        methods = Collections.unmodifiableList(retVal);
         return methods;
     }
 

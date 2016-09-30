@@ -533,12 +533,12 @@ public class Generator {
                     }
                     else {
                         compiledModel.addNonChild(mi.getRepresentedProperty(), mi.getDefaultValue(),
-                                mi.getGetterSetterType().getName(), true);
+                                mi.getGetterSetterType().getName(), true, mi.isElement());
                     }
                 }
                 else {
                     compiledModel.addNonChild(mi.getRepresentedProperty(), mi.getDefaultValue(),
-                            mi.getGetterSetterType().getName(), false);
+                            mi.getGetterSetterType().getName(), false, mi.isElement());
                 }
             }
             
@@ -618,24 +618,29 @@ public class Generator {
             sb.append("retVal.setKeyProperty(\"" + model.getKeyProperty() + "\");\n");
         }
         
-        Map<String, ParentedModel> childrenByName = model.getChildrenByName();
-        for (Map.Entry<String, ParentedModel> entry : childrenByName.entrySet()) {
-            // TODO: Generate a Map for defaultChild strings
+        Map<String, ChildDescriptor> allChildren = model.getAllChildrenDescriptors();
+        for (Map.Entry<String, ChildDescriptor> entry : allChildren.entrySet()) {
+            String xmlTag = entry.getKey();
+            ChildDescriptor descriptor = entry.getValue();
             
-            sb.append("retVal.addChild(" +
-              asParameter(entry.getValue().getChildInterface()) + "," +
-              asParameter(entry.getValue().getChildXmlTag()) + "," +
-              asParameter(entry.getValue().getChildType()) + "," +
-              asParameter(entry.getValue().getGivenDefault()) + ");\n");
-        }
-        
-        Map<String, ChildDataModel> nonChildProperties = model.getNonChildProperties();
-        for (Map.Entry<String, ChildDataModel> entry : nonChildProperties.entrySet()) {
-            sb.append("retVal.addNonChild(" +
-              asParameter(entry.getKey()) + "," +
-              asParameter(entry.getValue().getDefaultAsString()) + "," +
-              asParameter(entry.getValue().getChildType()) + "," +
-              asBoolean(entry.getValue().isReference()) + ");\n");
+            ParentedModel parentedModel = descriptor.getParentedModel();
+            if (parentedModel != null) {
+                sb.append("retVal.addChild(" +
+                        asParameter(parentedModel.getChildInterface()) + "," +
+                        asParameter(parentedModel.getChildXmlTag()) + "," +
+                        asParameter(parentedModel.getChildType()) + "," +
+                        asParameter(parentedModel.getGivenDefault()) + ");\n");
+            }
+            else {
+                ChildDataModel childDataModel = descriptor.getChildDataModel();
+                
+                sb.append("retVal.addNonChild(" +
+                        asParameter(xmlTag) + "," +
+                        asParameter(childDataModel.getDefaultAsString()) + "," +
+                        asParameter(childDataModel.getChildType()) + "," +
+                        asBoolean(childDataModel.isReference()) + "," +
+                        asBoolean(childDataModel.isElement()) + ");\n");
+            }
         }
         
         sb.append("return retVal; }");
@@ -973,20 +978,20 @@ public class Generator {
                 String defaultValue = xmlElement.getStringValue("defaultValue");
                 
                 if (JAXB_DEFAULT_STRING.equals(xmlElement.getStringValue("name"))) {
-                    xmlNameMap.put(setterVariable, new XmlElementData(setterVariable, defaultValue));
+                    xmlNameMap.put(setterVariable, new XmlElementData(setterVariable, defaultValue, true));
                 }
                 else {
-                    xmlNameMap.put(setterVariable, new XmlElementData(xmlElement.getStringValue("name"), defaultValue));
+                    xmlNameMap.put(setterVariable, new XmlElementData(xmlElement.getStringValue("name"), defaultValue, true));
                 }
             }
             else {
                 AltAnnotation xmlAttribute = originalMethod.getAnnotation(XmlAttribute.class.getName());
                 if (xmlAttribute != null) {
                     if (JAXB_DEFAULT_STRING.equals(xmlAttribute.getStringValue("name"))) {
-                        xmlNameMap.put(setterVariable, new XmlElementData(setterVariable, JAXB_DEFAULT_DEFAULT));
+                        xmlNameMap.put(setterVariable, new XmlElementData(setterVariable, JAXB_DEFAULT_DEFAULT, false));
                     }
                     else {
-                        xmlNameMap.put(setterVariable, new XmlElementData(xmlAttribute.getStringValue("name"), JAXB_DEFAULT_DEFAULT));
+                        xmlNameMap.put(setterVariable, new XmlElementData(xmlAttribute.getStringValue("name"), JAXB_DEFAULT_DEFAULT, false));
                     }
                 }
                 else {
@@ -1136,6 +1141,7 @@ public class Generator {
         }
         
         boolean isReference = xmlNameMap.isReference(variable);
+        boolean isElement = xmlNameMap.isElement(variable);
         
         return new MethodInformation(m,
                 methodType,
@@ -1147,7 +1153,8 @@ public class Generator {
                 key,
                 isList,
                 isArray,
-                isReference);
+                isReference,
+                isElement);
     }
     
     private static String convertXmlRootElementName(AltAnnotation root, AltClass clazz) {

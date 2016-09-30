@@ -310,6 +310,8 @@ public class OldConfigTest {
         Phyla phyla = kingdom1.getPhyla();
         Assert.assertNotNull(phyla);
         
+        Assert.assertNull(kingdom1.getAttribution());
+        
         List<Phylum> phylums = phyla.getPhylum();
         Assert.assertEquals(1, phylums.size());
         
