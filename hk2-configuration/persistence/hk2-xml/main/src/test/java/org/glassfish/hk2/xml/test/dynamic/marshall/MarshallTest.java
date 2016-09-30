@@ -86,7 +86,7 @@ public class MarshallTest {
      * Tests that the output contains nice output
      */
     @Test
-    // @org.junit.Ignore
+    @org.junit.Ignore
     public void testMarshallBackAfterUpdate() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
