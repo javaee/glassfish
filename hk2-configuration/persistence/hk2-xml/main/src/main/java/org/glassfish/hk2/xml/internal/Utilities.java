@@ -298,7 +298,7 @@ public class Utilities {
             Object rawChild,
             String childKey,
             int index,
-            DynamicChangeInfo changeInformation,
+            DynamicChangeInfo<?> changeInformation,
             XmlDynamicChange xmlDynamicChange,
             List<ActiveDescriptor<?>> addedServices) {
         if (index < -1) {
@@ -465,7 +465,7 @@ public class Utilities {
     @SuppressWarnings("unchecked")
     private static void handleChildren(BaseHK2JAXBBean child,
             BaseHK2JAXBBean childToCopy,
-            DynamicChangeInfo changeInformation,
+            DynamicChangeInfo<?> changeInformation,
             List<ActiveDescriptor<?>> addedServices,
             XmlDynamicChange xmlDynamicChange) {
         Map<String, ParentedModel> childrenMap = childToCopy._getModel().getChildrenProperties();
@@ -591,7 +591,7 @@ public class Utilities {
      */
     public static BaseHK2JAXBBean _addRoot(ModelImpl rootNode,
             Object rawRoot,
-            DynamicChangeInfo changeInfo,
+            DynamicChangeInfo<?> changeInfo,
             ClassReflectionHelper helper,
             WriteableBeanDatabase writeableDatabase,
             DynamicConfiguration dynamicService,
@@ -648,7 +648,7 @@ public class Utilities {
             String childKey,
             int index,
             Object childToRemove,
-            DynamicChangeInfo changeInformation,
+            DynamicChangeInfo<?> changeInformation,
             XmlDynamicChange xmlDynamicChange) {
         if (childProperty == null) return null;
         
@@ -1097,7 +1097,7 @@ public class Utilities {
     }
     
     @SuppressWarnings("unchecked")
-    public static void invokeVetoableChangeListeners(DynamicChangeInfo control,
+    public static void invokeVetoableChangeListeners(DynamicChangeInfo<?> control,
             BaseHK2JAXBBean source,
             Object oldValue,
             Object newValue,

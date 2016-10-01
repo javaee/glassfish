@@ -44,6 +44,7 @@ import java.beans.PropertyChangeEvent;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
@@ -150,10 +151,13 @@ public class BeanReflectionHelper {
     private static PropertyChangeEvent[] getMapChangeEvents(Map<String, Object> oldBean, Map<String, Object> newBean) {
         LinkedList<PropertyChangeEvent> retVal = new LinkedList<PropertyChangeEvent>();
         
+        Set<String> newKeys = new HashSet<String>(newBean.keySet());
         for (Map.Entry<String, Object> entry : oldBean.entrySet()) {
             String key = entry.getKey();
             Object oldValue = entry.getValue();
             Object newValue = newBean.get(key);
+            
+            newKeys.remove(key);
             
             if (!GeneralUtilities.safeEquals(oldValue, newValue)) {
                 retVal.add(new PropertyChangeEvent(newBean,
@@ -161,6 +165,14 @@ public class BeanReflectionHelper {
                     oldValue,
                     newValue));
             }
+        }
+        
+        // The remaining keys in newKeys represent new values that were not there in the old map
+        for (String newKey : newKeys) {
+            retVal.add(new PropertyChangeEvent(newBean,
+                    newKey,
+                    null,
+                    newBean.get(newKey)));
         }
         
         return retVal.toArray(new PropertyChangeEvent[retVal.size()]);

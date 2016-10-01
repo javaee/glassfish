@@ -1050,7 +1050,8 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * @param propValue The new value of the property
      */
     public boolean changeInHub(String propName, Object propValue, WriteableBeanDatabase wbd) {
-        if (GeneralUtilities.safeEquals(beanLikeMap.get(propName), propValue)) {
+        Object oldValue = beanLikeMap.get(propName);
+        if (GeneralUtilities.safeEquals(oldValue, propValue)) {
             // Calling set, but the value was not in fact changed
             return false;
         }

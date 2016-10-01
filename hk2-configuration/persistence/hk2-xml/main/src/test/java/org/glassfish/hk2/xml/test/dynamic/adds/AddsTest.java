@@ -39,12 +39,20 @@
  */
 package org.glassfish.hk2.xml.test.dynamic.adds;
 
+import java.beans.PropertyChangeEvent;
 import java.net.URL;
+import java.util.List;
+
+import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
+import org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener;
+import org.glassfish.hk2.configuration.hub.api.Change;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.Type;
+import org.glassfish.hk2.configuration.hub.api.Change.ChangeCategory;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.basic.beans.Commons;
@@ -82,7 +90,8 @@ public class AddsTest {
     /**
      * Tests that we can call createAndAdd successfully on a root with no required elements
      */
-    @Test // @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testCreateAndAdd() {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -122,14 +131,59 @@ public class AddsTest {
         else {
             Assert.assertNull(hub.getCurrentDatabase().getInstance(EMPLOYEE_TYPE, DAVE_INSTANCE));
         }
+        
+        if (inHub) {
+            // Check the changes
+            RecordingBeanUpdateListener listener = locator.getService(RecordingBeanUpdateListener.class);
+            
+            List<Change> allChanges = listener.latestCommit;
+            Assert.assertNotNull(allChanges);
+            Assert.assertEquals(2, allChanges.size());
+            
+            {
+                Change change0 = allChanges.get(0);
+                
+                Assert.assertEquals(ChangeCategory.ADD_INSTANCE, change0.getChangeCategory());
+                
+                Type changeType = change0.getChangeType();
+                Assert.assertEquals("/employees/employee", changeType.getName());
+                
+                Assert.assertEquals("employees.Dave", change0.getInstanceKey());
+                
+                Assert.assertNotNull(change0.getInstanceValue());
+                Assert.assertNull(change0.getOriginalInstanceValue());
+                Assert.assertNull(change0.getModifiedProperties());
+            }
+            
+            {
+                Change change1 = allChanges.get(1);
+                
+                Assert.assertEquals(ChangeCategory.MODIFY_INSTANCE, change1.getChangeCategory());
+                
+                Type changeType = change1.getChangeType();
+                Assert.assertEquals("/employees", changeType.getName());
+                
+                Assert.assertEquals("employees", change1.getInstanceKey());
+                
+                Assert.assertNotNull(change1.getInstanceValue());
+                Assert.assertNotNull(change1.getOriginalInstanceValue());
+                
+                List<PropertyChangeEvent> modifiedProperties = change1.getModifiedProperties();
+                Assert.assertNotNull(modifiedProperties);
+                Assert.assertEquals(1, modifiedProperties.size());
+                
+                Assert.assertEquals("employee", modifiedProperties.get(0).getPropertyName());
+            }
+        }
     }
     
     /**
      * Tests that we can add to an existing tree with just a basic add (no copy or overlay)
      */
-    @Test // @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testAddToExistingTree() throws Exception {
-        ServiceLocator locator = Utilities.createLocator();
+        ServiceLocator locator = Utilities.createLocator(RecordingBeanUpdateListener.class);
         XmlService xmlService = locator.getService(XmlService.class);
         Hub hub = locator.getService(Hub.class);
         
@@ -144,7 +198,8 @@ public class AddsTest {
      * Tests that we can add to an existing tree with just a basic add (no copy or overlay) not in Hub
      * @throws Exception
      */
-    @Test // @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testAddToExistingTreeNoHub() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -161,9 +216,10 @@ public class AddsTest {
      * Tests that we can add to an existing tree with just a basic add (no copy or overlay) not in ServiceLocator
      * @throws Exception
      */
-    @Test // @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testAddToExistingTreeNoHk2Service() throws Exception {
-        ServiceLocator locator = Utilities.createLocator();
+        ServiceLocator locator = Utilities.createLocator(RecordingBeanUpdateListener.class);
         XmlService xmlService = locator.getService(XmlService.class);
         Hub hub = locator.getService(Hub.class);
         
@@ -179,7 +235,8 @@ public class AddsTest {
      * or Hub
      * @throws Exception
      */
-    @Test // @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testAddToExistingTreeNoHk2ServiceOrHub() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -198,7 +255,8 @@ public class AddsTest {
      * Tests that we can add to an existing tree with just a basic add
      * with an unkeyed field
      */
-    @Test // @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testAddToExistingTreeUnKeyed() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -239,9 +297,10 @@ public class AddsTest {
      * Tests that we can add to an existing tree with just a basic add
      * with an direct stanza
      */
-    @Test // @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testAddToExistingTreeDirect() throws Exception {
-        ServiceLocator locator = Utilities.createLocator();
+        ServiceLocator locator = Utilities.createLocator(RecordingBeanUpdateListener.class);
         XmlService xmlService = locator.getService(XmlService.class);
         Hub hub = locator.getService(Hub.class);
         
@@ -261,6 +320,63 @@ public class AddsTest {
         Assert.assertNull(financials.getSymbol());
         
         Assert.assertNotNull(hub.getCurrentDatabase().getInstance(Commons.FINANCIALS_TYPE, Commons.FINANCIALS_INSTANCE));
+        
+        RecordingBeanUpdateListener listener = locator.getService(RecordingBeanUpdateListener.class);
+        
+        List<Change> allChanges = listener.latestCommit;
+        Assert.assertNotNull(allChanges);
+        Assert.assertEquals(3, allChanges.size());
+        
+        {
+            Change change0 = allChanges.get(0);
+            
+            Assert.assertEquals(ChangeCategory.ADD_TYPE, change0.getChangeCategory());
+            
+            Type changeType = change0.getChangeType();
+            Assert.assertEquals("/employees/financials", changeType.getName());
+            
+            Assert.assertNull(change0.getInstanceKey());
+            Assert.assertNull(change0.getInstanceValue());
+            Assert.assertNull(change0.getOriginalInstanceValue());
+            Assert.assertNull(change0.getModifiedProperties());
+        }
+        
+        {
+            Change change1 = allChanges.get(1);
+            
+            Assert.assertEquals(ChangeCategory.ADD_INSTANCE, change1.getChangeCategory());
+            
+            Type changeType = change1.getChangeType();
+            Assert.assertEquals("/employees/financials", changeType.getName());
+            
+            Assert.assertEquals("employees.financials", change1.getInstanceKey());
+            
+            Assert.assertNotNull(change1.getInstanceValue());
+            Assert.assertNull(change1.getOriginalInstanceValue());
+            Assert.assertNull(change1.getModifiedProperties());
+        }
+        
+        {
+            Change change2 = allChanges.get(2);
+            
+            Assert.assertEquals(ChangeCategory.MODIFY_INSTANCE, change2.getChangeCategory());
+            
+            Type changeType = change2.getChangeType();
+            Assert.assertEquals("/employees", changeType.getName());
+            
+            Assert.assertEquals("employees", change2.getInstanceKey());
+            
+            Assert.assertNotNull(change2.getInstanceValue());
+            Assert.assertNotNull(change2.getOriginalInstanceValue());
+            
+            List<PropertyChangeEvent> modifiedProperties = change2.getModifiedProperties();
+            Assert.assertNotNull(modifiedProperties);
+            Assert.assertEquals(1, modifiedProperties.size());
+            
+            Assert.assertEquals("financials", modifiedProperties.get(0).getPropertyName());
+            Assert.assertNull(modifiedProperties.get(0).getOldValue());
+            Assert.assertNotNull(modifiedProperties.get(0).getNewValue());
+        }
     }
     
     private static Employee createEmployee(XmlService xmlService, String name, long id) {
@@ -301,7 +417,8 @@ public class AddsTest {
      * Creates an entire tree unassociated with a root then sets it as
      * the root
      */
-    @Test // @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testAddOneLevelComplexRoot() {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -378,7 +495,8 @@ public class AddsTest {
      * Tests that we can add to an existing tree with just a basic add where the
      * add methods return the item added
      */
-    @Test // @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testAddsThatReturnValues() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -419,5 +537,45 @@ public class AddsTest {
         Assert.assertEquals(dosBean, allBeans[1]);
         Assert.assertEquals(tresBean, allBeans[2]);
         Assert.assertEquals(quatroBean, allBeans[3]);
+    }
+    
+    @Singleton
+    private static class RecordingBeanUpdateListener implements BeanDatabaseUpdateListener {
+        private List<Change> latestPrepares;
+        private List<Change> latestCommit;
+        private List<Change> latestRollback;
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener#prepareDatabaseChange(org.glassfish.hk2.configuration.hub.api.BeanDatabase, org.glassfish.hk2.configuration.hub.api.BeanDatabase, java.lang.Object, java.util.List)
+         */
+        @Override
+        public void prepareDatabaseChange(BeanDatabase currentDatabase,
+                BeanDatabase proposedDatabase, Object commitMessage,
+                List<Change> changes) {
+            latestPrepares = changes;
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener#commitDatabaseChange(org.glassfish.hk2.configuration.hub.api.BeanDatabase, org.glassfish.hk2.configuration.hub.api.BeanDatabase, java.lang.Object, java.util.List)
+         */
+        @Override
+        public void commitDatabaseChange(BeanDatabase oldDatabase,
+                BeanDatabase currentDatabase, Object commitMessage,
+                List<Change> changes) {
+            latestCommit = changes;
+            
+        }
+
+        /* (non-Javadoc)
+         * @see org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener#rollbackDatabaseChange(org.glassfish.hk2.configuration.hub.api.BeanDatabase, org.glassfish.hk2.configuration.hub.api.BeanDatabase, java.lang.Object, java.util.List)
+         */
+        @Override
+        public void rollbackDatabaseChange(BeanDatabase currentDatabase,
+                BeanDatabase proposedDatabase, Object commitMessage,
+                List<Change> changes) {
+            latestRollback = changes;
+            
+        }
+        
     }
 }

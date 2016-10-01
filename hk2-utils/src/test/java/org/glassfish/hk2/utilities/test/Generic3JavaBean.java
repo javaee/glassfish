@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,58 +43,6 @@ package org.glassfish.hk2.utilities.test;
  * @author jwells
  *
  */
-public class GenericJavaBean {
-    private String value;
-    private int anotherValue;
-    private long thirdValue;
-    private Generic2JavaBean bean2;
-    private Generic3JavaBean bean3;
-    
-    /**
-     * @return the value
-     */
-    public String getValue() {
-        return value;
-    }
-    /**
-     * @param value the value to set
-     */
-    public void setValue(String value) {
-        this.value = value;
-    }
-    /**
-     * @return the anotherValue
-     */
-    public int getAnotherValue() {
-        return anotherValue;
-    }
-    /**
-     * @param anotherValue the anotherValue to set
-     */
-    public void setAnotherValue(int anotherValue) {
-        this.anotherValue = anotherValue;
-    }
-    /**
-     * @return the thirdValue
-     */
-    public long getThirdValue() {
-        return thirdValue;
-    }
-    /**
-     * @param thirdValue the thirdValue to set
-     */
-    public void setThirdValue(long thirdValue) {
-        this.thirdValue = thirdValue;
-    }
-    
-    public Generic2JavaBean getBean2() { return bean2; }
-    public void setBean2(Generic2JavaBean bean) {
-        this.bean2 = bean;
-    }
-    
-    public Generic3JavaBean getBean3() { return bean3; }
-    public void setBean3(Generic3JavaBean bean) {
-        this.bean3 = bean;
-    }
+public class Generic3JavaBean {
 
 }
