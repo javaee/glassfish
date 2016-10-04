@@ -94,6 +94,12 @@ public class Commons {
     public final static String FINANCIALS_TYPE = "/employees/financials";
     public final static String FINANCIALS_INSTANCE = "employees.financials";
     
+    public final static String EMPLOYEES_TYPE = "/employees";
+    public final static String EMPLOYEES_INSTANCE_NAME = "employees";
+    
+    public final static String EMPLOYEE_TYPE = "/employees/employee";
+    public final static String DAVE_EMPLOYEE_INSTANCE = "employees.Dave";
+    
     public final static int HUNDRED_INT = 100;
     public final static int HUNDRED_TEN_INT = 110;
     
