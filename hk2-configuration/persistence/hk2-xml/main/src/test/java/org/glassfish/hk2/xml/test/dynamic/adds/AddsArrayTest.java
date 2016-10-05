@@ -139,7 +139,7 @@ public class AddsArrayTest {
         
         URL url = getClass().getClassLoader().getResource(Commons.ACME1_FILE);
         
-        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
+        XmlRootHandle<Employees> rootHandle = xmlService.unmarshal(url.toURI(), Employees.class);
         
         addToExistingTree(locator, hub, rootHandle, true, true);
     }
@@ -156,7 +156,7 @@ public class AddsArrayTest {
         
         URL url = getClass().getClassLoader().getResource(Commons.ACME1_FILE);
         
-        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class, true, false);
+        XmlRootHandle<Employees> rootHandle = xmlService.unmarshal(url.toURI(), Employees.class, true, false);
         
         addToExistingTree(locator, hub, rootHandle, true, false);
     }
@@ -173,7 +173,7 @@ public class AddsArrayTest {
         
         URL url = getClass().getClassLoader().getResource(Commons.ACME1_FILE);
         
-        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class, false, true);
+        XmlRootHandle<Employees> rootHandle = xmlService.unmarshal(url.toURI(), Employees.class, false, true);
         
         addToExistingTree(locator, hub, rootHandle, false, true);
     }
@@ -191,7 +191,7 @@ public class AddsArrayTest {
         
         URL url = getClass().getClassLoader().getResource(Commons.ACME1_FILE);
         
-        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class, false, false);
+        XmlRootHandle<Employees> rootHandle = xmlService.unmarshal(url.toURI(), Employees.class, false, false);
         
         addToExistingTree(locator, hub, rootHandle, false, false);
     }
@@ -210,7 +210,7 @@ public class AddsArrayTest {
         
         URL url = getClass().getClassLoader().getResource(Commons.ACME1_FILE);
         
-        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
+        XmlRootHandle<Employees> rootHandle = xmlService.unmarshal(url.toURI(), Employees.class);
         Employees employees = rootHandle.getRoot();
         
         employees.addOtherData(0);
@@ -251,7 +251,7 @@ public class AddsArrayTest {
         
         URL url = getClass().getClassLoader().getResource(Commons.ACME2_FILE);
         
-        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
+        XmlRootHandle<Employees> rootHandle = xmlService.unmarshal(url.toURI(), Employees.class);
         Employees employees = rootHandle.getRoot();
         
         Assert.assertNull(employees.getFinancials());
@@ -385,7 +385,7 @@ public class AddsArrayTest {
         
         URL url = getClass().getClassLoader().getResource(Commons.ACME1_FILE);
         
-        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
+        XmlRootHandle<Employees> rootHandle = xmlService.unmarshal(url.toURI(), Employees.class);
         Employees employees = rootHandle.getRoot();
         
         boolean success = false;

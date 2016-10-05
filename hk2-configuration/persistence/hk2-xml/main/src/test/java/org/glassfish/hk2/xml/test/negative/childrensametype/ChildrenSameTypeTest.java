@@ -70,7 +70,7 @@ public class ChildrenSameTypeTest {
         
         URL url = getClass().getClassLoader().getResource("foobar.xml");
         
-        XmlRootHandle<FooBarBean> handle = xmlService.unmarshall(url.toURI(), FooBarBean.class);
+        XmlRootHandle<FooBarBean> handle = xmlService.unmarshal(url.toURI(), FooBarBean.class);
         
         FooBarBean fooBar = handle.getRoot();
         Assert.assertNotNull(fooBar);

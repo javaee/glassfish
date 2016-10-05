@@ -282,7 +282,7 @@ public interface XmlRootHandle<T> {
     public boolean isValidating();
     
     /**
-     * Marshalls this tree into the given stream.  Will hold the WRITE
+     * Will marshal this tree into the given stream.  Will hold the WRITE
      * lock of this tree while it does so that the tree cannot change
      * underneath while it is being written out.  It will use a basic
      * indentation and new-line scheme
@@ -291,5 +291,5 @@ public interface XmlRootHandle<T> {
      * not close the output stream
      * @throws IOException On any exception that might happen
      */
-    public void marshall(OutputStream outputStream) throws IOException;
+    public void marshal(OutputStream outputStream) throws IOException;
 }

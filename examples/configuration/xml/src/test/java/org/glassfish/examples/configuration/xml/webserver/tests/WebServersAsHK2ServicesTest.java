@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -86,7 +86,7 @@ public class WebServersAsHK2ServicesTest extends HK2Runner {
         URI webserverFile = getClass().getClassLoader().getResource(EXAMPLE1_FILENAME).toURI();
         
         XmlRootHandle<ApplicationBean> applicationRootHandle =
-                xmlService.unmarshall(webserverFile, ApplicationBean.class);
+                xmlService.unmarshal(webserverFile, ApplicationBean.class);
         
         WebServerManager manager = testLocator.getService(WebServerManager.class);
         Assert.assertNotNull(manager);

@@ -131,7 +131,7 @@ public class OldConfigTest {
         
         URL url = getClass().getClassLoader().getResource(KINGDOM_FILE);
         
-        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, false);
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshal(url.toURI(), KingdomConfig.class, true, false);
         KingdomConfig kingdom1 = rootHandle.getRoot();
         
         assertOriginalStateKingdom1(kingdom1, null);
@@ -154,7 +154,7 @@ public class OldConfigTest {
         
         URL url = getClass().getClassLoader().getResource(KINGDOM_FILE);
         
-        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, false);
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshal(url.toURI(), KingdomConfig.class, true, false);
         KingdomConfig kingdom1 = rootHandle.getRoot();
         
         assertOriginalStateKingdom1(kingdom1, null);
@@ -256,7 +256,7 @@ public class OldConfigTest {
         
         URL url = getClass().getClassLoader().getResource(KINGDOM_FILE);
         
-        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, false);
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshal(url.toURI(), KingdomConfig.class, true, false);
         KingdomConfig kingdom1 = rootHandle.getRoot();
         
         assertOriginalStateKingdom1(kingdom1, null);
@@ -314,7 +314,7 @@ public class OldConfigTest {
         
         URL url = getClass().getClassLoader().getResource(KINGDOM_FILE);
         
-        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, true);
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshal(url.toURI(), KingdomConfig.class, true, true);
         KingdomConfig kingdom1 = rootHandle.getRoot();
         
         assertOriginalStateKingdom1(kingdom1, hub);
@@ -323,7 +323,7 @@ public class OldConfigTest {
         
         FileOutputStream fos = new FileOutputStream(OUTPUT_FILE);
         try {
-          rootHandle.marshall(fos);
+          rootHandle.marshal(fos);
         }
         finally {
             fos.close();

@@ -489,7 +489,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
      * @see org.glassfish.hk2.xml.api.XmlRootHandle#marshall(java.io.OutputStream)
      */
     @Override
-    public void marshall(OutputStream outputStream) throws IOException {
+    public void marshal(OutputStream outputStream) throws IOException {
         if (changeControl == null) {
             throw new IllegalStateException("marshall May only be called on a fully initialized root handle " + this);
         }

@@ -107,16 +107,16 @@ public class XmlServiceImpl implements XmlService {
      * @see org.glassfish.hk2.xml.api.XmlService#unmarshall(java.net.URI, java.lang.Class, boolean, boolean)
      */
     @Override
-    public <T> XmlRootHandle<T> unmarshall(URI uri,
+    public <T> XmlRootHandle<T> unmarshal(URI uri,
             Class<T> jaxbAnnotatedClassOrInterface) {
-        return unmarshall(uri, jaxbAnnotatedClassOrInterface, true, true);
+        return unmarshal(uri, jaxbAnnotatedClassOrInterface, true, true);
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.api.XmlService#unmarshall(java.net.URI, java.lang.Class)
      */
     @Override
-    public <T> XmlRootHandle<T> unmarshall(URI uri,
+    public <T> XmlRootHandle<T> unmarshal(URI uri,
             Class<T> jaxbAnnotatedInterface,
             boolean advertiseInRegistry, boolean advertiseInHub) {
         if (uri == null || jaxbAnnotatedInterface == null) throw new IllegalArgumentException();
@@ -149,7 +149,7 @@ public class XmlServiceImpl implements XmlService {
      * @see org.glassfish.hk2.xml.api.XmlService#unmarshall(javax.xml.stream.XMLStreamReader, java.lang.Class, boolean, boolean)
      */
     @Override
-    public <T> XmlRootHandle<T> unmarshall(XMLStreamReader reader,
+    public <T> XmlRootHandle<T> unmarshal(XMLStreamReader reader,
             Class<T> jaxbAnnotatedInterface, boolean advertiseInRegistry,
             boolean advertiseInHub) {
         if (reader == null || jaxbAnnotatedInterface == null) throw new IllegalArgumentException();

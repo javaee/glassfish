@@ -109,7 +109,7 @@ public class RemovesTest {
         
         URL url = getClass().getClassLoader().getResource(Commons.ACME1_FILE);
         
-        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
+        XmlRootHandle<Employees> rootHandle = xmlService.unmarshal(url.toURI(), Employees.class);
         Employees employees = rootHandle.getRoot();
         
         Employee bob = employees.lookupEmployee(Commons.BOB);
@@ -142,7 +142,7 @@ public class RemovesTest {
         
         URL url = getClass().getClassLoader().getResource(ACME3_FILE);
         
-        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
+        XmlRootHandle<Employees> rootHandle = xmlService.unmarshal(url.toURI(), Employees.class);
         Employees employees = rootHandle.getRoot();
         
         validateAcme3InitialState(employees, hub);
@@ -223,7 +223,7 @@ public class RemovesTest {
         
         URL url = getClass().getClassLoader().getResource(ACME3_FILE);
         
-        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
+        XmlRootHandle<Employees> rootHandle = xmlService.unmarshal(url.toURI(), Employees.class);
         Employees employees = rootHandle.getRoot();
         
         validateAcme3InitialState(employees, hub);
@@ -252,7 +252,7 @@ public class RemovesTest {
         
         URL url = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
         
-        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshall(url.toURI(), DomainBean.class);
+        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshal(url.toURI(), DomainBean.class);
         
         MergeTest.verifyDomain1Xml(rootHandle, hub, locator);
         
@@ -303,7 +303,7 @@ public class RemovesTest {
         
         URL url = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
         
-        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshall(url.toURI(), DomainBean.class);
+        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshal(url.toURI(), DomainBean.class);
         
         MergeTest.verifyDomain1Xml(rootHandle, hub, locator);
         
@@ -398,7 +398,7 @@ public class RemovesTest {
         
         URL url = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
         
-        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshall(url.toURI(), DomainBean.class);
+        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshal(url.toURI(), DomainBean.class);
         
         MergeTest.verifyDomain1Xml(rootHandle, hub, locator);
         
@@ -507,7 +507,7 @@ public class RemovesTest {
         
         URL url = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
         
-        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshall(url.toURI(), DomainBean.class);
+        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshal(url.toURI(), DomainBean.class);
         
         MergeTest.verifyDomain1Xml(rootHandle, hub, locator);
         
@@ -550,7 +550,7 @@ public class RemovesTest {
         
         URL url = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
         
-        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshall(url.toURI(), DomainBean.class);
+        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshal(url.toURI(), DomainBean.class);
         
         MergeTest.verifyDomain1Xml(rootHandle, hub, locator);
         
@@ -614,7 +614,7 @@ public class RemovesTest {
         
         URL url = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
         
-        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshall(url.toURI(), DomainBean.class);
+        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshal(url.toURI(), DomainBean.class);
         
         MergeTest.verifyDomain1Xml(rootHandle, hub, locator);
         

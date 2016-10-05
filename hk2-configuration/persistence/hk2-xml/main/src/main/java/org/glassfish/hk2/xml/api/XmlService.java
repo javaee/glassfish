@@ -63,7 +63,7 @@ public interface XmlService {
      * @return A non-null handle that can be used to get the unmarshalled data or perform
      * other tasks
      */
-    public <T> XmlRootHandle<T> unmarshall(URI uri, Class<T> jaxbAnnotatedInterface);
+    public <T> XmlRootHandle<T> unmarshal(URI uri, Class<T> jaxbAnnotatedInterface);
     
     /**
      * Unmarshalls the given URI using the jaxb annotated interface.
@@ -79,11 +79,11 @@ public interface XmlService {
      * @return A non-null handle that can be used to get the unmarshalled data or perform
      * other tasks
      */
-    public <T> XmlRootHandle<T> unmarshall(URI uri, Class<T> jaxbAnnotatedInterface,
+    public <T> XmlRootHandle<T> unmarshal(URI uri, Class<T> jaxbAnnotatedInterface,
             boolean advertiseInRegistry, boolean advertiseInHub);
     
     /**
-     * Unmarshalls an XML stream using the jaxb annotated interface.
+     * Unmarshals an XML stream using the jaxb annotated interface.
      * Will use a built-in algorithm to read the stream
      * 
      * @param reader The non-null XMLStreamReader representing the XML to be read
@@ -95,7 +95,7 @@ public interface XmlService {
      * @return A non-null handle that can be used to get the unmarshalled data or perform
      * other tasks
      */
-    public <T> XmlRootHandle<T> unmarshall(XMLStreamReader reader, Class<T> jaxbAnnotatedInterface,
+    public <T> XmlRootHandle<T> unmarshal(XMLStreamReader reader, Class<T> jaxbAnnotatedInterface,
             boolean advertiseInRegistry, boolean advertiseInHub);
     
     /**

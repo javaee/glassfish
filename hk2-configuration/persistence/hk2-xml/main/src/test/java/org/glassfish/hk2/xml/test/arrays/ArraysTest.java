@@ -71,7 +71,7 @@ public class ArraysTest {
         
         URL url = getClass().getClassLoader().getResource(Commons.ACME1_FILE);
         
-        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
+        XmlRootHandle<Employees> rootHandle = xmlService.unmarshal(url.toURI(), Employees.class);
         Employees employees = rootHandle.getRoot();
         
         Assert.assertTrue(employees instanceof XmlHk2ConfigurationBean);

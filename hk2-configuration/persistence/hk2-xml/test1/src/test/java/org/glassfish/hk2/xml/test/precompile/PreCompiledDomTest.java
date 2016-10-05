@@ -82,7 +82,7 @@ public class PreCompiledDomTest {
         
         URL url = getClass().getClassLoader().getResource(PRE_COMPILED_FILE);
         
-        XmlRootHandle<PreCompiledRoot> rootHandle = xmlService.unmarshall(url.toURI(), PreCompiledRoot.class);
+        XmlRootHandle<PreCompiledRoot> rootHandle = xmlService.unmarshal(url.toURI(), PreCompiledRoot.class);
         Assert.assertNotNull(rootHandle);
         
         PreCompiledRoot root = rootHandle.getRoot();
@@ -147,7 +147,7 @@ public class PreCompiledDomTest {
         
         URL url = getClass().getClassLoader().getResource(SIMPLE_FILE);
         
-        XmlRootHandle<SimpleBean> rootHandle = xmlService.unmarshall(url.toURI(), SimpleBean.class);
+        XmlRootHandle<SimpleBean> rootHandle = xmlService.unmarshal(url.toURI(), SimpleBean.class);
         Assert.assertNotNull(rootHandle);
         
         SimpleBean root = rootHandle.getRoot();
@@ -224,7 +224,7 @@ public class PreCompiledDomTest {
         
         URL url = getClass().getClassLoader().getResource(FREETIME_FILE);
         
-        XmlRootHandle<EntertainmentBean> rootHandle = xmlService.unmarshall(url.toURI(), EntertainmentBean.class);
+        XmlRootHandle<EntertainmentBean> rootHandle = xmlService.unmarshal(url.toURI(), EntertainmentBean.class);
         Assert.assertNotNull(rootHandle);
         
         EntertainmentBean root = rootHandle.getRoot();

@@ -82,7 +82,7 @@ public class CustomizerTest {
         
         URL url = getClass().getClassLoader().getResource(Commons.MUSEUM1_FILE);
         
-        XmlRootHandle<MuseumBean> rootHandle = xmlService.unmarshall(url.toURI(), MuseumBean.class);
+        XmlRootHandle<MuseumBean> rootHandle = xmlService.unmarshal(url.toURI(), MuseumBean.class);
         MuseumBean museum = rootHandle.getRoot();
         
         CustomOne custom1 = locator.getService(CustomOne.class);
@@ -102,7 +102,7 @@ public class CustomizerTest {
         
         URL url = getClass().getClassLoader().getResource(Commons.MUSEUM1_FILE);
         
-        XmlRootHandle<MuseumBeanDoubleCustomized> rootHandle = xmlService.unmarshall(url.toURI(), MuseumBeanDoubleCustomized.class);
+        XmlRootHandle<MuseumBeanDoubleCustomized> rootHandle = xmlService.unmarshal(url.toURI(), MuseumBeanDoubleCustomized.class);
         MuseumBeanDoubleCustomized museum = rootHandle.getRoot();
         
         CustomOne custom1 = locator.getService(CustomOne.class);
@@ -124,7 +124,7 @@ public class CustomizerTest {
         
         URL url = getClass().getClassLoader().getResource(Commons.MUSEUM1_FILE);
         
-        XmlRootHandle<MuseumBeanDoubleNamedCustomized> rootHandle = xmlService.unmarshall(url.toURI(), MuseumBeanDoubleNamedCustomized.class);
+        XmlRootHandle<MuseumBeanDoubleNamedCustomized> rootHandle = xmlService.unmarshal(url.toURI(), MuseumBeanDoubleNamedCustomized.class);
         MuseumBeanDoubleNamedCustomized museum = rootHandle.getRoot();
         
         CustomOne custom1 = locator.getService(CustomOne.class, CAROL_NAME);
@@ -209,7 +209,7 @@ public class CustomizerTest {
         
         URL url = getClass().getClassLoader().getResource(Commons.ACME1_FILE);
         
-        XmlRootHandle<EmployeesBean> rootHandle = xmlService.unmarshall(url.toURI(), EmployeesBean.class);
+        XmlRootHandle<EmployeesBean> rootHandle = xmlService.unmarshal(url.toURI(), EmployeesBean.class);
         EmployeesBean employees = rootHandle.getRoot();
         Assert.assertNotNull(employees);
         

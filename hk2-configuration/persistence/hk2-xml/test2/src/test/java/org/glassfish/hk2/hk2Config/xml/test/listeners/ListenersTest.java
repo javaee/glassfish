@@ -91,7 +91,7 @@ public class ListenersTest {
         
         URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
         
-        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, true);
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshal(url.toURI(), KingdomConfig.class, true, true);
         rootHandle.addChangeListener(new AuditableListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
@@ -125,7 +125,7 @@ public class ListenersTest {
         
         URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
         
-        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, true);
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshal(url.toURI(), KingdomConfig.class, true, true);
         rootHandle.addChangeListener(new AuditableListener(), new DaveHatingListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
@@ -167,7 +167,7 @@ public class ListenersTest {
         
         URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
         
-        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, true);
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshal(url.toURI(), KingdomConfig.class, true, true);
         rootHandle.addChangeListener(new AuditableListener(), new DaveHatingListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
@@ -208,7 +208,7 @@ public class ListenersTest {
         
         URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
         
-        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, true);
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshal(url.toURI(), KingdomConfig.class, true, true);
         rootHandle.addChangeListener(new AuditableListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
@@ -240,7 +240,7 @@ public class ListenersTest {
         
         URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
         
-        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, true);
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshal(url.toURI(), KingdomConfig.class, true, true);
         rootHandle.addChangeListener(new AuditableListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
@@ -276,7 +276,7 @@ public class ListenersTest {
         
         URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
         
-        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, true);
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshal(url.toURI(), KingdomConfig.class, true, true);
         rootHandle.addChangeListener(new AuditableListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
@@ -309,7 +309,7 @@ public class ListenersTest {
         
         URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
         
-        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, true);
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshal(url.toURI(), KingdomConfig.class, true, true);
         rootHandle.addChangeListener(new AuditableListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
@@ -389,7 +389,7 @@ public class ListenersTest {
         
         URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
         
-        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, true);
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshal(url.toURI(), KingdomConfig.class, true, true);
         rootHandle.addChangeListener(new AuditableListener(), new DaveHatingListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
@@ -430,7 +430,7 @@ public class ListenersTest {
         
         URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
         
-        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, true);
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshal(url.toURI(), KingdomConfig.class, true, true);
         rootHandle.addChangeListener(new DaveHatingListener(), new AuditableListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
@@ -469,7 +469,7 @@ public class ListenersTest {
         
         URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
         
-        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, true);
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshal(url.toURI(), KingdomConfig.class, true, true);
         
         AuditableListener auditableListener = new AuditableListener();
         rootHandle.addChangeListener(new DaveHatingListener(), auditableListener);
@@ -516,7 +516,7 @@ public class ListenersTest {
         
         URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
         
-        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshall(url.toURI(), KingdomConfig.class, true, true);
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshal(url.toURI(), KingdomConfig.class, true, true);
         rootHandle.addChangeListener(new AuditableListener(), new HaterGonnaHate());
         
         KingdomConfig kingdom = rootHandle.getRoot();

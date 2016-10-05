@@ -130,7 +130,7 @@ public class ChildLocatorTest {
         
         URL url = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
         
-        XmlRootHandle<DomainBean> rootHandle = childXmlService.unmarshall(url.toURI(), DomainBean.class);
+        XmlRootHandle<DomainBean> rootHandle = childXmlService.unmarshal(url.toURI(), DomainBean.class);
         
         Hub parentHub = parentLocator.getService(Hub.class);
         
@@ -156,8 +156,8 @@ public class ChildLocatorTest {
         
         URL url = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
         
-        XmlRootHandle<DomainBean> childHandle = childXmlService.unmarshall(url.toURI(), DomainBean.class);
-        XmlRootHandle<DomainBean> parentHandle = parentXmlService.unmarshall(url.toURI(), DomainBean.class);
+        XmlRootHandle<DomainBean> childHandle = childXmlService.unmarshal(url.toURI(), DomainBean.class);
+        XmlRootHandle<DomainBean> parentHandle = parentXmlService.unmarshal(url.toURI(), DomainBean.class);
         
         MergeTest.verifyDomain1Xml(parentHandle, parentHub, parentLocator);
         MergeTest.verifyDomain1Xml(childHandle, childHub, childLocator);
@@ -180,7 +180,7 @@ public class ChildLocatorTest {
         
         URL url = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
         
-        XmlRootHandle<DomainBean> parentHandle = parentXmlService.unmarshall(url.toURI(), DomainBean.class);
+        XmlRootHandle<DomainBean> parentHandle = parentXmlService.unmarshal(url.toURI(), DomainBean.class);
         
         MergeTest.verifyDomain1Xml(parentHandle, parentHub, parentLocator);
         MergeTest.assertDomain1Services(childLocator, parentLocator, false);

@@ -79,13 +79,13 @@ public class OverlayTest {
         
         URL url = getClass().getClassLoader().getResource(Commons.MUSEUM1_FILE);
         
-        XmlRootHandle<Museum> rootHandle = xmlService.unmarshall(url.toURI(), Museum.class);
+        XmlRootHandle<Museum> rootHandle = xmlService.unmarshal(url.toURI(), Museum.class);
         
         RawSetsTest.verifyPreState(rootHandle, hub);
         
         URL url2 = getClass().getClassLoader().getResource(RawSetsTest.MUSEUM2_FILE);
         
-        XmlRootHandle<Museum> rootHandle2 = xmlService.unmarshall(url2.toURI(), Museum.class, false, false);
+        XmlRootHandle<Museum> rootHandle2 = xmlService.unmarshal(url2.toURI(), Museum.class, false, false);
         
         // This just checks to make sure the original tree was not modified when creating the second handle
         RawSetsTest.verifyPreState(rootHandle, hub);

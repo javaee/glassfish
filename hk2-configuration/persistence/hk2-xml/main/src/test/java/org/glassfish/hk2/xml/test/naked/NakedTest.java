@@ -67,7 +67,7 @@ public class NakedTest {
         
         URL url = getClass().getClassLoader().getResource(NAKED_FILE);
         
-        XmlRootHandle<ParentBean> rootHandle = xmlService.unmarshall(url.toURI(), ParentBean.class);
+        XmlRootHandle<ParentBean> rootHandle = xmlService.unmarshal(url.toURI(), ParentBean.class);
         
         ParentBean parentBean = rootHandle.getRoot();
         Assert.assertNotNull(parentBean);

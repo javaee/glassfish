@@ -85,7 +85,7 @@ public class WebServerXmlTest extends HK2Runner {
         URI webserverFile = getClass().getClassLoader().getResource(EXAMPLE1_FILENAME).toURI();
         
         XmlRootHandle<ApplicationBean> applicationRootHandle =
-                xmlService.unmarshall(webserverFile, ApplicationBean.class);
+                xmlService.unmarshal(webserverFile, ApplicationBean.class);
         
         ApplicationBean root = applicationRootHandle.getRoot();
         WebServerBean webservers[] = root.getWebServers();

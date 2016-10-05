@@ -88,7 +88,7 @@ public class ReadOnlyTest {
         
         URL url = getClass().getClassLoader().getResource(LIBRARY1_FILE);
         
-        XmlRootHandle<LibraryBean> rootHandle = xmlService.unmarshall(url.toURI(), LibraryBean.class);
+        XmlRootHandle<LibraryBean> rootHandle = xmlService.unmarshal(url.toURI(), LibraryBean.class);
         LibraryBean library = rootHandle.getRoot();
         
         Assert.assertEquals(LIBRARY_NAME, library.getName());

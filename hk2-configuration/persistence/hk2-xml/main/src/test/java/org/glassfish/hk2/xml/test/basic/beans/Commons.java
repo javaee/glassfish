@@ -138,10 +138,10 @@ public class Commons {
         
         XmlRootHandle<Museum> rootHandle;
         if (uri != null) {
-            rootHandle = xmlService.unmarshall(uri, Museum.class);
+            rootHandle = xmlService.unmarshal(uri, Museum.class);
         }
         else {
-            rootHandle = xmlService.unmarshall(reader, Museum.class, true, true);
+            rootHandle = xmlService.unmarshal(reader, Museum.class, true, true);
         }
         Museum museum = rootHandle.getRoot();
         
@@ -175,10 +175,10 @@ public class Commons {
         
         XmlRootHandle<Employees> rootHandle;
         if (uri != null) {
-            rootHandle = xmlService.unmarshall(uri, Employees.class);
+            rootHandle = xmlService.unmarshal(uri, Employees.class);
         }
         else {
-            rootHandle = xmlService.unmarshall(reader, Employees.class, true, true);
+            rootHandle = xmlService.unmarshal(reader, Employees.class, true, true);
         }
         Employees employees = rootHandle.getRoot();
         
@@ -237,10 +237,10 @@ public class Commons {
         
         XmlRootHandle<Employees> rootHandle;
         if (uri != null) {
-            rootHandle = xmlService.unmarshall(uri, Employees.class);
+            rootHandle = xmlService.unmarshal(uri, Employees.class);
         }
         else {
-            rootHandle = xmlService.unmarshall(reader, Employees.class, true, true);
+            rootHandle = xmlService.unmarshal(reader, Employees.class, true, true);
         }
         Employees employees = rootHandle.getRoot();
         
@@ -313,10 +313,10 @@ public class Commons {
         
         XmlRootHandle<LifecycleConfig> rootHandle;
         if (uri != null) {
-            rootHandle = xmlService.unmarshall(uri, LifecycleConfig.class);
+            rootHandle = xmlService.unmarshal(uri, LifecycleConfig.class);
         }
         else {
-            rootHandle = xmlService.unmarshall(reader, LifecycleConfig.class, true, true);
+            rootHandle = xmlService.unmarshal(reader, LifecycleConfig.class, true, true);
         }
         LifecycleConfig lifecycleConfig = rootHandle.getRoot();
         Assert.assertNotNull(lifecycleConfig);
@@ -362,10 +362,10 @@ public class Commons {
         
         XmlRootHandle<LifecycleConfig> rootHandle;
         if (uri != null) {
-            rootHandle = xmlService.unmarshall(uri, LifecycleConfig.class);
+            rootHandle = xmlService.unmarshal(uri, LifecycleConfig.class);
         }
         else {
-            rootHandle = xmlService.unmarshall(reader, LifecycleConfig.class, true, true);
+            rootHandle = xmlService.unmarshal(reader, LifecycleConfig.class, true, true);
         }
         LifecycleConfig lifecycleConfig = rootHandle.getRoot();
         Assert.assertNotNull(lifecycleConfig);
@@ -441,10 +441,10 @@ public class Commons {
         
         XmlRootHandle<FooBarBean> rootHandle;
         if (uri != null) {
-            rootHandle = xmlService.unmarshall(uri, FooBarBean.class);
+            rootHandle = xmlService.unmarshal(uri, FooBarBean.class);
         }
         else {
-            rootHandle = xmlService.unmarshall(reader, FooBarBean.class, true, true);
+            rootHandle = xmlService.unmarshal(reader, FooBarBean.class, true, true);
         }
         FooBarBean foobar = rootHandle.getRoot();
         Assert.assertNotNull(foobar);
@@ -474,10 +474,10 @@ public class Commons {
         
         XmlRootHandle<RootWithCycle> rootHandle;
         if (uri != null) {
-            rootHandle = xmlService.unmarshall(uri, RootWithCycle.class);
+            rootHandle = xmlService.unmarshal(uri, RootWithCycle.class);
         }
         else {
-            rootHandle = xmlService.unmarshall(reader, RootWithCycle.class, true, true);
+            rootHandle = xmlService.unmarshal(reader, RootWithCycle.class, true, true);
         }
         RootWithCycle cycle = rootHandle.getRoot();
         
@@ -505,10 +505,10 @@ public class Commons {
         
         XmlRootHandle<TypeBean> rootHandle;
         if (uri != null) {
-            rootHandle = xmlService.unmarshall(uri, TypeBean.class);
+            rootHandle = xmlService.unmarshal(uri, TypeBean.class);
         }
         else {
-            rootHandle = xmlService.unmarshall(reader, TypeBean.class, true, true);
+            rootHandle = xmlService.unmarshal(reader, TypeBean.class, true, true);
         }
         TypeBean types = rootHandle.getRoot();
         
@@ -540,10 +540,10 @@ public class Commons {
         
         XmlRootHandle<Employees> rootHandle;
         if (uri != null) {
-            rootHandle = xmlService.unmarshall(uri, Employees.class);
+            rootHandle = xmlService.unmarshal(uri, Employees.class);
         }
         else {
-            rootHandle = xmlService.unmarshall(reader, Employees.class, true, true);
+            rootHandle = xmlService.unmarshal(reader, Employees.class, true, true);
         }
         Employees employees = rootHandle.getRoot();
         
@@ -598,10 +598,10 @@ public class Commons {
         
         XmlRootHandle<Employees> rootHandle;
         if (uri != null) {
-            rootHandle = xmlService.unmarshall(uri, Employees.class);
+            rootHandle = xmlService.unmarshal(uri, Employees.class);
         }
         else {
-            rootHandle = xmlService.unmarshall(reader, Employees.class, true, true);
+            rootHandle = xmlService.unmarshal(reader, Employees.class, true, true);
         }
         Employees employees = rootHandle.getRoot();
         
@@ -628,10 +628,10 @@ public class Commons {
         
         XmlRootHandle<Employees> rootHandle;
         if (uri != null) {
-            rootHandle = xmlService.unmarshall(uri, Employees.class);
+            rootHandle = xmlService.unmarshal(uri, Employees.class);
         }
         else {
-            rootHandle = xmlService.unmarshall(reader, Employees.class, true, true);
+            rootHandle = xmlService.unmarshal(reader, Employees.class, true, true);
         }
         Employees employees = rootHandle.getRoot();
         
@@ -661,10 +661,10 @@ public class Commons {
         
         XmlRootHandle<Employees> rootHandle;
         if (uri != null) {
-            rootHandle = xmlService.unmarshall(uri, Employees.class);
+            rootHandle = xmlService.unmarshal(uri, Employees.class);
         }
         else {
-            rootHandle = xmlService.unmarshall(reader, Employees.class, true, true);
+            rootHandle = xmlService.unmarshal(reader, Employees.class, true, true);
         }
         Employees employees = rootHandle.getRoot();
         
@@ -694,10 +694,10 @@ public class Commons {
         
         XmlRootHandle<LifecycleConfig> rootHandle;
         if (uri != null) {
-            rootHandle = xmlService.unmarshall(uri, LifecycleConfig.class);
+            rootHandle = xmlService.unmarshal(uri, LifecycleConfig.class);
         }
         else {
-            rootHandle = xmlService.unmarshall(reader, LifecycleConfig.class, true, true);
+            rootHandle = xmlService.unmarshal(reader, LifecycleConfig.class, true, true);
         }
         LifecycleConfig lifecycleConfig = rootHandle.getRoot();
         Assert.assertNotNull(lifecycleConfig);
@@ -766,10 +766,10 @@ public class Commons {
         
         XmlRootHandle<ReferenceMaster> rootHandle;
         if (uri != null) {
-            rootHandle = xmlService.unmarshall(uri, ReferenceMaster.class);
+            rootHandle = xmlService.unmarshal(uri, ReferenceMaster.class);
         }
         else {
-            rootHandle = xmlService.unmarshall(reader, ReferenceMaster.class, true, true);
+            rootHandle = xmlService.unmarshal(reader, ReferenceMaster.class, true, true);
         }
         ReferenceMaster referenceMaster = rootHandle.getRoot();
         Assert.assertNotNull(referenceMaster);

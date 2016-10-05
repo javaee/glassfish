@@ -170,7 +170,7 @@ public class MergeTest {
         
         URL url = getClass().getClassLoader().getResource(Commons.MUSEUM1_FILE);
         
-        XmlRootHandle<Museum> rootHandle = xmlService.unmarshall(url.toURI(), Museum.class);
+        XmlRootHandle<Museum> rootHandle = xmlService.unmarshal(url.toURI(), Museum.class);
         
         RawSetsTest.verifyPreState(rootHandle, hub);
         
@@ -243,7 +243,7 @@ public class MergeTest {
         
         URL url = getClass().getClassLoader().getResource(DOMAIN1_FILE);
         
-        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshall(url.toURI(), DomainBean.class);
+        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshal(url.toURI(), DomainBean.class);
         
         verifyDomain1Xml(rootHandle, hub, locator);
         

@@ -80,7 +80,7 @@ public class ValidationTest {
         
         URL url = getClass().getClassLoader().getResource(VALID1_FILE);
         
-        XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshall(url.toURI(), ValidationRootBean.class);
+        XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshal(url.toURI(), ValidationRootBean.class);
         
         Assert.assertFalse(rootHandle.isValidating());
         
@@ -105,7 +105,7 @@ public class ValidationTest {
         
         URL url = getClass().getClassLoader().getResource(INVALID1_FILE);
         
-        XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshall(url.toURI(), ValidationRootBean.class);
+        XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshal(url.toURI(), ValidationRootBean.class);
         
         ValidationRootBean validationRoot = rootHandle.getRoot();
         Assert.assertNull(validationRoot.getElementOne());
@@ -131,7 +131,7 @@ public class ValidationTest {
         
         URL url = getClass().getClassLoader().getResource(VALID1_FILE);
         
-        XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshall(url.toURI(), ValidationRootBean.class);
+        XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshal(url.toURI(), ValidationRootBean.class);
         
         rootHandle.startValidating();
         
@@ -171,7 +171,7 @@ public class ValidationTest {
         
         URL url = getClass().getClassLoader().getResource(VALID2_FILE);
         
-        XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshall(url.toURI(), ValidationRootBean.class);
+        XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshal(url.toURI(), ValidationRootBean.class);
         
         rootHandle.startValidating();
     }
@@ -188,7 +188,7 @@ public class ValidationTest {
         
         URL url = getClass().getClassLoader().getResource(INVALID2_FILE);
         
-        XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshall(url.toURI(), ValidationRootBean.class);
+        XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshal(url.toURI(), ValidationRootBean.class);
         
         try {
             rootHandle.startValidating();
@@ -211,7 +211,7 @@ public class ValidationTest {
         
         URL url = getClass().getClassLoader().getResource(INVALID3_FILE);
         
-        XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshall(url.toURI(), ValidationRootBean.class);
+        XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshal(url.toURI(), ValidationRootBean.class);
         
         try {
             rootHandle.startValidating();
@@ -234,7 +234,7 @@ public class ValidationTest {
         
         URL url = getClass().getClassLoader().getResource(INVALID4_FILE);
         
-        XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshall(url.toURI(), ValidationRootBean.class);
+        XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshal(url.toURI(), ValidationRootBean.class);
         
         try {
             rootHandle.startValidating();
@@ -257,7 +257,7 @@ public class ValidationTest {
         
         URL url = getClass().getClassLoader().getResource(VALID2_FILE);
         
-        XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshall(url.toURI(), ValidationRootBean.class);
+        XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshal(url.toURI(), ValidationRootBean.class);
         
         rootHandle.startValidating();
         
@@ -294,7 +294,7 @@ public class ValidationTest {
         
         URL url = getClass().getClassLoader().getResource(VALID2_FILE);
         
-        XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshall(url.toURI(), ValidationRootBean.class);
+        XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshal(url.toURI(), ValidationRootBean.class);
         
         rootHandle.startValidating();
         
@@ -332,7 +332,7 @@ public class ValidationTest {
         
         URL url = getClass().getClassLoader().getResource(VALID2_FILE);
         
-        XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshall(url.toURI(), ValidationRootBean.class);
+        XmlRootHandle<ValidationRootBean> rootHandle = xmlService.unmarshal(url.toURI(), ValidationRootBean.class);
         
         rootHandle.startValidating();
         

@@ -72,7 +72,7 @@ public class DefaultingTest {
         
         URL url = getClass().getClassLoader().getResource(DEFAULTING_FILE);
         
-        XmlRootHandle<DefaultedBean> rootHandle = xmlService.unmarshall(url.toURI(), DefaultedBean.class);
+        XmlRootHandle<DefaultedBean> rootHandle = xmlService.unmarshal(url.toURI(), DefaultedBean.class);
         DefaultedBean db = rootHandle.getRoot();
         
         Assert.assertEquals(13, db.getIntProp());
@@ -97,7 +97,7 @@ public class DefaultingTest {
         
         URL url = getClass().getClassLoader().getResource(DEFAULTING_FILE);
         
-        XmlRootHandle<DefaultedBean> rootHandle = xmlService.unmarshall(url.toURI(), DefaultedBean.class);
+        XmlRootHandle<DefaultedBean> rootHandle = xmlService.unmarshal(url.toURI(), DefaultedBean.class);
         DefaultedBean db = rootHandle.getRoot();
         
         Assert.assertEquals(0, db.getDefaultIntProp());
@@ -159,7 +159,7 @@ public class DefaultingTest {
         
         URL url = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
         
-        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshall(url.toURI(), DomainBean.class);
+        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshal(url.toURI(), DomainBean.class);
         
         MergeTest.verifyDomain1Xml(rootHandle, hub, locator, true);
         
@@ -188,7 +188,7 @@ public class DefaultingTest {
         
         URL url = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
         
-        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshall(url.toURI(), DomainBean.class);
+        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshal(url.toURI(), DomainBean.class);
         
         MergeTest.verifyDomain1Xml(rootHandle, hub, locator, true);
         
