@@ -39,12 +39,17 @@
  */
 package org.glassfish.hk2.xml.test.dynamic.adds;
 
+import java.beans.PropertyChangeEvent;
 import java.net.URL;
+import java.util.List;
 
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.configuration.hub.api.Change;
+import org.glassfish.hk2.configuration.hub.api.Change.ChangeCategory;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.Type;
+import org.glassfish.hk2.xml.api.XmlHandleTransaction;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.arrays.Employees;
@@ -52,6 +57,7 @@ import org.glassfish.hk2.xml.test.basic.beans.Commons;
 import org.glassfish.hk2.xml.test.basic.beans.Employee;
 import org.glassfish.hk2.xml.test.basic.beans.Financials;
 import org.glassfish.hk2.xml.test.basic.beans.OtherData;
+import org.glassfish.hk2.xml.test.dynamic.adds.AddsTest.RecordingBeanUpdateListener;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
 import org.junit.Assert;
 import org.junit.Test;
@@ -365,5 +371,81 @@ public class AddsArrayTest {
         Assert.assertEquals(2, lcv);
         
         checkFinancials(locator.getService(Financials.class), NASDAQ, ATT_SYMBOL);
+    }
+    
+    /**
+     * Tests that we can add to an existing tree and do adds and removes of the
+     * same bean in a single transaction
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testAddRemoveAddRemoveInOneTransaction() throws Exception {
+        ServiceLocator locator = Utilities.createLocator(RecordingBeanUpdateListener.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(Commons.ACME1_FILE);
+        
+        XmlRootHandle<Employees> rootHandle = xmlService.unmarshall(url.toURI(), Employees.class);
+        Employees employees = rootHandle.getRoot();
+        
+        boolean success = false;
+        XmlHandleTransaction<Employees> transaction = rootHandle.lockForTransaction();
+        try {
+            employees.removeEmployee(Commons.DAVE);
+            employees.addEmployee(Commons.DAVE);
+            employees.removeEmployee(Commons.DAVE);
+            employees.addEmployee(Commons.DAVE);
+            employees.removeEmployee(Commons.DAVE);
+            
+            success = true;
+        }
+        finally {
+            if (success) {
+                transaction.commit();
+            }
+            else {
+                transaction.abandon();
+            }
+        }
+        
+        Assert.assertNull(employees.lookupEmployee(Commons.DAVE));
+        
+        RecordingBeanUpdateListener listener = locator.getService(RecordingBeanUpdateListener.class);
+        Assert.assertNotNull(listener);
+        
+        List<Change> committed = listener.latestCommit;
+        
+        Assert.assertEquals(8, committed.size());
+        
+        for (int lcv = 0; lcv < committed.size(); lcv++) {
+            Change currentChange = committed.get(lcv);
+            
+            if (lcv == 0 || lcv == 4) {
+                Assert.assertEquals(ChangeCategory.ADD_INSTANCE, currentChange.getChangeCategory());
+                Assert.assertEquals(Commons.EMPLOYEE_TYPE, currentChange.getChangeType().getName());
+                Assert.assertEquals(Commons.DAVE_EMPLOYEE_INSTANCE, currentChange.getInstanceKey());
+            }
+            else if (lcv == 1 || lcv == 2 || lcv == 5 || lcv == 6) {
+                // First modify is for the add, second is for the remove.  They properly happen
+                // in the opposite order (the add gets the MODIFY *after* the add change event has
+                // happened, while the remove gets the MODIFY event *before* the remove change event
+                // has happened
+                Assert.assertEquals(ChangeCategory.MODIFY_INSTANCE, currentChange.getChangeCategory());
+                Assert.assertEquals(Commons.EMPLOYEES_TYPE, currentChange.getChangeType().getName());
+                Assert.assertEquals(Commons.EMPLOYEES_INSTANCE_NAME, currentChange.getInstanceKey());
+                List<PropertyChangeEvent> changed = currentChange.getModifiedProperties();
+                Assert.assertEquals(1, changed.size());
+                
+                Assert.assertEquals(Commons.EMPLOYEE_TAG, changed.get(0).getPropertyName());
+            }
+            else if (lcv == 3 || lcv == 7) {
+                Assert.assertEquals(ChangeCategory.REMOVE_INSTANCE, currentChange.getChangeCategory());
+                Assert.assertEquals(Commons.EMPLOYEE_TYPE, currentChange.getChangeType().getName());
+                Assert.assertEquals(Commons.DAVE_EMPLOYEE_INSTANCE, currentChange.getInstanceKey());
+            }
+            else {
+                Assert.fail("Too many entries? " + lcv);
+            }
+        }
     }
 }

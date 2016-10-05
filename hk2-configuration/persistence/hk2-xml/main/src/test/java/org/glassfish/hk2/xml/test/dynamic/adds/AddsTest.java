@@ -618,10 +618,10 @@ public class AddsTest {
     }
     
     @Singleton
-    private static class RecordingBeanUpdateListener implements BeanDatabaseUpdateListener {
-        private List<Change> latestPrepares;
-        private List<Change> latestCommit;
-        private List<Change> latestRollback;
+    public static class RecordingBeanUpdateListener implements BeanDatabaseUpdateListener {
+        public List<Change> latestPrepares;
+        public List<Change> latestCommit;
+        public List<Change> latestRollback;
 
         /* (non-Javadoc)
          * @see org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener#prepareDatabaseChange(org.glassfish.hk2.configuration.hub.api.BeanDatabase, org.glassfish.hk2.configuration.hub.api.BeanDatabase, java.lang.Object, java.util.List)
