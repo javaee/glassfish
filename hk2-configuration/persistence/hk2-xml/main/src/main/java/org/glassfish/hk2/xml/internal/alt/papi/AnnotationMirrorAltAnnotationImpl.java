@@ -40,9 +40,9 @@
 package org.glassfish.hk2.xml.internal.alt.papi;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
@@ -125,7 +125,7 @@ public class AnnotationMirrorAltAnnotationImpl implements AltAnnotation {
         
         Map<? extends ExecutableElement, ? extends AnnotationValue> rawValues =
                 processingEnv.getElementUtils().getElementValuesWithDefaults(annotation);
-        HashMap<String, Object> retVal = new HashMap<String, Object>();
+        Map<String, Object> retVal = new TreeMap<String, Object>();
         
         for (Map.Entry<? extends ExecutableElement, ? extends AnnotationValue> entry : rawValues.entrySet()) {
             ExecutableElement annoMethod = entry.getKey();

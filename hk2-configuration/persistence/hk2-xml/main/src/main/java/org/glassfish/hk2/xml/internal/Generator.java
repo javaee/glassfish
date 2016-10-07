@@ -43,8 +43,9 @@ import java.beans.Introspector;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -198,15 +199,15 @@ public class Generator {
         targetCtClass.addInterface(originalCtClass);
         
         NameInformation xmlNameMap = getXmlNameMap(convertMe);
-        HashSet<String> alreadyAddedNaked = new HashSet<String>();
+        Set<String> alreadyAddedNaked = new LinkedHashSet<String>();
         
         List<AltMethod> allMethods = convertMe.getMethods();
         if (DEBUG_METHODS) {
             Logger.getLogger().debug("Analyzing " + allMethods.size() + " methods of " + convertMe.getName());
         }
         
-        HashSet<String> setters = new HashSet<String>();
-        HashMap<String, MethodInformation> getters = new HashMap<String, MethodInformation>();
+        Set<String> setters = new LinkedHashSet<String>();
+        Map<String, MethodInformation> getters = new LinkedHashMap<String, MethodInformation>();
         for (AltMethod wrapper : allMethods) {
             MethodInformation mi = getMethodInformation(wrapper, xmlNameMap);
             if (mi.isKey()) {
@@ -951,12 +952,12 @@ public class Generator {
     }
     
     private static NameInformation getXmlNameMap(AltClass convertMe) {
-        Map<String, XmlElementData> xmlNameMap = new HashMap<String, XmlElementData>();
-        HashSet<String> unmappedNames = new HashSet<String>();
-        Map<String, String> addMethodToVariableMap = new HashMap<String, String>();
-        Map<String, String> removeMethodToVariableMap = new HashMap<String, String>();
-        Map<String, String> lookupMethodToVariableMap = new HashMap<String, String>();
-        HashSet<String> referenceSet = new HashSet<String>();
+        Map<String, XmlElementData> xmlNameMap = new LinkedHashMap<String, XmlElementData>();
+        Set<String> unmappedNames = new LinkedHashSet<String>();
+        Map<String, String> addMethodToVariableMap = new LinkedHashMap<String, String>();
+        Map<String, String> removeMethodToVariableMap = new LinkedHashMap<String, String>();
+        Map<String, String> lookupMethodToVariableMap = new LinkedHashMap<String, String>();
+        Set<String> referenceSet = new LinkedHashSet<String>();
         
         for (AltMethod originalMethod : convertMe.getMethods()) {
             String setterVariable = isSetter(originalMethod);
@@ -1008,7 +1009,7 @@ public class Generator {
             lookupMethodToVariableMap.put(getMethodName(MethodType.LOOKUP, unDecapitalizedVariable, pluralOf), setterVariable);
         }
         
-        Set<String> noXmlElementNames = new HashSet<String>();
+        Set<String> noXmlElementNames = new LinkedHashSet<String>();
         for (String unmappedName : unmappedNames) {
             if (!xmlNameMap.containsKey(unmappedName)) {
                 noXmlElementNames.add(unmappedName);

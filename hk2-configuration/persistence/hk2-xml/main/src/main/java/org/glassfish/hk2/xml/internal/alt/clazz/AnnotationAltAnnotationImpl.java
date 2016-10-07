@@ -42,9 +42,10 @@ package org.glassfish.hk2.xml.internal.alt.clazz;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
@@ -59,7 +60,7 @@ import org.glassfish.hk2.xml.jaxb.internal.XmlElementImpl;
  *
  */
 public class AnnotationAltAnnotationImpl implements AltAnnotation {
-    private final static HashSet<String> DO_NOT_HANDLE_METHODS = new HashSet<String>();
+    private final static Set<String> DO_NOT_HANDLE_METHODS = new HashSet<String>();
     static {
         DO_NOT_HANDLE_METHODS.add("hashCode");
         DO_NOT_HANDLE_METHODS.add("equals");
@@ -133,7 +134,7 @@ public class AnnotationAltAnnotationImpl implements AltAnnotation {
     public synchronized Map<String, Object> getAnnotationValues() {
         if (values != null) return values;
         
-        HashMap<String, Object> retVal = new HashMap<String, Object>();
+        Map<String, Object> retVal = new TreeMap<String, Object>();
         for (Method javaAnnotationMethod : annotation.annotationType().getMethods()) {
             if (javaAnnotationMethod.getParameterTypes().length != 0) continue;
             if (DO_NOT_HANDLE_METHODS.contains(javaAnnotationMethod.getName())) continue;
