@@ -39,19 +39,13 @@
  */
 package org.glassfish.hk2.xml.hk2Config.test.beans;
 
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlID;
 
-import org.glassfish.hk2.api.Customizer;
 import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
-import org.glassfish.hk2.xml.api.annotations.PluralOf;
-import org.glassfish.hk2.xml.hk2Config.test.customizers.AuditableListener;
 import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.config.ConfigBeanProxyCustomizer;
+import org.jvnet.hk2.config.ConfigBeanProxy;
 import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.types.PropertyBag;
-import org.jvnet.hk2.config.types.PropertyBagCustomizer;
 
 /**
  * @author jwells
@@ -60,25 +54,9 @@ import org.jvnet.hk2.config.types.PropertyBagCustomizer;
 @Contract
 @Configured
 @Hk2XmlPreGenerate
-@Customizer({PropertyBagCustomizer.class, ConfigBeanProxyCustomizer.class})
-public interface Phylum extends Named, PropertyBag, AuditableBean {
-    @XmlElement(name="num-germ-layers", defaultValue="2")
-    public void setNumGermLayers(int numLayers);
-    public int getNumGermLayers();
-    
-    @XmlElement(name="soft-bodied", defaultValue="true")
-    public void setSoftBodied(boolean soft);
-    public boolean isSoftBodied();
-    
-    @XmlElement(name="shell-type")
-    public String getShellType();
-    public void setShellType(String shellType);
-    
-    @XmlElement(name="class") @PluralOf("Class")
-    public List<Clazz> getClasses();
-    public void setClasses(List<Clazz> clazzes);
-    public Clazz lookupClass(String name);
-    public Clazz addClass(Clazz clazz);
-    public Clazz removeClass(Clazz clazz);
+public interface Order extends AuditableBean, ConfigBeanProxy {
+    @XmlElement @XmlID
+    public String getName();
+    public void setName(String name);
 
 }

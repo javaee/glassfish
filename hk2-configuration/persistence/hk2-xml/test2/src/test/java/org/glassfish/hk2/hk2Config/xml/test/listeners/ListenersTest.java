@@ -39,7 +39,9 @@
  */
 package org.glassfish.hk2.hk2Config.xml.test.listeners;
 
+import java.beans.PropertyChangeEvent;
 import java.net.URL;
+import java.util.List;
 import java.util.Map;
 
 import org.glassfish.hk2.api.MultiException;
@@ -48,9 +50,12 @@ import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.hk2Config.xml.test.utilities.LocatorUtilities;
 import org.glassfish.hk2.hk2Config.xml.test0.OldConfigTest;
+import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
+import org.glassfish.hk2.xml.hk2Config.test.beans.Clazz;
 import org.glassfish.hk2.xml.hk2Config.test.beans.KingdomConfig;
+import org.glassfish.hk2.xml.hk2Config.test.beans.Order;
 import org.glassfish.hk2.xml.hk2Config.test.beans.Phyla;
 import org.glassfish.hk2.xml.hk2Config.test.beans.Phylum;
 import org.glassfish.hk2.xml.hk2Config.test.beans.ScientistBean;
@@ -75,6 +80,38 @@ public class ListenersTest {
     public static final String EXPECTED_MESSAGE2 = "Carol fails with IllegalStateException";
     public static final String EXPECTED_MESSAGE3 = "The proverbial hater shall always hate";
     
+    private final static String UPDATED_ON = "updated-on";
+    private final static String CREATED_ON = "created-on";
+    private final static String DELETED_ON = "deleted-on";
+    private final static String EMPTY = "";
+    
+    private static void checkPropertyChangeEvent(PropertyChangeEvent pce, String prop, Object oldV, Object newV, Object source) {
+        Assert.assertNotNull(pce);
+        
+        Assert.assertNotNull(prop);
+        Assert.assertEquals(prop, pce.getPropertyName());
+        
+        Assert.assertTrue("OldValue mismatch expecting " + oldV + " got " + pce.getOldValue(),
+                GeneralUtilities.safeEquals(oldV, pce.getOldValue()));
+        Assert.assertTrue("NewValue mismatch expecting " + newV + " got " + pce.getNewValue(),
+                GeneralUtilities.safeEquals(newV, pce.getNewValue()));
+        
+        Assert.assertNotNull(source);
+        Assert.assertEquals("Source mismatch expecting " + source + " got " + pce.getSource(),
+               source, pce.getSource());
+    }
+    
+    private static void checkPropertyChangeEvent(PropertyChangeEvent pce, String prop, Object source) {
+        Assert.assertNotNull(pce);
+        
+        Assert.assertNotNull(prop);
+        Assert.assertEquals(prop, pce.getPropertyName());
+        
+        Assert.assertNotNull(source);
+        Assert.assertEquals("Source mismatch expecting " + source + " got " + pce.getSource(),
+               source, pce.getSource());
+    }
+    
     /**
      * Tests a basic listener for update
      */
@@ -92,7 +129,9 @@ public class ListenersTest {
         URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
         
         XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshal(url.toURI(), KingdomConfig.class, true, true);
-        rootHandle.addChangeListener(new AuditableListener());
+        
+        RecordingVetoListener recorder = new RecordingVetoListener();
+        rootHandle.addChangeListener(recorder, new AuditableListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
         OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
@@ -106,6 +145,187 @@ public class ListenersTest {
         long newUpdated = ph.getUpdatedOn();
         
         Assert.assertTrue(newUpdated > originalUpdated);
+        
+        List<PropertyChangeEvent> events = recorder.getEvents();
+        Assert.assertEquals(2, events.size());
+        
+        int lcv = 0;
+        for (PropertyChangeEvent event : events) {
+            if (lcv == 0) {
+                checkPropertyChangeEvent(event, "num-germ-layers", null, 15, ph);
+            }
+            else if (lcv == 1) {
+                checkPropertyChangeEvent(event, UPDATED_ON, null, newUpdated, ph);
+            }
+            
+            lcv++;
+        }
+    }
+    
+    /**
+     * Tests an add of two-deep beans
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testDeepAdds() throws Exception {    
+        ServiceLocator locator = LocatorUtilities.createLocator(
+                PropertyBagCustomizerImpl.class,
+                KingdomCustomizer.class,
+                PhylaCustomizer.class);
+        
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
+        
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshal(url.toURI(), KingdomConfig.class, true, true);
+        
+        RecordingVetoListener recorder = new RecordingVetoListener();
+        rootHandle.addChangeListener(recorder, new AuditableListener());
+        
+        KingdomConfig kingdom = rootHandle.getRoot();
+        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
+        
+        Phylum ph = locator.getService(Phylum.class, OldConfigTest.ALICE_NAME);
+        
+        Order order1 = xmlService.createBean(Order.class);
+        order1.setName(OldConfigTest.DARWIN_NAME);
+        
+        Order order2 = xmlService.createBean(Order.class);
+        order2.setName(OldConfigTest.BOB_NAME);
+        
+        Clazz clazz = xmlService.createBean(Clazz.class);
+        clazz.setName(LINN_NAME);
+        
+        clazz.addOrder(order1);
+        clazz.addOrder(order2);
+        
+        // Get all of the beans added in
+        clazz = ph.addClass(clazz);
+        order1 = clazz.lookupOrder(OldConfigTest.DARWIN_NAME);
+        order2 = clazz.lookupOrder(OldConfigTest.BOB_NAME); 
+        
+        List<PropertyChangeEvent> events = recorder.getEvents();
+        Assert.assertEquals(8, events.size());
+        
+        for (int lcv = 0; lcv < events.size(); lcv++) {
+            PropertyChangeEvent event = events.get(lcv);
+            
+            switch (lcv) {
+            case 0:
+                checkPropertyChangeEvent(event, EMPTY, null, clazz, clazz);
+                break;
+            case 1:
+                checkPropertyChangeEvent(event, CREATED_ON, 0L, clazz.getCreatedOn(), clazz);
+                break;
+            case 2:
+                checkPropertyChangeEvent(event, EMPTY, null, order1, order1);
+                break;
+            case 3:
+                checkPropertyChangeEvent(event, CREATED_ON, 0L, order1.getCreatedOn(), order1);
+                break;
+            case 4:
+                checkPropertyChangeEvent(event, EMPTY, null, order2, order2);
+                break;
+            case 5:
+                checkPropertyChangeEvent(event, CREATED_ON, 0L, order2.getCreatedOn(), order2);
+                break;
+            case 6:
+                checkPropertyChangeEvent(event, "class", ph);
+                break;
+            case 7:
+                checkPropertyChangeEvent(event, UPDATED_ON, null, ph.getUpdatedOn(), ph);
+                break;
+            default:
+                Assert.fail("Should only be 8: " + lcv + " event=" + event);
+            }
+        }
+    }
+    
+    /**
+     * Tests an add of two-deep beans
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testDeepRemove() throws Exception {    
+        ServiceLocator locator = LocatorUtilities.createLocator(
+                PropertyBagCustomizerImpl.class,
+                KingdomCustomizer.class,
+                PhylaCustomizer.class);
+        
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
+        
+        XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshal(url.toURI(), KingdomConfig.class, true, true);
+        
+        RecordingVetoListener recorder = new RecordingVetoListener();
+        rootHandle.addChangeListener(recorder, new AuditableListener());
+        
+        KingdomConfig kingdom = rootHandle.getRoot();
+        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
+        
+        Phylum ph = locator.getService(Phylum.class, OldConfigTest.ALICE_NAME);
+        
+        Order order1 = xmlService.createBean(Order.class);
+        order1.setName(OldConfigTest.DARWIN_NAME);
+        
+        Order order2 = xmlService.createBean(Order.class);
+        order2.setName(OldConfigTest.BOB_NAME);
+        
+        Clazz clazz = xmlService.createBean(Clazz.class);
+        clazz.setName(LINN_NAME);
+        
+        clazz.addOrder(order1);
+        clazz.addOrder(order2);
+        
+        clazz = ph.addClass(clazz);
+        order1 = clazz.lookupOrder(OldConfigTest.DARWIN_NAME);
+        order2 = clazz.lookupOrder(OldConfigTest.BOB_NAME);
+        
+        long originalUpdated = ph.getUpdatedOn();
+        
+        // Clear all previous events
+        recorder.clear();
+        
+        Assert.assertNotNull(ph.removeClass(clazz));
+        
+        List<PropertyChangeEvent> events = recorder.getEvents();
+        Assert.assertEquals(8, events.size());
+        
+        for (int lcv = 0; lcv < events.size(); lcv++) {
+            PropertyChangeEvent event = events.get(lcv);
+            
+            switch (lcv) {
+            case 0:
+                checkPropertyChangeEvent(event, EMPTY, order1, null, order1);
+                break;
+            case 1:
+                checkPropertyChangeEvent(event, DELETED_ON, 0L, order1.getDeletedOn(), order1);
+                break;
+            case 2:
+                checkPropertyChangeEvent(event, EMPTY, order2, null, order2);
+                break;
+            case 3:
+                checkPropertyChangeEvent(event, DELETED_ON, 0L, order2.getDeletedOn(), order2);
+                break;
+            case 4:
+                checkPropertyChangeEvent(event, EMPTY, clazz, null, clazz);
+                break;
+            case 5:
+                checkPropertyChangeEvent(event, DELETED_ON, 0L, clazz.getDeletedOn(), clazz);
+                break;
+            case 6:
+                checkPropertyChangeEvent(event, "class", ph);
+                break;
+            case 7:
+                checkPropertyChangeEvent(event, UPDATED_ON, originalUpdated, ph.getUpdatedOn(), ph);
+                break;
+            default:
+                Assert.fail("Should only be 8: " + lcv + " event=" + event);
+            }
+        }
     }
     
     /**
@@ -126,7 +346,9 @@ public class ListenersTest {
         URL url = getClass().getClassLoader().getResource(OldConfigTest.KINGDOM_FILE);
         
         XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshal(url.toURI(), KingdomConfig.class, true, true);
-        rootHandle.addChangeListener(new AuditableListener(), new DaveHatingListener());
+        
+        RecordingVetoListener recorder = new RecordingVetoListener();
+        rootHandle.addChangeListener(recorder, new AuditableListener(), new DaveHatingListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
         OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
@@ -149,6 +371,29 @@ public class ListenersTest {
             Map<String, Object> aliceMap = (Map<String, Object>) bobInstance.getBean();
             Assert.assertEquals(OldConfigTest.BOB_NAME, aliceMap.get(OldConfigTest.NAME_TAG));
         }
+        
+        List<PropertyChangeEvent> events = recorder.getEvents();
+        
+        for (int lcv = 0; lcv < events.size(); lcv++) {
+            PropertyChangeEvent event = events.get(lcv);
+            
+            if (lcv == 0) {
+                checkPropertyChangeEvent(event, "", null, bob, bob);
+            }
+            else if (lcv == 1) {
+                checkPropertyChangeEvent(event, CREATED_ON, 0L, bob.getCreatedOn(), bob);
+            }
+            else if (lcv == 2) {
+                checkPropertyChangeEvent(event, "phylum", phyla);
+            }
+            else if (lcv == 3) {
+                checkPropertyChangeEvent(event, UPDATED_ON, null, phyla.getUpdatedOn(), phyla);
+            }
+            else {
+                Assert.fail("Too many events: " + events + " lcv=" + lcv + " event=" + event);
+            }
+        }
+        
     }
     
     /**
@@ -322,7 +567,7 @@ public class ListenersTest {
             kingdom.setPhyla(null);
         
             // Alice was never truly deleted, so no event for it
-            Assert.assertEquals(0, alice.getDeletedOn());
+            Assert.assertTrue(alice.getDeletedOn() > 0L);
         
             // But phyla truly was
             Assert.assertTrue(phyla.getDeletedOn() > 0L);

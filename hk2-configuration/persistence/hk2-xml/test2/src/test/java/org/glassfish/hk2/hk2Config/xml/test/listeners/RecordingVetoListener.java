@@ -37,48 +37,39 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.hk2Config.test.beans;
+package org.glassfish.hk2.hk2Config.xml.test.listeners;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlElement;
+class RecordingVetoListener implements VetoableChangeListener {
+    private final List<PropertyChangeEvent> events = new ArrayList<PropertyChangeEvent>();
 
-import org.glassfish.hk2.api.Customizer;
-import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
-import org.glassfish.hk2.xml.api.annotations.PluralOf;
-import org.glassfish.hk2.xml.hk2Config.test.customizers.AuditableListener;
-import org.jvnet.hk2.annotations.Contract;
-import org.jvnet.hk2.config.ConfigBeanProxyCustomizer;
-import org.jvnet.hk2.config.Configured;
-import org.jvnet.hk2.config.types.PropertyBag;
-import org.jvnet.hk2.config.types.PropertyBagCustomizer;
-
-/**
- * @author jwells
- *
- */
-@Contract
-@Configured
-@Hk2XmlPreGenerate
-@Customizer({PropertyBagCustomizer.class, ConfigBeanProxyCustomizer.class})
-public interface Phylum extends Named, PropertyBag, AuditableBean {
-    @XmlElement(name="num-germ-layers", defaultValue="2")
-    public void setNumGermLayers(int numLayers);
-    public int getNumGermLayers();
+    /* (non-Javadoc)
+     * @see java.beans.VetoableChangeListener#vetoableChange(java.beans.PropertyChangeEvent)
+     */
+    @Override
+    public void vetoableChange(PropertyChangeEvent evt)
+            throws PropertyVetoException {
+        events.add(evt);
+        
+        if ("order".equals(evt.getPropertyName())) {
+            System.out.println("JRW(10) Recorder dumping order stack");
+            (new Throwable()).printStackTrace(System.out);
+        }
+    }
     
-    @XmlElement(name="soft-bodied", defaultValue="true")
-    public void setSoftBodied(boolean soft);
-    public boolean isSoftBodied();
+    public void clear() {
+        events.clear();
+    }
     
-    @XmlElement(name="shell-type")
-    public String getShellType();
-    public void setShellType(String shellType);
+    public List<PropertyChangeEvent> getEvents() {
+        return Collections.unmodifiableList(new LinkedList<PropertyChangeEvent>(events));
+    }
     
-    @XmlElement(name="class") @PluralOf("Class")
-    public List<Clazz> getClasses();
-    public void setClasses(List<Clazz> clazzes);
-    public Clazz lookupClass(String name);
-    public Clazz addClass(Clazz clazz);
-    public Clazz removeClass(Clazz clazz);
-
 }

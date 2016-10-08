@@ -99,6 +99,8 @@ public class Utilities {
     
     private final static String NOT_UNIQUE_UNIQUE_ID = "not-unique";
     
+    private final static String EMPTY_STRING = "";
+    
     /* package */ static String convertXmlRootElementName(XmlRootElement root, Class<?> clazz) {
         if (!"##default".equals(root.name())) return root.name();
         
@@ -410,13 +412,13 @@ public class Utilities {
         
         externalAdd(child, xmlDynamicChange.getDynamicConfiguration(), xmlDynamicChange.getBeanDatabase(), addedServices);
         
+        Utilities.invokeVetoableChangeListeners(changeInformation, child, null, child, EMPTY_STRING,
+                myParent._getClassReflectionHelper());
+        
         if (rawChild != null) {
             // Now we handle the children
             handleChildren(child, (BaseHK2JAXBBean) rawChild, changeInformation, addedServices, xmlDynamicChange);
         }
-        
-        Utilities.invokeVetoableChangeListeners(changeInformation, child, null, child, childNode.getChildXmlTag(),
-                myParent._getClassReflectionHelper());
         
         // Now modify the actual list
         if (multiChildren != null) {
@@ -730,9 +732,6 @@ public class Utilities {
                 
                 if (rootForDeletion == null) return null;
                 
-                invokeVetoableChangeListeners(changeInformation, rootForDeletion, rootForDeletion, null,
-                        removeMeParentedNode.getChildXmlTag(), myParent._getClassReflectionHelper());
-                
                 if (xmlDynamicChange.getBeanDatabase() != null) {
                     myParent.changeInHub(childProperty, listWithObjectRemoved, xmlDynamicChange.getBeanDatabase());
                 }
@@ -825,9 +824,6 @@ public class Utilities {
                 
                 if (rootForDeletion == null) return null;
                 
-                invokeVetoableChangeListeners(changeInformation, rootForDeletion, rootForDeletion, null,
-                        removeMeParentedNode.getChildXmlTag(), myParent._getClassReflectionHelper());
-                
                 if (xmlDynamicChange.getBeanDatabase() != null) {
                     myParent.changeInHub(childProperty, arrayWithObjectRemoved, xmlDynamicChange.getBeanDatabase());
                 }
@@ -839,15 +835,15 @@ public class Utilities {
             rootForDeletion = (BaseHK2JAXBBean) myParent._getProperty(childProperty);
             if (rootForDeletion == null) return null;
             
-            invokeVetoableChangeListeners(changeInformation, rootForDeletion, rootForDeletion, null,
-                    removeMeParentedNode.getChildXmlTag(), myParent._getClassReflectionHelper());
-            
             if (xmlDynamicChange.getBeanDatabase() != null) {
                 myParent.changeInHub(childProperty, null, xmlDynamicChange.getBeanDatabase());
             }
             
             myParent._setProperty(childProperty, null, false, true);
         }
+        
+        // Need to get all the beans to delete
+        invokeAllDeletedChangeListeners(changeInformation, rootForDeletion, myParent._getClassReflectionHelper());
         
         if (xmlDynamicChange.getDynamicConfiguration() != null) {
             HashSet<ActiveDescriptor<?>> descriptorsToRemove = new HashSet<ActiveDescriptor<?>>();
@@ -1094,6 +1090,45 @@ public class Utilities {
         }
         
         return null;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static void invokeAllDeletedChangeListeners(DynamicChangeInfo<?> control,
+            BaseHK2JAXBBean rootBean,
+            ClassReflectionHelper helper) {
+        ModelImpl model = rootBean._getModel();
+        
+        Map<String, ParentedModel> childrenByName = model.getChildrenByName();
+        for (Map.Entry<String, ParentedModel> entry : childrenByName.entrySet()) {
+            String propertyName = entry.getKey();
+            ParentedModel parentModel = entry.getValue();
+            
+            Object child = rootBean._getProperty(propertyName);
+            if (child == null) continue;
+            
+            if (ChildType.LIST.equals(parentModel.getChildType())) {
+                List<BaseHK2JAXBBean> listChildren = (List<BaseHK2JAXBBean>) child;
+                
+                for (BaseHK2JAXBBean grandchild : listChildren) {
+                    invokeAllDeletedChangeListeners(control, grandchild, helper);
+                }
+            }
+            else if (ChildType.ARRAY.equals(parentModel.getChildType())) {
+                int length = Array.getLength(child);
+                
+                for (int lcv = 0; lcv < length; lcv++) {
+                    BaseHK2JAXBBean grandchild = (BaseHK2JAXBBean) Array.get(child, lcv);
+                    invokeAllDeletedChangeListeners(control, grandchild, helper);
+                }
+            }
+            else if (ChildType.DIRECT.equals(parentModel.getChildType())) {
+                BaseHK2JAXBBean grandchild = (BaseHK2JAXBBean) child;
+                
+                invokeAllDeletedChangeListeners(control, grandchild, helper);
+            }
+        }
+        
+        invokeVetoableChangeListeners(control, rootBean, rootBean, null, EMPTY_STRING, helper);
     }
     
     @SuppressWarnings("unchecked")

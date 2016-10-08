@@ -264,8 +264,10 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
                 boolean success = false;
                 
                 try {
-                    Utilities.invokeVetoableChangeListeners(changeControl, this,
+                    if (!rawSet) {
+                      Utilities.invokeVetoableChangeListeners(changeControl, this,
                         beanLikeMap.get(propName), propValue, propName, classReflectionHelper);
+                    }
                 
                     if (changeInHub) {
                         changeInHubDirect(propName, propValue);
@@ -576,6 +578,8 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         
         changeControl.getWriteLock().lock();
         try {
+            Object oldValue = beanLikeMap.get(childProperty);
+            
             XmlDynamicChange change = changeControl.startOrContinueChange(this);
             
             LinkedList<ActiveDescriptor<?>> addedServices = new LinkedList<ActiveDescriptor<?>>();
@@ -583,6 +587,12 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
             boolean success = false;
             try {
                 retVal = Utilities.internalAdd(this, childProperty, rawChild, childKey, index, changeControl, change, addedServices);
+                
+                Object newValue = beanLikeMap.get(childProperty);
+                
+                Utilities.invokeVetoableChangeListeners(changeControl, this,
+                        oldValue, newValue, childProperty, classReflectionHelper);
+                
                 success = true;
             }
             finally {
@@ -731,7 +741,8 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
                 keyedChildrenCache.remove(childProperty);
             }
             
-            return Utilities.internalRemove(this, childProperty, childKey, index, child, null, XmlDynamicChange.EMPTY);
+            // return Utilities.internalRemove(this, childProperty, childKey, index, child, null, XmlDynamicChange.EMPTY);
+            return retVal;
         }
         
         changeControl.getWriteLock().lock();
@@ -741,7 +752,15 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
             Object retVal;
             boolean success = false;
             try {
+                Object oldVal = beanLikeMap.get(childProperty);
+                
                 retVal = Utilities.internalRemove(this, childProperty, childKey, index, child, changeControl, xmlDynamicChange);
+                
+                Object newVal = beanLikeMap.get(childProperty);
+                
+                Utilities.invokeVetoableChangeListeners(changeControl, this,
+                        oldVal, newVal, childProperty, classReflectionHelper);
+                
                 success = true;
             }
             finally {
