@@ -617,6 +617,34 @@ public class AddsTest {
         }
     }
     
+    /**
+     * Tests that we can call createAndAdd successfully on a root with no required elements
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testCannotChangeKeyProperty() throws Exception {
+        ServiceLocator locator = Utilities.createLocator(RecordingBeanUpdateListener.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = getClass().getClassLoader().getResource(Commons.ACME1_FILE);
+        
+        XmlRootHandle<Employees> rootHandle = xmlService.unmarshal(url.toURI(), Employees.class);
+        Employees employees = rootHandle.getRoot();
+        
+        Employee bob = employees.lookupEmployee(Commons.BOB);
+        Assert.assertNotNull(bob);
+        
+        try {
+            bob.setName(Commons.ALICE);
+            Assert.fail("Should have failed, cannot change the value of a key property");
+        }
+        catch (IllegalArgumentException iae) {
+            Assert.assertTrue(iae.getMessage().contains(Commons.BOB));
+            Assert.assertTrue(iae.getMessage().contains(Commons.ALICE));
+        }
+        
+    }
+    
     @Singleton
     public static class RecordingBeanUpdateListener implements BeanDatabaseUpdateListener {
         public List<Change> latestPrepares;

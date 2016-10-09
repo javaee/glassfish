@@ -258,6 +258,12 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
                         "A bean may not be modified with a set method, instead directly manipulate the fields of the existing bean or use add and remove methods");
             }
             
+            String keyProperty = _getModel().getKeyProperty();
+            if (keyProperty != null && propName.equals(keyProperty) && (keyValue != null)) {
+                throw new IllegalArgumentException("The key property of a bean (" + keyProperty + ") may not be changed from " +
+                  keyValue + " to " + propValue);
+            }
+            
             changeControl.getWriteLock().lock();
             try {
                 changeControl.startOrContinueChange(this);
