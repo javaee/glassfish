@@ -55,6 +55,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Customizer;
@@ -110,7 +111,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * as a cache, may not be completely accurate and must be flushed on remove
      * operations
      */
-    private final Map<String, Map<String, BaseHK2JAXBBean>> keyedChildrenCache = new HashMap<String, Map<String, BaseHK2JAXBBean>>();
+    private final Map<String, Map<String, BaseHK2JAXBBean>> keyedChildrenCache = new ConcurrentHashMap<String, Map<String, BaseHK2JAXBBean>>();
     
     /** The model for this, including lists of all children property names */
     // private UnparentedNode model;
@@ -508,7 +509,8 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         // First look in the cache
         Object retVal = null;
         
-        Map<String, BaseHK2JAXBBean> byName = keyedChildrenCache.get(propName);
+        Map<String, BaseHK2JAXBBean> byName;
+        byName = keyedChildrenCache.get(propName);
         if (byName != null) {
             retVal = byName.get(keyValue);
         }
@@ -527,7 +529,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
                 if (GeneralUtilities.safeEquals(keyValue, child._getKeyValue())) {
                     // Add it to the cache
                     if (byName == null) {
-                        byName = new HashMap<String, BaseHK2JAXBBean>();
+                        byName = new ConcurrentHashMap<String, BaseHK2JAXBBean>();
                         
                         keyedChildrenCache.put(propName, byName);
                     }
@@ -546,7 +548,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
                 if (GeneralUtilities.safeEquals(keyValue, child._getKeyValue())) {
                     // Add it to the cache
                     if (byName == null) {
-                        byName = new HashMap<String, BaseHK2JAXBBean>();
+                        byName = new ConcurrentHashMap<String, BaseHK2JAXBBean>();
                         
                         keyedChildrenCache.put(propName, byName);
                     }
