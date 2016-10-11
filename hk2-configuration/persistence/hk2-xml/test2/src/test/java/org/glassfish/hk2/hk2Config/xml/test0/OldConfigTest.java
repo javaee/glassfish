@@ -134,7 +134,7 @@ public class OldConfigTest {
         XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshal(url.toURI(), KingdomConfig.class, true, false);
         KingdomConfig kingdom1 = rootHandle.getRoot();
         
-        assertOriginalStateKingdom1(kingdom1, null);
+        assertOriginalStateKingdom1(kingdom1, null, locator);
     }
     
     /**
@@ -157,7 +157,7 @@ public class OldConfigTest {
         XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshal(url.toURI(), KingdomConfig.class, true, false);
         KingdomConfig kingdom1 = rootHandle.getRoot();
         
-        assertOriginalStateKingdom1(kingdom1, null);
+        assertOriginalStateKingdom1(kingdom1, null, locator);
         
         Assert.assertNull(kingdom1.getParent());
         Assert.assertNull(kingdom1.getParent(KingdomConfig.class));
@@ -259,7 +259,7 @@ public class OldConfigTest {
         XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshal(url.toURI(), KingdomConfig.class, true, false);
         KingdomConfig kingdom1 = rootHandle.getRoot();
         
-        assertOriginalStateKingdom1(kingdom1, null);
+        assertOriginalStateKingdom1(kingdom1, null, locator);
         
         Assert.assertNull(kingdom1.lookupProperty(ADDED_NAME));
         
@@ -317,7 +317,7 @@ public class OldConfigTest {
         XmlRootHandle<KingdomConfig> rootHandle = xmlService.unmarshal(url.toURI(), KingdomConfig.class, true, true);
         KingdomConfig kingdom1 = rootHandle.getRoot();
         
-        assertOriginalStateKingdom1(kingdom1, hub);
+        assertOriginalStateKingdom1(kingdom1, hub, locator);
         
         kingdom1.setAttribution(AMA);
         
@@ -382,7 +382,12 @@ public class OldConfigTest {
     public static String USERNAME_VALUE = "sa";
     
     @SuppressWarnings("unchecked")
-    public static void assertOriginalStateKingdom1(KingdomConfig kingdom1, Hub hub) {
+    public static void assertOriginalStateKingdom1(KingdomConfig kingdom1, Hub hub, ServiceLocator locator) {
+        if (locator != null) {
+            KingdomConfig locatorKingdom = locator.getService(KingdomConfig.class);
+            Assert.assertEquals(locatorKingdom, kingdom1);
+        }
+        
         Assert.assertNotNull(kingdom1);
         
         Assert.assertEquals(0L, kingdom1.getCreatedOn());
@@ -391,6 +396,11 @@ public class OldConfigTest {
         
         Phyla phyla = kingdom1.getPhyla();
         Assert.assertNotNull(phyla);
+        
+        if (locator != null) {
+            Phyla locatorPhyla = locator.getService(Phyla.class);
+            Assert.assertEquals(locatorPhyla, phyla);
+        }
         
         Assert.assertNull(kingdom1.getAttribution());
         

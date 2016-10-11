@@ -134,7 +134,7 @@ public class ListenersTest {
         rootHandle.addChangeListener(recorder, new AuditableListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
-        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
+        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub, locator);
         
         Phylum ph = locator.getService(Phylum.class, OldConfigTest.ALICE_NAME);
         
@@ -184,7 +184,7 @@ public class ListenersTest {
         rootHandle.addChangeListener(recorder, new AuditableListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
-        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
+        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub, locator);
         
         Phylum ph = locator.getService(Phylum.class, OldConfigTest.ALICE_NAME);
         
@@ -264,7 +264,7 @@ public class ListenersTest {
         rootHandle.addChangeListener(recorder, new AuditableListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
-        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
+        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub, locator);
         
         Phylum ph = locator.getService(Phylum.class, OldConfigTest.ALICE_NAME);
         
@@ -351,7 +351,7 @@ public class ListenersTest {
         rootHandle.addChangeListener(recorder, new AuditableListener(), new DaveHatingListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
-        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
+        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub, locator);
         
         Phylum bob = xmlService.createBean(Phylum.class);
         bob.setName(OldConfigTest.BOB_NAME);
@@ -416,7 +416,7 @@ public class ListenersTest {
         rootHandle.addChangeListener(new AuditableListener(), new DaveHatingListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
-        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
+        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub, locator);
         
         ScientistBean linnaeus = xmlService.createBean(ScientistBean.class);
         linnaeus.setName(LINN_NAME);
@@ -457,7 +457,7 @@ public class ListenersTest {
         rootHandle.addChangeListener(new AuditableListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
-        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
+        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub, locator);
         
         Phylum alice = kingdom.getPhyla().getPhylumByName(OldConfigTest.ALICE_NAME);
         Phyla phyla = kingdom.getPhyla();
@@ -489,7 +489,7 @@ public class ListenersTest {
         rootHandle.addChangeListener(new AuditableListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
-        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
+        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub, locator);
         
         Phyla phyla = kingdom.getPhyla();
         kingdom.setPhyla(null);
@@ -525,7 +525,7 @@ public class ListenersTest {
         rootHandle.addChangeListener(new AuditableListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
-        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
+        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub, locator);
         
         ScientistBean darwin = kingdom.lookupScientist(OldConfigTest.DARWIN_NAME);
         ScientistBean removed = kingdom.removeScientist(kingdom.getScientists()[0]);
@@ -558,7 +558,7 @@ public class ListenersTest {
         rootHandle.addChangeListener(new AuditableListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
-        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
+        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub, locator);
         
         {
             Phylum alice = kingdom.getPhyla().getPhylumByName(OldConfigTest.ALICE_NAME);
@@ -638,7 +638,7 @@ public class ListenersTest {
         rootHandle.addChangeListener(new AuditableListener(), new DaveHatingListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
-        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
+        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub, locator);
         
         Phylum dave = xmlService.createBean(Phylum.class);
         dave.setName(DAVE_NAME);
@@ -654,7 +654,7 @@ public class ListenersTest {
         }
         
         // Nothing should have happened
-        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
+        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub, locator);
     }
     
     /**
@@ -679,7 +679,7 @@ public class ListenersTest {
         rootHandle.addChangeListener(new DaveHatingListener(), new AuditableListener());
         
         KingdomConfig kingdom = rootHandle.getRoot();
-        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
+        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub, locator);
         
         Phyla phyla = kingdom.getPhyla();
         Phylum alice = phyla.getPhylumByName(OldConfigTest.ALICE_NAME);
@@ -693,7 +693,7 @@ public class ListenersTest {
         }
         
         // Nothing should have happened
-        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
+        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub, locator);
     }
     
     /**
@@ -720,7 +720,7 @@ public class ListenersTest {
         rootHandle.addChangeListener(new DaveHatingListener(), auditableListener);
         
         KingdomConfig kingdom = rootHandle.getRoot();
-        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
+        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub, locator);
         
         Phyla phyla = kingdom.getPhyla();
         Phylum alice = phyla.getPhylumByName(OldConfigTest.ALICE_NAME);
@@ -765,7 +765,7 @@ public class ListenersTest {
         rootHandle.addChangeListener(new AuditableListener(), new HaterGonnaHate());
         
         KingdomConfig kingdom = rootHandle.getRoot();
-        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub);
+        OldConfigTest.assertOriginalStateKingdom1(kingdom, hub, locator);
         
         ScientistBean darwin = kingdom.getScientists()[0];
         
