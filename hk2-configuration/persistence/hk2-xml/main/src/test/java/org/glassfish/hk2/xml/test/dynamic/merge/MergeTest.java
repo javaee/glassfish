@@ -203,16 +203,17 @@ public class MergeTest {
         List<Change> changes = listener.getChanges();
         Assert.assertNotNull(changes);
         
-        Assert.assertEquals(1, changes.size());
+        Assert.assertEquals(2, changes.size());
         
+        boolean gotId = false;
+        boolean gotAge = false;
         for (Change change : changes) {
             Assert.assertEquals(ChangeCategory.MODIFY_INSTANCE, change.getChangeCategory());
             
             List<PropertyChangeEvent> events = change.getModifiedProperties();
             
-            Assert.assertEquals(2, events.size());
-            boolean gotId = false;
-            boolean gotAge = false;
+            Assert.assertEquals(1, events.size());
+            
             for (PropertyChangeEvent event : events) {
                 if ("age".equals(event.getPropertyName())) {
                     gotAge = true;
@@ -221,10 +222,10 @@ public class MergeTest {
                     gotId = true;
                 }
             }
-            
-            Assert.assertTrue(gotId);
-            Assert.assertTrue(gotAge);
         }
+        
+        Assert.assertTrue(gotId);
+        Assert.assertTrue(gotAge);
     }
     
     /**
@@ -234,7 +235,7 @@ public class MergeTest {
      */
     @SuppressWarnings("unchecked")
     @Test 
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testMergeModifyAddADirectChild() throws Exception {
         ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
         XmlService xmlService = locator.getService(XmlService.class);
@@ -297,7 +298,27 @@ public class MergeTest {
             Assert.assertNull(bobMap.get(ADDRESS_TAG));
         }
         
-        // TODO: Check that we have the proper set of changes (one modify, one add)
+        List<Change> hubChanges = listener.getChanges();
+        Assert.assertEquals(2, hubChanges.size());
+        
+        boolean foundAdd = false;
+        boolean foundMod = false;
+        for (Change change : hubChanges) {
+            if (ChangeCategory.ADD_INSTANCE.equals(change.getChangeCategory())) {
+                Assert.assertEquals(BOB_INSTANCE, change.getInstanceKey());
+                foundAdd = true;
+            }
+            else if (ChangeCategory.MODIFY_INSTANCE.equals(change.getChangeCategory())) {
+                Assert.assertEquals(DOMAIN_INSTANCE, change.getInstanceKey());
+                foundMod = true;
+            }
+            else {
+                Assert.fail("Unknown change found: " + change);
+            }
+        }
+        
+        Assert.assertTrue(foundAdd);
+        Assert.assertTrue(foundMod);
     }
     
     public static void verifyDomain1Xml(XmlRootHandle<DomainBean> rootHandle, Hub hub, ServiceLocator locator, boolean didDefault) {

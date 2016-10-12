@@ -180,8 +180,6 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
     @SuppressWarnings("unchecked")
     @Override
     public XmlRootCopy<T> getXmlRootCopy() {
-        Hub useHub = (advertisedInHub) ? hub : null;
-        
         // In any case, the child should not be directly given the hub, as
         // it is not reflected in the hub
         DynamicChangeInfo<T> copyController =
@@ -197,7 +195,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
         try {
             BaseHK2JAXBBean bean = (BaseHK2JAXBBean) root;
             if (bean == null) {
-                return new XmlRootCopyImpl<T>(useHub, this, changeControl.getChangeNumber(), null);
+                return new XmlRootCopyImpl<T>(this, changeControl.getChangeNumber(), null);
             }
         
             BaseHK2JAXBBean copy;
@@ -216,7 +214,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
                 throw new RuntimeException(th);
             }
         
-            return new XmlRootCopyImpl<T>(useHub, this, changeControl.getChangeNumber(), (T) copy);
+            return new XmlRootCopyImpl<T>(this, changeControl.getChangeNumber(), (T) copy);
         }
         finally {
             changeControl.getReadLock().unlock();

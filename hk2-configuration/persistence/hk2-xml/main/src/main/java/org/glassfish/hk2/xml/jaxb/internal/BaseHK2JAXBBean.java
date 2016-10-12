@@ -40,7 +40,6 @@
 
 package org.glassfish.hk2.xml.jaxb.internal;
 
-import java.beans.PropertyChangeEvent;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
@@ -64,7 +63,6 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
-import org.glassfish.hk2.utilities.reflection.BeanReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
@@ -986,88 +984,6 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
             
             beanLikeMap.put(entrySet.getKey(), entrySet.getValue());
         }
-    }
-    
-    private PropertyChangeEvent changes[] = null;
-    
-    /**
-     * Called with writeLock held
-     * 
-     * @param other
-     * @param writeableDatabase
-     */
-    public void _merge(BaseHK2JAXBBean other, WriteableBeanDatabase writeableDatabase) {
-        if (changes != null) throw new IllegalStateException("Bean " + this + " has a merge on-going");
-        
-        Map<String, Object> otherMap = other._getBeanLikeMap();
-        
-        WriteableType wt = null;
-        if (writeableDatabase != null) {
-            wt = writeableDatabase.getWriteableType(xmlPath);
-        }
-        
-        changes = BeanReflectionHelper.getChangeEvents(classReflectionHelper,
-                beanLikeMap, otherMap);
-        
-        Map<String, ParentedModel> modelChildren = _getModel().getChildrenProperties();
-        for (Map.Entry<String, ParentedModel> modelChild : modelChildren.entrySet()) {
-            String childXmlTag = modelChild.getKey();
-            ParentedModel childPModel = modelChild.getValue();
-            
-            Object otherChildren = otherMap.get(childXmlTag);
-            Object thisChildren = beanLikeMap.get(childXmlTag);
-            if (otherChildren != null) {
-                if (ChildType.DIRECT.equals(childPModel.getChildType())) {
-                    BaseHK2JAXBBean otherChild = (BaseHK2JAXBBean) otherChildren;
-                
-                }
-                else {
-                    for (BaseHK2JAXBBean otherChild : (Iterable<BaseHK2JAXBBean>) otherChildren) {
-                        
-                    }
-                }
-            }
-            else if (thisChildren != null) {
-                // TODO: Remove
-                if (ChildType.DIRECT.equals(childPModel.getChildType())) {
-                    BaseHK2JAXBBean thisChild = (BaseHK2JAXBBean) thisChildren;
-                
-                }
-                else {
-                    for (BaseHK2JAXBBean thisChild : (Iterable<BaseHK2JAXBBean>) thisChildren) {
-                        
-                    }
-                }
-            }
-        }
-        
-        if (wt != null) {
-            wt.modifyInstance(instanceName, otherMap, changes);
-        }
-    }
-    
-    /**
-     * Write lock for tree must be held
-     * 
-     * @param success If the transaction committed successfully
-     */
-    public void _endMerge(boolean success) {
-        if (changes == null) throw new IllegalStateException("Bean " + this + " does not have a known merge");
-        if (!success) {
-            changes = null;
-            return;
-        }
-        
-        for (PropertyChangeEvent pce : changes) {
-            String propName = pce.getPropertyName();
-            Object newValue = pce.getNewValue();
-            
-            beanLikeMap.put(propName, newValue);
-            
-            // TODO: Children
-        }
-        
-        changes = null;
     }
     
     /**

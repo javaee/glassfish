@@ -81,6 +81,8 @@ import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
+import org.glassfish.hk2.xml.internal.Differences.Difference;
+import org.glassfish.hk2.xml.internal.Differences.RemoveData;
 import org.glassfish.hk2.xml.internal.alt.AltClass;
 import org.glassfish.hk2.xml.internal.alt.clazz.ClassAltClassImpl;
 import org.glassfish.hk2.xml.internal.alt.papi.ArrayTypeAltClassImpl;
@@ -1178,6 +1180,231 @@ public class Utilities {
         }
         if (!errors.isEmpty()) {
             throw new MultiException(errors);
+        }
+    }
+    
+    /**
+     * Must have write lock of source held though this is only doing reading
+     * 
+     * @param classReflectionHelper
+     * @param source
+     * @param other
+     * @return
+     */
+    public static Differences getDiff(BaseHK2JAXBBean source,
+            BaseHK2JAXBBean other) {
+        ModelImpl sourceModel = source._getModel();
+        ModelImpl otherModel = other._getModel();
+        
+        if (!sourceModel.equals(otherModel)) {
+            throw new AssertionError("Can only diff two beans of the same type.  Source is " + sourceModel + " other is " + otherModel);
+        }
+        
+        Differences retVal = new Differences();
+        
+        getAllDifferences(source, other, retVal);
+        
+        return retVal;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static void getAllDifferences(BaseHK2JAXBBean source,
+            BaseHK2JAXBBean other,
+            Differences differences) {
+        Difference localDifference = new Difference(source);
+        
+        ModelImpl sourceModel = source._getModel();
+        
+        Map<String, Object> sourceMap = source._getBeanLikeMap();
+        Map<String, Object> otherMap = other._getBeanLikeMap();
+        
+        Map<String, ChildDataModel> nonChildProperties = sourceModel.getNonChildProperties();
+        
+        for (Map.Entry<String, ChildDataModel> nonChildPropertyEntry : nonChildProperties.entrySet()) {
+            String nonChildProperty = nonChildPropertyEntry.getKey();
+            ChildDataModel dataModel = nonChildPropertyEntry.getValue();
+                    
+            Object sourceValue = sourceMap.get(nonChildProperty);
+            Object otherValue = otherMap.get(nonChildProperty);
+            
+            if (!dataModel.isReference()) {
+                if (!GeneralUtilities.safeEquals(sourceValue, otherValue)) {
+                    localDifference.addNonChildChange(new PropertyChangeEvent(source, nonChildProperty, sourceValue, otherValue));
+                }
+            }
+            else {
+                // Comparing references
+                if (sourceValue != null && otherValue == null) {
+                    localDifference.addNonChildChange(new PropertyChangeEvent(source, nonChildProperty, sourceValue, otherValue));
+                }
+                else if (sourceValue == null && otherValue != null) {
+                    localDifference.addNonChildChange(new PropertyChangeEvent(source, nonChildProperty, sourceValue, otherValue));
+                }
+                else if (sourceValue != null) {
+                    BaseHK2JAXBBean sourceReference = (BaseHK2JAXBBean) sourceValue;
+                    BaseHK2JAXBBean otherReference = (BaseHK2JAXBBean) otherValue;
+                    
+                    String sourceReferenceKey = sourceReference._getKeyValue();
+                    String otherReferenceKey = otherReference._getKeyValue();
+                    
+                    if (!GeneralUtilities.safeEquals(sourceReferenceKey, otherReferenceKey)) {
+                        localDifference.addNonChildChange(new PropertyChangeEvent(source, nonChildProperty, sourceValue, otherValue));
+                    }
+                    
+                }
+                
+            }
+        }
+        
+        Map<String, ParentedModel> childProperties = sourceModel.getChildrenByName();
+        for (Map.Entry<String, ParentedModel> childEntry : childProperties.entrySet()) {
+            String xmlTag = childEntry.getKey();
+            ParentedModel pModel = childEntry.getValue();
+            
+            Object sourceValue = sourceMap.get(xmlTag);
+            Object otherValue = otherMap.get(xmlTag);
+            
+            if (ChildType.DIRECT.equals(pModel.getChildType())) {
+                if (sourceValue == null && otherValue != null) {
+                    // This is just a pure add
+                    localDifference.addAdd(xmlTag, (BaseHK2JAXBBean) otherValue); 
+                }
+                else if (sourceValue != null && otherValue == null) {
+                    // A pure remove
+                    localDifference.addRemove(xmlTag, new RemoveData(xmlTag, (BaseHK2JAXBBean) sourceValue));
+                }
+                else if (sourceValue != null) {
+                    getAllDifferences((BaseHK2JAXBBean) sourceValue, (BaseHK2JAXBBean) otherValue, differences);
+                }
+            }
+            else if (ChildType.LIST.equals(pModel.getChildType())) {
+                String keyProperty = pModel.getChildModel().getKeyProperty();
+                
+                List<BaseHK2JAXBBean> sourceValueList = (List<BaseHK2JAXBBean>) sourceValue;
+                List<BaseHK2JAXBBean> otherValueList = (List<BaseHK2JAXBBean>) otherValue;
+                
+                if (sourceValueList == null && otherValueList != null) {
+                    // Everything in otherValueList is an add
+                    for (BaseHK2JAXBBean addMe : otherValueList) {
+                        localDifference.addAdd(xmlTag, addMe);
+                    }
+                }
+                else if (sourceValueList != null && otherValueList == null) {
+                    // Everything in sourceList is to be removed
+                    for (int lcv = sourceValueList.size() - 1; lcv >= 0; lcv--) {
+                        BaseHK2JAXBBean removeMe = sourceValueList.get(lcv);
+                        
+                        RemoveData rd;
+                        if (keyProperty != null) {
+                            rd = new RemoveData(xmlTag, removeMe._getKeyValue(), removeMe);
+                        }
+                        else {
+                            rd = new RemoveData(xmlTag, lcv, removeMe);
+                        }
+                        
+                        localDifference.addRemove(xmlTag, rd);
+                    }
+                }
+                else if (keyProperty != null) {
+                    for (BaseHK2JAXBBean sourceBean : sourceValueList) {
+                        String sourceKeyValue = sourceBean._getKeyValue();
+                        
+                        Object otherBean = other._lookupChild(xmlTag, sourceKeyValue);
+                        if (otherBean == null) {
+                            // Removing this bean
+                            localDifference.addRemove(xmlTag, new RemoveData(xmlTag, sourceKeyValue, sourceBean));
+                        }
+                        else {
+                            // Need to know sub-differences
+                            getAllDifferences(sourceBean, (BaseHK2JAXBBean) otherBean, differences);
+                        }
+                    }
+                    
+                    for (BaseHK2JAXBBean otherBean : otherValueList) {
+                        String otherKeyValue = otherBean._getKeyValue();
+                        
+                        Object addMe = source._lookupChild(xmlTag, otherKeyValue);
+                        if (addMe == null) {
+                            // Adding this bean
+                            localDifference.addAdd(xmlTag, otherBean);
+                        }
+                    }
+                }
+                else {
+                    // Both lists are there, this is an unkeyed list, we go *purely* on list size
+                    int sourceListSize = sourceValueList.size();
+                    int otherListSize = otherValueList.size();
+                    
+                    int leastSize = (otherListSize > sourceListSize) ? sourceListSize : otherListSize ;
+                    
+                    for (int lcv = 0; lcv < leastSize; lcv++) {
+                        BaseHK2JAXBBean sourceValueListChild = sourceValueList.get(lcv);
+                        BaseHK2JAXBBean otherValueListChild = otherValueList.get(lcv);
+                        
+                        getAllDifferences(sourceValueListChild, otherValueListChild, differences);
+                    }
+                    
+                    if (otherListSize > sourceListSize) {
+                        // Adds
+                        for (int lcv = sourceListSize; lcv < otherListSize; lcv++) {
+                            BaseHK2JAXBBean otherValueListChild = otherValueList.get(lcv);
+                            
+                            localDifference.addAdd(xmlTag, otherValueListChild);                            
+                        }
+                    }
+                    else if (otherListSize < sourceListSize) {
+                        // Removes
+                        for (int lcv = sourceListSize - 1; lcv >= otherListSize; lcv--) {
+                            BaseHK2JAXBBean sourceValueListChild = sourceValueList.get(lcv);
+                            
+                            localDifference.addRemove(xmlTag, new RemoveData(xmlTag, lcv, sourceValueListChild));
+                        }
+                    }
+                }
+                
+                
+            }
+            else if (ChildType.ARRAY.equals(pModel.getChildType())) {
+                // TODO: Implement arrays
+            }
+            
+        }
+        
+        if (localDifference.isDirty()) {
+            differences.addDifference(localDifference);
+        }
+    }
+    
+    /**
+     * Must have write lock of source held
+     * 
+     * @param classReflectionHelper
+     * @param source
+     * @param other
+     * @return
+     */
+    public static void applyDiff(Differences differences) {
+        for (Difference difference : differences.getDifferences()) {
+            BaseHK2JAXBBean source = difference.getSource();
+            
+            for (PropertyChangeEvent nonChildChange : difference.getNonChildChanges()) {
+                source._setProperty(nonChildChange.getPropertyName(),
+                        nonChildChange.getNewValue());
+            }
+            
+            for (Map.Entry<String, BaseHK2JAXBBean> entry : difference.getAdds().entrySet()) {
+                String xmlKey = entry.getKey();
+                BaseHK2JAXBBean addMe = entry.getValue();
+                
+                source._doAdd(xmlKey, addMe, null, -1);
+            }
+            
+            for (Map.Entry<String, RemoveData> entry : difference.getRemoves().entrySet()) {
+                String xmlKey = entry.getKey();
+                RemoveData rd = entry.getValue();
+                
+                source._doRemove(xmlKey, rd.getChildKey(), rd.getIndex(), rd.getChild());
+            }
         }
     }
 }
