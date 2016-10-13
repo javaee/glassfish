@@ -60,6 +60,7 @@ import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.basic.beans.Commons;
 import org.glassfish.hk2.xml.test.basic.beans.Museum;
 import org.glassfish.hk2.xml.test.beans.AuthorizationProviderBean;
+import org.glassfish.hk2.xml.test.beans.DiagnosticsBean;
 import org.glassfish.hk2.xml.test.beans.DomainBean;
 import org.glassfish.hk2.xml.test.beans.HttpFactoryBean;
 import org.glassfish.hk2.xml.test.beans.HttpServerBean;
@@ -129,7 +130,7 @@ public class MergeTest {
     public final static String HTTP_SERVER_TYPE = "/domain/http-factory/http-server";
     public final static String HTTPS_FACTORY_TYPE = "/domain/https-factory";
     public final static String SSL_MANAGER_TYPE = "/domain/security-manager/ssl-manager";
-    
+    public final static String DIAGNOSTICS_TYPE = "/domain/diagnostics";
     
     private final static String ALICE_INSTANCE = "domain.Alice";
     private final static String BOB_INSTANCE = "domain.Bob";
@@ -148,6 +149,7 @@ public class MergeTest {
     private final static String QUEUE1_INSTANCE = "domain.Carol.Queue1";
     private final static String QUEUE2_INSTANCE = "domain.Carol.Queue2";
     public final static String SSL_MANAGER_INSTANCE_NAME = "domain.security-manager.ssl-manager";
+    public final static String DIAGNOSTICS_INSTANCE = "domain.diagnostics";
     
     private final static String ADDRESS_TAG = "address";
     private final static String PORT_TAG = "port";
@@ -472,6 +474,139 @@ public class MergeTest {
         }
     }
     
+    /**
+     * Removes a direct child (and all children underneath)
+     * 
+     * @throws Exception
+     */
+    @Test 
+    // @org.junit.Ignore
+    public void testRemoveDirectChild() throws Exception {
+        ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        UpdateListener listener = locator.getService(UpdateListener.class);
+        
+        URL url = getClass().getClassLoader().getResource(DOMAIN1_FILE);
+        
+        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshal(url.toURI(), DomainBean.class);
+        
+        verifyDomain1Xml(rootHandle, hub, locator);
+        
+        // All above just verifying the pre-state
+        XmlRootCopy<DomainBean> copy = rootHandle.getXmlRootCopy();
+        DomainBean domainCopy = copy.getChildRoot();
+        DomainBean domainOld = rootHandle.getRoot();
+        
+        Assert.assertTrue(domainCopy.removeSecurityManager());
+        
+        // Ensure that the modification of the copy did NOT affect the parent!
+        verifyDomain1Xml(rootHandle, hub, locator);
+        
+        // Now do the merge
+        copy.merge();
+        
+        // Now make sure old values are gone
+        Assert.assertNull(domainOld.getSecurityManager());
+        
+        assertNotInHub(hub, SECURITY_MANAGER_TYPE, SECURITY_MANAGER_INSTANCE);
+        assertNotInHub(hub, AUTHORIZATION_PROVIDER_TYPE, RSA_INSTANCE);
+        
+        List<Change> hubChanges = listener.getChanges();
+        Assert.assertEquals("Did not get expected changes, got " + hubChanges, 3, hubChanges.size());
+        
+        for (int lcv = 0; lcv < hubChanges.size(); lcv++) {
+            Change change = hubChanges.get(lcv);
+            
+            switch (lcv) {
+            case 0:
+                Assert.assertEquals(ChangeCategory.MODIFY_INSTANCE, change.getChangeCategory());
+                Assert.assertEquals(DOMAIN_INSTANCE, change.getInstanceKey());
+                break;
+            case 1:
+                Assert.assertEquals(ChangeCategory.REMOVE_INSTANCE, change.getChangeCategory());
+                Assert.assertEquals(SECURITY_MANAGER_INSTANCE, change.getInstanceKey());
+                break;
+            case 2:
+                Assert.assertEquals(ChangeCategory.REMOVE_INSTANCE, change.getChangeCategory());
+                Assert.assertEquals(RSA_INSTANCE, change.getInstanceKey());
+                break;
+            default:
+                Assert.fail("Uknown change " + lcv + " was " + change);
+            }
+        }
+        
+    }
+    
+    /**
+     * Removes a direct child (and all children underneath)
+     * 
+     * @throws Exception
+     */
+    @Test 
+    // @org.junit.Ignore
+    public void testAddDirectChild() throws Exception {
+        ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        UpdateListener listener = locator.getService(UpdateListener.class);
+        
+        URL url = getClass().getClassLoader().getResource(DOMAIN1_FILE);
+        
+        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshal(url.toURI(), DomainBean.class);
+        
+        verifyDomain1Xml(rootHandle, hub, locator);
+        
+        // All above just verifying the pre-state
+        XmlRootCopy<DomainBean> copy = rootHandle.getXmlRootCopy();
+        DomainBean domainCopy = copy.getChildRoot();
+        DomainBean domainOld = rootHandle.getRoot();
+        
+        DiagnosticsBean diagnostics = xmlService.createBean(DiagnosticsBean.class);
+        diagnostics.setName(ESSEX_NAME);
+        
+        domainCopy.setDiagnostics(diagnostics);
+        
+        // Ensure that the modification of the copy did NOT affect the parent!
+        verifyDomain1Xml(rootHandle, hub, locator);
+        
+        // Now do the merge
+        copy.merge();
+        
+        // Now make sure new value is available
+        diagnostics = domainOld.getDiagnostics();
+        Assert.assertNotNull(diagnostics);
+        
+        assertNameOnlyBean(hub, DIAGNOSTICS_TYPE, DIAGNOSTICS_INSTANCE, ESSEX_NAME);
+        
+        List<Change> hubChanges = listener.getChanges();
+        Assert.assertEquals("Did not get expected changes, got " + hubChanges, 3, hubChanges.size());
+        
+        for (int lcv = 0; lcv < hubChanges.size(); lcv++) {
+            Change change = hubChanges.get(lcv);
+            
+            switch (lcv) {
+            case 0:
+                Assert.assertEquals(ChangeCategory.ADD_TYPE, change.getChangeCategory());
+                Assert.assertEquals(DIAGNOSTICS_TYPE, change.getChangeType().getName());
+                break;
+            case 1:
+                Assert.assertEquals(ChangeCategory.ADD_INSTANCE, change.getChangeCategory());
+                Assert.assertEquals(DIAGNOSTICS_INSTANCE, change.getInstanceKey());
+                Assert.assertEquals(DIAGNOSTICS_TYPE, change.getChangeType().getName());
+                break;
+            case 2:
+                Assert.assertEquals(ChangeCategory.MODIFY_INSTANCE, change.getChangeCategory());
+                Assert.assertEquals(DOMAIN_INSTANCE, change.getInstanceKey());
+                Assert.assertEquals(DOMAIN_TYPE, change.getChangeType().getName());
+                break;
+            default:
+                Assert.fail("Uknown change " + lcv + " was " + change);
+            }
+        }
+        
+    }
+    
     public static void verifyDomain1Xml(XmlRootHandle<DomainBean> rootHandle, Hub hub, ServiceLocator locator, boolean didDefault) {
         DomainBean root = rootHandle.getRoot();
         
@@ -769,6 +904,8 @@ public class MergeTest {
             Assert.assertEquals(LIBERTY_NAME, beanLike.get(Commons.NON_KEY_TAG));
         }
         
+        assertNotInHub(hub, DIAGNOSTICS_TYPE, DIAGNOSTICS_INSTANCE);
+        
         assertDomain1Services(locator, locator, didDefault);
     }
     
@@ -891,6 +1028,8 @@ public class MergeTest {
         else {
             Assert.assertNull(sslManager);
         }
+        
+        Assert.assertNull(fromLocator.getService(DiagnosticsBean.class));
     }
     
     private static void assertServiceComesFromSameLocator(Object service, ServiceLocator locator) {

@@ -1283,29 +1283,10 @@ public class Utilities {
                 List<BaseHK2JAXBBean> sourceValueList = (List<BaseHK2JAXBBean>) sourceValue;
                 List<BaseHK2JAXBBean> otherValueList = (List<BaseHK2JAXBBean>) otherValue;
                 
-                if (sourceValueList == null && otherValueList != null) {
-                    // Everything in otherValueList is an add
-                    for (BaseHK2JAXBBean addMe : otherValueList) {
-                        localDifference.addAdd(xmlTag, addMe);
-                    }
-                }
-                else if (sourceValueList != null && otherValueList == null) {
-                    // Everything in sourceList is to be removed
-                    for (int lcv = sourceValueList.size() - 1; lcv >= 0; lcv--) {
-                        BaseHK2JAXBBean removeMe = sourceValueList.get(lcv);
-                        
-                        RemoveData rd;
-                        if (keyProperty != null) {
-                            rd = new RemoveData(xmlTag, removeMe._getKeyValue(), removeMe);
-                        }
-                        else {
-                            rd = new RemoveData(xmlTag, lcv, removeMe);
-                        }
-                        
-                        localDifference.addRemove(xmlTag, rd);
-                    }
-                }
-                else if (sourceValueList != null && keyProperty != null) {
+                if (sourceValueList == null) sourceValueList = Collections.emptyList();
+                if (otherValueList == null) otherValueList = Collections.emptyList();
+                
+                if (keyProperty != null) {
                     for (BaseHK2JAXBBean sourceBean : sourceValueList) {
                         String sourceKeyValue = sourceBean._getKeyValue();
                         
@@ -1330,7 +1311,7 @@ public class Utilities {
                         }
                     }
                 }
-                else if (sourceValueList != null) {
+                else {
                     // Both lists are there, this is an unkeyed list, we go *purely* on list size
                     int sourceListSize = sourceValueList.size();
                     int otherListSize = otherValueList.size();
@@ -1367,39 +1348,14 @@ public class Utilities {
             else if (ChildType.ARRAY.equals(pModel.getChildType())) {
                 String keyProperty = pModel.getChildModel().getKeyProperty();
                 
-                if (sourceValue == null && otherValue != null) {
-                    // Everything in otherValueList is an add
-                    int length = Array.getLength(otherValue);
-                    
-                    for (int lcv = 0; lcv < length; lcv++) {
-                        BaseHK2JAXBBean addMe = (BaseHK2JAXBBean) Array.get(otherValue, lcv);
-                        
-                        localDifference.addAdd(xmlTag, addMe);
-                    }
-                }
-                else if (sourceValue != null && otherValue == null) {
-                    // Everything in sourceList is to be removed
-                    int length = Array.getLength(sourceValue);
-                    
-                    for (int lcv = length - 1; lcv >= 0; lcv--) {
-                        BaseHK2JAXBBean removeMe = (BaseHK2JAXBBean) Array.get(otherValue, lcv);
-                        
-                        RemoveData rd;
-                        if (keyProperty != null) {
-                            rd = new RemoveData(xmlTag, removeMe._getKeyValue(), removeMe);
-                        }
-                        else {
-                            rd = new RemoveData(xmlTag, lcv, removeMe);
-                        }
-                        
-                        localDifference.addRemove(xmlTag, rd);
-                    }
-                }
-                else if (sourceValue != null && keyProperty != null) {
-                    int sourceLength = Array.getLength(sourceValue);
+                Object sourceArray = (sourceValue == null) ? new BaseHK2JAXBBean[0] : sourceValue ;
+                Object otherArray = (otherValue == null) ? new BaseHK2JAXBBean[0] : otherValue;
+                
+                if (keyProperty != null) {
+                    int sourceLength = Array.getLength(sourceArray);
                     
                     for (int lcv = 0; lcv < sourceLength; lcv++) {
-                        BaseHK2JAXBBean sourceBean = (BaseHK2JAXBBean) Array.get(sourceValue, lcv);
+                        BaseHK2JAXBBean sourceBean = (BaseHK2JAXBBean) Array.get(sourceArray, lcv);
                         
                         String sourceKeyValue = sourceBean._getKeyValue();
                         
@@ -1414,10 +1370,10 @@ public class Utilities {
                         }
                     }
                     
-                    int otherLength = Array.getLength(otherValue);
+                    int otherLength = Array.getLength(otherArray);
                     
                     for (int lcv = 0; lcv < otherLength; lcv++) {
-                        BaseHK2JAXBBean otherBean = (BaseHK2JAXBBean) Array.get(otherValue, lcv);
+                        BaseHK2JAXBBean otherBean = (BaseHK2JAXBBean) Array.get(otherArray, lcv);
                         
                         String otherKeyValue = otherBean._getKeyValue();
                         
@@ -1428,16 +1384,16 @@ public class Utilities {
                         }
                     }
                 }
-                else if (sourceValue != null) {
+                else {
                     // Both lists are there, this is an unkeyed list, we go *purely* on list size
-                    int sourceListSize = Array.getLength(sourceValue);
-                    int otherListSize = Array.getLength(otherValue);
+                    int sourceListSize = Array.getLength(sourceArray);
+                    int otherListSize = Array.getLength(otherArray);
                     
                     int leastSize = (otherListSize > sourceListSize) ? sourceListSize : otherListSize ;
                     
                     for (int lcv = 0; lcv < leastSize; lcv++) {
-                        BaseHK2JAXBBean sourceValueListChild = (BaseHK2JAXBBean) Array.get(sourceValue, lcv);
-                        BaseHK2JAXBBean otherValueListChild = (BaseHK2JAXBBean) Array.get(otherValue, lcv);
+                        BaseHK2JAXBBean sourceValueListChild = (BaseHK2JAXBBean) Array.get(sourceArray, lcv);
+                        BaseHK2JAXBBean otherValueListChild = (BaseHK2JAXBBean) Array.get(otherArray, lcv);
                         
                         getAllDifferences(sourceValueListChild, otherValueListChild, differences);
                     }
@@ -1445,7 +1401,7 @@ public class Utilities {
                     if (otherListSize > sourceListSize) {
                         // Adds
                         for (int lcv = sourceListSize; lcv < otherListSize; lcv++) {
-                            BaseHK2JAXBBean otherValueListChild = (BaseHK2JAXBBean) Array.get(otherValue, lcv);
+                            BaseHK2JAXBBean otherValueListChild = (BaseHK2JAXBBean) Array.get(otherArray, lcv);
                             
                             localDifference.addAdd(xmlTag, otherValueListChild);                            
                         }
@@ -1453,7 +1409,7 @@ public class Utilities {
                     else if (otherListSize < sourceListSize) {
                         // Removes
                         for (int lcv = sourceListSize - 1; lcv >= otherListSize; lcv--) {
-                            BaseHK2JAXBBean sourceValueListChild = (BaseHK2JAXBBean) Array.get(sourceValue, lcv);
+                            BaseHK2JAXBBean sourceValueListChild = (BaseHK2JAXBBean) Array.get(sourceArray, lcv);
                             
                             localDifference.addRemove(xmlTag, new RemoveData(xmlTag, lcv, sourceValueListChild));
                         }

@@ -92,4 +92,8 @@ public interface DomainBean extends NamedBean {
     @XmlElement(name="taxonomy")
     public String getTaxonomy();
     public void setTaxonomy(String taxonomy);
+    
+    @XmlElement(name="diagnostics")
+    public DiagnosticsBean getDiagnostics();
+    public void setDiagnostics(DiagnosticsBean above);
 }
