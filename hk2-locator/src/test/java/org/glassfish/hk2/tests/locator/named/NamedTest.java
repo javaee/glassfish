@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,14 +42,13 @@ package org.glassfish.hk2.tests.locator.named;
 
 import java.util.List;
 
-import junit.framework.Assert;
-
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -70,6 +69,8 @@ public class NamedTest {
     public final static String BENVOLIO = "Benvolio";
     /** A rose by any other name */
     public final static String ROSE = "Rose";
+    /** Romeo's first girlfriend */
+    public final static String ROSALIND = "Rosalind";
     
     /**
      * Tests that I can differentiate between citizens
