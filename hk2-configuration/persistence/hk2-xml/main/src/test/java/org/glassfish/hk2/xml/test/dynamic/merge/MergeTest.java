@@ -41,6 +41,7 @@ package org.glassfish.hk2.xml.test.dynamic.merge;
 
 import java.beans.PropertyChangeEvent;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -94,6 +95,7 @@ public class MergeTest {
     
     public final static String TOPIC0_NAME = "Topic0";
     public final static String TOPIC1_NAME = "Topic1";
+    public final static String TOPIC2_NAME = "Topic2";
     public final static String QUEUE0_NAME = "Queue0";
     public final static String QUEUE1_NAME = "Queue1";
     public final static String QUEUE2_NAME = "Queue2";
@@ -140,7 +142,9 @@ public class MergeTest {
     public final static String JMS_SERVER_CAROL_INSTANCE = "domain.Carol";
     private final static String TOPIC0_INSTANCE = "domain.Carol.Topic0";
     private final static String TOPIC1_INSTANCE = "domain.Carol.Topic1";
+    private final static String TOPIC2_INSTANCE = "domain.Bob.Topic2";
     private final static String QUEUE0_INSTANCE = "domain.Carol.Queue0";
+    private final static String QUEUE0_BOB_INSTANCE = "domain.Bob.Queue0";
     private final static String QUEUE1_INSTANCE = "domain.Carol.Queue1";
     private final static String QUEUE2_INSTANCE = "domain.Carol.Queue2";
     public final static String SSL_MANAGER_INSTANCE_NAME = "domain.security-manager.ssl-manager";
@@ -229,14 +233,14 @@ public class MergeTest {
     }
     
     /**
-     * Adds a child to the top bean
+     * Adds a list child
      * 
      * @throws Exception
      */
     @SuppressWarnings("unchecked")
     @Test 
     // @org.junit.Ignore
-    public void testMergeModifyAddADirectChild() throws Exception {
+    public void testMergeModifyAddAListChild() throws Exception {
         ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
         XmlService xmlService = locator.getService(XmlService.class);
         Hub hub = locator.getService(Hub.class);
@@ -319,6 +323,153 @@ public class MergeTest {
         
         Assert.assertTrue(foundAdd);
         Assert.assertTrue(foundMod);
+    }
+    
+    /**
+     * Adds a array child
+     * 
+     * @throws Exception
+     */
+    @SuppressWarnings("unchecked")
+    @Test 
+    // @org.junit.Ignore
+    public void testMergeModifyAddAnArrayChild() throws Exception {
+        ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        UpdateListener listener = locator.getService(UpdateListener.class);
+        
+        URL url = getClass().getClassLoader().getResource(DOMAIN1_FILE);
+        
+        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshal(url.toURI(), DomainBean.class);
+        
+        verifyDomain1Xml(rootHandle, hub, locator);
+        
+        // All above just verifying the pre-state
+        XmlRootCopy<DomainBean> copy = rootHandle.getXmlRootCopy();
+        DomainBean domainCopy = copy.getChildRoot();
+        DomainBean domainOld = rootHandle.getRoot();
+        
+        JMSServerBean addedBean = xmlService.createBean(JMSServerBean.class);
+        addedBean.setName(BOB_NAME);
+        
+        TopicBean addedTopic = xmlService.createBean(TopicBean.class);
+        addedTopic.setName(TOPIC2_NAME);
+        addedBean.addTopic(addedTopic);
+        
+        QueueBean addedQueue = xmlService.createBean(QueueBean.class);
+        addedQueue.setName(QUEUE0_NAME);
+        addedBean.addQueue(addedQueue);
+        
+        domainCopy.addJMSServer(addedBean);
+        
+        // Ensure that the modification of the copy did NOT affect the parent!
+        verifyDomain1Xml(rootHandle, hub, locator);
+        
+        // Now do the merge
+        copy.merge();
+        
+        // Now make sure new values show up
+        JMSServerBean jmsServers[] = domainOld.getJMSServers();
+        Assert.assertEquals(3, jmsServers.length);
+        
+        boolean foundCarol = false;
+        boolean foundDave = false;
+        boolean foundBob = false;
+        for (JMSServerBean jmsServer : jmsServers) {
+            if (jmsServer.getName().equals(BOB_NAME)) {
+                if (foundBob) {
+                    Assert.fail("There were more than one bob in the list of machines: " + Arrays.toString(jmsServers));
+                }
+                foundBob = true;
+                
+                Assert.assertNotNull(jmsServer.lookupTopic(TOPIC2_NAME));
+                Assert.assertNotNull(jmsServer.lookupQueue(QUEUE0_NAME));
+            }
+            else if (jmsServer.getName().equals(CAROL_NAME)) {
+                if (foundCarol) {
+                    Assert.fail("There were more than one alice in the list of machines: " + Arrays.toString(jmsServers));
+                }
+                foundCarol = true;
+            }
+            else if (jmsServer.getName().equals(DAVE_NAME)) {
+                if (foundDave) {
+                    Assert.fail("There were more than one alice in the list of machines: " + Arrays.toString(jmsServers));
+                }
+                foundDave = true;
+            }
+            else {
+                Assert.fail("Unknown JMSServer: " + jmsServer);
+            }
+        }
+        
+        Assert.assertTrue("Added child was not found: " + Arrays.toString(jmsServers), foundBob);
+        Assert.assertTrue("Existing child was not found: " + Arrays.toString(jmsServers), foundCarol);
+        Assert.assertTrue("Existing child was not found: " + Arrays.toString(jmsServers), foundDave);
+        
+        {
+            // Check hub for bob
+            Instance machineBobInstance = hub.getCurrentDatabase().getInstance(JMS_SERVER_TYPE, BOB_INSTANCE);
+            Assert.assertNotNull(machineBobInstance);
+            
+            Map<String, Object> bobMap = (Map<String, Object>) machineBobInstance.getBean();
+            Assert.assertEquals(BOB_NAME, bobMap.get(Commons.NAME_TAG));
+            Assert.assertNull(bobMap.get(ADDRESS_TAG));
+        }
+        
+        {
+            // Check hub for topic2
+            Instance topic2Instance = hub.getCurrentDatabase().getInstance(TOPIC_TYPE, TOPIC2_INSTANCE);
+            Assert.assertNotNull(topic2Instance);
+            
+            Map<String, Object> topic2Map = (Map<String, Object>) topic2Instance.getBean();
+            Assert.assertEquals(TOPIC2_NAME, topic2Map.get(Commons.NAME_TAG));
+        }
+        
+        {
+            // Check hub for bob's Queue0
+            Instance queue0Instance = hub.getCurrentDatabase().getInstance(QUEUE_TYPE, QUEUE0_BOB_INSTANCE);
+            Assert.assertNotNull(queue0Instance);
+            
+            Map<String, Object> queue0Map = (Map<String, Object>) queue0Instance.getBean();
+            Assert.assertEquals(QUEUE0_NAME, queue0Map.get(Commons.NAME_TAG));
+        }
+        
+        List<Change> hubChanges = listener.getChanges();
+        Assert.assertEquals("Changes=" + hubChanges, 6, hubChanges.size());
+        
+        for (int lcv = 0; lcv < 6; lcv++) {
+            Change change = hubChanges.get(lcv);
+            
+            switch(lcv) {
+            case 0:
+                Assert.assertEquals(ChangeCategory.ADD_INSTANCE, change.getChangeCategory());
+                Assert.assertEquals(BOB_INSTANCE, change.getInstanceKey());
+                break;
+            case 1:
+                Assert.assertEquals(ChangeCategory.ADD_INSTANCE, change.getChangeCategory());
+                Assert.assertEquals(TOPIC2_INSTANCE, change.getInstanceKey());
+                break;
+            case 2:
+                Assert.assertEquals(ChangeCategory.MODIFY_INSTANCE, change.getChangeCategory());
+                Assert.assertEquals(BOB_INSTANCE, change.getInstanceKey());
+                break;
+            case 3:
+                Assert.assertEquals(ChangeCategory.ADD_INSTANCE, change.getChangeCategory());
+                Assert.assertEquals(QUEUE0_BOB_INSTANCE, change.getInstanceKey());
+                break;
+            case 4:
+                Assert.assertEquals(ChangeCategory.MODIFY_INSTANCE, change.getChangeCategory());
+                Assert.assertEquals(BOB_INSTANCE, change.getInstanceKey());
+                break;
+            case 5:
+                Assert.assertEquals(ChangeCategory.MODIFY_INSTANCE, change.getChangeCategory());
+                Assert.assertEquals(DOMAIN_INSTANCE, change.getInstanceKey());
+                break;
+            default:
+                Assert.fail("Too many changes: " + lcv + " change=" + change);
+            }
+        }
     }
     
     public static void verifyDomain1Xml(XmlRootHandle<DomainBean> rootHandle, Hub hub, ServiceLocator locator, boolean didDefault) {

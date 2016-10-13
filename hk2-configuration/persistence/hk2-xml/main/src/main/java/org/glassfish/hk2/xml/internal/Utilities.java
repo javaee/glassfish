@@ -1305,7 +1305,7 @@ public class Utilities {
                         localDifference.addRemove(xmlTag, rd);
                     }
                 }
-                else if (keyProperty != null) {
+                else if (sourceValueList != null && keyProperty != null) {
                     for (BaseHK2JAXBBean sourceBean : sourceValueList) {
                         String sourceKeyValue = sourceBean._getKeyValue();
                         
@@ -1330,7 +1330,7 @@ public class Utilities {
                         }
                     }
                 }
-                else {
+                else if (sourceValueList != null) {
                     // Both lists are there, this is an unkeyed list, we go *purely* on list size
                     int sourceListSize = sourceValueList.size();
                     int otherListSize = otherValueList.size();
@@ -1365,9 +1365,101 @@ public class Utilities {
                 
             }
             else if (ChildType.ARRAY.equals(pModel.getChildType())) {
-                // TODO: Implement arrays
+                String keyProperty = pModel.getChildModel().getKeyProperty();
+                
+                if (sourceValue == null && otherValue != null) {
+                    // Everything in otherValueList is an add
+                    int length = Array.getLength(otherValue);
+                    
+                    for (int lcv = 0; lcv < length; lcv++) {
+                        BaseHK2JAXBBean addMe = (BaseHK2JAXBBean) Array.get(otherValue, lcv);
+                        
+                        localDifference.addAdd(xmlTag, addMe);
+                    }
+                }
+                else if (sourceValue != null && otherValue == null) {
+                    // Everything in sourceList is to be removed
+                    int length = Array.getLength(sourceValue);
+                    
+                    for (int lcv = length - 1; lcv >= 0; lcv--) {
+                        BaseHK2JAXBBean removeMe = (BaseHK2JAXBBean) Array.get(otherValue, lcv);
+                        
+                        RemoveData rd;
+                        if (keyProperty != null) {
+                            rd = new RemoveData(xmlTag, removeMe._getKeyValue(), removeMe);
+                        }
+                        else {
+                            rd = new RemoveData(xmlTag, lcv, removeMe);
+                        }
+                        
+                        localDifference.addRemove(xmlTag, rd);
+                    }
+                }
+                else if (sourceValue != null && keyProperty != null) {
+                    int sourceLength = Array.getLength(sourceValue);
+                    
+                    for (int lcv = 0; lcv < sourceLength; lcv++) {
+                        BaseHK2JAXBBean sourceBean = (BaseHK2JAXBBean) Array.get(sourceValue, lcv);
+                        
+                        String sourceKeyValue = sourceBean._getKeyValue();
+                        
+                        Object otherBean = other._lookupChild(xmlTag, sourceKeyValue);
+                        if (otherBean == null) {
+                            // Removing this bean
+                            localDifference.addRemove(xmlTag, new RemoveData(xmlTag, sourceKeyValue, sourceBean));
+                        }
+                        else {
+                            // Need to know sub-differences
+                            getAllDifferences(sourceBean, (BaseHK2JAXBBean) otherBean, differences);
+                        }
+                    }
+                    
+                    int otherLength = Array.getLength(otherValue);
+                    
+                    for (int lcv = 0; lcv < otherLength; lcv++) {
+                        BaseHK2JAXBBean otherBean = (BaseHK2JAXBBean) Array.get(otherValue, lcv);
+                        
+                        String otherKeyValue = otherBean._getKeyValue();
+                        
+                        Object addMe = source._lookupChild(xmlTag, otherKeyValue);
+                        if (addMe == null) {
+                            // Adding this bean
+                            localDifference.addAdd(xmlTag, otherBean);
+                        }
+                    }
+                }
+                else if (sourceValue != null) {
+                    // Both lists are there, this is an unkeyed list, we go *purely* on list size
+                    int sourceListSize = Array.getLength(sourceValue);
+                    int otherListSize = Array.getLength(otherValue);
+                    
+                    int leastSize = (otherListSize > sourceListSize) ? sourceListSize : otherListSize ;
+                    
+                    for (int lcv = 0; lcv < leastSize; lcv++) {
+                        BaseHK2JAXBBean sourceValueListChild = (BaseHK2JAXBBean) Array.get(sourceValue, lcv);
+                        BaseHK2JAXBBean otherValueListChild = (BaseHK2JAXBBean) Array.get(otherValue, lcv);
+                        
+                        getAllDifferences(sourceValueListChild, otherValueListChild, differences);
+                    }
+                    
+                    if (otherListSize > sourceListSize) {
+                        // Adds
+                        for (int lcv = sourceListSize; lcv < otherListSize; lcv++) {
+                            BaseHK2JAXBBean otherValueListChild = (BaseHK2JAXBBean) Array.get(otherValue, lcv);
+                            
+                            localDifference.addAdd(xmlTag, otherValueListChild);                            
+                        }
+                    }
+                    else if (otherListSize < sourceListSize) {
+                        // Removes
+                        for (int lcv = sourceListSize - 1; lcv >= otherListSize; lcv--) {
+                            BaseHK2JAXBBean sourceValueListChild = (BaseHK2JAXBBean) Array.get(sourceValue, lcv);
+                            
+                            localDifference.addRemove(xmlTag, new RemoveData(xmlTag, lcv, sourceValueListChild));
+                        }
+                    }
+                }
             }
-            
         }
         
         if (localDifference.isDirty()) {
