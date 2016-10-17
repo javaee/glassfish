@@ -39,7 +39,9 @@
  */
 package org.glassfish.hk2.configuration.hub.internal;
 
+import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 
 import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
@@ -64,6 +66,21 @@ public class Utilities {
             stream.println(type.getName() + " -> " + Pretty.collection(instanceNames));
         }
         
+    }
+    
+    public static String dumpDatabaseAsString(BeanDatabase database) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream printer = new PrintStream(baos);
+        try {
+            dumpDatabase(database, printer);
+                
+            printer.close();
+                
+            return new String(baos.toByteArray(), StandardCharsets.UTF_8);
+        }
+        finally {
+            printer.close();
+        }
     }
 
 }

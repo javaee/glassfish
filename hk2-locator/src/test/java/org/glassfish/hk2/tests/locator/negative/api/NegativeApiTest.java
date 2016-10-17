@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,8 +43,6 @@ package org.glassfish.hk2.tests.locator.negative.api;
 import java.lang.reflect.Type;
 import java.util.Set;
 
-import junit.framework.Assert;
-
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
@@ -61,6 +59,7 @@ import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -241,6 +240,7 @@ public class NegativeApiTest {
     /**
      * You cannot call getServiceHandle with ActiveDescriptor and Injectee null
      */
+    @SuppressWarnings("deprecation")
     @Test(expected=IllegalArgumentException.class)
     public void testServiceWithRoot() {
         locator.getService((ActiveDescriptor<?>) null, (ServiceHandle<?>) null);

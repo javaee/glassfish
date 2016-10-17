@@ -87,5 +87,12 @@ public interface BeanDatabase {
      * @param output - The non-null outut stream to write the database to
      */
     public void dumpDatabase(PrintStream output);
+    
+    /**
+     * Dumps the type and instance names to a String for debugging
+     * 
+     * @return A string with all type and instance names
+     */
+    public String dumpDatabaseAsString();
 
 }

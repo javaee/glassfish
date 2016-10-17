@@ -255,6 +255,14 @@ public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase {
     }
     
     /* (non-Javadoc)
+     * @see org.glassfish.hk2.configuration.hub.api.BeanDatabase#dumpDatabaseAsString()
+     */
+    @Override
+    public String dumpDatabaseAsString() {
+        return Utilities.dumpDatabaseAsString(this);
+    }
+    
+    /* (non-Javadoc)
      * @see org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase#getTwoPhaseResource()
      */
     @Override
@@ -278,10 +286,7 @@ public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase {
         this.commitMessage = commitMessage;
     }
 
-    @Override
-    public String toString() {
-        return "WriteableBeanDatabaseImpl(" + baseRevision + "," + System.identityHashCode(this) + ")";
-    }
+    
 
     private class TwoPhaseResourceImpl implements TwoPhaseResource {
         private LinkedList<BeanDatabaseUpdateListener> completedListeners;
@@ -354,4 +359,11 @@ public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase {
         }
         
     }
+    
+    @Override
+    public String toString() {
+        return "WriteableBeanDatabaseImpl(" + baseRevision + "," + System.identityHashCode(this) + ")";
+    }
+
+    
 }

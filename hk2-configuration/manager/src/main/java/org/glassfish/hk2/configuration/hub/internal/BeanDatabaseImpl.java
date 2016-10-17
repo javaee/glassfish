@@ -78,7 +78,10 @@
  */
 package org.glassfish.hk2.configuration.hub.internal;
 
+import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -157,5 +160,18 @@ public class BeanDatabaseImpl implements BeanDatabase {
     @Override
     public void dumpDatabase(PrintStream output) {
         Utilities.dumpDatabase(this, output);
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.configuration.hub.api.BeanDatabase#dumpDatabaseAsString()
+     */
+    @Override
+    public String dumpDatabaseAsString() {
+        return Utilities.dumpDatabaseAsString(this);
+    }
+    
+    @Override
+    public String toString() {
+        return "BeanDatabaseImpl(" + revision + "," + System.identityHashCode(this) + ")";
     }
 }

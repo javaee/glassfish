@@ -1286,5 +1286,23 @@ public class HubTest extends HubTestBase {
             removeType(TYPE_TWELVE);
         }
     }
+    
+    /**
+     * Tests dumpting the database to a String
+     */
+    @Test
+    public void testDumpDatabase() {
+        GenericJavaBean addedBean = new GenericJavaBean(ALICE, OTHER_PROPERTY_VALUE1);
+        addTypeAndInstance(TYPE_TWO, ALICE, addedBean);
+        
+        try {
+            String dbAsString = hub.getCurrentDatabase().dumpDatabaseAsString();
+            Assert.assertTrue(dbAsString.contains(ALICE));
+            Assert.assertTrue(dbAsString.contains(TYPE_TWO));
+        }
+        finally {
+            removeType(TYPE_TWO);
+        }
+    }
 
 }
