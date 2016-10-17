@@ -1288,7 +1288,7 @@ public class HubTest extends HubTestBase {
     }
     
     /**
-     * Tests dumpting the database to a String
+     * Tests dumping the database to a String
      */
     @Test
     public void testDumpDatabase() {
