@@ -204,7 +204,7 @@ public class Utilities {
         
         if (wbd != null) {
             WriteableType wt = wbd.findOrAddWriteableType(bean._getXmlPath());
-            wt.addInstance(bean._getInstanceName(), bean._getBeanLikeMap());
+            wt.addInstance(bean._getInstanceName(), bean._getBeanLikeMap(), bean);
         }
         
         return selfDescriptor;

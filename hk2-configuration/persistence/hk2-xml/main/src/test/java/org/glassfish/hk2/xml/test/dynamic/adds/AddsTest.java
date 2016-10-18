@@ -121,13 +121,19 @@ public class AddsTest {
         if (inRegistry) {
             Employee daveService = locator.getService(Employee.class, DAVE);
             Assert.assertNotNull(daveService);
+            Assert.assertEquals(daveDirect, daveService);
         }
         else {
             Assert.assertNull(locator.getService(Employee.class, DAVE));
         }
         
         if (inHub) {
-            Assert.assertNotNull(hub.getCurrentDatabase().getInstance(EMPLOYEE_TYPE, DAVE_INSTANCE));
+            Instance daveInstance = hub.getCurrentDatabase().getInstance(EMPLOYEE_TYPE, DAVE_INSTANCE);
+            Assert.assertNotNull(daveInstance);
+            
+            Object daveInstanceMetadata = daveInstance.getMetadata();
+            Assert.assertNotNull(daveInstanceMetadata);
+            Assert.assertEquals(daveDirect, daveInstanceMetadata);
         }
         else {
             Assert.assertNull(hub.getCurrentDatabase().getInstance(EMPLOYEE_TYPE, DAVE_INSTANCE));

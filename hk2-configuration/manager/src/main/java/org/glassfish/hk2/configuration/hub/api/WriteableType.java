@@ -51,8 +51,9 @@ public interface WriteableType extends Type {
      * 
      * @param key A non-null name for this bean
      * @param bean The non-null bean to add
+     * @return The instance that was created
      */
-    public void addInstance(String key, Object bean);
+    public Instance addInstance(String key, Object bean);
     
     /**
      * Adds the instance with the given key to the type
@@ -60,8 +61,9 @@ public interface WriteableType extends Type {
      * @param key A non-null name for this bean
      * @param bean The non-null bean to add
      * @param metadata Possibly null metadata to be associated with this bean
+     * @return The instance that was created
      */
-    public void addInstance(String key, Object bean, Object metadata);
+    public Instance addInstance(String key, Object bean, Object metadata);
     
     /**
      * Removes the instance with the given key from the type

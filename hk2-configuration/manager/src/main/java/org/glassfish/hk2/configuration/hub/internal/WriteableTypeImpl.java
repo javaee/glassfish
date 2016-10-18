@@ -105,15 +105,15 @@ public class WriteableTypeImpl implements WriteableType {
      * @see org.glassfish.hk2.configuration.hub.api.WriteableType#addInstance(java.lang.Object, java.lang.Object)
      */
     @Override
-    public synchronized void addInstance(String key, Object bean) {
-        addInstance(key, bean, null);
+    public synchronized Instance addInstance(String key, Object bean) {
+        return addInstance(key, bean, null);
     }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.configuration.hub.api.WriteableType#addInstance(java.lang.Object, java.lang.Object)
      */
     @Override
-    public synchronized void addInstance(String key, Object bean, Object metadata) {
+    public synchronized Instance addInstance(String key, Object bean, Object metadata) {
         if (key == null || bean == null) throw new IllegalArgumentException();
         
         InstanceImpl ii = new InstanceImpl(bean, metadata);
@@ -126,6 +126,8 @@ public class WriteableTypeImpl implements WriteableType {
                                    null));
         
         beanMap.put(key, ii);
+        
+        return ii;
     }
 
     /* (non-Javadoc)

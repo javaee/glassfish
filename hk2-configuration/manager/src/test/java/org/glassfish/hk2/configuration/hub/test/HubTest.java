@@ -923,7 +923,8 @@ public class HubTest extends HubTestBase {
             WriteableType wt = wbd.findOrAddWriteableType(TYPE_SIX);
             
             Object metadata = new Object();
-            wt.addInstance(ALICE, new GenericJavaBean(ALICE, OTHER_PROPERTY_VALUE1), metadata);
+            Instance added = wt.addInstance(ALICE, new GenericJavaBean(ALICE, OTHER_PROPERTY_VALUE1), metadata);
+            Assert.assertNotNull(added);
             
             wbd.commit();
             

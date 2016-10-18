@@ -44,9 +44,11 @@ import javax.inject.Inject;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
 import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.ManagerUtilities;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.WriteableType;
+import org.junit.Assert;
 import org.junit.Before;
 import org.jvnet.hk2.testing.junit.HK2Runner;
 
@@ -101,7 +103,8 @@ public class HubTestBase extends HK2Runner {
         
         WriteableType wt = wbd.findOrAddWriteableType(typeName);
         
-        wt.addInstance(instanceKey, instanceValue);
+        Instance added = wt.addInstance(instanceKey, instanceValue);
+        Assert.assertNotNull(added);
         
         if (asResource) {
             DynamicConfiguration dc = dcs.createDynamicConfiguration();

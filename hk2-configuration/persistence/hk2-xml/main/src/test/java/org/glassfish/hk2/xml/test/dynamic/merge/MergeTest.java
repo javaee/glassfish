@@ -665,8 +665,10 @@ public class MergeTest {
         Assert.assertNotNull(machines);
         Assert.assertEquals(1, machines.size());
         
+        MachineBean alice = null;
         ServerBean myReference = null;
         for (MachineBean machine : machines) {
+            alice = machine;
             Assert.assertEquals(aliceRef, machine);
             
             Assert.assertEquals(ALICE_NAME, machine.getName());
@@ -781,8 +783,10 @@ public class MergeTest {
         
         String httpsInstanceName = ((XmlHk2ConfigurationBean) httpsFactories[0])._getInstanceName();
         
-        // Below is the verification for the Hub versions of the beans
         
+        if (hub == null || locator == null) return;
+        
+        // Below is the verification for the Hub versions of the beans
         {
             Instance domainInstance = hub.getCurrentDatabase().getInstance(DOMAIN_TYPE, DOMAIN_INSTANCE);
             Assert.assertNotNull(domainInstance);
@@ -790,6 +794,10 @@ public class MergeTest {
             Map<String, Object> domainMap = (Map<String, Object>) domainInstance.getBean();
             Assert.assertNull(domainMap.get(SUBNET_TAG));
             Assert.assertNull(domainMap.get(TAXONOMY_TAG));
+            
+            Object domainInstanceMetadata = domainInstance.getMetadata();
+            Assert.assertNotNull(domainInstanceMetadata);
+            Assert.assertEquals(root, domainInstanceMetadata);
         }
         
         {
@@ -799,6 +807,10 @@ public class MergeTest {
             Map<String, Object> aliceMap = (Map<String, Object>) machineAliceInstance.getBean();
             Assert.assertEquals(ALICE_NAME, aliceMap.get(Commons.NAME_TAG));
             Assert.assertEquals(ALICE_ADDRESS, aliceMap.get(ADDRESS_TAG));
+            
+            Object machineAliceInstanceMetadata = machineAliceInstance.getMetadata();
+            Assert.assertNotNull(machineAliceInstanceMetadata);
+            Assert.assertEquals(alice, machineAliceInstanceMetadata);
         }
         
         {
