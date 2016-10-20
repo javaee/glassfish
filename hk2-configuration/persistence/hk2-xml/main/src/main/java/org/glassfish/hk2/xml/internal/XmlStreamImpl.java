@@ -441,7 +441,15 @@ public class XmlStreamImpl {
             Object value = beanLikeMap.get(attributeTag);
             if (value == null) continue;
             
-            String valueAsString = value.toString();
+            String valueAsString;
+            if (!childDataModel.isReference()) {
+                valueAsString = value.toString();
+            }
+            else {
+                XmlHk2ConfigurationBean reference = (XmlHk2ConfigurationBean) value;
+                valueAsString = reference._getKeyValue();
+            }
+            
             if (GeneralUtilities.safeEquals(valueAsString, childDataModel.getDefaultAsString())) continue;
             
             indenter.writeAttribute(attributeTag, valueAsString);

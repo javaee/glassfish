@@ -44,12 +44,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.beans.DomainBean;
+import org.glassfish.hk2.xml.test.beans2.RefereeBean;
+import org.glassfish.hk2.xml.test.beans2.ReferencesBean;
 import org.glassfish.hk2.xml.test.dynamic.merge.MergeTest;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
 import org.junit.After;
@@ -64,8 +68,11 @@ import org.junit.Test;
 public class MarshallTest {
     private final static File OUTPUT_FILE = new File("output.xml");
     private final static String LOOK_FOR_ME = "0.255.255.255";
+    public final static String REFEREES1_FILE = "Referees1.xml";
     
     private final static String REF1 = "<machine>Alice</machine>";
+    private final static String REF2 = "<subnetwork>" + LOOK_FOR_ME + "</subnetwork>";
+    private final static String REF3 = "<references first-referee=\"Laird Hayes\" last-referee=\"Boris Cheek\">";
     
     @Before
     public void before() {
@@ -109,23 +116,25 @@ public class MarshallTest {
             fos.close();
         }
         
-        checkFile();
+        checkFile(REF1, REF2);
     }
     
-    private void checkFile() throws Exception {
-        boolean found = false;
-        boolean foundRef = false;
+    private void checkFile(String... strings) throws Exception {
+        Map<String, Boolean> foundAll = new HashMap<String, Boolean>();
+        for (String string : strings) {
+            foundAll.put(string, false);
+        }
+        
         FileReader reader = new FileReader(OUTPUT_FILE);
         BufferedReader buffered = new BufferedReader(reader);
         
         try {
             String line;
             while ((line = buffered.readLine()) != null) {
-                if (line.contains("<subnetwork>" + LOOK_FOR_ME + "</subnetwork>")) {
-                    found = true;
-                }
-                if (line.contains(REF1)) {
-                    foundRef = true;
+                for (String string : foundAll.keySet()) {
+                    if (line.contains(string)) {
+                        foundAll.put(string, true);
+                    }
                 }
             }
         }
@@ -134,9 +143,12 @@ public class MarshallTest {
             reader.close();
         }
         
-        Assert.assertTrue(found);
-        Assert.assertTrue(foundRef);
-        
+        for (Map.Entry<String, Boolean> entry : foundAll.entrySet()) {
+            String lookingFor = entry.getKey();
+            boolean found = entry.getValue();
+            
+            Assert.assertTrue("Did not find the string " + lookingFor, found);
+        }
     }
     
     /**
@@ -166,7 +178,44 @@ public class MarshallTest {
             fos.close();
         }
         
-        checkFile();
+        checkFile(REF1, REF2);
+    }
+    
+    /**
+     * Attribute references cannot be done with JAXB.  So this
+     * file is kept separately for this purpose
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testMarshalAttributeReferences() throws Exception {
+        ServiceLocator locator = Utilities.createDomLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource(REFEREES1_FILE);
+        
+        XmlRootHandle<ReferencesBean> rootHandle = xmlService.unmarshal(url.toURI(), ReferencesBean.class, false, false);
+        
+        ReferencesBean references = rootHandle.getRoot();
+        
+        RefereeBean hayes = references.getReferees().get(0);
+        RefereeBean cheek = references.getReferees().get(1);
+        
+        Assert.assertNotNull(hayes);
+        Assert.assertNotNull(cheek);
+        
+        Assert.assertEquals(hayes, references.getFirstReferee());
+        Assert.assertEquals(cheek, references.getLastReferee());
+        
+        FileOutputStream fos = new FileOutputStream(OUTPUT_FILE);
+        try {
+          rootHandle.marshal(fos);
+        }
+        finally {
+            fos.close();
+        }
+        
+        checkFile(REF3);
     }
 
 }

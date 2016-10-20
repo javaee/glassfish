@@ -37,13 +37,14 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test.beans;
+package org.glassfish.hk2.xml.test.beans2;
 
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.jvnet.hk2.annotations.Contract;
 
@@ -51,27 +52,16 @@ import org.jvnet.hk2.annotations.Contract;
  * @author jwells
  *
  */
-@Contract
-public interface JMSServerBean extends NamedBean {
-    @XmlIDREF @XmlElement
-    public ServerBean getServer();
+@XmlRootElement(name="references") @Contract
+public interface ReferencesBean {
+    @XmlAttribute(name="first-referee") @XmlIDREF
+    public RefereeBean getFirstReferee();
     
-    @XmlElement(name="topic")
-    public List<TopicBean> getTopics();
-    public void setTopics(List<TopicBean> topics);
-    public void addTopic(TopicBean topic);
-    public void removeTopic(String topic);
-    public TopicBean lookupTopic(String name);
+    @XmlElement(name="referee")
+    public List<RefereeBean> getReferees();
     
-    @XmlElement(name="queue")
-    public QueueBean[] getQueues();
-    public void setQueues(QueueBean[] queues);
-    public void addQueue(QueueBean queue);
-    public void removeQueue(String queue);
-    public QueueBean lookupQueue(String queue);
+    @XmlAttribute(name="last-referee") @XmlIDREF
+    public RefereeBean getLastReferee();
     
-    @XmlElement(name="compression-algorithm")
-    public String getCompressionAlgorithm();
-    public void setCompressionAlgorithm(String algorithm);
 
 }

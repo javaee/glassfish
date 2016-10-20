@@ -37,41 +37,18 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test.beans;
-
-import java.util.List;
+package org.glassfish.hk2.xml.test.beans2;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlIDREF;
-
-import org.jvnet.hk2.annotations.Contract;
+import javax.xml.bind.annotation.XmlID;
 
 /**
  * @author jwells
  *
  */
-@Contract
-public interface JMSServerBean extends NamedBean {
-    @XmlIDREF @XmlElement
-    public ServerBean getServer();
-    
-    @XmlElement(name="topic")
-    public List<TopicBean> getTopics();
-    public void setTopics(List<TopicBean> topics);
-    public void addTopic(TopicBean topic);
-    public void removeTopic(String topic);
-    public TopicBean lookupTopic(String name);
-    
-    @XmlElement(name="queue")
-    public QueueBean[] getQueues();
-    public void setQueues(QueueBean[] queues);
-    public void addQueue(QueueBean queue);
-    public void removeQueue(String queue);
-    public QueueBean lookupQueue(String queue);
-    
-    @XmlElement(name="compression-algorithm")
-    public String getCompressionAlgorithm();
-    public void setCompressionAlgorithm(String algorithm);
+public interface RefereeBean {
+    @XmlID @XmlAttribute
+    public String getName();
+    public void setName(String name);
 
 }
