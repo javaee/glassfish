@@ -37,59 +37,18 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.utilities;
+package org.jvnet.hk2.metadata.tests.faux.stub;
 
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.SOURCE;
+import java.sql.Connection;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import org.glassfish.hk2.utilities.Stub;
+import org.jvnet.hk2.annotations.ContractsProvided;
 
 /**
- * When this annotation is placed on an abstract class the methods of
- * the class that are abstract will be generated into a subclass by
- * the hk2-metadata-generator along with an empty
- * {@link org.jvnet.hk2.annotations.Service} annotation
- * <p>
- * Any {@link javax.inject.Named} or {@link org.jvnet.hk2.annotations.ContractsProvided}
- * annotation on the class marked with this annotation will also be copied to the
- * implementation.  No other qualifier or annotation will be copied to the concrete
- * implementation.  However, the {@link org.glassfish.hk2.api.Rank} annotation
- * on the stub class will be honored.
- * <p>
- * The methods generated into the subclass can either return null and fixed
- * values (for scalars) or can throw exceptions, depending on the
- * {@link Stub.Type} value of this annotation
- * <p>
- * Using this annotation is useful for testing, though it will work both with
- * test code and non-test code
- * 
  * @author jwells
+ *
  */
-@Documented
-@Retention(SOURCE)
-@Target( { TYPE} )
-public @interface Stub {
-    /**
-     * This value determines what the generated methods do
-     * <p>
-     * If set to {@link Type#VALUES} then the methods will return
-     * nulls or fixed values for scalars.
-     * <p>
-     * If set to {@link Type#EXCEPTIONS} then the methods will
-     * throw UnsupportedOperationException
-     * 
-     * @return The behavior of the generated methods
-     */
-    public Type value() default Type.VALUES;
-    
-    public enum Type {
-        /** The generated methods of this stub will return null and fixed values */
-        VALUES,
-        
-        /** The generated methods of this stub will throw an UnsupportedOperationException */
-        EXCEPTIONS
-    }
+@Stub @ContractsProvided({ConnectionStub.class, Connection.class})
+public abstract class ConnectionStub implements Connection {
 
 }

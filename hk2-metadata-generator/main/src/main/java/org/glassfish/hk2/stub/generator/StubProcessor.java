@@ -42,6 +42,7 @@ package org.glassfish.hk2.stub.generator;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -65,7 +66,6 @@ import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import javax.lang.model.type.TypeVariable;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.JavaFileObject;
@@ -74,6 +74,7 @@ import javax.tools.Diagnostic.Kind;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.metadata.generator.ServiceUtilities;
 import org.glassfish.hk2.utilities.Stub;
+import org.jvnet.hk2.annotations.ContractsProvided;
 
 /**
  * @author jwells
@@ -83,6 +84,7 @@ import org.glassfish.hk2.utilities.Stub;
 public class StubProcessor extends AbstractProcessor {
     private final static String NAMED_ANNO = Named.class.getName();
     private final static String EXCEPTIONS = "EXCEPTIONS";
+    private final static String PROVIDED_ANNO = ContractsProvided.class.getName();
     
     /**
      * Gets rid of warnings and this code should work with all source versions
@@ -133,6 +135,7 @@ public class StubProcessor extends AbstractProcessor {
         return true;
     }
     
+    @SuppressWarnings("unchecked")
     private void writeStub(TypeElement clazz) throws IOException {
         Elements elementUtils = processingEnv.getElementUtils();
         
@@ -151,6 +154,8 @@ public class StubProcessor extends AbstractProcessor {
         
         boolean exceptions = false;
         String name = null;
+        List<TypeElement> contractsProvided = null;
+        
         List<? extends AnnotationMirror> annotationMirrors = elementUtils.getAllAnnotationMirrors(clazz);
         for (AnnotationMirror annotationMirror : annotationMirrors) {
             DeclaredType annoType = annotationMirror.getAnnotationType();
@@ -187,12 +192,34 @@ public class StubProcessor extends AbstractProcessor {
                     exceptions = EXCEPTIONS.equals(stubType);
                 }
             }
+            else if (annoQualifiedName.equals(PROVIDED_ANNO)) {
+                Map<? extends ExecutableElement, ? extends AnnotationValue> values = annotationMirror.getElementValues();
+                AnnotationValue value = null;
+                for (AnnotationValue v : values.values()) {
+                    value = v;
+                    break;
+                }
+                
+                if (value != null) {
+                    List<? extends AnnotationValue> contracts = (List<? extends AnnotationValue>) value.getValue();
+                    
+                    contractsProvided = new LinkedList<TypeElement>();
+                    for (AnnotationValue contract : contracts) {
+                        DeclaredType dt = (DeclaredType) contract.getValue();
+                        TypeElement te = (TypeElement) dt.asElement();
+                        contractsProvided.add(te);
+                    }
+                }
+            }
         }
         
-        writeJavaFile(clazz, abstractMethods, name, exceptions);
+        writeJavaFile(clazz, abstractMethods, name, exceptions, contractsProvided);
     }
     
-    private void writeJavaFile(TypeElement clazz, Set<ExecutableElement> abstractMethods, String name, boolean exceptions) throws IOException {
+    private void writeJavaFile(TypeElement clazz, Set<ExecutableElement> abstractMethods,
+            String name,
+            boolean exceptions,
+            List<TypeElement> contractsProvided) throws IOException {
         Elements elementUtils = processingEnv.getElementUtils();
         
         PackageElement packageElement = elementUtils.getPackageOf(clazz);
@@ -215,11 +242,30 @@ public class StubProcessor extends AbstractProcessor {
                 writer.append("import javax.inject.Named;\n");
             }
             writer.append("import org.jvnet.hk2.annotations.Service;\n");
+            if (contractsProvided != null) {
+                writer.append("import org.jvnet.hk2.annotations.ContractsProvided;\n");
+            }
             writer.append("import " + clazzQualifiedName + ";\n\n");
             
             writer.append("@Service @Generated(\"org.glassfish.hk2.stub.generator.StubProcessor\")\n");
             if (name != null) {
                 writer.append("@Named(\"" + name + "\")\n");
+            }
+            if (contractsProvided != null) {
+                writer.append("@ContractsProvided({\n");
+                boolean first = true;
+                for (TypeElement contract : contractsProvided) {
+                    if (first) {
+                        first = false;
+                    }
+                    else {
+                        writer.append(",\n");
+                    }
+                    
+                    String cName = ServiceUtilities.nameToString(contract.getQualifiedName()) + ".class";
+                    writer.append("    " + cName);
+                }
+                writer.append("})\n");
             }
             writer.append("public class " + stubClazzName + " extends " + clazzSimpleName + " {\n");
             

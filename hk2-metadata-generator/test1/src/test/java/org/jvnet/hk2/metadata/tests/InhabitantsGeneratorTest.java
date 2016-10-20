@@ -60,15 +60,8 @@ import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.PerLookup;
-import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.utilities.DescriptorImpl;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Test;
-import org.jvnet.hk2.metadata.tests.faux.stub.AbstractService;
-import org.jvnet.hk2.metadata.tests.faux.stub.FailingLargeInterfaceStub;
-import org.jvnet.hk2.metadata.tests.faux.stub.InterfaceWithTypes;
-import org.jvnet.hk2.metadata.tests.faux.stub.NamedBean;
-import org.jvnet.hk2.metadata.tests.stub.LargeInterface;
 
 /**
  * Tests for the inhabitant generator
@@ -599,6 +592,17 @@ public class InhabitantsGeneratorTest {
         
             EXPECTED_DESCRIPTORS.put(di, 0);
         }
+        
+        {
+            // This is one of the generated stubs
+            DescriptorImpl di = new DescriptorImpl();
+            di.setImplementation("org.jvnet.hk2.metadata.tests.faux.stub.ConnectionStub_hk2Stub");
+            di.addAdvertisedContract("org.jvnet.hk2.metadata.tests.faux.stub.ConnectionStub");
+            di.addAdvertisedContract("java.sql.Connection");
+            di.setScope(Singleton.class.getName());
+        
+            EXPECTED_DESCRIPTORS.put(di, 0);
+        }
     }
     
     private void getAllDescriptorsFromInputStream(InputStream is, Set<DescriptorImpl> retVal) throws IOException {
@@ -665,225 +669,5 @@ public class InhabitantsGeneratorTest {
         }
         
         checkDescriptors(generatedImpls);
-    }
-    
-    /**
-     * Makes sure that the stubbed interface is used not the one from the main jar
-     */
-    @Test
-    public void testGetsStubImplementationRatherThanOneFromMain() {
-        ServiceLocator locator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
-        
-        LargeInterface li = locator.getService(LargeInterface.class);
-        
-        Assert.assertEquals(0, li.methodInt(27));
-    }
-    
-    /**
-     * Makes sure that the stubbed interface is used not the one from the main jar
-     */
-    @Test
-    public void testInnerClassCanBeStubbed() {
-        ServiceLocator locator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
-        
-        AbstractService li = locator.getService(AbstractService.class);
-        
-        Assert.assertNotNull(li.getRandomBeanStub());
-    }
-    
-    /**
-     * Ensures that {@link javax.inject.Named} works in a stub
-     */
-    @Test
-    public void testNamedWorks() {
-        ServiceLocator locator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
-        
-        NamedBean rawNamedService = locator.getService(NamedBean.class, "NamedBeanStub");
-        Assert.assertEquals("NamedBeanStub", rawNamedService.getName());
-        
-        NamedBean aliceService = locator.getService(NamedBean.class, ALICE);
-        Assert.assertEquals(ALICE, aliceService.getName());
-        
-        Assert.assertNull(rawNamedService.getAddress());
-        Assert.assertNull(aliceService.getAddress());
-    }
-    
-    /**
-     * Ensures that the exception version of the stub works properly
-     */
-    @Test
-    public void testExceptionTypeStub() {
-        ServiceLocator locator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
-        
-        FailingLargeInterfaceStub stub = locator.getService(FailingLargeInterfaceStub.class);
-        
-        Assert.assertTrue(stub.notOverridden(false));
-        
-        try {
-            stub.methodBoolean(true);
-            Assert.fail("Should have thrown exception");
-        }
-        catch (UnsupportedOperationException uoe) {
-            // ok
-        }
-        
-        try {
-            stub.methodVoids();
-            Assert.fail("Should have thrown exception");
-        }
-        catch (UnsupportedOperationException uoe) {
-            // ok
-        }
-        
-        try {
-            stub.methodByte((byte) 0);
-            Assert.fail("Should have thrown exception");
-        }
-        catch (UnsupportedOperationException uoe) {
-            // ok
-        }
-            
-        try {
-            stub.methodChar('a');
-            Assert.fail("Should have thrown exception");
-        }
-        catch (UnsupportedOperationException uoe) {
-            // ok
-        }
-        
-        try {
-            stub.methodDouble((double) 0.0);
-            Assert.fail("Should have thrown exception");
-        }
-        catch (UnsupportedOperationException uoe) {
-            // ok
-        }
-        
-        try {
-            stub.methodFloat((float) 0.0);
-            Assert.fail("Should have thrown exception");
-        }
-        catch (UnsupportedOperationException uoe) {
-            // ok
-        }
-        
-        try {
-          stub.methodInt(0);
-          Assert.fail("Should have thrown exception");
-        }
-        catch (UnsupportedOperationException uoe) {
-            // ok
-        }
-        
-        try {
-            stub.methodInt(0);
-            Assert.fail("Should have thrown exception");
-        }
-        catch (UnsupportedOperationException uoe) {
-            // ok
-        }
-        
-        
-        try {
-            stub.methodShort((short) 0);
-            Assert.fail("Should have thrown exception");
-        }
-        catch (UnsupportedOperationException uoe) {
-            // ok
-        }
-        
-        try {
-            stub.methodDeclared(null, null, null);
-            Assert.fail("Should have thrown exception");
-        }
-        catch (UnsupportedOperationException uoe) {
-            // ok
-        }
-        
-        try {
-            stub.methodBooleanArray(null);
-            Assert.fail("Should have thrown exception");
-        }
-        catch (UnsupportedOperationException uoe) {
-            // ok
-        }
-        
-        try {
-            stub.methodByteArray(null);
-            Assert.fail("Should have thrown exception");
-        }
-        catch (UnsupportedOperationException uoe) {
-            // ok
-        }
-        
-        try {
-            stub.methodCharArray(null);
-            Assert.fail("Should have thrown exception");
-        }
-        catch (UnsupportedOperationException uoe) {
-            // ok
-        }
-        
-        try {
-            stub.methodDoubleArray(null);
-            Assert.fail("Should have thrown exception");
-        }
-        catch (UnsupportedOperationException uoe) {
-            // ok
-        }
-        
-        try {
-            stub.methodFloatArray(null);
-            Assert.fail("Should have thrown exception");
-        }
-        catch (UnsupportedOperationException uoe) {
-            // ok
-        }
-        
-        try {
-            stub.methodIntArray((int[]) null);
-            Assert.fail("Should have thrown exception");
-        }
-        catch (UnsupportedOperationException uoe) {
-            // ok
-        }
-        
-        try {
-            stub.methodIntArray((long[][][][][]) null);
-            Assert.fail("Should have thrown exception");
-        }
-        catch (UnsupportedOperationException uoe) {
-            // ok
-        }
-        
-        try {
-            stub.methodShortArray(null);
-            Assert.fail("Should have thrown exception");
-        }
-        catch (UnsupportedOperationException uoe) {
-            // ok
-        }
-        
-        try {
-            stub.methodDeclaredArray(null, null);
-            Assert.fail("Should have thrown exception");
-        }
-        catch (UnsupportedOperationException uoe) {
-            // ok
-        }
-    }
-    
-    /**
-     * Ensures that the exception version of the stub works properly
-     */
-    @Test
-    public void testStubsWithTypeVariables() {
-        ServiceLocator locator = ServiceLocatorUtilities.createAndPopulateServiceLocator();
-        
-        InterfaceWithTypes<?,?> stub = locator.getService(InterfaceWithTypes.class);
-        
-        
-        Assert.assertNull(stub.get(null));
-        Assert.assertNull(stub.reverseGet(null));
     }
 }
