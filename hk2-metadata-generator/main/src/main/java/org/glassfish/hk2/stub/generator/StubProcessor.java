@@ -252,18 +252,18 @@ public class StubProcessor extends AbstractProcessor {
                 writer.append("@Named(\"" + name + "\")\n");
             }
             if (contractsProvided != null) {
-                writer.append("@ContractsProvided({\n");
+                writer.append("@ContractsProvided({");
                 boolean first = true;
                 for (TypeElement contract : contractsProvided) {
                     if (first) {
                         first = false;
                     }
                     else {
-                        writer.append(",\n");
+                        writer.append(",\n    ");
                     }
                     
                     String cName = ServiceUtilities.nameToString(contract.getQualifiedName()) + ".class";
-                    writer.append("    " + cName);
+                    writer.append(cName);
                 }
                 writer.append("})\n");
             }
