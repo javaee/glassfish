@@ -45,7 +45,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.AnnotationMirror;
@@ -186,20 +188,20 @@ public class TypeElementAltClassImpl implements AltClass {
         
         List<? extends Element> innerElements = processingEnv.getElementUtils().getAllMembers(clazz);
         
+        TreeMap<String, List<Element>> reorderByEnclosingClass = new TreeMap<String, List<Element>>();
         
-        LinkedList<List<Element>> reorderByEnclosingClass = new LinkedList<List<Element>>();
-        Element currentEnclosingElement = null;
-        List<Element> addedList = null;
-        
+        String clazzName = getName();
         for (Element innerElementElement : innerElements) {
             if (isMethodToGenerate(innerElementElement)) {
-                Element enclosingElement = innerElementElement.getEnclosingElement();
+                TypeElement enclosingElement = (TypeElement) innerElementElement.getEnclosingElement();
                 
-                if (currentEnclosingElement == null || !enclosingElement.equals(currentEnclosingElement)) {
-                    currentEnclosingElement = enclosingElement;
-                    
+                String enclosingName = Utilities.convertNameToString(processingEnv.getElementUtils().getBinaryName(enclosingElement));
+                
+                List<Element> addedList = reorderByEnclosingClass.get(enclosingName);
+                if (addedList == null) {
                     addedList = new LinkedList<Element>();
-                    reorderByEnclosingClass.addFirst(addedList);
+                    
+                    reorderByEnclosingClass.put(enclosingName, addedList);
                 }
                 
                 addedList.add(innerElementElement);
@@ -207,15 +209,21 @@ public class TypeElementAltClassImpl implements AltClass {
         }
         
         List<Element> innerElementsReordered = new ArrayList<Element>(innerElements.size());
-        for (List<Element> listByEnclosing : reorderByEnclosingClass) {
-            innerElementsReordered.addAll(listByEnclosing);
+        for (Map.Entry<String, List<Element>> listByEnclosing : reorderByEnclosingClass.entrySet()) {
+            String enclosingClass = listByEnclosing.getKey();
+            if (clazzName.equals(enclosingClass)) continue;
+            
+            innerElementsReordered.addAll(listByEnclosing.getValue());
+        }
+        
+        List<Element> topClass = reorderByEnclosingClass.get(clazzName);
+        if (topClass != null) {
+            innerElementsReordered.addAll(topClass);
         }
         
         ArrayList<AltMethod> retVal = new ArrayList<AltMethod>(innerElementsReordered.size());
         for (Element innerElementElement : innerElementsReordered) {
-            if (isMethodToGenerate(innerElementElement)) {
-                retVal.add(new ElementAltMethodImpl(innerElementElement, processingEnv));
-            }
+            retVal.add(new ElementAltMethodImpl(innerElementElement, processingEnv));
         }
         
         methods = Collections.unmodifiableList(retVal);
