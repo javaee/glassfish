@@ -68,15 +68,7 @@ public class BeanReflectionHelper {
      * if the method is not a java-bean getter
      */
     public static String getBeanPropertyNameFromGetter(final Method method) {
-        return isAGetter(new MethodWrapper() {
-
-            @Override
-            public Method getMethod() {
-                return method;
-            }
-            
-        });
-        
+        return isAGetter(method);
     }
     
     /**
@@ -86,7 +78,16 @@ public class BeanReflectionHelper {
      * @return The property name or null if not a getter
      */
     private static String isAGetter(MethodWrapper method) {
-        Method m = method.getMethod();
+        return isAGetter(method.getMethod());
+    }
+    
+    /**
+     * Returns the property name if this is a getter
+     * 
+     * @param method The method to investigate for being a property
+     * @return The property name or null if not a getter
+     */
+    private static String isAGetter(Method m) {
         String name = m.getName();
         
         if (void.class.equals(m.getReturnType())) {
