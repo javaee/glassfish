@@ -113,8 +113,8 @@ public class AsyncRunLevelContext {
      * The within level errors thrown.  This prevents double
      * starting a service that failed within a level
      */
-    private final Map<ActiveDescriptor<?>, RuntimeException> levelErrorMap =
-            new HashMap<ActiveDescriptor<?>, RuntimeException>();
+    private final Map<ActiveDescriptor<?>, Throwable> levelErrorMap =
+            new HashMap<ActiveDescriptor<?>, Throwable>();
     
     private boolean wasCancelled = false;
     
@@ -194,9 +194,17 @@ public class AsyncRunLevelContext {
                 return retVal;
             }
             
-            RuntimeException previousException = levelErrorMap.get(activeDescriptor);
+            Throwable previousException = levelErrorMap.get(activeDescriptor);
             if (previousException != null) {
-                throw previousException;
+                if (DEBUG_CONTEXT) {
+                    hk2Logger.debug("AsyncRunLevelController tried once, it failed, rethrowing " + oneLineDescriptor, previousException);
+                }
+                
+                if (previousException instanceof RuntimeException) {
+                    throw (RuntimeException) previousException;
+                }
+                
+                throw new RuntimeException(previousException);
             }
             
             if (hardCancelledDescriptors.contains(activeDescriptor)) {
@@ -252,7 +260,12 @@ public class AsyncRunLevelContext {
                 if (DEBUG_CONTEXT) {
                     hk2Logger.debug("AsyncRunLevelController service already threw " + oneLineDescriptor);
                 }
-                throw previousException;
+                
+                if (previousException instanceof RuntimeException) {
+                    throw (RuntimeException) previousException;
+                }
+                
+                throw new RuntimeException(previousException);
             }
             
             if (hardCancelledDescriptors.contains(activeDescriptor)) {
@@ -278,7 +291,7 @@ public class AsyncRunLevelContext {
             }
         }
         
-        RuntimeException error = null;
+        Throwable error = null;
         try {
             int mode = Utilities.getRunLevelMode(locator, activeDescriptor, localModeOverride);
 
@@ -296,7 +309,7 @@ public class AsyncRunLevelContext {
             
             return retVal;
         }
-        catch (RuntimeException th) {
+        catch (Throwable th) {
             if (DEBUG_CONTEXT) {
                 hk2Logger.debug("AsyncRunLevelController got exception for " + oneLineDescriptor + " in thread " + tid, th);
             }
@@ -312,7 +325,11 @@ public class AsyncRunLevelContext {
                 error = th;
             }
             
-            throw th;
+            if (th instanceof RuntimeException) {
+                throw (RuntimeException) th;
+            }
+            
+            throw new RuntimeException(th);
         }
         finally {
             synchronized (this) {
