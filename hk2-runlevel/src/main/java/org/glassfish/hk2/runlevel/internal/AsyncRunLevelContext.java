@@ -40,6 +40,8 @@
 
 package org.glassfish.hk2.runlevel.internal;
 
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -76,11 +78,22 @@ import org.jvnet.hk2.annotations.Service;
  */
 @Service @Visibility(DescriptorVisibility.LOCAL)
 public class AsyncRunLevelContext {
+    private final static String DEBUG_CONTEXT_PROPERTY = "org.jvnet.hk2.properties.debug.runlevel.context";
+    private final static boolean DEBUG_CONTEXT = AccessController.doPrivileged(new PrivilegedAction<Boolean>() {
+        @Override
+        public Boolean run() {
+            return Boolean.parseBoolean(System.getProperty(DEBUG_CONTEXT_PROPERTY, "false"));
+        }
+            
+    });
+    
     private static final Logger logger = Logger.getLogger(AsyncRunLevelContext.class.getName());
     
     private static final Timer timer = new Timer(true);
     
     private static final ThreadFactory THREAD_FACTORY = new RunLevelThreadFactory();
+    
+    private final org.glassfish.hk2.utilities.reflection.Logger hk2Logger = org.glassfish.hk2.utilities.reflection.Logger.getLogger();
     
     private int currentLevel = RunLevel.RUNLEVEL_VAL_INITIAL;
     private CurrentTaskFutureWrapper currentTask = null;
@@ -144,6 +157,12 @@ public class AsyncRunLevelContext {
     @SuppressWarnings("unchecked")
     public <U> U findOrCreate(ActiveDescriptor<U> activeDescriptor,
             ServiceHandle<?> root) {
+        String oneLineDescriptor = null;
+        if (DEBUG_CONTEXT) {
+            oneLineDescriptor = oneLineDescriptor(activeDescriptor);
+            hk2Logger.debug("AsyncRunLevelController findOrCreate for " + oneLineDescriptor + " and root " + oneLineRoot(root));
+        }
+        
         boolean throwWouldBlock;
         if (root == null) {
             throwWouldBlock = false;
@@ -162,11 +181,18 @@ public class AsyncRunLevelContext {
         
         int localCurrentLevel;
         Integer localModeOverride;
+        long tid = -1L;
+        
         synchronized (this) {
             localModeOverride = modeOverride;
             
             retVal = (U) backingMap.get(activeDescriptor);
-            if (retVal != null) return retVal;
+            if (retVal != null) {
+                if (DEBUG_CONTEXT) {
+                    hk2Logger.debug("AsyncRunLevelController found " + oneLineDescriptor);
+                }
+                return retVal;
+            }
             
             RuntimeException previousException = levelErrorMap.get(activeDescriptor);
             if (previousException != null) {
@@ -174,18 +200,31 @@ public class AsyncRunLevelContext {
             }
             
             if (hardCancelledDescriptors.contains(activeDescriptor)) {
+                if (DEBUG_CONTEXT) {
+                    hk2Logger.debug("AsyncRunLevelController hard cancelled " + oneLineDescriptor);
+                }
                 throw new MultiException(new WasCancelledException(activeDescriptor), false);
             }
             
             while (creatingDescriptors.containsKey(activeDescriptor)) {
+                if (DEBUG_CONTEXT) {
+                    hk2Logger.debug("AsyncRunLevelController already being created " + oneLineDescriptor);
+                }
+                
                 long holdingLock = creatingDescriptors.get(activeDescriptor);
                 if (holdingLock == Thread.currentThread().getId()) {
+                    if (DEBUG_CONTEXT) {
+                        hk2Logger.debug("AsyncRunLevelController circular dependency " + oneLineDescriptor);
+                    }
                     throw new MultiException(new IllegalStateException(
                             "Circular dependency involving " + activeDescriptor.getImplementation() +
                             " was found.  Full descriptor is " + activeDescriptor));
                 }
                 
                 if (throwWouldBlock) {
+                    if (DEBUG_CONTEXT) {
+                        hk2Logger.debug("AsyncRunLevelController would block optimization " + oneLineDescriptor);
+                    }
                     throw new MultiException(new WouldBlockException(activeDescriptor), false);
                 }
                 
@@ -196,20 +235,38 @@ public class AsyncRunLevelContext {
                     throw new MultiException(ie);
                 }
             }
+            if (DEBUG_CONTEXT) {
+                hk2Logger.debug("AsyncRunLevelController finished creating wait for " + oneLineDescriptor);
+            }
             
             retVal = (U) backingMap.get(activeDescriptor);
-            if (retVal != null) return retVal;
+            if (retVal != null) {
+                if (DEBUG_CONTEXT) {
+                    hk2Logger.debug("AsyncRunLevelController second chance found " + oneLineDescriptor);
+                }
+                return retVal;
+            }
             
             previousException = levelErrorMap.get(activeDescriptor);
             if (previousException != null) {
+                if (DEBUG_CONTEXT) {
+                    hk2Logger.debug("AsyncRunLevelController service already threw " + oneLineDescriptor);
+                }
                 throw previousException;
             }
             
             if (hardCancelledDescriptors.contains(activeDescriptor)) {
+                if (DEBUG_CONTEXT) {
+                    hk2Logger.debug("AsyncRunLevelController second chance hard cancel " + oneLineDescriptor);
+                }
                 throw new MultiException(new WasCancelledException(activeDescriptor), false);
             }
             
-            creatingDescriptors.put(activeDescriptor, Thread.currentThread().getId());
+            tid = Thread.currentThread().getId();
+            if (DEBUG_CONTEXT) {
+                hk2Logger.debug("AsyncRunLevelController am creating " + oneLineDescriptor + " in thread " + tid);
+            }
+            creatingDescriptors.put(activeDescriptor, tid);
             
             localCurrentLevel = currentLevel;
             if (currentTask != null && currentTask.isUp()) {
@@ -229,11 +286,21 @@ public class AsyncRunLevelContext {
                 validate(activeDescriptor, localCurrentLevel);
             }
 
+            if (DEBUG_CONTEXT) {
+                hk2Logger.debug("AsyncRunLevelController prior to actual create " + oneLineDescriptor + " in thread " + tid);
+            }
             retVal = activeDescriptor.create(root);
+            if (DEBUG_CONTEXT) {
+                hk2Logger.debug("AsyncRunLevelController after actual create " + oneLineDescriptor + " in thread " + tid);
+            }
             
             return retVal;
         }
         catch (RuntimeException th) {
+            if (DEBUG_CONTEXT) {
+                hk2Logger.debug("AsyncRunLevelController got exception for " + oneLineDescriptor + " in thread " + tid, th);
+            }
+            
             if (th instanceof MultiException) {
                 if (!CurrentTaskFuture.isWouldBlock((MultiException) th)) {
                     error = th;
@@ -258,6 +325,9 @@ public class AsyncRunLevelContext {
                     }
                     
                     if (wasCancelled || hardCancelled) {
+                        if (DEBUG_CONTEXT) {
+                            hk2Logger.debug("AsyncRunLevelController cancellation race failed " + oneLineDescriptor + " in thread " + tid);
+                        }
                         // Even though this service actually ran to completion, we
                         // are going to pretend it failed.  Putting it in the lists
                         // above will ensure it gets properly shutdown
@@ -270,6 +340,10 @@ public class AsyncRunLevelContext {
                         
                         creatingDescriptors.remove(activeDescriptor);
                         this.notifyAll();
+                        if (DEBUG_CONTEXT) {
+                            hk2Logger.debug("AsyncRunLevelController other threads notified cancellation path for " +
+                                oneLineDescriptor + " in thread " + tid);
+                        }
                         
                         throw cancelledException;
                     }
@@ -282,6 +356,10 @@ public class AsyncRunLevelContext {
                 
                 creatingDescriptors.remove(activeDescriptor);
                 this.notifyAll();
+                if (DEBUG_CONTEXT) {
+                    hk2Logger.debug("AsyncRunLevelController other threads notified for " +
+                        oneLineDescriptor + " in thread " + tid);
+                }
             }
         }
     }
@@ -507,5 +585,21 @@ public class AsyncRunLevelContext {
                 
             return activeThread;
         }
+    }
+    
+    private static String oneLineDescriptor(ActiveDescriptor<?> descriptor) {
+        if (descriptor == null) return "null-descriptor";
+        
+        return descriptor.getImplementation() +
+                ((descriptor.getName() != null) ? "/" + descriptor.getName() : "") +
+                "(" + descriptor.getServiceId() + "," + descriptor.getLocatorId() + "," + System.identityHashCode(descriptor) + ")";
+    }
+    
+    private static String oneLineRoot(ServiceHandle<?> root) {
+        if (root == null) return "null-root";
+        
+        root.getActiveDescriptor();
+        
+        return "root(" + oneLineDescriptor(root.getActiveDescriptor()) + "," + System.identityHashCode(root) + ")";
     }
 }
