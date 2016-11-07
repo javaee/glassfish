@@ -59,6 +59,7 @@ import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.glassfish.hk2.utilities.DuplicatePostProcessor;
+import org.glassfish.hk2.utilities.DuplicatePostProcessorMode;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Test;
@@ -80,6 +81,8 @@ public class DynamicPopulateTest {
     private final static String DUMMY_IMPL_7 = "com.acme.dummy.Dummy7";
     private final static String DUMMY_IMPL_8 = "com.acme.dummy.Dummy8";
     private final static String DUMMY_IMPL_9 = "com.acme.dummy.Dummy9";
+    private final static String DUMMY_IMPL_10 = "com.acme.dummy.Dummy10";
+    private final static String DUMMY_IMPL_11 = "com.acme.dummy.Dummy11";
     
     private final static String KEY = "key";
     private final static String VALUE = "value";
@@ -422,6 +425,40 @@ public class DynamicPopulateTest {
     }
     
     /**
+     * Tests the duplicate post processor will remove duplicates found
+     * in the input stream
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void testDuplicatePostProcessorImplOnly() throws IOException {
+        DescriptorImpl di_10 = new DescriptorImpl();
+        di_10.setImplementation(DUMMY_IMPL_10);
+        di_10.addAdvertisedContract(DUMMY_IMPL_10);
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintWriter pw = new PrintWriter(baos);
+        
+        di_10.writeObject(pw);
+        di_10.writeObject(pw);  // Doing it twice is twice as nice!
+        
+        pw.close();
+        
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        Assert.assertNotNull(dcs);
+        
+        Populator populator = dcs.getPopulator();
+        
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        populator.populate(new MyDescriptorFinder(bais), new DuplicatePostProcessor(DuplicatePostProcessorMode.IMPLEMENTATION_ONLY));
+        
+        List<ActiveDescriptor<?>> lucky10list = locator.getDescriptors(BuilderHelper.createContractFilter(DUMMY_IMPL_10));
+        
+        // Duplicator should have gotten rid of one of them!
+        Assert.assertEquals(1, lucky10list.size());
+    }
+    
+    /**
      * Tests the duplicate post processor will remove duplicates already
      * in the service locator
      * 
@@ -454,6 +491,41 @@ public class DynamicPopulateTest {
         
         // Duplicator should have gotten rid of one of them!
         Assert.assertEquals(1, lucky9list.size());
+    }
+    
+    /**
+     * Tests the duplicate post processor will remove duplicates already
+     * in the service locator
+     * 
+     * @throws IOException
+     */
+    @Test
+    public void testDuplicatePostProcessorWithExistingServiceImplMode() throws IOException {
+        DescriptorImpl di_11 = new DescriptorImpl();
+        di_11.setImplementation(DUMMY_IMPL_11);
+        di_11.addAdvertisedContract(DUMMY_IMPL_11);
+        
+        ServiceLocatorUtilities.addOneDescriptor(locator, di_11);
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintWriter pw = new PrintWriter(baos);
+        
+        di_11.writeObject(pw);
+        
+        pw.close();
+        
+        DynamicConfigurationService dcs = locator.getService(DynamicConfigurationService.class);
+        Assert.assertNotNull(dcs);
+        
+        Populator populator = dcs.getPopulator();
+        
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        populator.populate(new MyDescriptorFinder(bais), new DuplicatePostProcessor(DuplicatePostProcessorMode.IMPLEMENTATION_ONLY));
+        
+        List<ActiveDescriptor<?>> lucky11list = locator.getDescriptors(BuilderHelper.createContractFilter(DUMMY_IMPL_11));
+        
+        // Duplicator should have gotten rid of one of them!
+        Assert.assertEquals(1, lucky11list.size());
     }
     
     private static class MyDescriptorFinder implements DescriptorFileFinder {

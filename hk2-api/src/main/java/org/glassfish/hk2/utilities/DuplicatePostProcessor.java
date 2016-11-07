@@ -44,6 +44,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.PopulatorPostProcessor;
@@ -66,17 +67,82 @@ import org.glassfish.hk2.api.ServiceLocator;
 @PerLookup
 public class DuplicatePostProcessor implements PopulatorPostProcessor {
 
-    private final HashSet<DescriptorImpl> dupSet = new HashSet<DescriptorImpl>();
+	private final DuplicatePostProcessorMode mode;
+    private final HashSet<DescriptorImpl> strictDupSet = new HashSet<DescriptorImpl>();
+    private final HashSet<String> implOnlyDupSet = new HashSet<String>();
+    
+    /**
+     * Creates a DuplicatePostProcessor with the STRICT mode
+     * for determining duplicates
+     */
+    public DuplicatePostProcessor() {
+    	this(DuplicatePostProcessorMode.STRICT);
+    }
+    
+    /**
+     * Creates a DuplicatePostProcessor with the 
+     * @param mode
+     */
+    public DuplicatePostProcessor(DuplicatePostProcessorMode mode) {
+    	this.mode = mode;
+    }
+    
+    /**
+     * Returns the mode of this DuplicatePostProcessorMode of this processor
+     * 
+     * @return The mode
+     */
+    public DuplicatePostProcessorMode getMode() {
+    	return mode;
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.bootstrap.PopulatorPostProcessor#process(org.glassfish.hk2.utilities.DescriptorImpl)
      */
     @Override
     public DescriptorImpl process(ServiceLocator serviceLocator, DescriptorImpl descriptorImpl) {
-        if (dupSet.contains(descriptorImpl)) {
+    	switch (mode) {
+    	case STRICT:
+    		return strict(serviceLocator, descriptorImpl);
+    	case IMPLEMENTATION_ONLY:
+    		return implementationOnly(serviceLocator, descriptorImpl);
+    	default:
+    		throw new AssertionError("UnkownMode: " + mode);
+    	}
+    }
+    
+    private DescriptorImpl implementationOnly(ServiceLocator serviceLocator, DescriptorImpl descriptorImpl) {
+    	final String impl = descriptorImpl.getImplementation();
+    	if (impl == null) return descriptorImpl;
+    	
+    	if (implOnlyDupSet.contains(impl)) {
+    		return null;
+    	}
+    	implOnlyDupSet.add(impl);
+    	
+    	if (serviceLocator.getBestDescriptor(new Filter() {
+
+			@Override
+			public boolean matches(Descriptor d) {
+				if (d.getImplementation().equals(impl)) {
+					return true;
+				}
+				
+				return false;
+			}
+    		
+    	}) != null) {
+    		return null;
+    	}
+    	
+    	return descriptorImpl;    	
+    }
+    
+    private DescriptorImpl strict(ServiceLocator serviceLocator, DescriptorImpl descriptorImpl) {
+    	if (strictDupSet.contains(descriptorImpl)) {
             return null;
         }
-        dupSet.add(descriptorImpl);
+        strictDupSet.add(descriptorImpl);
         
         Set<String> contracts = descriptorImpl.getAdvertisedContracts();
         String contract = null;
@@ -117,6 +183,12 @@ public class DuplicatePostProcessor implements PopulatorPostProcessor {
         }
         
         return descriptorImpl;
+    	
+    }
+    
+    @Override
+    public String toString() {
+    	return "DuplicateCodeProcessor(" + mode + "," + System.identityHashCode(this) + ")";
     }
 
 

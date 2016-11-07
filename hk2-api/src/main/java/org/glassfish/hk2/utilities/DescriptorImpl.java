@@ -40,7 +40,14 @@
 
 package org.glassfish.hk2.utilities;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
