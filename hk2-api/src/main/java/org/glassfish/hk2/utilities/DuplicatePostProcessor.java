@@ -44,6 +44,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.glassfish.hk2.api.Descriptor;
+import org.glassfish.hk2.api.DescriptorType;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.IndexedFilter;
 import org.glassfish.hk2.api.PerLookup;
@@ -69,7 +70,7 @@ public class DuplicatePostProcessor implements PopulatorPostProcessor {
 
 	private final DuplicatePostProcessorMode mode;
     private final HashSet<DescriptorImpl> strictDupSet = new HashSet<DescriptorImpl>();
-    private final HashSet<String> implOnlyDupSet = new HashSet<String>();
+    private final HashSet<ImplOnlyKey> implOnlyDupSet = new HashSet<ImplOnlyKey>();
     
     /**
      * Creates a DuplicatePostProcessor with the STRICT mode
@@ -111,20 +112,22 @@ public class DuplicatePostProcessor implements PopulatorPostProcessor {
     	}
     }
     
-    private DescriptorImpl implementationOnly(ServiceLocator serviceLocator, DescriptorImpl descriptorImpl) {
+    private DescriptorImpl implementationOnly(ServiceLocator serviceLocator, final DescriptorImpl descriptorImpl) {
     	final String impl = descriptorImpl.getImplementation();
     	if (impl == null) return descriptorImpl;
     	
-    	if (implOnlyDupSet.contains(impl)) {
+    	ImplOnlyKey key = new ImplOnlyKey(descriptorImpl);
+    	
+    	if (implOnlyDupSet.contains(key)) {
     		return null;
     	}
-    	implOnlyDupSet.add(impl);
+    	implOnlyDupSet.add(key);
     	
     	if (serviceLocator.getBestDescriptor(new Filter() {
 
 			@Override
 			public boolean matches(Descriptor d) {
-				if (d.getImplementation().equals(impl)) {
+				if (d.getImplementation().equals(impl) && d.getDescriptorType().equals(descriptorImpl.getDescriptorType())) {
 					return true;
 				}
 				
@@ -191,5 +194,42 @@ public class DuplicatePostProcessor implements PopulatorPostProcessor {
     	return "DuplicateCodeProcessor(" + mode + "," + System.identityHashCode(this) + ")";
     }
 
-
+    /**
+     * Key use for implementation only (along with descriptor
+     * type, otherwise factories eliminate themselves)
+     * 
+     * @author jwells
+     */
+    private final static class ImplOnlyKey {
+        private final String impl;
+        private final DescriptorType type;
+        private final int hash;
+        
+        private ImplOnlyKey(Descriptor desc) {
+            impl = desc.getImplementation();
+            type = desc.getDescriptorType();
+            
+            hash = impl.hashCode() ^ type.hashCode();
+        }
+        
+        @Override
+        public int hashCode() {
+            return hash;
+        }
+        
+        @Override
+        public boolean equals(Object o) {
+            if (o == null) return false;
+            if (!(o instanceof ImplOnlyKey)) return false;
+            ImplOnlyKey other = (ImplOnlyKey) o;
+            
+            return other.impl.equals(impl) && other.type.equals(type);
+        }
+        
+        @Override
+        public String toString() {
+            return "ImplOnlyKey(" + impl + "," + type + "," + System.identityHashCode(this) + ")";
+        }
+        
+    }
 }
