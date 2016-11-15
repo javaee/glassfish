@@ -110,7 +110,7 @@ public final class ReflectionHelper {
         if (type instanceof GenericArrayType) {
             Type componentType = ((GenericArrayType) type).getGenericComponentType();
 
-            if (!(componentType instanceof ParameterizedType)) {
+            if (!(componentType instanceof ParameterizedType) && !(componentType instanceof Class)) {
                 // type variable is not supported
                 return null;
             }
