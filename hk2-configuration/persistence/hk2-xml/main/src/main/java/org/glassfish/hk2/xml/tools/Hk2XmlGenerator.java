@@ -71,11 +71,18 @@ import org.glassfish.hk2.xml.internal.alt.papi.TypeElementAltClassImpl;
  *
  */
 @SupportedAnnotationTypes("org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate")
-@SupportedSourceVersion(SourceVersion.RELEASE_7)
 public class Hk2XmlGenerator extends AbstractProcessor {
     private volatile boolean initialized;
     private ClassPool defaultClassPool;
     private CtClass superClazz;
+    
+    /**
+     * Gets rid of warnings and this code should work with all source versions
+     */
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return SourceVersion.latest();
+    }
     
     private  void initializeHk2XmlGenerator() {
         if (initialized) return;
