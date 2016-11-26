@@ -96,6 +96,15 @@ public class ForeignActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
     public Class<?> getImplementationClass() {
         return implClass;
     }
+    
+    @Override
+    public Type getImplementationType() {
+        return implClass;
+    }
+    
+    @Override
+    public void setImplementationType(Type t) {
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ActiveDescriptor#create(org.glassfish.hk2.api.ServiceHandle)

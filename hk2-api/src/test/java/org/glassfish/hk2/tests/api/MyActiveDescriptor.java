@@ -40,6 +40,8 @@
 
 package org.glassfish.hk2.tests.api;
 
+import java.lang.reflect.Type;
+
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 
@@ -64,6 +66,16 @@ public class MyActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
         // TODO Auto-generated method stub
         return null;
     }
+    
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#getImplementationType()
+     */
+    @Override
+    public Class<?> getImplementationType() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ActiveDescriptor#create(org.glassfish.hk2.api.ServiceHandle)
@@ -72,6 +84,12 @@ public class MyActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
     public T create(ServiceHandle<?> root) {
         // TODO Auto-generated method stub
         return null;
+    }
+
+
+    @Override
+    public void setImplementationType(Type t) {
+        // TODO Auto-generated method stub
     }
 
 }

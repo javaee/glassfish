@@ -50,7 +50,6 @@ import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.InheritableThread;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.Visibility;
-import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.Logger;
 
 /**

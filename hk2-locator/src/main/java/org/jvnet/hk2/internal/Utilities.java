@@ -735,7 +735,8 @@ public class Utilities {
                 proxyForSameScope,
                 analyzerName,
                 metadata,
-                DescriptorType.CLASS);
+                DescriptorType.CLASS,
+                clazz);
         
         retVal.setScopeAsAnnotation(scopeInfo.getScope());
 
@@ -836,7 +837,8 @@ public class Utilities {
                 proxyForSameScope,
                 null,  // provide methods do not have analyzers
                 metadata,
-                DescriptorType.PROVIDE_METHOD);
+                DescriptorType.PROVIDE_METHOD,
+                null);
         
         retVal.setScopeAsAnnotation(scopeInfo.getScope());
 

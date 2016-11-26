@@ -40,6 +40,7 @@
 
 package org.glassfish.hk2.tests.locator.servicelocatorutilities;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 import javax.inject.Singleton;
@@ -518,6 +519,15 @@ public class ServiceLocatorUtilitiesTest {
         @Override
         public Class<?> getImplementationClass() {
             return delegate.getImplementationClass();
+        }
+        
+        @Override
+        public Type getImplementationType() {
+            return delegate.getImplementationClass();
+        }
+        
+        @Override
+        public void setImplementationType(Type t) {
         }
 
         /* (non-Javadoc)

@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.tests.proxiableshared;
 
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -107,6 +108,11 @@ public class ForeignActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
      */
     @Override
     public Class<?> getImplementationClass() {
+        return implClass;
+    }
+
+    @Override
+    public Type getImplementationType() {
         return implClass;
     }
     

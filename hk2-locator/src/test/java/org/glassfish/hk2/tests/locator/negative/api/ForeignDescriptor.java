@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.tests.locator.negative.api;
 
+import java.lang.reflect.Type;
+
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
@@ -59,6 +61,16 @@ public class ForeignDescriptor extends AbstractActiveDescriptor<ForeignService> 
     @Override
     public Class<?> getImplementationClass() {
         return ForeignService.class;
+    }
+    
+    @Override
+    public Type getImplementationType() {
+        return ForeignService.class;
+    }
+    
+    @Override
+    public void setImplementationType(Type t) {
+        // Do nothing
     }
 
     /* (non-Javadoc)

@@ -127,6 +127,16 @@ public class DomDescriptor<T>
         return theDom.getClass();
     }
 
+    @Override
+    public Type getImplementationType() {
+        return theDom.getClass();
+    }
+
+    @Override
+    public void setImplementationType(Type t) {
+        throw new AssertionError("May not set type of DomDescriptor");
+    }
+
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ActiveDescriptor#create(org.glassfish.hk2.api.ServiceHandle)
      */

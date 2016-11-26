@@ -104,6 +104,19 @@ public class CrossOverDescriptor<T> extends AbstractActiveDescriptor<T> {
         
         return remote.getImplementationClass();
     }
+
+    @Override
+    public Type getImplementationType() {
+        checkState();
+        
+        return remote.getImplementationType();
+    }
+
+    @Override
+    public void setImplementationType(Type t) {
+        checkState();
+        throw new AssertionError("Can not set type of remove descriptor");    
+    }
     
     @Override
     public Set<Type> getContractTypes() {

@@ -226,6 +226,16 @@ public interface ActiveDescriptorBuilder {
     public ActiveDescriptorBuilder analyzeWith(String serviceName);
     
     /**
+     * Call this if the parameterized type of the implementation
+     * class is known.  This must only be called with a
+     * ParameterizedType
+     * 
+     * @param t The non-null ParameterizedType describing the implementation
+     * @return A DescriptorBuilder with the given implementationType
+     */
+    public ActiveDescriptorBuilder asType(Type t);
+    
+    /**
      * Generates a descriptor that can be used in binding operations
      * 
      * @return The descriptor that has been built up

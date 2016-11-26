@@ -76,6 +76,7 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
     private Boolean proxyForSameScope = null;
     private DescriptorVisibility visibility = DescriptorVisibility.NORMAL;
     private String classAnalysisName = null;
+    private Type implementationType;
     
     /**
      * constructor with the impl class
@@ -252,6 +253,15 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
         return this;
     }
     
+    @Override
+    public ActiveDescriptorBuilder asType(Type t) {
+        if (t == null) throw new IllegalArgumentException();
+        
+        this.implementationType = t;
+        
+        return this;
+    }
+    
     /* (non-Javadoc)
      * @see org.glassfish.hk2.utilities.ActiveDescriptorBuilder#build()
      */
@@ -271,7 +281,8 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
                 proxyForSameScope,
                 classAnalysisName,
                 metadatas,
-                loader);
+                loader,
+                implementationType);
     }
     
     /* (non-Javadoc)
@@ -302,7 +313,8 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
                 proxyForSameScope,
                 classAnalysisName,
                 metadatas,
-                loader);
+                loader,
+                implementationType);
     }
     
     private static class BuiltActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
@@ -312,6 +324,7 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
         private static final long serialVersionUID = 2434137639270026082L;
         
         private Class<?> implementationClass;
+        private Type implementationType;
         
         /**
          * For serialization
@@ -334,7 +347,8 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
                 Boolean proxyForSameScope,
                 String classAnalysisName,
                 Map<String, List<String>> metadata,
-                HK2Loader loader) {
+                HK2Loader loader,
+                Type implementationType) {
             super(advertisedContracts,
                     scope,
                     name,
@@ -353,6 +367,11 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
             
             this.implementationClass = implementationClass;
             super.setImplementation(implementationClass.getName());
+            
+            if (implementationType == null) {
+                implementationType = implementationClass;
+            }
+            this.implementationType = implementationType;
         }
         
         /* (non-Javadoc)
@@ -362,6 +381,11 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
         public Class<?> getImplementationClass() {
             return implementationClass;
         }
+        
+        @Override
+        public Type getImplementationType() {
+            return implementationType;
+        }
 
         /* (non-Javadoc)
          * @see org.glassfish.hk2.api.ActiveDescriptor#create(org.glassfish.hk2.api.ServiceHandle)
@@ -370,8 +394,14 @@ public class ActiveDescriptorBuilderImpl implements ActiveDescriptorBuilder {
         public T create(ServiceHandle<?> root) {
             throw new AssertionError("Should not be called directly");
         }
-        
+
+        @Override
+        public void setImplementationType(Type t) {
+            implementationType = t;
+        }
     }
+
+    
 
     
     

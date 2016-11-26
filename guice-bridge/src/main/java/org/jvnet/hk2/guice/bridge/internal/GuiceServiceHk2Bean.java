@@ -105,6 +105,11 @@ public class GuiceServiceHk2Bean<T> extends AbstractActiveDescriptor<T> {
     }
 
     @Override
+    public Type getImplementationType() {
+        return implClass;
+    }
+
+    @Override
     public T create(ServiceHandle<?> root) {
         T retVal = binding.getProvider().get();
         return retVal;

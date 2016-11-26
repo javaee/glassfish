@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2013-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,81 +37,60 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
+package org.glassfish.hk2.tests.locator.types;
 
-package org.jvnet.hk2.spring.bridge.internal;
-
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
 
-import org.glassfish.hk2.api.DescriptorType;
-import org.glassfish.hk2.api.DescriptorVisibility;
-import org.glassfish.hk2.api.ServiceHandle;
-import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
-import org.jvnet.hk2.spring.bridge.api.SpringScope;
-import org.springframework.beans.factory.BeanFactory;
+import javax.inject.Inject;
+
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.api.TypeLiteral;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
- * @param <T> Type of cache
- *  
  * @author jwells
  *
  */
-public class SpringServiceHK2Bean<T> extends AbstractActiveDescriptor<T> {
-    private Class<?> byType;
-    private BeanFactory factory;
-    
-    /**
-     * For serialization
-     */
-    public SpringServiceHK2Bean() {
-        
-    }
-    
-    /* package */ SpringServiceHK2Bean(
-            String name,
-            Set<Type> contracts,
-            Set<Annotation> qualifiers,
-            Class<?> byType,
-            BeanFactory factory) {
-        super(contracts,
-                SpringScope.class,
-                name,
-                qualifiers,
-                DescriptorType.CLASS,
-                DescriptorVisibility.NORMAL,
-                0,
-                false,
-                null,
-                (String) null,
-                new HashMap<String, List<String>>()
-               );
-        
-        this.byType = byType;
-        super.setImplementation(byType.getName());
-        this.factory = factory;
-    }
+public class BinderTypesTest {
+    private static class A<T> {
 
-    @Override
-    public Class<?> getImplementationClass() {
-        return byType;
-    }
+        private final T t;
 
-    @Override
-    public Type getImplementationType() {
-        return byType;
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public T create(ServiceHandle<?> root) {
-        if (getName() != null) {
-            return (T) factory.getBean(getName(), byType);
+        @Inject
+        public A(T t) {
+            this.t = t;
+            System.out.println(t);
         }
-        
-        return (T) factory.getBean(byType);
+
+    }
+
+    private static class B {
+
+    }
+
+    /**
+     * Tests that we can create a solidified typed class if we tell the descriptor
+     * about the solidified type
+     */
+    @Test
+    @org.junit.Ignore
+    public void testBindAsContract() {
+        ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance().create(null);
+        ServiceLocatorUtilities.bind(serviceLocator, new AbstractBinder() {
+            @Override
+            protected void configure() {
+                bind(B.class).to(B.class);
+                bindAsContract(new TypeLiteral<A<B>>() {}); // <--- ???
+            }
+        });
+
+        Type type = new TypeLiteral<A<B>>() {}.getType();
+        A<B> ab = serviceLocator.getService(type);
+        Assert.assertNotNull(ab);
     }
 
 }

@@ -86,6 +86,15 @@ public interface ActiveDescriptor<T> extends Descriptor, SingleCache<T> {
     public Class<?> getImplementationClass();
     
     /**
+     * If known the Type of the implementation.  If unknown will
+     * return the same as {@link #getImplementationClass()}
+     * 
+     * @return The type of the implementation or the
+     * implementation class
+     */
+    public Type getImplementationType();
+    
+    /**
      * The set of types that this ActiveDescriptor must produce.
      * These types may be Classes or ParameterizedTypes, and
      * may be no other subclass of Type

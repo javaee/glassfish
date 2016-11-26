@@ -275,6 +275,11 @@ public class DelegatingNamedActiveDescriptor implements
         return parent.getImplementationClass();
     }
 
+    @Override
+    public Type getImplementationType() {
+        return parent.getImplementationType();
+    }
+
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ActiveDescriptor#getContractTypes()
      */

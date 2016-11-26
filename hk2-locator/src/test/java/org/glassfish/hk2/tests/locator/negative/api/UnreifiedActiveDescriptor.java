@@ -89,6 +89,16 @@ public class UnreifiedActiveDescriptor extends AbstractActiveDescriptor<Object> 
     public Class<?> getImplementationClass() {
         throw new AssertionError("not called");
     }
+    
+    @Override
+    public Type getImplementationType() {
+        throw new AssertionError("not called");
+    }
+    
+    @Override
+    public void setImplementationType(Type t) {
+        throw new AssertionError("not called");
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ActiveDescriptor#create(org.glassfish.hk2.api.ServiceHandle)

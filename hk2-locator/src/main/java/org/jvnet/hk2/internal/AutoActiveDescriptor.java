@@ -66,6 +66,7 @@ public class AutoActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
     private Class<?> implClass;
     private Creator<T> creator;
     private SystemDescriptor<?> hk2Parent;
+    private Type implType;
     
     /**
      * For serialization
@@ -103,7 +104,8 @@ public class AutoActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
             Boolean proxyForSameScope,
             String classAnalysisName,
             Map<String, List<String>> metadata,
-            DescriptorType descriptorType) {
+            DescriptorType descriptorType,
+            Type clazzType) {
         super(advertisedContracts,
                 scope,
                 name,
@@ -121,6 +123,13 @@ public class AutoActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
         
         setImplementation(implClass.getName());
         setDescriptorType(descriptorType);
+        
+        if (clazzType == null) {
+            implType = clazz;
+        }
+        else {
+            implType = clazzType;
+        }
     }
     
     /* package */ void resetSelfDescriptor(ActiveDescriptor<?> toMe) {
@@ -140,6 +149,19 @@ public class AutoActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
     @Override
     public Class<?> getImplementationClass() {
         return implClass;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#getImplementationType()
+     */
+    @Override
+    public Type getImplementationType() {
+        return implType;
+    }
+    
+    @Override
+    public void setImplementationType(Type t) {
+        this.implType = t;
     }
 
     /* (non-Javadoc)
@@ -165,4 +187,6 @@ public class AutoActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
     public List<Injectee> getInjectees() {
         return creator.getInjectees();
     }
+
+    
 }

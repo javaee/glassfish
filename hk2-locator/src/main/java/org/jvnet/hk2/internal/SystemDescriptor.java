@@ -108,6 +108,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T>, Closeable {
     private Creator<T> creator;
     private Long factoryLocatorId;
     private Long factoryServiceId;
+    private Type implType;
 
     private final HashMap<ValidationService, Boolean> validationServiceCache =
             new HashMap<ValidationService, Boolean>();
@@ -145,6 +146,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T>, Closeable {
                 preAnalyzed = true;
 
                 implClass = active.getImplementationClass();
+                implType = active.getImplementationType();
                 scopeAnnotation = active.getScopeAsAnnotation();
                 scope = active.getScopeAnnotation();
                 contracts = Collections.unmodifiableSet(active.getContractTypes());
@@ -353,6 +355,20 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T>, Closeable {
         }
 
         return implClass;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.ActiveDescriptor#getImplementationClass()
+     */
+    @Override
+    public Type getImplementationType() {
+        checkState();
+
+        if (activeDescriptor != null) {
+            return activeDescriptor.getImplementationType();
+        }
+
+        return implType;
     }
 
     /* (non-Javadoc)
@@ -702,6 +718,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T>, Closeable {
     private void internalReify(Class<?> implClass, Collector collector) {
         if (!preAnalyzed) {
             this.implClass = implClass;
+            this.implType =  implClass;
         }
         else {
             if (!implClass.equals(this.implClass)) {

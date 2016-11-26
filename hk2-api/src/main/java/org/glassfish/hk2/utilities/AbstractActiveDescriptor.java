@@ -201,6 +201,10 @@ public abstract class AbstractActiveDescriptor<T> extends DescriptorImpl impleme
             wLock.unlock();
         }
     }
+    
+    public void setImplementationType(Type t) {
+        throw new AssertionError("Can not set type of " +  getClass().getName() + " descriptor");
+    }
 
     /**
      * Sets the name of this descriptor.  Will remove any existing Named

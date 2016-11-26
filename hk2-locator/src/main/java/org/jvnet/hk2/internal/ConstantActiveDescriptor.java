@@ -177,6 +177,16 @@ public class ConstantActiveDescriptor<T> extends AbstractActiveDescriptor<T> {
     public Class<?> getImplementationClass() {
         return theOne.getClass();
     }
+    
+    @Override
+    public Type getImplementationType() {
+        return theOne.getClass();
+    }
+    
+    @Override
+    public void setImplementationType(Type t) {
+        throw new AssertionError("Can not set type of a constant descriptor");
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ActiveDescriptor#create(org.glassfish.hk2.api.ServiceHandle)

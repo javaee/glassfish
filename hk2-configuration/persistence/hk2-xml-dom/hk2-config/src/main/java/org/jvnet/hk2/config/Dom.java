@@ -1015,6 +1015,14 @@ public class Dom extends AbstractActiveDescriptor implements InvocationHandler, 
         Class<?> retVal = (Class<?>) model.getProxyType();
         return retVal;
     }
+
+    public Type getImplementationType() {
+        return getImplementationClass();
+    }
+
+    public void setImplementationType(Type t) {
+        throw new AssertionError("Can not set type of Dom descriptor");
+    }
     
     public Set<Type> getContractTypes() {
         HashSet<Type> retVal = new HashSet<Type>();

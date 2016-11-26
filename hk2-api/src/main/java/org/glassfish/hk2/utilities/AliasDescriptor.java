@@ -191,6 +191,12 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
         ensureInitialized();
         return descriptor.getImplementationClass();
     }
+    
+    @Override
+    public Type getImplementationType() {
+        ensureInitialized();
+        return descriptor.getImplementationType();
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.api.ActiveDescriptor#create(org.glassfish.hk2.api.ServiceHandle)
@@ -376,4 +382,6 @@ public class AliasDescriptor<T> extends AbstractActiveDescriptor<T> {
         if (!GeneralUtilities.safeEquals(other.getName(), getName())) return false;
         return GeneralUtilities.safeEquals(other.contract, contract);
     }
+
+    
 }

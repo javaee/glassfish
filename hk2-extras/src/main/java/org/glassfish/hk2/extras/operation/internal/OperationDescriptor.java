@@ -40,6 +40,7 @@
 package org.glassfish.hk2.extras.operation.internal;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.extras.operation.OperationHandle;
@@ -68,6 +69,16 @@ public class OperationDescriptor<T extends Annotation> extends AbstractActiveDes
     @Override
     public Class<?> getImplementationClass() {
         return OperationHandleImpl.class;
+    }
+
+    @Override
+    public Type getImplementationType() {
+        return OperationHandleImpl.class;
+    }
+
+    @Override
+    public void setImplementationType(Type t) {
+        throw new AssertionError("Cannot set type of OperationHandle");
     }
 
     /* (non-Javadoc)

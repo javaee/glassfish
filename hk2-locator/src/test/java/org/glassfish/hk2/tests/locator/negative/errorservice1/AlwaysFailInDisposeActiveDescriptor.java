@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.tests.locator.negative.errorservice1;
 
+import java.lang.reflect.Type;
+
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.ServiceHandle;
@@ -63,6 +65,11 @@ public class AlwaysFailInDisposeActiveDescriptor extends
      */
     @Override
     public Class<?> getImplementationClass() {
+        return SimpleService.class;
+    }
+    
+    @Override
+    public Type getImplementationType() {
         return SimpleService.class;
     }
 
