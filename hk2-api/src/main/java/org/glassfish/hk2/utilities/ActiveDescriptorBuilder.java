@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -227,8 +227,9 @@ public interface ActiveDescriptorBuilder {
     
     /**
      * Call this if the parameterized type of the implementation
-     * class is known.  This must only be called with a
-     * ParameterizedType
+     * class is known.  This may  be called with any Type, but
+     * only a ParameterizedType based on the implementationClass
+     * will work
      * 
      * @param t The non-null ParameterizedType describing the implementation
      * @return A DescriptorBuilder with the given implementationType

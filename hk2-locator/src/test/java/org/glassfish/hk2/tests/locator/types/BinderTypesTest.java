@@ -43,9 +43,12 @@ import java.lang.reflect.Type;
 
 import javax.inject.Inject;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.ServiceLocatorFactory;
 import org.glassfish.hk2.api.TypeLiteral;
+import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.junit.Assert;
@@ -116,6 +119,122 @@ public class BinderTypesTest {
         });
 
         Type type = new TypeLiteral<A<B, C, D, E>>() {}.getType();
+        A<B, C, D, E> ab = serviceLocator.getService(type);
+        Assert.assertNotNull(ab);
+        
+        Assert.assertNotNull(ab.t);
+        Assert.assertEquals(B.class, ab.t.getClass());
+        
+        Assert.assertNotNull(ab.x);
+        Assert.assertEquals(C.class, ab.x.getClass());
+        
+        Assert.assertNotNull(ab.y);
+        Assert.assertEquals(D.class, ab.y.getClass());
+        
+        Assert.assertNotNull(ab.z);
+        Assert.assertEquals(E.class, ab.z.getClass());
+    }
+    
+    /**
+     * Tests using activeLink.asType
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testActiveLinkAsType() {
+        ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance().create(null);
+        
+        Type type = new TypeLiteral<A<B, C, D, E>>() {}.getType();
+        
+        ActiveDescriptor<?> ad = BuilderHelper.activeLink(A.class).
+                to(type).
+                asType(type).build();
+        
+        ServiceLocatorUtilities.addClasses(serviceLocator,
+                B.class, C.class, D.class, E.class);
+        
+        ActiveDescriptor<?> added = ServiceLocatorUtilities.addOneDescriptor(serviceLocator, ad);
+        Assert.assertNotNull(added);
+        
+        A<B, C, D, E> ab = serviceLocator.getService(type);
+        Assert.assertNotNull(ab);
+        
+        Assert.assertNotNull(ab.t);
+        Assert.assertEquals(B.class, ab.t.getClass());
+        
+        Assert.assertNotNull(ab.x);
+        Assert.assertEquals(C.class, ab.x.getClass());
+        
+        Assert.assertNotNull(ab.y);
+        Assert.assertEquals(D.class, ab.y.getClass());
+        
+        Assert.assertNotNull(ab.z);
+        Assert.assertEquals(E.class, ab.z.getClass());
+    }
+    
+    /**
+     * Tests using AbstractActiveDescriptor.setImplementationType
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testAbstractActiveDescriptorSetType() {
+        ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance().create(null);
+        
+        Type type = new TypeLiteral<A<B, C, D, E>>() {}.getType();
+        
+        AbstractActiveDescriptor<?> ad = BuilderHelper.activeLink(A.class).
+                to(type).build();
+        
+        ad.setImplementationType(type);
+        
+        ServiceLocatorUtilities.addClasses(serviceLocator,
+                B.class, C.class, D.class, E.class);
+        
+        ActiveDescriptor<?> added = ServiceLocatorUtilities.addOneDescriptor(serviceLocator, ad);
+        Assert.assertNotNull(added);
+        
+        A<B, C, D, E> ab = serviceLocator.getService(type);
+        Assert.assertNotNull(ab);
+        
+        Assert.assertNotNull(ab.t);
+        Assert.assertEquals(B.class, ab.t.getClass());
+        
+        Assert.assertNotNull(ab.x);
+        Assert.assertEquals(C.class, ab.x.getClass());
+        
+        Assert.assertNotNull(ab.y);
+        Assert.assertEquals(D.class, ab.y.getClass());
+        
+        Assert.assertNotNull(ab.z);
+        Assert.assertEquals(E.class, ab.z.getClass());
+    }
+    
+    /**
+     * Tests that pre-reifying a non-reified active descriptor works
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testPreReificationWorks() {
+        ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance().create(null);
+        
+        Type type = new TypeLiteral<A<B, C, D, E>>() {}.getType();
+        
+        AbstractActiveDescriptor<?> ad = BuilderHelper.activeLink(A.class).
+                to(type).build();
+        
+        ad.setImplementationType(type);
+        
+        ServiceLocatorUtilities.addClasses(serviceLocator,
+                B.class, C.class, D.class, E.class);
+        
+        ActiveDescriptor<?> added = ServiceLocatorUtilities.addOneDescriptor(serviceLocator, ad);
+        Assert.assertFalse(added.isReified());
+        
+        serviceLocator.reifyDescriptor(added);
+        
+        Assert.assertTrue(added.isReified());
+        
+        Assert.assertEquals(added.getImplementationType(), type);
+        
         A<B, C, D, E> ab = serviceLocator.getService(type);
         Assert.assertNotNull(ab);
         
