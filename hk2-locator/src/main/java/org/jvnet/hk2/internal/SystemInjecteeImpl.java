@@ -45,7 +45,9 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.Collections;
 import java.util.Set;
 
@@ -111,6 +113,19 @@ public class SystemInjecteeImpl implements Injectee {
      */
     @Override
     public Type getRequiredType() {
+        if ((requiredType instanceof TypeVariable) &&
+                (injecteeDescriptor != null) &&
+                (injecteeDescriptor.getImplementationType() != null) &&
+                (injecteeDescriptor.getImplementationType() instanceof ParameterizedType)) {
+            TypeVariable<?> tv = (TypeVariable<?>) requiredType;
+            ParameterizedType pt = (ParameterizedType) injecteeDescriptor.getImplementationType();
+            
+            Type translatedRequiredType = ReflectionHelper.resolveKnownType(tv, pt, pClass);
+            if (translatedRequiredType != null) {
+                return translatedRequiredType;
+            }
+        }
+        
         return requiredType;
     }
 

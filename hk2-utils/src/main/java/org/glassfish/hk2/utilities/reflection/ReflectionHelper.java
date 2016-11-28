@@ -72,6 +72,7 @@ import javax.inject.Named;
 import javax.inject.Qualifier;
 import javax.inject.Scope;
 
+import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.internal.MethodWrapperImpl;
 
 /**
@@ -195,6 +196,30 @@ public final class ReflectionHelper {
         }
         
         return retVal;
+    }
+    
+    /**
+     * If you have a class that declares type variables (knownDeclaringClass) and the type the user has told
+     * us it should be (knownType) then return the replaced type for the given userType.  Returns null if
+     * there is no match for the userType
+     * 
+     * @param userType The user type to replace.  May not be null
+     * @param knownType The user defined known final type of the knownDeclaringClass. May not be null
+     * @param knownDeclaringClass The declaringClass for which knownType is the resolved ParameterizedType for it.
+     * May not be null
+     * @return null if userType is not related, or the given hardened parameterized type from the knownType list
+     */
+    public static Type resolveKnownType(TypeVariable<?> userType, ParameterizedType knownType, Class<?> knownDeclaringClass) {
+        TypeVariable<?> knownTypeVariables[] = knownDeclaringClass.getTypeParameters();
+        for (int lcv = 0; lcv < knownTypeVariables.length; lcv++) {
+            TypeVariable<?> knownTypeVariable = knownTypeVariables[lcv];
+            
+            if (GeneralUtilities.safeEquals(knownTypeVariable.getName(), userType.getName())) {
+                return knownType.getActualTypeArguments()[lcv];
+            }
+        }
+        
+        return null;
     }
     
     private static Map<String, Type> typesFromSubClassToDeclaringClass(Class<?> topClass, Class<?> declaringClass) {

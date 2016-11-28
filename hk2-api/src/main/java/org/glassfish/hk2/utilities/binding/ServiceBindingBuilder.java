@@ -181,4 +181,14 @@ public interface ServiceBindingBuilder<T> extends BindingBuilder<T> {
      * to indicate the default class analzyer
      */
     public ServiceBindingBuilder<T> analyzeWith(String analyzer);
+    
+    /**
+     * Call this if the parameterized type of the implementation
+     * class is known.  This must only be called with a
+     * ParameterizedType
+     * 
+     * @param t The non-null ParameterizedType describing the implementation
+     * @return A DescriptorBuilder with the given implementationType
+     */
+    public ServiceBindingBuilder<T> asType(Type t);
 }

@@ -56,19 +56,42 @@ import org.junit.Test;
  *
  */
 public class BinderTypesTest {
-    private static class A<T> {
+    private static class A<T, X, Y, Z> {
 
         private final T t;
-
+        
+        @Inject
+        private X x;
+        
+        private Y y;
+        private Z z;
+        
         @Inject
         public A(T t) {
             this.t = t;
-            System.out.println(t);
+        }
+        
+        @Inject
+        private void init(Z z, Y y) {
+            this.z = z;
+            this.y = y;
         }
 
     }
 
     private static class B {
+
+    }
+    
+    private static class C {
+
+    }
+    
+    private static class D {
+
+    }
+    
+    private static class E {
 
     }
 
@@ -77,20 +100,36 @@ public class BinderTypesTest {
      * about the solidified type
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testBindAsContract() {
         ServiceLocator serviceLocator = ServiceLocatorFactory.getInstance().create(null);
         ServiceLocatorUtilities.bind(serviceLocator, new AbstractBinder() {
             @Override
             protected void configure() {
                 bind(B.class).to(B.class);
-                bindAsContract(new TypeLiteral<A<B>>() {}); // <--- ???
+                bind(C.class).to(C.class);
+                bind(D.class).to(D.class);
+                bind(E.class).to(E.class);
+                
+                bindAsContract(new TypeLiteral<A<B, C, D, E>>() {}); // <--- ???
             }
         });
 
-        Type type = new TypeLiteral<A<B>>() {}.getType();
-        A<B> ab = serviceLocator.getService(type);
+        Type type = new TypeLiteral<A<B, C, D, E>>() {}.getType();
+        A<B, C, D, E> ab = serviceLocator.getService(type);
         Assert.assertNotNull(ab);
+        
+        Assert.assertNotNull(ab.t);
+        Assert.assertEquals(B.class, ab.t.getClass());
+        
+        Assert.assertNotNull(ab.x);
+        Assert.assertEquals(C.class, ab.x.getClass());
+        
+        Assert.assertNotNull(ab.y);
+        Assert.assertEquals(D.class, ab.y.getClass());
+        
+        Assert.assertNotNull(ab.z);
+        Assert.assertEquals(E.class, ab.z.getClass());
     }
 
 }

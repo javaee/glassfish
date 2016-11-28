@@ -57,6 +57,7 @@ import org.glassfish.hk2.utilities.ActiveDescriptorBuilder;
 import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.FactoryDescriptorsImpl;
 import org.glassfish.hk2.utilities.reflection.ParameterizedTypeImpl;
+import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.jvnet.hk2.component.MultiMap;
 
 
@@ -109,6 +110,8 @@ abstract class AbstractBindingBuilder<T> implements
      * Injectee should be proxied even inside the same scope
      */
     Boolean proxyForSameScope = null;
+    
+    Type implementationType = null;
 
     @Override
     public AbstractBindingBuilder<T> proxy(boolean proxiable) {
@@ -202,6 +205,11 @@ abstract class AbstractBindingBuilder<T> implements
     public void ranked(int rank) {
         this.ranked = rank;
     }
+    
+    public AbstractBindingBuilder<T> asType(Type t) {
+        this.implementationType = t;
+        return this;
+    }
 
     /**
      * Build the binding descriptor and bind it in the {@link DynamicConfiguration
@@ -265,6 +273,10 @@ abstract class AbstractBindingBuilder<T> implements
             
             if (proxyForSameScope != null) {
                 builder.proxyForSameScope(proxyForSameScope);
+            }
+            
+            if (implementationType != null) {
+                builder.asType(implementationType);
             }
 
             configuration.bind(builder.build(), false);
@@ -469,7 +481,20 @@ abstract class AbstractBindingBuilder<T> implements
     static <T> AbstractBindingBuilder<T> create(Class<T> serviceType, boolean bindAsContract) {
         return new ClassBasedBindingBuilder<T>(serviceType, bindAsContract ? serviceType : null);
     }
-
+    
+    /**
+     * Create a new service binding builder.
+     *
+     * @param <T>            service type.
+     * @param serviceType    service class.
+     * @param bindAsContract if {@code true}, the service class will be bound as one of the contracts.
+     * @return initialized binding builder.
+     */
+    @SuppressWarnings("unchecked")
+    static <T> AbstractBindingBuilder<T> create(Type serviceType, boolean bindAsContract) {
+        return new ClassBasedBindingBuilder<T>(
+                (Class<T>) ReflectionHelper.getRawClass(serviceType), bindAsContract ? serviceType : null).asType(serviceType);
+    }
     /**
      * Create a new service binding builder.
      *
@@ -479,7 +504,8 @@ abstract class AbstractBindingBuilder<T> implements
      * @return initialized binding builder.
      */
     static <T> AbstractBindingBuilder<T> create(TypeLiteral<T> serviceType, boolean bindAsContract) {
-        return new ClassBasedBindingBuilder<T>(serviceType.getRawType(), bindAsContract ? serviceType.getType() : null);
+        Type type = serviceType.getType();
+        return new ClassBasedBindingBuilder<T>(serviceType.getRawType(), bindAsContract ? serviceType.getType() : null).asType(type);
     }
 
     /**

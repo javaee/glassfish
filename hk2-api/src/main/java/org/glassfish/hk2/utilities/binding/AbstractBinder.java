@@ -41,6 +41,7 @@
 package org.glassfish.hk2.utilities.binding;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
@@ -106,6 +107,19 @@ public abstract class AbstractBinder implements Binder, DynamicConfiguration {
      */
     public <T> ServiceBindingBuilder<T> bindAsContract(TypeLiteral<T> serviceType) {
         return resetBuilder(AbstractBindingBuilder.create(serviceType, true));
+    }
+    
+    /**
+     * Start building a new generic type-based service binding.
+     *
+     * Binds the generic service type itself as a contract type.
+     *
+     * @param <T>         service type.
+     * @param serviceType generic service type information.
+     * @return initialized binding builder.
+     */
+    public <T> ServiceBindingBuilder<T> bindAsContract(Type serviceType) {
+        return resetBuilder(AbstractBindingBuilder.<T>create(serviceType, true));
     }
 
     /**

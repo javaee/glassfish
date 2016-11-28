@@ -41,6 +41,7 @@
 package org.glassfish.hk2.utilities.binding;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.util.List;
 
 import org.glassfish.hk2.api.HK2Loader;
@@ -139,4 +140,14 @@ public interface NamedBindingBuilder<T> extends BindingBuilder<T> {
      * @param proxiable flag to determine if the binding should be proxiable.
      */
     public NamedBindingBuilder<T> proxy(boolean proxiable);
+    
+    /**
+     * Call this if the parameterized type of the implementation
+     * class is known.  This must only be called with a
+     * ParameterizedType
+     * 
+     * @param t The non-null ParameterizedType describing the implementation
+     * @return A DescriptorBuilder with the given implementationType
+     */
+    public NamedBindingBuilder<T> asType(Type t);
 }
