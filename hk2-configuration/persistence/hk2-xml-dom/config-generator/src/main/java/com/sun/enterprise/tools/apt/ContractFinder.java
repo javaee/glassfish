@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,12 +43,17 @@ package com.sun.enterprise.tools.apt;
 import org.jvnet.hk2.annotations.Contract;
 
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Given a {@link TypeElement},
@@ -62,7 +67,23 @@ public class ContractFinder {
      * The entry point.
      */
     public static Set<TypeElement> find(TypeElement d) {
-        return new ContractFinder().check(d).result;
+        LinkedHashSet<TypeElement> retVal = new LinkedHashSet<TypeElement>();
+        
+        for (Map.Entry<String, TypeElement> entry : new ContractFinder().check(d).result.entrySet()) {
+            retVal.add(entry.getValue());
+        }
+        
+        return retVal;
+    }
+    
+    /**
+     * Converts the Name from the Element to a String
+     * @param name
+     * @return
+     */
+    private static String convertNameToString(Name name) {
+        if (name == null) return null;
+        return name.toString();
     }
 
     /**
@@ -70,7 +91,7 @@ public class ContractFinder {
      */
     private final Set<TypeElement> checkedInterfaces = new HashSet<TypeElement>();
 
-    private final Set<TypeElement> result = new HashSet<TypeElement>();
+    private final TreeMap<String, TypeElement> result = new TreeMap<String, TypeElement>();
 
     private ContractFinder() {
     }
@@ -95,7 +116,7 @@ public class ContractFinder {
 
     private void checkContract(TypeElement type) {
         if (type.getAnnotation(Contract.class) != null)
-            result.add(type);
+            result.put(convertNameToString(type.getQualifiedName()), type);
     }
 
     private void checkSuperInterfaces(TypeElement d) {

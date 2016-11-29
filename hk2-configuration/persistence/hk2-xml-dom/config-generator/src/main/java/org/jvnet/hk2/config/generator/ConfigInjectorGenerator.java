@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -57,6 +57,7 @@ import com.sun.codemodel.JPackage;
 import com.sun.codemodel.JType;
 import com.sun.codemodel.JVar;
 import com.sun.enterprise.tools.apt.ContractFinder;
+
 import org.jvnet.hk2.annotations.InhabitantAnnotation;
 import org.jvnet.hk2.annotations.Service;
 import org.jvnet.hk2.component.MultiMap;
@@ -78,6 +79,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.ArrayType;
@@ -92,6 +94,7 @@ import javax.lang.model.util.SimpleTypeVisitor6;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import javax.tools.StandardLocation;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
@@ -99,10 +102,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.TreeMap;
 
 import static javax.tools.StandardLocation.CLASS_PATH;
 import static javax.tools.StandardLocation.SOURCE_PATH;
@@ -199,11 +204,36 @@ public class ConfigInjectorGenerator extends AbstractProcessor {
         }
     }
 
-
-
     private boolean isSubType(TypeElement subType, TypeElement baseType) {
         Types types = processingEnv.getTypeUtils();
         return types.isSubtype(types.getDeclaredType(subType), types.getDeclaredType(baseType));
+    }
+    
+    private static void addToMetadata(TreeMap<String,List<String>> metadata, String key, String value) {
+        List<String> inner = metadata.get(key);
+        if (inner == null) {
+            inner = new LinkedList<String>();
+            
+            metadata.put(key, inner);
+        }
+        
+        inner.add(value);
+    }
+    
+    /**
+     * @return the map as "key=value1,key=value2,...."
+     */
+    private static String toCommaSeparatedString(TreeMap<String,List<String>> metadata) {
+        StringBuilder buf = new StringBuilder();
+        for (Map.Entry<String, List<String>> e : metadata.entrySet()) {
+            for (String v : e.getValue()) {
+                if (buf.length() > 0) {
+                    buf.append(',');
+                }
+                buf.append(e.getKey()).append('=').append(v);
+            }
+        }
+        return buf.toString();
     }
 
     /*package*/ class ClassGenerator {
@@ -212,7 +242,7 @@ public class ConfigInjectorGenerator extends AbstractProcessor {
         final JClass targetType;
         final JAnnotationUse service;
         final JMethod injectMethod,injectAttributeMethod,injectElementMethod;
-        final MultiMap<String,String> metadata = new MultiMap<String,String>();
+        final TreeMap<String,List<String>> metadata = new TreeMap<String,List<String>>();
         /**
          * Key property that has {@link Element#key()} or {@link Attribute#key()}
          */
@@ -287,17 +317,17 @@ public class ConfigInjectorGenerator extends AbstractProcessor {
                 addReinjectionParam(injectElementMethod);
             }
 
-            metadata.add(ConfigMetadata.TARGET,name);
+            addToMetadata(metadata, ConfigMetadata.TARGET,name);
 
             // locate additional contracts for the target.
             for (TypeElement t : ContractFinder.find(clz))
-                metadata.add(ConfigMetadata.TARGET_CONTRACTS,t.getQualifiedName().toString());
+                addToMetadata(metadata, ConfigMetadata.TARGET_CONTRACTS,t.getQualifiedName().toString());
             if (targetHabitats.size() > 0) {
                 StringBuilder sb = new StringBuilder();
                 for (String h : targetHabitats) {
                     sb.append(h).append(";");
                 }
-                metadata.add(ConfigMetadata.TARGET_HABITATS, sb.toString());
+                addToMetadata(metadata, ConfigMetadata.TARGET_HABITATS, sb.toString());
             }
         }
 
@@ -341,7 +371,7 @@ public class ConfigInjectorGenerator extends AbstractProcessor {
                 }
             }
 
-            service.param("metadata", metadata.toCommaSeparatedString());
+            service.param("metadata", toCommaSeparatedString(metadata));
         }
 
         private void generate(Property p) {
@@ -486,8 +516,8 @@ public class ConfigInjectorGenerator extends AbstractProcessor {
             protected abstract JExpression getXmlValue();
 
             private void addKey() {
-                metadata.add(ConfigMetadata.KEY, xmlTokenName());
-                metadata.add(ConfigMetadata.KEYED_AS, ((TypeElement) p.decl().getEnclosingElement()).getQualifiedName().toString());
+                addToMetadata(metadata, ConfigMetadata.KEY, xmlTokenName());
+                addToMetadata(metadata, ConfigMetadata.KEYED_AS, ((TypeElement) p.decl().getEnclosingElement()).getQualifiedName().toString());
             }
 
             /**
@@ -748,7 +778,7 @@ public class ConfigInjectorGenerator extends AbstractProcessor {
                 }
 
                 void addMetadata(String key,TypeMirror itemType) {
-                    metadata.add(key,makeCollectionIfNecessary("leaf"));
+                    addToMetadata(metadata, key,makeCollectionIfNecessary("leaf"));
                 }
             }
 
@@ -765,7 +795,7 @@ public class ConfigInjectorGenerator extends AbstractProcessor {
                 }
 
                 void addMetadata(String key,TypeMirror itemType) {
-                    metadata.add(key,makeCollectionIfNecessary(itemType.toString()));
+                    addToMetadata(metadata, key,makeCollectionIfNecessary(itemType.toString()));
                 }
             }
 
@@ -803,8 +833,8 @@ public class ConfigInjectorGenerator extends AbstractProcessor {
                 }
 
                 void addMetadata(String key,TypeMirror itemType) {
-                    metadata.add(key,makeCollectionIfNecessary("leaf"));
-                    metadata.add(key, "reference");
+                    addToMetadata(metadata, key,makeCollectionIfNecessary("leaf"));
+                    addToMetadata(metadata, key, "reference");
                 }
             }
         }
@@ -848,12 +878,12 @@ public class ConfigInjectorGenerator extends AbstractProcessor {
              */
             @Override
             protected void generate() {
-                metadata.add(xmlTokenName(),isRequired()?"required":"optional");
+                addToMetadata(metadata, xmlTokenName(),isRequired()?"required":"optional");
                 if (this.hasDefault()) {
                     if (a.defaultValue().indexOf(',')!=-1) {
-                        metadata.add(xmlTokenName(), '"' + "default:" + a.defaultValue() + '"');
+                        addToMetadata(metadata, xmlTokenName(), '"' + "default:" + a.defaultValue() + '"');
                     } else {
-                        metadata.add(xmlTokenName(), "default:" + a.defaultValue());                        
+                        addToMetadata(metadata, xmlTokenName(), "default:" + a.defaultValue());                        
                     }
                 }
                 String ant = "";
@@ -865,9 +895,9 @@ public class ConfigInjectorGenerator extends AbstractProcessor {
                 if (ant.length() == 0) { //take it from the return type of method
                     Property.Method m = (Property.Method)p; // Method needn't be Property's inner class
                     String typeReturnedByMethodDecl = m.method.getReturnType().toString();
-                    metadata.add(xmlTokenName(), "datatype:" + typeReturnedByMethodDecl);
+                    addToMetadata(metadata, xmlTokenName(), "datatype:" + typeReturnedByMethodDecl);
                 } else {
-                    metadata.add(xmlTokenName(), "datatype:" + ant);
+                    addToMetadata(metadata, xmlTokenName(), "datatype:" + ant);
                 }
                 super.generate();
             }
@@ -915,7 +945,7 @@ public class ConfigInjectorGenerator extends AbstractProcessor {
                 if (packer==null) {
                     for (AnnotationMirror am : p.decl().getAnnotationMirrors()) {
                         if (!am.toString().contains("hk2"))
-                            metadata.add(xmlTokenName(), am.toString());
+                            addToMetadata(metadata, xmlTokenName(), am.toString());
                     }
                 }
             }
