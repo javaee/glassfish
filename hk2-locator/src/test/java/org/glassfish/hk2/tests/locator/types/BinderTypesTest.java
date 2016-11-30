@@ -114,7 +114,7 @@ public class BinderTypesTest {
                 bind(D.class).to(D.class);
                 bind(E.class).to(E.class);
                 
-                bindAsContract(new TypeLiteral<A<B, C, D, E>>() {}); // <--- ???
+                bindAsContract(new TypeLiteral<A<B, C, D, E>>() {});
             }
         });
 
