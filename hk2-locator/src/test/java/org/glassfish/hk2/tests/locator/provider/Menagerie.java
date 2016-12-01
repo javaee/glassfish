@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,10 +43,10 @@ package org.glassfish.hk2.tests.locator.provider;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import junit.framework.Assert;
-
+import org.glassfish.hk2.api.AnnotationLiteral;
 import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.ServiceHandle;
+import org.junit.Assert;
 
 /**
  * @author jwells
@@ -72,6 +72,12 @@ public class Menagerie {
         Assert.assertTrue(allEagles.getSize() == 1);
         Assert.assertEquals(ProviderTest.SHADY, allEagles.get().getName());
         Assert.assertEquals(ProviderTest.EAGLES, ((FootballCharacter) allEagles.getHandle().getService()).getTeam());
+        
+        IterableProvider<FootballCharacter> eagles = allNFLPlayers.qualifiedWith(new EaglesImpl());
+        
+        Assert.assertTrue(eagles.getSize() == 1);
+        Assert.assertEquals(ProviderTest.SHADY, eagles.get().getName());
+        Assert.assertEquals(ProviderTest.EAGLES, eagles.getHandle().getService().getTeam());
     }
     
     public void validateAllGiants() {
@@ -162,5 +168,10 @@ public class Menagerie {
                 allCharacters.named(ProviderTest.QUEEQUEG).getHandle().getService().getName());
         Assert.assertEquals(ProviderTest.ISHMAEL,
                 allCharacters.named(ProviderTest.ISHMAEL).getHandle().getService().getName());
+    }
+    
+    private static class EaglesImpl extends AnnotationLiteral<Eagles> implements Eagles {
+        private static final long serialVersionUID = 5656136871421657809L;
+        
     }
 }
