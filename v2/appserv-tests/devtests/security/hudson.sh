@@ -46,7 +46,7 @@ rm -rf glassfish-v4-image
 mkdir glassfish-v4-image
 pushd glassfish-v4-image
 
-wget --no-proxy http://hudson-sca.us.oracle.com/job/gf-trunk-build-listener/lastSuccessfulBuild/artifact/bundles/glassfish.zip
+wget --no-proxy http://gf-hudson.us.oracle.com/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip
 unzip -q glassfish.zip
 
 export S1AS_HOME=$PWD/glassfish4/glassfish
