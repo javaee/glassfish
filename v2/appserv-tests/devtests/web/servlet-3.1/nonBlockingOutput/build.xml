@@ -55,7 +55,7 @@
     &testproperties;
     &run;
 
-    <target name="all" depends="build,deploy,run,undeploy"/>
+    <target name="all" depends="build,setup,deploy,run,unsetup,undeploy"/>
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
@@ -67,6 +67,22 @@
     <target name="compile" depends="clean">
         <antcall target="compile-common">
             <param name="src" value="servlet"/>
+        </antcall>
+    </target>
+
+    <target name="setup" depends="init-common">
+        <antcall target="asadmin-common">
+            <param name="admin.command" value="set" />
+            <param name="operand.props"
+                   value="configs.config.server-config.network-config.transports.transport.tcp.socket-write-buffer-size=500000"/>
+        </antcall>
+    </target>
+
+    <target name="unsetup" depends="init-common">
+        <antcall target="asadmin-common">
+            <param name="admin.command" value="set" />
+            <param name="operand.props"
+                   value="configs.config.server-config.network-config.transports.transport.tcp.socket-write-buffer-size="/>
         </antcall>
     </target>
 

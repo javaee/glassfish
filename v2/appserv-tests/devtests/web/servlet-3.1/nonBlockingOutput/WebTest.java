@@ -71,7 +71,9 @@ public class WebTest {
             try {
                 input = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 int count = 0;
-                boolean first = true;
+                int sleepInSec = 5;
+                System.out.format("Sleeping %s sec\n", sleepInSec);
+                Thread.sleep(sleepInSec * 1000);
                 while ((line = input.readLine()) != null) {
                     expected = expected || line.endsWith(EXPECTED_RESPONSE);
                     System.out.println("\n " + (count++) + ": " + line.length());
@@ -83,12 +85,6 @@ public class WebTest {
                         System.out.println(line.substring(length - 20));
                     }
                     System.out.println();
-                    if (first) {
-                        int sleepInSec = 5;
-                        System.out.format("Sleeping %s sec\n", sleepInSec);
-                        Thread.sleep(sleepInSec * 1000);
-                        first = false;
-                    }
                 }
             } finally {
                 try {

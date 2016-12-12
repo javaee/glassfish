@@ -55,7 +55,7 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet(urlPatterns="/test", asyncSupported=true)
 public class TestServlet extends HttpServlet {
     private static final int MAX_TIME_MILLIS = 10 * 1000;
-    private static final int LENGTH = 587952;
+    private static final int LENGTH = 500000;
 
     public void service(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
