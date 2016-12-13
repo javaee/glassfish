@@ -82,7 +82,7 @@ $OPENDS_HOME/setup -i -v -n -p 1389 --adminConnectorPort 4444 -x 1689 -w dmanage
 $S1AS_HOME/bin/asadmin start-database
 $S1AS_HOME/bin/asadmin start-domain
 pushd $APS_HOME/devtests/security
-
+unset http_proxy
 rm count.txt || true
 ant all |tee log.txt
 
