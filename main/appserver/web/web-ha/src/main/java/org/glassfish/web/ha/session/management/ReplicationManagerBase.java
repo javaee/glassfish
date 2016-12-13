@@ -45,7 +45,7 @@ import org.apache.catalina.session.PersistentManagerBase;
 import org.glassfish.ha.store.api.BackingStore;
 import org.glassfish.ha.store.api.BackingStoreException;
 import org.glassfish.ha.store.api.Storeable;
-import org.glassfish.logging.annotation.LogMessageInfo;
+import org.glassfish.web.ha.LogFacade;
 
 import java.io.IOException;
 import java.util.Map;
@@ -62,17 +62,7 @@ public abstract class ReplicationManagerBase<T extends Storeable> extends Persis
 
     protected static final String name = "ReplicationManagerBase";
 
-    protected Logger _logger = HAStoreBase._logger;
-
-    @LogMessageInfo(
-            message = "Failed to remove session from backing store",
-            level = "WARNING")
-    public static final String FAILED_TO_REMOVE_SESSION = "AS-WEB-HA-00006";
-
-    @LogMessageInfo(
-            message = "Required version NumberFormatException",
-            level = "INFO")
-    public static final String REQUIRED_VERSION_NFE = "AS-WEB-HA-00007";
+    protected Logger _logger = LogFacade.getLogger();
 
     protected boolean relaxCacheVersionSemantics = false;
     protected boolean disableJreplica = false;
@@ -105,7 +95,7 @@ public abstract class ReplicationManagerBase<T extends Storeable> extends Persis
         try {
             backingStore.remove(id);
         } catch (BackingStoreException e) {
-            _logger.warning(FAILED_TO_REMOVE_SESSION);
+            _logger.warning(LogFacade.FAILED_TO_REMOVE_SESSION);
         }
     }
 
@@ -129,7 +119,7 @@ public abstract class ReplicationManagerBase<T extends Storeable> extends Persis
                 _logger.fine("Required version " + requiredVersion);
             }
         } catch (NumberFormatException ex) {
-             _logger.log(Level.INFO, REQUIRED_VERSION_NFE, ex);
+             _logger.log(Level.INFO, LogFacade.REQUIRED_VERSION_NFE, ex);
             //deliberately do nothing
         }
         if(_logger.isLoggable(Level.FINE)) {
