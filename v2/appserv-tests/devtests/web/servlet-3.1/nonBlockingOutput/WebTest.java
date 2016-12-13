@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -51,6 +51,7 @@ public class WebTest {
 
     private static String TEST_NAME = "non-blocking-output";
     private static String EXPECTED_RESPONSE = "onWritePossible";
+    private static final String CRLF = "\r\n";
 
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
@@ -61,20 +62,28 @@ public class WebTest {
         String contextRoot = args[2];
         stat.addDescription("Unit test for non blocking output");
 
-        try {
-            URL url = new URL("http://" + host + ":" + port + "/" + contextRoot + "/test");
-            HttpURLConnection conn = (HttpURLConnection)url.openConnection();
-            conn.connect();
-            BufferedReader input = null;
-            String line = null;
+        try (Socket s = new Socket(host, port);
+                     OutputStream output = s.getOutputStream()) {
+            String reqStr = "GET /" + contextRoot + "/test HTTP/1.1" + CRLF +
+                 "Host: localhost" + CRLF + CRLF;
+            output.write(reqStr.getBytes());
+
+            int count = 0;
+            int sleepInSec = 5;
+            System.out.format("Sleeping %s sec\n", sleepInSec);
+            Thread.sleep(sleepInSec * 1000);
+
             boolean expected = false;
-            try {
-                input = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                int count = 0;
-                int sleepInSec = 5;
-                System.out.format("Sleeping %s sec\n", sleepInSec);
-                Thread.sleep(sleepInSec * 1000);
-                while ((line = input.readLine()) != null) {
+            try (InputStream is = s.getInputStream();
+                    BufferedReader input = new BufferedReader(new InputStreamReader(is))) {
+                boolean isHeader = true;
+                String line = null;
+                while (!expected && (line = input.readLine()) != null) {
+                    if (isHeader) {
+                        System.out.println(line);
+                        isHeader = line.length() != 0;
+                        continue;
+                    }
                     expected = expected || line.endsWith(EXPECTED_RESPONSE);
                     System.out.println("\n " + (count++) + ": " + line.length());
                     int length = line.length();
@@ -85,13 +94,6 @@ public class WebTest {
                         System.out.println(line.substring(length - 20));
                     }
                     System.out.println();
-                }
-            } finally {
-                try {
-                    if (input != null) {
-                        input.close();
-                    }
-                } catch(Exception ex) {
                 }
             }
             
