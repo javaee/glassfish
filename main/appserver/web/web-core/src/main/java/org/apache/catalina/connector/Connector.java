@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -78,13 +78,12 @@ import org.apache.catalina.Host;
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.LifecycleListener;
+import org.apache.catalina.LogFacade;
 import org.apache.catalina.Service;
 import org.apache.catalina.core.StandardEngine;
-import org.apache.catalina.core.StandardServer;
 import org.apache.catalina.net.ServerSocketFactory;
 import org.apache.catalina.util.LifecycleSupport;
 import org.glassfish.grizzly.http.server.HttpHandler;
-import org.glassfish.logging.annotation.LogMessageInfo;
 import org.glassfish.web.util.IntrospectionUtils;
 import org.glassfish.grizzly.http.server.util.Mapper;
 
@@ -98,66 +97,8 @@ import org.glassfish.grizzly.http.server.util.Mapper;
 public class Connector
     implements org.apache.catalina.Connector, Lifecycle
 {
-    private static final Logger log = StandardServer.log;
+    private static final Logger log = LogFacade.getLogger();
     private static final ResourceBundle rb = log.getResourceBundle();
-
-    @LogMessageInfo(
-            message = "The connector has already been initialized",
-            level = "INFO"
-    )
-    public static final String CONNECTOR_BEEN_INIT = "AS-WEB-CORE-00028";
-
-    @LogMessageInfo(
-            message = "Error registering connector ",
-            level = "SEVERE",
-            cause = "Could not register connector",
-            action = "Verify domain name and type"
-    )
-    public static final String ERROR_REGISTER_CONNECTOR_EXCEPTION = "AS-WEB-CORE-00029";
-
-    @LogMessageInfo(
-            message = "Failed to instanciate HttpHandler ",
-            level = "WARNING"
-    )
-    public static final String FAILED_INSTANCIATE_HTTP_HANDLER_EXCEPTION = "AS-WEB-CORE-00030";
-
-    @LogMessageInfo(
-            message = "mod_jk invalid Adapter implementation: {0} ",
-            level = "WARNING"
-    )
-    public static final String INVALID_ADAPTER_IMPLEMENTATION_EXCEPTION = "AS-WEB-CORE-00031";
-
-    @LogMessageInfo(
-            message = "Protocol handler instantiation failed: {0}",
-            level = "WARNING"
-    )
-    public static final String PROTOCOL_HANDLER_INIT_FAILED_EXCEPTION = "AS-WEB-CORE-00032";
-
-    @LogMessageInfo(
-            message = "The connector has already been started",
-            level = "INFO"
-    )
-    public static final String CONNECTOR_BEEN_STARTED = "AS-WEB-CORE-00033";
-
-    @LogMessageInfo(
-            message = "Protocol handler start failed: {0}",
-            level = "WARNING"
-    )
-    public static final String PROTOCOL_HANDLER_START_FAILED_EXCEPTION = "AS-WEB-CORE-00034";
-
-    @LogMessageInfo(
-            message = "Coyote connector has not been started",
-            level = "SEVERE",
-            cause = "Could not stop processing requests via this Connector",
-            action = "Verify if the connector has not been started"
-    )
-    public static final String CONNECTOR_NOT_BEEN_STARTED = "AS-WEB-CORE-00035";
-
-    @LogMessageInfo(
-            message = "Protocol handler destroy failed: {0}",
-            level = "WARNING"
-    )
-    public static final String PROTOCOL_HANDLER_DESTROY_FAILED_EXCEPTION = "AS-WEB-CORE-00036";
 
     // ---------------------------------------------- Adapter Configuration --//
     
@@ -1387,7 +1328,7 @@ public class Connector
     {
         if (initialized) {
             if (log.isLoggable(Level.INFO)) {
-                log.log(Level.INFO, CONNECTOR_BEEN_INIT);
+                log.log(Level.INFO, LogFacade.CONNECTOR_BEEN_INIT);
             }
             return;
         }
@@ -1406,7 +1347,7 @@ public class Connector
                 oname = createObjectName(domain, "Connector");
                 controller=oname;
             } catch (Exception e) {
-                log.log(Level.SEVERE, ERROR_REGISTER_CONNECTOR_EXCEPTION, e);
+                log.log(Level.SEVERE, LogFacade.ERROR_REGISTER_CONNECTOR_EXCEPTION, e);
             }
             if (log.isLoggable(Level.FINE)) {
                 log.log(Level.FINE, "Creating name for connector " + oname);
@@ -1429,7 +1370,7 @@ public class Connector
                         (HttpHandler)constructor.newInstance(new Object[]{this});
             } catch (Exception e) {
                 throw new LifecycleException
-                    (rb.getString(FAILED_INSTANCIATE_HTTP_HANDLER_EXCEPTION), e);
+                    (rb.getString(LogFacade.FAILED_INSTANCIATE_HTTP_HANDLER_EXCEPTION), e);
             } 
         }
         //END SJSAS 6363251
@@ -1445,7 +1386,7 @@ public class Connector
                     if (handler instanceof CoyoteAdapter){
                         ((CoyoteAdapter) handler).setCompatWithTomcat(true);
                     } else {
-                        String msg = MessageFormat.format(rb.getString(INVALID_ADAPTER_IMPLEMENTATION_EXCEPTION),
+                        String msg = MessageFormat.format(rb.getString(LogFacade.INVALID_ADAPTER_IMPLEMENTATION_EXCEPTION),
                                                           handler);
                         throw new IllegalStateException
                           (msg);
@@ -1464,7 +1405,7 @@ public class Connector
                 // END SJSAS 6439313
                 }
             } catch (Exception e) {
-                String msg = MessageFormat.format(rb.getString(PROTOCOL_HANDLER_INIT_FAILED_EXCEPTION), e);
+                String msg = MessageFormat.format(rb.getString(LogFacade.PROTOCOL_HANDLER_INIT_FAILED_EXCEPTION), e);
                 throw new LifecycleException
                     (msg);
             }
@@ -1531,7 +1472,7 @@ public class Connector
         try {
             protocolHandler.init();
         } catch (Exception e) {
-            String msg = MessageFormat.format(rb.getString(PROTOCOL_HANDLER_INIT_FAILED_EXCEPTION), e);
+            String msg = MessageFormat.format(rb.getString(LogFacade.PROTOCOL_HANDLER_INIT_FAILED_EXCEPTION), e);
             throw new LifecycleException
                 (msg);
         }
@@ -1575,7 +1516,7 @@ public class Connector
         // Validate and update our current state
         if (started) {
             if (log.isLoggable(Level.INFO)) {
-                log.log(Level.INFO, CONNECTOR_BEEN_STARTED);
+                log.log(Level.INFO, LogFacade.CONNECTOR_BEEN_STARTED);
             }
             return;
         }
@@ -1585,7 +1526,7 @@ public class Connector
         try {
             protocolHandler.start();
         } catch (Exception e) {
-            String msg = MessageFormat.format(rb.getString(PROTOCOL_HANDLER_START_FAILED_EXCEPTION), e);
+            String msg = MessageFormat.format(rb.getString(LogFacade.PROTOCOL_HANDLER_START_FAILED_EXCEPTION), e);
             throw new LifecycleException
                 (msg);
         }
@@ -1602,7 +1543,7 @@ public class Connector
 
         // Validate and update our current state
         if (!started) {
-            log.log(Level.SEVERE, CONNECTOR_NOT_BEEN_STARTED);
+            log.log(Level.SEVERE, LogFacade.CONNECTOR_NOT_BEEN_STARTED);
             return;
 
         }
@@ -1612,7 +1553,7 @@ public class Connector
         try {
             protocolHandler.destroy();
         } catch (Exception e) {
-            String msg = MessageFormat.format(rb.getString(PROTOCOL_HANDLER_DESTROY_FAILED_EXCEPTION), e);
+            String msg = MessageFormat.format(rb.getString(LogFacade.PROTOCOL_HANDLER_DESTROY_FAILED_EXCEPTION), e);
             throw new LifecycleException
                 (msg);
         }

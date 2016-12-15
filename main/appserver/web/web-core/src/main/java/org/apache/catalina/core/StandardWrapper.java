@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -94,11 +94,11 @@ import static org.apache.catalina.InstanceEvent.EventType.BEFORE_SERVICE_EVENT;
 import org.apache.catalina.InstanceListener;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Loader;
+import org.apache.catalina.LogFacade;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.security.SecurityUtil;
 import org.apache.catalina.util.Enumerator;
 import org.apache.catalina.util.InstanceSupport;
-import org.glassfish.logging.annotation.LogMessageInfo;
 import org.glassfish.web.valve.GlassFishValve;
 // END GlassFish 1343
 
@@ -117,108 +117,6 @@ public class StandardWrapper
 
     private static final String[] DEFAULT_SERVLET_METHODS = new String[] {
                                                     "GET", "HEAD", "POST" };
-
-    @LogMessageInfo(
-        message = "Parent container of a Wrapper must be a Context",
-        level = "WARNING"
-    )
-    public static final String PARENT_CONTAINER_MUST_BE_CONTEXT_EXCEPTION = "AS-WEB-CORE-00257";
-
-    @LogMessageInfo(
-        message = "Wrapper container may not have child containers",
-        level = "WARNING"
-    )
-    public static final String WRAPPER_CONTAINER_NO_CHILD_EXCEPTION = "AS-WEB-CORE-00258";
-
-    @LogMessageInfo(
-        message = "Cannot allocate servlet {0} because it is being unloaded",
-        level = "WARNING"
-    )
-    public static final String CANNOT_ALLOCATE_SERVLET_EXCEPTION = "AS-WEB-CORE-00259";
-
-    @LogMessageInfo(
-        message = "Error allocating a servlet instance",
-        level = "WARNING"
-    )
-    public static final String ERROR_ALLOCATE_SERVLET_INSTANCE_EXCEPTION = "AS-WEB-CORE-00260";
-
-    @LogMessageInfo(
-        message = "Class {0} is not a Servlet",
-        level = "WARNING"
-    )
-    public static final String CLASS_IS_NOT_SERVLET_EXCEPTION = "AS-WEB-CORE-00261";
-
-    @LogMessageInfo(
-        message = "Error instantiating servlet class {0}",
-        level = "WARNING"
-    )
-    public static final String ERROR_INSTANTIATE_SERVLET_CLASS_EXCEPTION = "AS-WEB-CORE-00262";
-
-    @LogMessageInfo(
-        message = "Servlet of class {0} is privileged and cannot be loaded by this web application",
-        level = "WARNING"
-    )
-    public static final String PRIVILEGED_SERVLET_CANNOT_BE_LOADED_EXCEPTION = "AS-WEB-CORE-00263";
-
-    @LogMessageInfo(
-        message = "No servlet class has been specified for servlet {0}",
-        level = "WARNING"
-    )
-    public static final String NO_SERVLET_BE_SPECIFIED_EXCEPTION = "AS-WEB-CORE-00264";
-
-    @LogMessageInfo(
-        message = "Wrapper cannot find Loader for servlet {0}",
-        level = "WARNING"
-    )
-    public static final String CANNOT_FIND_LOADER_EXCEPTION = "AS-WEB-CORE-00265";
-
-    @LogMessageInfo(
-        message = "Wrapper cannot find servlet class {0} or a class it depends on",
-        level = "WARNING"
-    )
-    public static final String CANNOT_FIND_SERVLET_CLASS_EXCEPTION = "AS-WEB-CORE-00266";
-
-    @LogMessageInfo(
-        message = "Servlet.init() for servlet {0} threw exception",
-        level = "WARNING"
-    )
-    public static final String SERVLET_INIT_EXCEPTION = "AS-WEB-CORE-00267";
-
-    @LogMessageInfo(
-        message = "Servlet execution threw an exception",
-        level = "WARNING"
-    )
-    public static final String SERVLET_EXECUTION_EXCEPTION = "AS-WEB-CORE-00268";
-
-    @LogMessageInfo(
-        message = "Marking servlet {0} as unavailable",
-        level = "FINE"
-    )
-    public static final String MARK_SERVLET_UNAVAILABLE = "AS-WEB-CORE-00269";
-
-    @LogMessageInfo(
-        message = "Waiting for {0} instance(s) of {1} to be deallocated",
-        level = "INFO"
-    )
-    public static final String WAITING_INSTANCE_BE_DEALLOCATED = "AS-WEB-CORE-00270";
-
-    @LogMessageInfo(
-        message = "Servlet.destroy() for servlet {0} threw exception",
-        level = "WARNING"
-    )
-    public static final String DESTROY_SERVLET_EXCEPTION = "AS-WEB-CORE-00271";
-
-    @LogMessageInfo(
-        message = "Servlet {0} threw unload() exception",
-        level = "WARNING"
-    )
-    public static final String SERVLET_UNLOAD_EXCEPTION = "AS-WEB-CORE-00272";
-
-    @LogMessageInfo(
-            message = "Error loading {0} {1}",
-            level = "INFO"
-    )
-    public static final String ERROR_LOADING_INFO = "AS-WEB-CORE-00273";
 
     // ----------------------------------------------------------- Constructors
 
@@ -673,7 +571,7 @@ public class StandardWrapper
         if ((container != null) &&
             !(container instanceof Context))
             throw new IllegalArgumentException
-                    (rb.getString(PARENT_CONTAINER_MUST_BE_CONTEXT_EXCEPTION));
+                    (rb.getString(LogFacade.PARENT_CONTAINER_MUST_BE_CONTEXT_EXCEPTION));
         if (container instanceof StandardContext) {
             unloadDelay = ((StandardContext)container).getUnloadDelay();
             notifyContainerListeners =
@@ -1035,7 +933,7 @@ public class StandardWrapper
      */
     public void addChild(Container child) {
         throw new IllegalStateException
-                (rb.getString(WRAPPER_CONTAINER_NO_CHILD_EXCEPTION));
+                (rb.getString(LogFacade.WRAPPER_CONTAINER_NO_CHILD_EXCEPTION));
     }
 
 
@@ -1195,7 +1093,7 @@ public class StandardWrapper
 
         // If we are currently unloading this servlet, throw an exception
         if (unloading) {
-            String msg = MessageFormat.format(rb.getString(CANNOT_ALLOCATE_SERVLET_EXCEPTION), getName());
+            String msg = MessageFormat.format(rb.getString(LogFacade.CANNOT_ALLOCATE_SERVLET_EXCEPTION), getName());
             throw new ServletException(msg);
         }
 
@@ -1214,7 +1112,7 @@ public class StandardWrapper
                     throw e;
                 } catch (Throwable e) {
                     throw new ServletException
-                            (rb.getString(ERROR_ALLOCATE_SERVLET_INSTANCE_EXCEPTION), e);
+                            (rb.getString(LogFacade.ERROR_ALLOCATE_SERVLET_INSTANCE_EXCEPTION), e);
                 }
             } else if (!instanceInitialized) {
                 /*
@@ -1247,7 +1145,7 @@ public class StandardWrapper
                         throw e;
                     } catch (Throwable e) {
                         throw new ServletException
-                                (rb.getString(ERROR_ALLOCATE_SERVLET_INSTANCE_EXCEPTION), e);
+                                (rb.getString(LogFacade.ERROR_ALLOCATE_SERVLET_INSTANCE_EXCEPTION), e);
                     }
                 } else {
                     try {
@@ -1406,19 +1304,19 @@ public class StandardWrapper
         } catch (ClassCastException e) {
             unavailable(null);
             // Restore the context ClassLoader
-            String msg = MessageFormat.format(rb.getString(CLASS_IS_NOT_SERVLET_EXCEPTION), servletClass.getName());
+            String msg = MessageFormat.format(rb.getString(LogFacade.CLASS_IS_NOT_SERVLET_EXCEPTION), servletClass.getName());
             throw new ServletException(msg, e);
         } catch (Throwable e) {
             unavailable(null);
             // Restore the context ClassLoader
-            String msg = MessageFormat.format(rb.getString(ERROR_INSTANTIATE_SERVLET_CLASS_EXCEPTION), servletClass.getName());
+            String msg = MessageFormat.format(rb.getString(LogFacade.ERROR_INSTANTIATE_SERVLET_CLASS_EXCEPTION), servletClass.getName());
             throw new ServletException(msg, e);
         }
 
         // Check if loading the servlet in this web application should be
         // allowed
         if (!isServletAllowed(servlet)) {
-            String msg = MessageFormat.format(rb.getString(PRIVILEGED_SERVLET_CANNOT_BE_LOADED_EXCEPTION), servletClass.getName());
+            String msg = MessageFormat.format(rb.getString(LogFacade.PRIVILEGED_SERVLET_CANNOT_BE_LOADED_EXCEPTION), servletClass.getName());
             throw new SecurityException(msg);
         }
 
@@ -1477,7 +1375,7 @@ public class StandardWrapper
         // Complain if no servlet class has been specified
         if (actualClass == null) {
             unavailable(null);
-            String msg = MessageFormat.format(rb.getString(NO_SERVLET_BE_SPECIFIED_EXCEPTION), getName());
+            String msg = MessageFormat.format(rb.getString(LogFacade.NO_SERVLET_BE_SPECIFIED_EXCEPTION), getName());
             throw new ServletException(msg);
         }
 
@@ -1485,7 +1383,7 @@ public class StandardWrapper
         Loader loader = getLoader();
         if (loader == null) {
             unavailable(null);
-            String msg = MessageFormat.format(rb.getString(CANNOT_FIND_LOADER_EXCEPTION), getName());
+            String msg = MessageFormat.format(rb.getString(LogFacade.CANNOT_FIND_LOADER_EXCEPTION), getName());
             throw new ServletException(msg);
         }
 
@@ -1523,7 +1421,7 @@ public class StandardWrapper
                     if (ex instanceof ClassNotFoundException){
                         throw (ClassNotFoundException)ex;
                     } else {
-                        String msgErrorLoadingInfo = MessageFormat.format(rb.getString(ERROR_LOADING_INFO),
+                        String msgErrorLoadingInfo = MessageFormat.format(rb.getString(LogFacade.ERROR_LOADING_INFO),
                                                           new Object[] {fclassLoader, factualClass});
                         getServletContext().log(msgErrorLoadingInfo, ex );
                     }
@@ -1537,15 +1435,15 @@ public class StandardWrapper
             }
         } catch (ClassNotFoundException e) {
             unavailable(null);
-            String msgErrorLoadingInfo = MessageFormat.format(rb.getString(ERROR_LOADING_INFO),
+            String msgErrorLoadingInfo = MessageFormat.format(rb.getString(LogFacade.ERROR_LOADING_INFO),
                     new Object[] {classLoader, actualClass});
             getServletContext().log(msgErrorLoadingInfo, e );
-            String msg = MessageFormat.format(rb.getString(CANNOT_FIND_SERVLET_CLASS_EXCEPTION), actualClass);
+            String msg = MessageFormat.format(rb.getString(LogFacade.CANNOT_FIND_SERVLET_CLASS_EXCEPTION), actualClass);
             throw new ServletException(msg, e);
         }
 
         if (clazz == null) {
-            String msg = MessageFormat.format(rb.getString(CANNOT_FIND_SERVLET_CLASS_EXCEPTION), actualClass);
+            String msg = MessageFormat.format(rb.getString(LogFacade.CANNOT_FIND_SERVLET_CLASS_EXCEPTION), actualClass);
             unavailable(null);
             throw new ServletException(msg);
         }
@@ -1637,7 +1535,7 @@ public class StandardWrapper
             instanceSupport.fireInstanceEvent(AFTER_INIT_EVENT,servlet, f);
             // If the servlet wanted to be unavailable it would have
             // said so, so do not call unavailable(null).
-            String msg = MessageFormat.format(rb.getString(SERVLET_INIT_EXCEPTION), getName());
+            String msg = MessageFormat.format(rb.getString(LogFacade.SERVLET_INIT_EXCEPTION), getName());
             throw new ServletException(msg, f);
         }
     }
@@ -1729,7 +1627,7 @@ public class StandardWrapper
                 HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             supp.fireInstanceEvent(AFTER_SERVICE_EVENT,
                                    serv, request, response, e);
-            throw new ServletException(rb.getString(SERVLET_EXECUTION_EXCEPTION), e);
+            throw new ServletException(rb.getString(LogFacade.SERVLET_EXECUTION_EXCEPTION), e);
         }
 
     }
@@ -1825,7 +1723,7 @@ public class StandardWrapper
      *  to mark this servlet as permanently unavailable
      */
     public void unavailable(UnavailableException unavailable) {
-        String msg = MessageFormat.format(rb.getString(MARK_SERVLET_UNAVAILABLE), getName());
+        String msg = MessageFormat.format(rb.getString(LogFacade.MARK_SERVLET_UNAVAILABLE), getName());
         getServletContext().log(msg);
         if (unavailable == null)
             setAvailable(Long.MAX_VALUE);
@@ -1867,7 +1765,7 @@ public class StandardWrapper
             while ((nRetries < 21) && (countAllocated.get() > 0)) {
                 if ((nRetries % 10) == 0) {
                     if (log.isLoggable(Level.FINE)) {
-                        log.log(Level.FINE, WAITING_INSTANCE_BE_DEALLOCATED, new Object[] {countAllocated.toString(),
+                        log.log(Level.FINE, LogFacade.WAITING_INSTANCE_BE_DEALLOCATED, new Object[] {countAllocated.toString(),
                                 instance.getClass().getName()});
                     }
                 }
@@ -1909,7 +1807,7 @@ public class StandardWrapper
                 fireContainerEvent("unload", this);
             }
             unloading = false;
-            String msg = MessageFormat.format(rb.getString(DESTROY_SERVLET_EXCEPTION), getName());
+            String msg = MessageFormat.format(rb.getString(LogFacade.DESTROY_SERVLET_EXCEPTION), getName());
             throw new ServletException(msg, t);
         } finally {
             // restore the context ClassLoader
@@ -1941,7 +1839,7 @@ public class StandardWrapper
                 if (notifyContainerListeners) {
                     fireContainerEvent("unload", this);
                 }
-                String msg = MessageFormat.format(rb.getString(DESTROY_SERVLET_EXCEPTION), getName());
+                String msg = MessageFormat.format(rb.getString(LogFacade.DESTROY_SERVLET_EXCEPTION), getName());
                 throw new ServletException(msg, t);
             } finally {
                 // restore the context ClassLoader
@@ -2193,7 +2091,7 @@ public class StandardWrapper
         try {
             unload();
         } catch (ServletException e) {
-            String msg = MessageFormat.format(rb.getString(SERVLET_UNLOAD_EXCEPTION), getName());
+            String msg = MessageFormat.format(rb.getString(LogFacade.SERVLET_UNLOAD_EXCEPTION), getName());
             getServletContext().log(msg, e);
         }
 
