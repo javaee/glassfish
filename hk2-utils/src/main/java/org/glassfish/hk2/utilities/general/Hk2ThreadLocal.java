@@ -39,7 +39,7 @@
  */
 package org.glassfish.hk2.utilities.general;
 
-import java.util.HashMap;
+import java.util.WeakHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.ReadLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
@@ -58,7 +58,7 @@ public class Hk2ThreadLocal<T> {
     private final WriteLock wLock = readWriteLock.writeLock();
     private final ReadLock rLock = readWriteLock.readLock();
     
-    private final HashMap<Long, T> locals = new HashMap<Long, T>();
+    private final WeakHashMap<Thread, T> locals = new WeakHashMap<Thread, T>();
     
     /**
      * Returns the current thread's "initial value" for this
@@ -91,7 +91,7 @@ public class Hk2ThreadLocal<T> {
      * @return the current thread's value of this thread-local
      */
     public T get() {
-        long id = Thread.currentThread().getId();
+        Thread id = Thread.currentThread();
         
         rLock.lock();
         try {
@@ -132,7 +132,7 @@ public class Hk2ThreadLocal<T> {
      *        this thread-local.
      */
     public void set(T value) {
-        long id = Thread.currentThread().getId();
+        Thread id = Thread.currentThread();
         
         wLock.lock();
         try {
@@ -154,7 +154,7 @@ public class Hk2ThreadLocal<T> {
      * <tt>initialValue</tt> method in the current thread.
      */
      public void remove() {
-         long id = Thread.currentThread().getId();
+         Thread id = Thread.currentThread();
          
          wLock.lock();
          try {
