@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2014-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -224,6 +224,47 @@ public class GeneralUtilitiesTest {
         Assert.assertEquals(t3.getId(), g3.getThreadIdFromService());
         Assert.assertEquals(t4.getId(), g4.getThreadIdFromService());
         Assert.assertEquals(Thread.currentThread().getId(), ts.getThreadIdFromLocal());
+        
+        // One for each thread we still have a reference to t1, t2, t3, t4 and the current thread
+        Assert.assertEquals(5, ts.getSize());
+        
+        // The below code is here to make sure an optimizer doesn't get
+        // smart on us and notice that our references are stale in the
+        // check above
+        Assert.assertTrue(t1.getId() > 0);
+        Assert.assertTrue(t2.getId() > 0);
+        Assert.assertTrue(t3.getId() > 0);
+        Assert.assertTrue(t4.getId() > 0);
+    }
+    
+    /**
+     * Tests that ephemeral threads do not cause a large memory leak in the
+     * Hk2ThreadLocal
+     */
+    @Test
+    public void testMemoryLeakWithEphemeralThreads() throws InterruptedException {
+        ThreadService ts = new ThreadService();
+        
+        for (int lcv = 0; lcv < 1000; lcv++) {
+            ThreadSpecificSetOverridesInitialValue g1 = new ThreadSpecificSetOverridesInitialValue(ts, -1, true, false);
+            
+            Thread t1 = new Thread(g1);
+            
+            t1.start();
+            
+            Assert.assertEquals(-1, g1.getThreadIdFromService());
+        }
+        
+        for (int lcv = 0; lcv < 10; lcv++) {
+            System.gc();
+            
+            if (ts.getSize() < 10) break;
+            
+            Thread.sleep(1000);
+        }
+        
+        Assert.assertTrue("Size of heap still too large: " + ts.getSize(), ts.getSize() < 10);
+        
     }
     
     /**

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -184,5 +184,24 @@ public class Hk2ThreadLocal<T> {
               wLock.unlock();
           }
           
+      }
+      
+      /**
+       * Returns the total size of the internal data structure in
+       * terms of entries.  This is used for diagnostics purposes
+       * only
+       * 
+       * @return The current number of entries across all threads.
+       * This is basically the number of threads that currently
+       * have data with the Hk2ThreadLocal
+       */
+      public int getSize() {
+          rLock.lock();
+          try {
+              return locals.size();
+          }
+          finally {
+              rLock.unlock();
+          }
       }
 }
