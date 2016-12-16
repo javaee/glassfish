@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -54,16 +54,16 @@ public class CheckAccessLog extends HttpServlet {
                 resp.getWriter().println("File "+files[i]);
                 if (files[i].startsWith("server")) {
                     File file = new File(location + "/domains/domain1/logs/access/"+files[i]);
-                    FileInputStream fis = new FileInputStream(file);
-                    BufferedReader br = new BufferedReader(new InputStreamReader(fis));
-                    String line = br.readLine();
-                    resp.getWriter().println("file content "+line);
-                    resp.getWriter().println("file length "+file.exists()+" "+file.length());
-                    if ((file.length() > 0) && (line.contains("400"))) {
-                        resp.getWriter().println("SUCCESS!");
+                    try (FileInputStream fis = new FileInputStream(file);
+                        BufferedReader br = new BufferedReader(new InputStreamReader(fis));
+                        ) {
+                        String line = br.readLine();
+                        resp.getWriter().println("file content "+line);
+                        resp.getWriter().println("file length "+file.exists()+" "+file.length());
+                        if ((file.length() > 0) && (line.contains("400"))) {
+                            resp.getWriter().println("SUCCESS!");
+                        }
                     }
-                    //fis.close();
-                    //br.close();
                 }
             }
         }    

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -100,15 +100,15 @@ public class WebTest2 {
             throw new Exception("Wrong response code. Expected: 200"
                                 + ", received: " + responseCode);
         } else {
-            BufferedReader bis = new BufferedReader(
-                new InputStreamReader(conn.getInputStream()));
-            String line = null;
-            while ((line = bis.readLine()) != null) {
-                if (EXPECTED.equals(line)) {
-                    break;
+            try (BufferedReader bis = new BufferedReader(
+                    new InputStreamReader(conn.getInputStream()))) {
+                String line = null;
+                while ((line = bis.readLine()) != null) {
+                    System.out.println(line);
+                    if (EXPECTED.equals(line)) {
+                        return;
+                    }
                 }
-            }
-            if (line == null) {
                 throw new Exception("Wrong response body. Could not find "
                                     + "expected string: " + EXPECTED);
             }
