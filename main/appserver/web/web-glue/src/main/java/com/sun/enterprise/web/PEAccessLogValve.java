@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2016 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,7 +52,7 @@ import org.apache.catalina.*;
 import org.apache.catalina.valves.ValveBase;
 import org.glassfish.api.admin.ServerEnvironment;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.logging.annotation.LogMessageInfo;
+import org.glassfish.web.LogFacade;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -87,61 +87,9 @@ public final class PEAccessLogValve
     extends ValveBase
     implements Runnable {
 
-    private static final Logger _logger = com.sun.enterprise.web.WebContainer.logger;
+    private static final Logger _logger = LogFacade.getLogger();
 
     private static final ResourceBundle _rb = _logger.getResourceBundle();
-
-    @LogMessageInfo(
-            message = "Unable to write access log file {0}",
-            level = "SEVERE",
-            cause = "An exception occurred writing to access log file",
-            action = "Check the exception for the error")
-    public static final String ACCESS_LOG_UNABLE_TO_WRITE = "AS-WEB-GLUE-00098";
-
-    @LogMessageInfo(
-            message = "Setting accesslog directory for virtual server '{0}' to {1}",
-            level = "FINE")
-    public static final String ACCESS_LOG_DIRECTORY_SET = "AS-WEB-GLUE-00099";
-
-    @LogMessageInfo(
-            message = "Invalid accessLogWriterInterval value [{0}]",
-            level = "WARNING")
-    public static final String INVALID_ACCESS_LOG_WRITER_INTERVAL = "AS-WEB-GLUE-00100";
-
-    @LogMessageInfo(
-            message = "Invalid accessLogBufferSize value [{0}]",
-            level = "WARNING")
-    public static final String INVALID_ACCESS_LOG_BUFFER_SIZE = "AS-WEB-GLUE-00101";
-
-    @LogMessageInfo(
-            message = "Unable to parse max-history-files access log configuration [{0}]",
-            level = "WARNING")
-    public static final String INVALID_MAX_HISTORY_FILES = "AS-WEB-GLUE-00102";
-
-    @LogMessageInfo(
-            message = "Unable to create {0}",
-            level = "WARNING")
-    public static final String UNABLE_TO_CREATE = "AS-WEB-GLUE-00103";
-
-    @LogMessageInfo(
-            message = "Unable to rename access log file {0} to {1}",
-            level = "WARNING")
-    public static final String UNABLE_TO_RENAME_LOG_FILE = "AS-WEB-GLUE-00104";
-
-    @LogMessageInfo(
-            message = "Unable to remove access log file {0}",
-            level = "WARNING")
-    public static final String UNABLE_TO_REMOVE_LOG_FILE = "AS-WEB-GLUE-00105";
-
-    @LogMessageInfo(
-            message = "Access logger has already been started",
-            level = "WARNING")
-    public static final String ACCESS_LOG_ALREADY_STARTED = "AS-WEB-GLUE-00106";
-
-    @LogMessageInfo(
-            message = "Access logger has not yet been started",
-            level = "WARNING")
-    public static final String ACCESS_LOG_NOT_STARTED = "AS-WEB-GLUE-00107";
 
 
     // Predefined patterns
@@ -660,7 +608,7 @@ public final class PEAccessLogValve
                     if (i+1 == 2){
                         _logger.log(
                             Level.SEVERE,
-                            ACCESS_LOG_UNABLE_TO_WRITE,
+                            LogFacade.ACCESS_LOG_UNABLE_TO_WRITE,
                             new Object[] {ex});   
                         return;
                     }
@@ -801,7 +749,7 @@ public final class PEAccessLogValve
             
         if (_logger.isLoggable(Level.FINE)) {
             _logger.log(Level.FINE,
-                    ACCESS_LOG_DIRECTORY_SET,
+                    LogFacade.ACCESS_LOG_DIRECTORY_SET,
                     new Object[]{vsId, dir.getAbsolutePath()});
         }
 
@@ -820,7 +768,7 @@ public final class PEAccessLogValve
                 setWriterInterval(Integer.parseInt(acWriteInterval));
             } catch (NumberFormatException ex){
                 _logger.log(Level.WARNING,
-                    INVALID_ACCESS_LOG_WRITER_INTERVAL,
+                    LogFacade.INVALID_ACCESS_LOG_WRITER_INTERVAL,
                     acWriteInterval);
             }
         }
@@ -837,7 +785,7 @@ public final class PEAccessLogValve
                 setBufferSize(Integer.parseInt(acBufferSize));
             } catch (NumberFormatException ex){
                 _logger.log(Level.WARNING,
-                    INVALID_ACCESS_LOG_BUFFER_SIZE,
+                    LogFacade.INVALID_ACCESS_LOG_BUFFER_SIZE,
                     acBufferSize);
             }
         }
@@ -925,7 +873,7 @@ public final class PEAccessLogValve
                 try {
                     maxHistoryFiles = Integer.parseInt(prop);
                 } catch (NumberFormatException e) {
-                    String msg = MessageFormat.format(_rb.getString(INVALID_MAX_HISTORY_FILES), prop);
+                    String msg = MessageFormat.format(_rb.getString(LogFacade.INVALID_MAX_HISTORY_FILES), prop);
                     _logger.log(Level.WARNING, msg, e);   
                 }
             }
@@ -934,7 +882,7 @@ public final class PEAccessLogValve
                 maxHistoryFiles = Integer.parseInt(
                     accessLogConfig.getMaxHistoryFiles());
             } catch (NumberFormatException e) {
-                String msg = MessageFormat.format(_rb.getString(INVALID_MAX_HISTORY_FILES),
+                String msg = MessageFormat.format(_rb.getString(LogFacade.INVALID_MAX_HISTORY_FILES),
                     accessLogConfig.getMaxHistoryFiles());
                 _logger.log(Level.WARNING, msg, e);   
             }
@@ -984,7 +932,7 @@ public final class PEAccessLogValve
             dir = new File(System.getProperty("catalina.base"), directory);
         if (!FileUtils.mkdirsMaybe(dir)) {
             _logger.log(Level.WARNING,
-                    UNABLE_TO_CREATE,
+                    LogFacade.UNABLE_TO_CREATE,
                     dir.toString());
         }
 
@@ -1017,7 +965,7 @@ public final class PEAccessLogValve
                 if (!logFile.renameTo(renameToFile)) {
                     _logger.log(
                         Level.WARNING,
-                            UNABLE_TO_RENAME_LOG_FILE,
+                            LogFacade.UNABLE_TO_RENAME_LOG_FILE,
                             new Object[] {logFile.toString(), dateStampedPathname });
                 }
                 File removeFile = null;
@@ -1033,7 +981,7 @@ public final class PEAccessLogValve
                 }
                 if (removeFile != null && !removeFile.delete()) {
                     _logger.log(Level.WARNING,
-                                UNABLE_TO_REMOVE_LOG_FILE,
+                                LogFacade.UNABLE_TO_REMOVE_LOG_FILE,
                                 removeFile.toString());
                 }
             }
@@ -1103,7 +1051,7 @@ public final class PEAccessLogValve
 
         // Validate and update our current component state
         if (started) {
-            throw new LifecycleException(_rb.getString(ACCESS_LOG_ALREADY_STARTED));
+            throw new LifecycleException(_rb.getString(LogFacade.ACCESS_LOG_ALREADY_STARTED));
         }
 
         lifecycle.fireLifecycleEvent(START_EVENT, null);
@@ -1158,7 +1106,7 @@ public final class PEAccessLogValve
 
         // Validate and update our current component state
         if (!started) {
-            throw new LifecycleException(_rb.getString(ACCESS_LOG_NOT_STARTED));
+            throw new LifecycleException(_rb.getString(LogFacade.ACCESS_LOG_NOT_STARTED));
         }
 
         lifecycle.fireLifecycleEvent(STOP_EVENT, null);
