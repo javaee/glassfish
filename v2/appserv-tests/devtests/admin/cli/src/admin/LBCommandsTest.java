@@ -294,7 +294,7 @@ public class LBCommandsTest extends AdminBaseDevTest {
         asadmin("export-http-lb-config", TARGETS_OPTION, CLUSTER + ","
                 + CLUSTER2, loadbalancerXml.getAbsolutePath());
         runTest(i++ + ".export-http-lb-config", validateXML(loadbalancerXml,
-                CHECKSUM2));
+                CHECKSUM2,CHECKSUM2_2));
 
         deleteXML(loadbalancerXml);
         asadmin("export-http-lb-config", TARGETS_OPTION, CLUSTER + ","
@@ -302,7 +302,7 @@ public class LBCommandsTest extends AdminBaseDevTest {
                 "response-timeout-in-seconds=30:https-routing=true",
                 loadbalancerXml.getAbsolutePath());
         runTest(i++ + ".export-http-lb-config", validateXML(loadbalancerXml,
-                CHECKSUM3));
+                CHECKSUM3,CHECKSUM3_2));
 
         deleteXML(loadbalancerXml);
         asadmin("export-http-lb-config", TARGETS_OPTION, STANDALONE_INSTANCE1
@@ -493,7 +493,9 @@ public class LBCommandsTest extends AdminBaseDevTest {
 
     private static final String CHECKSUM1 = "6ac4df0a875e5202f190899e8ccf823c";
     private static final String CHECKSUM2 = "b8f0b333dc1b935d8921a420985953b0";
+    private static final String CHECKSUM2_2 = "e954ded13fdaa34209a580e332e8ec70";
     private static final String CHECKSUM3 = "4b5d431750cc251bf1920ce46c38ce38";
+    private static final String CHECKSUM3_2 = "2dd33443d61de9c51278d685c58fb57f";
     private static final String CHECKSUM4 = "99d66d54e9749427359e2c4b06f63847";
     private static final String CHECKSUM4_2 = "71f922d8e1e6aafc4d6f99c3ae4edb54";
 }
