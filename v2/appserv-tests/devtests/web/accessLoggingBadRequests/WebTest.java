@@ -79,7 +79,7 @@ public class WebTest {
 
         Socket sock = new Socket(host, new Integer(port).intValue());
         OutputStream os = sock.getOutputStream();
-        String get = "GET " +  "/" +" HTTP/1.1\n";
+        String get = "GET " +  "/nosuchurl" +" HTTP/1.1\n";
         System.out.println(get);
         os.write(get.getBytes());
         os.write("\n".getBytes());
