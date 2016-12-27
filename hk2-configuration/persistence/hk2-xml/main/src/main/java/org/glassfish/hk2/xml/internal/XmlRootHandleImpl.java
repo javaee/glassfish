@@ -167,8 +167,15 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
         if (!(newRootRoot instanceof BaseHK2JAXBBean)) {
             throw new IllegalArgumentException("The newRoot has a root of an unknown type: " + newRootRoot.getClass().getName());
         }
+        if (!newRootRoot.getClass().equals(root.getClass())) {
+            throw new IllegalArgumentException("The two roots must have the same class as this root, instead it is of type " + newRootRoot.getClass().getName());
+        }
+        if (newRootRoot.equals(root)) {
+            throw new IllegalArgumentException("Cannot overlay the same bean on top of itself");
+        }
         
         BaseHK2JAXBBean newRootBase = (BaseHK2JAXBBean) newRootRoot;
+        BaseHK2JAXBBean oldRootBase = (BaseHK2JAXBBean) root;
         
         throw new AssertionError("overlay not yet implemented");
         

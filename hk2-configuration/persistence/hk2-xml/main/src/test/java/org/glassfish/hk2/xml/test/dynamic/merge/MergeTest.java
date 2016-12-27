@@ -539,7 +539,7 @@ public class MergeTest {
     }
     
     /**
-     * Removes a direct child (and all children underneath)
+     * Adds a direct child (and all children underneath)
      * 
      * @throws Exception
      */

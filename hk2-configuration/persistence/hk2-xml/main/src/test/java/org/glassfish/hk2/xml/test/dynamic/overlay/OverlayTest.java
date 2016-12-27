@@ -48,6 +48,7 @@ import org.glassfish.hk2.configuration.hub.api.Change;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.Change.ChangeCategory;
+import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.basic.beans.Commons;
@@ -71,7 +72,7 @@ public class OverlayTest {
     @SuppressWarnings("unchecked")
     @Test
     @org.junit.Ignore
-    public void testRooBeanOnlyOverlay() throws Exception {
+    public void testRootBeanOnlyOverlay() throws Exception {
         ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
         XmlService xmlService = locator.getService(XmlService.class);
         Hub hub = locator.getService(Hub.class);
@@ -90,9 +91,10 @@ public class OverlayTest {
         // This just checks to make sure the original tree was not modified when creating the second handle
         RawSetsTest.verifyPreState(rootHandle, hub);
         
-        rootHandle.overlay(rootHandle2);
-        
         Museum museum = rootHandle.getRoot();
+        XmlHk2ConfigurationBean museumAsBean = (XmlHk2ConfigurationBean) museum;
+        
+        rootHandle.overlay(rootHandle2);
         
         // Now make sure new values show up
         Assert.assertEquals(RawSetsTest.ONE_OH_ONE_INT, museum.getId());

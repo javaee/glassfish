@@ -42,6 +42,7 @@ package org.glassfish.hk2.xml.test.basic.beans;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.jvnet.hk2.annotations.Contract;
@@ -54,7 +55,7 @@ import org.jvnet.hk2.annotations.Contract;
 public interface Museum {
     public String getName();
     
-    @XmlElement
+    @XmlElement @XmlID
     public void setName(String name);
     
     public int getAge();
