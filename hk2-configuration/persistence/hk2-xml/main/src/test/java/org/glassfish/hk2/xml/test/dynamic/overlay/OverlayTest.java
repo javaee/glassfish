@@ -117,4 +117,104 @@ public class OverlayTest {
             Assert.assertEquals(ChangeCategory.MODIFY_INSTANCE, change.getChangeCategory());
         }
     }
+    
+    private List<Change> doTest(String original, String overlay) {
+        ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        UpdateListener listener = locator.getService(UpdateListener.class);
+        
+        XmlRootHandle<OverlayRootABean> originalHandle = xmlService.createEmptyHandle(OverlayRootABean.class, true, true);
+        OverlayUtilities.generateOverlayRootABean(originalHandle, OverlayUtilities.singleLetterNames(original));
+        
+        XmlRootHandle<OverlayRootABean> overlayHandle = xmlService.createEmptyHandle(OverlayRootABean.class, false, false);
+        OverlayUtilities.generateOverlayRootABean(overlayHandle, OverlayUtilities.singleLetterNames(overlay));
+        
+        OverlayUtilities.checkHubSingleLetterOveralyRootA(hub, original);
+        
+        originalHandle.overlay(overlayHandle);
+        
+        OverlayUtilities.checkHubSingleLetterOveralyRootA(hub, overlay);
+        
+        return listener.getChanges();
+    }
+    
+    /**
+     * Tests overlay going from ABC -> BC
+     * 
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testABCxBC() throws Exception {
+        List<Change> changes = doTest("ABC", "BC");
+        
+        // TODO: Check the set of changes!
+    }
+    
+    /**
+     * Tests overlay going from ABC -> AB
+     * 
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testABCxAB() throws Exception {
+        doTest("ABC", "AB");
+    }
+    
+    /**
+     * Tests overlay going from ABC -> CBA
+     * 
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testABCxCBA() throws Exception {
+        doTest("ABC", "CBA");
+    }
+    
+    /**
+     * Tests overlay going from ABC -> BCA
+     * 
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testABCxBCA() throws Exception {
+        doTest("ABC", "BCA");
+    }
+    
+    /**
+     * Tests overlay going from ABC -> ABCD
+     * 
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testABCxABCD() throws Exception {
+        doTest("ABC", "ABCD");
+    }
+    
+    /**
+     * Tests overlay going from ABC -> DABC
+     * 
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testABCxCABC() throws Exception {
+        doTest("ABC", "CABC");
+    }
+    
+    /**
+     * Tests overlay going from ABC -> ABDC
+     * 
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testABCxABDC() throws Exception {
+        doTest("ABC", "ABDC");
+    }
 }
