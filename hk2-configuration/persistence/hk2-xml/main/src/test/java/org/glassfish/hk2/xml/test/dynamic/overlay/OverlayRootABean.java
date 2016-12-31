@@ -62,8 +62,8 @@ public interface OverlayRootABean {
     public UnkeyedLeafBean removeUnkeyedLeafList();
     
     @XmlElement(name=OverlayUtilities.A_ARRAY_CHILD)
-    public List<UnkeyedLeafBean> getUnkeyedLeafArray();
-    public void setUnkeyedLeafArray(List<UnkeyedLeafBean> value);
+    public UnkeyedLeafBean[] getUnkeyedLeafArray();
+    public void setUnkeyedLeafArray(UnkeyedLeafBean value[]);
     public UnkeyedLeafBean addUnkeyedLeafArray();
     public UnkeyedLeafBean removeUnkeyedLeafArray();
 }

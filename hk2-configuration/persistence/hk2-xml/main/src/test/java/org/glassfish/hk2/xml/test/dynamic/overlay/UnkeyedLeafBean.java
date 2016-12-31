@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.xml.test.dynamic.overlay;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlElement;
 
 /**
@@ -55,5 +57,17 @@ public interface UnkeyedLeafBean {
     @XmlElement(name=OverlayUtilities.NAME_TAG)
     public String getName();
     public void setName(String name);
+    
+    @XmlElement(name=OverlayUtilities.LEAF_LIST)
+    public List<UnkeyedLeafBean> getListLeaf();
+    public void setListLeaf(List<UnkeyedLeafBean> listLeaf);
+    public UnkeyedLeafBean addListLeaf();
+    public UnkeyedLeafBean removeListLeaf(int index);
+    
+    @XmlElement(name=OverlayUtilities.LEAF_ARRAY)
+    public UnkeyedLeafBean[] getArrayLeaf();
+    public void setArrayLeaf(UnkeyedLeafBean listLeaf[]);
+    public UnkeyedLeafBean addArrayLeaf();
+    public UnkeyedLeafBean removeArrayLeaf(int index);
 
 }

@@ -40,14 +40,18 @@
 package org.glassfish.hk2.xml.test.dynamic.overlay;
 
 import java.net.URL;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Change;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.Change.ChangeCategory;
+import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
@@ -125,18 +129,46 @@ public class OverlayTest {
         UpdateListener listener = locator.getService(UpdateListener.class);
         
         XmlRootHandle<OverlayRootABean> originalHandle = xmlService.createEmptyHandle(OverlayRootABean.class, true, true);
-        OverlayUtilities.generateOverlayRootABean(originalHandle, OverlayUtilities.singleLetterNames(original));
+        OverlayUtilities.generateOverlayRootABean(originalHandle, original);
         
         XmlRootHandle<OverlayRootABean> overlayHandle = xmlService.createEmptyHandle(OverlayRootABean.class, false, false);
-        OverlayUtilities.generateOverlayRootABean(overlayHandle, OverlayUtilities.singleLetterNames(overlay));
+        OverlayUtilities.generateOverlayRootABean(overlayHandle, overlay);
         
-        OverlayUtilities.checkHubSingleLetterOveralyRootA(hub, original);
+        OverlayUtilities.checkSingleLetterOveralyRootA(originalHandle, hub, original);
         
         originalHandle.overlay(overlayHandle);
         
-        OverlayUtilities.checkHubSingleLetterOveralyRootA(hub, overlay);
+        OverlayUtilities.checkSingleLetterOveralyRootA(originalHandle, hub, overlay);
         
         return listener.getChanges();
+    }
+    
+    private static String getAssertString(List<Change> changes, ChangeDescriptor... changeDescriptors) {
+        StringBuffer received = new StringBuffer("\n");
+        int count = 1;
+        for (Change change : changes) {
+            received.append("  " + count + ". " + change + "\n");
+            count++;
+        }
+        
+        StringBuffer expected = new StringBuffer("\n");
+        for (int lcv = 0; lcv < changeDescriptors.length; lcv++) {
+            expected.append("  " + (lcv + 1) + ". " + changeDescriptors[lcv] + "\n");
+        }
+        
+        return "Expected Changes were: " + expected + "Recieved changes are: " + received;
+    }
+    
+    private static void checkChanges(List<Change> changes, ChangeDescriptor... changeDescriptors) {
+        if (changes.size() != changeDescriptors.length) {
+            Assert.fail(getAssertString(changes, changeDescriptors));
+        }
+        
+        for (int lcv = 0; lcv < changes.size(); lcv++) {
+            ChangeDescriptor cd = changeDescriptors[lcv];
+            
+            cd.check(changes.get(lcv));
+        }
     }
     
     /**
@@ -149,7 +181,8 @@ public class OverlayTest {
     public void testABCxBC() throws Exception {
         List<Change> changes = doTest("ABC", "BC");
         
-        // TODO: Check the set of changes!
+        Assert.assertEquals(2, changes.size());
+        
     }
     
     /**
@@ -160,7 +193,21 @@ public class OverlayTest {
     @Test
     @org.junit.Ignore
     public void testABCxAB() throws Exception {
-        doTest("ABC", "AB");
+        List<Change> changes = doTest("ABC", "AB");
+        
+        checkChanges(changes,
+            new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
+                OverlayUtilities.OROOT_TYPE,    // type name
+                OverlayUtilities.OROOT_A,       // instance name
+                OverlayUtilities.A_LIST_CHILD,  // prop changed
+                OverlayUtilities.A_ARRAY_CHILD) // prop changed
+            , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
+                OverlayUtilities.ARRAY_TYPE,    // type name
+                OverlayUtilities.OROOT_A)       // instance name
+            , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
+                OverlayUtilities.LIST_TYPE,     // type name
+                OverlayUtilities.OROOT_A)       // instance name                    
+         );
     }
     
     /**
@@ -216,5 +263,87 @@ public class OverlayTest {
     @org.junit.Ignore
     public void testABCxABDC() throws Exception {
         doTest("ABC", "ABDC");
+    }
+    
+    /**
+     * Tests overlay going from ABC -> ABC (no changes)
+     * 
+     * @throws Exception
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testABCxABC() throws Exception {
+        List<Change> changes = doTest("ABC", "ABC");
+        
+        checkChanges(changes);
+    }
+    
+    /**
+     * This is diff'd against the change that was received to make
+     * it easier to build up test cases
+     * @author jwells
+     *
+     */
+    private final static class ChangeDescriptor {
+        private final ChangeCategory category;
+        private final String typeName;
+        private final List<String> instanceKey;
+        private final String props[];
+        
+        private ChangeDescriptor(ChangeCategory category, String type, String instance, String... props) {
+            this.category = category;
+            this.typeName = type;
+            this.props = props;
+            this.instanceKey = tokenizeInstanceKey(instance);
+        }
+        
+        private static List<String> tokenizeInstanceKey(String instance) {
+            LinkedList<String> retVal = new LinkedList<String>();
+            
+            StringTokenizer st = new StringTokenizer(instance, ".");
+            while (st.hasMoreTokens()) {
+                String nextToken = st.nextToken();
+                if (nextToken.startsWith("XMLServiceUID")) continue;
+                
+                retVal.add(nextToken);
+            }
+            
+            return retVal;
+        }
+        
+        private void checkInstanceKey(String recievedKey) {
+            List<String> receivedToken = tokenizeInstanceKey(recievedKey);
+            
+            Assert.assertEquals(instanceKey, receivedToken);
+            
+        }
+        
+        private void check(Change change) {
+            Assert.assertEquals(category, change.getChangeCategory());
+            Assert.assertEquals(typeName, change.getChangeType().getName());
+            checkInstanceKey(change.getInstanceKey());
+            
+            Assert.assertEquals(props.length, change.getModifiedProperties().size());
+            for (int lcv = 0; lcv < props.length; lcv++) {
+                String prop = props[lcv];
+                
+                // Props is unordered, must go through list
+                boolean found = false;
+                for (int inner = 0; inner < change.getModifiedProperties().size(); inner++) {
+                    if (GeneralUtilities.safeEquals(prop, change.getModifiedProperties().get(inner).getPropertyName())) {
+                        found = true;
+                        break;
+                    }
+                }
+                
+                Assert.assertTrue("Did not find prop " + prop, found);
+            }
+        }
+        
+        @Override
+        public String toString() {
+            return "ChangeDescriptor(" + category + "," + typeName + "," + instanceKey + "," + Arrays.toString(props) + ")";
+        }
+        
     }
 }

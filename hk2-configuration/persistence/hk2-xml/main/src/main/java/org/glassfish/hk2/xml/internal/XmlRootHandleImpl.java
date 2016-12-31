@@ -177,8 +177,25 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
         BaseHK2JAXBBean newRootBase = (BaseHK2JAXBBean) newRootRoot;
         BaseHK2JAXBBean oldRootBase = (BaseHK2JAXBBean) root;
         
-        throw new AssertionError("overlay not yet implemented");
-        
+        boolean success = false;
+        XmlHandleTransaction<T> handle = lockForTransaction();
+        try {
+            Differences differences = Utilities.getDiff(oldRootBase, newRootBase);
+            
+            if (!differences.getDifferences().isEmpty()) {
+                Utilities.applyDiff(differences);
+            }
+            
+            success = true;
+        }
+        finally {
+            if (success) {
+                handle.commit();
+            }
+            else {
+                handle.abandon();
+            }
+        }
     }
     
     /* (non-Javadoc)

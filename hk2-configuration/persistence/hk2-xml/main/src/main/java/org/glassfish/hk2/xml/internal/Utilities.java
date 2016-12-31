@@ -1313,8 +1313,15 @@ public class Utilities {
                 }
                 else {
                     // Both lists are there, this is an unkeyed list, we go *purely* on list size
+                    UnkeyedDiff unkeyedDiff = new UnkeyedDiff(localDifference, sourceValueList, otherValueList, pModel);
+                    unkeyedDiff.compute();
+                    
+                    /*
+                     * JRW JRW JRW
                     int sourceListSize = sourceValueList.size();
                     int otherListSize = otherValueList.size();
+                    
+                    System.out.println("JRW(10) U sls=" + sourceListSize + " ols=" + otherListSize);
                     
                     int leastSize = (otherListSize > sourceListSize) ? sourceListSize : otherListSize ;
                     
@@ -1341,6 +1348,7 @@ public class Utilities {
                             localDifference.addRemove(xmlTag, new RemoveData(xmlTag, lcv, sourceValueListChild));
                         }
                     }
+                    */
                 }
                 
                 
@@ -1386,6 +1394,12 @@ public class Utilities {
                 }
                 else {
                     // Both lists are there, this is an unkeyed list, we go *purely* on list size
+                    UnkeyedDiff unkeyedDiff = new UnkeyedDiff(localDifference, (Object[]) sourceArray, (Object[]) otherArray, pModel);
+                    unkeyedDiff.compute();
+                    
+                    /*
+                     * 
+                     
                     int sourceListSize = Array.getLength(sourceArray);
                     int otherListSize = Array.getLength(otherArray);
                     
@@ -1414,6 +1428,8 @@ public class Utilities {
                             localDifference.addRemove(xmlTag, new RemoveData(xmlTag, lcv, sourceValueListChild));
                         }
                     }
+                    
+                    */
                 }
             }
         }
