@@ -206,6 +206,8 @@ public class OverlayUtilities {
         String arrayChildType = parentType + "/" + LEAF_ARRAY;
         
         int childCount = 0;
+        UnkeyedLeafBean currentListBean = null;
+        UnkeyedLeafBean currentArrayBean = null;
         for (int lcv = 0; lcv < names.length; lcv++) {
             String name = names[lcv];
             
@@ -214,23 +216,19 @@ public class OverlayUtilities {
                 
                 lcv += childNames.length;
                 
-                for (UnkeyedLeafBean child : root.getListLeaf()) {
-                    checkSingleLetterLeaf(child, hub, listChildType, childNames);
-                }
+                checkSingleLetterLeaf(currentListBean, hub, listChildType, childNames);
                 
-                for (UnkeyedLeafBean child : root.getArrayLeaf()) {
-                    checkSingleLetterLeaf(child, hub, arrayChildType, childNames);
-                }
+                checkSingleLetterLeaf(currentArrayBean, hub, arrayChildType, childNames);
             }
             else if (RIGHT_PAREN.equals(name)) {
                 // Ignore it
             }
             else {
-                UnkeyedLeafBean listBean = root.getListLeaf().get(childCount);
-                checkLeafInHub(hub, listChildType, listBean, name);
+                currentListBean = root.getListLeaf().get(childCount);
+                checkLeafInHub(hub, listChildType, currentListBean, name);
                 
-                UnkeyedLeafBean arrayBean = root.getArrayLeaf()[childCount];
-                checkLeafInHub(hub, arrayChildType, arrayBean, name);
+                currentArrayBean = root.getArrayLeaf()[childCount];
+                checkLeafInHub(hub, arrayChildType, currentArrayBean, name);
                 
                 childCount++;
             }

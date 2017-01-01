@@ -320,6 +320,32 @@ public class OverlayTest {
     }
     
     /**
+     * Tests overlay going from A(B)A(C)A(D) -> A(B)A(C)
+     * 
+     * @throws Exception
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testA_B_C_D_EF__G_HI_JKL__xA_B_C_D_EF__G_HI_JKL__() throws Exception {
+        List<Change> changes = doTest("A(B(C)D(EF))G(HI(JKL))", "A(B(C)D(EF))G(HI(JKL))");
+        
+        checkChanges(changes);
+    }
+    
+    /**
+     * Tests overlay going from A(B)A(C)A(D) -> A(B)A(C)
+     * 
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testA_B_C_D_EF__G_HI_JKL__xG_HI_JKL__A_B_C_D_EF__() throws Exception {
+        List<Change> changes = doTest("A(B(C)D(EF))G(HI(JKL))", "G(HI(JKL))A(B(C)D(EF))");
+        
+        checkChanges(changes);
+    }
+    
+    /**
      * This is diff'd against the change that was received to make
      * it easier to build up test cases
      * @author jwells
