@@ -41,12 +41,14 @@ package org.glassfish.hk2.xml.test.dynamic.overlay;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
+import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.junit.Assert;
 
@@ -84,7 +86,7 @@ public class OverlayUtilities {
         createOverlay(root, null, leafNames);
     }
     
-    private static int createOverlay(OverlayRootABean root, UnkeyedLeafBean parent, String leafNames[]) {
+    private static void createOverlay(OverlayRootABean root, UnkeyedLeafBean parent, String leafNames[]) {
         UnkeyedLeafBean addedListChild = null;
         UnkeyedLeafBean addedArrayChild = null;
         
@@ -92,16 +94,15 @@ public class OverlayUtilities {
             String leafName = leafNames[lcv];
             
             if (LEFT_PAREN.equals(leafName)) {
-                String subList[] = new String[leafNames.length - 1];
-                System.arraycopy(leafNames, 1, subList, 0, subList.length);
+                String subList[] = getChildNames(leafNames, lcv);
                 
-                int addMe = createOverlay(root, addedListChild, subList);
-                Assert.assertEquals(addMe, createOverlay(root, addedArrayChild, subList));
+                createOverlay(root, addedListChild, subList);
+                createOverlay(root, addedArrayChild, subList);
                 
-                lcv += addMe;
+                lcv += subList.length + 1; // The extra one for the right paren
             }
             else if (RIGHT_PAREN.equals(leafName)) {
-                return lcv;
+                // Ignore
             }
             else {
                 if (parent == null) {
@@ -120,8 +121,6 @@ public class OverlayUtilities {
                 }
             }
         }
-        
-        return leafNames.length;
     }
     
     private static String[] singleLetterNames(String parseMe) {
@@ -147,6 +146,8 @@ public class OverlayUtilities {
         Assert.assertEquals(1, rootInstance.size());
         
         int childCount = 0;
+        UnkeyedLeafBean currentListBean = null;
+        UnkeyedLeafBean currentArrayBean = null;
         for (int lcv = 0; lcv < names.length; lcv++) {
             String name = names[lcv];
             
@@ -154,24 +155,21 @@ public class OverlayUtilities {
                 String childNames[] = getChildNames(names, lcv);
                 
                 lcv += childNames.length;
+               
                 
-                for (UnkeyedLeafBean child : root.getUnkeyedLeafList()) {
-                    checkSingleLetterLeaf(child, hub, typeName, childNames);
-                }
+                checkSingleLetterLeaf(currentListBean, hub, LIST_TYPE, childNames);
                 
-                for (UnkeyedLeafBean child : root.getUnkeyedLeafArray()) {
-                    checkSingleLetterLeaf(child, hub, typeName, childNames);
-                }
+                checkSingleLetterLeaf(currentArrayBean, hub, ARRAY_TYPE, childNames);
             }
             else if (RIGHT_PAREN.equals(name)) {
                 // Ignore it
             }
             else {
-                UnkeyedLeafBean listBean = root.getUnkeyedLeafList().get(childCount);
-                checkLeafInHub(hub, LIST_TYPE, listBean, name);
+                currentListBean = root.getUnkeyedLeafList().get(childCount);
+                checkLeafInHub(hub, LIST_TYPE, currentListBean, name);
                 
-                UnkeyedLeafBean arrayBean = root.getUnkeyedLeafArray()[childCount];
-                checkLeafInHub(hub, ARRAY_TYPE, arrayBean, name);
+                currentArrayBean = root.getUnkeyedLeafArray()[childCount];
+                checkLeafInHub(hub, ARRAY_TYPE, currentArrayBean, name);
                 
                 childCount++;
             }
@@ -229,14 +227,26 @@ public class OverlayUtilities {
             }
             else {
                 UnkeyedLeafBean listBean = root.getListLeaf().get(childCount);
-                checkLeafInHub(hub, LIST_TYPE, listBean, name);
+                checkLeafInHub(hub, listChildType, listBean, name);
                 
                 UnkeyedLeafBean arrayBean = root.getArrayLeaf()[childCount];
-                checkLeafInHub(hub, ARRAY_TYPE, arrayBean, name);
+                checkLeafInHub(hub, arrayChildType, arrayBean, name);
                 
                 childCount++;
             }
         }
+        
+        {
+            List<UnkeyedLeafBean> lBeans = root.getListLeaf();
+            Assert.assertEquals("Number of entries in " + lBeans + " is wrong", childCount, lBeans.size());
+        }
+        
+        {
+            UnkeyedLeafBean aBeans[] = root.getArrayLeaf();
+            Assert.assertEquals("Number of entries in " + Arrays.toString(aBeans) + " is wrong", childCount, aBeans.length);
+        }
+        
+        String parentInstanceName = ((XmlHk2ConfigurationBean) root)._getInstanceName();
         
         // Now check hub sizes of children, make sure there are no extras
         {
@@ -247,7 +257,17 @@ public class OverlayUtilities {
             else {
                 Map<String, Instance> listInstances = listType.getInstances();
             
-                Assert.assertEquals(childCount, listInstances.size());
+                int myChildrenCount = 0;
+                for (Map.Entry<String, Instance> me : listInstances.entrySet()) {
+                    String candidateInstanceName = me.getKey();
+                    
+                    if (isDirectChildBasedOnInstanceName(parentInstanceName, candidateInstanceName)) {
+                        myChildrenCount++;
+                    }
+                }
+                
+                Assert.assertEquals("The type " + listChildType + " had the wrong number of entries",
+                        childCount, myChildrenCount);
             }
         }
         
@@ -258,15 +278,26 @@ public class OverlayUtilities {
             }
             else {
                 Map<String, Instance> arrayInstances = arrayType.getInstances();
+                
+                int myChildrenCount = 0;
+                for (Map.Entry<String, Instance> me : arrayInstances.entrySet()) {
+                    String candidateInstanceName = me.getKey();
+                    
+                    if (isDirectChildBasedOnInstanceName(parentInstanceName, candidateInstanceName)) {
+                        myChildrenCount++;
+                    }
+                }
             
-                Assert.assertEquals(childCount, arrayInstances.size());
+                Assert.assertEquals("The type " + arrayChildType + " had the wrong number of entries",
+                        childCount, myChildrenCount);
             }
         }
     }
     
     @SuppressWarnings("unchecked")
     private static void checkLeafInHub(Hub hub, String typeName, UnkeyedLeafBean bean, String expectedName) {
-        Assert.assertEquals(expectedName, bean.getName());
+        Assert.assertEquals("In type " + typeName + " we got wrong name in bean " + bean,
+                expectedName, bean.getName());
         
         Type type = hub.getCurrentDatabase().getType(typeName);
         
@@ -301,7 +332,7 @@ public class OverlayUtilities {
             else if (current.equals(RIGHT_PAREN)) {
                 if (leftParenCount <= 0) {
                     // This is the terminal right paren, we can now get the substring
-                    int retLen = dot - leftParenIndex - 2;
+                    int retLen = dot - leftParenIndex - 1;
                     if (retLen <= 0) {
                         return new String[0];
                     }
@@ -317,5 +348,16 @@ public class OverlayUtilities {
         }
         
         throw new AssertionError("There was a left paren without a matching right paren in " + names);
+    }
+    
+    private final static boolean isDirectChildBasedOnInstanceName(String parentInstanceName, String myInstanceName) {
+        if (!myInstanceName.startsWith(parentInstanceName)) return false;
+        
+        String remainder = myInstanceName.substring(parentInstanceName.length());
+        if (!remainder.startsWith(".")) return false;
+        
+        remainder = remainder.substring(1);
+        int dotIndex = remainder.indexOf('.');
+        return (dotIndex < 0);
     }
 }

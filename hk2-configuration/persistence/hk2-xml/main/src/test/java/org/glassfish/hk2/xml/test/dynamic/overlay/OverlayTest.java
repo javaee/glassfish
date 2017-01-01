@@ -131,6 +131,8 @@ public class OverlayTest {
         XmlRootHandle<OverlayRootABean> originalHandle = xmlService.createEmptyHandle(OverlayRootABean.class, true, true);
         OverlayUtilities.generateOverlayRootABean(originalHandle, original);
         
+        OverlayUtilities.checkSingleLetterOveralyRootA(originalHandle, hub, original);
+        
         XmlRootHandle<OverlayRootABean> overlayHandle = xmlService.createEmptyHandle(OverlayRootABean.class, false, false);
         OverlayUtilities.generateOverlayRootABean(overlayHandle, overlay);
         
@@ -274,6 +276,45 @@ public class OverlayTest {
     // @org.junit.Ignore
     public void testABCxABC() throws Exception {
         List<Change> changes = doTest("ABC", "ABC");
+        
+        checkChanges(changes);
+    }
+    
+    /**
+     * Tests overlay going from A(B)A(C)A(D) -> A(B)A(C)A(D)
+     * 
+     * @throws Exception
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testA_B_A_C_A_D_xA_B_A_C_A_D_() throws Exception {
+        List<Change> changes = doTest("A(B)A(C)A(D)", "A(B)A(C)A(D)");
+        
+        checkChanges(changes);
+    }
+    
+    /**
+     * Tests overlay going from A(B)A(C)A(D) -> A(B)A(C)
+     * 
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testA_B_A_C_A_D_xA_B_A_C_() throws Exception {
+        List<Change> changes = doTest("A(B)A(C)A(D)", "A(B)A(C)");
+        
+        checkChanges(changes);
+    }
+    
+    /**
+     * Tests overlay going from A(B)A(C)A(D) -> A(B)A(C)
+     * 
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testA_B_A_C_A_D_xA_C_A_D_() throws Exception {
+        List<Change> changes = doTest("A(B)A(C)A(D)", "A(C)A(D)");
         
         checkChanges(changes);
     }
