@@ -281,14 +281,15 @@ public class OverlayTest {
     }
     
     /**
-     * Tests overlay going from A(B)A(C)A(D) -> A(B)A(C)A(D)
+     * Tests overlay going from A(B)A(C)A(D) -> A(B)A(C)
      * 
      * @throws Exception
      */
     @Test
-    // @org.junit.Ignore
+    @org.junit.Ignore
     public void testA_B_A_C_A_D_xA_B_A_C_A_D_() throws Exception {
         List<Change> changes = doTest("A(B)A(C)A(D)", "A(B)A(C)A(D)");
+        
         
         checkChanges(changes);
     }
@@ -303,7 +304,51 @@ public class OverlayTest {
     public void testA_B_A_C_A_D_xA_B_A_C_() throws Exception {
         List<Change> changes = doTest("A(B)A(C)A(D)", "A(B)A(C)");
         
-        checkChanges(changes);
+        checkChanges(changes,
+                new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
+                    OverlayUtilities.OROOT_TYPE,    // type name
+                    OverlayUtilities.OROOT_A,       // instance name
+                    OverlayUtilities.A_LIST_CHILD,  // prop changed
+                    OverlayUtilities.A_ARRAY_CHILD) // prop changed
+                , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
+                    OverlayUtilities.LIST_TYPE + "/" + OverlayUtilities.LEAF_LIST,    // type name
+                    OverlayUtilities.OROOT_A + ".*")       // instance name
+                , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
+                    OverlayUtilities.LIST_TYPE + "/" + OverlayUtilities.LEAF_ARRAY,    // type name
+                    OverlayUtilities.OROOT_A + ".*")       // instance name
+                , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
+                    OverlayUtilities.LIST_TYPE,     // type name
+                    OverlayUtilities.OROOT_A)       // instance name  
+                , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
+                    OverlayUtilities.ARRAY_TYPE  + "/" + OverlayUtilities.LEAF_LIST,    // type name
+                    OverlayUtilities.OROOT_A)       // instance name
+                , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
+                    OverlayUtilities.ARRAY_TYPE + "/" + OverlayUtilities.LEAF_ARRAY,    // type name
+                    OverlayUtilities.OROOT_A + ".*")       // instance name
+                , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
+                    OverlayUtilities.ARRAY_TYPE + "/" + OverlayUtilities.LEAF_ARRAY,    // type name
+                    OverlayUtilities.OROOT_A)       // instance name
+                                  
+             );
+    }
+    
+    /**
+     * Tests overlay going from A(B)A(C)A(D) -> A(B)A(C)
+     * 
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testA_B_A_CxA_C_A_B_() throws Exception {
+        List<Change> changes = doTest("A(B)A(C)", "A(C)A(B)");
+        
+        checkChanges(changes,
+                new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
+                    OverlayUtilities.OROOT_TYPE,    // type name
+                    OverlayUtilities.OROOT_A,       // instance name
+                    OverlayUtilities.A_LIST_CHILD,  // prop changed
+                    OverlayUtilities.A_ARRAY_CHILD) // prop changed
+             );
     }
     
     /**
@@ -316,7 +361,32 @@ public class OverlayTest {
     public void testA_B_A_C_A_D_xA_C_A_D_() throws Exception {
         List<Change> changes = doTest("A(B)A(C)A(D)", "A(C)A(D)");
         
-        checkChanges(changes);
+        checkChanges(changes,
+                new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
+                    OverlayUtilities.OROOT_TYPE,    // type name
+                    OverlayUtilities.OROOT_A,       // instance name
+                    OverlayUtilities.A_LIST_CHILD,  // prop changed
+                    OverlayUtilities.A_ARRAY_CHILD) // prop changed
+                , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
+                    OverlayUtilities.LIST_TYPE + "/" + OverlayUtilities.LEAF_LIST,    // type name
+                    OverlayUtilities.OROOT_A + ".*")       // instance name
+                , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
+                    OverlayUtilities.LIST_TYPE + "/" + OverlayUtilities.LEAF_ARRAY,    // type name
+                    OverlayUtilities.OROOT_A + ".*")       // instance name
+                , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
+                    OverlayUtilities.LIST_TYPE,     // type name
+                    OverlayUtilities.OROOT_A)       // instance name  
+                , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
+                    OverlayUtilities.ARRAY_TYPE  + "/" + OverlayUtilities.LEAF_LIST,    // type name
+                    OverlayUtilities.OROOT_A)       // instance name
+                , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
+                    OverlayUtilities.ARRAY_TYPE + "/" + OverlayUtilities.LEAF_ARRAY,    // type name
+                    OverlayUtilities.OROOT_A + ".*")       // instance name
+                , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
+                    OverlayUtilities.ARRAY_TYPE + "/" + OverlayUtilities.LEAF_ARRAY,    // type name
+                    OverlayUtilities.OROOT_A)       // instance name
+                                  
+             );
     }
     
     /**
@@ -325,7 +395,7 @@ public class OverlayTest {
      * @throws Exception
      */
     @Test
-    // @org.junit.Ignore
+    @org.junit.Ignore
     public void testA_B_C_D_EF__G_HI_JKL__xA_B_C_D_EF__G_HI_JKL__() throws Exception {
         List<Change> changes = doTest("A(B(C)D(EF))G(HI(JKL))", "A(B(C)D(EF))G(HI(JKL))");
         

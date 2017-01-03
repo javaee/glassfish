@@ -160,6 +160,15 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
     private transient ActiveDescriptor<?> selfDescriptor;
     
     /**
+     * The cost to add this bean to a tree, which
+     * is 1 plus the add cost of all children.  This
+     * value is transient and is only calculated under
+     * locks and may not be accurate after intended use.
+     * The add cost and the remove cost are the same
+     */
+    private transient int addCost = -1;
+    
+    /**
      * For JAXB and Serialization
      */
     public BaseHK2JAXBBean() {
@@ -1070,6 +1079,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      */
     public void __activateChange() {
         backupMap = null;
+        addCost = -1;
     }
     
     /**
@@ -1091,6 +1101,14 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      */
     public XmlRootHandle<?> _getRoot() {
         return root;
+    }
+    
+    public void __setAddCost(int addCost) {
+        this.addCost = addCost;
+    }
+    
+    public int __getAddCost() {
+        return addCost;
     }
     
     @Override

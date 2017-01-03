@@ -81,6 +81,7 @@ import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
+import org.glassfish.hk2.xml.internal.Differences.AddData;
 import org.glassfish.hk2.xml.internal.Differences.Difference;
 import org.glassfish.hk2.xml.internal.Differences.RemoveData;
 import org.glassfish.hk2.xml.internal.alt.AltClass;
@@ -1313,45 +1314,11 @@ public class Utilities {
                 }
                 else {
                     // Both lists are there, this is an unkeyed list, we go *purely* on list size
-                    UnkeyedDiff unkeyedDiff = new UnkeyedDiff(localDifference, sourceValueList, otherValueList, pModel);
-                    unkeyedDiff.compute();
+                    UnkeyedDiff unkeyedDiff = new UnkeyedDiff(sourceValueList, otherValueList, source, pModel);
+                    Differences unkeyedDiffs = unkeyedDiff.compute();
                     
-                    /*
-                     * JRW JRW JRW
-                    int sourceListSize = sourceValueList.size();
-                    int otherListSize = otherValueList.size();
-                    
-                    System.out.println("JRW(10) U sls=" + sourceListSize + " ols=" + otherListSize);
-                    
-                    int leastSize = (otherListSize > sourceListSize) ? sourceListSize : otherListSize ;
-                    
-                    for (int lcv = 0; lcv < leastSize; lcv++) {
-                        BaseHK2JAXBBean sourceValueListChild = sourceValueList.get(lcv);
-                        BaseHK2JAXBBean otherValueListChild = otherValueList.get(lcv);
-                        
-                        getAllDifferences(sourceValueListChild, otherValueListChild, differences);
-                    }
-                    
-                    if (otherListSize > sourceListSize) {
-                        // Adds
-                        for (int lcv = sourceListSize; lcv < otherListSize; lcv++) {
-                            BaseHK2JAXBBean otherValueListChild = otherValueList.get(lcv);
-                            
-                            localDifference.addAdd(xmlTag, otherValueListChild);                            
-                        }
-                    }
-                    else if (otherListSize < sourceListSize) {
-                        // Removes
-                        for (int lcv = sourceListSize - 1; lcv >= otherListSize; lcv--) {
-                            BaseHK2JAXBBean sourceValueListChild = sourceValueList.get(lcv);
-                            
-                            localDifference.addRemove(xmlTag, new RemoveData(xmlTag, lcv, sourceValueListChild));
-                        }
-                    }
-                    */
+                    differences.merge(unkeyedDiffs);
                 }
-                
-                
             }
             else if (ChildType.ARRAY.equals(pModel.getChildType())) {
                 String keyProperty = pModel.getChildModel().getKeyProperty();
@@ -1392,44 +1359,12 @@ public class Utilities {
                         }
                     }
                 }
-                else {
-                    // Both lists are there, this is an unkeyed list, we go *purely* on list size
-                    UnkeyedDiff unkeyedDiff = new UnkeyedDiff(localDifference, (Object[]) sourceArray, (Object[]) otherArray, pModel);
-                    unkeyedDiff.compute();
+                else {  
+                    // Both lists are there, this is an unkeyed list
+                    UnkeyedDiff unkeyedDiff = new UnkeyedDiff((Object[]) sourceArray, (Object[]) otherArray, source, pModel);
+                    Differences unkeyedDiffs = unkeyedDiff.compute();
                     
-                    /*
-                     * 
-                     
-                    int sourceListSize = Array.getLength(sourceArray);
-                    int otherListSize = Array.getLength(otherArray);
-                    
-                    int leastSize = (otherListSize > sourceListSize) ? sourceListSize : otherListSize ;
-                    
-                    for (int lcv = 0; lcv < leastSize; lcv++) {
-                        BaseHK2JAXBBean sourceValueListChild = (BaseHK2JAXBBean) Array.get(sourceArray, lcv);
-                        BaseHK2JAXBBean otherValueListChild = (BaseHK2JAXBBean) Array.get(otherArray, lcv);
-                        
-                        getAllDifferences(sourceValueListChild, otherValueListChild, differences);
-                    }
-                    
-                    if (otherListSize > sourceListSize) {
-                        // Adds
-                        for (int lcv = sourceListSize; lcv < otherListSize; lcv++) {
-                            BaseHK2JAXBBean otherValueListChild = (BaseHK2JAXBBean) Array.get(otherArray, lcv);
-                            
-                            localDifference.addAdd(xmlTag, otherValueListChild);                            
-                        }
-                    }
-                    else if (otherListSize < sourceListSize) {
-                        // Removes
-                        for (int lcv = sourceListSize - 1; lcv >= otherListSize; lcv--) {
-                            BaseHK2JAXBBean sourceValueListChild = (BaseHK2JAXBBean) Array.get(sourceArray, lcv);
-                            
-                            localDifference.addRemove(xmlTag, new RemoveData(xmlTag, lcv, sourceValueListChild));
-                        }
-                    }
-                    
-                    */
+                    differences.merge(unkeyedDiffs);
                 }
             }
         }
@@ -1456,19 +1391,85 @@ public class Utilities {
                         nonChildChange.getNewValue());
             }
             
-            for (Map.Entry<String, BaseHK2JAXBBean> entry : difference.getAdds().entrySet()) {
+            for (Map.Entry<String, List<AddData>> entry : difference.getAdds().entrySet()) {
                 String xmlKey = entry.getKey();
-                BaseHK2JAXBBean addMe = entry.getValue();
+            
+                for (AddData added : entry.getValue()) {
+                    BaseHK2JAXBBean addMe = added.getToAdd();
+                    int index = added.getIndex();
                 
-                source._doAdd(xmlKey, addMe, null, -1);
+                    source._doAdd(xmlKey, addMe, null, index);
+                }
             }
             
-            for (Map.Entry<String, RemoveData> entry : difference.getRemoves().entrySet()) {
+            for (Map.Entry<String, List<RemoveData>> entry : difference.getRemoves().entrySet()) {
                 String xmlKey = entry.getKey();
-                RemoveData rd = entry.getValue();
                 
-                source._doRemove(xmlKey, rd.getChildKey(), rd.getIndex(), rd.getChild());
+                for (RemoveData removed : entry.getValue()) {
+                    source._doRemove(xmlKey, removed.getChildKey(), removed.getIndex(), removed.getChild());
+                }
             }
         }
+    }
+    
+    /**
+     * Calculates and sets the add cost for the given bean
+     * and sets all add costs for this bean and all its
+     * children
+     * 
+     * @param bean The bean to calculate and set the
+     * add cost on
+     * @return The add cost, which will be at least one,
+     * or -1 if the bean is null
+     */
+    @SuppressWarnings("unchecked")
+    public static int calculateAddCost(BaseHK2JAXBBean bean) {
+        if (bean == null) return -1;
+        
+        int knownValue = bean.__getAddCost();
+        if (knownValue >= 0) return knownValue;
+        
+        int retVal = 1;
+        
+        ModelImpl model = bean._getModel();
+        for (ParentedModel parentedModel : model.getAllChildren()) {
+            String propName = parentedModel.getChildXmlTag();
+            
+            Object rawChild = bean._getProperty(propName);
+            if (rawChild == null) continue;
+            
+            switch (parentedModel.getChildType()) {
+            case DIRECT:
+                {
+                    BaseHK2JAXBBean child = (BaseHK2JAXBBean) rawChild;
+                    int childCost = calculateAddCost(child);
+                
+                    retVal += childCost;
+                }
+                break;
+            case LIST:
+                List<BaseHK2JAXBBean> childList = (List<BaseHK2JAXBBean>) rawChild;
+                for (BaseHK2JAXBBean child : childList) {
+                    int childCost = calculateAddCost(child);
+                    
+                    retVal += childCost;
+                }
+                break;
+            case ARRAY:
+                int length = Array.getLength(rawChild);
+                for (int lcv = 0; lcv < length; lcv++) {
+                    BaseHK2JAXBBean child = (BaseHK2JAXBBean) Array.get(rawChild, lcv);
+                    int childCost = calculateAddCost(child);
+                    
+                    retVal += childCost;
+                }
+                break;
+            default:
+                throw new AssertionError("Unknown child type " + parentedModel.getChildType());
+            }
+        }
+        
+        bean.__setAddCost(retVal);
+        return retVal;
     }
 }

@@ -40,6 +40,7 @@
 package org.glassfish.hk2.xml.internal;
 
 import java.beans.PropertyChangeEvent;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -52,14 +53,38 @@ import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
  *
  */
 public class Differences {
-    private List<Difference> differences = new LinkedList<Difference>();
+    private Map<DifferenceKey, Difference> differences = new LinkedHashMap<DifferenceKey, Difference>();
     
     public void addDifference(Difference difference) {
-        differences.add(difference);
+        DifferenceKey addedKey = new DifferenceKey(difference.getSource());
+        
+        Difference existingDifference = differences.get(addedKey);
+        if (existingDifference == null) {
+            differences.put(addedKey, difference);
+        }
+        else {
+            existingDifference.merge(difference);
+        }
     }
     
     public List<Difference> getDifferences() {
-        return differences;
+        return new ArrayList<Difference>(differences.values());
+    }
+    
+    public int getDifferenceCost() {
+        int retVal = 0;
+        
+        for (Difference d : differences.values()) {
+            retVal += d.getSize();
+        }
+        
+        return retVal;
+    }
+    
+    public void merge(Differences diffs) {
+        for (Difference diff : diffs.getDifferences()) {
+          addDifference(diff);
+        }
     }
     
     public static class Difference {
@@ -67,9 +92,11 @@ public class Differences {
         private final List<PropertyChangeEvent> nonChildChanges = new LinkedList<PropertyChangeEvent>();
         
         /** From xmlName to the bean to add */
-        private final Map<String, BaseHK2JAXBBean> adds = new LinkedHashMap<String, BaseHK2JAXBBean>();
+        private final Map<String, List<AddData>> adds = new LinkedHashMap<String, List<AddData>>();
         
-        private final Map<String, RemoveData> removes = new LinkedHashMap<String, RemoveData>();
+        private final Map<String, List<RemoveData>> removes = new LinkedHashMap<String, List<RemoveData>>();
+        
+        private final Map<String, List<MoveData>> moves = new LinkedHashMap<String, List<MoveData>>();
         
         public Difference(BaseHK2JAXBBean source) {
             this.source = source;
@@ -87,30 +114,141 @@ public class Differences {
             return nonChildChanges;
         }
         
-        public void addAdd(String propName, BaseHK2JAXBBean toAdd) {
-            adds.put(propName, toAdd);
+        public void addAdd(String propName, AddData toAdd) {
+            List<AddData> field = adds.get(propName);
+            if (field == null) {
+                field = new ArrayList<AddData>();
+                
+                adds.put(propName, field);
+            }
+            
+            field.add(toAdd);
         }
         
-        public Map<String, BaseHK2JAXBBean> getAdds() {
+        public void addAdd(String propName, BaseHK2JAXBBean toAdd) {
+            addAdd(propName, new AddData(toAdd));
+        }
+        
+        public void addMove(String propName, MoveData md) {
+            List<MoveData> field = moves.get(propName);
+            if (field == null) {
+                field = new ArrayList<MoveData>();
+                
+                moves.put(propName, field);
+            }
+            
+            field.add(md);
+        }
+        
+        public Map<String, List<AddData>> getAdds() {
             return adds;
         }
         
         public void addRemove(String propName, RemoveData removeData) {
-            removes.put(propName, removeData);
+            List<RemoveData> field = removes.get(propName);
+            if (field == null) {
+                field = new ArrayList<RemoveData>();
+                
+                removes.put(propName, field);
+            }
+            
+            field.add(removeData);
         }
         
-        public Map<String, RemoveData> getRemoves() {
+        private void merge(Difference mergeMe) {
+            for (PropertyChangeEvent pce : mergeMe.getNonChildChanges()) {
+                addNonChildChange(pce);
+            }
+            
+            Map<String, List<AddData>> adds = mergeMe.getAdds();
+            for (Map.Entry<String, List<AddData>> entry : adds.entrySet()) {
+                String propName = entry.getKey();
+                List<AddData> addMes = entry.getValue();
+                for (AddData addMe : addMes) {
+                    addAdd(propName, addMe);
+                }
+            }
+            
+            Map<String, List<RemoveData>> removes = mergeMe.getRemoves();
+            for (Map.Entry<String, List<RemoveData>> entry : removes.entrySet()) {
+                String propName = entry.getKey();
+                List<RemoveData> removeMes = entry.getValue();
+                for (RemoveData removeMe : removeMes) {
+                    addRemove(propName, removeMe);
+                }
+            }
+            
+            Map<String, List<MoveData>> moves = mergeMe.getMoves();
+            for (Map.Entry<String, List<MoveData>> entry : moves.entrySet()) {
+                String propName = entry.getKey();
+                List<MoveData> moveMes = entry.getValue();
+                for (MoveData moveMe : moveMes) {
+                    addMove(propName, moveMe);
+                }
+            }
+        }
+        
+        public Map<String, List<RemoveData>> getRemoves() {
             return removes;
         }
         
+        public Map<String, List<MoveData>> getMoves() {
+            return moves;
+        }
+        
         public boolean isDirty() {
-            return !nonChildChanges.isEmpty() || !adds.isEmpty() || !removes.isEmpty();
+            return !nonChildChanges.isEmpty() || !adds.isEmpty() || !removes.isEmpty() || !moves.isEmpty();
+        }
+        
+        public int getSize() {
+            int retVal = nonChildChanges.size();
+            
+            for (List<AddData> addMe : adds.values()) {
+                for (AddData add : addMe) {
+                    int addCost = Utilities.calculateAddCost(add.getToAdd());
+                
+                    retVal += addCost;
+                }
+            }
+            
+            for (List<RemoveData> rds : removes.values()) {
+                for (RemoveData rd : rds) {
+                    BaseHK2JAXBBean removeMe = rd.getChild();
+                
+                    int addCost = Utilities.calculateAddCost(removeMe);
+                
+                    retVal += addCost;
+                }
+            }
+            
+            for (List<MoveData> mds : moves.values()) {
+                retVal += mds.size();
+            }
+            
+            return retVal;
         }
         
         @Override
         public String toString() {
             return "Difference(" + source + "," + System.identityHashCode(this) + ")";
         }
+    }
+    
+    public static class AddData {
+        private final BaseHK2JAXBBean toAdd;
+        private final int index;
+        
+        public AddData(BaseHK2JAXBBean toAdd, int index) {
+            this.toAdd = toAdd;
+            this.index = index;
+        }
+        
+        private AddData(BaseHK2JAXBBean toAdd) {
+            this(toAdd, -1);
+        }
+        
+        public BaseHK2JAXBBean getToAdd() { return toAdd; }
+        public int getIndex() { return index; }
     }
     
     public static class RemoveData {
@@ -167,16 +305,29 @@ public class Differences {
         }
         
     }
+    
+    public static class MoveData {
+        private final int oldIndex;
+        private final int newIndex;
+        
+        public MoveData(int oldIndex, int newIndex) {
+            this.oldIndex = oldIndex;
+            this.newIndex = newIndex;
+        }
+        
+        public int getOldIndex() { return oldIndex; }
+        public int getNewIndex() { return newIndex; }
+    }
 
     /**
      * Prints very pretty version of modifications
      */
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer("Differences(num=" + differences.size() + "\n");
+        StringBuffer sb = new StringBuffer("Differences(num=" + differences.size() + ",cost=" + getDifferenceCost() + "\n");
         
         int lcv = 1;
-        for (Difference d : differences) {
+        for (Difference d : differences.values()) {
             BaseHK2JAXBBean source = d.getSource();
             
             String xmlPath = source._getXmlPath();
@@ -189,29 +340,76 @@ public class Differences {
                 sb.append("  CHANGED: " + event.getPropertyName() + " from " + event.getOldValue() + " to " + event.getNewValue() + "\n");
             }
             
-            Map<String, BaseHK2JAXBBean> adds = d.getAdds();
-            for (Map.Entry<String, BaseHK2JAXBBean> add : adds.entrySet()) {
-                BaseHK2JAXBBean added = add.getValue();
+            Map<String, List<AddData>> addss = d.getAdds();
+            for (Map.Entry<String, List<AddData>> adds : addss.entrySet()) {
+                String propertyName = adds.getKey();
+                
+                for (AddData ad : adds.getValue()) {
+                    BaseHK2JAXBBean added = ad.getToAdd();
+                    int index = ad.getIndex();
                     
-                String addedXmlPath = added._getXmlPath();
-                String addedInstanceName = added._getInstanceName();
+                    String addedXmlPath = added._getXmlPath();
+                    String addedInstanceName = added._getInstanceName();
                     
-                sb.append("  ADDED: addedPath=" + addedXmlPath + " addedInstanceName=" + addedInstanceName);
+                    sb.append("  ADDED: addedPath=" + addedXmlPath + " addedInstanceName=" + addedInstanceName + " addedIndex=" + index +
+                        " property=" + propertyName + "\n");
+                }
             }
             
-            Map<String, RemoveData> removed = d.getRemoves();
-            for (Map.Entry<String, RemoveData> remove : removed.entrySet()) {
-                RemoveData removeMe = remove.getValue();
+            Map<String, List<RemoveData>> removeds = d.getRemoves();
+            for (Map.Entry<String, List<RemoveData>> remove : removeds.entrySet()) {
+                String propertyName = remove.getKey();
+            
+                for (RemoveData rd : remove.getValue()) {
+                    String removedXmlPath = rd.getChild()._getXmlPath();
+                    String removedInstanceName = rd.getChild()._getInstanceName();
                     
-                String removedXmlPath = removeMe.getChild()._getXmlPath();
-                String removedInstanceName = removeMe.getChild()._getInstanceName();
-                    
-                sb.append("  REMOVED: removedPath=" + removedXmlPath + " removedInstanceName=" + removedInstanceName);
+                    sb.append("  REMOVED: removedPath=" + removedXmlPath + " removedInstanceName=" + removedInstanceName + 
+                        " property=" + propertyName + "\n");
+                }
+            }
+            
+            Map<String, List<MoveData>> moveds = d.getMoves();
+            for (Map.Entry<String, List<MoveData>> entry : moveds.entrySet()) {
+                String propertyName = entry.getKey();
+                for (MoveData md : entry.getValue()) {
+                    sb.append("  MOVED: oldIndex=" + md.getOldIndex() + " newIndex=" + md.getNewIndex() +
+                        " property=" + propertyName + "\n");
+                }
             }
             
             lcv++;
         }
         
-        return sb.toString();
+        return sb.toString() + "\n," + System.identityHashCode(this) + ")";
+    }
+    
+    private static class DifferenceKey {
+        private final String xmlPath;
+        private final String instanceName;
+        private final int hash;
+        
+        private DifferenceKey(BaseHK2JAXBBean bean) {
+            xmlPath = bean._getXmlPath();
+            instanceName = bean._getInstanceName();
+            
+            hash = xmlPath.hashCode() ^ instanceName.hashCode();
+        }
+        
+        @Override
+        public int hashCode() {
+            return hash;
+        }
+        
+        @Override
+        public boolean equals(Object o) {
+            if (o == null) return false;
+            if (!(o instanceof DifferenceKey)) return false;
+            
+            DifferenceKey other = (DifferenceKey) o;
+            
+            return xmlPath.equals(other.xmlPath) && instanceName.equals(other.instanceName) ;
+        }
+        
     }
 }
