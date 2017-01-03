@@ -104,7 +104,7 @@ public class XmlRootCopyImpl<T> implements XmlRootCopy<T> {
             Differences differences = Utilities.getDiff(original, copyBean);
             
             if (!differences.getDifferences().isEmpty()) {
-                Utilities.applyDiff(differences);
+                Utilities.applyDiff(differences, parent.getChangeInfo());
             }
             
             success = true;

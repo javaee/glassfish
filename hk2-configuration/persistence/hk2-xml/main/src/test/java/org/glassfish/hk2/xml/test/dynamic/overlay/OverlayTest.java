@@ -416,6 +416,25 @@ public class OverlayTest {
     }
     
     /**
+     * Tests overlay going from A(B(C)) -> A(B(CD(E)))
+     * 
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testA_B_C__xA_B_CD_E___() throws Exception {
+        List<Change> changes = doTest("A(B(C))", "A(B(CD(E)))");
+        
+        checkChanges(changes,
+                new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
+                    OverlayUtilities.OROOT_TYPE,    // type name
+                    OverlayUtilities.OROOT_A,       // instance name
+                    OverlayUtilities.A_LIST_CHILD,  // prop changed
+                    OverlayUtilities.A_ARRAY_CHILD) // prop changed
+             );
+    }
+    
+    /**
      * This is diff'd against the change that was received to make
      * it easier to build up test cases
      * @author jwells

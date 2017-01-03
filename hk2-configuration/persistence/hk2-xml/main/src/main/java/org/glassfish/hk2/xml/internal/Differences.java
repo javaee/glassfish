@@ -91,12 +91,7 @@ public class Differences {
         private final BaseHK2JAXBBean source;
         private final List<PropertyChangeEvent> nonChildChanges = new LinkedList<PropertyChangeEvent>();
         
-        /** From xmlName to the bean to add */
-        private final Map<String, List<AddData>> adds = new LinkedHashMap<String, List<AddData>>();
-        
-        private final Map<String, List<RemoveData>> removes = new LinkedHashMap<String, List<RemoveData>>();
-        
-        private final Map<String, List<MoveData>> moves = new LinkedHashMap<String, List<MoveData>>();
+        private final Map<String, AddRemoveMoveDifference> childChanges = new LinkedHashMap<String, AddRemoveMoveDifference>();
         
         public Difference(BaseHK2JAXBBean source) {
             this.source = source;
@@ -114,45 +109,38 @@ public class Differences {
             return nonChildChanges;
         }
         
-        public void addAdd(String propName, AddData toAdd) {
-            List<AddData> field = adds.get(propName);
-            if (field == null) {
-                field = new ArrayList<AddData>();
-                
-                adds.put(propName, field);
-            }
-            
-            field.add(toAdd);
+        public Map<String, AddRemoveMoveDifference> getChildChanges() {
+            return childChanges;
         }
         
-        public void addAdd(String propName, BaseHK2JAXBBean toAdd) {
-            addAdd(propName, new AddData(toAdd));
+        private AddRemoveMoveDifference getARMDiff(String propName) {
+            AddRemoveMoveDifference field = childChanges.get(propName);
+            if (field == null) {
+                field = new AddRemoveMoveDifference();
+                
+                childChanges.put(propName, field);
+            }
+            
+            return field;
+        }
+        
+        public void addAdd(String propName, AddData toAdd) {
+            AddRemoveMoveDifference arm = getARMDiff(propName);
+            arm.addAdd(toAdd);
+        }
+        
+        public void addAdd(String propName, BaseHK2JAXBBean toAdd, int index) {
+            addAdd(propName, new AddData(toAdd, index));
         }
         
         public void addMove(String propName, MoveData md) {
-            List<MoveData> field = moves.get(propName);
-            if (field == null) {
-                field = new ArrayList<MoveData>();
-                
-                moves.put(propName, field);
-            }
-            
-            field.add(md);
-        }
-        
-        public Map<String, List<AddData>> getAdds() {
-            return adds;
+            AddRemoveMoveDifference arm = getARMDiff(propName);
+            arm.addMove(md);
         }
         
         public void addRemove(String propName, RemoveData removeData) {
-            List<RemoveData> field = removes.get(propName);
-            if (field == null) {
-                field = new ArrayList<RemoveData>();
-                
-                removes.put(propName, field);
-            }
-            
-            field.add(removeData);
+            AddRemoveMoveDifference arm = getARMDiff(propName);
+            arm.addRemove(removeData);
         }
         
         private void merge(Difference mergeMe) {
@@ -160,70 +148,38 @@ public class Differences {
                 addNonChildChange(pce);
             }
             
-            Map<String, List<AddData>> adds = mergeMe.getAdds();
-            for (Map.Entry<String, List<AddData>> entry : adds.entrySet()) {
-                String propName = entry.getKey();
-                List<AddData> addMes = entry.getValue();
-                for (AddData addMe : addMes) {
-                    addAdd(propName, addMe);
+            Map<String, AddRemoveMoveDifference> childChanges = mergeMe.getChildChanges();
+            for (Map.Entry<String, AddRemoveMoveDifference> childEntry : childChanges.entrySet()) {
+                String propertyName = childEntry.getKey();
+                AddRemoveMoveDifference arm = childEntry.getValue();
+                
+                for (AddData add : arm.getAdds()) {
+                    addAdd(propertyName, new AddData(add));
                 }
-            }
-            
-            Map<String, List<RemoveData>> removes = mergeMe.getRemoves();
-            for (Map.Entry<String, List<RemoveData>> entry : removes.entrySet()) {
-                String propName = entry.getKey();
-                List<RemoveData> removeMes = entry.getValue();
-                for (RemoveData removeMe : removeMes) {
-                    addRemove(propName, removeMe);
+                
+                for (RemoveData remove : arm.getRemoves()) {
+                    addRemove(propertyName, new RemoveData(remove));
                 }
-            }
-            
-            Map<String, List<MoveData>> moves = mergeMe.getMoves();
-            for (Map.Entry<String, List<MoveData>> entry : moves.entrySet()) {
-                String propName = entry.getKey();
-                List<MoveData> moveMes = entry.getValue();
-                for (MoveData moveMe : moveMes) {
-                    addMove(propName, moveMe);
+                
+                for (MoveData move : arm.getMoves()) {
+                    addMove(propertyName, new MoveData(move));
                 }
+                
             }
-        }
-        
-        public Map<String, List<RemoveData>> getRemoves() {
-            return removes;
-        }
-        
-        public Map<String, List<MoveData>> getMoves() {
-            return moves;
         }
         
         public boolean isDirty() {
-            return !nonChildChanges.isEmpty() || !adds.isEmpty() || !removes.isEmpty() || !moves.isEmpty();
+            return !nonChildChanges.isEmpty() || !childChanges.isEmpty();
+        }
+        
+        public boolean hasChildChanges() {
+            return !childChanges.isEmpty();
         }
         
         public int getSize() {
             int retVal = nonChildChanges.size();
             
-            for (List<AddData> addMe : adds.values()) {
-                for (AddData add : addMe) {
-                    int addCost = Utilities.calculateAddCost(add.getToAdd());
-                
-                    retVal += addCost;
-                }
-            }
-            
-            for (List<RemoveData> rds : removes.values()) {
-                for (RemoveData rd : rds) {
-                    BaseHK2JAXBBean removeMe = rd.getChild();
-                
-                    int addCost = Utilities.calculateAddCost(removeMe);
-                
-                    retVal += addCost;
-                }
-            }
-            
-            for (List<MoveData> mds : moves.values()) {
-                retVal += mds.size();
-            }
+            retVal += childChanges.size();
             
             return retVal;
         }
@@ -231,6 +187,48 @@ public class Differences {
         @Override
         public String toString() {
             return "Difference(" + source + "," + System.identityHashCode(this) + ")";
+        }
+    }
+    
+    public static class AddRemoveMoveDifference {
+        private final List<AddData> adds = new ArrayList<AddData>();
+        private final List<RemoveData> removes = new ArrayList<RemoveData>();
+        private final List<MoveData> moves = new ArrayList<MoveData>();
+        
+        private void addAdd(AddData add) {
+            adds.add(add);
+        }
+        
+        private void addRemove(RemoveData remove) {
+            removes.add(remove);
+        }
+        
+        private void addMove(MoveData move) {
+            moves.add(move);
+        }
+        
+        public List<AddData> getAdds() {
+            return adds;
+        }
+        
+        public List<RemoveData> getRemoves() {
+            return removes;
+        }
+        
+        public List<MoveData> getMoves() {
+            return moves;
+        }
+        
+        public boolean requiresListChange() {
+            return !adds.isEmpty() || !removes.isEmpty() || !moves.isEmpty();
+        }
+        
+        public int getSize() {
+            return adds.size() + removes.size() + moves.size();
+        }
+        
+        public int getNewSize(int oldSize) {
+            return oldSize - removes.size() + adds.size();
         }
     }
     
@@ -245,6 +243,11 @@ public class Differences {
         
         private AddData(BaseHK2JAXBBean toAdd) {
             this(toAdd, -1);
+        }
+        
+        public AddData(AddData copyMe) {
+            this.toAdd = copyMe.toAdd;
+            this.index = copyMe.index;
         }
         
         public BaseHK2JAXBBean getToAdd() { return toAdd; }
@@ -267,6 +270,10 @@ public class Differences {
         
         public RemoveData(String childProperty, int index, BaseHK2JAXBBean child) {
             this(childProperty, null, index, child);
+        }
+        
+        public RemoveData(RemoveData copyMe) {
+            this(copyMe.childProperty, copyMe.childKey, copyMe.index, copyMe.child);
         }
         
         private RemoveData (String childProperty,
@@ -315,6 +322,10 @@ public class Differences {
             this.newIndex = newIndex;
         }
         
+        public MoveData(MoveData copyMe) {
+            this(copyMe.oldIndex, copyMe.newIndex);
+        }
+        
         public int getOldIndex() { return oldIndex; }
         public int getNewIndex() { return newIndex; }
     }
@@ -337,44 +348,36 @@ public class Differences {
             sb.append(lcv + ". Modified Bean sourcePath=" + xmlPath + " sourceInstance=" + instanceName + "\n");
             
             for (PropertyChangeEvent event : events) {
-                sb.append("  CHANGED: " + event.getPropertyName() + " from " + event.getOldValue() + " to " + event.getNewValue() + "\n");
+                sb.append("\tCHANGED: " + event.getPropertyName() + " from " + event.getOldValue() + " to " + event.getNewValue() + "\n");
             }
             
-            Map<String, List<AddData>> addss = d.getAdds();
-            for (Map.Entry<String, List<AddData>> adds : addss.entrySet()) {
-                String propertyName = adds.getKey();
+            Map<String, AddRemoveMoveDifference> childChanges = d.getChildChanges();
+            
+            for (Map.Entry<String, AddRemoveMoveDifference> childEntry : childChanges.entrySet()) {
+                String propertyName = childEntry.getKey();
                 
-                for (AddData ad : adds.getValue()) {
+                sb.append("  CHANGED CHILD: " + propertyName + "\n");
+                AddRemoveMoveDifference arm = childEntry.getValue();
+                
+                for (AddData ad : arm.getAdds()) {
                     BaseHK2JAXBBean added = ad.getToAdd();
                     int index = ad.getIndex();
                     
                     String addedXmlPath = added._getXmlPath();
                     String addedInstanceName = added._getInstanceName();
                     
-                    sb.append("  ADDED: addedPath=" + addedXmlPath + " addedInstanceName=" + addedInstanceName + " addedIndex=" + index +
-                        " property=" + propertyName + "\n");
+                    sb.append("    ADDED: addedPath=" + addedXmlPath + " addedInstanceName=" + addedInstanceName + " addedIndex=" + index + "\n");
                 }
-            }
-            
-            Map<String, List<RemoveData>> removeds = d.getRemoves();
-            for (Map.Entry<String, List<RemoveData>> remove : removeds.entrySet()) {
-                String propertyName = remove.getKey();
-            
-                for (RemoveData rd : remove.getValue()) {
+                
+                for (RemoveData rd : arm.getRemoves()) {
                     String removedXmlPath = rd.getChild()._getXmlPath();
                     String removedInstanceName = rd.getChild()._getInstanceName();
                     
-                    sb.append("  REMOVED: removedPath=" + removedXmlPath + " removedInstanceName=" + removedInstanceName + 
-                        " property=" + propertyName + "\n");
+                    sb.append("    REMOVED: removedPath=" + removedXmlPath + " removedInstanceName=" + removedInstanceName + "\n");
                 }
-            }
-            
-            Map<String, List<MoveData>> moveds = d.getMoves();
-            for (Map.Entry<String, List<MoveData>> entry : moveds.entrySet()) {
-                String propertyName = entry.getKey();
-                for (MoveData md : entry.getValue()) {
-                    sb.append("  MOVED: oldIndex=" + md.getOldIndex() + " newIndex=" + md.getNewIndex() +
-                        " property=" + propertyName + "\n");
+                
+                for (MoveData md : arm.getMoves()) {
+                    sb.append("    MOVED: oldIndex=" + md.getOldIndex() + " newIndex=" + md.getNewIndex() + "\n");
                 }
             }
             

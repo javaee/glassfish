@@ -587,21 +587,24 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
     }
     
     public Object _doAdd(String childProperty, Object rawChild, String childKey, int index) {
+        return _doAdd(childProperty, rawChild, childKey, index, true);
+    }
+    
+    public Object _doAdd(String childProperty, Object rawChild, String childKey, int index, boolean changeList) {
         if (changeControl == null) {
-            return Utilities.internalAdd(this, childProperty, rawChild, childKey, index, null, XmlDynamicChange.EMPTY, new LinkedList<ActiveDescriptor<?>>());
+            return Utilities.internalAdd(this, childProperty, rawChild, childKey, index, null, XmlDynamicChange.EMPTY, new LinkedList<ActiveDescriptor<?>>(), changeList);
         }
         
         changeControl.getWriteLock().lock();
         try {
             Object oldValue = beanLikeMap.get(childProperty);
             
-            XmlDynamicChange change = changeControl.startOrContinueChange(this);
-            
             LinkedList<ActiveDescriptor<?>> addedServices = new LinkedList<ActiveDescriptor<?>>();
             Object retVal;
             boolean success = false;
+            XmlDynamicChange change = changeControl.startOrContinueChange(this);
             try {
-                retVal = Utilities.internalAdd(this, childProperty, rawChild, childKey, index, changeControl, change, addedServices);
+                retVal = Utilities.internalAdd(this, childProperty, rawChild, childKey, index, changeControl, change, addedServices, changeList);
                 
                 Object newValue = beanLikeMap.get(childProperty);
                 
@@ -749,8 +752,12 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
     }
     
     public Object _doRemove(String childProperty, String childKey, int index, Object child) {
+        return _doRemove(childProperty, childKey, index, child, true);
+    }
+    
+    public Object _doRemove(String childProperty, String childKey, int index, Object child, boolean changeList) {
         if (changeControl == null) {
-            Object retVal = Utilities.internalRemove(this, childProperty, childKey, index, child, null, XmlDynamicChange.EMPTY);
+            Object retVal = Utilities.internalRemove(this, childProperty, childKey, index, child, null, XmlDynamicChange.EMPTY, changeList);
             
             if (retVal != null) {
                 keyedChildrenCache.remove(childProperty);
@@ -769,7 +776,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
             try {
                 Object oldVal = beanLikeMap.get(childProperty);
                 
-                retVal = Utilities.internalRemove(this, childProperty, childKey, index, child, changeControl, xmlDynamicChange);
+                retVal = Utilities.internalRemove(this, childProperty, childKey, index, child, changeControl, xmlDynamicChange, changeList);
                 
                 Object newVal = beanLikeMap.get(childProperty);
                 

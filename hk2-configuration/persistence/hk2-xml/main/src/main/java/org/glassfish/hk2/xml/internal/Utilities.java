@@ -50,6 +50,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -82,7 +83,9 @@ import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.xml.internal.Differences.AddData;
+import org.glassfish.hk2.xml.internal.Differences.AddRemoveMoveDifference;
 import org.glassfish.hk2.xml.internal.Differences.Difference;
+import org.glassfish.hk2.xml.internal.Differences.MoveData;
 import org.glassfish.hk2.xml.internal.Differences.RemoveData;
 import org.glassfish.hk2.xml.internal.alt.AltClass;
 import org.glassfish.hk2.xml.internal.alt.clazz.ClassAltClassImpl;
@@ -305,7 +308,8 @@ public class Utilities {
             int index,
             DynamicChangeInfo<?> changeInformation,
             XmlDynamicChange xmlDynamicChange,
-            List<ActiveDescriptor<?>> addedServices) {
+            List<ActiveDescriptor<?>> addedServices,
+            boolean changeList) {
         if (index < -1) {
             throw new IllegalArgumentException("Unknown index " + index);
         }
@@ -424,7 +428,8 @@ public class Utilities {
         }
         
         // Now modify the actual list
-        if (multiChildren != null) {
+        if (changeList && (multiChildren != null)) {
+            // List or Array child
             multiChildren.add(index, child);
             
             Object finalChildList;
@@ -445,7 +450,8 @@ public class Utilities {
             
             myParent._setProperty(childProperty, finalChildList, false, true);
         }
-        else {
+        else if (multiChildren == null) {
+            // Direct child
             if (xmlDynamicChange.getBeanDatabase() != null){
                 myParent.changeInHub(childProperty, child, xmlDynamicChange.getBeanDatabase());
             }
@@ -503,7 +509,7 @@ public class Utilities {
                 int lcv = 0;
                 for (BaseHK2JAXBBean childsChild : childsChildren) {
                     BaseHK2JAXBBean grandchild = internalAdd(child, childsChildProperty,
-                            childsChild, null, -1, changeInformation, xmlDynamicChange, addedServices);
+                            childsChild, null, -1, changeInformation, xmlDynamicChange, addedServices, true);
                     
                     copiedChildArray.add(grandchild);
                     Array.set(asArray, lcv++, grandchild);
@@ -521,7 +527,7 @@ public class Utilities {
                 if (childsChild == null) continue;
                 
                 BaseHK2JAXBBean grandchild = internalAdd(child, childsChildProperty,
-                        childsChild, null, -1, changeInformation, xmlDynamicChange, addedServices);
+                        childsChild, null, -1, changeInformation, xmlDynamicChange, addedServices, true);
                 
                 child._setProperty(childsChildProperty, grandchild, false, true);
             }
@@ -654,7 +660,8 @@ public class Utilities {
             int index,
             Object childToRemove,
             DynamicChangeInfo<?> changeInformation,
-            XmlDynamicChange xmlDynamicChange) {
+            XmlDynamicChange xmlDynamicChange,
+            boolean changeList) {
         if (childProperty == null) return null;
         
         String instanceToRemove = null;
@@ -735,11 +742,13 @@ public class Utilities {
                 
                 if (rootForDeletion == null) return null;
                 
-                if (xmlDynamicChange.getBeanDatabase() != null) {
-                    myParent.changeInHub(childProperty, listWithObjectRemoved, xmlDynamicChange.getBeanDatabase());
-                }
+                if (changeList) {
+                    if (xmlDynamicChange.getBeanDatabase() != null) {
+                        myParent.changeInHub(childProperty, listWithObjectRemoved, xmlDynamicChange.getBeanDatabase());
+                    }
                 
-                myParent._setProperty(childProperty, listWithObjectRemoved, false, true);
+                    myParent._setProperty(childProperty, listWithObjectRemoved, false, true);
+                }
             }
             else {
                 // array children
@@ -827,14 +836,17 @@ public class Utilities {
                 
                 if (rootForDeletion == null) return null;
                 
-                if (xmlDynamicChange.getBeanDatabase() != null) {
-                    myParent.changeInHub(childProperty, arrayWithObjectRemoved, xmlDynamicChange.getBeanDatabase());
-                }
+                if (changeList) {
+                    if (xmlDynamicChange.getBeanDatabase() != null) {
+                        myParent.changeInHub(childProperty, arrayWithObjectRemoved, xmlDynamicChange.getBeanDatabase());
+                    }
                 
-                myParent._setProperty(childProperty, arrayWithObjectRemoved, false, true);
+                    myParent._setProperty(childProperty, arrayWithObjectRemoved, false, true);
+                }
             }
         }
         else {
+            // Direct child
             rootForDeletion = (BaseHK2JAXBBean) myParent._getProperty(childProperty);
             if (rootForDeletion == null) return null;
             
@@ -1268,7 +1280,7 @@ public class Utilities {
             if (ChildType.DIRECT.equals(pModel.getChildType())) {
                 if (sourceValue == null && otherValue != null) {
                     // This is just a pure add
-                    localDifference.addAdd(xmlTag, (BaseHK2JAXBBean) otherValue); 
+                    localDifference.addAdd(xmlTag, (BaseHK2JAXBBean) otherValue, -1); 
                 }
                 else if (sourceValue != null && otherValue == null) {
                     // A pure remove
@@ -1308,7 +1320,7 @@ public class Utilities {
                         Object addMe = source._lookupChild(xmlTag, otherKeyValue);
                         if (addMe == null) {
                             // Adding this bean
-                            localDifference.addAdd(xmlTag, otherBean);
+                            localDifference.addAdd(xmlTag, otherBean, -1);
                         }
                     }
                 }
@@ -1355,7 +1367,7 @@ public class Utilities {
                         Object addMe = source._lookupChild(xmlTag, otherKeyValue);
                         if (addMe == null) {
                             // Adding this bean
-                            localDifference.addAdd(xmlTag, otherBean);
+                            localDifference.addAdd(xmlTag, otherBean, -1);
                         }
                     }
                 }
@@ -1382,7 +1394,7 @@ public class Utilities {
      * @param other
      * @return
      */
-    public static void applyDiff(Differences differences) {
+    public static void applyDiff(Differences differences, DynamicChangeInfo<?> changeControl) {
         for (Difference difference : differences.getDifferences()) {
             BaseHK2JAXBBean source = difference.getSource();
             
@@ -1391,25 +1403,141 @@ public class Utilities {
                         nonChildChange.getNewValue());
             }
             
-            for (Map.Entry<String, List<AddData>> entry : difference.getAdds().entrySet()) {
-                String xmlKey = entry.getKey();
+            if (!difference.hasChildChanges()) {
+                continue;
+            }
             
-                for (AddData added : entry.getValue()) {
+            ModelImpl model = source._getModel();
+            
+            for (Map.Entry<String, AddRemoveMoveDifference> childEntry : difference.getChildChanges().entrySet()) {
+                String xmlKey = childEntry.getKey();
+                AddRemoveMoveDifference childDiffs = childEntry.getValue();
+                ParentedModel parentedModel = model.getChild(xmlKey);
+                ChildType childType = parentedModel.getChildType();
+                
+                boolean changeList = ChildType.DIRECT.equals(childType);
+                
+                Object oldListOrArray = null;
+                Map<Integer, BaseHK2JAXBBean> arrayChanges = null;
+                List<BaseHK2JAXBBean> addToEnds = new LinkedList<BaseHK2JAXBBean>();
+                
+                if (!changeList) {
+                  oldListOrArray = source._getProperty(xmlKey);
+                  
+                  arrayChanges = new LinkedHashMap<Integer, BaseHK2JAXBBean>();
+                }
+                
+                for (AddData added : childDiffs.getAdds()) {
                     BaseHK2JAXBBean addMe = added.getToAdd();
                     int index = added.getIndex();
                 
-                    source._doAdd(xmlKey, addMe, null, index);
+                    BaseHK2JAXBBean addedBean = (BaseHK2JAXBBean) source._doAdd(xmlKey, addMe, null, index, changeList);
+                    if (!changeList) {
+                        if (index < 0) {
+                            addToEnds.add(addedBean);
+                        }
+                        else {
+                            arrayChanges.put(index, addedBean);
+                        }
+                    }
                 }
-            }
-            
-            for (Map.Entry<String, List<RemoveData>> entry : difference.getRemoves().entrySet()) {
-                String xmlKey = entry.getKey();
                 
-                for (RemoveData removed : entry.getValue()) {
-                    source._doRemove(xmlKey, removed.getChildKey(), removed.getIndex(), removed.getChild());
+                for (RemoveData removed : childDiffs.getRemoves()) {
+                    source._doRemove(xmlKey, removed.getChildKey(), removed.getIndex(), removed.getChild(), changeList);
                 }
+                
+                for (MoveData md : childDiffs.getMoves()) {
+                    BaseHK2JAXBBean movedBean = getLOABean(oldListOrArray, childType, md.getOldIndex());
+                    
+                    if (!changeList) {
+                        arrayChanges.put(md.getNewIndex(), movedBean);
+                    }
+                }
+                
+                if (!changeList) {
+                    int newSize = childDiffs.getNewSize(getLOASize(oldListOrArray, childType));
+                    Object newListOrArray = createLOA(childType, newSize, parentedModel.getChildModel());
+                    
+                    for (int lcv = 0; lcv < newSize; lcv++) {
+                        BaseHK2JAXBBean toPut = arrayChanges.get(lcv);
+                        
+                        if (toPut == null) {
+                            toPut = getLOABean(oldListOrArray, childType, lcv);
+                        }
+                        
+                        putLOABean(newListOrArray, childType, lcv, toPut);
+                    }
+                    
+                    boolean success = false;
+                    XmlDynamicChange xmlDynamicChange = changeControl.startOrContinueChange(source);
+                    try {
+                        if (xmlDynamicChange.getBeanDatabase() != null) {
+                            source.changeInHub(xmlKey, newListOrArray, xmlDynamicChange.getBeanDatabase());
+                        }
+                    
+                        source._setProperty(xmlKey, newListOrArray, false, true);
+                        
+                        success = true;
+                    }
+                    finally {
+                        changeControl.endOrDeferChange(success);
+                    }
+                }
+                
             }
         }
+    }
+    
+    private static Object createLOA(ChildType type, int size, ModelImpl childModel) {
+        if (ChildType.ARRAY.equals(type)) {
+            return Array.newInstance(childModel.getOriginalInterfaceAsClass(), size);
+        }
+        
+        return new ArrayList<BaseHK2JAXBBean>(size);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static void putLOABean(Object listOrArray, ChildType type, int index, BaseHK2JAXBBean putMe) {
+        if (ChildType.ARRAY.equals(type)) {
+            Array.set(listOrArray, index, putMe);
+            return;
+        }
+
+        List<BaseHK2JAXBBean> list = (List<BaseHK2JAXBBean>) listOrArray;
+            
+        list.add(index, putMe);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static BaseHK2JAXBBean getLOABean(Object listOrArray, ChildType type, int index) {
+        if (ChildType.ARRAY.equals(type)) {
+            return (BaseHK2JAXBBean) Array.get(listOrArray, index);
+        }
+        
+        if (ChildType.LIST.equals(type)) {
+            List<BaseHK2JAXBBean> list = (List<BaseHK2JAXBBean>) listOrArray;
+            
+            return list.get(index);
+        }
+        
+        return (BaseHK2JAXBBean) listOrArray;
+        
+    }
+    
+    // LOA stands for List Or Array
+    @SuppressWarnings("unchecked")
+    private static int getLOASize(Object listOrArray, ChildType type) {
+        if (ChildType.ARRAY.equals(type)) {
+            return Array.getLength(listOrArray);
+        }
+        if (ChildType.LIST.equals(type)) {
+            List<BaseHK2JAXBBean> list = (List<BaseHK2JAXBBean>) listOrArray;
+            
+            return list.size();
+        }
+        
+        // Direct is always size 1
+        return 1;
     }
     
     /**

@@ -241,7 +241,7 @@ public class MergeTest {
      */
     @SuppressWarnings("unchecked")
     @Test 
-    // @org.junit.Ignore
+    @org.junit.Ignore
     public void testMergeModifyAddAListChild() throws Exception {
         ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
         XmlService xmlService = locator.getService(XmlService.class);
@@ -334,7 +334,7 @@ public class MergeTest {
      */
     @SuppressWarnings("unchecked")
     @Test 
-    // @org.junit.Ignore
+    @org.junit.Ignore
     public void testMergeModifyAddAnArrayChild() throws Exception {
         ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
         XmlService xmlService = locator.getService(XmlService.class);

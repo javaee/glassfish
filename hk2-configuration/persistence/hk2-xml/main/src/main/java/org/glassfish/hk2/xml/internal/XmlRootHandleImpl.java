@@ -183,7 +183,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
             Differences differences = Utilities.getDiff(oldRootBase, newRootBase);
             
             if (!differences.getDifferences().isEmpty()) {
-                Utilities.applyDiff(differences);
+                Utilities.applyDiff(differences, changeControl);
             }
             
             success = true;
