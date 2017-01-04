@@ -40,6 +40,7 @@
 
 package org.glassfish.hk2.xml.jaxb.internal;
 
+import java.beans.PropertyChangeEvent;
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
@@ -1023,6 +1024,37 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         wt.modifyInstance(instanceName, modified);
             
         return true;
+    }
+    
+    /**
+     * Called under write lock
+     * 
+     * @param propName The name of the property to change
+     * @param propValue The new value of the property
+     */
+    public boolean changeInHub(List<PropertyChangeEvent> events, WriteableBeanDatabase wbd) {
+        WriteableType wt = wbd.getWriteableType(xmlPath);
+        HashMap<String, Object> modified = new HashMap<String, Object>(beanLikeMap);
+        
+        boolean madeAChange = false;
+        for (PropertyChangeEvent event : events) {
+            String propName = event.getPropertyName();
+            Object oldValue = event.getOldValue();
+            Object newValue = event.getNewValue();
+            
+            if (GeneralUtilities.safeEquals(oldValue, newValue)) {
+                continue;
+            }
+            
+            madeAChange = true;
+            modified.put(propName, newValue);   
+        }
+        
+        if (madeAChange) {
+            wt.modifyInstance(instanceName, modified);
+        }
+            
+        return madeAChange;
     }
     
     /**

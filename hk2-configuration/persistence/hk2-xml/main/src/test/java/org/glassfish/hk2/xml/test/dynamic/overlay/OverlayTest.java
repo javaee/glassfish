@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,8 +39,11 @@
  */
 package org.glassfish.hk2.xml.test.dynamic.overlay;
 
+import java.beans.PropertyChangeEvent;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -166,11 +169,23 @@ public class OverlayTest {
             Assert.fail(getAssertString(changes, changeDescriptors));
         }
         
-        for (int lcv = 0; lcv < changes.size(); lcv++) {
+        HashSet<Integer> usedDescriptors = new HashSet<Integer>();
+        for (int lcv = 0; lcv < changeDescriptors.length; lcv++) {
             ChangeDescriptor cd = changeDescriptors[lcv];
             
-            cd.check(changes.get(lcv));
+            for (int inner = 0; inner < changes.size(); inner++) {
+                if (usedDescriptors.contains(inner)) continue;
+                
+                Change change = changes.get(inner);
+                    
+                String isSame = cd.check(change);
+                if (isSame == null) {
+                    usedDescriptors.add(inner);
+                }
+            }
         }
+        
+        Assert.assertEquals(getAssertString(changes, changeDescriptors) + " unusedDescriptors=" + usedDescriptors, usedDescriptors.size(), changes.size());
     }
     
     /**
@@ -179,11 +194,23 @@ public class OverlayTest {
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testABCxBC() throws Exception {
         List<Change> changes = doTest("ABC", "BC");
         
-        Assert.assertEquals(2, changes.size());
+        checkChanges(changes,
+                new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
+                        OverlayUtilities.LIST_TYPE,     // type name
+                        OverlayUtilities.OROOT_A + ".*")       // instance name
+                , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
+                        OverlayUtilities.ARRAY_TYPE,    // type name
+                        OverlayUtilities.OROOT_A + ".*")       // instance name
+                , new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
+                        OverlayUtilities.OROOT_TYPE,    // type name
+                        OverlayUtilities.OROOT_A,       // instance name
+                        OverlayUtilities.A_LIST_CHILD,  // prop changed
+                        OverlayUtilities.A_ARRAY_CHILD) // prop changed
+        );
         
     }
     
@@ -205,10 +232,10 @@ public class OverlayTest {
                 OverlayUtilities.A_ARRAY_CHILD) // prop changed
             , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
                 OverlayUtilities.ARRAY_TYPE,    // type name
-                OverlayUtilities.OROOT_A)       // instance name
+                OverlayUtilities.OROOT_A + ".*")       // instance name
             , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
                 OverlayUtilities.LIST_TYPE,     // type name
-                OverlayUtilities.OROOT_A)       // instance name                    
+                OverlayUtilities.OROOT_A + ".*")       // instance name                    
          );
     }
     
@@ -445,12 +472,14 @@ public class OverlayTest {
         private final String typeName;
         private final List<String> instanceKey;
         private final String props[];
+        private final String instance;
         
         private ChangeDescriptor(ChangeCategory category, String type, String instance, String... props) {
             this.category = category;
             this.typeName = type;
             this.props = props;
             this.instanceKey = tokenizeInstanceKey(instance);
+            this.instance = instance;
         }
         
         private static List<String> tokenizeInstanceKey(String instance) {
@@ -467,33 +496,62 @@ public class OverlayTest {
             return retVal;
         }
         
-        private void checkInstanceKey(String recievedKey) {
+        private String checkInstanceKey(String recievedKey) {
             List<String> receivedToken = tokenizeInstanceKey(recievedKey);
             
-            Assert.assertEquals(instanceKey, receivedToken);
+            if (instanceKey.size() != receivedToken.size()) {
+                return "Instance cardinality for " + recievedKey + " does not match " + instance;
+            }
             
+            for (int lcv = 0; lcv < receivedToken.size(); lcv++) {
+                String expected = instanceKey.get(lcv);
+                String received = receivedToken.get(lcv);
+                
+                if ("*".equals(expected)) continue;
+                if (!GeneralUtilities.safeEquals(expected, received)) {
+                  return "Failed in " + this + " at index " + lcv;
+                }
+            }
+            
+            return null;
         }
         
-        private void check(Change change) {
-            Assert.assertEquals(category, change.getChangeCategory());
-            Assert.assertEquals(typeName, change.getChangeType().getName());
-            checkInstanceKey(change.getInstanceKey());
+        private String check(Change change) {
+            if (!GeneralUtilities.safeEquals(category, change.getChangeCategory())) {
+                return "Category is not the same expected=" + this + " got=" + change;
+            }
             
-            Assert.assertEquals(props.length, change.getModifiedProperties().size());
+            if (!GeneralUtilities.safeEquals(typeName, change.getChangeType().getName())) {
+                return "Type is not the same expected=" + this + " got=" + change;
+            }
+            
+            String errorInstanceKey = checkInstanceKey(change.getInstanceKey());
+            if (errorInstanceKey != null) return errorInstanceKey;
+            
+            List<PropertyChangeEvent> modifiedProperties = change.getModifiedProperties();
+            if (modifiedProperties == null) {
+                modifiedProperties = Collections.emptyList();
+            }
+            
+            Assert.assertEquals(props.length, modifiedProperties.size());
             for (int lcv = 0; lcv < props.length; lcv++) {
                 String prop = props[lcv];
                 
                 // Props is unordered, must go through list
                 boolean found = false;
-                for (int inner = 0; inner < change.getModifiedProperties().size(); inner++) {
-                    if (GeneralUtilities.safeEquals(prop, change.getModifiedProperties().get(inner).getPropertyName())) {
+                for (int inner = 0; inner < modifiedProperties.size(); inner++) {
+                    if (GeneralUtilities.safeEquals(prop, modifiedProperties.get(inner).getPropertyName())) {
                         found = true;
                         break;
                     }
                 }
                 
-                Assert.assertTrue("Did not find prop " + prop, found);
+                if (!found) {
+                  return "Did not find prop " + prop + " in " + this;
+                }
             }
+            
+            return null;
         }
         
         @Override

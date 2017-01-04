@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -1398,12 +1398,11 @@ public class Utilities {
         for (Difference difference : differences.getDifferences()) {
             BaseHK2JAXBBean source = difference.getSource();
             
-            for (PropertyChangeEvent nonChildChange : difference.getNonChildChanges()) {
-                source._setProperty(nonChildChange.getPropertyName(),
-                        nonChildChange.getNewValue());
-            }
+            List<PropertyChangeEvent> allSourceChanges = new LinkedList<PropertyChangeEvent>();
+            allSourceChanges.addAll(difference.getNonChildChanges());
             
             if (!difference.hasChildChanges()) {
+                applyAllSourceChanges(source, allSourceChanges, changeControl);
                 continue;
             }
             
@@ -1417,13 +1416,10 @@ public class Utilities {
                 
                 boolean changeList = ChildType.DIRECT.equals(childType);
                 
-                Object oldListOrArray = null;
+                Object oldListOrArray = source._getProperty(xmlKey);
                 Map<Integer, BaseHK2JAXBBean> arrayChanges = null;
-                List<BaseHK2JAXBBean> addToEnds = new LinkedList<BaseHK2JAXBBean>();
                 
                 if (!changeList) {
-                  oldListOrArray = source._getProperty(xmlKey);
-                  
                   arrayChanges = new LinkedHashMap<Integer, BaseHK2JAXBBean>();
                 }
                 
@@ -1433,17 +1429,18 @@ public class Utilities {
                 
                     BaseHK2JAXBBean addedBean = (BaseHK2JAXBBean) source._doAdd(xmlKey, addMe, null, index, changeList);
                     if (!changeList) {
-                        if (index < 0) {
-                            addToEnds.add(addedBean);
-                        }
-                        else {
-                            arrayChanges.put(index, addedBean);
-                        }
+                        arrayChanges.put(index, addedBean);
+                    }
+                    else {
+                        allSourceChanges.add(new PropertyChangeEvent(source, xmlKey, null, addedBean));
                     }
                 }
                 
                 for (RemoveData removed : childDiffs.getRemoves()) {
                     source._doRemove(xmlKey, removed.getChildKey(), removed.getIndex(), removed.getChild(), changeList);
+                    if (changeList) {
+                        allSourceChanges.add(new PropertyChangeEvent(source, xmlKey, oldListOrArray, null));
+                    }
                 }
                 
                 for (MoveData md : childDiffs.getMoves()) {
@@ -1468,23 +1465,49 @@ public class Utilities {
                         putLOABean(newListOrArray, childType, lcv, toPut);
                     }
                     
-                    boolean success = false;
-                    XmlDynamicChange xmlDynamicChange = changeControl.startOrContinueChange(source);
-                    try {
-                        if (xmlDynamicChange.getBeanDatabase() != null) {
-                            source.changeInHub(xmlKey, newListOrArray, xmlDynamicChange.getBeanDatabase());
-                        }
-                    
-                        source._setProperty(xmlKey, newListOrArray, false, true);
-                        
-                        success = true;
-                    }
-                    finally {
-                        changeControl.endOrDeferChange(success);
-                    }
+                    allSourceChanges.add(new PropertyChangeEvent(source, xmlKey, oldListOrArray, newListOrArray));
                 }
-                
             }
+            
+            applyAllSourceChanges(source, allSourceChanges, changeControl);
+        }
+    }
+    
+    private static void applyAllSourceChanges(BaseHK2JAXBBean source, List<PropertyChangeEvent> events, DynamicChangeInfo<?> changeControl) {
+        boolean success = false;
+        XmlDynamicChange xmlDynamicChange = changeControl.startOrContinueChange(source);
+        try {
+            boolean madeAChange = false;
+            for (PropertyChangeEvent pce : events) {
+                if (!GeneralUtilities.safeEquals(pce.getOldValue(), pce.getNewValue())) {
+                    madeAChange = true;
+                    Utilities.invokeVetoableChangeListeners(changeControl,
+                            source,
+                            pce.getOldValue(),
+                            pce.getNewValue(),
+                            pce.getPropertyName(),
+                            source._getClassReflectionHelper());
+                }
+            }
+            
+            if (!madeAChange) {
+                success = true;
+                
+                return;
+            }
+            
+            if (xmlDynamicChange.getBeanDatabase() != null) {
+                source.changeInHub(events, xmlDynamicChange.getBeanDatabase());
+            }
+            
+            for (PropertyChangeEvent pce : events) { 
+                source._setProperty(pce.getPropertyName(), pce.getNewValue(), false, true);
+            }
+            
+            success = true;
+        }
+        finally {
+            changeControl.endOrDeferChange(success);
         }
     }
     
