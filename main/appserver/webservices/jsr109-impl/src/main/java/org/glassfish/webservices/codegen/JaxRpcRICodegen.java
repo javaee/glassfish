@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,7 +40,6 @@
 
 package org.glassfish.webservices.codegen;
 
-import com.sun.appserv.ClassLoaderUtil;
 import com.sun.enterprise.deployment.util.DOLUtils;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -383,7 +382,11 @@ public class JaxRpcRICodegen extends ModuleContentLinker
             if (env != null && env instanceof com.sun.xml.rpc.processor.util.ProcessorEnvironment) {
                 com.sun.xml.rpc.processor.util.ProcessorEnvironment typedEnv = (com.sun.xml.rpc.processor.util.ProcessorEnvironment) env;
                 java.net.URLClassLoader urlCL = typedEnv.getClassLoader();
-                ClassLoaderUtil.releaseLoader(urlCL);
+                try {
+                    urlCL.close();
+                } catch (IOException e) {
+                    // ignore it
+                }
             }
         }
     }
