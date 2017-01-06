@@ -68,10 +68,3 @@ public class HelloStateful {
 
 
 }
-
-interface Hello {
-
-    public void foo();
-
-}
-
