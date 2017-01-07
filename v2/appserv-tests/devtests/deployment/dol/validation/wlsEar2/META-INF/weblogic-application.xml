@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<weblogic-application xmlns="http://www.bea.com/ns/weblogic/90" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.bea.com/ns/weblogic/90 http://www.bea.com/ns/weblogic/90/weblogic-application.xsd">
-  <application-param>
-  <foo/>
-    <param-name>param1</param-name>
-    <param-value>val1</param-value>
-  </application-param>
-</weblogic-application>

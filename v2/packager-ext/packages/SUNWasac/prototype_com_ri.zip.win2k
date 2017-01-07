@@ -1,6 +1,0 @@
-lib/appserv-admin.jar
-lib/appserv-deployment-client.jar
-lib/admin-cli.jar
-bin/cliutil.dll
-lib/install/templates/asadmin.bat.template
-lib/install/templates/start-appserv.bat.template

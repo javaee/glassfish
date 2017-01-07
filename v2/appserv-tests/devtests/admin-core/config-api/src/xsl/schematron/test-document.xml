@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<test id="FirstTest">
-  <foo feetle="yup"/>
-  <foo>
-    the first value
-    <fir>Fir</fir>
-  </foo>
-</test>

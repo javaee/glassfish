@@ -1,9 +1,0 @@
-If a connection's autocommit is set to true and we attempt a select
-for update sql query, Oracle throws a "ORA-01002: Fetch out of sequence"
-exception. This test tries to :
-1. get a connection using getNonTxConnection API and try a "select for
-update" query. Since a connection obtained using getNonTxConnection
-is not managed (transaction-wise), its autocommit is set to true by
-default. So this fails.
-2. gets a connection as above but sets its autocommit to true. The 
-query will then pass.

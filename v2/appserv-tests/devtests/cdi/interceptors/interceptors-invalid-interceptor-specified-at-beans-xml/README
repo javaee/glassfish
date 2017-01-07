@@ -1,4 +1,0 @@
-Test
-- Use of business method interceptors 
-    - invalid specification of interceptor class in beans.xml should result
-    in deployment failure of archive.  

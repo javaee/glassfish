@@ -1,9 +1,0 @@
-<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page"
-          xmlns="http://www.w3.org/1999/xhtml"
-          xmlns:test="http://test" version="2.0">
-  <html>
-    <body>
-      <test:test/>
-    </body>
-  </html>
-</jsp:root>

@@ -1,5 +1,0 @@
-Manifest-Version: 1.0
-Ant-Version: Apache Ant 1.7.0
-Created-By: 16.0-b08 (Sun Microsystems Inc.)
-Extension-List: blackbox
-blackbox-Extension-Name: blackbox.jar

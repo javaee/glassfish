@@ -1,3 +1,0 @@
-Test for bug : 5005189
-synopsis : Argument type mismatch error occurs with overridden MCF/RA during RA deployment
-Test deploys a RA [with overridden setters for some RA properties] and creates an admin object
