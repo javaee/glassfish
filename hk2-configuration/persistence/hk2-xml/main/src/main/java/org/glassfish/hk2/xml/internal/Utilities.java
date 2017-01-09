@@ -887,8 +887,11 @@ public class Utilities {
                         Map<String, Instance> allInstances = allType.getInstances();
                         
                         Set<String> removeMe = new LinkedHashSet<String>();
+                        
+                        // Do not forget to put the dot at the end or it will remove too much
+                        String rootInstancePrefix = rootInstanceName + ".";
                         for (String iKey : allInstances.keySet()) {
-                            if (!iKey.startsWith(rootInstanceName)) continue;
+                            if (!iKey.startsWith(rootInstancePrefix)) continue;
                             removeMe.add(iKey);
                         }
                         
@@ -1477,6 +1480,8 @@ public class Utilities {
         boolean success = false;
         XmlDynamicChange xmlDynamicChange = changeControl.startOrContinueChange(source);
         try {
+            WriteableBeanDatabase wbd = xmlDynamicChange.getBeanDatabase();
+            
             boolean madeAChange = false;
             for (PropertyChangeEvent pce : events) {
                 if (!GeneralUtilities.safeEquals(pce.getOldValue(), pce.getNewValue())) {
@@ -1496,8 +1501,8 @@ public class Utilities {
                 return;
             }
             
-            if (xmlDynamicChange.getBeanDatabase() != null) {
-                source.changeInHub(events, xmlDynamicChange.getBeanDatabase());
+            if (wbd != null) {
+                source.changeInHub(events, wbd);
             }
             
             for (PropertyChangeEvent pce : events) { 

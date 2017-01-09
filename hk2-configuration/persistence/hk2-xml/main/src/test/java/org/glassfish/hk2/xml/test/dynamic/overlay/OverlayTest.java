@@ -41,7 +41,6 @@ package org.glassfish.hk2.xml.test.dynamic.overlay;
 
 import java.beans.PropertyChangeEvent;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -137,14 +136,32 @@ public class OverlayTest {
         XmlRootHandle<OverlayRootABean> originalHandle = xmlService.createEmptyHandle(OverlayRootABean.class, true, true);
         OverlayUtilities.generateOverlayRootABean(originalHandle, original);
         
+        String originalFromList = OverlayUtilities.getStringVersionOfTree(originalHandle.getRoot(), true);
+        String originalFromArray = OverlayUtilities.getStringVersionOfTree(originalHandle.getRoot(), false);
+        
+        Assert.assertEquals(original, originalFromList);
+        Assert.assertEquals(original, originalFromArray);
+        
         OverlayUtilities.checkSingleLetterOveralyRootA(originalHandle, hub, original);
         
         XmlRootHandle<OverlayRootABean> overlayHandle = xmlService.createEmptyHandle(OverlayRootABean.class, false, false);
         OverlayUtilities.generateOverlayRootABean(overlayHandle, overlay);
         
+        String overlayFromList = OverlayUtilities.getStringVersionOfTree(overlayHandle.getRoot(), true);
+        String overlayFromArray = OverlayUtilities.getStringVersionOfTree(overlayHandle.getRoot(), false);
+        
+        Assert.assertEquals(overlay, overlayFromList);
+        Assert.assertEquals(overlay, overlayFromArray);
+        
         OverlayUtilities.checkSingleLetterOveralyRootA(originalHandle, hub, original);
         
         originalHandle.overlay(overlayHandle);
+        
+        String overlayedFromList = OverlayUtilities.getStringVersionOfTree(originalHandle.getRoot(), true);
+        String overlayedFromArray = OverlayUtilities.getStringVersionOfTree(originalHandle.getRoot(), false);
+        
+        Assert.assertEquals(overlay, overlayedFromList);
+        Assert.assertEquals(overlay, overlayedFromArray);
         
         OverlayUtilities.checkSingleLetterOveralyRootA(originalHandle, hub, overlay);
         
@@ -536,7 +553,7 @@ public class OverlayTest {
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testA_B_A_C_A_D_xA_C_A_D_() throws Exception {
         List<Change> changes = doTest("A(B)A(C)A(D)", "A(C)A(D)");
         

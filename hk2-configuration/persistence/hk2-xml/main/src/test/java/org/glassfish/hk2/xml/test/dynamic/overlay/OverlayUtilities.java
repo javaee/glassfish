@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2016-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,14 +40,12 @@
 package org.glassfish.hk2.xml.test.dynamic.overlay;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.Type;
-import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.junit.Assert;
@@ -70,6 +68,90 @@ public class OverlayUtilities {
     
     private static final String LEFT_PAREN = "(";
     private static final String RIGHT_PAREN = ")";
+    
+    public static String getStringVersionOfTree(OverlayRootABean root, boolean followList) {
+        if (followList) {
+            return getStringVersionOfTreeList(root);
+        }
+        
+        return getStringVersionOfTreeArray(root);
+    }
+    
+    private static String getStringVersionOfTreeList(OverlayRootABean root) {
+        StringBuffer sb = new StringBuffer();
+        
+        for(UnkeyedLeafBean ulb : root.getUnkeyedLeafList()) {
+            sb.append(ulb.getName());
+            
+            boolean wroteParen = false;
+            if (!ulb.getListLeaf().isEmpty()) {
+                sb.append(LEFT_PAREN);
+                wroteParen = true;
+            }
+            for (UnkeyedLeafBean ulbc : ulb.getListLeaf()) {
+                getStringVersionOfLeafList(ulbc, sb);
+            }
+            if (wroteParen) {
+                sb.append(RIGHT_PAREN);
+            }
+        }
+        
+        return sb.toString();
+    }
+    
+    private static void getStringVersionOfLeafList(UnkeyedLeafBean ulb, StringBuffer sb) {
+        sb.append(ulb.getName());
+        
+        boolean wroteParen = false;
+        if (!ulb.getListLeaf().isEmpty()) {
+            sb.append(LEFT_PAREN);
+            wroteParen = true;
+        }
+        for (UnkeyedLeafBean ulbc : ulb.getListLeaf()) {
+            getStringVersionOfLeafList(ulbc, sb);
+        }
+        if (wroteParen) {
+            sb.append(RIGHT_PAREN);
+        }
+    }
+    
+    private static String getStringVersionOfTreeArray(OverlayRootABean root) {
+        StringBuffer sb = new StringBuffer();
+        
+        for(UnkeyedLeafBean ulb : root.getUnkeyedLeafArray()) {
+            sb.append(ulb.getName());
+            
+            boolean wroteParen = false;
+            if (!ulb.getListLeaf().isEmpty()) {
+                sb.append(LEFT_PAREN);
+                wroteParen = true;
+            }
+            for (UnkeyedLeafBean ulbc : ulb.getListLeaf()) {
+                getStringVersionOfLeafArray(ulbc, sb);
+            }
+            if (wroteParen) {
+                sb.append(RIGHT_PAREN);
+            }
+        }
+        
+        return sb.toString();
+    }
+    
+    private static void getStringVersionOfLeafArray(UnkeyedLeafBean ulb, StringBuffer sb) {
+        sb.append(ulb.getName());
+        
+        boolean wroteParen = false;
+        if (!ulb.getListLeaf().isEmpty()) {
+            sb.append(LEFT_PAREN);
+            wroteParen = true;
+        }
+        for (UnkeyedLeafBean ulbc : ulb.getListLeaf()) {
+            getStringVersionOfLeafArray(ulbc, sb);
+        }
+        if (wroteParen) {
+            sb.append(RIGHT_PAREN);
+        }
+    }
     
     public static void generateOverlayRootABean(XmlRootHandle<OverlayRootABean> handle, String singleLetterLeafNames) {
         generateOverlayRootABean(handle, singleLetterNames(singleLetterLeafNames));
@@ -156,7 +238,6 @@ public class OverlayUtilities {
                 
                 lcv += childNames.length;
                
-                
                 checkSingleLetterLeaf(currentListBean, hub, LIST_TYPE, childNames);
                 
                 checkSingleLetterLeaf(currentArrayBean, hub, ARRAY_TYPE, childNames);
@@ -166,10 +247,10 @@ public class OverlayUtilities {
             }
             else {
                 currentListBean = root.getUnkeyedLeafList().get(childCount);
-                checkLeafInHub(hub, LIST_TYPE, currentListBean, name);
+                checkLeafInHub(hub, LIST_TYPE, currentListBean, name, childCount);
                 
                 currentArrayBean = root.getUnkeyedLeafArray()[childCount];
-                checkLeafInHub(hub, ARRAY_TYPE, currentArrayBean, name);
+                checkLeafInHub(hub, ARRAY_TYPE, currentArrayBean, name, childCount);
                 
                 childCount++;
             }
@@ -225,10 +306,10 @@ public class OverlayUtilities {
             }
             else {
                 currentListBean = root.getListLeaf().get(childCount);
-                checkLeafInHub(hub, listChildType, currentListBean, name);
+                checkLeafInHub(hub, listChildType, currentListBean, name, childCount);
                 
                 currentArrayBean = root.getArrayLeaf()[childCount];
-                checkLeafInHub(hub, arrayChildType, currentArrayBean, name);
+                checkLeafInHub(hub, arrayChildType, currentArrayBean, name, childCount);
                 
                 childCount++;
             }
@@ -293,8 +374,8 @@ public class OverlayUtilities {
     }
     
     @SuppressWarnings("unchecked")
-    private static void checkLeafInHub(Hub hub, String typeName, UnkeyedLeafBean bean, String expectedName) {
-        Assert.assertEquals("In type " + typeName + " we got wrong name in bean " + bean,
+    private static void checkLeafInHub(Hub hub, String typeName, UnkeyedLeafBean bean, String expectedName, int parentIndex) {
+        Assert.assertEquals("In type " + typeName + " we got wrong name at parent index " + parentIndex + " in bean " + bean,
                 expectedName, bean.getName());
         
         Type type = hub.getCurrentDatabase().getType(typeName);
