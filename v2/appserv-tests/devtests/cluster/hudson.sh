@@ -20,6 +20,7 @@ echo "Cleanup up from previous tests..."
 #cmd_on_hosted_nodes "/usr/jdk/jdk1.6.0_21/bin/jps |egrep 'ASMain|admin-cli' |cut -f1 -d' ' | xargs -l10 kill -9; rm -rf /export/home/hudson/testnode"
 cmd_on_hosted_nodes "/usr/jdk/latest/bin/jps |egrep 'ASMain|admin-cli' |cut -f1 -d' ' | xargs -l10 kill -9; rm -rf /export/home/hudson/testnode"
 rm -rf glassfish4 apps
+rm glassfish.zip*
 ln -s appserv-tests/devtests/cluster/apps apps
 #echo "Revision under test: " `cat $GFBUILDDIR/revision.txt`
 echo "Installing GlassFish..."
