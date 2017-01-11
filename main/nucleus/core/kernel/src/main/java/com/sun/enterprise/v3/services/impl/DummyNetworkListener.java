@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -254,5 +254,35 @@ public class DummyNetworkListener implements NetworkListener {
 
         return defaultValue;
     }
-}
 
+    @Override
+    public Property addProperty(Property prprt) {
+        if (properties.add(prprt)) {
+            return prprt;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public Property lookupProperty(String string) {
+        return getProperty(name);
+    }
+
+    @Override
+    public Property removeProperty(String string) {
+        final Property prop = getProperty(name);
+        if(prop == null){
+            return null;
+        }
+        return removeProperty(prop);
+    }
+
+    @Override
+    public Property removeProperty(Property prprt) {
+        if (properties.remove(prprt)) {
+            return prprt;
+        }
+        return null;
+    }
+}

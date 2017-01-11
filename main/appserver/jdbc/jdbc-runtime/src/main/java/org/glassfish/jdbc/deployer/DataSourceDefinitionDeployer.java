@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -491,6 +491,26 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
         public void setDeploymentOrder(String value) {
             //do nothing
         }
+
+        @Override
+        public Property addProperty(Property prprt) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public Property lookupProperty(String string) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public Property removeProperty(String string) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public Property removeProperty(Property prprt) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
     }
 
     class MyJdbcConnectionPool extends FakeConfigBean implements JdbcConnectionPool {
@@ -969,6 +989,26 @@ public class DataSourceDefinitionDeployer implements ResourceDeployer {
 
         public void setDeploymentOrder(String value) {
             //do nothing
+        }
+
+        @Override
+        public Property addProperty(Property prprt) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public Property lookupProperty(String string) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public Property removeProperty(String string) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public Property removeProperty(Property prprt) {
+            throw new UnsupportedOperationException("Not supported yet.");
         }
     }
 }
