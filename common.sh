@@ -567,7 +567,7 @@ delete_svn_tag(){
 
 svn_checkout(){
     printf "\n%s \n\n" "===== CHECKOUT ====="
-    svn checkout ${GF_WORKSPACE_URL_SSH}/branches/4.1.2 -r ${1}
+    svn checkout ${GF_WORKSPACE_URL_SSH}/branches/4.1.2 -r ${1} main
 }
 
 create_version_info(){
