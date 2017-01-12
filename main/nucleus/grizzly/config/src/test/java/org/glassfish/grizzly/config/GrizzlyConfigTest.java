@@ -56,6 +56,7 @@ import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.memory.ByteBufferManager;
 import org.glassfish.grizzly.memory.HeapMemoryManager;
 import org.glassfish.grizzly.memory.MemoryManager;
+import org.glassfish.grizzly.memory.PooledMemoryManager;
 import org.glassfish.grizzly.nio.NIOTransport;
 import org.glassfish.grizzly.strategies.SameThreadIOStrategy;
 import org.glassfish.grizzly.strategies.WorkerThreadIOStrategy;
@@ -149,7 +150,7 @@ public class GrizzlyConfigTest extends BaseTestGrizzlyConfig {
             GenericGrizzlyListener genericGrizzlyListener =
                     (GenericGrizzlyListener) getListener(grizzlyConfig, "http-listener-1");
             MemoryManager mm = genericGrizzlyListener.getTransport().getMemoryManager();
-            assertEquals(HeapMemoryManager.class.getName(), mm.getClass().getName());
+            assertEquals(PooledMemoryManager.class.getName(), mm.getClass().getName());
         } finally {
             if (grizzlyConfig != null) {
                 grizzlyConfig.shutdownNetwork();
