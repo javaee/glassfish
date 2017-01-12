@@ -1,7 +1,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2010-2015 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010-2017 Oracle and/or its affiliates. All rights reserved.
 #
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
@@ -60,7 +60,7 @@
 # will use that. We will not add build numbers for these packages. For 
 # example, grizzly version would look like 1.8.2-0,0. 
 
-glassfish_version="4.1.1,0-${build.id}"
+glassfish_version="4.1.2,0-${build.id}"
 felix_version="4.0.2,0-0"
 corba_version="4.0.0,0-4"
 jsf_version="2.2.12,0-0"

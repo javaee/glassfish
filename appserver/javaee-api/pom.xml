@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -46,11 +46,11 @@
     <parent>
         <groupId>org.glassfish.main</groupId>
         <artifactId>glassfish-parent</artifactId>
-        <version>4.1.1-SNAPSHOT</version>
+        <version>4.1.2-SNAPSHOT</version>
     </parent>
     <artifactId>javaee-api-parent</artifactId>
     <packaging>pom</packaging>
-    <version>4.1.1-SNAPSHOT</version>
+    <version>4.1.2-SNAPSHOT</version>
     <name>JavaEE API</name>
     <description>Java EE API combined bundles</description>
 
@@ -202,7 +202,7 @@
                         <doctitle>${project.name}</doctitle>
                         <windowtitle>${project.name}</windowtitle>
                         <bottom>
-<![CDATA[Copyright &#169; 1996-2015,
+<![CDATA[Copyright &#169; 1996-2017,
     <a href="http://www.oracle.com">Oracle</a>
     and/or its affiliates. All Rights Reserved.
     Use is subject to
