@@ -9,8 +9,12 @@ pushd glassfish-v4-image
 export http_proxy=http://www-proxy.us.oracle.com:80
 
 # download the latest GF 
-wget --no-proxy http://gf-hudson.us.oracle.com/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip
-
+# check if latest GF is provided by upstream job otherwise use default.
+if [ -z "$GLASSFISH_URL" ]
+then
+  GLASSFISH_URL=http://gf-hudson.us.oracle.com/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip
+fi
+wget --no-proxy $GLASSFISH_URL
 unzip -q glassfish.zip
 
 # PUT IN GMS PATCH

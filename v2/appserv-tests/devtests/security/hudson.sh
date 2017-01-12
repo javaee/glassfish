@@ -46,7 +46,13 @@ rm -rf glassfish-v4-image
 mkdir glassfish-v4-image
 pushd glassfish-v4-image
 
-wget --no-proxy http://gf-hudson.us.oracle.com/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip
+# check if latest GF is provided by upstream job otherwise use default.
+if [ -z "$GLASSFISH_URL" ]
+then
+  GLASSFISH_URL=http://gf-hudson.us.oracle.com/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip
+fi
+wget --no-proxy $GLASSFISH_URL
+
 unzip -q glassfish.zip
 
 export S1AS_HOME=$PWD/glassfish4/glassfish
