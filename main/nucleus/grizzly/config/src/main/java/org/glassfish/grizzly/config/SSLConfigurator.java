@@ -463,11 +463,6 @@ public class SSLConfigurator extends SSLEngineConfigurator {
         public void setTrustStoreType(String trustStoreType) {
             throw new IllegalStateException("The configuration is immutable");
         }
-
-        @Override
-        public SSLContext createSSLContext(final boolean throwException) {
-            return configureSSL();
-        }
     }
 
     private String getKeyStorePassword(Ssl ssl) {
