@@ -615,7 +615,7 @@ public class OverlayTest {
     }
     
     /**
-     * Tests overlay going from A(B)A(C)A(D) -> A(B)A(C)
+     * Tests overlay going from A(B(C)D(EF))G(HI(JKL) -> G(HI(JKL))A(B(C)D(EF))
      * 
      * @throws Exception
      */
@@ -634,14 +634,52 @@ public class OverlayTest {
     }
     
     /**
-     * Tests overlay going from A(B(C)) -> A(B(CD(E)))
+     * Tests overlay going from A(B(C)) -> A(B(CD(E))) list only
      * 
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testListA_B_C__xA_B_CD_E___() throws Exception {
         List<Change> changes = doTestA("A(B(C))", "A(B(CD(E)))", true, false);
+        
+        checkChanges(changes,
+                new ChangeDescriptor(ChangeCategory.ADD_INSTANCE,
+                        "/overlay-root-A/unkeyed-leaf-list/leaf-list/leaf-list",    // type name
+                        "overlay-root-A.*.*.*",      // instance name
+                        null
+               
+                 )
+                 , new ChangeDescriptor(ChangeCategory.ADD_TYPE,
+                         "/overlay-root-A/unkeyed-leaf-list/leaf-list/leaf-list/leaf-list",    // type name
+                         null,      // instance name
+                         null
+       
+                 )
+                 , new ChangeDescriptor(ChangeCategory.ADD_INSTANCE,
+                         "/overlay-root-A/unkeyed-leaf-list/leaf-list/leaf-list/leaf-list",    // type name
+                         "overlay-root-A.*.*.*.*",      // instance name
+                         null
+                
+                  )
+                  , new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
+                         "/overlay-root-A/unkeyed-leaf-array/leaf-list/leaf-lst",    // type name
+                         "overlay-root-A.*.*",      // instance name
+                         "leaf-list"
+       
+                  )        
+         );
+    }
+    
+    /**
+     * Tests overlay going from A(B(C)) -> A(B(CD(E))) array only
+     * 
+     * @throws Exception
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testArrayA_B_C__xA_B_CD_E___() throws Exception {
+        List<Change> changes = doTestA("A(B(C))", "A(B(CD(E)))", false, true);
         
         checkChanges(changes,
                 new ChangeDescriptor(ChangeCategory.ADD_INSTANCE,
@@ -650,6 +688,12 @@ public class OverlayTest {
                         null
                
                  )
+                 , new ChangeDescriptor(ChangeCategory.ADD_TYPE,
+                         "/overlay-root-A/unkeyed-leaf-array/leaf-array/leaf-array/leaf-array",    // type name
+                         null,      // instance name
+                         null
+       
+                 )
                  , new ChangeDescriptor(ChangeCategory.ADD_INSTANCE,
                          "/overlay-root-A/unkeyed-leaf-array/leaf-array/leaf-array/leaf-array",    // type name
                          "overlay-root-A.*.*.*.*",      // instance name
@@ -657,18 +701,12 @@ public class OverlayTest {
                 
                   )
                   , new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
-                         "/overlay-root-A/unkeyed-leaf-array/leaf-array/leaf-array",    // type name
-                         "overlay-root-A.*.*.*.*",      // instance name
+                         "/overlay-root-A/unkeyed-leaf-array/leaf-array",    // type name
+                         "overlay-root-A.*.*",      // instance name
                          "leaf-array"
        
-         )
-                
-                        
+                  )        
          );
-        
-        
-        
-        
     }
     
     /**
@@ -696,6 +734,8 @@ public class OverlayTest {
         
         private static List<String> tokenizeInstanceKey(String instance) {
             LinkedList<String> retVal = new LinkedList<String>();
+            
+            if (instance == null) return retVal;
             
             StringTokenizer st = new StringTokenizer(instance, ".");
             while (st.hasMoreTokens()) {

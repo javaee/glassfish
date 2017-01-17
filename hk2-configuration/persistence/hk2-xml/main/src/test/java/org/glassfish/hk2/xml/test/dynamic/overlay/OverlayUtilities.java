@@ -124,11 +124,11 @@ public class OverlayUtilities {
             sb.append(ulb.getName());
             
             boolean wroteParen = false;
-            if (!ulb.getListLeaf().isEmpty()) {
+            if (ulb.getArrayLeaf().length > 0) {
                 sb.append(LEFT_PAREN);
                 wroteParen = true;
             }
-            for (UnkeyedLeafBean ulbc : ulb.getListLeaf()) {
+            for (UnkeyedLeafBean ulbc : ulb.getArrayLeaf()) {
                 getStringVersionOfLeafArray(ulbc, sb);
             }
             if (wroteParen) {
@@ -143,11 +143,11 @@ public class OverlayUtilities {
         sb.append(ulb.getName());
         
         boolean wroteParen = false;
-        if (!ulb.getListLeaf().isEmpty()) {
+        if (ulb.getArrayLeaf().length > 0) {
             sb.append(LEFT_PAREN);
             wroteParen = true;
         }
-        for (UnkeyedLeafBean ulbc : ulb.getListLeaf()) {
+        for (UnkeyedLeafBean ulbc : ulb.getArrayLeaf()) {
             getStringVersionOfLeafArray(ulbc, sb);
         }
         if (wroteParen) {

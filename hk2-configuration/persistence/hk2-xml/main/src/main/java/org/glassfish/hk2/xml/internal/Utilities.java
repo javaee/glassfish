@@ -509,7 +509,7 @@ public class Utilities {
                 int lcv = 0;
                 for (BaseHK2JAXBBean childsChild : childsChildren) {
                     BaseHK2JAXBBean grandchild = internalAdd(child, childsChildProperty,
-                            childsChild, null, -1, changeInformation, xmlDynamicChange, addedServices, true);
+                            childsChild, null, -1, changeInformation, xmlDynamicChange, addedServices, false);
                     
                     copiedChildArray.add(grandchild);
                     Array.set(asArray, lcv++, grandchild);
