@@ -127,43 +127,59 @@ public class OverlayTest {
         }
     }
     
-    private List<Change> doTest(String original, String overlay) {
+    private List<Change> doTestA(String original, String overlay) {
+        return doTestA(original, overlay, true, true);
+    }
+    
+    private List<Change> doTestA(String original, String overlay, boolean generateLists, boolean generateArrays) {
         ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
         XmlService xmlService = locator.getService(XmlService.class);
         Hub hub = locator.getService(Hub.class);
         UpdateListener listener = locator.getService(UpdateListener.class);
         
         XmlRootHandle<OverlayRootABean> originalHandle = xmlService.createEmptyHandle(OverlayRootABean.class, true, true);
-        OverlayUtilities.generateOverlayRootABean(originalHandle, original);
+        OverlayUtilities.generateOverlayRootABean(originalHandle, generateLists, generateArrays, original);
         
         String originalFromList = OverlayUtilities.getStringVersionOfTree(originalHandle.getRoot(), true);
         String originalFromArray = OverlayUtilities.getStringVersionOfTree(originalHandle.getRoot(), false);
         
-        Assert.assertEquals(original, originalFromList);
-        Assert.assertEquals(original, originalFromArray);
+        if (generateLists) {
+            Assert.assertEquals(original, originalFromList);
+        }
+        if (generateArrays) {
+            Assert.assertEquals(original, originalFromArray);
+        }
         
-        OverlayUtilities.checkSingleLetterOveralyRootA(originalHandle, hub, original);
+        OverlayUtilities.checkSingleLetterOveralyRootA(originalHandle, hub, generateLists, generateArrays, original);
         
         XmlRootHandle<OverlayRootABean> overlayHandle = xmlService.createEmptyHandle(OverlayRootABean.class, false, false);
-        OverlayUtilities.generateOverlayRootABean(overlayHandle, overlay);
+        OverlayUtilities.generateOverlayRootABean(overlayHandle, generateLists, generateArrays, overlay);
         
         String overlayFromList = OverlayUtilities.getStringVersionOfTree(overlayHandle.getRoot(), true);
         String overlayFromArray = OverlayUtilities.getStringVersionOfTree(overlayHandle.getRoot(), false);
         
-        Assert.assertEquals(overlay, overlayFromList);
-        Assert.assertEquals(overlay, overlayFromArray);
+        if (generateLists) {
+            Assert.assertEquals(overlay, overlayFromList);
+        }
+        if (generateArrays) {
+            Assert.assertEquals(overlay, overlayFromArray);
+        }
         
-        OverlayUtilities.checkSingleLetterOveralyRootA(originalHandle, hub, original);
+        OverlayUtilities.checkSingleLetterOveralyRootA(originalHandle, hub, generateLists, generateArrays, original);
         
         originalHandle.overlay(overlayHandle);
         
         String overlayedFromList = OverlayUtilities.getStringVersionOfTree(originalHandle.getRoot(), true);
         String overlayedFromArray = OverlayUtilities.getStringVersionOfTree(originalHandle.getRoot(), false);
         
-        Assert.assertEquals(overlay, overlayedFromList);
-        Assert.assertEquals(overlay, overlayedFromArray);
+        if (generateLists) {
+            Assert.assertEquals(overlay, overlayedFromList);
+        }
+        if (generateArrays) {
+            Assert.assertEquals(overlay, overlayedFromArray);
+        }
         
-        OverlayUtilities.checkSingleLetterOveralyRootA(originalHandle, hub, overlay);
+        OverlayUtilities.checkSingleLetterOveralyRootA(originalHandle, hub, generateLists, generateArrays, overlay);
         
         return listener.getChanges();
     }
@@ -275,7 +291,7 @@ public class OverlayTest {
     @Test
     // @org.junit.Ignore
     public void testABCxBC() throws Exception {
-        List<Change> changes = doTest("ABC", "BC");
+        List<Change> changes = doTestA("ABC", "BC");
         
         checkChanges(changes,
                 new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
@@ -302,7 +318,7 @@ public class OverlayTest {
     @Test
     // @org.junit.Ignore
     public void testABCxAB() throws Exception {
-        List<Change> changes = doTest("ABC", "AB");
+        List<Change> changes = doTestA("ABC", "AB");
         
         checkChanges(changes,
             new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
@@ -328,7 +344,7 @@ public class OverlayTest {
     @Test
     // @org.junit.Ignore
     public void testABCxCBA() throws Exception {
-        List<Change> changes = doTest("ABC", "CBA");
+        List<Change> changes = doTestA("ABC", "CBA");
         
         checkChanges(changes,
                 new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
@@ -348,7 +364,7 @@ public class OverlayTest {
     @Test
     // @org.junit.Ignore
     public void testABCxBCA() throws Exception {
-        List<Change> changes = doTest("ABC", "BCA");
+        List<Change> changes = doTestA("ABC", "BCA");
         
         checkChanges(changes,
                 new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
@@ -368,7 +384,7 @@ public class OverlayTest {
     @Test
     // @org.junit.Ignore
     public void testABCxABCD() throws Exception {
-        List<Change> changes = doTest("ABC", "ABCD");
+        List<Change> changes = doTestA("ABC", "ABCD");
         
         checkChanges(changes,
                 new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
@@ -394,7 +410,7 @@ public class OverlayTest {
     @Test
     // @org.junit.Ignore
     public void testABCxCABC() throws Exception {
-        List<Change> changes = doTest("ABC", "CABC");
+        List<Change> changes = doTestA("ABC", "CABC");
         
         checkChanges(changes,
                 new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
@@ -420,7 +436,7 @@ public class OverlayTest {
     @Test
     // @org.junit.Ignore
     public void testABCxABDC() throws Exception {
-        List<Change> changes = doTest("ABC", "ABDC");
+        List<Change> changes = doTestA("ABC", "ABDC");
         
         checkChanges(changes,
                 new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
@@ -446,7 +462,7 @@ public class OverlayTest {
     @Test
     // @org.junit.Ignore
     public void testABCxABC() throws Exception {
-        List<Change> changes = doTest("ABC", "ABC");
+        List<Change> changes = doTestA("ABC", "ABC");
         
         checkChanges(changes);
     }
@@ -459,7 +475,7 @@ public class OverlayTest {
     @Test
     // @org.junit.Ignore
     public void testABCxABD() throws Exception {
-        List<Change> changes = doTest("ABC", "ABD");
+        List<Change> changes = doTestA("ABC", "ABD");
         
         checkChanges(changes,
                 new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
@@ -483,7 +499,7 @@ public class OverlayTest {
     @Test
     // @org.junit.Ignore
     public void testA_B_A_C_A_D_xA_B_A_C_A_D_() throws Exception {
-        List<Change> changes = doTest("A(B)A(C)A(D)", "A(B)A(C)A(D)");
+        List<Change> changes = doTestA("A(B)A(C)A(D)", "A(B)A(C)A(D)");
         
         checkChanges(changes);
     }
@@ -496,7 +512,7 @@ public class OverlayTest {
     @Test
     // @org.junit.Ignore
     public void testA_B_A_C_A_D_xA_B_A_C_() throws Exception {
-        List<Change> changes = doTest("A(B)A(C)A(D)", "A(B)A(C)");
+        List<Change> changes = doTestA("A(B)A(C)A(D)", "A(B)A(C)");
         
         checkChanges(changes,
                 new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
@@ -535,7 +551,7 @@ public class OverlayTest {
     @Test
     // @org.junit.Ignore
     public void testA_B_A_CxA_C_A_B_() throws Exception {
-        List<Change> changes = doTest("A(B)A(C)", "A(C)A(B)");
+        List<Change> changes = doTestA("A(B)A(C)", "A(C)A(B)");
         
         checkChanges(changes,
                 new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
@@ -555,7 +571,7 @@ public class OverlayTest {
     @Test
     // @org.junit.Ignore
     public void testA_B_A_C_A_D_xA_C_A_D_() throws Exception {
-        List<Change> changes = doTest("A(B)A(C)A(D)", "A(C)A(D)");
+        List<Change> changes = doTestA("A(B)A(C)A(D)", "A(C)A(D)");
         
         checkChanges(changes,
                 new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
@@ -593,7 +609,7 @@ public class OverlayTest {
     @Test
     // @org.junit.Ignore
     public void testA_B_C_D_EF__G_HI_JKL__xA_B_C_D_EF__G_HI_JKL__() throws Exception {
-        List<Change> changes = doTest("A(B(C)D(EF))G(HI(JKL))", "A(B(C)D(EF))G(HI(JKL))");
+        List<Change> changes = doTestA("A(B(C)D(EF))G(HI(JKL))", "A(B(C)D(EF))G(HI(JKL))");
         
         checkChanges(changes);
     }
@@ -606,7 +622,7 @@ public class OverlayTest {
     @Test
     // @org.junit.Ignore
     public void testA_B_C_D_EF__G_HI_JKL__xG_HI_JKL__A_B_C_D_EF__() throws Exception {
-        List<Change> changes = doTest("A(B(C)D(EF))G(HI(JKL))", "G(HI(JKL))A(B(C)D(EF))");
+        List<Change> changes = doTestA("A(B(C)D(EF))G(HI(JKL))", "G(HI(JKL))A(B(C)D(EF))");
         
         checkChanges(changes,
                 new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
@@ -624,16 +640,35 @@ public class OverlayTest {
      */
     @Test
     @org.junit.Ignore
-    public void testA_B_C__xA_B_CD_E___() throws Exception {
-        List<Change> changes = doTest("A(B(C))", "A(B(CD(E)))");
+    public void testListA_B_C__xA_B_CD_E___() throws Exception {
+        List<Change> changes = doTestA("A(B(C))", "A(B(CD(E)))", true, false);
         
         checkChanges(changes,
-                new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
-                    OverlayUtilities.OROOT_TYPE,    // type name
-                    OverlayUtilities.OROOT_A,       // instance name
-                    OverlayUtilities.A_LIST_CHILD,  // prop changed
-                    OverlayUtilities.A_ARRAY_CHILD) // prop changed
-             );
+                new ChangeDescriptor(ChangeCategory.ADD_INSTANCE,
+                        "/overlay-root-A/unkeyed-leaf-array/leaf-array/leaf-array",    // type name
+                        "overlay-root-A.*.*.*",      // instance name
+                        null
+               
+                 )
+                 , new ChangeDescriptor(ChangeCategory.ADD_INSTANCE,
+                         "/overlay-root-A/unkeyed-leaf-array/leaf-array/leaf-array/leaf-array",    // type name
+                         "overlay-root-A.*.*.*.*",      // instance name
+                         null
+                
+                  )
+                  , new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
+                         "/overlay-root-A/unkeyed-leaf-array/leaf-array/leaf-array",    // type name
+                         "overlay-root-A.*.*.*.*",      // instance name
+                         "leaf-array"
+       
+         )
+                
+                        
+         );
+        
+        
+        
+        
     }
     
     /**

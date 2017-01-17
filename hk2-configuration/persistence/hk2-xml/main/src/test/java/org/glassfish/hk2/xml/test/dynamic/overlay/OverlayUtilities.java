@@ -56,6 +56,8 @@ import org.junit.Assert;
  */
 public class OverlayUtilities {
     public static final String OROOT_A = "overlay-root-A";
+    public static final String OROOT_B = "overlay-root-B";
+    
     public static final String A_LIST_CHILD = "unkeyed-leaf-list";
     public static final String A_ARRAY_CHILD = "unkeyed-leaf-array";
     public static final String NAME_TAG = "name";
@@ -154,10 +156,14 @@ public class OverlayUtilities {
     }
     
     public static void generateOverlayRootABean(XmlRootHandle<OverlayRootABean> handle, String singleLetterLeafNames) {
-        generateOverlayRootABean(handle, singleLetterNames(singleLetterLeafNames));
+        generateOverlayRootABean(handle, true, true, singleLetterNames(singleLetterLeafNames));
     }
     
-    private static void generateOverlayRootABean(XmlRootHandle<OverlayRootABean> handle, String... leafNames) {
+    public static void generateOverlayRootABean(XmlRootHandle<OverlayRootABean> handle, boolean generateLists, boolean generateArrays, String singleLetterLeafNames) {
+        generateOverlayRootABean(handle, generateLists, generateArrays, singleLetterNames(singleLetterLeafNames));
+    }
+    
+    private static void generateOverlayRootABean(XmlRootHandle<OverlayRootABean> handle, boolean generateLists, boolean generateArrays, String... leafNames) {
         OverlayRootABean root = handle.getRoot();
         Assert.assertNull(root);
         
@@ -165,10 +171,10 @@ public class OverlayUtilities {
         
         root = handle.getRoot();
         
-        createOverlay(root, null, leafNames);
+        createOverlay(root, null, generateLists, generateArrays, leafNames);
     }
     
-    private static void createOverlay(OverlayRootABean root, UnkeyedLeafBean parent, String leafNames[]) {
+    private static void createOverlay(OverlayRootABean root, UnkeyedLeafBean parent, boolean generateLists, boolean generateArrays, String leafNames[]) {
         UnkeyedLeafBean addedListChild = null;
         UnkeyedLeafBean addedArrayChild = null;
         
@@ -178,8 +184,12 @@ public class OverlayUtilities {
             if (LEFT_PAREN.equals(leafName)) {
                 String subList[] = getChildNames(leafNames, lcv);
                 
-                createOverlay(root, addedListChild, subList);
-                createOverlay(root, addedArrayChild, subList);
+                if (generateLists) {
+                    createOverlay(root, addedListChild, generateLists, generateArrays, subList);
+                }
+                if (generateArrays) {
+                    createOverlay(root, addedArrayChild, generateLists, generateArrays, subList);
+                }
                 
                 lcv += subList.length + 1; // The extra one for the right paren
             }
@@ -188,18 +198,26 @@ public class OverlayUtilities {
             }
             else {
                 if (parent == null) {
-                    addedArrayChild = root.addUnkeyedLeafArray();
-                    addedListChild = root.addUnkeyedLeafList();
+                    if (generateArrays) {
+                        addedArrayChild = root.addUnkeyedLeafArray();
+                        addedArrayChild.setName(leafName);
+                    }
                     
-                    addedArrayChild.setName(leafName);
-                    addedListChild.setName(leafName);
+                    if (generateLists) {
+                        addedListChild = root.addUnkeyedLeafList();
+                        addedListChild.setName(leafName);
+                    }
                 }
                 else {
-                    addedArrayChild = parent.addArrayLeaf();
-                    addedListChild = parent.addListLeaf();
+                    if (generateArrays) {
+                        addedArrayChild = parent.addArrayLeaf();
+                        addedArrayChild.setName(leafName);
+                    }
                     
-                    addedArrayChild.setName(leafName);
-                    addedListChild.setName(leafName);
+                    if (generateLists) {
+                        addedListChild = parent.addListLeaf();
+                        addedListChild.setName(leafName);
+                    }
                 }
             }
         }
@@ -216,11 +234,11 @@ public class OverlayUtilities {
         return retVal;
     }
     
-    public static void checkSingleLetterOveralyRootA(XmlRootHandle<OverlayRootABean> handle, Hub hub, String names) {
-        checkSingleLetterOveralyRootA(handle.getRoot(), hub, singleLetterNames(names));
+    public static void checkSingleLetterOveralyRootA(XmlRootHandle<OverlayRootABean> handle, Hub hub, boolean generateLists, boolean generateArrays, String names) {
+        checkSingleLetterOveralyRootA(handle.getRoot(), hub, generateLists, generateArrays, singleLetterNames(names));
     }
     
-    private static void checkSingleLetterOveralyRootA(OverlayRootABean root, Hub hub, String names[]) {
+    private static void checkSingleLetterOveralyRootA(OverlayRootABean root, Hub hub, boolean generateLists, boolean generateArrays, String names[]) {
         String typeName = OROOT_TYPE;
         Type rootType = hub.getCurrentDatabase().getType(typeName);
         
@@ -238,26 +256,34 @@ public class OverlayUtilities {
                 
                 lcv += childNames.length;
                
-                checkSingleLetterLeaf(currentListBean, hub, LIST_TYPE, childNames);
+                if (generateLists) {
+                    checkSingleLetterLeaf(currentListBean, hub, LIST_TYPE, generateLists, generateArrays, childNames);
+                }
                 
-                checkSingleLetterLeaf(currentArrayBean, hub, ARRAY_TYPE, childNames);
+                if (generateArrays) {
+                    checkSingleLetterLeaf(currentArrayBean, hub, ARRAY_TYPE, generateLists, generateArrays, childNames);
+                }
             }
             else if (RIGHT_PAREN.equals(name)) {
                 // Ignore it
             }
             else {
-                currentListBean = root.getUnkeyedLeafList().get(childCount);
-                checkLeafInHub(hub, LIST_TYPE, currentListBean, name, childCount);
+                if (generateLists) {
+                    currentListBean = root.getUnkeyedLeafList().get(childCount);
+                    checkLeafInHub(hub, LIST_TYPE, currentListBean, name, childCount);
+                }
                 
-                currentArrayBean = root.getUnkeyedLeafArray()[childCount];
-                checkLeafInHub(hub, ARRAY_TYPE, currentArrayBean, name, childCount);
+                if (generateArrays) {
+                    currentArrayBean = root.getUnkeyedLeafArray()[childCount];
+                    checkLeafInHub(hub, ARRAY_TYPE, currentArrayBean, name, childCount);
+                }
                 
                 childCount++;
             }
         }
         
         // Now check hub sizes of children, make sure there are no extras
-        {
+        if (generateLists) {
             Type listType = hub.getCurrentDatabase().getType(LIST_TYPE);
             if (listType == null) {
                 Assert.assertEquals(0, childCount);
@@ -269,7 +295,7 @@ public class OverlayUtilities {
             }
         }
         
-        {
+        if (generateArrays) {
             Type arrayType = hub.getCurrentDatabase().getType(ARRAY_TYPE);
             if (arrayType == null) {
                 Assert.assertEquals(0, childCount);
@@ -282,7 +308,7 @@ public class OverlayUtilities {
         }
     }
     
-    private static void checkSingleLetterLeaf(UnkeyedLeafBean root, Hub hub, String parentType, String names[]) {
+    private static void checkSingleLetterLeaf(UnkeyedLeafBean root, Hub hub, String parentType, boolean generateLists, boolean generateArrays, String names[]) {
         String listChildType = parentType + "/" + LEAF_LIST;
         String arrayChildType = parentType + "/" + LEAF_ARRAY;
         
@@ -297,30 +323,38 @@ public class OverlayUtilities {
                 
                 lcv += childNames.length;
                 
-                checkSingleLetterLeaf(currentListBean, hub, listChildType, childNames);
+                if (generateLists) {
+                    checkSingleLetterLeaf(currentListBean, hub, listChildType, generateLists, generateArrays, childNames);
+                }
                 
-                checkSingleLetterLeaf(currentArrayBean, hub, arrayChildType, childNames);
+                if (generateArrays) {
+                    checkSingleLetterLeaf(currentArrayBean, hub, arrayChildType, generateLists, generateArrays, childNames);
+                }
             }
             else if (RIGHT_PAREN.equals(name)) {
                 // Ignore it
             }
             else {
-                currentListBean = root.getListLeaf().get(childCount);
-                checkLeafInHub(hub, listChildType, currentListBean, name, childCount);
+                if (generateLists) {
+                    currentListBean = root.getListLeaf().get(childCount);
+                    checkLeafInHub(hub, listChildType, currentListBean, name, childCount);
+                }
                 
-                currentArrayBean = root.getArrayLeaf()[childCount];
-                checkLeafInHub(hub, arrayChildType, currentArrayBean, name, childCount);
+                if (generateArrays) {
+                    currentArrayBean = root.getArrayLeaf()[childCount];
+                    checkLeafInHub(hub, arrayChildType, currentArrayBean, name, childCount);
+                }
                 
                 childCount++;
             }
         }
         
-        {
+        if (generateLists) {
             List<UnkeyedLeafBean> lBeans = root.getListLeaf();
             Assert.assertEquals("Number of entries in " + lBeans + " is wrong", childCount, lBeans.size());
         }
         
-        {
+        if (generateArrays) {
             UnkeyedLeafBean aBeans[] = root.getArrayLeaf();
             Assert.assertEquals("Number of entries in " + Arrays.toString(aBeans) + " is wrong", childCount, aBeans.length);
         }
@@ -328,7 +362,7 @@ public class OverlayUtilities {
         String parentInstanceName = ((XmlHk2ConfigurationBean) root)._getInstanceName();
         
         // Now check hub sizes of children, make sure there are no extras
-        {
+        if (generateLists) {
             Type listType = hub.getCurrentDatabase().getType(listChildType);
             if (listType == null) {
                 Assert.assertEquals(0, childCount);
@@ -350,7 +384,7 @@ public class OverlayUtilities {
             }
         }
         
-        {
+        if (generateArrays) {
             Type arrayType = hub.getCurrentDatabase().getType(arrayChildType);
             if (arrayType == null) {
                 Assert.assertEquals(0, childCount);
