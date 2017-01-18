@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2013-2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -108,8 +108,10 @@ public class SpdyAddOnProvider implements AddOn, ConfigAwareElement<Spdy> {
             }
         }
 
-        if (spdyVersions == null || spdyVersions.length == 0) {
-            spdyVersions = GlassFishSpdyAddOn.getAllVersions();
+        if(spdyVersions != null && spdyVersions.length > 0) {
+            spdyAddOn = new GlassFishSpdyAddOn(spdyMode, spdyVersions);
+        } else {
+            spdyAddOn = new GlassFishSpdyAddOn(spdyMode);
         }
         
         spdyAddOn = new GlassFishSpdyAddOn(spdyMode, spdyVersions);
@@ -128,6 +130,10 @@ public class SpdyAddOnProvider implements AddOn, ConfigAwareElement<Spdy> {
 
     private static class GlassFishSpdyAddOn extends SpdyAddOn {
         private FilterChainBuilder filterChainBuilder;
+
+        public GlassFishSpdyAddOn(final SpdyMode mode) {
+            super(mode);
+        }
 
         public GlassFishSpdyAddOn(final SpdyMode mode,
                 final SpdyVersion... supportedSpdyVersions) {
@@ -148,9 +154,6 @@ public class SpdyAddOnProvider implements AddOn, ConfigAwareElement<Spdy> {
             return new SpdyNpnConfigProbe(filterChainBuilder);
         }
 
-        private static SpdyVersion[] getAllVersions() {
-            return ALL_SPDY_VERSIONS;
-        }
         // ---------------------------------------------------------- Nested Classes
 
         private final class SpdyNpnConfigProbe extends TransportProbe.Adapter {
