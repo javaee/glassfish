@@ -856,11 +856,7 @@ public class SystemDescriptor<T> implements ActiveDescriptor<T>, Closeable {
     public boolean isClosed() {
         // This is safe because once a descriptor is
         // closed it is never opened
-        if (closed) return true;
-
-        synchronized (this) {
-            return closed;
-        }
+        return closed;
     }
 
     /**
