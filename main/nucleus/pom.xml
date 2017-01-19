@@ -190,6 +190,7 @@
         <nucleus.install.dir.name>nucleus</nucleus.install.dir.name>
         <javadoc.skip>false</javadoc.skip>
         <deploy.skip>false</deploy.skip>
+	<bean.validator.version>2.5.0-b06</bean.validator.version>
     </properties>
 
     <modules>
