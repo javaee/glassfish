@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,8 +40,10 @@
 
 package org.glassfish.web.admin.monitor;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import com.sun.enterprise.util.StringUtils;
 import org.glassfish.external.statistics.CountStatistic;
 import org.glassfish.external.statistics.StringStatistic;
 import org.glassfish.external.statistics.annotations.Reset;
@@ -193,7 +195,8 @@ public class HttpServiceStatsProvider implements PostConstruct {
 
     public HttpServiceStatsProvider(String vsName, String listeners, NetworkConfig networkConfig) {
         this.virtualServerName = vsName;
-        this.networkListeners = listeners == null ? new String[0] : listeners.split(",");
+        List<String> listenerList = StringUtils.parseStringList(listeners, ",");
+        this.networkListeners = listenerList == null ? new String[0] :listenerList.toArray(new String[listenerList.size()]);
         this.networkConfig = networkConfig;
     }
 
