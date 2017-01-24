@@ -46,7 +46,7 @@ import javax.xml.bind.annotation.XmlElement;
  *
  */
 public interface DirectWithDirect {
-    @XmlElement(name = "direct-terminal")
+    @XmlElement(name = OverlayDirectTest.DIRECT_TERMINAL)
     public DirectTerminalBean getDirectTerminal();
     public void setDirectTerminal(DirectTerminalBean addMe);
 

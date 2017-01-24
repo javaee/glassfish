@@ -46,7 +46,7 @@ import javax.xml.bind.annotation.XmlElement;
  *
  */
 public interface DirectTerminalBean {
-    @XmlElement(name = "terminal-data")
+    @XmlElement(name = OverlayDirectTest.TERMINAL_DATA)
     public String getTerminalData();
     public void setTerminalData(String data);
 

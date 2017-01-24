@@ -51,13 +51,13 @@ import org.jvnet.hk2.annotations.Contract;
  */
 @XmlRootElement(name=OverlayUtilities.OROOT_B) @Contract
 public interface OverlayRootBBean {
-    @XmlElement(name = "direct-with-keyed")
+    @XmlElement(name = OverlayDirectTest.DIRECT_WITH_KEYED)
     public DirectWithKeyed getDirectWithKeyed();
     
-    @XmlElement(name = "direct-with-unkeyed")
+    @XmlElement(name = OverlayDirectTest.DIRECT_WITH_UNKEYED)
     public DirectWithUnkeyed getDirectWithUnkeyed();
     
-    @XmlElement(name = "direct-with-direct")
+    @XmlElement(name = OverlayDirectTest.DIRECT_WITH_DIRECT)
     public DirectWithDirect getDirectWithDirect();
     public void setDirectWithDirect(DirectWithDirect addMe);
 }

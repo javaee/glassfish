@@ -70,6 +70,7 @@ public class OverlayUtilities {
     public static final String OROOT_TYPE = "/" + OROOT_A;
     public static final String LIST_TYPE = "/" + OROOT_A + "/" + A_LIST_CHILD;
     public static final String ARRAY_TYPE = "/" + OROOT_A + "/" + A_ARRAY_CHILD;
+    public static final String OROOT_TYPE_B = "/" + OROOT_B;
     
     private static final String LEFT_PAREN = "(";
     private static final String RIGHT_PAREN = ")";
