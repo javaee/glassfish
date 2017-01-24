@@ -360,9 +360,20 @@ public class WriteableBeanDatabaseImpl implements WriteableBeanDatabase {
         
     }
     
+    private String getChanges() {
+        int lcv = 1;
+        StringBuffer sb = new StringBuffer("\n");
+        for (Change change : changes) {
+            sb.append(lcv + ". " + change + "\n");
+            lcv++;
+        }
+        
+        return sb.toString();
+    }
+    
     @Override
     public String toString() {
-        return "WriteableBeanDatabaseImpl(" + baseRevision + "," + System.identityHashCode(this) + ")";
+        return "WriteableBeanDatabaseImpl(" + baseRevision + ",changes=" + getChanges() + "," + System.identityHashCode(this) + ")";
     }
 
     

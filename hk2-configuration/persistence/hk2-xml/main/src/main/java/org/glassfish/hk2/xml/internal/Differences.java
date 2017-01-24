@@ -230,6 +230,11 @@ public class Differences {
         public int getNewSize(int oldSize) {
             return oldSize - removes.size() + adds.size();
         }
+        
+        @Override
+        public String toString() {
+            return "AddRemoveMoveDifference(" + adds + "," + removes + "," + moves + "," + System.identityHashCode(this) + ")";
+        }
     }
     
     public static class AddData {
@@ -241,10 +246,6 @@ public class Differences {
             this.index = index;
         }
         
-        private AddData(BaseHK2JAXBBean toAdd) {
-            this(toAdd, -1);
-        }
-        
         public AddData(AddData copyMe) {
             this.toAdd = copyMe.toAdd;
             this.index = copyMe.index;
@@ -252,6 +253,11 @@ public class Differences {
         
         public BaseHK2JAXBBean getToAdd() { return toAdd; }
         public int getIndex() { return index; }
+        
+        @Override
+        public String toString() {
+            return "AddData(" + toAdd + "," + index + "," + System.identityHashCode(this) + ")";
+        }
     }
     
     public static class RemoveData {
@@ -311,6 +317,11 @@ public class Differences {
             return child;
         }
         
+        @Override
+        public String toString() {
+            return "RemoveData(" + childProperty + "," + childKey + "," + index + "," + child + "," + System.identityHashCode(this) + ")";
+        }
+        
     }
     
     public static class MoveData {
@@ -328,6 +339,11 @@ public class Differences {
         
         public int getOldIndex() { return oldIndex; }
         public int getNewIndex() { return newIndex; }
+        
+        @Override
+        public String toString() {
+            return "MoveData(" + oldIndex + "," + newIndex + "," + System.identityHashCode(this) + ")";
+        }
     }
 
     /**
@@ -412,6 +428,11 @@ public class Differences {
             DifferenceKey other = (DifferenceKey) o;
             
             return xmlPath.equals(other.xmlPath) && instanceName.equals(other.instanceName) ;
+        }
+        
+        @Override
+        public String toString() {
+            return "DifferenceKey(" + xmlPath + "," + instanceName + "," + hash + "," + System.identityHashCode(this) + ")";
         }
         
     }

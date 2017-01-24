@@ -1035,8 +1035,8 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
     public boolean changeInHub(List<PropertyChangeEvent> events, WriteableBeanDatabase wbd) {
         WriteableType wt = wbd.getWriteableType(xmlPath);
         HashMap<String, Object> modified = new HashMap<String, Object>(beanLikeMap);
+        List<PropertyChangeEvent> effectiveChanges = new ArrayList<PropertyChangeEvent>(events.size());
         
-        boolean madeAChange = false;
         for (PropertyChangeEvent event : events) {
             String propName = event.getPropertyName();
             Object oldValue = event.getOldValue();
@@ -1046,12 +1046,13 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
                 continue;
             }
             
-            madeAChange = true;
+            effectiveChanges.add(event);
             modified.put(propName, newValue);   
         }
         
+        boolean madeAChange = !effectiveChanges.isEmpty();
         if (madeAChange) {
-            wt.modifyInstance(instanceName, modified);
+            wt.modifyInstance(instanceName, modified, effectiveChanges.toArray(new PropertyChangeEvent[effectiveChanges.size()]));
         }
             
         return madeAChange;

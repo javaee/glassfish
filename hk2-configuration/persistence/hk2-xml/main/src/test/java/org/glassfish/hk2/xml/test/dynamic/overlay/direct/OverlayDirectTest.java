@@ -72,7 +72,8 @@ public class OverlayDirectTest {
     /**
      * Tests adding a two-deep direct bean
      */
-    @Test @org.junit.Ignore
+    @Test
+    // @org.junit.Ignore
     public void testDirectWithDirectAdded() {
         ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
         XmlService xmlService = locator.getService(XmlService.class);

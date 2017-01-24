@@ -427,8 +427,12 @@ public class Utilities {
             handleChildren(child, (BaseHK2JAXBBean) rawChild, changeInformation, addedServices, xmlDynamicChange);
         }
         
+        if (!changeList) {
+            return child;
+        }
+        
         // Now modify the actual list
-        if (changeList && (multiChildren != null)) {
+        if (multiChildren != null) {
             // List or Array child
             multiChildren.add(index, child);
             
@@ -450,7 +454,7 @@ public class Utilities {
             
             myParent._setProperty(childProperty, finalChildList, false, true);
         }
-        else if (multiChildren == null) {
+        else {
             // Direct child
             if (xmlDynamicChange.getBeanDatabase() != null){
                 myParent.changeInHub(childProperty, child, xmlDynamicChange.getBeanDatabase());
@@ -527,7 +531,7 @@ public class Utilities {
                 if (childsChild == null) continue;
                 
                 BaseHK2JAXBBean grandchild = internalAdd(child, childsChildProperty,
-                        childsChild, null, -1, changeInformation, xmlDynamicChange, addedServices, true);
+                        childsChild, null, -1, changeInformation, xmlDynamicChange, addedServices, false);
                 
                 child._setProperty(childsChildProperty, grandchild, false, true);
             }
@@ -1430,7 +1434,7 @@ public class Utilities {
                     BaseHK2JAXBBean addMe = added.getToAdd();
                     int index = added.getIndex();
                 
-                    BaseHK2JAXBBean addedBean = (BaseHK2JAXBBean) source._doAdd(xmlKey, addMe, null, index, changeList);
+                    BaseHK2JAXBBean addedBean = (BaseHK2JAXBBean) source._doAdd(xmlKey, addMe, null, index, false);
                     if (!changeList) {
                         arrayChanges.put(index, addedBean);
                     }
@@ -1440,7 +1444,7 @@ public class Utilities {
                 }
                 
                 for (RemoveData removed : childDiffs.getRemoves()) {
-                    source._doRemove(xmlKey, removed.getChildKey(), removed.getIndex(), removed.getChild(), changeList);
+                    source._doRemove(xmlKey, removed.getChildKey(), removed.getIndex(), removed.getChild(), false);
                     if (changeList) {
                         allSourceChanges.add(new PropertyChangeEvent(source, xmlKey, oldListOrArray, null));
                     }
