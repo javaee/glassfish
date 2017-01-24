@@ -314,6 +314,10 @@ public class UnkeyedDiff {
             retVal.addDifference(d);
         }
         
+        if (UNKEYED_DEBUG) {
+            Logger.getLogger().debug("needsChangeOfList=" + needsChangeOfList + " with outcome " + retVal);
+        }
+        
         return retVal;
     }
     

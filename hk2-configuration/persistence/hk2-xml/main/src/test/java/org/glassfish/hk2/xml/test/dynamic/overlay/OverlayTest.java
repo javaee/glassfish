@@ -39,14 +39,10 @@
  */
 package org.glassfish.hk2.xml.test.dynamic.overlay;
 
-import java.beans.PropertyChangeEvent;
 import java.net.URL;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.StringTokenizer;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Change;
@@ -54,7 +50,6 @@ import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.Change.ChangeCategory;
 import org.glassfish.hk2.configuration.hub.api.Type;
-import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
@@ -184,105 +179,6 @@ public class OverlayTest {
         return listener.getChanges();
     }
     
-    private static String instanceToName(Instance instance) {
-        if (instance == null) return null;
-        
-        Map<String, Object> blm = (Map<String, Object>) instance.getBean();
-        if (blm == null) return null;
-        
-        return (String) blm.get("name");
-    }
-    
-    private static String getChangeDescription(Change change) {
-        StringBuffer sb = new StringBuffer("" + change.getChangeCategory() + " type=");
-        
-        Type type = change.getChangeType();
-        sb.append(type.getName() + " ");
-        
-        switch (change.getChangeCategory()) {
-        case REMOVE_INSTANCE:
-        {
-            String instanceKey = change.getInstanceKey();
-            
-            Instance instanceRemoved = change.getInstanceValue();
-            String instanceName = instanceToName(instanceRemoved);
-            
-            sb.append(" removedName=" + instanceName + " instanceKey=" + instanceKey);
-        }
-            break;
-            
-        case ADD_INSTANCE:
-        {
-            String instanceKey = change.getInstanceKey();
-            
-            Instance instanceAdded = change.getInstanceValue();
-            String instanceName = instanceToName(instanceAdded);
-            
-            sb.append(" addedName=" + instanceName + " instanceKey=" + instanceKey);
-        }
-            break;
-        case MODIFY_INSTANCE:
-        {
-            String instanceKey = change.getInstanceKey();
-            
-            Instance originalMod = change.getOriginalInstanceValue();
-            Instance changedMod = change.getInstanceValue();
-            String originalName = instanceToName(originalMod);
-            String changedName = instanceToName(changedMod);
-            
-            sb.append(" originalName=" + originalName + " newName=" + changedName + " instanceKey=" + instanceKey);
-            
-        }
-            break;
-        case ADD_TYPE:
-        case REMOVE_TYPE:
-        default:
-            break;
-        }
-        
-        return sb.toString();
-    }
-    
-    private static String getAssertString(List<Change> changes, ChangeDescriptor... changeDescriptors) {
-        StringBuffer received = new StringBuffer("\n");
-        int count = 1;
-        for (Change change : changes) {
-            received.append("  " + count + ". " + getChangeDescription(change) + "\n");
-            count++;
-        }
-        
-        StringBuffer expected = new StringBuffer("\n");
-        for (int lcv = 0; lcv < changeDescriptors.length; lcv++) {
-            expected.append("  " + (lcv + 1) + ". " + changeDescriptors[lcv] + "\n");
-        }
-        
-        return "Expected Changes were: " + expected + "Recieved changes are: " + received;
-    }
-    
-    private static void checkChanges(List<Change> changes, ChangeDescriptor... changeDescriptors) {
-        if (changes.size() != changeDescriptors.length) {
-            Assert.fail(getAssertString(changes, changeDescriptors));
-        }
-        
-        HashSet<Integer> usedDescriptors = new HashSet<Integer>();
-        for (int lcv = 0; lcv < changeDescriptors.length; lcv++) {
-            ChangeDescriptor cd = changeDescriptors[lcv];
-            
-            for (int inner = 0; inner < changes.size(); inner++) {
-                if (usedDescriptors.contains(inner)) continue;
-                
-                Change change = changes.get(inner);
-                    
-                String isSame = cd.check(change);
-                if (isSame == null) {
-                    usedDescriptors.add(inner);
-                }
-            }
-        }
-        
-        Assert.assertEquals(getAssertString(changes, changeDescriptors) + " usedDescriptors=" + usedDescriptors, changeDescriptors.length, changes.size());
-    }
-    
     /**
      * Tests overlay going from ABC -> BC
      * 
@@ -293,7 +189,7 @@ public class OverlayTest {
     public void testABCxBC() throws Exception {
         List<Change> changes = doTestA("ABC", "BC");
         
-        checkChanges(changes,
+        OverlayUtilities.checkChanges(changes,
                 new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
                         OverlayUtilities.LIST_TYPE,     // type name
                         OverlayUtilities.OROOT_A + ".*", "A") // instance name
@@ -320,7 +216,7 @@ public class OverlayTest {
     public void testABCxAB() throws Exception {
         List<Change> changes = doTestA("ABC", "AB");
         
-        checkChanges(changes,
+        OverlayUtilities.checkChanges(changes,
             new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
                 OverlayUtilities.OROOT_TYPE,    // type name
                 OverlayUtilities.OROOT_A,       // instance name
@@ -346,7 +242,7 @@ public class OverlayTest {
     public void testABCxCBA() throws Exception {
         List<Change> changes = doTestA("ABC", "CBA");
         
-        checkChanges(changes,
+        OverlayUtilities.checkChanges(changes,
                 new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
                         OverlayUtilities.OROOT_TYPE,    // type name
                         OverlayUtilities.OROOT_A,       // instance name
@@ -366,7 +262,7 @@ public class OverlayTest {
     public void testABCxBCA() throws Exception {
         List<Change> changes = doTestA("ABC", "BCA");
         
-        checkChanges(changes,
+        OverlayUtilities.checkChanges(changes,
                 new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
                         OverlayUtilities.OROOT_TYPE,    // type name
                         OverlayUtilities.OROOT_A,       // instance name
@@ -386,7 +282,7 @@ public class OverlayTest {
     public void testABCxABCD() throws Exception {
         List<Change> changes = doTestA("ABC", "ABCD");
         
-        checkChanges(changes,
+        OverlayUtilities.checkChanges(changes,
                 new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
                         OverlayUtilities.OROOT_TYPE,    // type name
                         OverlayUtilities.OROOT_A,       // instance name
@@ -412,7 +308,7 @@ public class OverlayTest {
     public void testABCxCABC() throws Exception {
         List<Change> changes = doTestA("ABC", "CABC");
         
-        checkChanges(changes,
+        OverlayUtilities.checkChanges(changes,
                 new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
                         OverlayUtilities.OROOT_TYPE,    // type name
                         OverlayUtilities.OROOT_A,       // instance name
@@ -438,7 +334,7 @@ public class OverlayTest {
     public void testABCxABDC() throws Exception {
         List<Change> changes = doTestA("ABC", "ABDC");
         
-        checkChanges(changes,
+        OverlayUtilities.checkChanges(changes,
                 new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
                         OverlayUtilities.OROOT_TYPE,    // type name
                         OverlayUtilities.OROOT_A,       // instance name
@@ -464,7 +360,7 @@ public class OverlayTest {
     public void testABCxABC() throws Exception {
         List<Change> changes = doTestA("ABC", "ABC");
         
-        checkChanges(changes);
+        OverlayUtilities.checkChanges(changes);
     }
     
     /**
@@ -477,7 +373,7 @@ public class OverlayTest {
     public void testABCxABD() throws Exception {
         List<Change> changes = doTestA("ABC", "ABD");
         
-        checkChanges(changes,
+        OverlayUtilities.checkChanges(changes,
                 new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
                         OverlayUtilities.LIST_TYPE,    // type name
                         OverlayUtilities.OROOT_A + ".*",       // instance name
@@ -501,7 +397,7 @@ public class OverlayTest {
     public void testA_B_A_C_A_D_xA_B_A_C_A_D_() throws Exception {
         List<Change> changes = doTestA("A(B)A(C)A(D)", "A(B)A(C)A(D)");
         
-        checkChanges(changes);
+        OverlayUtilities.checkChanges(changes);
     }
     
     /**
@@ -514,7 +410,7 @@ public class OverlayTest {
     public void testA_B_A_C_A_D_xA_B_A_C_() throws Exception {
         List<Change> changes = doTestA("A(B)A(C)A(D)", "A(B)A(C)");
         
-        checkChanges(changes,
+        OverlayUtilities.checkChanges(changes,
                 new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
                     OverlayUtilities.OROOT_TYPE,    // type name
                     OverlayUtilities.OROOT_A,       // instance name
@@ -553,7 +449,7 @@ public class OverlayTest {
     public void testA_B_A_CxA_C_A_B_() throws Exception {
         List<Change> changes = doTestA("A(B)A(C)", "A(C)A(B)");
         
-        checkChanges(changes,
+        OverlayUtilities.checkChanges(changes,
                 new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
                     OverlayUtilities.OROOT_TYPE,    // type name
                     OverlayUtilities.OROOT_A,       // instance name
@@ -573,7 +469,7 @@ public class OverlayTest {
     public void testA_B_A_C_A_D_xA_C_A_D_() throws Exception {
         List<Change> changes = doTestA("A(B)A(C)A(D)", "A(C)A(D)");
         
-        checkChanges(changes,
+        OverlayUtilities.checkChanges(changes,
                 new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
                     OverlayUtilities.OROOT_TYPE,    // type name
                     OverlayUtilities.OROOT_A,       // instance name
@@ -611,7 +507,7 @@ public class OverlayTest {
     public void testA_B_C_D_EF__G_HI_JKL__xA_B_C_D_EF__G_HI_JKL__() throws Exception {
         List<Change> changes = doTestA("A(B(C)D(EF))G(HI(JKL))", "A(B(C)D(EF))G(HI(JKL))");
         
-        checkChanges(changes);
+        OverlayUtilities.checkChanges(changes);
     }
     
     /**
@@ -624,7 +520,7 @@ public class OverlayTest {
     public void testA_B_C_D_EF__G_HI_JKL__xG_HI_JKL__A_B_C_D_EF__() throws Exception {
         List<Change> changes = doTestA("A(B(C)D(EF))G(HI(JKL))", "G(HI(JKL))A(B(C)D(EF))");
         
-        checkChanges(changes,
+        OverlayUtilities.checkChanges(changes,
                 new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
                     OverlayUtilities.OROOT_TYPE,    // type name
                     OverlayUtilities.OROOT_A,       // instance name
@@ -643,7 +539,7 @@ public class OverlayTest {
     public void testListA_B_C__xA_B_CD_E___() throws Exception {
         List<Change> changes = doTestA("A(B(C))", "A(B(CD(E)))", true, false);
         
-        checkChanges(changes,
+        OverlayUtilities.checkChanges(changes,
                 new ChangeDescriptor(ChangeCategory.ADD_INSTANCE,
                         "/overlay-root-A/unkeyed-leaf-list/leaf-list/leaf-list",    // type name
                         "overlay-root-A.*.*.*",      // instance name
@@ -681,7 +577,7 @@ public class OverlayTest {
     public void testArrayA_B_C__xA_B_CD_E___() throws Exception {
         List<Change> changes = doTestA("A(B(C))", "A(B(CD(E)))", false, true);
         
-        checkChanges(changes,
+        OverlayUtilities.checkChanges(changes,
                 new ChangeDescriptor(ChangeCategory.ADD_INSTANCE,
                         "/overlay-root-A/unkeyed-leaf-array/leaf-array/leaf-array",    // type name
                         "overlay-root-A.*.*.*",      // instance name
@@ -707,111 +603,5 @@ public class OverlayTest {
        
                   )        
          );
-    }
-    
-    /**
-     * This is diff'd against the change that was received to make
-     * it easier to build up test cases
-     * @author jwells
-     *
-     */
-    private final static class ChangeDescriptor {
-        private final ChangeCategory category;
-        private final String typeName;
-        private final List<String> instanceKey;
-        private final String props[];
-        private final String instance;
-        private final String arName; // add-remove name also the old name
-        
-        private ChangeDescriptor(ChangeCategory category, String type, String instance, String arName, String... props) {
-            this.category = category;
-            this.typeName = type;
-            this.props = props;
-            this.instanceKey = tokenizeInstanceKey(instance);
-            this.instance = instance;
-            this.arName = arName;
-        }
-        
-        private static List<String> tokenizeInstanceKey(String instance) {
-            LinkedList<String> retVal = new LinkedList<String>();
-            
-            if (instance == null) return retVal;
-            
-            StringTokenizer st = new StringTokenizer(instance, ".");
-            while (st.hasMoreTokens()) {
-                String nextToken = st.nextToken();
-                if (nextToken.startsWith("XMLServiceUID")) continue;
-                
-                retVal.add(nextToken);
-            }
-            
-            return retVal;
-        }
-        
-        private String checkInstanceKey(String recievedKey) {
-            List<String> receivedToken = tokenizeInstanceKey(recievedKey);
-            
-            if (instanceKey.size() != receivedToken.size()) {
-                return "Instance cardinality for " + recievedKey + " does not match " + instance;
-            }
-            
-            for (int lcv = 0; lcv < receivedToken.size(); lcv++) {
-                String expected = instanceKey.get(lcv);
-                String received = receivedToken.get(lcv);
-                
-                if ("*".equals(expected)) continue;
-                if (!GeneralUtilities.safeEquals(expected, received)) {
-                  return "Failed in " + this + " at index " + lcv;
-                }
-            }
-            
-            return null;
-        }
-        
-        private String check(Change change) {
-            if (!GeneralUtilities.safeEquals(category, change.getChangeCategory())) {
-                return "Category is not the same expected=" + this + " got=" + change;
-            }
-            
-            if (!GeneralUtilities.safeEquals(typeName, change.getChangeType().getName())) {
-                return "Type is not the same expected=" + this + " got=" + change;
-            }
-            
-            String errorInstanceKey = checkInstanceKey(change.getInstanceKey());
-            if (errorInstanceKey != null) return errorInstanceKey;
-            
-            List<PropertyChangeEvent> modifiedProperties = change.getModifiedProperties();
-            if (modifiedProperties == null) {
-                modifiedProperties = Collections.emptyList();
-            }
-            
-            if (props.length != modifiedProperties.size()) {
-                return "Expectect property length of " + props.length + " but got size " + modifiedProperties.size();
-            }
-            for (int lcv = 0; lcv < props.length; lcv++) {
-                String prop = props[lcv];
-                
-                // Props is unordered, must go through list
-                boolean found = false;
-                for (int inner = 0; inner < modifiedProperties.size(); inner++) {
-                    if (GeneralUtilities.safeEquals(prop, modifiedProperties.get(inner).getPropertyName())) {
-                        found = true;
-                        break;
-                    }
-                }
-                
-                if (!found) {
-                  return "Did not find prop " + prop + " in " + this;
-                }
-            }
-            
-            return null;
-        }
-        
-        @Override
-        public String toString() {
-            return category + " type=" + typeName + " name=" + arName + " instanceKey=" + instanceKey;
-        }
-        
     }
 }

@@ -39,10 +39,13 @@
  */
 package org.glassfish.hk2.xml.test.dynamic.overlay;
 
+import java.beans.PropertyChangeEvent;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.glassfish.hk2.configuration.hub.api.Change;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.Type;
@@ -472,5 +475,119 @@ public class OverlayUtilities {
         remainder = remainder.substring(1);
         int dotIndex = remainder.indexOf('.');
         return (dotIndex < 0);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static String instanceToName(Instance instance) {
+        if (instance == null) return null;
+        
+        Map<String, Object> blm = (Map<String, Object>) instance.getBean();
+        if (blm == null) return null;
+        
+        return (String) blm.get("name");
+    }
+    
+    private static String getChangeDescription(Change change) {
+        StringBuffer sb = new StringBuffer("" + change.getChangeCategory() + " type=");
+        
+        Type type = change.getChangeType();
+        sb.append(type.getName() + " ");
+        
+        switch (change.getChangeCategory()) {
+        case REMOVE_INSTANCE:
+        {
+            String instanceKey = change.getInstanceKey();
+            
+            Instance instanceRemoved = change.getInstanceValue();
+            String instanceName = instanceToName(instanceRemoved);
+            
+            sb.append(" removedName=" + instanceName + " instanceKey=" + instanceKey);
+        }
+            break;
+            
+        case ADD_INSTANCE:
+        {
+            String instanceKey = change.getInstanceKey();
+            
+            Instance instanceAdded = change.getInstanceValue();
+            String instanceName = instanceToName(instanceAdded);
+            
+            sb.append(" addedName=" + instanceName + " instanceKey=" + instanceKey);
+        }
+            break;
+        case MODIFY_INSTANCE:
+        {
+            String instanceKey = change.getInstanceKey();
+            
+            Instance originalMod = change.getOriginalInstanceValue();
+            Instance changedMod = change.getInstanceValue();
+            String originalName = instanceToName(originalMod);
+            String changedName = instanceToName(changedMod);
+            
+            sb.append(" originalName=" + originalName + " newName=" + changedName + " instanceKey=" + instanceKey + " propsChanged=[");
+            
+            boolean firstTime = true;
+            List<PropertyChangeEvent> propsChanged = change.getModifiedProperties();
+            for (PropertyChangeEvent pce : propsChanged) {
+                if (firstTime) {
+                    sb.append(pce.getPropertyName());
+                    firstTime = false;
+                }
+                else {
+                    sb.append("," + pce.getPropertyName());
+                }
+            }
+            
+            sb.append("]");
+            
+        }
+            break;
+        case ADD_TYPE:
+        case REMOVE_TYPE:
+        default:
+            break;
+        }
+        
+        return sb.toString();
+    }
+    
+    private static String getAssertString(List<Change> changes, ChangeDescriptor... changeDescriptors) {
+        StringBuffer received = new StringBuffer("\n");
+        int count = 1;
+        for (Change change : changes) {
+            received.append("  " + count + ". " + getChangeDescription(change) + "\n");
+            count++;
+        }
+        
+        StringBuffer expected = new StringBuffer("\n");
+        for (int lcv = 0; lcv < changeDescriptors.length; lcv++) {
+            expected.append("  " + (lcv + 1) + ". " + changeDescriptors[lcv] + "\n");
+        }
+        
+        return "Expected Changes were: " + expected + "Recieved changes are: " + received;
+    }
+    
+    public static void checkChanges(List<Change> changes, ChangeDescriptor... changeDescriptors) {
+        if (changes.size() != changeDescriptors.length) {
+            Assert.fail(getAssertString(changes, changeDescriptors));
+        }
+        
+        HashSet<Integer> usedDescriptors = new HashSet<Integer>();
+        for (int lcv = 0; lcv < changeDescriptors.length; lcv++) {
+            ChangeDescriptor cd = changeDescriptors[lcv];
+            
+            for (int inner = 0; inner < changes.size(); inner++) {
+                if (usedDescriptors.contains(inner)) continue;
+                
+                Change change = changes.get(inner);
+                    
+                String isSame = cd.check(change);
+                if (isSame == null) {
+                    usedDescriptors.add(inner);
+                }
+            }
+        }
+        
+        Assert.assertEquals(getAssertString(changes, changeDescriptors) + " usedDescriptors=" + usedDescriptors, changeDescriptors.length, changes.size());
     }
 }
