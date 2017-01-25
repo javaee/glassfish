@@ -147,7 +147,7 @@ public class OverlayDirectTest {
      * Tests adding a two-deep direct bean
      */
     @Test
-    // @org.junit.Ignore
+    @org.junit.Ignore
     public void testDirectWithDirectAdded() {
         ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
         XmlService xmlService = locator.getService(XmlService.class);
@@ -228,7 +228,7 @@ public class OverlayDirectTest {
      * Tests removing a two-deep direct bean
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testDirectWithDirectRemoved() {
         ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
         XmlService xmlService = locator.getService(XmlService.class);
@@ -238,7 +238,7 @@ public class OverlayDirectTest {
         XmlRootHandle<OverlayRootBBean> originalHandle = createEmptyRoot(xmlService, true);
         XmlRootHandle<OverlayRootBBean> modifiedHandle = createEmptyRoot(xmlService, false);
         
-        OverlayRootBBean originalRoot = modifiedHandle.getRoot();
+        OverlayRootBBean originalRoot = originalHandle.getRoot();
         
         originalRoot.setDirectWithDirect(xmlService.createBean(DirectWithDirect.class));
         DirectWithDirect dwd = originalRoot.getDirectWithDirect();
@@ -274,18 +274,17 @@ public class OverlayDirectTest {
         List<Change> changes = listener.getChanges();
         
         OverlayUtilities.checkChanges(changes,
-                
                 new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
                         "/overlay-root-B/direct-with-direct",    // type name
                         "overlay-root-B.direct-with-direct",      // instance name
                         null
-                 )
-                 , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
-                         "/overlay-root-B/direct-with-direct/direct-terminal",    // type name
-                         "overlay-root-B.direct-with-direct.direct-terminal",      // instance name
-                         null
-                 )
-                 , new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
+                )
+                , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
+                        "/overlay-root-B/direct-with-direct/direct-terminal",    // type name
+                        "overlay-root-B.direct-with-direct.direct-terminal",      // instance name
+                        null
+                )
+                , new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
                          "/overlay-root-B",    // type name
                          "overlay-root-B",      // instance name
                          "direct-with-direct"

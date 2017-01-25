@@ -854,11 +854,13 @@ public class Utilities {
             rootForDeletion = (BaseHK2JAXBBean) myParent._getProperty(childProperty);
             if (rootForDeletion == null) return null;
             
-            if (xmlDynamicChange.getBeanDatabase() != null) {
-                myParent.changeInHub(childProperty, null, xmlDynamicChange.getBeanDatabase());
-            }
+            if (changeList) {
+                if (xmlDynamicChange.getBeanDatabase() != null) {
+                    myParent.changeInHub(childProperty, null, xmlDynamicChange.getBeanDatabase());
+                }
             
-            myParent._setProperty(childProperty, null, false, true);
+                myParent._setProperty(childProperty, null, false, true);
+            }
         }
         
         // Need to get all the beans to delete
