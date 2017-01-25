@@ -82,86 +82,6 @@ public class OverlayDirectTest {
     private final static String DIRECT_WITH_DIRECT_INSTANCE = OverlayUtilities.OROOT_B + "." + DIRECT_WITH_DIRECT ;
     private final static String DIRECT_WITH_DIRECT_TERMINAL_INSTANCE = DIRECT_WITH_DIRECT_INSTANCE + "." + DIRECT_TERMINAL ;
     
-    private static XmlRootHandle<OverlayRootBBean> createEmptyRoot(XmlService xmlService, boolean advertise) {
-        XmlRootHandle<OverlayRootBBean> retVal = xmlService.createEmptyHandle(OverlayRootBBean.class, advertise, advertise);
-        retVal.addRoot();
-        
-        return retVal;
-    }
-    
-    private static void checkExistsInHub(Hub hub, String type, String instance) {
-        BeanDatabase bd = hub.getCurrentDatabase();
-        
-        Type hubType = bd.getType(type);
-        Assert.assertNotNull(hubType);
-        
-        Instance i = hubType.getInstance(instance);
-        Assert.assertNotNull(i);
-        
-        Object bean = i.getBean();
-        Assert.assertNotNull(bean);
-    }
-    
-    private static <T> T checkExists(Hub hub, String type, String instance, Class<T> serviceClazz, ServiceLocator locator) {
-        checkExistsInHub(hub, type, instance);
-        
-        T retVal = locator.getService(serviceClazz);
-        
-        Assert.assertNotNull(retVal);
-        
-        return retVal;
-    }
-    
-    @SuppressWarnings("unchecked")
-    private static void checkFieldInHub(Hub hub, String type, String instance, String field, Object value) {
-        BeanDatabase bd = hub.getCurrentDatabase();
-        
-        Type hubType = bd.getType(type);
-        Assert.assertNotNull(hubType);
-        
-        Instance i = hubType.getInstance(instance);
-        Assert.assertNotNull(i);
-        
-        Map<String, Object> bean = (Map<String, Object>) i.getBean();
-        Assert.assertNotNull(bean);
-        
-        Object checkedValue = bean.get(field);
-        Assert.assertTrue(GeneralUtilities.safeEquals(value, checkedValue));
-    }
-    
-    private static void checkNotExistsInHub(Hub hub, String type, String instance) {
-        BeanDatabase bd = hub.getCurrentDatabase();
-        Type hubType = bd.getType(type);
-        if (hubType == null) return;
-        
-        if (instance == null) {
-            Assert.assertEquals(0, hubType.getInstances().size());
-            return;
-        }
-        
-        Instance i = hubType.getInstance(instance);
-        Assert.assertNull(i);
-    }
-    
-    private static void checkRootInHub(Hub hub, ServiceLocator locator) {
-        checkExists(hub, OverlayUtilities.OROOT_TYPE_B, OverlayUtilities.OROOT_B, OverlayRootBBean.class, locator);
-    }
-    
-    private static void checkEmptyRootInHub(Hub hub, ServiceLocator locator) {
-        checkRootInHub(hub, locator);
-        
-        checkNotExistsInHub(hub, DIRECT_WITH_KEYED_TYPE, null);
-        checkNotExistsInHub(hub, DIRECT_WITH_UNKEYED_TYPE, null);
-        checkNotExistsInHub(hub, DIRECT_WITH_DIRECT_TYPE, DIRECT_WITH_DIRECT_INSTANCE);
-        
-        Assert.assertNull(locator.getService(DirectWithKeyed.class));
-        Assert.assertNull(locator.getService(DirectWithUnkeyed.class));
-        Assert.assertNull(locator.getService(DirectWithDirect.class));
-        
-        Assert.assertNull(locator.getService(KeyedTerminalBean.class));
-        Assert.assertNull(locator.getService(UnkeyedTerminalBean.class));
-        Assert.assertNull(locator.getService(DirectTerminalBean.class));
-    }
     
     /**
      * Tests adding a two-deep direct bean
@@ -404,5 +324,85 @@ public class OverlayDirectTest {
                  )
         );
     }
-
+    
+    private static XmlRootHandle<OverlayRootBBean> createEmptyRoot(XmlService xmlService, boolean advertise) {
+        XmlRootHandle<OverlayRootBBean> retVal = xmlService.createEmptyHandle(OverlayRootBBean.class, advertise, advertise);
+        retVal.addRoot();
+        
+        return retVal;
+    }
+    
+    private static void checkExistsInHub(Hub hub, String type, String instance) {
+        BeanDatabase bd = hub.getCurrentDatabase();
+        
+        Type hubType = bd.getType(type);
+        Assert.assertNotNull(hubType);
+        
+        Instance i = hubType.getInstance(instance);
+        Assert.assertNotNull(i);
+        
+        Object bean = i.getBean();
+        Assert.assertNotNull(bean);
+    }
+    
+    private static <T> T checkExists(Hub hub, String type, String instance, Class<T> serviceClazz, ServiceLocator locator) {
+        checkExistsInHub(hub, type, instance);
+        
+        T retVal = locator.getService(serviceClazz);
+        
+        Assert.assertNotNull(retVal);
+        
+        return retVal;
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static void checkFieldInHub(Hub hub, String type, String instance, String field, Object value) {
+        BeanDatabase bd = hub.getCurrentDatabase();
+        
+        Type hubType = bd.getType(type);
+        Assert.assertNotNull(hubType);
+        
+        Instance i = hubType.getInstance(instance);
+        Assert.assertNotNull(i);
+        
+        Map<String, Object> bean = (Map<String, Object>) i.getBean();
+        Assert.assertNotNull(bean);
+        
+        Object checkedValue = bean.get(field);
+        Assert.assertTrue(GeneralUtilities.safeEquals(value, checkedValue));
+    }
+    
+    private static void checkNotExistsInHub(Hub hub, String type, String instance) {
+        BeanDatabase bd = hub.getCurrentDatabase();
+        Type hubType = bd.getType(type);
+        if (hubType == null) return;
+        
+        if (instance == null) {
+            Assert.assertEquals(0, hubType.getInstances().size());
+            return;
+        }
+        
+        Instance i = hubType.getInstance(instance);
+        Assert.assertNull(i);
+    }
+    
+    private static void checkRootInHub(Hub hub, ServiceLocator locator) {
+        checkExists(hub, OverlayUtilities.OROOT_TYPE_B, OverlayUtilities.OROOT_B, OverlayRootBBean.class, locator);
+    }
+    
+    private static void checkEmptyRootInHub(Hub hub, ServiceLocator locator) {
+        checkRootInHub(hub, locator);
+        
+        checkNotExistsInHub(hub, DIRECT_WITH_KEYED_TYPE, null);
+        checkNotExistsInHub(hub, DIRECT_WITH_UNKEYED_TYPE, null);
+        checkNotExistsInHub(hub, DIRECT_WITH_DIRECT_TYPE, DIRECT_WITH_DIRECT_INSTANCE);
+        
+        Assert.assertNull(locator.getService(DirectWithKeyed.class));
+        Assert.assertNull(locator.getService(DirectWithUnkeyed.class));
+        Assert.assertNull(locator.getService(DirectWithDirect.class));
+        
+        Assert.assertNull(locator.getService(KeyedTerminalBean.class));
+        Assert.assertNull(locator.getService(UnkeyedTerminalBean.class));
+        Assert.assertNull(locator.getService(DirectTerminalBean.class));
+    }
 }
