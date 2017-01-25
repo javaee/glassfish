@@ -51,7 +51,7 @@ import org.jvnet.hk2.annotations.Contract;
  */
 @Contract
 public interface DirectWithUnkeyed {
-    @XmlElement(name = "unkeyed-terminal")
+    @XmlElement(name = OverlayDirectTest.UNKEYED_TERMINAL)
     public List<UnkeyedTerminalBean> getUnkeyedTerminal();
     public UnkeyedTerminalBean addUnkeyedTerminal();
 

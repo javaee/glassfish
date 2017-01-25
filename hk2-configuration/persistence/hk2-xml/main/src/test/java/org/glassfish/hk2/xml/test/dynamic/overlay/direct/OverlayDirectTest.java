@@ -72,15 +72,20 @@ public class OverlayDirectTest {
     public final static String DIRECT_WITH_DIRECT = "direct-with-direct";
     public final static String DIRECT_TERMINAL = "direct-with-direct";
     public final static String TERMINAL_DATA = "terminal-data";
+    public final static String UNKEYED_TERMINAL = "unkeyed-terminal";
+    public final static String UNKEYED_DATA = "unkeyed-data";
     
     private final static String DIRECT_WITH_KEYED_TYPE = OverlayUtilities.OROOT_TYPE_B + "/" + DIRECT_WITH_KEYED ;
     private final static String DIRECT_WITH_UNKEYED_TYPE = OverlayUtilities.OROOT_TYPE_B + "/" + DIRECT_WITH_UNKEYED ;
     private final static String DIRECT_WITH_DIRECT_TYPE = OverlayUtilities.OROOT_TYPE_B + "/" + DIRECT_WITH_DIRECT ;
     
     private final static String DIRECT_WITH_DIRECT_TERMINAL_TYPE = DIRECT_WITH_DIRECT_TYPE + "/" + DIRECT_TERMINAL;
+    private final static String DIRECT_WITH_UNKEYED_TERMINAL_TYPE = DIRECT_WITH_UNKEYED_TYPE + "/" + UNKEYED_TERMINAL;
     
     private final static String DIRECT_WITH_DIRECT_INSTANCE = OverlayUtilities.OROOT_B + "." + DIRECT_WITH_DIRECT ;
     private final static String DIRECT_WITH_DIRECT_TERMINAL_INSTANCE = DIRECT_WITH_DIRECT_INSTANCE + "." + DIRECT_TERMINAL ;
+    private final static String DIRECT_WITH_UNKEYED_INSTANCE = OverlayUtilities.OROOT_B + "." + DIRECT_WITH_UNKEYED;
+    private final static String DIRECT_WITH_UNKEYED_TERMINAL_INSTANCE = DIRECT_WITH_UNKEYED_INSTANCE + ".*";
     
     
     /**
@@ -133,10 +138,6 @@ public class OverlayDirectTest {
             checkFieldInHub(hub, DIRECT_WITH_DIRECT_TERMINAL_TYPE, DIRECT_WITH_DIRECT_TERMINAL_INSTANCE, TERMINAL_DATA, TERMINAL_DATA_A);
             
             Assert.assertEquals(TERMINAL_DATA_A, service.getTerminalData());
-        }
-        
-        {
-            // Check the registry
         }
         
         List<Change> changes = listener.getChanges();
@@ -325,6 +326,239 @@ public class OverlayDirectTest {
         );
     }
     
+    /**
+     * Tests adding a two-deep direct bean
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testDirectWithUnkeyedAdded() {
+        ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        UpdateListener listener = locator.getService(UpdateListener.class);
+        
+        XmlRootHandle<OverlayRootBBean> originalHandle = createEmptyRoot(xmlService, true);
+        XmlRootHandle<OverlayRootBBean> modifiedHandle = createEmptyRoot(xmlService, false);
+        
+        checkEmptyRootInHub(hub, locator);
+        
+        OverlayRootBBean modifiedRoot = modifiedHandle.getRoot();
+        
+        modifiedRoot.setDirectWithUnkeyed(xmlService.createBean(DirectWithUnkeyed.class));
+        DirectWithUnkeyed dwu = modifiedRoot.getDirectWithUnkeyed();
+        
+        UnkeyedTerminalBean utb = dwu.addUnkeyedTerminal();
+        utb.setUnkeyedData(TERMINAL_DATA_A);
+        
+        originalHandle.overlay(modifiedHandle);
+        
+        {
+            // Check the bean itself
+            OverlayRootBBean originalRoot = originalHandle.getRoot();
+            Assert.assertNull(originalRoot.getDirectWithDirect());
+            Assert.assertNull(originalRoot.getDirectWithKeyed());
+            Assert.assertNotNull(originalRoot.getDirectWithUnkeyed());
+        
+            DirectWithUnkeyed overlayDWU = originalRoot.getDirectWithUnkeyed();
+            UnkeyedTerminalBean overlayUTB = overlayDWU.getUnkeyedTerminal().get(0);
+        
+            Assert.assertNotNull(overlayUTB);
+            Assert.assertEquals(TERMINAL_DATA_A, overlayUTB.getUnkeyedData());
+        }
+        
+        {
+            // Check the hub
+            checkRootInHub(hub, locator);
+            checkExists(hub, DIRECT_WITH_UNKEYED_TYPE, DIRECT_WITH_UNKEYED_INSTANCE, DirectWithUnkeyed.class, locator);
+            UnkeyedTerminalBean service = checkExists(hub, DIRECT_WITH_UNKEYED_TERMINAL_TYPE, DIRECT_WITH_UNKEYED_TERMINAL_INSTANCE, UnkeyedTerminalBean.class, locator);
+            checkFieldInHub(hub, DIRECT_WITH_UNKEYED_TERMINAL_TYPE, DIRECT_WITH_UNKEYED_TERMINAL_INSTANCE, UNKEYED_DATA, TERMINAL_DATA_A);
+            
+            Assert.assertEquals(TERMINAL_DATA_A, service.getUnkeyedData());
+        }
+        
+        List<Change> changes = listener.getChanges();
+        
+        OverlayUtilities.checkChanges(changes,
+                new ChangeDescriptor(ChangeCategory.ADD_TYPE,
+                        DIRECT_WITH_UNKEYED_TYPE,    // type name
+                        null,      // instance name
+                        null
+                )
+                , new ChangeDescriptor(ChangeCategory.ADD_INSTANCE,
+                        DIRECT_WITH_UNKEYED_TYPE,    // type name
+                        DIRECT_WITH_UNKEYED_INSTANCE,      // instance name
+                        null
+                 )
+                 , new ChangeDescriptor(ChangeCategory.ADD_TYPE,
+                        DIRECT_WITH_UNKEYED_TERMINAL_TYPE,    // type name
+                        null,      // instance name
+                        null
+                 )
+                 , new ChangeDescriptor(ChangeCategory.ADD_INSTANCE,
+                         DIRECT_WITH_UNKEYED_TERMINAL_TYPE,    // type name
+                         DIRECT_WITH_UNKEYED_TERMINAL_INSTANCE,      // instance name
+                         null
+                 )
+                 , new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
+                         OverlayUtilities.OROOT_TYPE_B,    // type name
+                         OverlayUtilities.OROOT_B,      // instance name
+                         DIRECT_WITH_UNKEYED
+                 )
+        );
+    }
+    
+    /**
+     * Tests changing the data in a direct child two levels down
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testDirectWithUnkeyedChanged() {
+        ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        UpdateListener listener = locator.getService(UpdateListener.class);
+        
+        XmlRootHandle<OverlayRootBBean> originalHandle = createEmptyRoot(xmlService, true);
+        XmlRootHandle<OverlayRootBBean> modifiedHandle = createEmptyRoot(xmlService, false);
+        
+        {
+            OverlayRootBBean originalRoot = originalHandle.getRoot();
+        
+            originalRoot.setDirectWithUnkeyed(xmlService.createBean(DirectWithUnkeyed.class));
+            DirectWithUnkeyed dwu = originalRoot.getDirectWithUnkeyed();
+        
+            UnkeyedTerminalBean utb = dwu.addUnkeyedTerminal();
+        
+            utb.setUnkeyedData(TERMINAL_DATA_A);
+        }
+        
+        {
+            OverlayRootBBean modifiedRoot = modifiedHandle.getRoot();
+        
+            modifiedRoot.setDirectWithUnkeyed(xmlService.createBean(DirectWithUnkeyed.class));
+            DirectWithUnkeyed dwu = modifiedRoot.getDirectWithUnkeyed();
+        
+            UnkeyedTerminalBean utb = dwu.addUnkeyedTerminal();
+        
+            utb.setUnkeyedData(TERMINAL_DATA_B);
+        }
+        
+        {
+            // Check pre-state of hub
+            checkRootInHub(hub, locator);
+            checkExists(hub, DIRECT_WITH_UNKEYED_TYPE, DIRECT_WITH_UNKEYED_INSTANCE, DirectWithUnkeyed.class, locator);
+            UnkeyedTerminalBean service = checkExists(hub, DIRECT_WITH_UNKEYED_TERMINAL_TYPE, DIRECT_WITH_UNKEYED_TERMINAL_INSTANCE, UnkeyedTerminalBean.class, locator);
+            checkFieldInHub(hub, DIRECT_WITH_UNKEYED_TERMINAL_TYPE, DIRECT_WITH_UNKEYED_TERMINAL_INSTANCE, UNKEYED_DATA, TERMINAL_DATA_A);
+            
+            Assert.assertEquals(TERMINAL_DATA_A, service.getUnkeyedData());
+        }
+        
+        originalHandle.overlay(modifiedHandle);
+        
+        {
+            // Check the bean itself
+            OverlayRootBBean originalRoot = originalHandle.getRoot();
+            Assert.assertNull(originalRoot.getDirectWithDirect());
+            Assert.assertNull(originalRoot.getDirectWithKeyed());
+            Assert.assertNotNull(originalRoot.getDirectWithUnkeyed());
+            
+            DirectWithUnkeyed dwu = originalRoot.getDirectWithUnkeyed();
+            UnkeyedTerminalBean utb = dwu.getUnkeyedTerminal().get(0);
+            Assert.assertNotNull(utb);
+            
+            Assert.assertEquals(TERMINAL_DATA_B, utb.getUnkeyedData());
+        }
+        
+        {
+            // Check the hub
+            checkRootInHub(hub, locator);
+            checkExists(hub, DIRECT_WITH_UNKEYED_TYPE, DIRECT_WITH_UNKEYED_INSTANCE, DirectWithUnkeyed.class, locator);
+            UnkeyedTerminalBean service = checkExists(hub, DIRECT_WITH_UNKEYED_TERMINAL_TYPE, DIRECT_WITH_UNKEYED_TERMINAL_INSTANCE, UnkeyedTerminalBean.class, locator);
+            checkFieldInHub(hub, DIRECT_WITH_UNKEYED_TERMINAL_TYPE, DIRECT_WITH_UNKEYED_TERMINAL_INSTANCE, UNKEYED_DATA, TERMINAL_DATA_B);
+            
+            Assert.assertEquals(TERMINAL_DATA_B, service.getUnkeyedData());
+        }
+        
+        List<Change> changes = listener.getChanges();
+        
+        OverlayUtilities.checkChanges(changes,
+                new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
+                         DIRECT_WITH_UNKEYED_TERMINAL_TYPE,    // type name
+                         DIRECT_WITH_UNKEYED_TERMINAL_INSTANCE,      // instance name
+                         UNKEYED_DATA
+                 )
+        );
+    }
+    
+    /**
+     * Tests removing a two-deep direct bean
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testDirectWithUnkeyedRemoved() {
+        ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        UpdateListener listener = locator.getService(UpdateListener.class);
+        
+        XmlRootHandle<OverlayRootBBean> originalHandle = createEmptyRoot(xmlService, true);
+        XmlRootHandle<OverlayRootBBean> modifiedHandle = createEmptyRoot(xmlService, false);
+        
+        OverlayRootBBean originalRoot = originalHandle.getRoot();
+        
+        originalRoot.setDirectWithUnkeyed(xmlService.createBean(DirectWithUnkeyed.class));
+        DirectWithUnkeyed dwu = originalRoot.getDirectWithUnkeyed();
+        
+        UnkeyedTerminalBean utb = dwu.addUnkeyedTerminal();
+        
+        utb.setUnkeyedData(TERMINAL_DATA_A);
+        
+        {
+            // Check pre-state of hub
+            checkRootInHub(hub, locator);
+            checkExists(hub, DIRECT_WITH_UNKEYED_TYPE, DIRECT_WITH_UNKEYED_INSTANCE, DirectWithUnkeyed.class, locator);
+            UnkeyedTerminalBean service = checkExists(hub, DIRECT_WITH_UNKEYED_TERMINAL_TYPE, DIRECT_WITH_UNKEYED_TERMINAL_INSTANCE, UnkeyedTerminalBean.class, locator);
+            checkFieldInHub(hub, DIRECT_WITH_UNKEYED_TERMINAL_TYPE, DIRECT_WITH_UNKEYED_TERMINAL_INSTANCE, UNKEYED_DATA, TERMINAL_DATA_A);
+            
+            Assert.assertEquals(TERMINAL_DATA_A, service.getUnkeyedData());
+        }
+        
+        originalHandle.overlay(modifiedHandle);
+        
+        {
+            // Check the bean itself
+            originalRoot = originalHandle.getRoot();
+            Assert.assertNull(originalRoot.getDirectWithDirect());
+            Assert.assertNull(originalRoot.getDirectWithKeyed());
+            Assert.assertNull(originalRoot.getDirectWithUnkeyed());
+        }
+        
+        {
+            // Check the hub
+            checkEmptyRootInHub(hub, locator);
+        }
+        
+        List<Change> changes = listener.getChanges();
+        
+        OverlayUtilities.checkChanges(changes,
+                new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
+                        DIRECT_WITH_UNKEYED_TYPE,    // type name
+                        DIRECT_WITH_UNKEYED_INSTANCE,      // instance name
+                        null
+                )
+                , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
+                        DIRECT_WITH_UNKEYED_TERMINAL_TYPE,    // type name
+                        DIRECT_WITH_UNKEYED_TERMINAL_INSTANCE,      // instance name
+                        null
+                )
+                , new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
+                        OverlayUtilities.OROOT_TYPE_B,    // type name
+                        OverlayUtilities.OROOT_B,      // instance name
+                        DIRECT_WITH_UNKEYED
+                 )
+        );
+    }
+    
     private static XmlRootHandle<OverlayRootBBean> createEmptyRoot(XmlService xmlService, boolean advertise) {
         XmlRootHandle<OverlayRootBBean> retVal = xmlService.createEmptyHandle(OverlayRootBBean.class, advertise, advertise);
         retVal.addRoot();
@@ -338,8 +572,20 @@ public class OverlayDirectTest {
         Type hubType = bd.getType(type);
         Assert.assertNotNull(hubType);
         
-        Instance i = hubType.getInstance(instance);
-        Assert.assertNotNull(i);
+        Instance i = null;
+        if (instance.contains(".*")) {
+            Map<String, Instance> instances = hubType.getInstances();
+            Assert.assertEquals(1, instances.size());
+            
+            for (Instance found : instances.values()) {
+                i = found;
+            }
+        }
+        else {
+            i = hubType.getInstance(instance);
+        }
+        
+        Assert.assertNotNull("Could not find instance " + instance + " in type " + type, i);
         
         Object bean = i.getBean();
         Assert.assertNotNull(bean);
@@ -362,7 +608,18 @@ public class OverlayDirectTest {
         Type hubType = bd.getType(type);
         Assert.assertNotNull(hubType);
         
-        Instance i = hubType.getInstance(instance);
+        Instance i = null;
+        if (instance.contains(".*")) {
+            Map<String, Instance> instances = hubType.getInstances();
+            Assert.assertEquals(1, instances.size());
+            
+            for (Instance found : instances.values()) {
+                i = found;
+            }
+        }
+        else {
+            i = hubType.getInstance(instance);
+        }
         Assert.assertNotNull(i);
         
         Map<String, Object> bean = (Map<String, Object>) i.getBean();

@@ -49,8 +49,9 @@ import org.jvnet.hk2.annotations.Contract;
  */
 @Contract
 public interface UnkeyedTerminalBean {
-    @XmlElement(name = "unkeyed-data")
+    @XmlElement(name = OverlayDirectTest.UNKEYED_DATA)
     public String getUnkeyedData();
+    public void setUnkeyedData(String data);
     
 
 }

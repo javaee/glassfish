@@ -53,9 +53,11 @@ import org.jvnet.hk2.annotations.Contract;
 public interface OverlayRootBBean {
     @XmlElement(name = OverlayDirectTest.DIRECT_WITH_KEYED)
     public DirectWithKeyed getDirectWithKeyed();
+    public void setDirectWithKeyed(DirectWithKeyed addMe);
     
     @XmlElement(name = OverlayDirectTest.DIRECT_WITH_UNKEYED)
     public DirectWithUnkeyed getDirectWithUnkeyed();
+    public void setDirectWithUnkeyed(DirectWithUnkeyed addMe);
     
     @XmlElement(name = OverlayDirectTest.DIRECT_WITH_DIRECT)
     public DirectWithDirect getDirectWithDirect();
