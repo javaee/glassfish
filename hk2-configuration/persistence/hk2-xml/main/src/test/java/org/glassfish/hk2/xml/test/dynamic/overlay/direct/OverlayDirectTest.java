@@ -102,6 +102,16 @@ public class OverlayDirectTest {
         Assert.assertNotNull(bean);
     }
     
+    private static <T> T checkExists(Hub hub, String type, String instance, Class<T> serviceClazz, ServiceLocator locator) {
+        checkExistsInHub(hub, type, instance);
+        
+        T retVal = locator.getService(serviceClazz);
+        
+        Assert.assertNotNull(retVal);
+        
+        return retVal;
+    }
+    
     @SuppressWarnings("unchecked")
     private static void checkFieldInHub(Hub hub, String type, String instance, String field, Object value) {
         BeanDatabase bd = hub.getCurrentDatabase();
@@ -133,23 +143,31 @@ public class OverlayDirectTest {
         Assert.assertNull(i);
     }
     
-    private static void checkRootInHub(Hub hub) {
-        checkExistsInHub(hub, OverlayUtilities.OROOT_TYPE_B, OverlayUtilities.OROOT_B);
+    private static void checkRootInHub(Hub hub, ServiceLocator locator) {
+        checkExists(hub, OverlayUtilities.OROOT_TYPE_B, OverlayUtilities.OROOT_B, OverlayRootBBean.class, locator);
     }
     
-    private static void checkEmptyRootInHub(Hub hub) {
-        checkRootInHub(hub);
+    private static void checkEmptyRootInHub(Hub hub, ServiceLocator locator) {
+        checkRootInHub(hub, locator);
         
         checkNotExistsInHub(hub, DIRECT_WITH_KEYED_TYPE, null);
         checkNotExistsInHub(hub, DIRECT_WITH_UNKEYED_TYPE, null);
         checkNotExistsInHub(hub, DIRECT_WITH_DIRECT_TYPE, DIRECT_WITH_DIRECT_INSTANCE);
+        
+        Assert.assertNull(locator.getService(DirectWithKeyed.class));
+        Assert.assertNull(locator.getService(DirectWithUnkeyed.class));
+        Assert.assertNull(locator.getService(DirectWithDirect.class));
+        
+        Assert.assertNull(locator.getService(KeyedTerminalBean.class));
+        Assert.assertNull(locator.getService(UnkeyedTerminalBean.class));
+        Assert.assertNull(locator.getService(DirectTerminalBean.class));
     }
     
     /**
      * Tests adding a two-deep direct bean
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testDirectWithDirectAdded() {
         ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
         XmlService xmlService = locator.getService(XmlService.class);
@@ -159,7 +177,7 @@ public class OverlayDirectTest {
         XmlRootHandle<OverlayRootBBean> originalHandle = createEmptyRoot(xmlService, true);
         XmlRootHandle<OverlayRootBBean> modifiedHandle = createEmptyRoot(xmlService, false);
         
-        checkEmptyRootInHub(hub);
+        checkEmptyRootInHub(hub, locator);
         
         OverlayRootBBean modifiedRoot = modifiedHandle.getRoot();
         
@@ -189,10 +207,16 @@ public class OverlayDirectTest {
         
         {
             // Check the hub
-            checkRootInHub(hub);
-            checkExistsInHub(hub, DIRECT_WITH_DIRECT_TYPE, DIRECT_WITH_DIRECT_INSTANCE);
-            checkExistsInHub(hub, DIRECT_WITH_DIRECT_TERMINAL_TYPE, DIRECT_WITH_DIRECT_TERMINAL_INSTANCE);
+            checkRootInHub(hub, locator);
+            checkExists(hub, DIRECT_WITH_DIRECT_TYPE, DIRECT_WITH_DIRECT_INSTANCE, DirectWithDirect.class, locator);
+            DirectTerminalBean service = checkExists(hub, DIRECT_WITH_DIRECT_TERMINAL_TYPE, DIRECT_WITH_DIRECT_TERMINAL_INSTANCE, DirectTerminalBean.class, locator);
             checkFieldInHub(hub, DIRECT_WITH_DIRECT_TERMINAL_TYPE, DIRECT_WITH_DIRECT_TERMINAL_INSTANCE, TERMINAL_DATA, TERMINAL_DATA_A);
+            
+            Assert.assertEquals(TERMINAL_DATA_A, service.getTerminalData());
+        }
+        
+        {
+            // Check the registry
         }
         
         List<Change> changes = listener.getChanges();
@@ -252,10 +276,12 @@ public class OverlayDirectTest {
         
         {
             // Check pre-state of hub
-            checkRootInHub(hub);
-            checkExistsInHub(hub, DIRECT_WITH_DIRECT_TYPE, DIRECT_WITH_DIRECT_INSTANCE);
-            checkExistsInHub(hub, DIRECT_WITH_DIRECT_TERMINAL_TYPE, DIRECT_WITH_DIRECT_TERMINAL_INSTANCE);
+            checkRootInHub(hub, locator);
+            checkExists(hub, DIRECT_WITH_DIRECT_TYPE, DIRECT_WITH_DIRECT_INSTANCE, DirectWithDirect.class, locator);
+            DirectTerminalBean service = checkExists(hub, DIRECT_WITH_DIRECT_TERMINAL_TYPE, DIRECT_WITH_DIRECT_TERMINAL_INSTANCE, DirectTerminalBean.class, locator);
             checkFieldInHub(hub, DIRECT_WITH_DIRECT_TERMINAL_TYPE, DIRECT_WITH_DIRECT_TERMINAL_INSTANCE, TERMINAL_DATA, TERMINAL_DATA_A);
+            
+            Assert.assertEquals(TERMINAL_DATA_A, service.getTerminalData());
         }
         
         originalHandle.overlay(modifiedHandle);
@@ -270,7 +296,7 @@ public class OverlayDirectTest {
         
         {
             // Check the hub
-            checkEmptyRootInHub(hub);
+            checkEmptyRootInHub(hub, locator);
         }
         
         List<Change> changes = listener.getChanges();
@@ -334,10 +360,12 @@ public class OverlayDirectTest {
         
         {
             // Check pre-state of hub
-            checkRootInHub(hub);
-            checkExistsInHub(hub, DIRECT_WITH_DIRECT_TYPE, DIRECT_WITH_DIRECT_INSTANCE);
-            checkExistsInHub(hub, DIRECT_WITH_DIRECT_TERMINAL_TYPE, DIRECT_WITH_DIRECT_TERMINAL_INSTANCE);
+            checkRootInHub(hub, locator);
+            checkExists(hub, DIRECT_WITH_DIRECT_TYPE, DIRECT_WITH_DIRECT_INSTANCE, DirectWithDirect.class, locator);
+            DirectTerminalBean service = checkExists(hub, DIRECT_WITH_DIRECT_TERMINAL_TYPE, DIRECT_WITH_DIRECT_TERMINAL_INSTANCE, DirectTerminalBean.class, locator);
             checkFieldInHub(hub, DIRECT_WITH_DIRECT_TERMINAL_TYPE, DIRECT_WITH_DIRECT_TERMINAL_INSTANCE, TERMINAL_DATA, TERMINAL_DATA_A);
+            
+            Assert.assertEquals(TERMINAL_DATA_A, service.getTerminalData());
         }
         
         originalHandle.overlay(modifiedHandle);
@@ -358,10 +386,12 @@ public class OverlayDirectTest {
         
         {
             // Check the hub
-            checkRootInHub(hub);
-            checkExistsInHub(hub, DIRECT_WITH_DIRECT_TYPE, DIRECT_WITH_DIRECT_INSTANCE);
-            checkExistsInHub(hub, DIRECT_WITH_DIRECT_TERMINAL_TYPE, DIRECT_WITH_DIRECT_TERMINAL_INSTANCE);
+            checkRootInHub(hub, locator);
+            checkExists(hub, DIRECT_WITH_DIRECT_TYPE, DIRECT_WITH_DIRECT_INSTANCE, DirectWithDirect.class, locator);
+            DirectTerminalBean service = checkExists(hub, DIRECT_WITH_DIRECT_TERMINAL_TYPE, DIRECT_WITH_DIRECT_TERMINAL_INSTANCE, DirectTerminalBean.class, locator);
             checkFieldInHub(hub, DIRECT_WITH_DIRECT_TERMINAL_TYPE, DIRECT_WITH_DIRECT_TERMINAL_INSTANCE, TERMINAL_DATA, TERMINAL_DATA_B);
+            
+            Assert.assertEquals(TERMINAL_DATA_B, service.getTerminalData());
         }
         
         List<Change> changes = listener.getChanges();

@@ -41,10 +41,13 @@ package org.glassfish.hk2.xml.test.dynamic.overlay.direct;
 
 import javax.xml.bind.annotation.XmlElement;
 
+import org.jvnet.hk2.annotations.Contract;
+
 /**
  * @author jwells
  *
  */
+@Contract
 public interface DirectTerminalBean {
     @XmlElement(name = OverlayDirectTest.TERMINAL_DATA)
     public String getTerminalData();
