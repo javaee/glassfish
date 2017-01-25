@@ -65,6 +65,8 @@ import org.junit.Test;
  */
 public class OverlayDirectTest {
     private final static String TERMINAL_DATA_A = "terminalDataA";
+    private final static String TERMINAL_DATA_B = "terminalDataB";
+    
     public final static String DIRECT_WITH_KEYED = "direct-with-keyed";
     public final static String DIRECT_WITH_UNKEYED = "direct-with-unkeyed";
     public final static String DIRECT_WITH_DIRECT = "direct-with-direct";
@@ -288,6 +290,87 @@ public class OverlayDirectTest {
                          "/overlay-root-B",    // type name
                          "overlay-root-B",      // instance name
                          "direct-with-direct"
+                 )
+        );
+    }
+    
+    /**
+     * Tests changing the data in a direct child two levels down
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testDirectWithDirectChanged() {
+        ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        UpdateListener listener = locator.getService(UpdateListener.class);
+        
+        XmlRootHandle<OverlayRootBBean> originalHandle = createEmptyRoot(xmlService, true);
+        XmlRootHandle<OverlayRootBBean> modifiedHandle = createEmptyRoot(xmlService, false);
+        
+        {
+            OverlayRootBBean originalRoot = originalHandle.getRoot();
+        
+            originalRoot.setDirectWithDirect(xmlService.createBean(DirectWithDirect.class));
+            DirectWithDirect dwd = originalRoot.getDirectWithDirect();
+        
+            dwd.setDirectTerminal(xmlService.createBean(DirectTerminalBean.class));
+            DirectTerminalBean dtb = dwd.getDirectTerminal();
+        
+            dtb.setTerminalData(TERMINAL_DATA_A);
+        }
+        
+        {
+            OverlayRootBBean modifiedRoot = modifiedHandle.getRoot();
+        
+            modifiedRoot.setDirectWithDirect(xmlService.createBean(DirectWithDirect.class));
+            DirectWithDirect dwd = modifiedRoot.getDirectWithDirect();
+        
+            dwd.setDirectTerminal(xmlService.createBean(DirectTerminalBean.class));
+            DirectTerminalBean dtb = dwd.getDirectTerminal();
+        
+            dtb.setTerminalData(TERMINAL_DATA_B);
+        }
+        
+        {
+            // Check pre-state of hub
+            checkRootInHub(hub);
+            checkExistsInHub(hub, DIRECT_WITH_DIRECT_TYPE, DIRECT_WITH_DIRECT_INSTANCE);
+            checkExistsInHub(hub, DIRECT_WITH_DIRECT_TERMINAL_TYPE, DIRECT_WITH_DIRECT_TERMINAL_INSTANCE);
+            checkFieldInHub(hub, DIRECT_WITH_DIRECT_TERMINAL_TYPE, DIRECT_WITH_DIRECT_TERMINAL_INSTANCE, TERMINAL_DATA, TERMINAL_DATA_A);
+        }
+        
+        originalHandle.overlay(modifiedHandle);
+        
+        {
+            // Check the bean itself
+            OverlayRootBBean originalRoot = originalHandle.getRoot();
+            Assert.assertNotNull(originalRoot.getDirectWithDirect());
+            Assert.assertNull(originalRoot.getDirectWithKeyed());
+            Assert.assertNull(originalRoot.getDirectWithUnkeyed());
+            
+            DirectWithDirect dwd = originalRoot.getDirectWithDirect();
+            DirectTerminalBean dtb = dwd.getDirectTerminal();
+            Assert.assertNotNull(dtb);
+            
+            Assert.assertEquals(TERMINAL_DATA_B, dtb.getTerminalData());
+        }
+        
+        {
+            // Check the hub
+            checkRootInHub(hub);
+            checkExistsInHub(hub, DIRECT_WITH_DIRECT_TYPE, DIRECT_WITH_DIRECT_INSTANCE);
+            checkExistsInHub(hub, DIRECT_WITH_DIRECT_TERMINAL_TYPE, DIRECT_WITH_DIRECT_TERMINAL_INSTANCE);
+            checkFieldInHub(hub, DIRECT_WITH_DIRECT_TERMINAL_TYPE, DIRECT_WITH_DIRECT_TERMINAL_INSTANCE, TERMINAL_DATA, TERMINAL_DATA_B);
+        }
+        
+        List<Change> changes = listener.getChanges();
+        
+        OverlayUtilities.checkChanges(changes,
+                new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
+                         DIRECT_WITH_DIRECT_TERMINAL_TYPE,    // type name
+                         DIRECT_WITH_DIRECT_TERMINAL_INSTANCE,      // instance name
+                         TERMINAL_DATA
                  )
         );
     }
