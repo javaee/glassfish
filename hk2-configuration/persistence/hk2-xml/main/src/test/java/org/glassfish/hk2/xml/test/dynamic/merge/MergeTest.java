@@ -331,7 +331,7 @@ public class MergeTest {
      */
     @SuppressWarnings("unchecked")
     @Test 
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testMergeModifyAddAnArrayChild() throws Exception {
         ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
         XmlService xmlService = locator.getService(XmlService.class);
@@ -435,9 +435,9 @@ public class MergeTest {
         }
         
         List<Change> hubChanges = listener.getChanges();
-        Assert.assertEquals("Changes=" + hubChanges, 6, hubChanges.size());
+        Assert.assertEquals("changeSize=" + hubChanges.size() + " Changes=" + hubChanges, 4, hubChanges.size());
         
-        for (int lcv = 0; lcv < 6; lcv++) {
+        for (int lcv = 0; lcv < 4; lcv++) {
             Change change = hubChanges.get(lcv);
             
             switch(lcv) {
@@ -450,18 +450,10 @@ public class MergeTest {
                 Assert.assertEquals(TOPIC2_INSTANCE, change.getInstanceKey());
                 break;
             case 2:
-                Assert.assertEquals(ChangeCategory.MODIFY_INSTANCE, change.getChangeCategory());
-                Assert.assertEquals(BOB_INSTANCE, change.getInstanceKey());
-                break;
-            case 3:
                 Assert.assertEquals(ChangeCategory.ADD_INSTANCE, change.getChangeCategory());
                 Assert.assertEquals(QUEUE0_BOB_INSTANCE, change.getInstanceKey());
                 break;
-            case 4:
-                Assert.assertEquals(ChangeCategory.MODIFY_INSTANCE, change.getChangeCategory());
-                Assert.assertEquals(BOB_INSTANCE, change.getInstanceKey());
-                break;
-            case 5:
+            case 3:
                 Assert.assertEquals(ChangeCategory.MODIFY_INSTANCE, change.getChangeCategory());
                 Assert.assertEquals(DOMAIN_INSTANCE, change.getInstanceKey());
                 break;
@@ -477,7 +469,7 @@ public class MergeTest {
      * @throws Exception
      */
     @Test 
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testRemoveDirectChild() throws Exception {
         ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
         XmlService xmlService = locator.getService(XmlService.class);
@@ -511,22 +503,23 @@ public class MergeTest {
         
         List<Change> hubChanges = listener.getChanges();
         Assert.assertEquals("Did not get expected changes, got " + hubChanges, 3, hubChanges.size());
+      
         
         for (int lcv = 0; lcv < hubChanges.size(); lcv++) {
             Change change = hubChanges.get(lcv);
             
             switch (lcv) {
             case 0:
-                Assert.assertEquals(ChangeCategory.MODIFY_INSTANCE, change.getChangeCategory());
-                Assert.assertEquals(DOMAIN_INSTANCE, change.getInstanceKey());
-                break;
-            case 1:
                 Assert.assertEquals(ChangeCategory.REMOVE_INSTANCE, change.getChangeCategory());
                 Assert.assertEquals(SECURITY_MANAGER_INSTANCE, change.getInstanceKey());
                 break;
-            case 2:
+            case 1:
                 Assert.assertEquals(ChangeCategory.REMOVE_INSTANCE, change.getChangeCategory());
                 Assert.assertEquals(RSA_INSTANCE, change.getInstanceKey());
+                break;
+            case 2:
+                Assert.assertEquals(ChangeCategory.MODIFY_INSTANCE, change.getChangeCategory());
+                Assert.assertEquals(DOMAIN_INSTANCE, change.getInstanceKey());
                 break;
             default:
                 Assert.fail("Uknown change " + lcv + " was " + change);
@@ -541,7 +534,7 @@ public class MergeTest {
      * @throws Exception
      */
     @Test 
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testAddDirectChild() throws Exception {
         ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
         XmlService xmlService = locator.getService(XmlService.class);
