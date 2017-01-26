@@ -49,6 +49,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -1229,6 +1230,40 @@ public class Utilities {
         return retVal;
     }
     
+    private static Map<String, Integer> getIndexMap(List<BaseHK2JAXBBean> list) {
+        Map<String, Integer> retVal = new HashMap<String, Integer>();
+        for (int lcv = 0; lcv < list.size(); lcv++) {
+            BaseHK2JAXBBean bean = list.get(lcv);
+            String key = bean._getKeyValue();
+            
+            if (key == null) {
+                throw new AssertionError("Found a keyed bean with no key " + bean + " at index " + lcv + " in " + list);
+            }
+            
+            retVal.put(key, lcv);
+        }
+        
+        return retVal;
+    }
+    
+    private static Map<String, Integer> getIndexMapArray(Object array) {
+        Map<String, Integer> retVal = new HashMap<String, Integer>();
+        
+        int length = Array.getLength(array);
+        for (int lcv = 0; lcv < length; lcv++) {
+            BaseHK2JAXBBean bean = (BaseHK2JAXBBean) Array.get(array, lcv);
+            String key = bean._getKeyValue();
+            
+            if (key == null) {
+                throw new AssertionError("Found a keyed bean with no key " + bean + " at index " + lcv);
+            }
+            
+            retVal.put(key, lcv);
+        }
+        
+        return retVal;
+    }
+    
     @SuppressWarnings("unchecked")
     private static void getAllDifferences(BaseHK2JAXBBean source,
             BaseHK2JAXBBean other,
@@ -1309,15 +1344,25 @@ public class Utilities {
                 if (otherValueList == null) otherValueList = Collections.emptyList();
                 
                 if (keyProperty != null) {
+                    Map<String, Integer> sourceIndexMap = getIndexMap(sourceValueList);
+                    Map<String, Integer> otherIndexMap = getIndexMap(otherValueList);
+                    
                     for (BaseHK2JAXBBean sourceBean : sourceValueList) {
                         String sourceKeyValue = sourceBean._getKeyValue();
                         
-                        Object otherBean = other._lookupChild(xmlTag, sourceKeyValue);
-                        if (otherBean == null) {
-                            // Removing this bean
+                        if (!otherIndexMap.containsKey(sourceKeyValue)) {
                             localDifference.addRemove(xmlTag, new RemoveData(xmlTag, sourceKeyValue, sourceBean));
                         }
                         else {
+                            int sourceIndex = sourceIndexMap.get(sourceKeyValue);
+                            int otherIndex = otherIndexMap.get(sourceKeyValue);
+                            
+                            Object otherBean = otherValueList.get(otherIndex);
+                            
+                            if (otherIndex != sourceIndex) {
+                                localDifference.addMove(xmlTag, new MoveData(sourceIndex, otherIndex));
+                            }
+                            
                             // Need to know sub-differences
                             getAllDifferences(sourceBean, (BaseHK2JAXBBean) otherBean, differences);
                         }
@@ -1326,10 +1371,10 @@ public class Utilities {
                     for (BaseHK2JAXBBean otherBean : otherValueList) {
                         String otherKeyValue = otherBean._getKeyValue();
                         
-                        Object addMe = source._lookupChild(xmlTag, otherKeyValue);
-                        if (addMe == null) {
-                            // Adding this bean
-                            localDifference.addAdd(xmlTag, otherBean, -1);
+                        if (!sourceIndexMap.containsKey(otherKeyValue)) {
+                            int addedIndex = otherIndexMap.get(otherKeyValue);
+                            
+                            localDifference.addAdd(xmlTag, otherBean, addedIndex);
                         }
                     }
                 }
@@ -1348,6 +1393,9 @@ public class Utilities {
                 Object otherArray = (otherValue == null) ? new BaseHK2JAXBBean[0] : otherValue;
                 
                 if (keyProperty != null) {
+                    Map<String, Integer> sourceIndexMap = getIndexMapArray(sourceArray);
+                    Map<String, Integer> otherIndexMap = getIndexMapArray(otherArray);
+                    
                     int sourceLength = Array.getLength(sourceArray);
                     
                     for (int lcv = 0; lcv < sourceLength; lcv++) {
@@ -1355,14 +1403,23 @@ public class Utilities {
                         
                         String sourceKeyValue = sourceBean._getKeyValue();
                         
-                        Object otherBean = other._lookupChild(xmlTag, sourceKeyValue);
-                        if (otherBean == null) {
+                        if (!otherIndexMap.containsKey(sourceKeyValue)) {
                             // Removing this bean
                             localDifference.addRemove(xmlTag, new RemoveData(xmlTag, sourceKeyValue, sourceBean));
                         }
                         else {
-                            // Need to know sub-differences
-                            getAllDifferences(sourceBean, (BaseHK2JAXBBean) otherBean, differences);
+                            int sourceIndex = sourceIndexMap.get(sourceKeyValue);
+                            int otherIndex = otherIndexMap.get(sourceKeyValue);
+                            
+                            BaseHK2JAXBBean otherBean = (BaseHK2JAXBBean) Array.get(otherArray, otherIndex);
+                            
+                            if (sourceIndex != otherIndex) {
+                                // Bean was moved
+                                localDifference.addMove(xmlTag, new MoveData(sourceIndex, otherIndex));
+                            }
+                            
+                            // Get all changes to sub bean
+                            getAllDifferences(sourceBean, otherBean, differences);
                         }
                     }
                     
@@ -1373,10 +1430,9 @@ public class Utilities {
                         
                         String otherKeyValue = otherBean._getKeyValue();
                         
-                        Object addMe = source._lookupChild(xmlTag, otherKeyValue);
-                        if (addMe == null) {
-                            // Adding this bean
-                            localDifference.addAdd(xmlTag, otherBean, -1);
+                        if (!sourceIndexMap.containsKey(otherKeyValue)) {
+                            // This is an add
+                            localDifference.addAdd(xmlTag, otherBean, lcv);
                         }
                     }
                 }

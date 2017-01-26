@@ -167,7 +167,7 @@ public class MergeTest {
      */
     @SuppressWarnings("unchecked")
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testMergeModifyTwoPropertiesOneTransaction() throws Exception {
         ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
         XmlService xmlService = locator.getService(XmlService.class);
@@ -209,24 +209,21 @@ public class MergeTest {
         List<Change> changes = listener.getChanges();
         Assert.assertNotNull(changes);
         
-        Assert.assertEquals(2, changes.size());
+        Assert.assertEquals(1, changes.size());
+        
+        Change change = changes.get(0);
+        
+        Assert.assertEquals(ChangeCategory.MODIFY_INSTANCE, change.getChangeCategory());
+        List<PropertyChangeEvent> events = change.getModifiedProperties();
         
         boolean gotId = false;
         boolean gotAge = false;
-        for (Change change : changes) {
-            Assert.assertEquals(ChangeCategory.MODIFY_INSTANCE, change.getChangeCategory());
-            
-            List<PropertyChangeEvent> events = change.getModifiedProperties();
-            
-            Assert.assertEquals(1, events.size());
-            
-            for (PropertyChangeEvent event : events) {
-                if ("age".equals(event.getPropertyName())) {
-                    gotAge = true;
-                }
-                else if ("id".equals(event.getPropertyName())) {
-                    gotId = true;
-                }
+        for (PropertyChangeEvent event : events) {
+            if ("age".equals(event.getPropertyName())) {
+                gotAge = true;
+            }
+            else if ("id".equals(event.getPropertyName())) {
+                gotId = true;
             }
         }
         
@@ -241,7 +238,7 @@ public class MergeTest {
      */
     @SuppressWarnings("unchecked")
     @Test 
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testMergeModifyAddAListChild() throws Exception {
         ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
         XmlService xmlService = locator.getService(XmlService.class);
