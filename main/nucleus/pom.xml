@@ -880,6 +880,11 @@
             </dependency>
             <dependency>
                 <groupId>org.glassfish.pfl</groupId>
+                <artifactId>pfl-asm</artifactId>
+                <version>${pfl.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.pfl</groupId>
                 <artifactId>pfl-tf</artifactId>
                 <version>${pfl.version}</version>
             </dependency>
