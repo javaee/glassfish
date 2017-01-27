@@ -39,12 +39,17 @@
  */
 package org.glassfish.hk2.xml.test.dynamic.marshall;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.glassfish.hk2.api.ServiceLocator;
@@ -216,6 +221,175 @@ public class MarshallTest {
         }
         
         checkFile(REF3);
+    }
+    
+    private final static String A = "A";
+    private final static String B = "B";
+    private final static String C = "C";
+    private final static String D = "D";
+    private final static String E = "E";
+    private final static String F = "F";
+    private final static String G = "G";
+    private final static String H = "H";
+    private final static String I = "I";
+    private final static String J = "J";
+    private final static String K = "K";
+    
+    private static void fillInKeyedLeafBean(KeyedLeafBean klb) {
+        klb.setPropertyI(I);
+        klb.setPropertyH(H);
+    }
+    
+    private static void fillInUnkeyedLeafBean(UnkeyedLeafBean ulb) {
+        ulb.setPropertyJ(J);
+        ulb.setPropertyK(K);
+    }
+    
+    private static void fillInRootBean(OrderingRootBean orb, XmlService xmlService) {
+        KeyedLeafBean propA = orb.addPropertyA(H);
+        fillInKeyedLeafBean(propA);
+        
+        UnkeyedLeafBean propB = orb.addPropertyB();
+        fillInUnkeyedLeafBean(propB);
+        
+        UnkeyedLeafBean propC = orb.addPropertyC();
+        fillInUnkeyedLeafBean(propC);
+        
+        KeyedLeafBean propD = orb.addPropertyD(H);
+        fillInKeyedLeafBean(propD);
+        
+        KeyedLeafBean propE = xmlService.createBean(KeyedLeafBean.class);
+        fillInKeyedLeafBean(propE);
+        orb.setPropertyE(propE);
+        
+        UnkeyedLeafBean propF = xmlService.createBean(UnkeyedLeafBean.class);
+        fillInUnkeyedLeafBean(propF);
+        orb.setPropertyF(propF);
+        
+        orb.setPropertyG(G);
+    }
+    
+    /**
+     * Attribute references cannot be done with JAXB.  So this
+     * file is kept separately for this purpose
+     */
+    @Test
+    @org.junit.Ignore
+    public void testOrderingSpecifiedWithXmlType() throws Exception {
+        ServiceLocator locator = Utilities.createDomLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        XmlRootHandle<OrderingRootBean> rootHandle = xmlService.createEmptyHandle(OrderingRootBean.class);
+        
+        rootHandle.addRoot();
+        OrderingRootBean root = rootHandle.getRoot();
+        
+        fillInRootBean(root, xmlService);
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+          rootHandle.marshal(baos);
+        }
+        finally {
+            baos.close();
+        }
+        
+        LinkedHashMap<Integer, String> lines = new LinkedHashMap<Integer, String>();
+        
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        BufferedReader br = new BufferedReader(new InputStreamReader(bais));
+        try {
+            String line;
+            int lcv = 0;
+            while ((line = br.readLine()) != null) {
+                lines.put(lcv, line);
+                lcv++;
+            }
+            
+        }
+        finally {
+            br.close();
+        }
+        
+        String failureDocument = baos.toString();
+        
+        boolean foundF = false;
+        boolean foundG = false;
+        boolean foundE = false;
+        boolean foundA = false;
+        boolean foundC = false;
+        boolean foundB = false;
+        for (Map.Entry<Integer, String> lineEntry : lines.entrySet()) {
+            String line = lineEntry.getValue();
+            int lineNumber = lineEntry.getKey();
+            
+            if (line.contains("<f>")) {
+                Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundF);
+                Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundG);
+                Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundE);
+                Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundA);
+                Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundB);
+                
+                foundF = true;
+            }
+            
+            if (line.contains("<g>")) {
+                Assert.assertTrue("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundF);
+                Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundG);
+                Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundE);
+                Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundA);
+                Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundC);
+                Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundB);
+                
+                foundG = true;
+            }
+            
+            if (line.contains("<e>")) {
+                Assert.assertTrue("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundF);
+                Assert.assertTrue("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundG);
+                Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundE);
+                Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundA);
+                Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundC);
+                Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundB);
+                
+                foundE = true;
+            }
+            
+            if (line.contains("<a>")) {
+                Assert.assertTrue("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundF);
+                Assert.assertTrue("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundG);
+                Assert.assertTrue("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundE);
+                Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundA);
+                Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundC);
+                Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundB);
+                
+                foundA = true;
+            }
+            
+            if (line.contains("<c>")) {
+                Assert.assertTrue("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundF);
+                Assert.assertTrue("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundG);
+                Assert.assertTrue("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundE);
+                Assert.assertTrue("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundA);
+                Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundC);
+                Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundB);
+                
+                foundC = true;
+            }
+            
+            if (line.contains("<b>")) {
+                Assert.assertTrue(foundF);
+                Assert.assertTrue(foundG);
+                Assert.assertTrue(foundE);
+                Assert.assertTrue(foundA);
+                Assert.assertTrue(foundC);
+                Assert.assertFalse(foundB);
+                
+                foundC = true;
+            }
+        }
+        
+        Assert.assertTrue(foundB);
     }
 
 }

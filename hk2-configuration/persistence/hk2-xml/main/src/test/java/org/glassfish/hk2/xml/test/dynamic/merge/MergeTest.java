@@ -437,6 +437,8 @@ public class MergeTest {
         List<Change> hubChanges = listener.getChanges();
         Assert.assertEquals("changeSize=" + hubChanges.size() + " Changes=" + hubChanges, 4, hubChanges.size());
         
+        boolean foundTopic2Instance = false;
+        boolean foundQueue0BobInstance = false;
         for (int lcv = 0; lcv < 4; lcv++) {
             Change change = hubChanges.get(lcv);
             
@@ -446,12 +448,18 @@ public class MergeTest {
                 Assert.assertEquals(BOB_INSTANCE, change.getInstanceKey());
                 break;
             case 1:
-                Assert.assertEquals(ChangeCategory.ADD_INSTANCE, change.getChangeCategory());
-                Assert.assertEquals(TOPIC2_INSTANCE, change.getInstanceKey());
-                break;
             case 2:
                 Assert.assertEquals(ChangeCategory.ADD_INSTANCE, change.getChangeCategory());
-                Assert.assertEquals(QUEUE0_BOB_INSTANCE, change.getInstanceKey());
+                String changeInstance = change.getInstanceKey();
+                if (TOPIC2_INSTANCE.equals(changeInstance)) {
+                    foundTopic2Instance = true;
+                }
+                else if (QUEUE0_BOB_INSTANCE.equals(changeInstance)) {
+                    foundQueue0BobInstance = true;
+                }
+                else {
+                    Assert.fail("Found add_instance of unknown instance name " + changeInstance);
+                }
                 break;
             case 3:
                 Assert.assertEquals(ChangeCategory.MODIFY_INSTANCE, change.getChangeCategory());
@@ -461,6 +469,9 @@ public class MergeTest {
                 Assert.fail("Too many changes: " + lcv + " change=" + change);
             }
         }
+        
+        Assert.assertTrue(foundTopic2Instance);
+        Assert.assertTrue(foundQueue0BobInstance);
     }
     
     /**
