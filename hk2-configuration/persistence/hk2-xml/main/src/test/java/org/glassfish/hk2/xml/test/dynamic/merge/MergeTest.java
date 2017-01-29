@@ -73,7 +73,7 @@ import org.glassfish.hk2.xml.test.beans.SecurityManagerBean;
 import org.glassfish.hk2.xml.test.beans.ServerBean;
 import org.glassfish.hk2.xml.test.beans.TopicBean;
 import org.glassfish.hk2.xml.test.dynamic.rawsets.RawSetsTest;
-import org.glassfish.hk2.xml.test.dynamic.rawsets.RawSetsTest.UpdateListener;
+import org.glassfish.hk2.xml.test.dynamic.rawsets.UpdateListener;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
 import org.junit.Assert;
 import org.junit.Test;

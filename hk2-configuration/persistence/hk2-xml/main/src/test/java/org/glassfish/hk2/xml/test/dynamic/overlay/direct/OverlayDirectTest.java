@@ -54,7 +54,7 @@ import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.dynamic.overlay.ChangeDescriptor;
 import org.glassfish.hk2.xml.test.dynamic.overlay.OverlayUtilities;
-import org.glassfish.hk2.xml.test.dynamic.rawsets.RawSetsTest.UpdateListener;
+import org.glassfish.hk2.xml.test.dynamic.rawsets.UpdateListener;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
 import org.junit.Assert;
 import org.junit.Test;

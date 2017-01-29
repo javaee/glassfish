@@ -45,11 +45,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Singleton;
-
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
-import org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener;
 import org.glassfish.hk2.configuration.hub.api.Change;
 import org.glassfish.hk2.configuration.hub.api.Change.ChangeCategory;
 import org.glassfish.hk2.configuration.hub.api.Hub;
@@ -61,11 +57,15 @@ import org.glassfish.hk2.xml.test.basic.beans.Commons;
 import org.glassfish.hk2.xml.test.basic.beans.Museum;
 import org.glassfish.hk2.xml.test.beans.AuthorizationProviderBean;
 import org.glassfish.hk2.xml.test.beans.DomainBean;
+import org.glassfish.hk2.xml.test.beans.HttpFactoryBean;
+import org.glassfish.hk2.xml.test.beans.JMSServerBean;
 import org.glassfish.hk2.xml.test.beans.MachineBean;
 import org.glassfish.hk2.xml.test.beans.SSLManagerBean;
 import org.glassfish.hk2.xml.test.beans.SSLManagerBeanCustomizer;
 import org.glassfish.hk2.xml.test.beans.SecurityManagerBean;
 import org.glassfish.hk2.xml.test.dynamic.merge.MergeTest;
+import org.glassfish.hk2.xml.test.dynamic.overlay.ChangeDescriptor;
+import org.glassfish.hk2.xml.test.dynamic.overlay.OverlayUtilities;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
 import org.junit.Assert;
 import org.junit.Test;
@@ -142,7 +142,7 @@ public class RawSetsTest {
         Assert.assertEquals(Commons.HUNDRED_INT, beanLikeMap.get(Commons.ID_TAG));
         Assert.assertEquals(ONE_OH_ONE_INT, beanLikeMap.get(AGE_TAG));  // The test
         
-        List<Change> changes = listener.changes;
+        List<Change> changes = listener.getChanges();
         Assert.assertNotNull(changes);
         
         Assert.assertEquals(1, changes.size());
@@ -371,47 +371,46 @@ public class RawSetsTest {
         }
     }
     
-    @Singleton
-    public static class UpdateListener implements BeanDatabaseUpdateListener {
-        private List<Change> changes;
-
-        /* (non-Javadoc)
-         * @see org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener#prepareDatabaseChange(org.glassfish.hk2.configuration.hub.api.BeanDatabase, org.glassfish.hk2.configuration.hub.api.BeanDatabase, java.lang.Object, java.util.List)
-         */
-        @Override
-        public void prepareDatabaseChange(BeanDatabase currentDatabase,
-                BeanDatabase proposedDatabase, Object commitMessage,
-                List<Change> changes) {
-            // TODO Auto-generated method stub
-            
-        }
-
-        /* (non-Javadoc)
-         * @see org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener#commitDatabaseChange(org.glassfish.hk2.configuration.hub.api.BeanDatabase, org.glassfish.hk2.configuration.hub.api.BeanDatabase, java.lang.Object, java.util.List)
-         */
-        @Override
-        public void commitDatabaseChange(BeanDatabase oldDatabase,
-                BeanDatabase currentDatabase, Object commitMessage,
-                List<Change> changes) {
-            this.changes = changes;
-            
-        }
-
-        /* (non-Javadoc)
-         * @see org.glassfish.hk2.configuration.hub.api.BeanDatabaseUpdateListener#rollbackDatabaseChange(org.glassfish.hk2.configuration.hub.api.BeanDatabase, org.glassfish.hk2.configuration.hub.api.BeanDatabase, java.lang.Object, java.util.List)
-         */
-        @Override
-        public void rollbackDatabaseChange(BeanDatabase currentDatabase,
-                BeanDatabase proposedDatabase, Object commitMessage,
-                List<Change> changes) {
-            // TODO Auto-generated method stub
-            
-        }
+    /**
+     * Tests that setting a bean to itself is ok (one
+     * case of set to set that works)
+     * 
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testArrayListSwap() throws Exception {
+        ServiceLocator locator = Utilities.createLocator(UpdateListener.class,
+                SSLManagerBeanCustomizer.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
         
-        public List<Change> getChanges() {
-            return changes;
-        }
+        URL url = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
         
+        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshal(url.toURI(), DomainBean.class);
+        DomainBean domain = rootHandle.getRoot();
+        
+        MergeTest.verifyDomain1Xml(rootHandle, hub, locator);
+        
+        JMSServerBean newBeans[] = new JMSServerBean[2];
+        JMSServerBean oldBeans[] = domain.getJMSServers();
+        
+        // Swap zero and one index
+        newBeans[0] = oldBeans[1];
+        newBeans[1] = oldBeans[1];
+        
+        domain.setJMSServers(newBeans);
+        
+        JMSServerBean changedBeans[] = domain.getJMSServers();
+        
+        Assert.assertEquals(MergeTest.DAVE_NAME, changedBeans[0].getName());
+        Assert.assertEquals(MergeTest.CAROL_NAME, changedBeans[1].getName());
+        
+        UpdateListener listener = locator.getService(UpdateListener.class);
+        
+        List<Change> changes = listener.getChanges();
+        
+        OverlayUtilities.checkChanges(changes);
     }
 
 }
