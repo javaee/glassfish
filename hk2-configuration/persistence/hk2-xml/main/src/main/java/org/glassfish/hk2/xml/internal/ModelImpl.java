@@ -390,10 +390,10 @@ public class ModelImpl implements Model {
     private static String getJavaNameFromGetterOrSetter(Method m, ClassReflectionHelper reflectionHelper) {
         AltMethod alt = new MethodAltMethodImpl(m, reflectionHelper);
         
-        String retVal = Generator.isGetter(alt);
+        String retVal = Utilities.isGetter(alt);
         if (retVal != null) return retVal;
         
-        return Generator.isSetter(alt);
+        return Utilities.isSetter(alt);
     }
     
     

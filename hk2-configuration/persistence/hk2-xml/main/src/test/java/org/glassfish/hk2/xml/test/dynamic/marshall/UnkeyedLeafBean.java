@@ -48,7 +48,7 @@ import org.jvnet.hk2.annotations.Contract;
  * 
  * @author jwells
  */
-@Contract @XmlType(propOrder={"b","a"})
+@Contract @XmlType(propOrder={"propertyK","propertyJ"})
 public interface UnkeyedLeafBean {
     @XmlElement(name="j")
     public String getPropertyJ();

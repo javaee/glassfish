@@ -47,7 +47,7 @@ import javax.xml.bind.annotation.XmlType;
  * @author jwells
  *
  */
-@XmlType(propOrder={"i","h"})
+@XmlType(propOrder={"propertyI","propertyH"})
 public interface KeyedLeafBean {
     @XmlElement(name="h") @XmlID
     public String getPropertyH();

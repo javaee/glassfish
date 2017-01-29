@@ -40,6 +40,7 @@
 
 package org.glassfish.hk2.xml.internal;
 
+import java.beans.Introspector;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
@@ -49,6 +50,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -57,6 +59,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Name;
@@ -69,9 +72,11 @@ import javax.lang.model.type.TypeVariable;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
+import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.Customize;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.configuration.hub.api.Instance;
@@ -83,12 +88,16 @@ import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
+import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
 import org.glassfish.hk2.xml.internal.Differences.AddData;
 import org.glassfish.hk2.xml.internal.Differences.AddRemoveMoveDifference;
 import org.glassfish.hk2.xml.internal.Differences.Difference;
 import org.glassfish.hk2.xml.internal.Differences.MoveData;
 import org.glassfish.hk2.xml.internal.Differences.RemoveData;
+import org.glassfish.hk2.xml.internal.alt.AltAnnotation;
 import org.glassfish.hk2.xml.internal.alt.AltClass;
+import org.glassfish.hk2.xml.internal.alt.AltMethod;
+import org.glassfish.hk2.xml.internal.alt.MethodInformationI;
 import org.glassfish.hk2.xml.internal.alt.clazz.ClassAltClassImpl;
 import org.glassfish.hk2.xml.internal.alt.papi.ArrayTypeAltClassImpl;
 import org.glassfish.hk2.xml.internal.alt.papi.TypeElementAltClassImpl;
@@ -1689,5 +1698,395 @@ public class Utilities {
         
         bean.__setAddCost(retVal);
         return retVal;
+    }
+    
+    public static List<AltMethod> prioritizeMethods(List<AltMethod> methods, String specifiedOrdering[], NameInformation xmlMap) {
+        if (specifiedOrdering == null || specifiedOrdering.length <= 0) {
+            return methods;
+        }
+        
+        Map<String, Integer> orderingAsMap = new HashMap<String, Integer>();
+        for (int lcv = 0; lcv < specifiedOrdering.length; lcv++) {
+            orderingAsMap.put(specifiedOrdering[lcv], lcv);
+        }
+        
+        Map<AltMethod, Integer> secondarySort = new HashMap<AltMethod, Integer>();
+        int lcv = 0;
+        for (AltMethod method : methods) {
+            secondarySort.put(method, lcv);
+            lcv++;
+        }
+        
+        TreeSet<AltMethod> orderedSet = new TreeSet<AltMethod>(new SpecifiedOrderComparator(orderingAsMap, secondarySort, xmlMap));
+        orderedSet.addAll(methods);
+        
+        ArrayList<AltMethod> retVal = new ArrayList<AltMethod>(orderedSet);
+        return retVal;
+    }
+    
+    private static boolean isSpecifiedCustom(AltMethod method) {
+        AltAnnotation customAnnotation = method.getAnnotation(Customize.class.getName());
+        return (customAnnotation != null);
+    }
+    
+    public static String isSetter(AltMethod method) {
+        String name = method.getName();
+        
+        if (name.startsWith(JAUtilities.SET)) {
+            if (name.length() <= JAUtilities.SET.length()) return null;
+            if (method.getParameterTypes().size() != 1) return null;
+            if (void.class.getName().equals(method.getReturnType().getName())) {
+                String variableName = name.substring(JAUtilities.SET.length());
+                
+                return Introspector.decapitalize(variableName);
+            }
+            
+            return null;
+        }
+        
+        return null;
+    }
+    
+    public static String isGetter(AltMethod method) {
+        String name = method.getName();
+        
+        if (name.startsWith(JAUtilities.GET)) {
+            if (name.length() <= JAUtilities.GET.length()) return null;
+            if (method.getParameterTypes().size() != 0) return null;
+            if (void.class.getName().equals(method.getReturnType().getName())) return null;
+            
+            String variableName = name.substring(JAUtilities.GET.length());
+            
+            return Introspector.decapitalize(variableName);
+        }
+        
+        if (name.startsWith(JAUtilities.IS)) {
+            if (name.length() <= JAUtilities.IS.length()) return null;
+            if (method.getParameterTypes().size() != 0) return null;
+            if (boolean.class.getName().equals(method.getReturnType().getName()) || Boolean.class.getName().equals(method.getReturnType().getName())) {
+                String variableName = name.substring(JAUtilities.IS.length());
+                
+                return Introspector.decapitalize(variableName);
+            }
+            
+            return null;
+        }
+        
+        return null;
+    }
+    
+    private static String isLookup(AltMethod method, NameInformation nameInformation) {
+        String name = method.getName();
+        
+        String retVal = nameInformation.getLookupVariableName(name);
+        if (retVal == null) return null;
+        
+        List<AltClass> parameterTypes = method.getParameterTypes();
+        if (parameterTypes.size() != 1) return null;
+        if (!String.class.getName().equals(parameterTypes.get(0).getName())) return null;
+            
+        if (method.getReturnType() == null || void.class.getName().equals(method.getReturnType().getName())) return null;
+        
+        return retVal;
+    }
+    
+    private static String isAdd(AltMethod method, NameInformation nameInformation) {
+        String name = method.getName();
+        
+        String retVal = nameInformation.getAddVariableName(name);
+        if (retVal == null) return null;
+        
+        if (!void.class.getName().equals(method.getReturnType().getName()) &&
+                !method.getReturnType().isInterface()) return null;
+        
+        List<AltClass> parameterTypes = method.getParameterTypes();
+        if (parameterTypes.size() > 2) return null;
+        
+        if (parameterTypes.size() == 0) return retVal;
+        
+        AltClass param0 = parameterTypes.get(0);
+        AltClass param1 = null;
+        if (parameterTypes.size() == 2) {
+            param1 = parameterTypes.get(1);
+        }
+        
+        if (String.class.getName().equals(param0.getName()) ||
+                int.class.getName().equals(param0.getName()) ||
+                param0.isInterface()) {
+            // Yes, this is possibly an add
+            if (parameterTypes.size() == 1) {
+                // add(int), add(String), add(interface) are legal adds
+                return retVal;
+            }
+            
+            if (int.class.getName().equals(param0.getName())) {
+                // If int is first there must not be any other parameter
+                return null;
+            }
+            else if (String.class.getName().equals(param0.getName())) {
+                // add(String, int) is a legal add
+                if (int.class.getName().equals(param1.getName())) return retVal;
+            }
+            else {
+                // add(interface, int) is a legal add
+                if (int.class.getName().equals(param1.getName())) return retVal;
+            }
+        }
+        return null;
+    }
+    
+    private static String isRemove(AltMethod method, NameInformation nameInformation) {
+        String name = method.getName();
+        
+        String retVal = nameInformation.getRemoveVariableName(name);
+        if (retVal == null) return null;
+        
+        AltClass returnType = method.getReturnType();
+        if (returnType == null) returnType = ClassAltClassImpl.VOID;
+        
+        if (!boolean.class.getName().equals(returnType.getName()) &&
+                !returnType.isInterface() &&
+                !void.class.getName().equals(returnType.getName())) return null;
+        
+        List<AltClass> parameterTypes = method.getParameterTypes();
+        if (parameterTypes.size() > 1) return null;
+        
+        if (parameterTypes.size() == 0) return retVal;
+        
+        AltClass param0 = parameterTypes.get(0);
+        
+        if (String.class.getName().equals(param0.getName()) ||
+                int.class.getName().equals(param0.getName())||
+                param0.isInterface()) return retVal;
+        
+        return null;
+    }
+    
+    public static MethodInformationI getMethodInformation(AltMethod m, NameInformation xmlNameMap) {
+        if (m.getMethodInformation() != null) {
+            return m.getMethodInformation();
+        }
+        
+        boolean isCustom = isSpecifiedCustom(m);
+        String setterVariable = null;
+        String getterVariable = null;
+        String lookupVariable = null;
+        String addVariable = null;
+        String removeVariable = null;
+        
+        if (!isCustom) {
+            setterVariable = isSetter(m);
+            if (setterVariable == null) {
+                getterVariable = isGetter(m);
+                if (getterVariable == null) {
+                    lookupVariable = isLookup(m, xmlNameMap);
+                    if (lookupVariable == null) {
+                        addVariable = isAdd(m, xmlNameMap);
+                        if (addVariable == null) {
+                            removeVariable = isRemove(m, xmlNameMap);
+                        }
+                    }
+                }
+            }
+        }
+        
+        MethodType methodType;
+        AltClass baseChildType = null;
+        AltClass gsType = null;
+        String variable = null;
+        boolean isList = false;
+        boolean isArray = false;
+        if (getterVariable != null) {
+            // This is a getter
+            methodType = MethodType.GETTER;
+            variable = getterVariable;
+            
+            AltClass returnType = m.getReturnType();
+            gsType = returnType;
+            
+            if (List.class.getName().equals(returnType.getName())) {
+                isList = true;
+                AltClass typeChildType = m.getFirstTypeArgument();
+                
+                baseChildType = typeChildType;
+                if (baseChildType == null) {
+                    throw new RuntimeException("Cannot find child type of method " + m);
+                }
+            }
+            else if (returnType.isArray()) {
+                AltClass arrayType = returnType.getComponentType();
+                if (arrayType.isInterface()) {
+                    isArray = true;
+                    baseChildType = arrayType;
+                }
+            }
+            else if (returnType.isInterface() && !returnType.getName().startsWith(Generator.NO_CHILD_PACKAGE)) {
+                baseChildType = returnType;
+            }
+        }
+        else if (setterVariable != null) {
+            // This is a setter
+            methodType = MethodType.SETTER;
+            variable = setterVariable;
+            
+            AltClass setterType = m.getParameterTypes().get(0);
+            gsType = setterType;
+            
+            if (List.class.getName().equals(setterType.getName())) {
+                isList = true;
+                AltClass typeChildType = m.getFirstTypeArgumentOfParameter(0);
+                
+                baseChildType = typeChildType;
+                if (baseChildType == null) {
+                    throw new RuntimeException("Cannot find child type of method " + m);
+                }
+            }
+            else if (setterType.isArray()) {
+                AltClass arrayType = setterType.getComponentType();
+                if (arrayType.isInterface()) {
+                    isArray = true;
+                    baseChildType = arrayType;
+                }
+            }
+            else if (setterType.isInterface() && !setterType.getName().startsWith(Generator.NO_CHILD_PACKAGE)) {
+                baseChildType = setterType;
+            }
+        }
+        else if (lookupVariable != null) {
+            // This is a lookup
+            methodType = MethodType.LOOKUP;
+            variable = lookupVariable;
+            
+            AltClass lookupType = m.getReturnType();
+            gsType = lookupType;
+        }
+        else if (addVariable != null) {
+            // This is an add
+            methodType = MethodType.ADD;
+            variable = addVariable;
+        }
+        else if (removeVariable != null) {
+            // This is an remove
+            methodType = MethodType.REMOVE;
+            variable = removeVariable;
+        }
+        else {
+            methodType = MethodType.CUSTOM;
+        }
+        
+        String representedProperty = xmlNameMap.getNameMap(variable);
+        if (representedProperty == null) representedProperty = variable;
+        
+        String defaultValue = xmlNameMap.getDefaultNameMap(variable);
+        
+        boolean key = false;
+        if ((m.getAnnotation(XmlID.class.getName()) != null) || (m.getAnnotation(XmlIdentifier.class.getName()) != null)) {
+            key = true;
+        }
+        
+        boolean isReference = xmlNameMap.isReference(variable);
+        boolean isElement = xmlNameMap.isElement(variable);
+        
+        return new MethodInformation(m,
+                methodType,
+                variable,
+                representedProperty,
+                defaultValue,
+                baseChildType,
+                gsType,
+                key,
+                isList,
+                isArray,
+                isReference,
+                isElement);
+    }
+    
+    private static MethodInformationI getAndSetMethodInformation(AltMethod am, NameInformation xmlMap) {
+        MethodInformationI retVal = am.getMethodInformation();
+        if (retVal != null) return retVal;
+        
+        retVal = getMethodInformation(am, xmlMap);
+        am.setMethodInformation(retVal);
+        
+        return retVal;
+    }
+    
+    /**
+     * This comparator is not 100% state free, since it will set the MethodInformation
+     * if it needs on the AltMethod
+     * 
+     * @author jwells
+     *
+     */
+    private final static class SpecifiedOrderComparator implements Comparator<AltMethod> {
+        private final Map<String, Integer> specifiedOrder;
+        private final Map<AltMethod, Integer> secondarySort;
+        private final NameInformation xmlMap;
+        
+        private SpecifiedOrderComparator(Map<String, Integer> specifiedOrder, Map<AltMethod, Integer> secondarySort, NameInformation xmlMap) {
+            this.specifiedOrder = specifiedOrder;
+            this.secondarySort = secondarySort;
+            this.xmlMap = xmlMap;
+        }
+        
+        private int secondarySort(AltMethod o1, AltMethod o2) {
+            Integer p1 = secondarySort.get(o1);
+            Integer p2 = secondarySort.get(o2);
+            
+            int pr1 = p1;
+            int pr2 = p2;
+            
+            return pr2 - pr1;
+        }
+
+        @Override
+        public int compare(AltMethod o1, AltMethod o2) {
+            if (o1.equals(o2)) return 0;
+            
+            MethodInformationI methodInfo1 = getAndSetMethodInformation(o1, xmlMap);
+            MethodInformationI methodInfo2 = getAndSetMethodInformation(o2, xmlMap);
+            
+            String prop1 = methodInfo1.getRepresentedProperty();
+            String prop2 = methodInfo2.getRepresentedProperty();
+            
+            if (prop1 == null && prop2 == null) {
+                return secondarySort(o1, o2);
+            }
+            if (prop1 != null && prop2 == null) {
+                return -1;
+            }
+            if (prop1 == null && prop2 != null) {
+                return 1;
+            }
+            
+            // Both properties are not null
+            
+            Integer priority1 = specifiedOrder.get(prop1);
+            Integer priority2 = specifiedOrder.get(prop2);
+            
+            if (priority1 != null && priority2 == null) {
+                return -1;
+            }
+            if (priority1 == null && priority2 != null) {
+                return 1;
+            }
+            if (priority1 != null && priority2 != null) {
+                int p1 = priority1;
+                int p2 = priority2;
+                
+                if (p1 < p2) {
+                    return -1;
+                }
+                
+                if (p1 > p2) {
+                    return 1;
+                }
+                
+                // Fall through, use other criteria
+            }
+            
+            
+            return secondarySort(o1, o2);
+        }
     }
 }

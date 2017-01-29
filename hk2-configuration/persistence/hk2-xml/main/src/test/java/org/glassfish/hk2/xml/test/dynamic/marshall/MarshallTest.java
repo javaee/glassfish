@@ -98,7 +98,7 @@ public class MarshallTest {
      * Tests that the output contains nice output
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testMarshallBackAfterUpdate() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         XmlService xmlService = locator.getService(XmlService.class);
@@ -277,6 +277,27 @@ public class MarshallTest {
     @org.junit.Ignore
     public void testOrderingSpecifiedWithXmlType() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
+        
+        orderingSpecifiedWithXmlType(locator);
+    }
+    
+    /**
+     * Attribute references cannot be done with JAXB.  So this
+     * file is kept separately for this purpose
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testOrderingSpecifiedWithXmlTypeJAXB() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        
+        orderingSpecifiedWithXmlType(locator);
+    }
+    
+    /**
+     * Attribute references cannot be done with JAXB.  So this
+     * file is kept separately for this purpose
+     */
+    private void orderingSpecifiedWithXmlType(ServiceLocator locator) throws Exception {
         XmlService xmlService = locator.getService(XmlService.class);
         
         XmlRootHandle<OrderingRootBean> rootHandle = xmlService.createEmptyHandle(OrderingRootBean.class);
@@ -319,6 +340,7 @@ public class MarshallTest {
         boolean foundA = false;
         boolean foundC = false;
         boolean foundB = false;
+        boolean foundD = false;
         for (Map.Entry<Integer, String> lineEntry : lines.entrySet()) {
             String line = lineEntry.getValue();
             int lineNumber = lineEntry.getKey();
@@ -329,6 +351,7 @@ public class MarshallTest {
                 Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundE);
                 Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundA);
                 Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundB);
+                Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundD);
                 
                 foundF = true;
             }
@@ -340,6 +363,7 @@ public class MarshallTest {
                 Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundA);
                 Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundC);
                 Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundB);
+                Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundD);
                 
                 foundG = true;
             }
@@ -351,6 +375,7 @@ public class MarshallTest {
                 Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundA);
                 Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundC);
                 Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundB);
+                Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundD);
                 
                 foundE = true;
             }
@@ -362,6 +387,7 @@ public class MarshallTest {
                 Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundA);
                 Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundC);
                 Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundB);
+                Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundD);
                 
                 foundA = true;
             }
@@ -373,23 +399,37 @@ public class MarshallTest {
                 Assert.assertTrue("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundA);
                 Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundC);
                 Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundB);
+                Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundD);
                 
                 foundC = true;
             }
             
             if (line.contains("<b>")) {
-                Assert.assertTrue(foundF);
-                Assert.assertTrue(foundG);
-                Assert.assertTrue(foundE);
-                Assert.assertTrue(foundA);
-                Assert.assertTrue(foundC);
-                Assert.assertFalse(foundB);
+                Assert.assertTrue("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundF);
+                Assert.assertTrue("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundG);
+                Assert.assertTrue("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundE);
+                Assert.assertTrue("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundA);
+                Assert.assertTrue("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundC);
+                Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundB);
+                Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundD);
                 
-                foundC = true;
+                foundB = true;
+            }
+            
+            if (line.contains("<d>")) {
+                Assert.assertTrue("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundF);
+                Assert.assertTrue("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundG);
+                Assert.assertTrue("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundE);
+                Assert.assertTrue("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundA);
+                Assert.assertTrue("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundC);
+                Assert.assertTrue("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundB);
+                Assert.assertFalse("Order wrong on line " + lineNumber + " of\n" + failureDocument, foundD);
+                
+                foundD = true;
             }
         }
         
-        Assert.assertTrue(foundB);
+        Assert.assertTrue(foundD);
     }
 
 }

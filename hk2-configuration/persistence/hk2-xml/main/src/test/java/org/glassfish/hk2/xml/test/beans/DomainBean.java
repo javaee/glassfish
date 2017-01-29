@@ -43,6 +43,7 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 import org.glassfish.hk2.xml.api.annotations.PluralOf;
 import org.jvnet.hk2.annotations.Contract;
@@ -52,6 +53,16 @@ import org.jvnet.hk2.annotations.Contract;
  *
  */
 @XmlRootElement(name="domain") @Contract
+@XmlType(propOrder={
+        "name"
+        , "securityManager"
+        , "machines"
+        , "JMSServers"
+        , "HTTPFactories"
+        , "HTTPSFactories"
+        , "subnetwork"
+        , "taxonomy"
+        , "diagnostics"})
 public interface DomainBean extends NamedBean {
     @XmlElement(name="security-manager")
     public SecurityManagerBean getSecurityManager();

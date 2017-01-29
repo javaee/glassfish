@@ -88,5 +88,23 @@ public interface AltMethod {
     public List<AltAnnotation> getAnnotations();
     
     public boolean isVarArgs();
+    
+    /**
+     * Sets the method information once it has been calculated.  This
+     * field is not set by the underlying provider, but is calculated
+     * later
+     * 
+     * @param methodInfo The possibly null methodInformation
+     */
+    public void setMethodInformation(MethodInformationI methodInfo);
+    
+    /**
+     * Gets the method information once it has been calculated.  This
+     * field is not set by the underlying provider, but is calculated
+     * later
+     * 
+     * @return The possibly null methodInformation
+     */
+    public MethodInformationI getMethodInformation();
 
 }

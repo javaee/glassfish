@@ -83,6 +83,7 @@ import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 
 import org.glassfish.hk2.api.AnnotationLiteral;
 import org.glassfish.hk2.api.Customize;
@@ -95,6 +96,7 @@ import org.glassfish.hk2.xml.internal.alt.AltAnnotation;
 import org.glassfish.hk2.xml.internal.alt.AltClass;
 import org.glassfish.hk2.xml.internal.alt.AltEnum;
 import org.glassfish.hk2.xml.internal.alt.AltMethod;
+import org.glassfish.hk2.xml.internal.alt.MethodInformationI;
 import org.glassfish.hk2.xml.internal.alt.clazz.AnnotationAltAnnotationImpl;
 import org.glassfish.hk2.xml.internal.alt.clazz.ClassAltClassImpl;
 import org.glassfish.hk2.xml.jaxb.internal.XmlElementImpl;
@@ -117,7 +119,7 @@ public class Generator {
     
     private final static String JAXB_DEFAULT_STRING = "##default";
     public final static String JAXB_DEFAULT_DEFAULT = "\u0000";
-    private final static String NO_CHILD_PACKAGE = "java.";
+    public final static String NO_CHILD_PACKAGE = "java.";
     public final static String STATIC_GET_MODEL_METHOD_NAME = "__getModel";
     private final static String QUOTE = "\"";
     
@@ -159,6 +161,7 @@ public class Generator {
         
         ModelImpl compiledModel = new ModelImpl(modelOriginalInterface, modelTranslatedClass);
         AnnotationsAttribute ctAnnotations = null;
+        String propOrder[] = null;
         for (AltAnnotation convertMeAnnotation : convertMe.getAnnotations()) {
             if (NO_COPY_ANNOTATIONS.contains(convertMeAnnotation.annotationType())) {
                 // We do NOT want the generated class to be in the set of contracts, so
@@ -185,6 +188,10 @@ public class Generator {
             else {
                 createAnnotationCopy(targetConstPool, convertMeAnnotation, ctAnnotations);
             }
+            
+            if (XmlType.class.getName().equals(convertMeAnnotation.annotationType())) {
+                propOrder = convertMeAnnotation.getStringArrayValue("propOrder");
+            }
         }
         if (ctAnnotations != null) {
             targetClassFile.addAttribute(ctAnnotations);
@@ -206,10 +213,12 @@ public class Generator {
             Logger.getLogger().debug("Analyzing " + allMethods.size() + " methods of " + convertMe.getName());
         }
         
+        allMethods = Utilities.prioritizeMethods(allMethods, propOrder, xmlNameMap);
+        
         Set<String> setters = new LinkedHashSet<String>();
-        Map<String, MethodInformation> getters = new LinkedHashMap<String, MethodInformation>();
+        Map<String, MethodInformationI> getters = new LinkedHashMap<String, MethodInformationI>();
         for (AltMethod wrapper : allMethods) {
-            MethodInformation mi = getMethodInformation(wrapper, xmlNameMap);
+            MethodInformationI mi = Utilities.getMethodInformation(wrapper, xmlNameMap);
             if (mi.isKey()) {
                 compiledModel.setKeyProperty(mi.getRepresentedProperty());
             }
@@ -572,9 +581,9 @@ public class Generator {
         }
         
         // Now generate the invisible setters for JAXB
-        for (Map.Entry<String, MethodInformation> getterEntry : getters.entrySet()) {
+        for (Map.Entry<String, MethodInformationI> getterEntry : getters.entrySet()) {
             String getterProperty = getterEntry.getKey();
-            MethodInformation mi = getterEntry.getValue();
+            MethodInformationI mi = getterEntry.getValue();
             
             if (setters.contains(getterProperty)) continue;
             
@@ -960,9 +969,9 @@ public class Generator {
         Set<String> referenceSet = new LinkedHashSet<String>();
         
         for (AltMethod originalMethod : convertMe.getMethods()) {
-            String setterVariable = isSetter(originalMethod);
+            String setterVariable = Utilities.isSetter(originalMethod);
             if (setterVariable == null) {
-                setterVariable = isGetter(originalMethod);
+                setterVariable = Utilities.isGetter(originalMethod);
                 if (setterVariable == null) continue;
             }
             
@@ -1023,141 +1032,6 @@ public class Generator {
                 referenceSet);
     }
     
-    private static MethodInformation getMethodInformation(AltMethod m, NameInformation xmlNameMap) {
-        boolean isCustom = isSpecifiedCustom(m);
-        String setterVariable = null;
-        String getterVariable = null;
-        String lookupVariable = null;
-        String addVariable = null;
-        String removeVariable = null;
-        
-        if (!isCustom) {
-            setterVariable = isSetter(m);
-            if (setterVariable == null) {
-                getterVariable = isGetter(m);
-                if (getterVariable == null) {
-                    lookupVariable = isLookup(m, xmlNameMap);
-                    if (lookupVariable == null) {
-                        addVariable = isAdd(m, xmlNameMap);
-                        if (addVariable == null) {
-                            removeVariable = isRemove(m, xmlNameMap);
-                        }
-                    }
-                }
-            }
-        }
-        
-        MethodType methodType;
-        AltClass baseChildType = null;
-        AltClass gsType = null;
-        String variable = null;
-        boolean isList = false;
-        boolean isArray = false;
-        if (getterVariable != null) {
-            // This is a getter
-            methodType = MethodType.GETTER;
-            variable = getterVariable;
-            
-            AltClass returnType = m.getReturnType();
-            gsType = returnType;
-            
-            if (List.class.getName().equals(returnType.getName())) {
-                isList = true;
-                AltClass typeChildType = m.getFirstTypeArgument();
-                
-                baseChildType = typeChildType;
-                if (baseChildType == null) {
-                    throw new RuntimeException("Cannot find child type of method " + m);
-                }
-            }
-            else if (returnType.isArray()) {
-                AltClass arrayType = returnType.getComponentType();
-                if (arrayType.isInterface()) {
-                    isArray = true;
-                    baseChildType = arrayType;
-                }
-            }
-            else if (returnType.isInterface() && !returnType.getName().startsWith(NO_CHILD_PACKAGE)) {
-                baseChildType = returnType;
-            }
-        }
-        else if (setterVariable != null) {
-            // This is a setter
-            methodType = MethodType.SETTER;
-            variable = setterVariable;
-            
-            AltClass setterType = m.getParameterTypes().get(0);
-            gsType = setterType;
-            
-            if (List.class.getName().equals(setterType.getName())) {
-                isList = true;
-                AltClass typeChildType = m.getFirstTypeArgumentOfParameter(0);
-                
-                baseChildType = typeChildType;
-                if (baseChildType == null) {
-                    throw new RuntimeException("Cannot find child type of method " + m);
-                }
-            }
-            else if (setterType.isArray()) {
-                AltClass arrayType = setterType.getComponentType();
-                if (arrayType.isInterface()) {
-                    isArray = true;
-                    baseChildType = arrayType;
-                }
-            }
-            else if (setterType.isInterface() && !setterType.getName().startsWith(NO_CHILD_PACKAGE)) {
-                baseChildType = setterType;
-            }
-        }
-        else if (lookupVariable != null) {
-            // This is a lookup
-            methodType = MethodType.LOOKUP;
-            variable = lookupVariable;
-            
-            AltClass lookupType = m.getReturnType();
-            gsType = lookupType;
-        }
-        else if (addVariable != null) {
-            // This is an add
-            methodType = MethodType.ADD;
-            variable = addVariable;
-        }
-        else if (removeVariable != null) {
-            // This is an remove
-            methodType = MethodType.REMOVE;
-            variable = removeVariable;
-        }
-        else {
-            methodType = MethodType.CUSTOM;
-        }
-        
-        String representedProperty = xmlNameMap.getNameMap(variable);
-        if (representedProperty == null) representedProperty = variable;
-        
-        String defaultValue = xmlNameMap.getDefaultNameMap(variable);
-        
-        boolean key = false;
-        if ((m.getAnnotation(XmlID.class.getName()) != null) || (m.getAnnotation(XmlIdentifier.class.getName()) != null)) {
-            key = true;
-        }
-        
-        boolean isReference = xmlNameMap.isReference(variable);
-        boolean isElement = xmlNameMap.isElement(variable);
-        
-        return new MethodInformation(m,
-                methodType,
-                variable,
-                representedProperty,
-                defaultValue,
-                baseChildType,
-                gsType,
-                key,
-                isList,
-                isArray,
-                isReference,
-                isElement);
-    }
-    
     private static String convertXmlRootElementName(AltAnnotation root, AltClass clazz) {
         String rootName = root.getStringValue("name");
         
@@ -1203,147 +1077,9 @@ public class Generator {
         return sb.toString();
     }
     
-    /* package */ static String isGetter(AltMethod method) {
-        String name = method.getName();
-        
-        if (name.startsWith(JAUtilities.GET)) {
-            if (name.length() <= JAUtilities.GET.length()) return null;
-            if (method.getParameterTypes().size() != 0) return null;
-            if (void.class.getName().equals(method.getReturnType().getName())) return null;
-            
-            String variableName = name.substring(JAUtilities.GET.length());
-            
-            return Introspector.decapitalize(variableName);
-        }
-        
-        if (name.startsWith(JAUtilities.IS)) {
-            if (name.length() <= JAUtilities.IS.length()) return null;
-            if (method.getParameterTypes().size() != 0) return null;
-            if (boolean.class.getName().equals(method.getReturnType().getName()) || Boolean.class.getName().equals(method.getReturnType().getName())) {
-                String variableName = name.substring(JAUtilities.IS.length());
-                
-                return Introspector.decapitalize(variableName);
-            }
-            
-            return null;
-        }
-        
-        return null;
-    }
-    
-    private static boolean isSpecifiedCustom(AltMethod method) {
-        AltAnnotation customAnnotation = method.getAnnotation(Customize.class.getName());
-        return (customAnnotation != null);
-    }
-    
     private static boolean isSpecifiedReference(AltMethod method) {
         AltAnnotation customAnnotation = method.getAnnotation(XmlIDREF.class.getName());
         return (customAnnotation != null);
-    }
-    
-    /* package */ static String isSetter(AltMethod method) {
-        String name = method.getName();
-        
-        if (name.startsWith(JAUtilities.SET)) {
-            if (name.length() <= JAUtilities.SET.length()) return null;
-            if (method.getParameterTypes().size() != 1) return null;
-            if (void.class.getName().equals(method.getReturnType().getName())) {
-                String variableName = name.substring(JAUtilities.SET.length());
-                
-                return Introspector.decapitalize(variableName);
-            }
-            
-            return null;
-        }
-        
-        return null;
-    }
-    
-    private static String isLookup(AltMethod method, NameInformation nameInformation) {
-        String name = method.getName();
-        
-        String retVal = nameInformation.getLookupVariableName(name);
-        if (retVal == null) return null;
-        
-        List<AltClass> parameterTypes = method.getParameterTypes();
-        if (parameterTypes.size() != 1) return null;
-        if (!String.class.getName().equals(parameterTypes.get(0).getName())) return null;
-            
-        if (method.getReturnType() == null || void.class.getName().equals(method.getReturnType().getName())) return null;
-        
-        return retVal;
-    }
-    
-    private static String isAdd(AltMethod method, NameInformation nameInformation) {
-        String name = method.getName();
-        
-        String retVal = nameInformation.getAddVariableName(name);
-        if (retVal == null) return null;
-        
-        if (!void.class.getName().equals(method.getReturnType().getName()) &&
-                !method.getReturnType().isInterface()) return null;
-        
-        List<AltClass> parameterTypes = method.getParameterTypes();
-        if (parameterTypes.size() > 2) return null;
-        
-        if (parameterTypes.size() == 0) return retVal;
-        
-        AltClass param0 = parameterTypes.get(0);
-        AltClass param1 = null;
-        if (parameterTypes.size() == 2) {
-            param1 = parameterTypes.get(1);
-        }
-        
-        if (String.class.getName().equals(param0.getName()) ||
-                int.class.getName().equals(param0.getName()) ||
-                param0.isInterface()) {
-            // Yes, this is possibly an add
-            if (parameterTypes.size() == 1) {
-                // add(int), add(String), add(interface) are legal adds
-                return retVal;
-            }
-            
-            if (int.class.getName().equals(param0.getName())) {
-                // If int is first there must not be any other parameter
-                return null;
-            }
-            else if (String.class.getName().equals(param0.getName())) {
-                // add(String, int) is a legal add
-                if (int.class.getName().equals(param1.getName())) return retVal;
-            }
-            else {
-                // add(interface, int) is a legal add
-                if (int.class.getName().equals(param1.getName())) return retVal;
-            }
-        }
-        return null;
-    }
-    
-    private static String isRemove(AltMethod method, NameInformation nameInformation) {
-        String name = method.getName();
-        
-        String retVal = nameInformation.getRemoveVariableName(name);
-        if (retVal == null) return null;
-        
-        AltClass returnType = method.getReturnType();
-        if (returnType == null) returnType = ClassAltClassImpl.VOID;
-        
-        if (!boolean.class.getName().equals(returnType.getName()) &&
-                !returnType.isInterface() &&
-                !void.class.getName().equals(returnType.getName())) return null;
-        
-        List<AltClass> parameterTypes = method.getParameterTypes();
-        if (parameterTypes.size() > 1) return null;
-        
-        if (parameterTypes.size() == 0) return retVal;
-        
-        AltClass param0 = parameterTypes.get(0);
-        
-        if (String.class.getName().equals(param0.getName()) ||
-                int.class.getName().equals(param0.getName())||
-                param0.isInterface()) return retVal;
-        
-        return null;
     }
     
     private static String getCompilableClass(AltClass clazz) {

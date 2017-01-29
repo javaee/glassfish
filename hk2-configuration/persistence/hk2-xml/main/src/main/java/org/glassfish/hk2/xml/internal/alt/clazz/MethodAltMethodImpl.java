@@ -51,6 +51,7 @@ import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.xml.internal.alt.AltAnnotation;
 import org.glassfish.hk2.xml.internal.alt.AltClass;
 import org.glassfish.hk2.xml.internal.alt.AltMethod;
+import org.glassfish.hk2.xml.internal.alt.MethodInformationI;
 
 /**
  * @author jwells
@@ -61,6 +62,7 @@ public class MethodAltMethodImpl implements AltMethod {
     private final ClassReflectionHelper helper;
     private List<AltClass> parameterTypes;
     private List<AltAnnotation> altAnnotations;
+    private MethodInformationI methodInformation;
     
     public MethodAltMethodImpl(Method method, ClassReflectionHelper helper) {
         this.method = method;
@@ -187,7 +189,20 @@ public class MethodAltMethodImpl implements AltMethod {
     }
     
     @Override
+    public void setMethodInformation(MethodInformationI methodInfo) {
+        methodInformation = methodInfo;
+        
+    }
+
+    @Override
+    public MethodInformationI getMethodInformation() {
+        return methodInformation;
+    }
+    
+    @Override
     public String toString() {
         return "MethodAltMethodImpl(" + method + "," + System.identityHashCode(this) + ")";
     }
+
+    
 }

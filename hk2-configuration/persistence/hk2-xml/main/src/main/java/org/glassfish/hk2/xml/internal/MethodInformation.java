@@ -41,6 +41,7 @@ package org.glassfish.hk2.xml.internal;
 
 import org.glassfish.hk2.xml.internal.alt.AltClass;
 import org.glassfish.hk2.xml.internal.alt.AltMethod;
+import org.glassfish.hk2.xml.internal.alt.MethodInformationI;
 
 /**
  * Information needed for proxy from a method
@@ -48,7 +49,7 @@ import org.glassfish.hk2.xml.internal.alt.AltMethod;
  * @author jwells
  *
  */
-public class MethodInformation {
+public class MethodInformation implements MethodInformationI {
     /** The actual method */
     private final AltMethod originalMethod;
     
@@ -135,77 +136,98 @@ public class MethodInformation {
         this.isElement = isElement;
     }
     
-    /**
-     * @return the originalMethod
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.internal.MethodInformationI#getOriginalMethod()
      */
+    @Override
     public AltMethod getOriginalMethod() {
         return originalMethod;
     }
 
-    /**
-     * @return the methodType
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.internal.MethodInformationI#getMethodType()
      */
+    @Override
     public MethodType getMethodType() {
         return methodType;
     }
 
-    /**
-     * @return the getterSetterType
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.internal.MethodInformationI#getGetterSetterType()
      */
+    @Override
     public AltClass getGetterSetterType() {
         return getterSetterType;
     }
 
-    /**
-     * @return the representedProperty
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.internal.MethodInformationI#getRepresentedProperty()
      */
+    @Override
     public String getRepresentedProperty() {
         return representedProperty;
     }
 
-    /**
-     * @return the defaultValue
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.internal.MethodInformationI#getDefaultValue()
      */
+    @Override
     public String getDefaultValue() {
         return defaultValue;
     }
 
-    /**
-     * @return the baseChildType
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.internal.MethodInformationI#getBaseChildType()
      */
+    @Override
     public AltClass getBaseChildType() {
         return baseChildType;
     }
 
-    /**
-     * @return the key
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.internal.MethodInformationI#isKey()
      */
+    @Override
     public boolean isKey() {
         return key;
     }
 
-    /**
-     * @return the isList
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.internal.MethodInformationI#isList()
      */
+    @Override
     public boolean isList() {
         return isList;
     }
 
-    /**
-     * @return the isArray
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.internal.MethodInformationI#isArray()
      */
+    @Override
     public boolean isArray() {
         return isArray;
     }
     
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.internal.MethodInformationI#isReference()
+     */
+    @Override
     public boolean isReference() {
         return isReference;
     }
     
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.internal.MethodInformationI#getDecapitalizedMethodProperty()
+     */
+    @Override
     public String getDecapitalizedMethodProperty() {
         return decapitalizedMethodProperty;
     }
     
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.internal.MethodInformationI#isElement()
+     */
+    @Override
     public boolean isElement() {
         return isElement;
     }

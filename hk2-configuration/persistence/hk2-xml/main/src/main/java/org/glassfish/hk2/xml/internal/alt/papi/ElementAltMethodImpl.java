@@ -60,6 +60,7 @@ import org.glassfish.hk2.xml.internal.Utilities;
 import org.glassfish.hk2.xml.internal.alt.AltAnnotation;
 import org.glassfish.hk2.xml.internal.alt.AltClass;
 import org.glassfish.hk2.xml.internal.alt.AltMethod;
+import org.glassfish.hk2.xml.internal.alt.MethodInformationI;
 import org.glassfish.hk2.xml.internal.alt.clazz.ClassAltClassImpl;
 
 /**
@@ -72,6 +73,7 @@ public class ElementAltMethodImpl implements AltMethod {
     private List<AltClass> parameters;
     private AltClass returnType;
     private Map<String, AltAnnotation> annotations;
+    private MethodInformationI methodInformation;
     
     public ElementAltMethodImpl(Element method, ProcessingEnvironment processingEnv) {
         this.method = (ExecutableElement) method;
@@ -202,6 +204,16 @@ public class ElementAltMethodImpl implements AltMethod {
         
         annotations = Collections.unmodifiableMap(retVal);
         return Collections.unmodifiableList(new ArrayList<AltAnnotation>(annotations.values()));
+    }
+    
+    @Override
+    public void setMethodInformation(MethodInformationI methodInfo) {
+        methodInformation = methodInfo;
+    }
+
+    @Override
+    public MethodInformationI getMethodInformation() {
+        return methodInformation;
     }
 
     /* (non-Javadoc)

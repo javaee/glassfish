@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.xml.test.dynamic.marshall;
 
+import java.net.URL;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -50,7 +51,7 @@ import javax.xml.bind.annotation.XmlType;
  *
  */
 @XmlRootElement(name="ordering-root-bean")
-@XmlType(propOrder={"f", "g", "e", "a", "c", "b"})
+@XmlType(propOrder={"propertyF", "propertyG", "propertyE", "propertyA", "propertyC", "propertyB", "propertyD"})
 public interface OrderingRootBean {
     @XmlElement(name="a")
     public List<KeyedLeafBean> getPropertyA();
@@ -79,4 +80,6 @@ public interface OrderingRootBean {
     @XmlElement(name="g")
     public String getPropertyG();
     public void setPropertyG(String prop);
+    
+    public void aCustomizerMethod(double foo, List<URL> bar);
 }
