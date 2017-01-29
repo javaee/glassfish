@@ -274,7 +274,7 @@ public class MarshallTest {
      * file is kept separately for this purpose
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testOrderingSpecifiedWithXmlType() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
         

@@ -59,4 +59,10 @@ public class XmlElementData {
     public String getName() { return name; }
     public String getDefaultValue() { return defaultValue; }
     public boolean isElement() { return isElement; }
+    
+    @Override
+    public String toString() {
+        return "XmlElementData(" + name + "," + defaultValue + "," +
+                    isElement + "," + System.identityHashCode(this) + ")";
+    }
 }

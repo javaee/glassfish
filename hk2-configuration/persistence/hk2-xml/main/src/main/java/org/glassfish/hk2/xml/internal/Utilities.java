@@ -2046,8 +2046,8 @@ public class Utilities {
             MethodInformationI methodInfo1 = getAndSetMethodInformation(o1, xmlMap);
             MethodInformationI methodInfo2 = getAndSetMethodInformation(o2, xmlMap);
             
-            String prop1 = methodInfo1.getRepresentedProperty();
-            String prop2 = methodInfo2.getRepresentedProperty();
+            String prop1 = methodInfo1.getDecapitalizedMethodProperty();
+            String prop2 = methodInfo2.getDecapitalizedMethodProperty();
             
             if (prop1 == null && prop2 == null) {
                 return secondarySort(o1, o2);
