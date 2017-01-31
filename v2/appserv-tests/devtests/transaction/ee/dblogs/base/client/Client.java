@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright 2010-2011 Sun Microsystems, Inc. All rights reserved.
+ * Copyright 2010-2017 Sun Microsystems, Inc. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -82,6 +82,10 @@ public class Client extends ClientBase {
             }
             asadmin("create-local-instance", "--cluster", CLUSTER_NAME, INSTANCE2_NAME);
 
+            asadmin("create-resource-ref", "--target", CLUSTER_NAME, DEF_RESOURCE);
+            asadmin("create-resource-ref", "--target", CLUSTER_NAME, XA_RESOURCE);
+            asadmin("create-resource-ref", "--target", CLUSTER_NAME, NONTX_RESOURCE);
+
             if (Boolean.getBoolean("enableShoalLogger")) {
                  asadmin("set-log-levels", "ShoalLogger=FINER");
                  asadmin("set-log-levels", "--target", CLUSTER_NAME, "ShoalLogger=FINER");
@@ -90,9 +94,6 @@ public class Client extends ClientBase {
             asadmin("start-cluster", CLUSTER_NAME);
             System.out.println("Started cluster. Setting up resources.");
 
-            asadmin("create-resource-ref", "--target", CLUSTER_NAME, DEF_RESOURCE);
-            asadmin("create-resource-ref", "--target", CLUSTER_NAME, XA_RESOURCE);
-            asadmin("create-resource-ref", "--target", CLUSTER_NAME, NONTX_RESOURCE);
             asadmin("deploy", "--target", CLUSTER_NAME, path);
             System.out.println("Deployed " + path);
         } catch (Exception e) {
