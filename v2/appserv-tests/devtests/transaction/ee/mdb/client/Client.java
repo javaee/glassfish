@@ -81,10 +81,10 @@ public class Client extends ClientBase {
                 asadmin("set-log-levels", "ShoalLogger=FINER");
                 asadmin("set-log-levels", "--target", CLUSTER_NAME, "ShoalLogger=FINER");
             }
-            asadmin("start-cluster", CLUSTER_NAME);
             asadmin("create-resource-ref", "--target", CLUSTER_NAME, XA_RESOURCE);
             asadmin("create-resource-ref", "--target", CLUSTER_NAME, "jms/ejb_mdb_QCF");
             asadmin("create-resource-ref", "--target", CLUSTER_NAME, "jms/ejb_mdb_Queue");
+            asadmin("start-cluster", CLUSTER_NAME);
             System.out.println("Started cluster.");
 
         } catch (Exception e) {
