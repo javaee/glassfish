@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -102,7 +102,7 @@ public class WebBundleDescriptorImpl extends WebBundleDescriptor {
             entityManagerReferences =
             new HashSet<EntityManagerReferenceDescriptor>();
 
-    private Boolean isDistributable;
+    private boolean distributable = false;
     private boolean denyUncoveredHttpMethods = false;
     private Set<SecurityRoleDescriptor> securityRoles;
     private Set<SecurityConstraint> securityConstraints;
@@ -153,20 +153,21 @@ public class WebBundleDescriptorImpl extends WebBundleDescriptor {
      */
     public void addWebBundleDescriptor(WebBundleDescriptor webBundleDescriptor) {
         getWelcomeFilesSet().addAll(webBundleDescriptor.getWelcomeFilesSet());
-        addCommonWebBundleDescriptor(webBundleDescriptor);
+        addCommonWebBundleDescriptor(webBundleDescriptor, false);
     }
 
     public void addDefaultWebBundleDescriptor(WebBundleDescriptor webBundleDescriptor) {
         if (getWelcomeFilesSet().size() == 0) {
             getWelcomeFilesSet().addAll(webBundleDescriptor.getWelcomeFilesSet());
         }
-        addCommonWebBundleDescriptor(webBundleDescriptor);
+        addCommonWebBundleDescriptor(webBundleDescriptor, true);
     }
 
     /**
      * This method combines all except welcome file set for two webBundleDescriptors.
      */
-    private void addCommonWebBundleDescriptor(WebBundleDescriptor wbd) {
+    private void addCommonWebBundleDescriptor(WebBundleDescriptor wbd,
+            boolean defaultDescriptor) {
         super.addBundleDescriptor(wbd);
 
         WebBundleDescriptorImpl webBundleDescriptor = (WebBundleDescriptorImpl) wbd;
@@ -255,14 +256,11 @@ public class WebBundleDescriptorImpl extends WebBundleDescriptor {
         // combine login config with conflict resolution check
         combineLoginConfiguration(webBundleDescriptor);
 
-        Boolean otherIsDistributable = webBundleDescriptor.isDistributable();
-        if (otherIsDistributable != null) {
-            if (isDistributable != null) {
-                setDistributable(isDistributable && otherIsDistributable);
-            } else {
-                setDistributable(otherIsDistributable);
-            }
+        if (!defaultDescriptor) {
+            boolean otherDistributable = webBundleDescriptor.isDistributable();
+            setDistributable(distributable && otherDistributable);
         }
+
         combinePostConstructDescriptors(webBundleDescriptor);
         combinePreDestroyDescriptors(webBundleDescriptor);
         addJndiNameEnvironment(webBundleDescriptor);
@@ -807,15 +805,15 @@ public class WebBundleDescriptorImpl extends WebBundleDescriptor {
      * Return true if this web app [{0}] can be distributed across different processes.
      */
 
-    public Boolean isDistributable() {
-        return isDistributable;
+    public boolean isDistributable() {
+        return distributable;
     }
 
     /**
      * Sets whether this web app [{0}] can be distributed across different processes.
      */
-    public void setDistributable(Boolean isDistributable) {
-        this.isDistributable = isDistributable;
+    public void setDistributable(boolean distributable) {
+        this.distributable = distributable;
     }
 
     /**
@@ -2113,7 +2111,7 @@ public class WebBundleDescriptorImpl extends WebBundleDescriptor {
         toStringBuffer.append("\n serviceReferences ");
         if (serviceReferences != null)
             printDescriptorSet(serviceReferences, toStringBuffer);
-        toStringBuffer.append("\n isDistributable ").append(isDistributable);
+        toStringBuffer.append("\n distributable ").append(distributable);
         toStringBuffer.append("\n denyUncoveredHttpMethods ").append(denyUncoveredHttpMethods);
         toStringBuffer.append("\n securityRoles ").append(securityRoles);
         toStringBuffer.append("\n securityConstraints ").append(securityConstraints);
