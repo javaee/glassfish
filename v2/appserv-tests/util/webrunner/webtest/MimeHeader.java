@@ -59,7 +59,7 @@ public class MimeHeader extends Hashtable
                     put(key,val);
                 }
                 //This is POST data after request and headers.Header has ended and after CRLF Content starts.
-                //ô\r\n\r\nö is CRLF.Header lines are separated by ô\r\nö
+                //\r\n\r\n is CRLF.Header lines are separated by \r\n
                 else
                 {
                     //System.out.println("\n%%%%%%POST DATA%%%%%%");
