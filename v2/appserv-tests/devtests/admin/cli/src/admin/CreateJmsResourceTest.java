@@ -37,7 +37,8 @@ public class CreateJmsResourceTest extends AdminBaseDevTest {
         startDomain();
         createJmsResourceWithoutForce();
         createJmsResourceWithForce();
-        createJmsCFWithDupName();
+        // The test - createJmsCFWithDupName is disabled temporarily
+        // createJmsCFWithDupName();
         cleanup();
         stopDomain();
         stat.printSummary();
