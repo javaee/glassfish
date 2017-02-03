@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -46,7 +46,7 @@
   <display-name>EARwithWAROnly</display-name>
   <module>
     <web>
-      <web-uri>web-pluggability-sharedlib-interfaceimpl-web.war</web-uri>
+      <web-uri>web-servlet-3.0-pluggability-sharedlib-interfaceimpl-web.war</web-uri>
       <context-root>/mytest1</context-root>
     </web>
   </module>
