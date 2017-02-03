@@ -49,7 +49,7 @@ import com.sun.ejte.ccl.reporter.*;
  */
 public class WebTest {
 
-    private static String TEST_NAME = "non-blocking-Input";
+    private static String TEST_NAME = "servlet-3.1-non-blocking-Input";
     private static String EXPECTED_RESPONSE = "HelloWorld-onAllDataRead";
 
     private static SimpleReporterAdapter stat

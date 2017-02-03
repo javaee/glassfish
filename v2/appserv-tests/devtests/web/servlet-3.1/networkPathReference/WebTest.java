@@ -50,7 +50,7 @@ import org.apache.catalina.startup.SimpleHttpClient;
  */
 public class WebTest {
 
-    private static String TEST_NAME = "network-path-reference";
+    private static String TEST_NAME = "servlet-3.1-network-path-reference";
     private static String LOCATION_PREFIX = "Location:";
     private static String EXPECTED_RESPONSE = "redirect a";
 

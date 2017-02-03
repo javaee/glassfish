@@ -49,7 +49,7 @@ import com.sun.ejte.ccl.reporter.*;
  */
 public class WebTest {
     
-    private static final String TEST_NAME = "reset-character-encoding";
+    private static final String TEST_NAME = "servlet-3.1-reset-character-encoding";
     private static final String EXPECTED_CONTENT_TYPE = "Content-Type: text/plain;charset=Big5";
     private static final String EXPECTED_RESPONSE="Done";
     

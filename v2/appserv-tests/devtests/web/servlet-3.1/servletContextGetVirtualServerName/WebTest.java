@@ -49,7 +49,7 @@ import com.sun.ejte.ccl.reporter.*;
  */
 public class WebTest {
     
-    private static final String TEST_NAME = "servlet-context-get-virtual-server-name";
+    private static final String TEST_NAME = "servlet-3.1-servlet-context-get-virtual-server-name";
     
     static SimpleReporterAdapter stat=
         new SimpleReporterAdapter("appserv-tests");

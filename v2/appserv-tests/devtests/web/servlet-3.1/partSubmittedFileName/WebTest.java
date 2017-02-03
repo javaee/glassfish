@@ -51,7 +51,7 @@ public class WebTest {
     private static final SimpleReporterAdapter stat =
         new SimpleReporterAdapter("appserv-tests");
 
-    private static final String TEST_NAME = "part-submitted-file-name";
+    private static final String TEST_NAME = "servlet-3.1-part-submitted-file-name";
 
     public static void main(String args[]) {
 

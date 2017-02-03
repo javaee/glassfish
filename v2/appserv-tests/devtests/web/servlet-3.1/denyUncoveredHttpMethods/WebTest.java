@@ -47,7 +47,7 @@ import com.sun.ejte.ccl.reporter.*;
  */
 public class WebTest {
 
-    private static final String TEST_NAME = "deny-uncovered-http-methods";
+    private static final String TEST_NAME = "servlet-3.1-deny-uncovered-http-methods";
     private static final String EXPECTED_RESPONSE = "Hello javaee";
 
     private static SimpleReporterAdapter stat

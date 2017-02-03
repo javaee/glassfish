@@ -52,7 +52,7 @@ import com.sun.appserv.test.BaseDevTest;
  */
 public class WebTest extends BaseDevTest {
 
-    private static final String TEST_NAME = "run-as-init-destroy";
+    private static final String TEST_NAME = "servlet-3.1-run-as-init-destroy";
     private static final String EXPECTED_RESPONSE = "RunAsInitDestroy-SL: Hello javaee";
     private static final String EXPECTED_RESPONSE2 = "RunAsInitDestroy-SL: Hello destroy";
 

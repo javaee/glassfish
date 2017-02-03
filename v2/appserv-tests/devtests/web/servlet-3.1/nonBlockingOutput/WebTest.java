@@ -49,7 +49,7 @@ import com.sun.ejte.ccl.reporter.*;
  */
 public class WebTest {
 
-    private static String TEST_NAME = "non-blocking-output";
+    private static String TEST_NAME = "servlet-3.1-non-blocking-output";
     private static String EXPECTED_RESPONSE = "onWritePossible";
     private static final String CRLF = "\r\n";
 

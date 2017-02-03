@@ -47,7 +47,7 @@ import com.sun.ejte.ccl.reporter.*;
  */
 public class WebTest {
 
-    private static final String TEST_NAME = "any-authenticated-user";
+    private static final String TEST_NAME = "servlet-3.1-any-authenticated-user";
     private static final String EXPECTED_RESPONSE = "Hello javaee true";
 
     private static SimpleReporterAdapter stat

@@ -49,7 +49,7 @@ import com.sun.ejte.ccl.reporter.*;
  */
 public class WebTest {
     
-    private static final String TEST_NAME = "change-session-id";
+    private static final String TEST_NAME = "servlet-3.1-change-session-id";
     private static final String JSESSIONID = "JSESSIONID";
     private static final String EXPECTED_RESPONSE = "two";
     

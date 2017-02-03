@@ -50,7 +50,7 @@ import com.sun.ejte.ccl.reporter.*;
  */
 public class WebTest {
 
-    private static String TEST_NAME = "upgrade-echo";
+    private static String TEST_NAME = "servlet-3.1-upgrade-echo";
     private static String EXPECTED_RESPONSE = "HelloWorld";
     private static final String CRLF = "\r\n";
 
