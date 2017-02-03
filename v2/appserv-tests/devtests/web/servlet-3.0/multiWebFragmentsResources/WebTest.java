@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -53,7 +53,7 @@ public class WebTest {
 
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
-    private static final String TEST_NAME = "multi-web-fragments-resources";
+    private static final String TEST_NAME = "servlet-3.0-multi-web-fragments-resources";
     private static final String PREFIX_1 = "getResourcePaths:/=";
     private static final String PREFIX_2 = "getResourcePaths:/catalog/=";
     private static final String PREFIX_3 = "getResourcePaths:/catalog=";

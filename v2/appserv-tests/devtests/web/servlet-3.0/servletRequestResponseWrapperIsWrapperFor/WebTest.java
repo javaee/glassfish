@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,7 +47,7 @@ import com.sun.ejte.ccl.reporter.*;
  */
 public class WebTest {
 
-    private static final String TEST_NAME = "servlet-request-response-wrapper-is-wrapper-for";
+    private static final String TEST_NAME = "servlet-3.0-servlet-request-response-wrapper-is-wrapper-for";
 
     private static final String EXPECTED_RESPONSE = "true";
 

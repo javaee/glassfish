@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -50,7 +50,7 @@ public class WebTest{
 
     static SimpleReporterAdapter stat=
            new SimpleReporterAdapter("appserv-tests");
-    private static final String TEST_NAME = "transportProtectedAnnotation";
+    private static final String TEST_NAME = "servlet-3.0-transportProtectedAnnotation";
     
     public static void main(String args[]) throws Exception{
         String host = args[0];

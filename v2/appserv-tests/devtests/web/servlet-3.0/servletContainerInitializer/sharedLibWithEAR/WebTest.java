@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -49,7 +49,7 @@ public class WebTest {
 
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
-    private static final String TEST_NAME = "pluggability-sharedlib-ear";
+    private static final String TEST_NAME = "servlet-3.0-pluggability-sharedlib-ear";
     private static final String[] EXPECTED_RESPONSE = {"none","CALLED EARSHAREDLIB-1;CALLED EARSHAREDLIB-2;CALLED EARSHAREDLIB-3;null;CALLED EARAPPLIB-1;null","CALLED SHAREDLIB-1;CALLED SHAREDLIB-2;CALLED SHAREDLIB-3;null;null;CALLED APPLIB-2"};
 
     private String host;

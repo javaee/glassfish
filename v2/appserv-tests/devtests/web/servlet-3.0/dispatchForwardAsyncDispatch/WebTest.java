@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,7 +47,7 @@ import com.sun.ejte.ccl.reporter.*;
  */
 public class WebTest {
 
-    private static final String TEST_NAME = "dispatch-forward-async-dispatch";
+    private static final String TEST_NAME = "servlet-3.0-dispatch-forward-async-dispatch";
 
     private static final String EXPECTED_RESPONSE_1 = "Hello from DispatchForward";
     private static final String EXPECTED_RESPONSE_2 = "Hello from AsyncDispatch";
