@@ -80,7 +80,7 @@ public class RawSetsTest {
     public final static String MUSEUM_TYPE = "/museum";
     public final static String MUSEUM_INSTANCE = "museum";
     
-    
+    private final static String JMS_SERVER_PROPERTY = "jms-server";
     
     public final static String AGE_TAG = "age";
     
@@ -233,7 +233,7 @@ public class RawSetsTest {
      * @throws Exception
      */
     @Test
-    // @org.junit.Ignore
+    @org.junit.Ignore
     public void testChangeDirectTypeWithSetFails() throws Exception {
         ServiceLocator locator = Utilities.createLocator(UpdateListener.class,
                 SSLManagerBeanCustomizer.class);
@@ -328,7 +328,7 @@ public class RawSetsTest {
      * @throws Exception
      */
     @Test
-    // @org.junit.Ignore
+    @org.junit.Ignore
     public void testListSetToDifferentFails() throws Exception {
         ServiceLocator locator = Utilities.createLocator(UpdateListener.class,
                 SSLManagerBeanCustomizer.class);
@@ -378,7 +378,7 @@ public class RawSetsTest {
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testArrayListSwap() throws Exception {
         ServiceLocator locator = Utilities.createLocator(UpdateListener.class,
                 SSLManagerBeanCustomizer.class);
@@ -397,7 +397,7 @@ public class RawSetsTest {
         
         // Swap zero and one index
         newBeans[0] = oldBeans[1];
-        newBeans[1] = oldBeans[1];
+        newBeans[1] = oldBeans[0];
         
         domain.setJMSServers(newBeans);
         
@@ -410,7 +410,13 @@ public class RawSetsTest {
         
         List<Change> changes = listener.getChanges();
         
-        OverlayUtilities.checkChanges(changes);
+        OverlayUtilities.checkChanges(changes,
+                new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
+                        MergeTest.DOMAIN_TYPE,    // type name
+                        MergeTest.DOMAIN_INSTANCE,       // instance name
+                        null,
+                        JMS_SERVER_PROPERTY) // prop changed
+        );
     }
 
 }

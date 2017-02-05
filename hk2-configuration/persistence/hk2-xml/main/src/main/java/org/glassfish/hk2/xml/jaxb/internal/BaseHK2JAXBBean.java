@@ -220,6 +220,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
             
             if (!rawSet) {
                 changeControl.getReadLock().lock();
+                
                 try {
                     currentValue = beanLikeMap.get(propName);
                 
@@ -244,7 +245,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
                             }
                         }
                         else {
-                            // Just not going to work
+                            // Direct modification of a child
                             doModify = true;
                         }
                     }
@@ -263,8 +264,8 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
                 return;
             }
             if (doModify) {
-                throw new IllegalStateException(
-                        "A bean may not be modified with a set method, instead directly manipulate the fields of the existing bean or use add and remove methods");
+                _doModify(propName, currentValue, propValue);
+                return;
             }
             
             String keyProperty = _getModel().getKeyProperty();
@@ -631,6 +632,31 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         }
     }
     
+    private void _doModify(String propName, Object currentValue, Object newValue) {
+        if (root == null) {
+            throw new IllegalStateException("A direct set will only work on a rooted bean");
+        }
+        
+        changeControl.getWriteLock().lock();
+        try {
+            boolean success = false;
+            XmlDynamicChange change = changeControl.startOrContinueChange(this);
+            try {
+                Utilities.internalModifyChild(this, propName, currentValue, newValue, root, changeControl, change);
+                
+                success = true;
+            }
+            finally {
+                changeControl.endOrDeferChange(success);
+            }
+            
+        }
+        finally {
+            changeControl.getWriteLock().unlock();
+        }
+        
+    }
+    
     public Object _invokeCustomizedMethod(String methodName, Class<?>[] params, Object[] values) {
         if (DEBUG_GETS_AND_SETS) {
             // Hidden behind static because of potential expensive toString costs
@@ -972,7 +998,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
     
     /**
      * This copy method ONLY copies non-child and
-     * non-parent and non-reference fields and so is
+     * non-parent and optionally reference fields and so is
      * not a full copy.  The children and parent and
      * reference and lock information need to be filled
      * in later so as not to have links from one tree into
@@ -980,7 +1006,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * 
      * @param copyMe The non-null bean to copy FROM
      */
-    public void _shallowCopyFrom(BaseHK2JAXBBean copyMe) {
+    public void _shallowCopyFrom(BaseHK2JAXBBean copyMe, boolean copyReferences) {
         selfXmlTag = copyMe.selfXmlTag;
         instanceName = copyMe.instanceName;
         keyValue = copyMe.keyValue;
@@ -995,7 +1021,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
             if (copyModel.getKeyedChildren().contains(xmlTag) || copyMe._getModel().getUnKeyedChildren().contains(xmlTag)) continue;
             
             ChildDataModel cdm = copyModel.getNonChildProperties().get(xmlTag);
-            if (cdm != null && cdm.isReference()) {
+            if (!copyReferences && cdm != null && cdm.isReference()) {
                 continue;
             }
             
@@ -1009,7 +1035,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * @param propName The name of the property to change
      * @param propValue The new value of the property
      */
-    public boolean changeInHub(String propName, Object propValue, WriteableBeanDatabase wbd) {
+    public boolean _changeInHub(String propName, Object propValue, WriteableBeanDatabase wbd) {
         Object oldValue = beanLikeMap.get(propName);
         if (GeneralUtilities.safeEquals(oldValue, propValue)) {
             // Calling set, but the value was not in fact changed
@@ -1032,7 +1058,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * @param propName The name of the property to change
      * @param propValue The new value of the property
      */
-    public boolean changeInHub(List<PropertyChangeEvent> events, WriteableBeanDatabase wbd) {
+    public boolean _changeInHub(List<PropertyChangeEvent> events, WriteableBeanDatabase wbd) {
         WriteableType wt = wbd.getWriteableType(xmlPath);
         HashMap<String, Object> modified = new HashMap<String, Object>(beanLikeMap);
         List<PropertyChangeEvent> effectiveChanges = new ArrayList<PropertyChangeEvent>(events.size());
@@ -1077,7 +1103,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
                 return;
             }
             
-            changeInHub(propName, propValue, wbd);
+            _changeInHub(propName, propValue, wbd);
             
             success = true;
         }

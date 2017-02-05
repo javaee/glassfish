@@ -88,6 +88,7 @@ import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
+import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
 import org.glassfish.hk2.xml.internal.Differences.AddData;
 import org.glassfish.hk2.xml.internal.Differences.AddRemoveMoveDifference;
@@ -309,6 +310,61 @@ public class Utilities {
         throw new AssertionError("Unknown parameter kind: " + typeMirror.getKind());
     }
     
+    public static void internalModifyChild(
+            BaseHK2JAXBBean myParent,
+            String childProperty,
+            Object currentValue,
+            Object newValue,
+            XmlRootHandleImpl<?> root,
+            DynamicChangeInfo<?> changeInformation,
+            XmlDynamicChange xmlDynamicChange
+            ) {
+        ParentedModel childNode = myParent._getModel().getChild(childProperty);
+        if (childNode == null) {
+            throw new IllegalArgumentException("There is no child with xmlTag " + childProperty + " of " + myParent);
+        }
+        
+        Differences differences = new Differences();
+        String xmlTag = childNode.getChildXmlTag();
+        
+        if (ChildType.ARRAY.equals(childNode.getChildType())) {
+            int newLength = Array.getLength(newValue);
+            Object newArrayWithCopies = Array.newInstance(childNode.getChildModel().getOriginalInterfaceAsClass(), newLength);
+                    
+            for (int lcv = 0; lcv < newLength; lcv++) {
+                BaseHK2JAXBBean aBean = (BaseHK2JAXBBean) Array.get(newValue, lcv);
+                if (aBean == null) {
+                    throw new IllegalArgumentException("The new array may not have null elements, the element at index " + lcv + " is null");
+                }
+                
+                XmlRootHandle<?> aRoot = aBean._getRoot();
+                if (aRoot != null) {
+                    if (!aRoot.equals(root)) {
+                        throw new IllegalArgumentException("Can not have a bean from a different tree added with set method.  The element at index "
+                                + lcv + " is from tree " + aRoot);
+                    }
+                    
+                    aBean = createUnrootedBeanTreeCopy(aBean);
+                }
+                
+                Array.set(newArrayWithCopies, lcv, aBean);
+            }
+            
+            getArrayDifferences(childNode,
+                    currentValue, newArrayWithCopies,
+                    differences,
+                    xmlTag, myParent);
+        }
+        else {
+            throw new AssertionError("List and Direct not yet implemented");
+        }
+        
+        if (!differences.getDifferences().isEmpty()) {
+            Utilities.applyDiff(differences, changeInformation);
+        }
+        
+    }
+    
     @SuppressWarnings("unchecked")
     public static BaseHK2JAXBBean internalAdd(
             BaseHK2JAXBBean myParent,
@@ -459,7 +515,7 @@ public class Utilities {
             }
             
             if (xmlDynamicChange.getBeanDatabase() != null) {
-                myParent.changeInHub(childProperty, finalChildList, xmlDynamicChange.getBeanDatabase());
+                myParent._changeInHub(childProperty, finalChildList, xmlDynamicChange.getBeanDatabase());
             }
             
             myParent._setProperty(childProperty, finalChildList, false, true);
@@ -467,7 +523,7 @@ public class Utilities {
         else {
             // Direct child
             if (xmlDynamicChange.getBeanDatabase() != null){
-                myParent.changeInHub(childProperty, child, xmlDynamicChange.getBeanDatabase());
+                myParent._changeInHub(childProperty, child, xmlDynamicChange.getBeanDatabase());
             }
             
             myParent._setProperty(childProperty, child, false, true);
@@ -758,7 +814,7 @@ public class Utilities {
                 
                 if (changeList) {
                     if (xmlDynamicChange.getBeanDatabase() != null) {
-                        myParent.changeInHub(childProperty, listWithObjectRemoved, xmlDynamicChange.getBeanDatabase());
+                        myParent._changeInHub(childProperty, listWithObjectRemoved, xmlDynamicChange.getBeanDatabase());
                     }
                 
                     myParent._setProperty(childProperty, listWithObjectRemoved, false, true);
@@ -852,7 +908,7 @@ public class Utilities {
                 
                 if (changeList) {
                     if (xmlDynamicChange.getBeanDatabase() != null) {
-                        myParent.changeInHub(childProperty, arrayWithObjectRemoved, xmlDynamicChange.getBeanDatabase());
+                        myParent._changeInHub(childProperty, arrayWithObjectRemoved, xmlDynamicChange.getBeanDatabase());
                     }
                 
                     myParent._setProperty(childProperty, arrayWithObjectRemoved, false, true);
@@ -866,7 +922,7 @@ public class Utilities {
             
             if (changeList) {
                 if (xmlDynamicChange.getBeanDatabase() != null) {
-                    myParent.changeInHub(childProperty, null, xmlDynamicChange.getBeanDatabase());
+                    myParent._changeInHub(childProperty, null, xmlDynamicChange.getBeanDatabase());
                 }
             
                 myParent._setProperty(childProperty, null, false, true);
@@ -1396,68 +1452,85 @@ public class Utilities {
                 }
             }
             else if (ChildType.ARRAY.equals(pModel.getChildType())) {
-                String keyProperty = pModel.getChildModel().getKeyProperty();
-                
-                Object sourceArray = (sourceValue == null) ? new BaseHK2JAXBBean[0] : sourceValue ;
-                Object otherArray = (otherValue == null) ? new BaseHK2JAXBBean[0] : otherValue;
-                
-                if (keyProperty != null) {
-                    Map<String, Integer> sourceIndexMap = getIndexMapArray(sourceArray);
-                    Map<String, Integer> otherIndexMap = getIndexMapArray(otherArray);
-                    
-                    int sourceLength = Array.getLength(sourceArray);
-                    
-                    for (int lcv = 0; lcv < sourceLength; lcv++) {
-                        BaseHK2JAXBBean sourceBean = (BaseHK2JAXBBean) Array.get(sourceArray, lcv);
-                        
-                        String sourceKeyValue = sourceBean._getKeyValue();
-                        
-                        if (!otherIndexMap.containsKey(sourceKeyValue)) {
-                            // Removing this bean
-                            localDifference.addRemove(xmlTag, new RemoveData(xmlTag, sourceKeyValue, sourceBean));
-                        }
-                        else {
-                            int sourceIndex = sourceIndexMap.get(sourceKeyValue);
-                            int otherIndex = otherIndexMap.get(sourceKeyValue);
-                            
-                            BaseHK2JAXBBean otherBean = (BaseHK2JAXBBean) Array.get(otherArray, otherIndex);
-                            
-                            if (sourceIndex != otherIndex) {
-                                // Bean was moved
-                                localDifference.addMove(xmlTag, new MoveData(sourceIndex, otherIndex));
-                            }
-                            
-                            // Get all changes to sub bean
-                            getAllDifferences(sourceBean, otherBean, differences);
-                        }
-                    }
-                    
-                    int otherLength = Array.getLength(otherArray);
-                    
-                    for (int lcv = 0; lcv < otherLength; lcv++) {
-                        BaseHK2JAXBBean otherBean = (BaseHK2JAXBBean) Array.get(otherArray, lcv);
-                        
-                        String otherKeyValue = otherBean._getKeyValue();
-                        
-                        if (!sourceIndexMap.containsKey(otherKeyValue)) {
-                            // This is an add
-                            localDifference.addAdd(xmlTag, otherBean, lcv);
-                        }
-                    }
-                }
-                else {  
-                    // Both lists are there, this is an unkeyed list
-                    UnkeyedDiff unkeyedDiff = new UnkeyedDiff((Object[]) sourceArray, (Object[]) otherArray, source, pModel);
-                    Differences unkeyedDiffs = unkeyedDiff.compute();
-                    
-                    differences.merge(unkeyedDiffs);
-                }
+                getArrayDifferences(pModel,
+                        sourceValue, otherValue,
+                        differences,
+                        xmlTag, source);
             }
         }
         
         if (localDifference.isDirty()) {
             differences.addDifference(localDifference);
         }
+    }
+    
+    private static void getArrayDifferences(ParentedModel pModel,
+            Object sourceValue, Object otherValue,
+            Differences differences,
+            String xmlTag, BaseHK2JAXBBean source) {
+        Difference localDifference = new Difference(source);
+
+        String keyProperty = pModel.getChildModel().getKeyProperty();
+        
+        Object sourceArray = (sourceValue == null) ? new BaseHK2JAXBBean[0] : sourceValue ;
+        Object otherArray = (otherValue == null) ? new BaseHK2JAXBBean[0] : otherValue;
+        
+        if (keyProperty != null) {
+            Map<String, Integer> sourceIndexMap = getIndexMapArray(sourceArray);
+            Map<String, Integer> otherIndexMap = getIndexMapArray(otherArray);
+            
+            int sourceLength = Array.getLength(sourceArray);
+            
+            for (int lcv = 0; lcv < sourceLength; lcv++) {
+                BaseHK2JAXBBean sourceBean = (BaseHK2JAXBBean) Array.get(sourceArray, lcv);
+                
+                String sourceKeyValue = sourceBean._getKeyValue();
+                
+                if (!otherIndexMap.containsKey(sourceKeyValue)) {
+                    // Removing this bean
+                    localDifference.addRemove(xmlTag, new RemoveData(xmlTag, sourceKeyValue, sourceBean));
+                }
+                else {
+                    int sourceIndex = sourceIndexMap.get(sourceKeyValue);
+                    int otherIndex = otherIndexMap.get(sourceKeyValue);
+                    
+                    BaseHK2JAXBBean otherBean = (BaseHK2JAXBBean) Array.get(otherArray, otherIndex);
+                    
+                    if (sourceIndex != otherIndex) {
+                        // Bean was moved
+                        localDifference.addMove(xmlTag, new MoveData(sourceIndex, otherIndex));
+                    }
+                    
+                    // Get all changes to sub bean
+                    getAllDifferences(sourceBean, otherBean, differences);
+                }
+            }
+            
+            int otherLength = Array.getLength(otherArray);
+            
+            for (int lcv = 0; lcv < otherLength; lcv++) {
+                BaseHK2JAXBBean otherBean = (BaseHK2JAXBBean) Array.get(otherArray, lcv);
+                
+                String otherKeyValue = otherBean._getKeyValue();
+                
+                if (!sourceIndexMap.containsKey(otherKeyValue)) {
+                    // This is an add
+                    localDifference.addAdd(xmlTag, otherBean, lcv);
+                }
+            }
+        }
+        else {  
+            // Both lists are there, this is an unkeyed list
+            UnkeyedDiff unkeyedDiff = new UnkeyedDiff((Object[]) sourceArray, (Object[]) otherArray, source, pModel);
+            Differences unkeyedDiffs = unkeyedDiff.compute();
+            
+            differences.merge(unkeyedDiffs);
+        }
+        
+        if (localDifference.isDirty()) {
+            differences.addDifference(localDifference);
+        }
+    
     }
     
     /**
@@ -1573,7 +1646,7 @@ public class Utilities {
             }
             
             if (wbd != null) {
-                source.changeInHub(events, wbd);
+                source._changeInHub(events, wbd);
             }
             
             for (PropertyChangeEvent pce : events) { 
@@ -2088,5 +2161,134 @@ public class Utilities {
             
             return secondarySort(o1, o2);
         }
+    }
+    
+    /**
+     * TODO:  References that are outside of the scope of this bean will be... difficult or impossible
+     * to fill in.  So, like, how do we handle them?
+     * 
+     * @param copyMe
+     * @return
+     */
+    private static BaseHK2JAXBBean createUnrootedBeanTreeCopy(BaseHK2JAXBBean copyMe) {
+        BaseHK2JAXBBean copy = null;
+        try {
+            copy = Utilities.doCopy(copyMe, null, null, null, null, null);
+        }
+        catch (RuntimeException re) {
+            throw re;
+        }
+        catch (Throwable th) {
+            throw new RuntimeException(th);
+        }
+        
+        return copy;
+    }
+    
+    public static <T> BaseHK2JAXBBean doCopy(BaseHK2JAXBBean copyMe,
+            DynamicChangeInfo<T> copyController,
+            BaseHK2JAXBBean theCopiedParent,
+            XmlRootHandleImpl<?> rootHandle,
+            Map<ReferenceKey, BaseHK2JAXBBean> referenceMap,
+            List<UnresolvedReference> unresolved) throws Throwable {
+        if (copyMe == null) return null;
+        
+        BaseHK2JAXBBean retVal = Utilities.createBean(copyMe.getClass());
+        retVal._shallowCopyFrom(copyMe, (referenceMap == null));
+        
+        ModelImpl myModel = retVal._getModel();
+        
+        Set<String> childrenProps = copyMe._getChildrenXmlTags();
+        for (String childProp : childrenProps) {
+            Object child = copyMe._getProperty(childProp);
+            if (child == null) continue;
+            
+            if (child instanceof List) {
+                List<?> childList = (List<?>) child;
+                
+                ArrayList<Object> toSetChildList = new ArrayList<Object>(childList.size());
+                
+                for (Object subChild : childList) {
+                    BaseHK2JAXBBean copiedChild = doCopy((BaseHK2JAXBBean) subChild, copyController, retVal, rootHandle, referenceMap, unresolved);
+                    
+                    toSetChildList.add(copiedChild);
+                }
+                
+                // Sets the list property into the parent
+                retVal._setProperty(childProp, toSetChildList);
+            }
+            else if (child.getClass().isArray()) {
+                int length = Array.getLength(child);
+                
+                ParentedModel pm = myModel.getChild(childProp);
+                ModelImpl childModel = pm.getChildModel();
+                
+                Class<?> childInterface = childModel.getOriginalInterfaceAsClass();
+                
+                Object toSetChildArray = Array.newInstance(childInterface, length);
+                
+                for (int lcv = 0; lcv < length; lcv++) {
+                    Object subChild = Array.get(child, lcv);
+                    
+                    BaseHK2JAXBBean copiedChild = doCopy((BaseHK2JAXBBean) subChild, copyController, retVal, rootHandle, referenceMap, unresolved);
+                    
+                    Array.set(toSetChildArray, lcv, copiedChild);
+                }
+                
+                // Sets the array property into the parent
+                retVal._setProperty(childProp, toSetChildArray);
+            }
+            else {
+                // A direct child
+                BaseHK2JAXBBean copiedChild = doCopy((BaseHK2JAXBBean) child, copyController, retVal, rootHandle, referenceMap, unresolved);
+                
+                retVal._setProperty(childProp, copiedChild);
+            }
+        }
+        
+        if (theCopiedParent != null) {
+            retVal._setParent(theCopiedParent);
+        }
+        
+        String keyPropertyName = retVal._getKeyPropertyName();
+        if (referenceMap != null && keyPropertyName != null) {
+            String keyProperty = retVal._getKeyValue();
+            if (keyProperty != null) {
+                referenceMap.put(new ReferenceKey(myModel.getOriginalInterface(), keyProperty), retVal);
+            }
+            
+            // Now try to resolve any references, and if we can not add them to the unfinished list
+            Map<String, ChildDataModel> nonChildrenProps = myModel.getNonChildProperties();
+            for (Map.Entry<String, ChildDataModel> nonChild : nonChildrenProps.entrySet()) {
+                String xmlTag = nonChild.getKey();
+                ChildDataModel cdm = nonChild.getValue();
+                
+                if (!cdm.isReference()) continue;
+                
+                Object fromReferenceRaw = copyMe._getProperty(xmlTag);
+                if (fromReferenceRaw == null) continue;
+                if (!(fromReferenceRaw instanceof BaseHK2JAXBBean)) continue;
+                BaseHK2JAXBBean fromReference = (BaseHK2JAXBBean) fromReferenceRaw;
+                
+                String fromKeyValue = fromReference._getKeyValue();
+                
+                ReferenceKey rk = new ReferenceKey(cdm.getChildType(), fromKeyValue);
+                
+                BaseHK2JAXBBean toReference = referenceMap.get(rk);
+                if (toReference != null) {
+                    retVal._setProperty(xmlTag, toReference);
+                }
+                else {
+                    // Must go in unfinished list
+                    unresolved.add(new UnresolvedReference(cdm.getChildType(), fromKeyValue, xmlTag, retVal));
+                }
+            }
+        }
+        
+        if (rootHandle != null) {
+            retVal._setDynamicChangeInfo(rootHandle, copyController, false);
+        }
+        
+        return retVal;
     }
 }
