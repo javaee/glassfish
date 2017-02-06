@@ -86,6 +86,8 @@ public class Client extends ClientBase {
                 asadmin("set-log-levels", "ShoalLogger=FINER");
                 asadmin("set-log-levels", "--target", CLUSTER_NAME, "ShoalLogger=FINER");
             }
+            asadmin("create-resource-ref", "--target", CLUSTER_NAME, XA2);
+            asadmin("create-resource-ref", "--target", CLUSTER_NAME, XA_RESOURCE);
             asadmin("start-cluster", CLUSTER_NAME);
             asadmin("set", "configs.config." + CLUSTER_NAME + "-config.monitoring-service.module-monitoring-levels.transaction-service=HIGH");
             //asadmin("set", "configs.config." + CLUSTER_NAME + "-config.log-service.module-log-levels.jta=FINE");
@@ -93,8 +95,6 @@ public class Client extends ClientBase {
             //asadmin("set-log-level", "javax.enterprise.resource.jta=FINE");
             System.out.println("Started cluster. Setting up resources.");
 
-            asadmin("create-resource-ref", "--target", CLUSTER_NAME, XA2);
-            asadmin("create-resource-ref", "--target", CLUSTER_NAME, XA_RESOURCE);
             asadmin("deploy", "--target", CLUSTER_NAME, path);
             System.out.println("Deployed " + path);
         } catch (Exception e) {
