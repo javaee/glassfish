@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -269,8 +269,9 @@ public class GlassfishNetworkListener extends GenericGrizzlyListener {
             final String defaultResponseType, final KeepAlive keepAlive,
             final DelayedExecutor delayedExecutor,
             final int maxRequestHeaders, final int maxResponseHeaders) {
-        
-        return new GlassfishHttpCodecFilter(
+
+        final org.glassfish.grizzly.http.HttpServerFilter httpCodecFilter =
+                new GlassfishHttpCodecFilter(
                 http == null || Boolean.parseBoolean(http.getXpoweredBy()),
                 isChunkedEnabled,
                 headerBufferLengthBytes,
@@ -279,6 +280,16 @@ public class GlassfishNetworkListener extends GenericGrizzlyListener {
                 delayedExecutor,
                 maxRequestHeaders,
                 maxResponseHeaders);
+
+        if (http != null) { // could be null for HTTP redirect
+            httpCodecFilter.setMaxPayloadRemainderToSkip(
+                    Integer.parseInt(http.getMaxSwallowingInputBytes()));
+
+            httpCodecFilter.setAllowPayloadForUndefinedHttpMethods(
+                    Boolean.parseBoolean(http.getAllowPayloadForUndefinedHttpMethods()));
+        }
+
+        return httpCodecFilter;
     }
 
 
