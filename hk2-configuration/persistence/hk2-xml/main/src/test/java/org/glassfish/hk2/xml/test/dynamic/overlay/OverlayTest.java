@@ -388,6 +388,46 @@ public class OverlayTest {
     }
     
     /**
+     * Tests overlay going from A -> ABC (two adds)
+     * 
+     * @throws Exception
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testAxABC() throws Exception {
+        List<Change> changes = doTestA("A", "ABC");
+        
+        OverlayUtilities.checkChanges(changes,
+                new ChangeDescriptor(ChangeCategory.ADD_INSTANCE,
+                        OverlayUtilities.ARRAY_TYPE,    // type name
+                        OverlayUtilities.OROOT_A + ".*",       // instance name
+                        "B",
+                        (String) null) // prop changed
+                , new ChangeDescriptor(ChangeCategory.ADD_INSTANCE,
+                        OverlayUtilities.ARRAY_TYPE,    // type name
+                        OverlayUtilities.OROOT_A + ".*",       // instance name
+                        "C",
+                        (String) null)
+                , new ChangeDescriptor(ChangeCategory.ADD_INSTANCE,
+                       OverlayUtilities.LIST_TYPE,    // type name
+                       OverlayUtilities.OROOT_A + ".*",       // instance name
+                       "B",
+                       (String) null) // prop changed
+                , new ChangeDescriptor(ChangeCategory.ADD_INSTANCE,
+                       OverlayUtilities.ARRAY_TYPE,    // type name
+                       OverlayUtilities.OROOT_A + ".*",       // instance name
+                       "C",
+                       (String) null) // prop changed
+                , new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
+                        OverlayUtilities.OROOT_TYPE,    // type name
+                        OverlayUtilities.OROOT_A,       // instance name
+                        null,
+                        OverlayUtilities.A_LIST_CHILD,
+                        OverlayUtilities.A_ARRAY_CHILD) // prop changed
+        );
+    }
+    
+    /**
      * Tests overlay going from A(B)A(C)A(D) -> A(B)A(C)A(D)
      * 
      * @throws Exception

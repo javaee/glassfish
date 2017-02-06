@@ -355,8 +355,35 @@ public class Utilities {
                     differences,
                     xmlTag, myParent);
         }
+        else if (ChildType.LIST.equals(childNode.getChildType())) {
+            List<BaseHK2JAXBBean> newValueAsList = (List<BaseHK2JAXBBean>) newValue;
+            
+            List<BaseHK2JAXBBean> newListWithCopies = new ArrayList<BaseHK2JAXBBean>(newValueAsList.size());
+            for (BaseHK2JAXBBean aBean : newValueAsList) {
+                if (aBean == null) {
+                    throw new IllegalArgumentException("The new list may not have null elements");
+                }
+                
+                XmlRootHandle<?> aRoot = aBean._getRoot();
+                if (aRoot != null) {
+                    if (!aRoot.equals(root)) {
+                        throw new IllegalArgumentException("Can not have a bean from a different tree added with set method");
+                    }
+                    
+                    aBean = createUnrootedBeanTreeCopy(aBean);
+                }
+                
+                newListWithCopies.add(aBean);
+            }
+            
+            getListDifferences(childNode,
+                    currentValue, newListWithCopies,
+                    differences,
+                    xmlTag, myParent);
+            
+        }
         else {
-            throw new AssertionError("List and Direct not yet implemented");
+            throw new AssertionError("DIRECT not yet implemented");
         }
         
         if (!differences.getDifferences().isEmpty()) {
@@ -408,8 +435,10 @@ public class Utilities {
                 }
             }
             
-            if (index > multiChildren.size()) {
-                throw new IllegalArgumentException("The index given to add child " + childProperty + " to " + myParent + " is not in range");
+            if (changeList && index > multiChildren.size()) {
+                throw new IllegalArgumentException(
+                        "The index given to add child " + childProperty + " to " + myParent + " is not in range (" +
+                index + "," + multiChildren.size() + ")");
             }
             
             if (index == -1) {
@@ -1295,14 +1324,17 @@ public class Utilities {
         return retVal;
     }
     
-    private static Map<String, Integer> getIndexMap(List<BaseHK2JAXBBean> list) {
+    private static Map<String, Integer> getIndexMap(List<BaseHK2JAXBBean> list, String keyProperty) {
         Map<String, Integer> retVal = new HashMap<String, Integer>();
         for (int lcv = 0; lcv < list.size(); lcv++) {
             BaseHK2JAXBBean bean = list.get(lcv);
             String key = bean._getKeyValue();
             
             if (key == null) {
-                throw new AssertionError("Found a keyed bean with no key " + bean + " at index " + lcv + " in " + list);
+                key = (String) bean._getProperty(keyProperty);
+                if (key == null) {
+                    throw new AssertionError("Found a keyed bean with no key " + bean + " at index " + lcv + " in " + list);
+                }
             }
             
             retVal.put(key, lcv);
@@ -1311,7 +1343,7 @@ public class Utilities {
         return retVal;
     }
     
-    private static Map<String, Integer> getIndexMapArray(Object array) {
+    private static Map<String, Integer> getIndexMapArray(Object array, String keyProperty) {
         Map<String, Integer> retVal = new HashMap<String, Integer>();
         
         int length = Array.getLength(array);
@@ -1320,7 +1352,10 @@ public class Utilities {
             String key = bean._getKeyValue();
             
             if (key == null) {
-                throw new AssertionError("Found a keyed bean with no key " + bean + " at index " + lcv);
+                key = (String) bean._getProperty(keyProperty);
+                if (key == null) {
+                    throw new AssertionError("Found a keyed bean with no key " + bean + " at index " + lcv);
+                }
             }
             
             retVal.put(key, lcv);
@@ -1400,56 +1435,10 @@ public class Utilities {
                 }
             }
             else if (ChildType.LIST.equals(pModel.getChildType())) {
-                String keyProperty = pModel.getChildModel().getKeyProperty();
-                
-                List<BaseHK2JAXBBean> sourceValueList = (List<BaseHK2JAXBBean>) sourceValue;
-                List<BaseHK2JAXBBean> otherValueList = (List<BaseHK2JAXBBean>) otherValue;
-                
-                if (sourceValueList == null) sourceValueList = Collections.emptyList();
-                if (otherValueList == null) otherValueList = Collections.emptyList();
-                
-                if (keyProperty != null) {
-                    Map<String, Integer> sourceIndexMap = getIndexMap(sourceValueList);
-                    Map<String, Integer> otherIndexMap = getIndexMap(otherValueList);
-                    
-                    for (BaseHK2JAXBBean sourceBean : sourceValueList) {
-                        String sourceKeyValue = sourceBean._getKeyValue();
-                        
-                        if (!otherIndexMap.containsKey(sourceKeyValue)) {
-                            localDifference.addRemove(xmlTag, new RemoveData(xmlTag, sourceKeyValue, sourceBean));
-                        }
-                        else {
-                            int sourceIndex = sourceIndexMap.get(sourceKeyValue);
-                            int otherIndex = otherIndexMap.get(sourceKeyValue);
-                            
-                            Object otherBean = otherValueList.get(otherIndex);
-                            
-                            if (otherIndex != sourceIndex) {
-                                localDifference.addMove(xmlTag, new MoveData(sourceIndex, otherIndex));
-                            }
-                            
-                            // Need to know sub-differences
-                            getAllDifferences(sourceBean, (BaseHK2JAXBBean) otherBean, differences);
-                        }
-                    }
-                    
-                    for (BaseHK2JAXBBean otherBean : otherValueList) {
-                        String otherKeyValue = otherBean._getKeyValue();
-                        
-                        if (!sourceIndexMap.containsKey(otherKeyValue)) {
-                            int addedIndex = otherIndexMap.get(otherKeyValue);
-                            
-                            localDifference.addAdd(xmlTag, otherBean, addedIndex);
-                        }
-                    }
-                }
-                else {
-                    // Both lists are there, this is an unkeyed list, we go *purely* on list size
-                    UnkeyedDiff unkeyedDiff = new UnkeyedDiff(sourceValueList, otherValueList, source, pModel);
-                    Differences unkeyedDiffs = unkeyedDiff.compute();
-                    
-                    differences.merge(unkeyedDiffs);
-                }
+                getListDifferences(pModel,
+                        sourceValue, otherValue,
+                        differences,
+                        xmlTag, source);
             }
             else if (ChildType.ARRAY.equals(pModel.getChildType())) {
                 getArrayDifferences(pModel,
@@ -1457,6 +1446,72 @@ public class Utilities {
                         differences,
                         xmlTag, source);
             }
+        }
+        
+        if (localDifference.isDirty()) {
+            differences.addDifference(localDifference);
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static void getListDifferences(ParentedModel pModel,
+            Object sourceValue, Object otherValue,
+            Differences differences,
+            String xmlTag, BaseHK2JAXBBean source) {
+        Difference localDifference = new Difference(source);
+        
+        String keyProperty = pModel.getChildModel().getKeyProperty();
+        
+        List<BaseHK2JAXBBean> sourceValueList = (List<BaseHK2JAXBBean>) sourceValue;
+        List<BaseHK2JAXBBean> otherValueList = (List<BaseHK2JAXBBean>) otherValue;
+        
+        if (sourceValueList == null) sourceValueList = Collections.emptyList();
+        if (otherValueList == null) otherValueList = Collections.emptyList();
+        
+        if (keyProperty != null) {
+            Map<String, Integer> sourceIndexMap = getIndexMap(sourceValueList, keyProperty);
+            Map<String, Integer> otherIndexMap = getIndexMap(otherValueList, keyProperty);
+            
+            for (BaseHK2JAXBBean sourceBean : sourceValueList) {
+                String sourceKeyValue = sourceBean._getKeyValue();
+                
+                if (!otherIndexMap.containsKey(sourceKeyValue)) {
+                    localDifference.addRemove(xmlTag, new RemoveData(xmlTag, sourceKeyValue, sourceBean));
+                }
+                else {
+                    int sourceIndex = sourceIndexMap.get(sourceKeyValue);
+                    int otherIndex = otherIndexMap.get(sourceKeyValue);
+                    
+                    Object otherBean = otherValueList.get(otherIndex);
+                    
+                    if (otherIndex != sourceIndex) {
+                        localDifference.addMove(xmlTag, new MoveData(sourceIndex, otherIndex));
+                    }
+                    
+                    // Need to know sub-differences
+                    getAllDifferences(sourceBean, (BaseHK2JAXBBean) otherBean, differences);
+                }
+            }
+            
+            for (BaseHK2JAXBBean otherBean : otherValueList) {
+                String otherKeyValue = otherBean._getKeyValue();
+                if (otherKeyValue == null) {
+                    otherKeyValue = (String) otherBean._getProperty(keyProperty);
+                }
+                
+                if (!sourceIndexMap.containsKey(otherKeyValue)) {
+                    int addedIndex = otherIndexMap.get(otherKeyValue);
+                    
+                    localDifference.addAdd(xmlTag, otherBean, addedIndex);
+                }
+            }
+        }
+        else {
+            // Both lists are there, this is an unkeyed list, we go *purely* on list size
+            UnkeyedDiff unkeyedDiff = new UnkeyedDiff(sourceValueList, otherValueList, source, pModel);
+            Differences unkeyedDiffs = unkeyedDiff.compute();
+            
+            differences.merge(unkeyedDiffs);
         }
         
         if (localDifference.isDirty()) {
@@ -1476,8 +1531,8 @@ public class Utilities {
         Object otherArray = (otherValue == null) ? new BaseHK2JAXBBean[0] : otherValue;
         
         if (keyProperty != null) {
-            Map<String, Integer> sourceIndexMap = getIndexMapArray(sourceArray);
-            Map<String, Integer> otherIndexMap = getIndexMapArray(otherArray);
+            Map<String, Integer> sourceIndexMap = getIndexMapArray(sourceArray, keyProperty);
+            Map<String, Integer> otherIndexMap = getIndexMapArray(otherArray, keyProperty);
             
             int sourceLength = Array.getLength(sourceArray);
             
@@ -1512,6 +1567,9 @@ public class Utilities {
                 BaseHK2JAXBBean otherBean = (BaseHK2JAXBBean) Array.get(otherArray, lcv);
                 
                 String otherKeyValue = otherBean._getKeyValue();
+                if (otherKeyValue == null) {
+                    otherKeyValue = (String) otherBean._getProperty(keyProperty);
+                }
                 
                 if (!sourceIndexMap.containsKey(otherKeyValue)) {
                     // This is an add
@@ -1530,7 +1588,6 @@ public class Utilities {
         if (localDifference.isDirty()) {
             differences.addDifference(localDifference);
         }
-    
     }
     
     /**
