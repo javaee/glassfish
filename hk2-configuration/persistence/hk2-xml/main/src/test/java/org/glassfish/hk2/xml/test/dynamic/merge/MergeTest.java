@@ -88,8 +88,8 @@ public class MergeTest {
     private final static String DOMAIN1_NAME = "domain1";
     public final static String RSA_ATZ_PROV_NAME = "RSA";
     private final static String RSA_DOM_PFX = "rsa";
-    private final static String ALICE_NAME = "Alice";
-    private final static String BOB_NAME = "Bob";
+    public final static String ALICE_NAME = "Alice";
+    public final static String BOB_NAME = "Bob";
     public final static String CAROL_NAME = "Carol";
     public final static String DAVE_NAME = "Dave";
     public final static String EDDIE_NAME = "Eddie";
@@ -132,8 +132,9 @@ public class MergeTest {
     public final static String SSL_MANAGER_TYPE = "/domain/security-manager/ssl-manager";
     public final static String DIAGNOSTICS_TYPE = "/domain/diagnostics";
     
-    private final static String ALICE_INSTANCE = "domain.Alice";
-    private final static String BOB_INSTANCE = "domain.Bob";
+    public final static String ALICE_INSTANCE = "domain.Alice";
+    public final static String BOB_INSTANCE = "domain.Bob";
+    public final static String CAROL_INSTANCE = "domain.Carol";
     public final static String DAVE_INSTANCE = "domain.Dave";
     public final static String EDDIE_INSTANCE = "domain.Eddie";
     private final static String SERVER0_INSTANCE = "domain.Alice.Server-0";

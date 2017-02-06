@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
 import org.glassfish.hk2.configuration.hub.api.Change;
 import org.glassfish.hk2.configuration.hub.api.Change.ChangeCategory;
 import org.glassfish.hk2.configuration.hub.api.Hub;
@@ -57,7 +58,6 @@ import org.glassfish.hk2.xml.test.basic.beans.Commons;
 import org.glassfish.hk2.xml.test.basic.beans.Museum;
 import org.glassfish.hk2.xml.test.beans.AuthorizationProviderBean;
 import org.glassfish.hk2.xml.test.beans.DomainBean;
-import org.glassfish.hk2.xml.test.beans.HttpFactoryBean;
 import org.glassfish.hk2.xml.test.beans.JMSServerBean;
 import org.glassfish.hk2.xml.test.beans.MachineBean;
 import org.glassfish.hk2.xml.test.beans.SSLManagerBean;
@@ -226,43 +226,6 @@ public class RawSetsTest {
     }
     
     /**
-     * Tests that an attempt to set an already set direct child will
-     * fail.  Note this test should be removed if we ever decide to
-     * support some sort of automatic merge in this case
-     * 
-     * @throws Exception
-     */
-    @Test
-    @org.junit.Ignore
-    public void testChangeDirectTypeWithSetFails() throws Exception {
-        ServiceLocator locator = Utilities.createLocator(UpdateListener.class,
-                SSLManagerBeanCustomizer.class);
-        XmlService xmlService = locator.getService(XmlService.class);
-        Hub hub = locator.getService(Hub.class);
-        
-        URL url = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
-        
-        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshal(url.toURI(), DomainBean.class);
-        
-        MergeTest.verifyDomain1Xml(rootHandle, hub, locator);
-        
-        DomainBean domain = rootHandle.getRoot();
-        
-        SecurityManagerBean newOne = xmlService.createBean(SecurityManagerBean.class);
-        
-        try {
-            domain.setSecurityManager(newOne);
-            Assert.fail("Should have failed trying to change an existing bean");
-        }
-        catch (IllegalStateException ise) {
-            // Expected
-        }
-        
-        // Verify nothing was changed
-        MergeTest.verifyDomain1Xml(rootHandle, hub, locator);
-    }
-    
-    /**
      * Tests that setting null back to null works
      * 
      * @throws Exception
@@ -328,56 +291,6 @@ public class RawSetsTest {
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
-    public void testListSetToDifferentFails() throws Exception {
-        ServiceLocator locator = Utilities.createLocator(UpdateListener.class,
-                SSLManagerBeanCustomizer.class);
-        XmlService xmlService = locator.getService(XmlService.class);
-        Hub hub = locator.getService(Hub.class);
-        
-        URL url = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
-        
-        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshal(url.toURI(), DomainBean.class);
-        DomainBean domain = rootHandle.getRoot();
-        
-        MergeTest.verifyDomain1Xml(rootHandle, hub, locator);
-        
-        List<MachineBean> newBeans = new LinkedList<MachineBean>();
-        
-        try {
-           domain.setMachines(newBeans);
-           Assert.fail("Should not be able to set machines at this time");
-        }
-        catch (IllegalStateException ise) {
-            // expected
-        }
-        
-        try {
-            domain.setMachines(null);
-            Assert.fail("Should not be able to set machines at this time");
-        }
-        catch (IllegalStateException ise) {
-            // expected
-        }
-        
-        List<MachineBean> oldBeans = domain.getMachines();
-         
-        try {
-            domain.setMachines(oldBeans);
-            Assert.fail("Should not be able to set machines at this time");
-        }
-        catch (IllegalStateException ise) {
-            // expected
-        }
-    }
-    
-    /**
-     * Tests that setting a bean to itself is ok (one
-     * case of set to set that works)
-     * 
-     * @throws Exception
-     */
-    @Test
     // @org.junit.Ignore
     public void testArrayListSwap() throws Exception {
         ServiceLocator locator = Utilities.createLocator(UpdateListener.class,
@@ -417,6 +330,133 @@ public class RawSetsTest {
                         null,
                         JMS_SERVER_PROPERTY) // prop changed
         );
+    }
+    
+    
+    
+    /**
+     * Tests that setting a bean to itself is ok (one
+     * case of set to set that works)
+     * 
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testListSetModificationsSwap() throws Exception {
+        ServiceLocator locator = Utilities.createLocator(UpdateListener.class,
+                SSLManagerBeanCustomizer.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        XmlRootHandle<DomainBean> rootHandle = xmlService.createEmptyHandle(DomainBean.class);
+        rootHandle.addRoot();
+        
+        DomainBean domain = rootHandle.getRoot();
+        
+        MachineBean aliceBean = createMachineBean(xmlService, MergeTest.ALICE_NAME);
+        MachineBean bobBean = createMachineBean(xmlService, MergeTest.BOB_NAME);
+        MachineBean carolBean = createMachineBean(xmlService, MergeTest.CAROL_NAME);
+        
+        List<MachineBean> allBeans = new LinkedList<MachineBean>();
+        allBeans.add(aliceBean);
+        allBeans.add(bobBean);
+        allBeans.add(carolBean);
+        
+        domain.setMachines(allBeans);
+        
+        // Ensures that modifying the original list doesn't affect anything
+        allBeans.clear();
+        
+        UpdateListener listener = locator.getService(UpdateListener.class);
+        
+        List<Change> changes = listener.getChanges();
+        
+        OverlayUtilities.checkChanges(changes,
+                new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
+                        MergeTest.DOMAIN_TYPE,    // type name
+                        MergeTest.DOMAIN_INSTANCE,       // instance name
+                        null,
+                        JMS_SERVER_PROPERTY) // prop changed
+        );
+        
+        Assert.assertNotNull(locator.getService(MachineBean.class, MergeTest.ALICE_NAME));
+        Assert.assertNotNull(locator.getService(MachineBean.class, MergeTest.BOB_NAME));
+        Assert.assertNotNull(locator.getService(MachineBean.class, MergeTest.CAROL_NAME));
+        Assert.assertNull(locator.getService(MachineBean.class, MergeTest.DAVE_NAME));
+        
+        List<MachineBean> fromRootMachines = domain.getMachines();
+        Assert.assertEquals(3, fromRootMachines.size());
+        Assert.assertEquals(MergeTest.ALICE_NAME, fromRootMachines.get(0).getName());
+        Assert.assertEquals(MergeTest.BOB_NAME, fromRootMachines.get(1).getName());
+        Assert.assertEquals(MergeTest.CAROL_NAME, fromRootMachines.get(2).getName());
+        
+        checkHubInstanceWithName(hub, MergeTest.MACHINE_TYPE, MergeTest.ALICE_INSTANCE, MergeTest.ALICE_NAME);
+        checkHubInstanceWithName(hub, MergeTest.MACHINE_TYPE, MergeTest.BOB_INSTANCE, MergeTest.BOB_NAME);
+        checkHubInstanceWithName(hub, MergeTest.MACHINE_TYPE, MergeTest.CAROL_INSTANCE, MergeTest.CAROL_NAME);
+        checkHubNoInstance(hub, MergeTest.MACHINE_TYPE, MergeTest.DAVE_INSTANCE);
+        
+        MachineBean daveBean = createMachineBean(xmlService, MergeTest.DAVE_NAME);
+        
+        // This next thing has everything: A move, a delete and an add
+        allBeans.add(carolBean);
+        allBeans.add(daveBean);
+        allBeans.add(aliceBean);
+        
+        domain.setMachines(allBeans);
+        
+        Assert.assertNotNull(locator.getService(MachineBean.class, MergeTest.ALICE_NAME));
+        Assert.assertNull(locator.getService(MachineBean.class, MergeTest.BOB_NAME));
+        Assert.assertNotNull(locator.getService(MachineBean.class, MergeTest.CAROL_NAME));
+        Assert.assertNotNull(locator.getService(MachineBean.class, MergeTest.DAVE_NAME));
+        
+        fromRootMachines = domain.getMachines();
+        Assert.assertEquals(3, fromRootMachines.size());
+        Assert.assertEquals(MergeTest.CAROL_NAME, fromRootMachines.get(0).getName());
+        Assert.assertEquals(MergeTest.DAVE_NAME, fromRootMachines.get(1).getName());
+        Assert.assertEquals(MergeTest.ALICE_NAME, fromRootMachines.get(2).getName());
+        
+        checkHubInstanceWithName(hub, MergeTest.MACHINE_TYPE, MergeTest.ALICE_INSTANCE, MergeTest.ALICE_NAME);
+        checkHubNoInstance(hub, MergeTest.MACHINE_TYPE, MergeTest.BOB_INSTANCE);
+        checkHubInstanceWithName(hub, MergeTest.MACHINE_TYPE, MergeTest.CAROL_INSTANCE, MergeTest.CAROL_NAME);
+        checkHubInstanceWithName(hub, MergeTest.MACHINE_TYPE, MergeTest.DAVE_INSTANCE, MergeTest.DAVE_NAME);
+        
+        changes = listener.getChanges();
+        
+        OverlayUtilities.checkChanges(changes,
+                new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
+                        MergeTest.DOMAIN_TYPE,    // type name
+                        MergeTest.DOMAIN_INSTANCE,       // instance name
+                        null,
+                        JMS_SERVER_PROPERTY) // prop changed
+        );
+        
+    }
+    
+    private static void checkHubNoInstance(Hub hub, String typeName, String instanceName) {
+        BeanDatabase bd = hub.getCurrentDatabase();
+        
+        Instance instance = bd.getInstance(typeName, instanceName);
+        Assert.assertNull(instance);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static void checkHubInstanceWithName(Hub hub, String typeName, String instanceName, String name) {
+        BeanDatabase bd = hub.getCurrentDatabase();
+        
+        Instance instance = bd.getInstance(typeName, instanceName);
+        Assert.assertNotNull(instance);
+        
+        Map<String, Object> bean = (Map<String, Object>) instance.getBean();
+        Assert.assertNotNull(bean);
+        
+        Assert.assertEquals(name, bean.get(Commons.NAME_TAG));
+    }
+    
+    private final static MachineBean createMachineBean(XmlService xmlService, String name) {
+        MachineBean retVal = xmlService.createBean(MachineBean.class);
+        retVal.setName(name);
+       
+        return retVal;
     }
 
 }
