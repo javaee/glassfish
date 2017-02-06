@@ -488,8 +488,6 @@ public class VirtualServer extends StandardHost
 
     private ActionReport report = null;
 
-    private HttpProbeImpl httpProbe = null;
-
     // ------------------------------------------------------------- Properties
 
     /**
@@ -1836,22 +1834,7 @@ public class VirtualServer extends StandardHost
 
     void addProbes(boolean globalAccessLoggingEnabled) {
 
-        List<String> listenerList = StringUtils.parseStringList(
-                vsBean.getNetworkListeners(), ",");
-        String[] listeners = (listenerList != null) ?
-                listenerList.toArray(new String[listenerList.size()]) :
-                new String[0];
-        List<NetworkListener> networkListeners = new ArrayList<NetworkListener>();
-
-        for (String listener : listeners) {
-            for (NetworkListener networkListener :
-                    serverConfig.getNetworkConfig().getNetworkListeners().getNetworkListener()) {
-                if (networkListener.getName().equals(listener)) {
-                    networkListeners.add(networkListener);
-                }
-            }
-        }
-        for (final NetworkListener listener : networkListeners) {
+        for (final NetworkListener listener : getGrizzlyNetworkListeners()) {
             try {
                 final GrizzlyProxy proxy = (GrizzlyProxy) grizzlyService.lookupNetworkProxy(listener);
                 if (proxy != null) {
@@ -1866,7 +1849,7 @@ public class VirtualServer extends StandardHost
                     } else {
                         for (HttpCodecFilter codecFilter : codecFilters) {
                             if (codecFilter.getMonitoringConfig().getProbes().length == 0) {
-                                httpProbe = new HttpProbeImpl(listener, isAccessLoggingEnabled(globalAccessLoggingEnabled));
+                                HttpProbeImpl httpProbe = new HttpProbeImpl(listener, isAccessLoggingEnabled(globalAccessLoggingEnabled));
                                 codecFilter.getMonitoringConfig().addProbes(httpProbe);
                             }
                         }
@@ -1946,8 +1929,9 @@ public class VirtualServer extends StandardHost
                 webcontainerFeatureFactory);
             if (restart) {
                 accessLogValve.start();
-                if (httpProbe != null)
-                    httpProbe.enableAccessLogging();
+                for (HttpProbeImpl p : getHttpProbeImpl()) {
+                    p.enableAccessLogging();
+                }
             }
         } catch (LifecycleException le) {
             _logger.log(Level.SEVERE, UNABLE_RECONFIGURE_ACCESS_LOG, le);
@@ -1975,8 +1959,9 @@ public class VirtualServer extends StandardHost
                     accessLogValve.stop();
                 }
                 accessLogValve.start();
-                if (httpProbe != null)
-                    httpProbe.enableAccessLogging();
+                for (HttpProbeImpl p : getHttpProbeImpl()) {
+                    p.enableAccessLogging();
+                }
             } catch (LifecycleException le) {
                 _logger.log(Level.SEVERE, UNABLE_RECONFIGURE_ACCESS_LOG, le);
             }
@@ -1989,8 +1974,9 @@ public class VirtualServer extends StandardHost
      */
     void disableAccessLogging() {
         removeValve(accessLogValve);
-        if (httpProbe != null)
-            httpProbe.disableAccessLogging();
+        for (HttpProbeImpl p : getHttpProbeImpl()) {
+            p.disableAccessLogging();
+        }
     }
 
     /**
@@ -2714,8 +2700,46 @@ public class VirtualServer extends StandardHost
         }
     }
 
+    private List<NetworkListener> getGrizzlyNetworkListeners() {
+        List<String> listenerList = StringUtils.parseStringList(vsBean.getNetworkListeners(), ",");
+        String[] listeners = (listenerList != null) ? listenerList.toArray(new String[listenerList.size()]) : new String[0];
+        List<NetworkListener> networkListeners = new ArrayList<NetworkListener>();
 
+        for (String listener : listeners) {
+            for (NetworkListener networkListener : serverConfig.getNetworkConfig().getNetworkListeners().getNetworkListener()) {
+                if (networkListener.getName().equals(listener)) {
+                    networkListeners.add(networkListener);
+                }
+            }
+        }
 
+        return networkListeners;
+    }
+
+    private List<HttpProbeImpl> getHttpProbeImpl() {
+        List<HttpProbeImpl> httpProbes = new ArrayList<>();
+        for (final NetworkListener listener : getGrizzlyNetworkListeners()) {
+            final GrizzlyProxy proxy = (GrizzlyProxy) grizzlyService.lookupNetworkProxy(listener);
+            if (proxy != null) {
+                 GenericGrizzlyListener grizzlyListener = (GenericGrizzlyListener) proxy.getUnderlyingListener();
+                 List<HttpCodecFilter> codecFilters = grizzlyListener.getFilters(HttpCodecFilter.class);
+                 if (codecFilters != null && !codecFilters.isEmpty()) {
+                     for (HttpCodecFilter codecFilter : codecFilters) {
+                         HttpProbe[] probes = codecFilter.getMonitoringConfig().getProbes();
+                         if (probes != null) {
+                             for (HttpProbe probe : probes) {
+                                 if (probe instanceof HttpProbeImpl) {
+                                     httpProbes.add((HttpProbeImpl)probe);
+                                 }
+                             }
+                         }
+                     }
+                 }
+            }
+        }
+
+        return httpProbes;
+    }
 
     // ---------------------------------------------------------- Nested Classes
 
