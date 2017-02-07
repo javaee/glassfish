@@ -82,6 +82,7 @@ public class RawSetsTest {
     
     private final static String JMS_SERVER_PROPERTY = "jms-server";
     private final static String MACHINE_PROPERTY = "machine";
+    private final static String AUTHORIZATION_PROVIDER_PROPERTY = "authorization-provider";
     
     public final static String AGE_TAG = "age";
     
@@ -331,13 +332,12 @@ public class RawSetsTest {
                         null,
                         JMS_SERVER_PROPERTY) // prop changed
         );
+        
+        // TODO Need an add and a delete
     }
     
-    
-    
     /**
-     * Tests that setting a bean to itself is ok (one
-     * case of set to set that works)
+     * Tests that setting things in a list is fine
      * 
      * @throws Exception
      */
@@ -457,6 +457,77 @@ public class RawSetsTest {
         
     }
     
+    /**
+     * Tests that setting things in a direct bean is fine
+     * 
+     * @throws Exception
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testDirectSetModification() throws Exception {
+        ServiceLocator locator = Utilities.createLocator(UpdateListener.class,
+                SSLManagerBeanCustomizer.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        XmlRootHandle<DomainBean> rootHandle = xmlService.createEmptyHandle(DomainBean.class);
+        rootHandle.addRoot();
+        
+        DomainBean domain = rootHandle.getRoot();
+        
+        SecurityManagerBean originalSM = xmlService.createBean(SecurityManagerBean.class);
+        AuthorizationProviderBean aliceBean = createAuthorizationProviderBean(xmlService, MergeTest.ALICE_NAME);
+        
+        originalSM.addAuthorizationProvider(aliceBean);
+        
+        domain.setSecurityManager(originalSM);
+        
+        Assert.assertNotNull(locator.getService(AuthorizationProviderBean.class, MergeTest.ALICE_NAME));
+        Assert.assertNull(locator.getService(AuthorizationProviderBean.class, MergeTest.BOB_NAME));
+        
+        checkHubInstanceWithName(hub, MergeTest.AUTHORIZATION_PROVIDER_TYPE,
+                MergeTest.SECURITY_MANAGER_INSTANCE + "." + MergeTest.ALICE_NAME, MergeTest.ALICE_NAME);
+        checkHubNoInstance(hub, MergeTest.AUTHORIZATION_PROVIDER_TYPE,
+                MergeTest.SECURITY_MANAGER_INSTANCE + "." + MergeTest.BOB_NAME);
+        
+        SecurityManagerBean newSM = xmlService.createBean(SecurityManagerBean.class);
+        AuthorizationProviderBean bobBean = createAuthorizationProviderBean(xmlService, MergeTest.BOB_NAME);
+        
+        newSM.addAuthorizationProvider(bobBean);
+        
+        domain.setSecurityManager(newSM);
+        
+        Assert.assertNull(locator.getService(AuthorizationProviderBean.class, MergeTest.ALICE_NAME));
+        Assert.assertNotNull(locator.getService(AuthorizationProviderBean.class, MergeTest.BOB_NAME));
+        
+        checkHubInstanceWithName(hub, MergeTest.AUTHORIZATION_PROVIDER_TYPE,
+                MergeTest.SECURITY_MANAGER_INSTANCE + "." + MergeTest.BOB_NAME, MergeTest.BOB_NAME);
+        checkHubNoInstance(hub, MergeTest.AUTHORIZATION_PROVIDER_TYPE,
+                MergeTest.SECURITY_MANAGER_INSTANCE + "." + MergeTest.ALICE_NAME);
+        
+        UpdateListener listener = locator.getService(UpdateListener.class);
+        
+        List<Change> changes = listener.getChanges();
+        
+        OverlayUtilities.checkChanges(changes,
+                new ChangeDescriptor(ChangeCategory.ADD_INSTANCE,
+                        MergeTest.AUTHORIZATION_PROVIDER_TYPE,    // type name
+                        MergeTest.SECURITY_MANAGER_INSTANCE + "." + MergeTest.BOB_NAME,       // instance name
+                        MergeTest.BOB_NAME)
+                , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
+                        MergeTest.AUTHORIZATION_PROVIDER_TYPE,    // type name
+                        MergeTest.SECURITY_MANAGER_INSTANCE + "." + MergeTest.ALICE_NAME,       // instance name
+                        MergeTest.ALICE_NAME)
+                , new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
+                        MergeTest.SECURITY_MANAGER_TYPE,    // type name
+                        MergeTest.SECURITY_MANAGER_INSTANCE,       // instance name
+                        null,
+                        AUTHORIZATION_PROVIDER_PROPERTY) // prop changed
+        );
+        
+        
+    }
+    
     private static void checkHubNoInstance(Hub hub, String typeName, String instanceName) {
         BeanDatabase bd = hub.getCurrentDatabase();
         
@@ -479,6 +550,13 @@ public class RawSetsTest {
     
     private final static MachineBean createMachineBean(XmlService xmlService, String name) {
         MachineBean retVal = xmlService.createBean(MachineBean.class);
+        retVal.setName(name);
+       
+        return retVal;
+    }
+    
+    private final static AuthorizationProviderBean createAuthorizationProviderBean(XmlService xmlService, String name) {
+        AuthorizationProviderBean retVal = xmlService.createBean(AuthorizationProviderBean.class);
         retVal.setName(name);
        
         return retVal;

@@ -310,6 +310,7 @@ public class Utilities {
         throw new AssertionError("Unknown parameter kind: " + typeMirror.getKind());
     }
     
+    @SuppressWarnings("unchecked")
     public static void internalModifyChild(
             BaseHK2JAXBBean myParent,
             String childProperty,
@@ -382,8 +383,22 @@ public class Utilities {
                     xmlTag, myParent);
             
         }
+        else if (ChildType.DIRECT.equals(childNode.getChildType())) {
+            BaseHK2JAXBBean aBean = (BaseHK2JAXBBean) newValue;
+            
+            XmlRootHandle<?> aRoot = aBean._getRoot();
+            if (aRoot != null) {
+                if (!aRoot.equals(root)) {
+                    throw new IllegalArgumentException("Can not have a bean from a different tree added with set method (direct child)");
+                }
+                
+                aBean = createUnrootedBeanTreeCopy(aBean);
+            }
+            
+            getAllDifferences((BaseHK2JAXBBean) currentValue, aBean, differences);
+        }
         else {
-            throw new AssertionError("DIRECT not yet implemented");
+            throw new AssertionError("Unknown child type: " + childNode.getChildType());
         }
         
         if (!differences.getDifferences().isEmpty()) {
