@@ -94,11 +94,16 @@ public class SimpleBVServlet extends HttpServlet {
         try {
             violations =
                     beanValidator.validateValue(Person.class, "nonExistentProperty", listOfString);
+            System.out.println("Check: should not print this");
         } catch (IllegalArgumentException iae) {
             out.print("<p>");
             out.print("case2: caught IllegalArgumentException.  Message: " +
                     iae.getMessage());
             out.print("</p>");
+	    System.out.println("Caught IllegalArgumentException: must pass test");
+        }catch (Exception ex) {
+            System.out.println("check: if any other exception?");
+	    ex.printStackTrace();
         }
         Person person = new Person();
         
