@@ -132,6 +132,7 @@
       <java-config debug-options="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9009" system-classpath="" classpath-suffix="">
         <jvm-options>-XX:MaxPermSize=192m</jvm-options>
         <jvm-options>-client</jvm-options>
+        <jvm-options>-Xbootclasspath/p:${com.sun.aas.installRoot}/lib/grizzly-npn-bootstrap.jar</jvm-options>
         <jvm-options>-XX:+UnlockDiagnosticVMOptions</jvm-options>
         <jvm-options>-XX:+LogVMOutput</jvm-options>
         <jvm-options>-XX:LogFile=${com.sun.aas.instanceRoot}/logs/jvm.log</jvm-options>
@@ -167,6 +168,7 @@
             <http max-connections="250" default-virtual-server="server" server-name="">
               <file-cache enabled="false" />
             </http>
+            <http2></http2>
             <ssl ssl3-enabled="false" cert-nickname="s1as" />
           </protocol>
           <protocol name="admin-listener">
