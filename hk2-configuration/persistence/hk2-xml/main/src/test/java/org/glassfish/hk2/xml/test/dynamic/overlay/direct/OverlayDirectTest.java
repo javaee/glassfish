@@ -52,8 +52,12 @@ import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
+import org.glassfish.hk2.xml.test.beans.DiagnosticsBean;
+import org.glassfish.hk2.xml.test.beans.DomainBean;
+import org.glassfish.hk2.xml.test.dynamic.merge.MergeTest;
 import org.glassfish.hk2.xml.test.dynamic.overlay.ChangeDescriptor;
 import org.glassfish.hk2.xml.test.dynamic.overlay.OverlayUtilities;
+import org.glassfish.hk2.xml.test.dynamic.rawsets.RawSetsTest;
 import org.glassfish.hk2.xml.test.dynamic.rawsets.UpdateListener;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
 import org.junit.Assert;
@@ -556,6 +560,55 @@ public class OverlayDirectTest {
                         OverlayUtilities.OROOT_B,      // instance name
                         DIRECT_WITH_UNKEYED
                  )
+        );
+    }
+    
+    /**
+     * Tests changing a keyed direct child from one key to another
+     */
+    @Test
+    @org.junit.Ignore
+    public void testChangeKeyedDirectChildWithOverlay() {
+        ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        UpdateListener listener = locator.getService(UpdateListener.class);
+        
+        XmlRootHandle<DomainBean> rootHandle1 = xmlService.createEmptyHandle(DomainBean.class);
+        rootHandle1.addRoot();
+        
+        DomainBean domain1 = rootHandle1.getRoot();
+        
+        DiagnosticsBean aliceBean = RawSetsTest.createDiagnosticsBean(xmlService, MergeTest.ALICE_NAME);
+        domain1.setDiagnostics(aliceBean);
+        
+        XmlRootHandle<DomainBean> rootHandle2 = xmlService.createEmptyHandle(DomainBean.class, false, false);
+        rootHandle2.addRoot();
+        
+        DomainBean domain2 = rootHandle2.getRoot();
+        
+        DiagnosticsBean bobBean = RawSetsTest.createDiagnosticsBean(xmlService, MergeTest.BOB_NAME);
+        domain2.setDiagnostics(bobBean);
+        
+        
+        rootHandle1.overlay(rootHandle2);
+        
+        List<Change> changes = listener.getChanges();
+        
+        OverlayUtilities.checkChanges(changes,
+                new ChangeDescriptor(ChangeCategory.ADD_INSTANCE,
+                        MergeTest.DIAGNOSTICS_TYPE,    // type name
+                        MergeTest.DIAGNOSTICS_INSTANCE,       // instance name
+                        MergeTest.BOB_NAME)
+                , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
+                        MergeTest.DIAGNOSTICS_TYPE,    // type name
+                        MergeTest.DIAGNOSTICS_INSTANCE,       // instance name
+                        MergeTest.ALICE_NAME)
+                , new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
+                        MergeTest.DOMAIN_TYPE,    // type name
+                        MergeTest.DOMAIN_INSTANCE,       // instance name
+                        null,
+                        "diagnostics") // prop changed
         );
     }
     

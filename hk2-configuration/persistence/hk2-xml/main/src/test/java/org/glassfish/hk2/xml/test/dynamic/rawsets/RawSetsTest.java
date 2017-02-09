@@ -51,12 +51,14 @@ import org.glassfish.hk2.configuration.hub.api.Change;
 import org.glassfish.hk2.configuration.hub.api.Change.ChangeCategory;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.basic.beans.Commons;
 import org.glassfish.hk2.xml.test.basic.beans.Museum;
 import org.glassfish.hk2.xml.test.beans.AuthorizationProviderBean;
+import org.glassfish.hk2.xml.test.beans.DiagnosticsBean;
 import org.glassfish.hk2.xml.test.beans.DomainBean;
 import org.glassfish.hk2.xml.test.beans.JMSServerBean;
 import org.glassfish.hk2.xml.test.beans.MachineBean;
@@ -528,6 +530,69 @@ public class RawSetsTest {
         
     }
     
+    /**
+     * Tests that setting things in a direct bean is fine
+     * 
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testKeyedDirectSetModification() throws Exception {
+        ServiceLocator locator = Utilities.createLocator(UpdateListener.class,
+                SSLManagerBeanCustomizer.class);
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        XmlRootHandle<DomainBean> rootHandle = xmlService.createEmptyHandle(DomainBean.class);
+        rootHandle.addRoot();
+        
+        DomainBean domain = rootHandle.getRoot();
+        
+        DiagnosticsBean aliceBean = createDiagnosticsBean(xmlService, MergeTest.ALICE_NAME);
+        
+        domain.setDiagnostics(aliceBean);
+        
+        ServiceLocatorUtilities.dumpAllDescriptors(locator, System.out);
+        
+        Assert.assertNotNull(locator.getService(DiagnosticsBean.class, MergeTest.ALICE_NAME));
+        Assert.assertNull(locator.getService(DiagnosticsBean.class, MergeTest.BOB_NAME));
+        
+        checkHubInstanceWithName(hub, MergeTest.DIAGNOSTICS_TYPE,
+                MergeTest.DIAGNOSTICS_INSTANCE, MergeTest.ALICE_NAME);
+        
+        DiagnosticsBean bobBean = createDiagnosticsBean(xmlService, MergeTest.BOB_NAME);
+        
+        domain.setDiagnostics(bobBean);
+        
+        Assert.assertNull(locator.getService(DiagnosticsBean.class, MergeTest.ALICE_NAME));
+        Assert.assertNotNull(locator.getService(DiagnosticsBean.class, MergeTest.BOB_NAME));
+        
+        checkHubInstanceWithName(hub, MergeTest.DIAGNOSTICS_TYPE,
+                MergeTest.DIAGNOSTICS_INSTANCE, MergeTest.BOB_NAME);
+        
+        UpdateListener listener = locator.getService(UpdateListener.class);
+        
+        List<Change> changes = listener.getChanges();
+        
+        OverlayUtilities.checkChanges(changes,
+                new ChangeDescriptor(ChangeCategory.ADD_INSTANCE,
+                        MergeTest.AUTHORIZATION_PROVIDER_TYPE,    // type name
+                        MergeTest.SECURITY_MANAGER_INSTANCE + "." + MergeTest.BOB_NAME,       // instance name
+                        MergeTest.BOB_NAME)
+                , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
+                        MergeTest.AUTHORIZATION_PROVIDER_TYPE,    // type name
+                        MergeTest.SECURITY_MANAGER_INSTANCE + "." + MergeTest.ALICE_NAME,       // instance name
+                        MergeTest.ALICE_NAME)
+                , new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
+                        MergeTest.SECURITY_MANAGER_TYPE,    // type name
+                        MergeTest.SECURITY_MANAGER_INSTANCE,       // instance name
+                        null,
+                        AUTHORIZATION_PROVIDER_PROPERTY) // prop changed
+        );
+        
+        
+    }
+    
     private static void checkHubNoInstance(Hub hub, String typeName, String instanceName) {
         BeanDatabase bd = hub.getCurrentDatabase();
         
@@ -557,6 +622,13 @@ public class RawSetsTest {
     
     private final static AuthorizationProviderBean createAuthorizationProviderBean(XmlService xmlService, String name) {
         AuthorizationProviderBean retVal = xmlService.createBean(AuthorizationProviderBean.class);
+        retVal.setName(name);
+       
+        return retVal;
+    }
+    
+    public final static DiagnosticsBean createDiagnosticsBean(XmlService xmlService, String name) {
+        DiagnosticsBean retVal = xmlService.createBean(DiagnosticsBean.class);
         retVal.setName(name);
        
         return retVal;

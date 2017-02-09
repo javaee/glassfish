@@ -216,7 +216,9 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
             boolean doAdd = false;
             boolean doRemove = false;
             boolean doModify = false;
+            boolean doDirectReplace = false;
             Object currentValue = null;
+            String directChildKey = null;
             
             if (!rawSet) {
                 changeControl.getReadLock().lock();
@@ -234,6 +236,11 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
                             if (currentValue == null && propValue != null) {
                                 // This is an add
                                 doAdd = true;
+                                
+                                String childKeyProperty = childModel.getChildModel().getKeyProperty();
+                                if (childKeyProperty != null) {
+                                    directChildKey = (String) ((BaseHK2JAXBBean) propValue)._getProperty(childKeyProperty);
+                                }
                             }
                             else if (currentValue != null && propValue == null) {
                                 // This is a remove
@@ -241,7 +248,21 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
                             }
                             else {
                                 // Both beans are different
-                                doModify = true;
+                                String childKeyProperty = childModel.getChildModel().getKeyProperty();
+                                if (childKeyProperty != null) {
+                                    String currentKey = (String) ((BaseHK2JAXBBean) currentValue)._getProperty(childKeyProperty);
+                                    directChildKey = (String) ((BaseHK2JAXBBean) propValue)._getProperty(childKeyProperty);
+                                    
+                                    if (GeneralUtilities.safeEquals(currentKey, directChildKey)) {
+                                        doModify = true;
+                                    }
+                                    else {
+                                        doDirectReplace = true;
+                                    }
+                                }
+                                else {
+                                    doModify = true;
+                                }
                             }
                         }
                         else {
@@ -256,7 +277,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
             }
             
             if (doAdd) {
-                _doAdd(propName, propValue, null, -1);
+                _doAdd(propName, propValue, directChildKey, -1);
                 return;
             }
             if (doRemove) {
@@ -265,6 +286,25 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
             }
             if (doModify) {
                 _doModify(propName, currentValue, propValue);
+                return;
+            }
+            if (doDirectReplace) {
+                changeControl.getWriteLock().lock();
+                try {
+                    boolean success = false;
+                    changeControl.startOrContinueChange(this);
+                    try {
+                        _doRemove(propName, null, -1, currentValue);
+                        _doAdd(propName, propValue, directChildKey, -1);
+                        success = true;
+                    }
+                    finally {
+                        changeControl.endOrDeferChange(success);
+                    }
+                }
+                finally {
+                    changeControl.getWriteLock().unlock();
+                }
                 return;
             }
             

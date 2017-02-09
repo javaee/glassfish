@@ -1379,7 +1379,6 @@ public class Utilities {
         return retVal;
     }
     
-    @SuppressWarnings("unchecked")
     private static void getAllDifferences(BaseHK2JAXBBean source,
             BaseHK2JAXBBean other,
             Differences differences) {
