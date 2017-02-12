@@ -401,23 +401,19 @@ public class OverlayTest {
                 new ChangeDescriptor(ChangeCategory.ADD_INSTANCE,
                         OverlayUtilities.ARRAY_TYPE,    // type name
                         OverlayUtilities.OROOT_A + ".*",       // instance name
-                        "B",
-                        (String) null) // prop changed
+                        "B") // prop changed
                 , new ChangeDescriptor(ChangeCategory.ADD_INSTANCE,
                         OverlayUtilities.ARRAY_TYPE,    // type name
                         OverlayUtilities.OROOT_A + ".*",       // instance name
-                        "C",
-                        (String) null)
+                        "C")
                 , new ChangeDescriptor(ChangeCategory.ADD_INSTANCE,
                        OverlayUtilities.LIST_TYPE,    // type name
                        OverlayUtilities.OROOT_A + ".*",       // instance name
-                       "B",
-                       (String) null) // prop changed
+                       "B") // prop changed
                 , new ChangeDescriptor(ChangeCategory.ADD_INSTANCE,
-                       OverlayUtilities.ARRAY_TYPE,    // type name
+                       OverlayUtilities.LIST_TYPE,    // type name
                        OverlayUtilities.OROOT_A + ".*",       // instance name
-                       "C",
-                       (String) null) // prop changed
+                       "C") // prop changed
                 , new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
                         OverlayUtilities.OROOT_TYPE,    // type name
                         OverlayUtilities.OROOT_A,       // instance name
@@ -459,22 +455,22 @@ public class OverlayTest {
                     OverlayUtilities.A_ARRAY_CHILD) // prop changed
                 , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
                     OverlayUtilities.LIST_TYPE + "/" + OverlayUtilities.LEAF_LIST,    // type name
-                    OverlayUtilities.OROOT_A + ".*", "D")       // instance name
+                    OverlayUtilities.OROOT_A + ".*.*", "D")       // instance name
                 , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
                     OverlayUtilities.LIST_TYPE + "/" + OverlayUtilities.LEAF_ARRAY,    // type name
-                    OverlayUtilities.OROOT_A + ".*", "D")       // instance name
+                    OverlayUtilities.OROOT_A + ".*.*", "D")       // instance name
                 , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
                     OverlayUtilities.LIST_TYPE,     // type name
-                    OverlayUtilities.OROOT_A, "A")       // instance name  
+                    OverlayUtilities.OROOT_A + ".*", "A")       // instance name  
                 , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
-                    OverlayUtilities.ARRAY_TYPE  + "/" + OverlayUtilities.LEAF_LIST,    // type name
-                    OverlayUtilities.OROOT_A, "A")       // instance name
+                    OverlayUtilities.ARRAY_TYPE,    // type name
+                    OverlayUtilities.OROOT_A + ".*", "A")       // instance name
+                , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
+                    OverlayUtilities.ARRAY_TYPE + "/" + OverlayUtilities.LEAF_LIST,    // type name
+                    OverlayUtilities.OROOT_A + ".*.*", "D")       // instance name
                 , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
                     OverlayUtilities.ARRAY_TYPE + "/" + OverlayUtilities.LEAF_ARRAY,    // type name
-                    OverlayUtilities.OROOT_A + ".*", "D")       // instance name
-                , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
-                    OverlayUtilities.ARRAY_TYPE + "/" + OverlayUtilities.LEAF_ARRAY,    // type name
-                    OverlayUtilities.OROOT_A, "D")       // instance name
+                    OverlayUtilities.OROOT_A + ".*.*", "D")       // instance name
                                   
              );
     }
@@ -513,26 +509,27 @@ public class OverlayTest {
                 new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
                     OverlayUtilities.OROOT_TYPE,    // type name
                     OverlayUtilities.OROOT_A,       // instance name
+                    null,
                     OverlayUtilities.A_LIST_CHILD,  // prop changed
                     OverlayUtilities.A_ARRAY_CHILD) // prop changed
                 , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
                     OverlayUtilities.LIST_TYPE + "/" + OverlayUtilities.LEAF_LIST,    // type name
-                    OverlayUtilities.OROOT_A + ".*", "B")       // instance name
+                    OverlayUtilities.OROOT_A + ".*.*", "B")       // instance name
                 , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
                     OverlayUtilities.LIST_TYPE + "/" + OverlayUtilities.LEAF_ARRAY,    // type name
-                    OverlayUtilities.OROOT_A + ".*", "B")       // instance name
+                    OverlayUtilities.OROOT_A + ".*.*", "B")       // instance name
                 , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
                     OverlayUtilities.LIST_TYPE,     // type name
-                    OverlayUtilities.OROOT_A, "A")       // instance name  
+                    OverlayUtilities.OROOT_A + ".*", "A")       // instance name  
                 , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
-                    OverlayUtilities.ARRAY_TYPE  + "/" + OverlayUtilities.LEAF_LIST,    // type name
-                    OverlayUtilities.OROOT_A, "A")       // instance name
+                    OverlayUtilities.ARRAY_TYPE,    // type name
+                    OverlayUtilities.OROOT_A + ".*", "A")       // instance name
+                , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
+                    OverlayUtilities.ARRAY_TYPE + "/" + OverlayUtilities.LEAF_LIST,    // type name
+                    OverlayUtilities.OROOT_A + ".*.*", "B")       // instance name
                 , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
                     OverlayUtilities.ARRAY_TYPE + "/" + OverlayUtilities.LEAF_ARRAY,    // type name
-                    OverlayUtilities.OROOT_A + ".*", "B")       // instance name
-                , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
-                    OverlayUtilities.ARRAY_TYPE + "/" + OverlayUtilities.LEAF_ARRAY,    // type name
-                    OverlayUtilities.OROOT_A, "B")       // instance name
+                    OverlayUtilities.OROOT_A + ".*.*", "B")       // instance name
                                   
              );
     }
@@ -564,6 +561,7 @@ public class OverlayTest {
                 new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
                     OverlayUtilities.OROOT_TYPE,    // type name
                     OverlayUtilities.OROOT_A,       // instance name
+                    null,
                     OverlayUtilities.A_LIST_CHILD,  // prop changed
                     OverlayUtilities.A_ARRAY_CHILD) // prop changed
              );
@@ -583,7 +581,7 @@ public class OverlayTest {
                 new ChangeDescriptor(ChangeCategory.ADD_INSTANCE,
                         "/overlay-root-A/unkeyed-leaf-list/leaf-list/leaf-list",    // type name
                         "overlay-root-A.*.*.*",      // instance name
-                        null
+                        "D"
                
                  )
                  , new ChangeDescriptor(ChangeCategory.ADD_TYPE,
@@ -595,12 +593,13 @@ public class OverlayTest {
                  , new ChangeDescriptor(ChangeCategory.ADD_INSTANCE,
                          "/overlay-root-A/unkeyed-leaf-list/leaf-list/leaf-list/leaf-list",    // type name
                          "overlay-root-A.*.*.*.*",      // instance name
-                         null
+                         "E"
                 
                   )
                   , new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
-                         "/overlay-root-A/unkeyed-leaf-array/leaf-list/leaf-lst",    // type name
+                         "/overlay-root-A/unkeyed-leaf-list/leaf-list",    // type name
                          "overlay-root-A.*.*",      // instance name
+                         null,
                          "leaf-list"
        
                   )        
@@ -639,6 +638,7 @@ public class OverlayTest {
                   , new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
                          "/overlay-root-A/unkeyed-leaf-array/leaf-array",    // type name
                          "overlay-root-A.*.*",      // instance name
+                         null,
                          "leaf-array"
        
                   )        

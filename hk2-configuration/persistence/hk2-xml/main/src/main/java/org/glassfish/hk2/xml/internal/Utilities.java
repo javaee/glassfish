@@ -91,6 +91,7 @@ import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
 import org.glassfish.hk2.xml.internal.Differences.AddData;
+import org.glassfish.hk2.xml.internal.Differences.AddRemoveData;
 import org.glassfish.hk2.xml.internal.Differences.AddRemoveMoveDifference;
 import org.glassfish.hk2.xml.internal.Differences.Difference;
 import org.glassfish.hk2.xml.internal.Differences.MoveData;
@@ -460,9 +461,6 @@ public class Utilities {
                 index = multiChildren.size();
             }
         }
-        else if (allMyChildren != null) {
-            throw new IllegalStateException("Attempting to add direct child of " + myParent + " of name " + childProperty + " but there is already one there");
-        }
         
         BaseHK2JAXBBean child = createBean(childNode.getChildModel().getProxyAsClass());
         child._setClassReflectionHelper(myParent._getClassReflectionHelper());
@@ -517,7 +515,7 @@ public class Utilities {
         child._setParent(myParent);
         child._setSelfXmlTag(childNode.getChildXmlTag());
         child._setKeyValue(childKey);
-        if (!ChildType.DIRECT.equals(childNode.getChildType())) {
+        if (childKey != null) {
             child._setInstanceName(myParent._getInstanceName() + Utilities.INSTANCE_PATH_SEPARATOR + child._getKeyValue());
         }
         else {
@@ -1445,7 +1443,21 @@ public class Utilities {
                     localDifference.addRemove(xmlTag, new RemoveData(xmlTag, (BaseHK2JAXBBean) sourceValue));
                 }
                 else if (sourceValue != null) {
-                    getAllDifferences((BaseHK2JAXBBean) sourceValue, (BaseHK2JAXBBean) otherValue, differences);
+                    String keyProperty = pModel.getChildModel().getKeyProperty();
+                    if (keyProperty == null) {
+                        getAllDifferences((BaseHK2JAXBBean) sourceValue, (BaseHK2JAXBBean) otherValue, differences);
+                    }
+                    else {
+                        String sourceKey = (String) ((BaseHK2JAXBBean) sourceValue)._getProperty(keyProperty);
+                        String otherKey = (String) ((BaseHK2JAXBBean) otherValue)._getProperty(keyProperty);
+                        
+                        if (GeneralUtilities.safeEquals(sourceKey, otherKey)) {
+                            getAllDifferences((BaseHK2JAXBBean) sourceValue, (BaseHK2JAXBBean) otherValue, differences);
+                        }
+                        else {
+                            localDifference.addDirectReplace(xmlTag, (BaseHK2JAXBBean) otherValue, new RemoveData(xmlTag, (BaseHK2JAXBBean) sourceValue));
+                        }
+                    }
                 }
             }
             else if (ChildType.LIST.equals(pModel.getChildType())) {
@@ -1639,6 +1651,19 @@ public class Utilities {
                 
                 if (!changeList) {
                   arrayChanges = new LinkedHashMap<Integer, BaseHK2JAXBBean>();
+                }
+                
+                for (AddRemoveData ard : childDiffs.getDirectReplaces()) {
+                    RemoveData removed = ard.getRemove();
+                    AddData added = ard.getAdd();
+                    
+                    BaseHK2JAXBBean addMe = added.getToAdd();
+                    String addedKey = addMe._getKeyValue();
+                    
+                    BaseHK2JAXBBean removedBean = (BaseHK2JAXBBean) source._doRemove(xmlKey, removed.getChildKey(), removed.getIndex(), removed.getChild(), false);
+                    BaseHK2JAXBBean addedBean = (BaseHK2JAXBBean) source._doAdd(xmlKey, addMe, addedKey, -1, false);
+                    
+                    allSourceChanges.add(new PropertyChangeEvent(source, xmlKey, removedBean, addedBean));
                 }
                 
                 for (AddData added : childDiffs.getAdds()) {

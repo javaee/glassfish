@@ -74,7 +74,7 @@ public class OverlayDirectTest {
     public final static String DIRECT_WITH_KEYED = "direct-with-keyed";
     public final static String DIRECT_WITH_UNKEYED = "direct-with-unkeyed";
     public final static String DIRECT_WITH_DIRECT = "direct-with-direct";
-    public final static String DIRECT_TERMINAL = "direct-with-direct";
+    public final static String DIRECT_TERMINAL = "direct-terminal";
     public final static String TERMINAL_DATA = "terminal-data";
     public final static String UNKEYED_TERMINAL = "unkeyed-terminal";
     public final static String UNKEYED_DATA = "unkeyed-data";
@@ -148,29 +148,30 @@ public class OverlayDirectTest {
         
         OverlayUtilities.checkChanges(changes,
                 new ChangeDescriptor(ChangeCategory.ADD_TYPE,
-                        "/overlay-root-B/direct-with-direct",    // type name
+                        DIRECT_WITH_DIRECT_TYPE,    // type name
                         null,      // instance name
                         null
                 )
                 , new ChangeDescriptor(ChangeCategory.ADD_INSTANCE,
-                        "/overlay-root-B/direct-with-direct",    // type name
-                        "overlay-root-B.direct-with-direct",      // instance name
+                        DIRECT_WITH_DIRECT_TYPE,    // type name
+                        DIRECT_WITH_DIRECT_INSTANCE,      // instance name
                         null
                  )
                  , new ChangeDescriptor(ChangeCategory.ADD_TYPE,
-                        "/overlay-root-B/direct-with-direct/direct-terminal",    // type name
+                        DIRECT_WITH_DIRECT_TERMINAL_TYPE,    // type name
                         null,      // instance name
                         null
                  )
                  , new ChangeDescriptor(ChangeCategory.ADD_INSTANCE,
-                         "/overlay-root-B/direct-with-direct/direct-terminal",    // type name
-                         "overlay-root-B.direct-with-direct.direct-terminal",      // instance name
+                         DIRECT_WITH_DIRECT_TERMINAL_TYPE,    // type name
+                         DIRECT_WITH_DIRECT_TERMINAL_INSTANCE,      // instance name
                          null
                  )
                  , new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
-                         "/overlay-root-B",    // type name
-                         "overlay-root-B",      // instance name
-                         "direct-with-direct"
+                         OverlayUtilities.OROOT_TYPE_B,    // type name
+                         OverlayUtilities.OROOT_B,      // instance name
+                         null,
+                         DIRECT_WITH_DIRECT
                  )
         );
     }
@@ -240,6 +241,7 @@ public class OverlayDirectTest {
                 , new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
                          "/overlay-root-B",    // type name
                          "overlay-root-B",      // instance name
+                         null,
                          "direct-with-direct"
                  )
         );
@@ -325,6 +327,7 @@ public class OverlayDirectTest {
                 new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
                          DIRECT_WITH_DIRECT_TERMINAL_TYPE,    // type name
                          DIRECT_WITH_DIRECT_TERMINAL_INSTANCE,      // instance name
+                         null,
                          TERMINAL_DATA
                  )
         );
@@ -406,6 +409,7 @@ public class OverlayDirectTest {
                  , new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
                          OverlayUtilities.OROOT_TYPE_B,    // type name
                          OverlayUtilities.OROOT_B,      // instance name
+                         null,
                          DIRECT_WITH_UNKEYED
                  )
         );
@@ -489,6 +493,7 @@ public class OverlayDirectTest {
                 new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
                          DIRECT_WITH_UNKEYED_TERMINAL_TYPE,    // type name
                          DIRECT_WITH_UNKEYED_TERMINAL_INSTANCE,      // instance name
+                         null,
                          UNKEYED_DATA
                  )
         );
@@ -558,6 +563,7 @@ public class OverlayDirectTest {
                 , new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
                         OverlayUtilities.OROOT_TYPE_B,    // type name
                         OverlayUtilities.OROOT_B,      // instance name
+                        null,
                         DIRECT_WITH_UNKEYED
                  )
         );
@@ -567,7 +573,7 @@ public class OverlayDirectTest {
      * Tests changing a keyed direct child from one key to another
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testChangeKeyedDirectChildWithOverlay() {
         ServiceLocator locator = Utilities.createLocator(UpdateListener.class);
         XmlService xmlService = locator.getService(XmlService.class);
@@ -590,20 +596,39 @@ public class OverlayDirectTest {
         DiagnosticsBean bobBean = RawSetsTest.createDiagnosticsBean(xmlService, MergeTest.BOB_NAME);
         domain2.setDiagnostics(bobBean);
         
+        {
+            DiagnosticsBean checkBean = checkExists(hub, MergeTest.DIAGNOSTICS_TYPE,
+                MergeTest.DOMAIN_INSTANCE + "." + MergeTest.ALICE_NAME,
+                DiagnosticsBean.class, locator);
+            
+            Assert.assertEquals(MergeTest.ALICE_NAME, checkBean.getName());
+            
+            checkNotExistsInHub(hub, MergeTest.DIAGNOSTICS_TYPE, MergeTest.DOMAIN_INSTANCE + "." + MergeTest.BOB_NAME);
+        }
         
         rootHandle1.overlay(rootHandle2);
+        
+        {
+            checkNotExistsInHub(hub, MergeTest.DIAGNOSTICS_TYPE, MergeTest.DOMAIN_INSTANCE + "." + MergeTest.ALICE_NAME);
+            
+            DiagnosticsBean checkBean = checkExists(hub, MergeTest.DIAGNOSTICS_TYPE,
+                MergeTest.DOMAIN_INSTANCE + "." + MergeTest.BOB_NAME,
+                DiagnosticsBean.class, locator);
+            
+            Assert.assertEquals(MergeTest.BOB_NAME, checkBean.getName());
+        }
         
         List<Change> changes = listener.getChanges();
         
         OverlayUtilities.checkChanges(changes,
-                new ChangeDescriptor(ChangeCategory.ADD_INSTANCE,
+                new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
                         MergeTest.DIAGNOSTICS_TYPE,    // type name
-                        MergeTest.DIAGNOSTICS_INSTANCE,       // instance name
-                        MergeTest.BOB_NAME)
-                , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
-                        MergeTest.DIAGNOSTICS_TYPE,    // type name
-                        MergeTest.DIAGNOSTICS_INSTANCE,       // instance name
+                        MergeTest.DOMAIN_INSTANCE + "." + MergeTest.ALICE_NAME,       // instance name
                         MergeTest.ALICE_NAME)
+                , new ChangeDescriptor(ChangeCategory.ADD_INSTANCE,
+                        MergeTest.DIAGNOSTICS_TYPE,    // type name
+                        MergeTest.DOMAIN_INSTANCE + "." + MergeTest.BOB_NAME,       // instance name
+                        MergeTest.BOB_NAME)
                 , new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
                         MergeTest.DOMAIN_TYPE,    // type name
                         MergeTest.DOMAIN_INSTANCE,       // instance name

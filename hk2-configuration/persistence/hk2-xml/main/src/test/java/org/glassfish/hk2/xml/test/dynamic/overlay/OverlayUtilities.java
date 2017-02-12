@@ -41,7 +41,9 @@ package org.glassfish.hk2.xml.test.dynamic.overlay;
 
 import java.beans.PropertyChangeEvent;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -554,7 +556,7 @@ public class OverlayUtilities {
     
     private static String getAssertString(List<Change> changes, ChangeDescriptor... changeDescriptors) {
         StringBuffer received = new StringBuffer("\n");
-        int count = 1;
+        int count = 0;
         for (Change change : changes) {
             received.append("  " + count + ". " + getChangeDescription(change) + "\n");
             count++;
@@ -562,7 +564,7 @@ public class OverlayUtilities {
         
         StringBuffer expected = new StringBuffer("\n");
         for (int lcv = 0; lcv < changeDescriptors.length; lcv++) {
-            expected.append("  " + (lcv + 1) + ". " + changeDescriptors[lcv] + "\n");
+            expected.append("  " + lcv + ". " + changeDescriptors[lcv] + "\n");
         }
         
         return "Expected Changes were: " + expected + "Recieved changes are: " + received;
@@ -573,7 +575,8 @@ public class OverlayUtilities {
             Assert.fail(getAssertString(changes, changeDescriptors));
         }
         
-        HashSet<Integer> usedDescriptors = new HashSet<Integer>();
+        LinkedHashSet<Integer> usedDescriptors = new LinkedHashSet<Integer>();
+        HashMap<Integer, List<String>> errors = new HashMap<Integer, List<String>>();
         for (int lcv = 0; lcv < changeDescriptors.length; lcv++) {
             ChangeDescriptor cd = changeDescriptors[lcv];
             
@@ -586,9 +589,34 @@ public class OverlayUtilities {
                 if (isSame == null) {
                     usedDescriptors.add(inner);
                 }
+                else {
+                    List<String> eList = errors.get(inner);
+                    if (eList == null) {
+                        eList = new LinkedList<String>();
+                        errors.put(inner, eList);
+                    }
+                    eList.add(isSame);
+                }
             }
         }
         
-        Assert.assertEquals(getAssertString(changes, changeDescriptors) + " usedDescriptors=" + usedDescriptors, changeDescriptors.length, changes.size());
+        StringBuffer sb = new StringBuffer();
+        if (!errors.isEmpty()) {
+            for (Map.Entry<Integer, List<String>> errorEntry : errors.entrySet()) {
+                Integer changeKey = errorEntry.getKey();
+                if (usedDescriptors.contains(changeKey)) continue;
+                
+                sb.append("Errors for Change " + errorEntry.getKey() + " (" + changes.get(changeKey) + ")\n");
+                
+                int lcv = 0;
+                for (String eError : errorEntry.getValue()) {
+                    sb.append("  " + lcv + ". " + eError + "\n");
+                    lcv++;
+                }
+            }
+        }
+        
+        Assert.assertEquals(getAssertString(changes, changeDescriptors) + " usedDescriptors=" + usedDescriptors + "\n" + sb.toString(),
+                changes.size(), usedDescriptors.size());
     }
 }

@@ -40,6 +40,7 @@
 package org.glassfish.hk2.xml.test.dynamic.overlay;
 
 import java.beans.PropertyChangeEvent;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -92,7 +93,8 @@ public final class ChangeDescriptor {
         List<String> receivedToken = tokenizeInstanceKey(recievedKey);
         
         if (instanceKey.size() != receivedToken.size()) {
-            return "Instance cardinality for " + recievedKey + " does not match " + instance;
+            return "Expected instance cardinality of " + instanceKey.size() + " does not match received " + receivedToken.size() +
+                    " (" + instanceKey + " , " + receivedToken + ")";
         }
         
         for (int lcv = 0; lcv < receivedToken.size(); lcv++) {
@@ -110,11 +112,11 @@ public final class ChangeDescriptor {
     
     String check(Change change) {
         if (!GeneralUtilities.safeEquals(category, change.getChangeCategory())) {
-            return "Category is not the same expected=" + this + " got=" + change;
+            return "Category is not the same expected=" + category + " got=" + change.getChangeCategory();
         }
         
         if (!GeneralUtilities.safeEquals(typeName, change.getChangeType().getName())) {
-            return "Type is not the same expected=" + this + " got=" + change;
+            return "Type is not the same expected=" + typeName + " got=" + change.getChangeType().getName();
         }
         
         String errorInstanceKey = checkInstanceKey(change.getInstanceKey());
@@ -150,7 +152,7 @@ public final class ChangeDescriptor {
     
     @Override
     public String toString() {
-        return category + " type=" + typeName + " name=" + arName + " instanceKey=" + instanceKey;
+        return category + " type=" + typeName + " name=" + arName + " instanceKey=" + instanceKey + " props=" + Arrays.toString(props);
     }
     
 }

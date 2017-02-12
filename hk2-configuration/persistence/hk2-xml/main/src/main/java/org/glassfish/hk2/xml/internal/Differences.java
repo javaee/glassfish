@@ -143,6 +143,11 @@ public class Differences {
             arm.addRemove(removeData);
         }
         
+        public void addDirectReplace(String propName, BaseHK2JAXBBean toAdd, RemoveData removeData) {
+            AddRemoveMoveDifference arm = getARMDiff(propName);
+            arm.addDirectReplace(new AddRemoveData(new AddData(toAdd, -1), removeData));
+        }
+        
         private void merge(Difference mergeMe) {
             for (PropertyChangeEvent pce : mergeMe.getNonChildChanges()) {
                 addNonChildChange(pce);
@@ -190,10 +195,34 @@ public class Differences {
         }
     }
     
+    public static class AddRemoveData {
+        private final AddData add;
+        private final RemoveData remove;
+        
+        private AddRemoveData(AddData add, RemoveData remove) {
+            this.add = add;
+            this.remove = remove;
+        }
+        
+        public AddData getAdd() {
+            return add;
+        }
+        
+        public RemoveData getRemove() {
+            return remove;
+        }
+        
+        @Override
+        public String toString() {
+            return "AddRemoveData(" + add + "," + remove + "," + System.identityHashCode(this) + ")";
+        }
+    }
+    
     public static class AddRemoveMoveDifference {
         private final List<AddData> adds = new ArrayList<AddData>();
         private final List<RemoveData> removes = new ArrayList<RemoveData>();
         private final List<MoveData> moves = new ArrayList<MoveData>();
+        private final List<AddRemoveData> directReplace = new ArrayList<AddRemoveData>();
         
         private void addAdd(AddData add) {
             adds.add(add);
@@ -205,6 +234,10 @@ public class Differences {
         
         private void addMove(MoveData move) {
             moves.add(move);
+        }
+        
+        private void addDirectReplace(AddRemoveData dr) {
+            directReplace.add(dr);
         }
         
         public List<AddData> getAdds() {
@@ -219,21 +252,26 @@ public class Differences {
             return moves;
         }
         
+        public List<AddRemoveData> getDirectReplaces() {
+            return directReplace;
+        }
+        
         public boolean requiresListChange() {
-            return !adds.isEmpty() || !removes.isEmpty() || !moves.isEmpty();
+            return !adds.isEmpty() || !removes.isEmpty() || !moves.isEmpty() || !directReplace.isEmpty();
         }
         
         public int getSize() {
-            return adds.size() + removes.size() + moves.size();
+            return adds.size() + removes.size() + moves.size() + directReplace.size();
         }
         
         public int getNewSize(int oldSize) {
+            // Direct replace is +1 and -1, so 0
             return oldSize - removes.size() + adds.size();
         }
         
         @Override
         public String toString() {
-            return "AddRemoveMoveDifference(" + adds + "," + removes + "," + moves + "," + System.identityHashCode(this) + ")";
+            return "AddRemoveMoveDifference(" + adds + "," + removes + "," + moves + "," + directReplace + "," + System.identityHashCode(this) + ")";
         }
     }
     
@@ -394,6 +432,21 @@ public class Differences {
                 
                 for (MoveData md : arm.getMoves()) {
                     sb.append("    MOVED: oldIndex=" + md.getOldIndex() + " newIndex=" + md.getNewIndex() + "\n");
+                }
+                
+                for (AddRemoveData ard : arm.getDirectReplaces()) {
+                    AddData ad = ard.getAdd();
+                    RemoveData rd = ard.getRemove();
+                    
+                    BaseHK2JAXBBean added = ad.getToAdd();
+                    
+                    String addedXmlPath = added._getXmlPath();
+                    String addedInstanceName = added._getInstanceName();
+                    
+                    String removedInstanceName = rd.getChild()._getInstanceName();
+                    
+                    sb.append("    DIRECT_REPLACEMENT: modifiedPath=" + addedXmlPath + " addedInstanceName=" + addedInstanceName +
+                            " removedInstanceName=" + removedInstanceName + "\n");
                 }
             }
             
