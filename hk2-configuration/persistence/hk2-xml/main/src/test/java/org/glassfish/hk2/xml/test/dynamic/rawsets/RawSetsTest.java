@@ -51,7 +51,6 @@ import org.glassfish.hk2.configuration.hub.api.Change;
 import org.glassfish.hk2.configuration.hub.api.Change.ChangeCategory;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
@@ -536,7 +535,7 @@ public class RawSetsTest {
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testKeyedDirectSetModification() throws Exception {
         ServiceLocator locator = Utilities.createLocator(UpdateListener.class,
                 SSLManagerBeanCustomizer.class);
@@ -552,13 +551,12 @@ public class RawSetsTest {
         
         domain.setDiagnostics(aliceBean);
         
-        ServiceLocatorUtilities.dumpAllDescriptors(locator, System.out);
-        
         Assert.assertNotNull(locator.getService(DiagnosticsBean.class, MergeTest.ALICE_NAME));
         Assert.assertNull(locator.getService(DiagnosticsBean.class, MergeTest.BOB_NAME));
         
         checkHubInstanceWithName(hub, MergeTest.DIAGNOSTICS_TYPE,
-                MergeTest.DIAGNOSTICS_INSTANCE, MergeTest.ALICE_NAME);
+                MergeTest.DOMAIN_INSTANCE + "." + MergeTest.ALICE_NAME, MergeTest.ALICE_NAME);
+        checkHubNoInstance(hub, MergeTest.DIAGNOSTICS_TYPE, MergeTest.DOMAIN_INSTANCE + "." + MergeTest.BOB_NAME);
         
         DiagnosticsBean bobBean = createDiagnosticsBean(xmlService, MergeTest.BOB_NAME);
         
@@ -568,7 +566,8 @@ public class RawSetsTest {
         Assert.assertNotNull(locator.getService(DiagnosticsBean.class, MergeTest.BOB_NAME));
         
         checkHubInstanceWithName(hub, MergeTest.DIAGNOSTICS_TYPE,
-                MergeTest.DIAGNOSTICS_INSTANCE, MergeTest.BOB_NAME);
+                MergeTest.DOMAIN_INSTANCE + "." + MergeTest.BOB_NAME, MergeTest.BOB_NAME);
+        checkHubNoInstance(hub, MergeTest.DIAGNOSTICS_TYPE, MergeTest.DOMAIN_INSTANCE + "." + MergeTest.ALICE_NAME);
         
         UpdateListener listener = locator.getService(UpdateListener.class);
         
@@ -576,18 +575,18 @@ public class RawSetsTest {
         
         OverlayUtilities.checkChanges(changes,
                 new ChangeDescriptor(ChangeCategory.ADD_INSTANCE,
-                        MergeTest.AUTHORIZATION_PROVIDER_TYPE,    // type name
-                        MergeTest.SECURITY_MANAGER_INSTANCE + "." + MergeTest.BOB_NAME,       // instance name
+                        MergeTest.DIAGNOSTICS_TYPE,    // type name
+                        MergeTest.DOMAIN_INSTANCE + "." + MergeTest.BOB_NAME,       // instance name
                         MergeTest.BOB_NAME)
                 , new ChangeDescriptor(ChangeCategory.REMOVE_INSTANCE,
-                        MergeTest.AUTHORIZATION_PROVIDER_TYPE,    // type name
-                        MergeTest.SECURITY_MANAGER_INSTANCE + "." + MergeTest.ALICE_NAME,       // instance name
+                        MergeTest.DIAGNOSTICS_TYPE,    // type name
+                        MergeTest.DOMAIN_INSTANCE + "." + MergeTest.ALICE_NAME,       // instance name
                         MergeTest.ALICE_NAME)
                 , new ChangeDescriptor(ChangeCategory.MODIFY_INSTANCE,
-                        MergeTest.SECURITY_MANAGER_TYPE,    // type name
-                        MergeTest.SECURITY_MANAGER_INSTANCE,       // instance name
+                        MergeTest.DOMAIN_TYPE,    // type name
+                        MergeTest.DOMAIN_INSTANCE,       // instance name
                         null,
-                        AUTHORIZATION_PROVIDER_PROPERTY) // prop changed
+                        "diagnostics") // prop changed
         );
         
         

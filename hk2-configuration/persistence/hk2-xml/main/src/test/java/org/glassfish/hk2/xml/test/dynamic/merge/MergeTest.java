@@ -53,6 +53,7 @@ import org.glassfish.hk2.configuration.hub.api.Change;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.Instance;
 import org.glassfish.hk2.configuration.hub.api.Change.ChangeCategory;
+import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootCopy;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
@@ -150,7 +151,6 @@ public class MergeTest {
     private final static String QUEUE1_INSTANCE = "domain.Carol.Queue1";
     private final static String QUEUE2_INSTANCE = "domain.Carol.Queue2";
     public final static String SSL_MANAGER_INSTANCE_NAME = "domain.security-manager.ssl-manager";
-    public final static String DIAGNOSTICS_INSTANCE = "domain.diagnostics";
     
     private final static String ADDRESS_TAG = "address";
     private final static String PORT_TAG = "port";
@@ -918,7 +918,7 @@ public class MergeTest {
             Assert.assertEquals(LIBERTY_NAME, beanLike.get(Commons.NON_KEY_TAG));
         }
         
-        assertNotInHub(hub, DIAGNOSTICS_TYPE, DIAGNOSTICS_INSTANCE);
+        assertNotInHub(hub, DIAGNOSTICS_TYPE);
         
         assertDomain1Services(locator, locator, didDefault);
     }
@@ -942,6 +942,14 @@ public class MergeTest {
     
     private static void assertNotInHub(Hub hub, String type, String instance) {
         Assert.assertNull(hub.getCurrentDatabase().getInstance(type, instance));
+    }
+    
+    private static void assertNotInHub(Hub hub, String type) {
+        Type dbType = hub.getCurrentDatabase().getType(type);
+        if (dbType == null) return;
+        
+        Map<String, Instance> instances = dbType.getInstances();
+        Assert.assertTrue("Found instances of type: " + instances, instances.isEmpty());
     }
     
     public static void assertDomain1Services(ServiceLocator locator) {
