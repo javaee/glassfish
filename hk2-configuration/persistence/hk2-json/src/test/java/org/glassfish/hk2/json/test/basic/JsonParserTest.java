@@ -39,9 +39,17 @@
  */
 package org.glassfish.hk2.json.test.basic;
 
+import java.net.URI;
+import java.net.URL;
+import java.util.List;
+
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.json.api.JsonUtilities;
+import org.glassfish.hk2.json.test.skillzbeans.SkillBean;
+import org.glassfish.hk2.json.test.skillzbeans.SkillCategoryBean;
+import org.glassfish.hk2.json.test.skillzbeans.SpecificSkillBean;
 import org.glassfish.hk2.json.test.utilities.Utilities;
+import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.junit.Assert;
 import org.junit.Test;
@@ -51,16 +59,83 @@ import org.junit.Test;
  *
  */
 public class JsonParserTest {
+    private final static String SKILLZ_FILE = "skillz.json";
+    
+    private final static String SKILLZ = "skillz";
+    
+    private final static String WEB = "web";
+    private final static String DB = "database";
+    
+    private final static String HTML = "html";
+    private final static String CSS = "css";
+    
+    private final static String SQL = "sql";
     
     /**
      * Tests a basic bean can be marshalled
      */
     @Test
-    public void testBasicMarshal() {
+    @org.junit.Ignore
+    public void testBasicMarshal() throws Exception {
         ServiceLocator locator = Utilities.enableLocator();
         
         XmlService jsonService = locator.getService(XmlService.class, JsonUtilities.JSON_SERVICE_NAME);
         Assert.assertNotNull(jsonService);
+        
+        URL url = getClass().getClassLoader().getResource(SKILLZ_FILE);
+        URI uri = url.toURI();
+        
+        XmlRootHandle<SkillBean> skillBeanHandle = jsonService.unmarshal(uri, SkillBean.class);
+        SkillBean skillBean = skillBeanHandle.getRoot();
+        
+        Assert.assertEquals(SKILLZ, skillBean.getName());
+        
+        List<SkillCategoryBean> categories = skillBean.getSkillCategories();
+        Assert.assertEquals(2, categories.size());
+        
+        for (int lcv = 0; lcv < categories.size(); lcv++) {
+            SkillCategoryBean category = categories.get(lcv);
+            
+            if (lcv == 0) {
+                Assert.assertEquals(WEB, category.getName());
+                
+                SpecificSkillBean specifics[] = category.getSpecificSkills();
+                Assert.assertEquals(2, specifics.length);
+                
+                for (int inner = 0; inner < specifics.length; inner++) {
+                    SpecificSkillBean specific = specifics[inner];
+                    
+                    if (inner == 0) {
+                        Assert.assertEquals(HTML, specific.getName());
+                        Assert.assertEquals(5, specific.getYears());
+                    }
+                    else if (inner == 1) {
+                        Assert.assertEquals(CSS, specific.getName());
+                        Assert.assertEquals(3, specific.getYears());
+                    }
+                    else {
+                        Assert.fail("Unknown index " + inner);
+                    }
+                }
+            }
+            else if (lcv == 1) {
+                Assert.assertEquals(DB, category.getName());
+                
+                SpecificSkillBean specifics[] = category.getSpecificSkills();
+                Assert.assertEquals(1, specifics.length);
+                
+                for (int inner = 0; inner < specifics.length; inner++) {
+                    SpecificSkillBean specific = specifics[inner];
+                    
+                    Assert.assertEquals(SQL, specific.getName());
+                    Assert.assertEquals(7, specific.getYears());
+                }
+                
+            }
+            else {
+                Assert.fail("Unknown lcv " + lcv);
+            }
+        }
     }
 
 }
