@@ -419,7 +419,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
                 return;
             }
         
-            parser.marshall(outputStream, this);
+            parser.marshal(outputStream, this);
         }
         finally {
             changeControl.getWriteLock().unlock();

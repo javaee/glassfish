@@ -46,6 +46,7 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
+import org.glassfish.hk2.xml.spi.XmlServiceParser;
 import org.glassfish.hk2.xml.test.beans.DomainBean;
 import org.glassfish.hk2.xml.test.dynamic.merge.MergeTest;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
@@ -68,19 +69,19 @@ public class ChildLocatorTest {
         ServiceLocator grandChildALocator = Utilities.createDomLocator(childALocator);
         
         List<XmlService> allXmlServices = grandChildALocator.getAllServices(XmlService.class);
-        Assert.assertEquals(1, allXmlServices.size());
+        Assert.assertEquals(2, allXmlServices.size());
         XmlService grandChildAXmlService = allXmlServices.get(0);
         
         allXmlServices = childALocator.getAllServices(XmlService.class);
-        Assert.assertEquals(1, allXmlServices.size());
+        Assert.assertEquals(2, allXmlServices.size());
         XmlService childAXmlService = allXmlServices.get(0);
         
         allXmlServices = parentLocator.getAllServices(XmlService.class);
-        Assert.assertEquals(1, allXmlServices.size());
+        Assert.assertEquals(2, allXmlServices.size());
         XmlService parentXmlService = allXmlServices.get(0);
         
         allXmlServices = childBLocator.getAllServices(XmlService.class);
-        Assert.assertEquals(1, allXmlServices.size());
+        Assert.assertEquals(2, allXmlServices.size());
         XmlService childBXmlService = allXmlServices.get(0);
         
         Assert.assertNotEquals(grandChildAXmlService, childAXmlService);

@@ -51,6 +51,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.Unmarshaller.Listener;
 
 import org.glassfish.hk2.api.DescriptorVisibility;
+import org.glassfish.hk2.api.Rank;
 import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
@@ -66,6 +67,7 @@ import org.glassfish.hk2.xml.spi.XmlServiceParser;
 @Singleton
 @Named(XmlServiceParser.DEFAULT_PARSING_SERVICE)
 @Visibility(DescriptorVisibility.LOCAL)
+@Rank(1)
 public class JAXBXmlParser implements XmlServiceParser {
 
     /* (non-Javadoc)
@@ -98,7 +100,7 @@ public class JAXBXmlParser implements XmlServiceParser {
      * @see org.glassfish.hk2.xml.spi.XmlServiceParser#marshall(java.io.OutputStream, org.glassfish.hk2.xml.api.XmlRootHandle)
      */
     @Override
-    public <T> void marshall(OutputStream outputStream, XmlRootHandle<T> rootHandle)
+    public <T> void marshal(OutputStream outputStream, XmlRootHandle<T> rootHandle)
             throws IOException {
         T root = rootHandle.getRoot();
         if (root == null) return;

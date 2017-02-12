@@ -40,12 +40,18 @@
 
 package org.glassfish.hk2.xml.api;
 
+import java.util.List;
+
+import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.ManagerUtilities;
+import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.glassfish.hk2.xml.internal.DomXmlParser;
 import org.glassfish.hk2.xml.internal.XmlServiceImpl;
 import org.glassfish.hk2.xml.jaxb.internal.JAXBXmlParser;
+import org.glassfish.hk2.xml.spi.XmlServiceParser;
 
 /**
  * Useful utilities for initializing the HK2 XmlService
@@ -55,38 +61,59 @@ import org.glassfish.hk2.xml.jaxb.internal.JAXBXmlParser;
 public class XmlServiceUtilities {
 
     /**
-     * Enables the Hk2 XmlService in the given locator.  Will
+     * Enables Hk2 XmlServices in the given locator.  Will
      * also enable the HK2 Configuration Hub if the hub has
      * not already been started.  This operation is idempotent
-     * in that if the XmlService is already available in the
-     * given locator then this method does nothing
+     * in that if the named XmlService is already available in the
+     * given locator then this method does nothing.
+     * 
+     * There will be one xml service added per parser that is found
+     * in the locator at the time this is called.  The two provided
+     * providers will also be added if they are not in the locator
+     * already.  The parsers must have names, and both the name
+     * and the rank from the underlying parsers will be given
+     * to the XmlServices added
      * 
      * @param locator The non-null locator to which to add
      * the {@link XmlService}
      */
     public static void enableXmlService(ServiceLocator locator) {
-        if (locator.getServiceHandle(XmlService.class) != null) return;
-        
         ManagerUtilities.enableConfigurationHub(locator);
         
-        ServiceLocatorUtilities.addClasses(locator, true, JAXBXmlParser.class, XmlServiceImpl.class);
+        ServiceLocatorUtilities.addClasses(locator, true, JAXBXmlParser.class, DomXmlParser.class);
+        
+        List<ActiveDescriptor<?>> allParsers = locator.getDescriptors(BuilderHelper.createContractFilter(XmlServiceParser.class.getName()));
+        for (ActiveDescriptor<?> parserDescriptor : allParsers) {
+            String name = parserDescriptor.getName();
+            if (name == null) continue;
+            
+            ActiveDescriptor<?> found = locator.getBestDescriptor(BuilderHelper.createNameAndContractFilter(XmlService.class.getName(), name));
+            if (found != null) continue;
+            
+            DescriptorImpl di = BuilderHelper.createDescriptorFromClass(XmlServiceImpl.class);
+            di.setName(name);
+            di.setRanking(parserDescriptor.getRanking());
+            
+            ServiceLocatorUtilities.addOneDescriptor(locator, di, false);
+        }
     }
     
     /**
-     * Enables the Hk2 XmlService in the given locator.  Will
-     * also enable the HK2 Configuration Hub if the hub has
-     * not already been started.  This operation is idempotent
-     * in that if the XmlService is already available in the
-     * given locator then this method does nothing
+     * This will enable all of the same xml parsers as
+     * {@link #enableXmlService(ServiceLocator)} but will
+     * set the rank of the stream-based xml parser to be
+     * higher than that of the JAXB based one
      * 
      * @param locator The non-null locator to which to add
      * the {@link XmlService}
      */
     public static void enableDomXmlService(ServiceLocator locator) {
-        if (locator.getServiceHandle(XmlService.class) != null) return;
+        enableXmlService(locator);
         
-        ManagerUtilities.enableConfigurationHub(locator);
+        ActiveDescriptor<?> found = locator.getBestDescriptor(BuilderHelper.createNameAndContractFilter(XmlService.class.getName(),
+                XmlServiceParser.STREAM_PARSING_SERVICE));
+        if (found == null) return;
         
-        ServiceLocatorUtilities.addClasses(locator, true, DomXmlParser.class, XmlServiceImpl.class);
+        found.setRanking(2);
     }
 }

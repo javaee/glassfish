@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015-2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -59,7 +59,13 @@ public interface XmlServiceParser {
     /**
      * The default Xml parsing service will have this name
      */
-    public static final String DEFAULT_PARSING_SERVICE = "DefaultJAXBXmlParsingService";
+    public static final String DEFAULT_PARSING_SERVICE = "JAXBXmlParsingService";
+    
+    /**
+     * A stream parsing service that does not use JAXB but an internal stream based
+     * implementation
+     */
+    public static final String STREAM_PARSING_SERVICE = "StreamXmlParsingService";
     
     /**
      * This method must return an instance of the given class as the root of
@@ -93,6 +99,6 @@ public interface XmlServiceParser {
      * @param root The root of the tree to marshall
      * @throws IOException On any exception that might happen
      */
-    public <T> void marshall(OutputStream outputStream, XmlRootHandle<T> root) throws IOException;
+    public <T> void marshal(OutputStream outputStream, XmlRootHandle<T> root) throws IOException;
 
 }

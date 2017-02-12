@@ -48,7 +48,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.xml.stream.XMLStreamReader;
 
@@ -56,7 +55,9 @@ import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.DescriptorVisibility;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.DynamicConfigurationService;
+import org.glassfish.hk2.api.IterableProvider;
 import org.glassfish.hk2.api.MultiException;
+import org.glassfish.hk2.api.Self;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.configuration.hub.api.Hub;
@@ -97,11 +98,14 @@ public class XmlServiceImpl implements XmlService {
     private Hub hub;
     
     @Inject
-    private Provider<XmlServiceParser> parser;
+    private IterableProvider<XmlServiceParser> parser;
     
     private final ClassReflectionHelper classReflectionHelper = new ClassReflectionHelperImpl();
     
     private final JAUtilities jaUtilities = new JAUtilities(classReflectionHelper);
+    
+    @Inject @Self
+    private ActiveDescriptor<?> selfDescriptor;
     
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.api.XmlService#unmarshall(java.net.URI, java.lang.Class, boolean, boolean)
@@ -124,7 +128,7 @@ public class XmlServiceImpl implements XmlService {
             throw new IllegalArgumentException("Only an interface can be given to unmarshall: " + jaxbAnnotatedInterface.getName());
         }
         
-        XmlServiceParser localParser = parser.get();
+        XmlServiceParser localParser = parser.named(selfDescriptor.getName()).get();
         if (localParser == null) {
             throw new IllegalStateException("There is no XmlServiceParser implementation");
         }
@@ -389,6 +393,6 @@ public class XmlServiceImpl implements XmlService {
     }
     
     public XmlServiceParser getParser() {
-        return parser.get();
+        return parser.named(selfDescriptor.getName()).get();
     }
 }
