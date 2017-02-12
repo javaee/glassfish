@@ -477,29 +477,27 @@ public class Utilities {
         }
         
         if (childKey == null) {
-            if (!ChildType.DIRECT.equals(childNode.getChildType())) {
-                if (childNode.getChildModel().getKeyProperty() != null) {
-                    if (rawChild != null) {
-                        childKey = (String) child._getProperty(childNode.getChildModel().getKeyProperty());
-                    }
+            if (childNode.getChildModel().getKeyProperty() != null) {
+                if (rawChild != null) {
+                    childKey = (String) child._getProperty(childNode.getChildModel().getKeyProperty());
+                }
                     
-                    if (childKey == null) {
-                        throw new IllegalArgumentException("Attempted to create child with xmlTag " + childProperty +
-                            " with no key field in " + myParent);
-                    }
+                if (childKey == null) {
+                    throw new IllegalArgumentException("Attempted to create child with xmlTag " + childProperty +
+                        " with no key field in " + myParent);
+                }
                     
-                    child._setKeyValue(childKey);
+                child._setKeyValue(childKey);
+            }
+            else if (!ChildType.DIRECT.equals(childNode.getChildType())) {
+                // This is a multi-child with no key and no key property, must generate a key
+                if (myParent._getChangeControl() == null) {
+                    childKey = NOT_UNIQUE_UNIQUE_ID;
+                    child._setKeyValue(NOT_UNIQUE_UNIQUE_ID);
                 }
                 else {
-                    // This is a multi-child with no key and no key property, must generate a key
-                    if (myParent._getChangeControl() == null) {
-                        childKey = NOT_UNIQUE_UNIQUE_ID;
-                        child._setKeyValue(NOT_UNIQUE_UNIQUE_ID);
-                    }
-                    else {
-                        childKey = myParent._getChangeControl().getGeneratedId();
-                        child._setKeyValue(childKey);
-                    }
+                    childKey = myParent._getChangeControl().getGeneratedId();
+                    child._setKeyValue(childKey);
                 }
             }
         }

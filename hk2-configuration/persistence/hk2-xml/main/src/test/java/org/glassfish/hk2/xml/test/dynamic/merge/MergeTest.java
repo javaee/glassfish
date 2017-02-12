@@ -579,7 +579,7 @@ public class MergeTest {
         diagnostics = domainOld.getDiagnostics();
         Assert.assertNotNull(diagnostics);
         
-        assertNameOnlyBean(hub, DIAGNOSTICS_TYPE, DIAGNOSTICS_INSTANCE, ESSEX_NAME);
+        assertNameOnlyBean(hub, DIAGNOSTICS_TYPE, DOMAIN_INSTANCE + "." + ESSEX_NAME, ESSEX_NAME);
         
         List<Change> hubChanges = listener.getChanges();
         Assert.assertEquals("Did not get expected changes, got " + hubChanges, 3, hubChanges.size());
@@ -594,7 +594,7 @@ public class MergeTest {
                 break;
             case 1:
                 Assert.assertEquals(ChangeCategory.ADD_INSTANCE, change.getChangeCategory());
-                Assert.assertEquals(DIAGNOSTICS_INSTANCE, change.getInstanceKey());
+                Assert.assertEquals(DOMAIN_INSTANCE + "." + ESSEX_NAME, change.getInstanceKey());
                 Assert.assertEquals(DIAGNOSTICS_TYPE, change.getChangeType().getName());
                 break;
             case 2:
