@@ -61,6 +61,7 @@ public class Jira extends MonTest {
                       test14389();
 		*/
 
+        test21646();
         test16313();
         test15397();
         test15054();
@@ -72,6 +73,20 @@ public class Jira extends MonTest {
         test13905();
         test13723();
         test15964();
+    }
+
+    private void test21646() {
+        String prepend = "21646::";
+        String pattern = "server.http-service.server.request.countbytesreceived-count";
+        report(asadmin("enable-monitoring", "--modules", "http-service=HIGH"), prepend + "set-http-service-module-high");
+
+        AsadminReturn ar = asadminWithOutput("get", "-m", pattern);
+        String output = ar.outAndErr;
+
+        report(asadmin("get", "-m", pattern), prepend + "get-request-value-countbytesreceived");
+
+        ar = asadminWithOutput("get", "-m", pattern);
+        report(checkForString(ar, output), prepend + "get-request-value-countbytesreceivedcountassamevalue");
     }
 
     private void test16313() {
