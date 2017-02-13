@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -55,7 +55,7 @@
     &testproperties;
     &run;
 
-    <target name="all" depends="setup,build,deploy,run,undeploy,restore"/>
+    <target name="all" depends="build,deploy,run,undeploy"/>
 
     <target name="clean" depends="init-common">
       <antcall target="clean-common"/>
@@ -81,14 +81,6 @@
 
     </target> 
 
-    <target name="setup" depends="init-common">
-        <antcall target="asadmin-common-ignore-fail">
-            <param name="admin.command" value="set" />
-            <param name="operand.props"
-                   value="configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.enabled=true"/>
-        </antcall>
-    </target>
-
     <target name="build-publish-war" depends="build, publish-war-common" />
     
     <target name="deploy" depends="init-common">
@@ -111,14 +103,6 @@
     <target name="undeploy" depends="init-common">
         <antcall target="undeploy-war-common"/>
     </target>   
-
-    <target name="restore" depends="init-common">
-        <antcall target="asadmin-common-ignore-fail">
-            <param name="admin.command" value="set" />
-            <param name="operand.props"
-                   value="configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.enabled=false"/>
-        </antcall>
-    </target>
 
     <target name="usage">
         <antcall target="usage-common"/>

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -62,9 +62,6 @@ public class WebTest extends BaseDevTest {
         HttpsURLConnection connection = null;
         try {
             SSLSocketFactory ssf = getSSLSocketFactory(trustStorePath);
-            report("enable-listener-2", asadmin("set",
-                "configs.config.server-config.network-config.network-listeners.network-listener"
-                    + ".http-listener-2.enabled=true"));
             connection = doSSLHandshake("https://" + host + ":" + port + "/", ssf);
             int count = 1;
             checkStatus(connection, count++);
@@ -75,9 +72,6 @@ public class WebTest extends BaseDevTest {
         } catch (Throwable t) {
             t.printStackTrace();
         } finally {
-            report("disable-listener-2", asadmin("set",
-                "configs.config.server-config.network-config.network-listeners.network-listener"
-                    + ".http-listener-2.enabled=false"));
             if(connection != null) {
                 connection.disconnect();
             }

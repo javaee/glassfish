@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -85,8 +85,6 @@ public class PortUnificationTest extends BaseDevTest {
             report("set-listener", asadmin("set",
                 "configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.protocol="
                     + puName));
-            report("enable-listener", asadmin("set",
-                "configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.enabled=true"));
             final String content = getContent(new URL("http://localhost:" + port).openConnection());
             report("http-read", content.contains("<h1>Your server is now running</h1>"));
             report("dummy-read", "Dummy-Protocol-Response".equals(getDummyProtocolContent("localhost")));
@@ -97,13 +95,14 @@ public class PortUnificationTest extends BaseDevTest {
             aReturn = asadminWithOutput("list-protocol-finders", "pu-protocol");
             report("list-protocol-finders", aReturn.out.contains("http-finder") && aReturn.out.contains("dummy-finder"));
 
-            report("disable-listener", asadmin("set",
-                "configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.enabled=false"));
-            report("reset-listener", asadmin("set",
-                "configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.protocol=http-listener-2"));
-            deletePUElements();
         } finally {
-            stat.printSummary();
+            try {
+                report("reset-listener", asadmin("set",
+                    "configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.protocol=http-listener-2"));
+                deletePUElements();
+            } finally {
+                stat.printSummary();
+            }
         }
     }
 

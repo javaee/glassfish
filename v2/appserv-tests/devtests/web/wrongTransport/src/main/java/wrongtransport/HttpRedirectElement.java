@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -209,8 +209,6 @@ public class HttpRedirectElement extends BaseDevTest {
         } else {
             report("set-http-listener-protocol", asadmin("set",
                 "configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.protocol=pu-protocol"));
-            report("enable-http-listener-protocol", asadmin("set",
-                "configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.enabled=true"));
         }
         try {
             Thread.sleep(2000);
@@ -225,8 +223,6 @@ public class HttpRedirectElement extends BaseDevTest {
             report("reset-http-listener-protocol", asadmin("set",
                 "configs.config.server-config.network-config.network-listeners.network-listener.http-listener-1.protocol=http-listener-1"));
         } else {
-            report("disable-http-listener-protocol", asadmin("set",
-                "configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.enabled=false"));
             report("reset-http-listener-protocol", asadmin("set",
                 "configs.config.server-config.network-config.network-listeners.network-listener.http-listener-2.protocol=http-listener-2"));
         }
