@@ -39,12 +39,9 @@
  */
 package org.glassfish.hk2.json.test.skillzbeans;
 
-import java.util.List;
-
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlRootElement;
 
+import org.glassfish.hk2.json.test.basic.JsonParserTest;
 import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
 import org.jvnet.hk2.annotations.Contract;
 
@@ -52,13 +49,14 @@ import org.jvnet.hk2.annotations.Contract;
  * @author jwells
  *
  */
-@XmlRootElement(name="skill")
 @Hk2XmlPreGenerate
 @Contract
 public interface SkillBean {
-    @XmlElement @XmlID
-    public String getName();
+    @XmlElement(name=JsonParserTest.WEB)
+    public SkillCategoryBean getWebBean();
     
-    @XmlElement
-    public List<SkillCategoryBean> getSkillCategories();
+    @XmlElement(name=JsonParserTest.DB)
+    public SkillCategoryBean getDatabaseBean();
+    
+    
 }

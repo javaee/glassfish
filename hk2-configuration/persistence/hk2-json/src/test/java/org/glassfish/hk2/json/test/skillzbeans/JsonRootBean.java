@@ -39,8 +39,11 @@
  */
 package org.glassfish.hk2.json.test.skillzbeans;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
+import org.glassfish.hk2.json.test.basic.JsonParserTest;
 import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
 import org.jvnet.hk2.annotations.Contract;
 
@@ -48,9 +51,14 @@ import org.jvnet.hk2.annotations.Contract;
  * @author jwells
  *
  */
-@Contract
+@XmlRootElement
 @Hk2XmlPreGenerate
-public interface SkillCategoryBean {
-    @XmlElement
-    public SpecificSkillBean[] getSkills();
+@Contract
+public interface JsonRootBean {
+    @XmlAttribute(name="_copyright")
+    public String getCopyright();
+    
+    @XmlElement(name=JsonParserTest.SKILLZ)
+    public SkillBean getSkillz();
+
 }

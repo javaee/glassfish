@@ -45,6 +45,7 @@ import java.util.List;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.json.api.JsonUtilities;
+import org.glassfish.hk2.json.test.skillzbeans.JsonRootBean;
 import org.glassfish.hk2.json.test.skillzbeans.SkillBean;
 import org.glassfish.hk2.json.test.skillzbeans.SkillCategoryBean;
 import org.glassfish.hk2.json.test.skillzbeans.SpecificSkillBean;
@@ -61,10 +62,10 @@ import org.junit.Test;
 public class JsonParserTest {
     private final static String SKILLZ_FILE = "skillz.json";
     
-    private final static String SKILLZ = "skillz";
+    public final static String SKILLZ = "skillz";
     
-    private final static String WEB = "web";
-    private final static String DB = "database";
+    public final static String WEB = "web";
+    public final static String DB = "database";
     
     private final static String HTML = "html";
     private final static String CSS = "css";
@@ -85,56 +86,38 @@ public class JsonParserTest {
         URL url = getClass().getClassLoader().getResource(SKILLZ_FILE);
         URI uri = url.toURI();
         
-        XmlRootHandle<SkillBean> skillBeanHandle = jsonService.unmarshal(uri, SkillBean.class);
-        SkillBean skillBean = skillBeanHandle.getRoot();
+        XmlRootHandle<JsonRootBean> skillBeanHandle = jsonService.unmarshal(uri, JsonRootBean.class);
+        SkillBean skillzBean = skillBeanHandle.getRoot().getSkillz();
         
-        Assert.assertEquals(SKILLZ, skillBean.getName());
+        SkillCategoryBean webBean = skillzBean.getWebBean();
+        SpecificSkillBean specifics[] = webBean.getSkills();
+        Assert.assertEquals(2, specifics.length);
         
-        List<SkillCategoryBean> categories = skillBean.getSkillCategories();
-        Assert.assertEquals(2, categories.size());
-        
-        for (int lcv = 0; lcv < categories.size(); lcv++) {
-            SkillCategoryBean category = categories.get(lcv);
+        for (int lcv = 0; lcv < specifics.length; lcv++) {
+            SpecificSkillBean specific = specifics[lcv];
             
             if (lcv == 0) {
-                Assert.assertEquals(WEB, category.getName());
-                
-                SpecificSkillBean specifics[] = category.getSpecificSkills();
-                Assert.assertEquals(2, specifics.length);
-                
-                for (int inner = 0; inner < specifics.length; inner++) {
-                    SpecificSkillBean specific = specifics[inner];
-                    
-                    if (inner == 0) {
-                        Assert.assertEquals(HTML, specific.getName());
-                        Assert.assertEquals(5, specific.getYears());
-                    }
-                    else if (inner == 1) {
-                        Assert.assertEquals(CSS, specific.getName());
-                        Assert.assertEquals(3, specific.getYears());
-                    }
-                    else {
-                        Assert.fail("Unknown index " + inner);
-                    }
-                }
+                Assert.assertEquals(HTML, specific.getName());
+                Assert.assertEquals(5, specific.getYears());
             }
             else if (lcv == 1) {
-                Assert.assertEquals(DB, category.getName());
-                
-                SpecificSkillBean specifics[] = category.getSpecificSkills();
-                Assert.assertEquals(1, specifics.length);
-                
-                for (int inner = 0; inner < specifics.length; inner++) {
-                    SpecificSkillBean specific = specifics[inner];
-                    
-                    Assert.assertEquals(SQL, specific.getName());
-                    Assert.assertEquals(7, specific.getYears());
-                }
-                
+                Assert.assertEquals(CSS, specific.getName());
+                Assert.assertEquals(3, specific.getYears());
             }
             else {
-                Assert.fail("Unknown lcv " + lcv);
+                Assert.fail("Unknown index " + lcv);
             }
+        }
+        
+        SkillCategoryBean dbBean = skillzBean.getDatabaseBean();
+        specifics = dbBean.getSkills();
+        Assert.assertEquals(1, specifics.length);
+        
+        for (int lcv = 0; lcv < specifics.length; lcv++) {
+            SpecificSkillBean specific = specifics[lcv];
+            
+            Assert.assertEquals(SQL, specific.getName());
+            Assert.assertEquals(7, specific.getYears());
         }
     }
 
