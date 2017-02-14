@@ -60,5 +60,6 @@ public interface JsonRootBean {
     
     @XmlElement(name=JsonParserTest.SKILLZ)
     public SkillBean getSkillz();
+    public void setSkillz(SkillBean skillBean);
 
 }

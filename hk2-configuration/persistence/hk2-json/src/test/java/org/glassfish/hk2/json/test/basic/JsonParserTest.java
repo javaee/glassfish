@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.json.test.basic;
 
+import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
@@ -99,6 +100,57 @@ public class JsonParserTest {
         XmlRootHandle<JsonRootBean> skillBeanHandle = jsonService.unmarshal(uri, JsonRootBean.class);
         checkStandardDocument(skillBeanHandle, hub, locator);
         
+    }
+    
+    /**
+     * Tests a basic bean can be marshalled
+     */
+    @Test
+    @org.junit.Ignore
+    public void testBasicUnmarshal() throws Exception {
+        ServiceLocator locator = Utilities.enableLocator();
+        Hub hub = locator.getService(Hub.class);
+        
+        XmlService jsonService = locator.getService(XmlService.class, JsonUtilities.JSON_SERVICE_NAME);
+        
+        XmlRootHandle<JsonRootBean> rootHandle = createStandardDocument(jsonService, hub, locator);
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            rootHandle.marshal(baos);
+        }
+        finally {
+            baos.close();
+        }
+    }
+    
+    private static XmlRootHandle<JsonRootBean> createStandardDocument(XmlService jsonService, Hub hub, ServiceLocator locator) {
+       XmlRootHandle<JsonRootBean> retVal = jsonService.createEmptyHandle(JsonRootBean.class);
+       
+       retVal.addRoot();
+       JsonRootBean root = retVal.getRoot();
+       
+       SkillBean skillBean = jsonService.createBean(SkillBean.class);
+       root.setSkillz(skillBean);
+       skillBean = root.getSkillz();
+       
+       skillBean.addWebBean(createSpecificSkillBean(jsonService, HTML, 5));
+       skillBean.addWebBean(createSpecificSkillBean(jsonService, CSS, 3));
+       
+       skillBean.addDatabaseBean(createSpecificSkillBean(jsonService, SQL, 7));
+       
+       checkStandardDocument(retVal, hub, locator);
+       
+       return retVal;
+    }
+    
+    private static SpecificSkillBean createSpecificSkillBean(XmlService jsonService, String name, int years) {
+        SpecificSkillBean retVal = jsonService.createBean(SpecificSkillBean.class);
+        
+        retVal.setName(name);
+        retVal.setYears(years);
+        
+        return retVal;
     }
     
     private static final String JSON_ROOT_TYPE = "/json-root-bean";

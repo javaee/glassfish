@@ -56,9 +56,11 @@ import org.jvnet.hk2.annotations.Contract;
 public interface SkillBean {
     @XmlElement(name=JsonParserTest.WEB)
     public List<SpecificSkillBean> getWebBean();
+    public SpecificSkillBean addWebBean(SpecificSkillBean addMe);
     
     @XmlElement(name=JsonParserTest.DB)
     public SpecificSkillBean[] getDatabaseBean();
+    public SpecificSkillBean addDatabaseBean(SpecificSkillBean addMe);
     
     
 }

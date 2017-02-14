@@ -54,8 +54,10 @@ import org.jvnet.hk2.annotations.Contract;
 public interface SpecificSkillBean {
     @XmlAttribute @XmlID
     public String getName();
+    public void setName(String name);
     
     @XmlAttribute
     public int getYears();
+    public void setYears(int years);
 
 }
