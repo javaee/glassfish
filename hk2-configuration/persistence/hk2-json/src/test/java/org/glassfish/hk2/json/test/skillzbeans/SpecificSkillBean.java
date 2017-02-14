@@ -40,6 +40,7 @@
 package org.glassfish.hk2.json.test.skillzbeans;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlID;
 
 import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
 import org.jvnet.hk2.annotations.Contract;
@@ -51,7 +52,7 @@ import org.jvnet.hk2.annotations.Contract;
 @Hk2XmlPreGenerate
 @Contract
 public interface SpecificSkillBean {
-    @XmlAttribute
+    @XmlAttribute @XmlID
     public String getName();
     
     @XmlAttribute
