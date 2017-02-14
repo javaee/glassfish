@@ -69,7 +69,7 @@ import org.glassfish.hk2.xml.spi.XmlServiceParser;
 public class DomXmlParser implements XmlServiceParser {
     private final XMLInputFactory xif = XMLInputFactory.newInstance();
     
-    @Inject
+    @Inject @Named(XmlServiceParser.STREAM_PARSING_SERVICE)
     private Provider<XmlServiceImpl> xmlService;
 
     /* (non-Javadoc)

@@ -3,13 +3,13 @@
   "skillz": {
 	"web":[
 		{"name": "html", 
-		 "years": "5"
+		 "years": 5
 		},
 		{"name": "css", 
-		 "years": "3"
+		 "years": 3
 		}],
 	"database":[
 		{"name": "sql", 
-		 "years": "7"
+		 "years": 7
 		}]
 }}

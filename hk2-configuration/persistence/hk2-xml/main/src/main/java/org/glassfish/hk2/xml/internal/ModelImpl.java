@@ -185,6 +185,10 @@ public class ModelImpl implements Model {
         return allChildren;
     }
     
+    public ChildDescriptor getChildDescriptor(String xmlTag) {
+        return allChildren.get(xmlTag);
+    }
+    
     public Set<String> getUnKeyedChildren() {
         synchronized (lock) {
             if (unKeyedChildren != null) return unKeyedChildren;

@@ -39,6 +39,8 @@
  */
 package org.glassfish.hk2.json.test.skillzbeans;
 
+import java.util.List;
+
 import javax.xml.bind.annotation.XmlElement;
 
 import org.glassfish.hk2.json.test.basic.JsonParserTest;
@@ -53,10 +55,10 @@ import org.jvnet.hk2.annotations.Contract;
 @Contract
 public interface SkillBean {
     @XmlElement(name=JsonParserTest.WEB)
-    public SkillCategoryBean getWebBean();
+    public List<SpecificSkillBean> getWebBean();
     
     @XmlElement(name=JsonParserTest.DB)
-    public SkillCategoryBean getDatabaseBean();
+    public SpecificSkillBean[] getDatabaseBean();
     
     
 }

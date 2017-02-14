@@ -69,19 +69,19 @@ public class ChildLocatorTest {
         ServiceLocator grandChildALocator = Utilities.createDomLocator(childALocator);
         
         List<XmlService> allXmlServices = grandChildALocator.getAllServices(XmlService.class);
-        Assert.assertEquals(2, allXmlServices.size());
+        Assert.assertEquals(1, allXmlServices.size());
         XmlService grandChildAXmlService = allXmlServices.get(0);
         
         allXmlServices = childALocator.getAllServices(XmlService.class);
-        Assert.assertEquals(2, allXmlServices.size());
+        Assert.assertEquals(1, allXmlServices.size());
         XmlService childAXmlService = allXmlServices.get(0);
         
         allXmlServices = parentLocator.getAllServices(XmlService.class);
-        Assert.assertEquals(2, allXmlServices.size());
+        Assert.assertEquals(1, allXmlServices.size());
         XmlService parentXmlService = allXmlServices.get(0);
         
         allXmlServices = childBLocator.getAllServices(XmlService.class);
-        Assert.assertEquals(2, allXmlServices.size());
+        Assert.assertEquals(1, allXmlServices.size());
         XmlService childBXmlService = allXmlServices.get(0);
         
         Assert.assertNotEquals(grandChildAXmlService, childAXmlService);

@@ -47,7 +47,6 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.json.api.JsonUtilities;
 import org.glassfish.hk2.json.test.skillzbeans.JsonRootBean;
 import org.glassfish.hk2.json.test.skillzbeans.SkillBean;
-import org.glassfish.hk2.json.test.skillzbeans.SkillCategoryBean;
 import org.glassfish.hk2.json.test.skillzbeans.SpecificSkillBean;
 import org.glassfish.hk2.json.test.utilities.Utilities;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
@@ -76,7 +75,7 @@ public class JsonParserTest {
      * Tests a basic bean can be marshalled
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testBasicMarshal() throws Exception {
         ServiceLocator locator = Utilities.enableLocator();
         
@@ -89,12 +88,11 @@ public class JsonParserTest {
         XmlRootHandle<JsonRootBean> skillBeanHandle = jsonService.unmarshal(uri, JsonRootBean.class);
         SkillBean skillzBean = skillBeanHandle.getRoot().getSkillz();
         
-        SkillCategoryBean webBean = skillzBean.getWebBean();
-        SpecificSkillBean specifics[] = webBean.getSkills();
-        Assert.assertEquals(2, specifics.length);
+        List<SpecificSkillBean> specificsList = skillzBean.getWebBean();
+        Assert.assertEquals(2, specificsList.size());
         
-        for (int lcv = 0; lcv < specifics.length; lcv++) {
-            SpecificSkillBean specific = specifics[lcv];
+        for (int lcv = 0; lcv < specificsList.size(); lcv++) {
+            SpecificSkillBean specific = specificsList.get(lcv);
             
             if (lcv == 0) {
                 Assert.assertEquals(HTML, specific.getName());
@@ -109,8 +107,7 @@ public class JsonParserTest {
             }
         }
         
-        SkillCategoryBean dbBean = skillzBean.getDatabaseBean();
-        specifics = dbBean.getSkills();
+        SpecificSkillBean specifics[] = skillzBean.getDatabaseBean();
         Assert.assertEquals(1, specifics.length);
         
         for (int lcv = 0; lcv < specifics.length; lcv++) {

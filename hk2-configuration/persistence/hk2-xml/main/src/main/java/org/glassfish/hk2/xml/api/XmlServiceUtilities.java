@@ -67,12 +67,7 @@ public class XmlServiceUtilities {
      * in that if the named XmlService is already available in the
      * given locator then this method does nothing.
      * 
-     * There will be one xml service added per parser that is found
-     * in the locator at the time this is called.  The two provided
-     * providers will also be added if they are not in the locator
-     * already.  The parsers must have names, and both the name
-     * and the rank from the underlying parsers will be given
-     * to the XmlServices added
+     * Only the JAXB XML parser will be added
      * 
      * @param locator The non-null locator to which to add
      * the {@link XmlService}
@@ -80,8 +75,12 @@ public class XmlServiceUtilities {
     public static void enableXmlService(ServiceLocator locator) {
         ManagerUtilities.enableConfigurationHub(locator);
         
-        ServiceLocatorUtilities.addClasses(locator, true, JAXBXmlParser.class, DomXmlParser.class);
+        ServiceLocatorUtilities.addClasses(locator, true, JAXBXmlParser.class);
         
+        enableAllFoundParsers(locator);
+    }
+    
+    private static void enableAllFoundParsers(ServiceLocator locator) {
         List<ActiveDescriptor<?>> allParsers = locator.getDescriptors(BuilderHelper.createContractFilter(XmlServiceParser.class.getName()));
         for (ActiveDescriptor<?> parserDescriptor : allParsers) {
             String name = parserDescriptor.getName();
@@ -96,6 +95,7 @@ public class XmlServiceUtilities {
             
             ServiceLocatorUtilities.addOneDescriptor(locator, di, false);
         }
+        
     }
     
     /**
@@ -108,12 +108,10 @@ public class XmlServiceUtilities {
      * the {@link XmlService}
      */
     public static void enableDomXmlService(ServiceLocator locator) {
-        enableXmlService(locator);
+        ManagerUtilities.enableConfigurationHub(locator);
         
-        ActiveDescriptor<?> found = locator.getBestDescriptor(BuilderHelper.createNameAndContractFilter(XmlService.class.getName(),
-                XmlServiceParser.STREAM_PARSING_SERVICE));
-        if (found == null) return;
+        ServiceLocatorUtilities.addClasses(locator, true, DomXmlParser.class);
         
-        found.setRanking(2);
+        enableAllFoundParsers(locator);
     }
 }

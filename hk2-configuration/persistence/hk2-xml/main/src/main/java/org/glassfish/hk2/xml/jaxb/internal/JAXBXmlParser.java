@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015-2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -51,7 +51,6 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.Unmarshaller.Listener;
 
 import org.glassfish.hk2.api.DescriptorVisibility;
-import org.glassfish.hk2.api.Rank;
 import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
@@ -67,7 +66,6 @@ import org.glassfish.hk2.xml.spi.XmlServiceParser;
 @Singleton
 @Named(XmlServiceParser.DEFAULT_PARSING_SERVICE)
 @Visibility(DescriptorVisibility.LOCAL)
-@Rank(1)
 public class JAXBXmlParser implements XmlServiceParser {
 
     /* (non-Javadoc)
