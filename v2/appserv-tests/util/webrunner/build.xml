@@ -12,6 +12,7 @@
      <property environment="myenv" />
      <property name="webtest.src" value="webtest"/>
      <property name="tomcattest.src" value="tomcattest"/>
+     <property name="http2test.src" value="http2test"/>
      <property name="build.dest" value="build"/>
      <property name="java.classpath" value="${JAVA_HOME}/lib/dt.jar:${JAVA_HOME}/lib/tools.jar:${build.dest}:${myenv.APS_HOME}/lib/reporter.jar"/>
      <property name="server.host" value="dsingh"/>
@@ -59,6 +60,21 @@
 		
     />
   </target>
+
+  <target name="compile-http2test" depends="init-common">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <echo message="Compiling Grizzly test source files (${name}) ..."/>
+    <mkdir dir="${build.dest}"/>
+    <javac
+		srcdir="${http2test.src}"
+		destdir="${build.dest}"
+		classpath="${java.classpath}:${myenv.S1AS_HOME}/modules/nucleus-grizzly-all.jar"
+                debug="on"
+		
+    />
+
+  </target>
+
   <target name="run-webtest" depends="compile-webtest">
     <!-- Compile the java code from ${src} into ${build} -->
     <echo message="Running Web Test"/>
@@ -88,7 +104,7 @@
     <delete dir="${build.dest}"/>
   </target>
 
-<target name="jar" depends="compile-proxy,compile-webtest,compile-tomcattest">
+<target name="jar" depends="compile-proxy,compile-webtest,compile-tomcattest,compile-http2test">
   <jar destfile="${myenv.APS_HOME}/lib/webtest.jar">
 	<fileset dir="${build.dest}"/>
   </jar>
