@@ -343,6 +343,8 @@
         <ant dir="servlet-3.1/partSubmittedFileName" target="all"/>
         <ant dir="servlet-3.1/servletContextGetVirtualServerName" target="all"/>
         <ant dir="localeEncodingMapping" target="all"/>
+        <ant dir="servlet-4.0/setSessionTimeout" target="all"/>
+        <ant dir="servlet-4.0/setJspFile" target="all"/>
     </target>
 
     <target name="web-container" depends="init-report">
