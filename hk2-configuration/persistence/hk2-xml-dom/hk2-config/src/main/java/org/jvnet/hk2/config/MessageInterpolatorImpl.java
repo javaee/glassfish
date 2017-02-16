@@ -148,9 +148,15 @@ public class MessageInterpolatorImpl implements MessageInterpolator {
             } else {
                 cl = MessageInterpolator.class.getClassLoader();
             }
-            ResourceBundle defaultResourceBundle = ResourceBundle.getBundle(DEFAULT_VALIDATION_MESSAGES,
+            ResourceBundle defaultResourceBundle = null;
+            try {
+                defaultResourceBundle = ResourceBundle.getBundle(DEFAULT_VALIDATION_MESSAGES,
                     locale,
                     cl);
+            }
+            catch (MissingResourceException mre) {
+                // defaultResourceBundle is already null
+            }
 
             String userBundleResolvedMessage;
             resolvedMessage = message;
