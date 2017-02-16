@@ -1,7 +1,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2010-2015 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010-2017 Oracle and/or its affiliates. All rights reserved.
 #
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
@@ -41,6 +41,8 @@
 -exportcontents: \
 			org.glassfish.hk2.runlevel
 
+DynamicImport-Package: *
+
 Import-Package: \
                         org.jvnet.hk2.annotations; \
                         javax.inject; \
@@ -48,5 +50,4 @@ Import-Package: \
                         org.junit.runner;resolution:=optional, \
                         org.junit.runner.notification;resolution:=optional, \
                         org.objectweb.asm;password=GlassFish;resolution:=optional, \
-                        org.objectweb.asm.commons;password=GlassFish;resolution:=optional, \
-                        *
+                        org.objectweb.asm.commons;password=GlassFish;resolution:=optional
