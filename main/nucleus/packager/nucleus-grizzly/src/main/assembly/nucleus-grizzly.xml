@@ -55,7 +55,7 @@
             <includes>
                 <include>grizzly-npn-bootstrap.jar</include>
             </includes>
-            <outputDirectory>${install.dir.name}/lib</outputDirectory>
+            <outputDirectory>${install.dir.name}/modules/endorsed</outputDirectory>
         </fileSet>
         <fileSet>
             <directory>${temp.dir}</directory>
