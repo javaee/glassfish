@@ -97,7 +97,7 @@
     
     <target name="run" depends="init-common">
         <java classname="WebTest" fork="true">
-          <jvmarg value="-Xbootclasspath/p:${env.S1AS_HOME}/lib/grizzly-npn-bootstrap.jar"/>
+          <jvmarg value="-Djava.endorsed.dirs=${env.S1AS_HOME}/modules/endorsed"/>
           <sysproperty key="S1AS_HOME" value="${env.S1AS_HOME}"/>
           <arg value="${http.host}"/>
           <arg value="${https.port}"/>
