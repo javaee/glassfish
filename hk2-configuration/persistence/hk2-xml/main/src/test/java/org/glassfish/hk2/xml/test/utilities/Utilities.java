@@ -52,7 +52,7 @@ import org.jvnet.hk2.external.generator.ServiceLocatorGeneratorImpl;
  *
  */
 public class Utilities {
-    private final static ServiceLocatorGenerator GENERATOR = new ServiceLocatorGeneratorImpl();
+    public final static ServiceLocatorGenerator GENERATOR = new ServiceLocatorGeneratorImpl();
 
     /**
      * Creates a fresh service locator with the XmlService added

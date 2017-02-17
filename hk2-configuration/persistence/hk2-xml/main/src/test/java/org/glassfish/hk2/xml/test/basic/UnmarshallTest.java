@@ -42,10 +42,16 @@ package org.glassfish.hk2.xml.test.basic;
 
 import java.net.URI;
 import java.net.URL;
+import java.util.List;
 
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.api.ServiceLocatorFactory;
+import org.glassfish.hk2.xml.api.XmlService;
+import org.glassfish.hk2.xml.api.XmlServiceUtilities;
+import org.glassfish.hk2.xml.spi.XmlServiceParser;
 import org.glassfish.hk2.xml.test.basic.beans.Commons;
 import org.glassfish.hk2.xml.test.utilities.Utilities;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -281,5 +287,48 @@ public class UnmarshallTest {
         URI uri = url.toURI();
         
         Commons.testJaxbStyleForwardReference(locator, uri);
+    }
+    
+    /**
+     * Tests that JaxB style references work.
+     * These are references that use XmlID and XmlIDREF
+     * 
+     * @throws Exception
+     */
+    @Test // @org.junit.Ignore
+    public void testIdempotent() throws Exception {
+        ServiceLocator locator = ServiceLocatorFactory.getInstance().create(null, null, Utilities.GENERATOR);
+        
+        XmlServiceUtilities.enableXmlService(locator);
+        XmlServiceUtilities.enableXmlService(locator);
+       
+        List<XmlService> allXmlServices = locator.getAllServices(XmlService.class);
+        Assert.assertEquals(1, allXmlServices.size());
+        
+        List<XmlServiceParser> allParsers = locator.getAllServices(XmlServiceParser.class);
+        Assert.assertEquals(1, allParsers.size());
+        
+        Assert.assertNotNull(locator.getService(XmlService.class, XmlServiceParser.DEFAULT_PARSING_SERVICE));
+        Assert.assertNull(locator.getService(XmlService.class, XmlServiceParser.STREAM_PARSING_SERVICE));
+        
+        Assert.assertNotNull(locator.getService(XmlServiceParser.class, XmlServiceParser.DEFAULT_PARSING_SERVICE));
+        Assert.assertNull(locator.getService(XmlServiceParser.class, XmlServiceParser.STREAM_PARSING_SERVICE));
+        
+        XmlServiceUtilities.enableDomXmlService(locator);
+        XmlServiceUtilities.enableDomXmlService(locator);
+        
+        allXmlServices = locator.getAllServices(XmlService.class);
+        Assert.assertEquals(2, allXmlServices.size());
+        
+        allParsers = locator.getAllServices(XmlServiceParser.class);
+        Assert.assertEquals(2, allParsers.size());
+        
+        Assert.assertNotNull(locator.getService(XmlService.class, XmlServiceParser.DEFAULT_PARSING_SERVICE));
+        Assert.assertNotNull(locator.getService(XmlService.class, XmlServiceParser.STREAM_PARSING_SERVICE));
+        
+        Assert.assertNotNull(locator.getService(XmlServiceParser.class, XmlServiceParser.DEFAULT_PARSING_SERVICE));
+        Assert.assertNotNull(locator.getService(XmlServiceParser.class, XmlServiceParser.STREAM_PARSING_SERVICE));
+        
+        
     }
 }

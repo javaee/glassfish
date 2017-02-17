@@ -43,6 +43,8 @@ package org.glassfish.hk2.xml.api;
 import java.util.List;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.DuplicateServiceException;
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.ManagerUtilities;
 import org.glassfish.hk2.utilities.BuilderHelper;
@@ -59,6 +61,17 @@ import org.glassfish.hk2.xml.spi.XmlServiceParser;
  * @author jwells
  */
 public class XmlServiceUtilities {
+    private static boolean isDuplicateException(MultiException me) {
+        for (Throwable th : me.getErrors()) {
+            while (th != null) {
+                if (th instanceof DuplicateServiceException) return true;
+                
+                th = th.getCause();
+            }
+        }
+        
+        return false;
+    }
 
     /**
      * Enables Hk2 XmlServices in the given locator.  Will
@@ -75,7 +88,16 @@ public class XmlServiceUtilities {
     public static void enableXmlService(ServiceLocator locator) {
         ManagerUtilities.enableConfigurationHub(locator);
         
-        ServiceLocatorUtilities.addClasses(locator, true, JAXBXmlParser.class);
+        try {
+            ServiceLocatorUtilities.addClasses(locator, true, JAXBXmlParser.class);
+        }
+        catch (MultiException me) {
+            if (!isDuplicateException(me)) {
+                throw me;
+            }
+            
+            // Pass through
+        }
         
         enableAllFoundParsers(locator);
     }
@@ -110,7 +132,16 @@ public class XmlServiceUtilities {
     public static void enableDomXmlService(ServiceLocator locator) {
         ManagerUtilities.enableConfigurationHub(locator);
         
-        ServiceLocatorUtilities.addClasses(locator, true, DomXmlParser.class);
+        try {
+            ServiceLocatorUtilities.addClasses(locator, true, DomXmlParser.class);
+        }
+        catch (MultiException me) {
+            if (!isDuplicateException(me)) {
+                throw me;
+            }
+            
+            // Pass through
+        }
         
         enableAllFoundParsers(locator);
     }
