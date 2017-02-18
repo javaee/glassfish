@@ -411,7 +411,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
             throw new IllegalStateException("marshall May only be called on a fully initialized root handle " + this);
         }
         
-        changeControl.getWriteLock().lock();
+        changeControl.getReadLock().lock();
         try {
             XmlServiceParser parser = parent.getParser();
             if (parser == null) {
@@ -422,7 +422,7 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
             parser.marshal(outputStream, this);
         }
         finally {
-            changeControl.getWriteLock().unlock();
+            changeControl.getReadLock().unlock();
         }
     }
     

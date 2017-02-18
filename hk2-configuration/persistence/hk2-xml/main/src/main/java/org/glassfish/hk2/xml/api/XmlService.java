@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,7 +40,9 @@
 
 package org.glassfish.hk2.xml.api;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 
 import javax.xml.stream.XMLStreamReader;
@@ -101,7 +103,8 @@ public interface XmlService {
     
     /**
      * Unmarshals an XML stream using the jaxb annotated interface.
-     * Will use the plugin associated with this service to read the stream.
+     * Will use the registered implementation of {@link org.glassfish.hk2.xml.spi.XmlServiceParser}
+     * to parse the file.
      * The beans will be included in the service registry and the configuration
      * hub as appropriate
      * 
@@ -114,7 +117,8 @@ public interface XmlService {
     
     /**
      * Unmarshals an XML stream using the jaxb annotated interface.
-     * Will use the plugin associated with this service to read the stream
+     * Will use the registered implementation of {@link org.glassfish.hk2.xml.spi.XmlServiceParser}
+     * to parse the file.
      * 
      * @param inputStream The non-null input stream to read.  Will not close this stream
      * @param jaxbAnnotatedClassOrInterface The non-null interface corresponding to the Xml to be parsed
@@ -167,5 +171,23 @@ public interface XmlService {
      * no properties set
      */
     public <T> T createBean(Class<T> beanInterface);
+    
+    /**
+     * Will marshal the given tree into the given stream.  This can
+     * be called with a rootHandle that was NOT created with this
+     * XmlService implementation.  In that way different parsing
+     * formats can potentially be converted into each other.  For
+     * example an XML document can be converted to equivalent JSON.
+     * Not all transformations may be possible.  This method
+     * will hold the read lock of the rootHandle so it cannot be
+     * modified while being written to the output stream
+     * 
+     * @param outputStream A non-closed output stream.  This method will
+     * not close the output stream
+     * @param rootHandle A non-null root handle that may or may not
+     * have been created with this XmlService implementation
+     * @throws IOException On any exception that might happen
+     */
+    public <T> void marshal(OutputStream outputStream, XmlRootHandle<T> rootHandle) throws IOException;
 
 }

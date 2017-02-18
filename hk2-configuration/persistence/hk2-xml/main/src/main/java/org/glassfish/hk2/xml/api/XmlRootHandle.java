@@ -291,7 +291,7 @@ public interface XmlRootHandle<T> {
     public boolean isValidating();
     
     /**
-     * Will marshal this tree into the given stream.  Will hold the WRITE
+     * Will marshal this tree into the given stream.  Will hold the read
      * lock of this tree while it does so that the tree cannot change
      * underneath while it is being written out.  It will use a basic
      * indentation and new-line scheme

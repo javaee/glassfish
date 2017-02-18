@@ -40,7 +40,9 @@
 
 package org.glassfish.hk2.xml.internal;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -418,6 +420,30 @@ public class XmlServiceImpl implements XmlService {
         
         
         return retVal;
+    }
+    
+    @Override
+    public <T> void marshal(OutputStream outputStream, XmlRootHandle<T> rootHandle) throws IOException {
+        XmlServiceParser localParser = parser.named(selfDescriptor.getName()).get();
+        if (localParser == null) {
+            throw new IllegalStateException("There is no XmlServiceParser implementation");
+        }
+        
+        XmlRootHandleImpl<T> impl = (XmlRootHandleImpl<T>) rootHandle;
+        DynamicChangeInfo<T> changeControl = impl.getChangeInfo();
+        
+        if (changeControl == null) {
+            localParser.marshal(outputStream, rootHandle);
+            return;
+        }
+        
+        changeControl.getReadLock().lock();
+        try {
+            localParser.marshal(outputStream, rootHandle);
+        }
+        finally {
+            changeControl.getReadLock().unlock();
+        }
     }
 
     public ClassReflectionHelper getClassReflectionHelper() {

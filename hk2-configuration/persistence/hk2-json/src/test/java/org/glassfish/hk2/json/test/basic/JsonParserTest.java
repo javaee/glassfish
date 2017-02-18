@@ -60,6 +60,8 @@ import org.glassfish.hk2.json.test.utilities.Utilities;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
+import org.glassfish.hk2.xml.api.XmlServiceUtilities;
+import org.glassfish.hk2.xml.spi.XmlServiceParser;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -128,6 +130,45 @@ public class JsonParserTest {
         
         XmlRootHandle<JsonRootBean> reupRoot = jsonService.unmarshal(bais, JsonRootBean.class);
         checkStandardDocument(reupRoot, hub, locator);
+    }
+    
+    /**
+     * Tests a basic bean can be marshalled
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testConvertToXml() throws Exception {
+        ServiceLocator locator = Utilities.enableLocator();
+        XmlServiceUtilities.enableDomXmlService(locator);
+        
+        Hub hub = locator.getService(Hub.class);
+        
+        XmlService jsonService = locator.getService(XmlService.class, JsonUtilities.JSON_SERVICE_NAME);
+        XmlService xmlService = locator.getService(XmlService.class, XmlServiceParser.STREAM_PARSING_SERVICE);
+        
+        XmlRootHandle<JsonRootBean> rootHandle = createStandardDocument(jsonService, hub, locator);
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            xmlService.marshal(baos, rootHandle);
+        }
+        finally {
+            baos.close();
+        }
+        
+        XmlServiceUtilities.enableXmlService(locator);
+        XmlService jaxbService = locator.getService(XmlService.class, XmlServiceParser.DEFAULT_PARSING_SERVICE);
+        
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        try {
+            XmlRootHandle<JsonRootBean> jaxbHandle = jaxbService.unmarshal(bais, JsonRootBean.class, false, false);
+            
+            checkStandardDocument(jaxbHandle, hub, locator);
+        }
+        finally {
+            bais.close();
+        }
+        
     }
     
     private static XmlRootHandle<JsonRootBean> createStandardDocument(XmlService jsonService, Hub hub, ServiceLocator locator) {
