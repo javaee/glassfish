@@ -40,6 +40,7 @@
 package org.glassfish.hk2.xml.jaxb.internal;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 
@@ -82,6 +83,24 @@ public class JAXBXmlParser implements XmlServiceParser {
         unmarshaller.setListener(listener);
         
         T root = (T) unmarshaller.unmarshal(location.toURL());
+        
+        return root;
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.spi.XmlServiceParser#parseRoot(java.lang.Class, java.net.URI, javax.xml.bind.Unmarshaller.Listener)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T parseRoot(Model rootModel, InputStream input, Listener listener) throws Exception {
+        Class<?> clazz = rootModel.getProxyAsClass();
+        
+        JAXBContext context = JAXBContext.newInstance(clazz);
+        
+        Unmarshaller unmarshaller = context.createUnmarshaller();
+        unmarshaller.setListener(listener);
+        
+        T root = (T) unmarshaller.unmarshal(input);
         
         return root;
     }

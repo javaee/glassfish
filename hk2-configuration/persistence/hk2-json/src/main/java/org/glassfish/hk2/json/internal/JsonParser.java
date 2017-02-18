@@ -40,17 +40,26 @@
 package org.glassfish.hk2.json.internal;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Array;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonWriter;
+import javax.json.JsonWriterFactory;
+import javax.json.stream.JsonGenerator;
 import javax.xml.bind.Unmarshaller.Listener;
 
 import org.glassfish.hk2.api.Rank;
@@ -250,11 +259,26 @@ public class JsonParser implements XmlServiceParser {
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.spi.XmlServiceParser#parseRoot(org.glassfish.hk2.xml.spi.Model, java.net.URI, javax.xml.bind.Unmarshaller.Listener)
      */
-    @SuppressWarnings("unchecked")
     @Override
     public <T> T parseRoot(Model rootModel, URI location, Listener listener)
             throws Exception {
-        javax.json.stream.JsonParser parser = Json.createParser(location.toURL().openStream());
+        InputStream input = location.toURL().openStream();
+        try {
+            return parseRoot(rootModel, input, listener);
+        }
+        finally {
+            input.close();
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.spi.XmlServiceParser#parseRoot(org.glassfish.hk2.xml.spi.Model, java.net.URI, javax.xml.bind.Unmarshaller.Listener)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T parseRoot(Model rootModel, InputStream input, Listener listener)
+            throws Exception {
+        javax.json.stream.JsonParser parser = Json.createParser(input);
         
         try {
             if (!parser.hasNext()) {
@@ -294,9 +318,105 @@ public class JsonParser implements XmlServiceParser {
      * @see org.glassfish.hk2.xml.spi.XmlServiceParser#marshall(java.io.OutputStream, org.glassfish.hk2.xml.api.XmlRootHandle)
      */
     @Override
-    public <T> void marshal(OutputStream outputStream, XmlRootHandle<T> root)
+    public <T> void marshal(OutputStream outputStream, XmlRootHandle<T> rootHandle)
             throws IOException {
-        throw new AssertionError("marshal not yet implemented");
+        JsonObjectBuilder objectBuilder = Json.createObjectBuilder();
+        
+        T root = rootHandle.getRoot();
+        
+        JsonObject rootObject = createJsonObject((BaseHK2JAXBBean) root, objectBuilder);
+        
+        Map<String, Object> config = new HashMap<String, Object>();
+        config.put(JsonGenerator.PRETTY_PRINTING, Boolean.TRUE);
+        
+        JsonWriterFactory writerFactory = Json.createWriterFactory(config);
+        JsonWriter writer = writerFactory.createWriter(outputStream);
+        try {
+            writer.writeObject(rootObject);
+        }
+        finally {
+            writer.close();
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    private JsonObject createJsonObject(BaseHK2JAXBBean bean, JsonObjectBuilder builder) {
+        if (bean == null) {
+            return builder.build();
+        }
+        
+        ModelImpl model = bean._getModel();
+        Map<String, ChildDescriptor> allChildren = model.getAllChildrenDescriptors();
+        for (Map.Entry<String, ChildDescriptor> entry : allChildren.entrySet()) {
+            String keyName = entry.getKey();
+            
+            if (!bean._isSet(keyName)) continue;
+            Object value = bean._getProperty(keyName);
+            
+            ParentedModel parented = entry.getValue().getParentedModel();
+            if (parented != null) {
+                if (ChildType.DIRECT.equals(parented.getChildType())) {
+                    if (value != null) {
+                        builder = builder.add(keyName, createJsonObject((BaseHK2JAXBBean) value, Json.createObjectBuilder()));
+                    }
+                }
+                else if (ChildType.LIST.equals(parented.getChildType())) {
+                    List<BaseHK2JAXBBean> list = (List<BaseHK2JAXBBean>) value;
+                    if (list != null && !list.isEmpty()) {
+                        JsonArrayBuilder jsonArray = Json.createArrayBuilder();
+                        
+                        for (BaseHK2JAXBBean item : list) {
+                            JsonObjectBuilder childBuilder = Json.createObjectBuilder();
+                            
+                            JsonObject obj = createJsonObject(item, childBuilder);
+                            jsonArray.add(obj);
+                        }
+                        
+                        builder.add(keyName, jsonArray);
+                    }
+                }
+                else if (ChildType.ARRAY.equals(parented.getChildType())) {
+                    int length = Array.getLength(value);
+                    if (length > 0) {
+                        JsonArrayBuilder jsonArray = Json.createArrayBuilder();
+                        
+                        for (int lcv = 0; lcv < length; lcv++) {
+                            BaseHK2JAXBBean item = (BaseHK2JAXBBean) Array.get(value, lcv);
+                            
+                            JsonObjectBuilder childBuilder = Json.createObjectBuilder();
+                            
+                            JsonObject obj = createJsonObject(item, childBuilder);
+                            jsonArray.add(obj);
+                        }
+                        
+                        builder.add(keyName, jsonArray);
+                    }
+                }
+                else {
+                    throw new AssertionError("Unknown childType " + parented.getChildType());
+                }
+            }
+            else {
+                if (value == null) {
+                    builder.addNull(keyName);
+                }
+                else if (value instanceof Integer) {
+                    builder.add(keyName, ((Integer) value).intValue());
+                }
+                else if (value instanceof Long) {
+                    builder.add(keyName, ((Long) value).longValue());
+                }
+                else if (value instanceof Boolean) {
+                    builder.add(keyName, ((Boolean) value).booleanValue());
+                }
+                else {
+                    builder.add(keyName, value.toString());
+                }
+            }
+            
+        }
+        
+        return builder.build();
     }
 
 }

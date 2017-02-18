@@ -131,6 +131,17 @@ public interface XmlHk2ConfigurationBean {
     public Object _lookupChild(String propName, String keyValue);
     
     /**
+     * Returns true if the given property is explicitly set, false
+     * if the property has not been explicitly set
+     * 
+     * @param propName The name of the property to check for being set,
+     * may not be null
+     * @return true if the property is explicitly set, false if
+     * the property is not explicitly set
+     */
+    public boolean _isSet(String propName);
+    
+    /**
      * Gets the root associated with this bean.  If this bean
      * has no associated root this will return null
      * 

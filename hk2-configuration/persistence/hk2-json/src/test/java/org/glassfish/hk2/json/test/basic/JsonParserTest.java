@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.json.test.basic;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.net.URL;
@@ -106,7 +107,7 @@ public class JsonParserTest {
      * Tests a basic bean can be marshalled
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testBasicUnmarshal() throws Exception {
         ServiceLocator locator = Utilities.enableLocator();
         Hub hub = locator.getService(Hub.class);
@@ -122,6 +123,11 @@ public class JsonParserTest {
         finally {
             baos.close();
         }
+        
+        ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+        
+        XmlRootHandle<JsonRootBean> reupRoot = jsonService.unmarshal(bais, JsonRootBean.class);
+        checkStandardDocument(reupRoot, hub, locator);
     }
     
     private static XmlRootHandle<JsonRootBean> createStandardDocument(XmlService jsonService, Hub hub, ServiceLocator locator) {

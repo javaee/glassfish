@@ -40,6 +40,7 @@
 
 package org.glassfish.hk2.xml.api;
 
+import java.io.InputStream;
 import java.net.URI;
 
 import javax.xml.stream.XMLStreamReader;
@@ -96,6 +97,35 @@ public interface XmlService {
      * other tasks
      */
     public <T> XmlRootHandle<T> unmarshal(XMLStreamReader reader, Class<T> jaxbAnnotatedInterface,
+            boolean advertiseInRegistry, boolean advertiseInHub);
+    
+    /**
+     * Unmarshals an XML stream using the jaxb annotated interface.
+     * Will use the plugin associated with this service to read the stream.
+     * The beans will be included in the service registry and the configuration
+     * hub as appropriate
+     * 
+     * @param inputStream The non-null input stream to read.  Will not close this stream
+     * @param jaxbAnnotatedClassOrInterface The non-null interface corresponding to the Xml to be parsed
+     * @return A non-null handle that can be used to get the unmarshalled data or perform
+     * other tasks
+     */
+    public <T> XmlRootHandle<T> unmarshal(InputStream inputStream, Class<T> jaxbAnnotatedInterface);
+    
+    /**
+     * Unmarshals an XML stream using the jaxb annotated interface.
+     * Will use the plugin associated with this service to read the stream
+     * 
+     * @param inputStream The non-null input stream to read.  Will not close this stream
+     * @param jaxbAnnotatedClassOrInterface The non-null interface corresponding to the Xml to be parsed
+     * @param advertiseInRegistry if true the entire tree of parsed xml will be added to the
+     * ServiceLocator
+     * @param advertiseInHub if true the entire tree of parsed xml will be added to the
+     * HK2 configuration Hub (as bean-like maps)
+     * @return A non-null handle that can be used to get the unmarshalled data or perform
+     * other tasks
+     */
+    public <T> XmlRootHandle<T> unmarshal(InputStream inputStream, Class<T> jaxbAnnotatedInterface,
             boolean advertiseInRegistry, boolean advertiseInHub);
     
     /**

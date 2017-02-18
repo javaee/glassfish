@@ -40,6 +40,7 @@
 package org.glassfish.hk2.xml.spi;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 
@@ -77,6 +78,17 @@ public interface XmlServiceParser {
      * @return The root object with all fields filled in from the given document
      */
     public <T> T parseRoot(Model rootModel, URI location, Unmarshaller.Listener listener) throws Exception;
+    
+    /**
+     * This method must return an instance of the given class as the root of
+     * an XML graph
+     * 
+     * @param rootModel The Model object of the root to be parsed
+     * @param input A non-null input stream.  This stream will NOT be closed by this method
+     * @param listener A listener that must be called via the contract of Unmarshaller.Listener
+     * @return The root object with all fields filled in from the given document
+     */
+    public <T> T parseRoot(Model rootModel, InputStream input, Unmarshaller.Listener listener) throws Exception;
     
     
     /**

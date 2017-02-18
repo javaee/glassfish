@@ -101,13 +101,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.glassfish.copyright</groupId>
-                <artifactId>glassfish-copyright-maven-plugin</artifactId>
-                <configuration>
-                	<excludeFile>src/test/resources/skillz.json</excludeFile>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 

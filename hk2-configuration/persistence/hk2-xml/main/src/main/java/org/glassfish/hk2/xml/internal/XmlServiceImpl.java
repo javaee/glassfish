@@ -40,6 +40,7 @@
 
 package org.glassfish.hk2.xml.internal;
 
+import java.io.InputStream;
 import java.net.URI;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -115,6 +116,12 @@ public class XmlServiceImpl implements XmlService {
             Class<T> jaxbAnnotatedClassOrInterface) {
         return unmarshal(uri, jaxbAnnotatedClassOrInterface, true, true);
     }
+    
+    @Override
+    public <T> XmlRootHandle<T> unmarshal(InputStream input,
+            Class<T> jaxbAnnotatedInterface) {
+        return unmarshal(input, jaxbAnnotatedInterface, true, true);
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.api.XmlService#unmarshall(java.net.URI, java.lang.Class)
@@ -139,7 +146,7 @@ public class XmlServiceImpl implements XmlService {
             
             ModelImpl model = jaUtilities.getModel(jaxbAnnotatedInterface);
                 
-            return unmarshallClass(uri, model, localParser, null, advertiseInRegistry, advertiseInHub);
+            return unmarshallClass(uri, null, model, localParser, null, advertiseInRegistry, advertiseInHub);
         }
         catch (RuntimeException re) {
             throw re;
@@ -166,7 +173,7 @@ public class XmlServiceImpl implements XmlService {
             
             ModelImpl model = jaUtilities.getModel(jaxbAnnotatedInterface);
                 
-            return unmarshallClass(null, model, null, reader, advertiseInRegistry, advertiseInHub);
+            return unmarshallClass(null, null, model, null, reader, advertiseInRegistry, advertiseInHub);
         }
         catch (RuntimeException re) {
             throw re;
@@ -176,7 +183,39 @@ public class XmlServiceImpl implements XmlService {
         }
     }
     
-    private <T> XmlRootHandle<T> unmarshallClass(URI uri, ModelImpl model,
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.api.XmlService#unmarshall(javax.xml.stream.XMLStreamReader, java.lang.Class, boolean, boolean)
+     */
+    @Override
+    public <T> XmlRootHandle<T> unmarshal(InputStream input,
+            Class<T> jaxbAnnotatedInterface, boolean advertiseInRegistry,
+            boolean advertiseInHub) {
+        if (input == null || jaxbAnnotatedInterface == null) throw new IllegalArgumentException();
+        if (!jaxbAnnotatedInterface.isInterface()) {
+            throw new IllegalArgumentException("Only an interface can be given to unmarshall: " + jaxbAnnotatedInterface.getName());
+        }
+        
+        XmlServiceParser localParser = parser.named(selfDescriptor.getName()).get();
+        if (localParser == null) {
+            throw new IllegalStateException("There is no XmlServiceParser implementation");
+        }
+        
+        try {
+            jaUtilities.convertRootAndLeaves(jaxbAnnotatedInterface, false);
+            
+            ModelImpl model = jaUtilities.getModel(jaxbAnnotatedInterface);
+                
+            return unmarshallClass(null, input, model, localParser, null, advertiseInRegistry, advertiseInHub);
+        }
+        catch (RuntimeException re) {
+            throw re;
+        }
+        catch (Throwable e) {
+            throw new MultiException(e);
+        }
+    }
+    
+    private <T> XmlRootHandle<T> unmarshallClass(URI uri, InputStream inputStream, ModelImpl model,
             XmlServiceParser localParser, XMLStreamReader reader,
             boolean advertise, boolean advertiseInHub) throws Exception {
         long elapsedUpToJAXB = 0;
@@ -195,7 +234,12 @@ public class XmlServiceImpl implements XmlService {
         
         T root;
         if (localParser != null) {
-            root = localParser.parseRoot(model, uri, listener);
+            if (uri != null) {
+                root = localParser.parseRoot(model, uri, listener);
+            }
+            else {
+                root = localParser.parseRoot(model, inputStream, listener);
+            }
         }
         else {
             root = XmlStreamImpl.parseRoot(this, model, reader, listener);

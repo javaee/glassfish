@@ -445,6 +445,7 @@
                           <exclude>resources/gendir</exclude>
                           <exclude>.png</exclude>
                           <exclude>.class</exclude>
+                          <exclude>.json</exclude>
                         </exclude>
                     </configuration>
                 </plugin>

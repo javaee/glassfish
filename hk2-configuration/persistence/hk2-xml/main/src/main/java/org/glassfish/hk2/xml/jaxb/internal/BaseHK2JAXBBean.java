@@ -1207,8 +1207,25 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * @return The root of this bean, or null if this bean
      * is not associated with a root
      */
+    @Override
     public XmlRootHandle<?> _getRoot() {
         return root;
+    }
+    
+    @Override
+    public boolean _isSet(String propName) {
+        if (changeControl == null) {
+            return beanLikeMap.containsKey(propName);
+        }
+        
+        changeControl.getReadLock().lock();
+        try {
+            return beanLikeMap.containsKey(propName);
+        }
+        finally {
+            changeControl.getReadLock().unlock();
+        }
+        
     }
     
     public void __setAddCost(int addCost) {

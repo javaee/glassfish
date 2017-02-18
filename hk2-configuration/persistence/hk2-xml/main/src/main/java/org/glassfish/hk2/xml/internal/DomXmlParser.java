@@ -75,22 +75,28 @@ public class DomXmlParser implements XmlServiceParser {
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.spi.XmlServiceParser#parseRoot(java.lang.Class, java.net.URI, javax.xml.bind.Unmarshaller.Listener)
      */
-    @SuppressWarnings("unchecked")
     @Override
     public <T> T parseRoot(Model rootModel, URI location, Listener listener)
             throws Exception {
         InputStream urlStream = location.toURL().openStream();
         try {
-            XMLStreamReader xmlStreamReader = xif.createXMLStreamReader(urlStream);
-            try {
-                return (T) XmlStreamImpl.parseRoot(xmlService.get(), rootModel, xmlStreamReader, listener);
-            }
-            finally {
-                xmlStreamReader.close();
-            }
+            return parseRoot(rootModel, urlStream, listener);
         }
         finally {
             urlStream.close();
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T parseRoot(Model rootModel, InputStream input, Listener listener)
+            throws Exception {
+        XMLStreamReader xmlStreamReader = xif.createXMLStreamReader(input);
+        try {
+            return (T) XmlStreamImpl.parseRoot(xmlService.get(), rootModel, xmlStreamReader, listener);
+        }
+        finally {
+            xmlStreamReader.close();
         }
     }
 
