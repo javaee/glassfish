@@ -192,8 +192,8 @@ public class ExtrasUtilities {
      * This method will enable the default topic distribution service.
      * <p>
      * The default distribution service distributes messages on the
-     * same thread as the caller of {@link org.glassfish.hk2.api.messaging.Topic#publish(Object)}
-     * and (TBD security policy).  Objects to be distributed to will be
+     * same thread as the caller of {@link org.glassfish.hk2.api.messaging.Topic#publish(Object)}.
+     * Objects to be distributed to will be
      * held with SoftReferences, and hence if they go out of scope they
      * will not be distributed to.  Only services created AFTER the topic
      * distribution service is enabled will be distributed to.
