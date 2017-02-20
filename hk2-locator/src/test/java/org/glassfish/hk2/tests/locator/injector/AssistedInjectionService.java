@@ -55,7 +55,10 @@ public class AssistedInjectionService {
     private double foo;
     
     public void aMethod(@SubscribeTo Event event, @Special SpecialService special, SimpleService simple, double foo) {
-        
+        this.event = event;
+        this.special = special;
+        this.simple = simple;
+        this.foo = foo;
     }
     
     public Event getEvent() {

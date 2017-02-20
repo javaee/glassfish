@@ -92,6 +92,7 @@ import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.InstanceLifecycleListener;
 import org.glassfish.hk2.api.InterceptionService;
+import org.glassfish.hk2.api.MethodParameter;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.Proxiable;
@@ -909,9 +910,68 @@ public class Utilities {
             throw new MultiException(e);
         }
     }
+    
+    /**
+     * Just injects this one method
+     * @param injectMe
+     * @param method
+     * @param locator
+     * @param givenValues
+     */
+    public static void justAssistedInject(Object injectMe, Method method, ServiceLocatorImpl locator, MethodParameter... givenValues) {
+        if (injectMe == null || method == null) {
+            throw new IllegalArgumentException("injectMe=" + injectMe + " method=" + method);
+        }
+        if (givenValues == null) givenValues = new MethodParameter[0];
+        
+        int numParameters = method.getParameterCount();
+        
+        Map<Integer, MethodParameter> knownValues = new HashMap<Integer, MethodParameter>();
+        for (MethodParameter mp : givenValues) {
+            int index = mp.getParameterPosition();
+            if (knownValues.containsKey(index)) {
+                throw new IllegalArgumentException("The given values contain more than one value for index " + index);
+            }
+            knownValues.put(index, mp);
+            
+            if ((index < 0) || (index >= numParameters)) {
+                throw new IllegalArgumentException("Index of " + mp + " is out of range of the method parameters " + method);
+            }
+        }
+        
+        List<SystemInjecteeImpl> injectees = Utilities.getMethodInjectees(injectMe.getClass(), method, null, knownValues);
+        
+        Object args[] = new Object[numParameters];
+        for (int lcv = 0; lcv < injectees.size(); lcv++) {
+            SystemInjecteeImpl injectee = injectees.get(lcv);
+            
+            if (injectee == null) {
+                MethodParameter mp = knownValues.get(lcv);
+                if (mp == null) {
+                    throw new AssertionError("Error getting values " + lcv + " method=" + method + " injectMe=" + injectMe + " knownValues=" + knownValues);
+                }
+                
+                args[lcv] = mp.getParameterValue();
+            }
+            else {
+                InjectionResolver<?> resolver = locator.getPerLocatorUtilities().getInjectionResolver(locator, injectee);
+                args[lcv] = resolver.resolve(injectee, null);
+            }
+        }
+        
+        try {
+            ReflectionHelper.invoke(injectMe, method, args, locator.getNeutralContextClassLoader());
+        }
+        catch (MultiException me) {
+            throw me;
+        }
+        catch (Throwable e) {
+            throw new MultiException(e);
+        }
+    }
 
     /**
-     * Just creates the thing, doesn't try to do anything else
+     * Just injects the thing, doesn't try to do anything else
      * @param injectMe The object to inject into
      * @param locator The locator to find the injection points with
      * @param strategy The strategy to use for analyzing the class
@@ -946,6 +1006,9 @@ public class Utilities {
             try {
                 ReflectionHelper.setField(field, injectMe, fieldValue);
             }
+            catch (MultiException me) {
+                throw me;
+            }
             catch (Throwable th) {
                 throw new MultiException(th);
             }
@@ -966,7 +1029,11 @@ public class Utilities {
 
             try {
                 ReflectionHelper.invoke(injectMe, method, args, locator.getNeutralContextClassLoader());
-            } catch (Throwable e) {
+            }
+            catch (MultiException me) {
+                throw me;
+            }
+            catch (Throwable e) {
                 throw new MultiException(e);
             }
         }
@@ -1808,7 +1875,7 @@ public class Utilities {
 
         return retVal;
     }
-
+    
     /**
      * Returns all the injectees for a constructor
      * @param c The constructor to analyze
@@ -1816,13 +1883,29 @@ public class Utilities {
      * @return the list (in order) of parameters to the constructor
      */
     public static List<SystemInjecteeImpl> getMethodInjectees(Class<?> actualClass, Method c, ActiveDescriptor<?> injecteeDescriptor) {
+        return getMethodInjectees(actualClass, c, injecteeDescriptor, Collections.<Integer, MethodParameter>emptyMap());
+    }
+
+    /**
+     * Returns all the injectees for a constructor
+     * @param c The constructor to analyze
+     * @param injecteeDescriptor The descriptor of the injectee
+     * @return the list (in order) of parameters to the constructor
+     */
+    public static List<SystemInjecteeImpl> getMethodInjectees(Class<?> actualClass, Method c, ActiveDescriptor<?> injecteeDescriptor,
+            Map<Integer, MethodParameter> knownValues) {
         Type genericTypeParams[] = c.getGenericParameterTypes();
         Annotation paramAnnotations[][] = c.getParameterAnnotations();
 
-        List<SystemInjecteeImpl> retVal = new LinkedList<SystemInjecteeImpl>();
+        List<SystemInjecteeImpl> retVal = new ArrayList<SystemInjecteeImpl>();
         Class<?> declaringClass = c.getDeclaringClass();
 
         for (int lcv = 0; lcv < genericTypeParams.length; lcv++) {
+            if (knownValues.containsKey(lcv)) {
+                retVal.add(null);
+                continue;
+            }
+            
             AnnotationInformation ai = getParamInformation(paramAnnotations[lcv]);
             
             Type adjustedType = ReflectionHelper.resolveMember(actualClass,

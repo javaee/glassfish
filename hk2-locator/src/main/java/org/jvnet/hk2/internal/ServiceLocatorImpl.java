@@ -988,7 +988,9 @@ public class ServiceLocatorImpl implements ServiceLocator {
     
     @Override
     public void assistedInject(Object injectMe, Method method, MethodParameter... params) {
-        throw new AssertionError("not yet implemented");
+        checkState();
+        
+        Utilities.justAssistedInject(injectMe, method, this, params);
     }
 
     /* (non-Javadoc)

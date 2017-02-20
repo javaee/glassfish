@@ -165,7 +165,7 @@ public class InjectorTest {
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testAssistedInjection() throws Exception {
         AssistedInjectionService ais = new AssistedInjectionService();
         
