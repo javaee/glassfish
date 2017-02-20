@@ -455,9 +455,18 @@ public class ServiceLocatorImpl implements ServiceLocator {
     }
 
     @Override
-    public void assistedInject(Object injectMe, Method method,
+    public Object assistedInject(Object injectMe, Method method,
             MethodParameter... params) {
         // TODO Auto-generated method stub
+        return null;
+        
+    }
+
+    @Override
+    public Object assistedInject(Object injectMe, Method method,
+            ServiceHandle<?> root, MethodParameter... params) {
+        // TODO Auto-generated method stub
+        return null;
         
     }
 }

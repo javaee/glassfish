@@ -42,6 +42,7 @@ package org.glassfish.hk2.tests.locator.injector;
 import javax.inject.Singleton;
 
 import org.glassfish.hk2.api.messaging.SubscribeTo;
+import org.jvnet.hk2.annotations.Optional;
 
 /**
  * @author jwells
@@ -53,12 +54,14 @@ public class AssistedInjectionService {
     private SpecialService special;
     private SimpleService simple;
     private double foo;
+    private UnknownService unknown = new UnknownService();
     
-    public void aMethod(@SubscribeTo Event event, @Special SpecialService special, SimpleService simple, double foo) {
+    public void aMethod(@SubscribeTo Event event, @Special SpecialService special, SimpleService simple, double foo, @Optional UnknownService unknown) {
         this.event = event;
         this.special = special;
         this.simple = simple;
         this.foo = foo;
+        this.unknown = unknown;
     }
     
     public Event getEvent() {
@@ -75,6 +78,10 @@ public class AssistedInjectionService {
 
     public double getFoo() {
         return foo;
+    }
+    
+    public UnknownService getUnknown() {
+        return unknown;
     }
 
 }

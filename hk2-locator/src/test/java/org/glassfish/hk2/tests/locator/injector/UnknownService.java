@@ -37,63 +37,12 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.messaging.resolver;
-
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.tests.extras.internal.Utilities;
-import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
-import org.junit.Assert;
-import org.junit.Test;
+package org.glassfish.hk2.tests.locator.injector;
 
 /**
  * @author jwells
  *
  */
-public class CustomResolverTest {
-    public final static String HEADER = "Soccer";
-    
-    /**
-     * Tests that JIT resolvers can be used with
-     * event handler methods
-     */
-    @Test
-    @org.junit.Ignore
-    public void testJITResolverInEventMethod() {
-        ServiceLocator locator = Utilities.getLocatorWithTopics(
-                EventHeaderJIT.class);
-        
-        ServiceLocatorUtilities.addClasses(locator, EventSender.class, EventHandler.class);
-        
-        EventHandler handler = locator.getService(EventHandler.class);
-        EventSender sender = locator.getService(EventSender.class);
-        Event event = new Event();
-        
-        sender.sendEvent(event);
-        
-        Assert.assertEquals(event, handler.getLastEvent());
-        Assert.assertEquals(HEADER, handler.getLastHeader());
-    }
-    
-    /**
-     * Tests that custom resolvers can be used with
-     * event handler methods
-     */
-    @Test
-    // @org.junit.Ignore
-    public void testCustomResolverInEventMethod() {
-        ServiceLocator locator = Utilities.getLocatorWithTopics(
-                EventHeaderInjectionResolver.class);
-        
-        ServiceLocatorUtilities.addClasses(locator, EventSender.class, EventHandler.class);
-        
-        EventHandler handler = locator.getService(EventHandler.class);
-        EventSender sender = locator.getService(EventSender.class);
-        Event event = new Event();
-        
-        sender.sendEvent(event);
-        
-        Assert.assertEquals(event, handler.getLastEvent());
-        Assert.assertEquals(HEADER, handler.getLastHeader());
-    }
+public class UnknownService {
 
 }

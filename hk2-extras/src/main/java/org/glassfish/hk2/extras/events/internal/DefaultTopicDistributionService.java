@@ -44,6 +44,7 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -68,6 +69,7 @@ import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.InstanceLifecycleEvent;
 import org.glassfish.hk2.api.InstanceLifecycleListener;
 import org.glassfish.hk2.api.IterableProvider;
+import org.glassfish.hk2.api.MethodParameter;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.PerLookup;
 import org.glassfish.hk2.api.Self;
@@ -80,6 +82,7 @@ import org.glassfish.hk2.api.messaging.Topic;
 import org.glassfish.hk2.api.messaging.TopicDistributionService;
 import org.glassfish.hk2.extras.events.DefaultTopicDistributionErrorService;
 import org.glassfish.hk2.utilities.InjecteeImpl;
+import org.glassfish.hk2.utilities.MethodParameterImpl;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.MethodWrapper;
 import org.glassfish.hk2.utilities.reflection.Pretty;
@@ -114,6 +117,9 @@ public class DefaultTopicDistributionService implements
     @Inject
     private IterableProvider<DefaultTopicDistributionErrorService> errorHandlers;
     
+    @Inject @Self
+    private ActiveDescriptor<TopicDistributionService> selfDescriptor;
+    
     private final ClassReflectionHelper reflectionHelper = new ClassReflectionHelperImpl();
     private final HashMap<ActiveDescriptor<?>, Set<Class<?>>> descriptor2Classes = new HashMap<ActiveDescriptor<?>, Set<Class<?>>>();
     private final HashMap<ActivatorClassKey, List<SubscriberInfo>> class2Subscribers = new HashMap<ActivatorClassKey, List<SubscriberInfo>>();
@@ -122,50 +128,36 @@ public class DefaultTopicDistributionService implements
     private final WriteLock wLock = readWriteLock.writeLock();
     private final ReadLock rLock = readWriteLock.readLock();
     
-    private static void fire(Object message, Method subscription, SubscriberInfo subscriptionInfo, Object target, ServiceLocator locator) throws Throwable {
-        Object arguments[] = new Object[subscriptionInfo.otherInjectees.length];
+    private void fire(Object message, Method subscription, SubscriberInfo subscriptionInfo, Object target, ServiceLocator locator) throws Throwable {
+        List<MethodParameter> mps = new ArrayList<MethodParameter>(subscriptionInfo.otherInjectees.length);
         
-        List<ServiceHandle<?>> destroyMe = new LinkedList<ServiceHandle<?>>();
-        try {
-            for (int lcv = 0; lcv < subscriptionInfo.otherInjectees.length; lcv++) {
-                InjecteeImpl injectee = subscriptionInfo.otherInjectees[lcv];
-                if (injectee == null) {
-                    arguments[lcv] = message;
-                }
-                else {
-                    if (injectee.isSelf()) {
-                        arguments[lcv] = injectee.getInjecteeDescriptor();
-                        continue;
-                    }
-                    
-                    ActiveDescriptor<?> injecteeDescriptor = locator.getInjecteeDescriptor(injectee);
-                    if (injecteeDescriptor == null) {
-                        if (injectee.isOptional()) {
-                            arguments[lcv] = null;
-                            continue;
-                        }
-                        
-                        throw new IllegalStateException("Could not find injectee " + injectee + " for subscriber " +
-                                Pretty.method(subscription) + " on class " + target.getClass().getName());
-                    }
-                
-                    ServiceHandle<?> handle = locator.getServiceHandle(injecteeDescriptor);
-                    if (injecteeDescriptor.getScope().equals(PerLookup.class.getName())) {
-                        // Only will live as long as the method
-                        destroyMe.add(handle);
-                    }
-                    
-                    arguments[lcv] = handle.getService();
+        
+        for (int lcv = 0; lcv < subscriptionInfo.otherInjectees.length; lcv++) {
+            InjecteeImpl injectee = subscriptionInfo.otherInjectees[lcv];
+            if (injectee == null) {
+                mps.add(new MethodParameterImpl(lcv, message));
+            }
+            else {
+                if (injectee.isSelf()) {
+                    mps.add(new MethodParameterImpl(lcv, injectee.getInjecteeDescriptor()));
+                    continue;
                 }
             }
-            
-            // OK, everything filled in!
-            ReflectionHelper.invoke(target, subscription, arguments, locator.getNeutralContextClassLoader());
         }
-        finally {
-            for (ServiceHandle<?> dead : destroyMe) {
-                dead.destroy();
-            }
+            
+        // OK, everything filled in!
+        ServiceHandle<TopicDistributionService> handle = locator.getServiceHandle(selfDescriptor);
+            
+        locator.assistedInject(target, subscription, handle, mps.toArray(new MethodParameter[mps.size()]));
+            
+        List<ServiceHandle<?>> subHandles = handle.getSubHandles();
+        for (ServiceHandle<?> subHandle : subHandles) {
+            ActiveDescriptor<?> ad = subHandle.getActiveDescriptor();
+            if (ad == null) continue;
+            
+            if (!PerLookup.class.equals(ad.getScopeAnnotation())) continue;
+            
+            subHandle.destroy();
         }
     }
     

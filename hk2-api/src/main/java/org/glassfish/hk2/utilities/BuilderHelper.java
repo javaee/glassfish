@@ -46,6 +46,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -735,12 +736,16 @@ public class BuilderHelper {
             @Override
             public synchronized void setServiceData(Object serviceData) {
                 this.serviceData = serviceData;
-                
             }
 
             @Override
             public synchronized Object getServiceData() {
                 return serviceData;
+            }
+
+            @Override
+            public List<ServiceHandle<?>> getSubHandles() {
+                return Collections.emptyList();
             }
 	        
 	    };

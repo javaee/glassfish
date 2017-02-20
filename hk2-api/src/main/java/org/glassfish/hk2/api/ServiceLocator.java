@@ -646,11 +646,31 @@ public interface ServiceLocator {
      * @param params A list of parameter values known by the caller.  The indexes
      * in params may not repeat and must be in the valid range of parameters
      * for the passed in method
+     * @return The return value of the method (null if the method is void type)
      * @throws IllegalArgumentException if their is more than one of the same index
      * in the params list or the index of one of the params is out of range of
      * the parameters in the method
      */
-    public void assistedInject(Object injectMe, Method method, MethodParameter... params);
+    public Object assistedInject(Object injectMe, Method method, MethodParameter... params);
+    
+    /**
+     * This will invoke the given method on the given object.  The values for the
+     * method will either be taken from the params list or will be gotten from
+     * this ServiceLocator taking into account all injection resolvers
+     * 
+     * @param injectMe The non-null object to inject into
+     * @param method The non-null method to inject into
+     * @param root A possibly null ServiceHandle that can be used after this call
+     * to destroy any hanging PerLookup instances created
+     * @param params A list of parameter values known by the caller.  The indexes
+     * in params may not repeat and must be in the valid range of parameters
+     * for the passed in method
+     * @return The return value of the method (null if the method is void type)
+     * @throws IllegalArgumentException if their is more than one of the same index
+     * in the params list or the index of one of the params is out of range of
+     * the parameters in the method
+     */
+    public Object assistedInject(Object injectMe, Method method, ServiceHandle<?> root, MethodParameter... params);
     
     /**
      * This will analyze the given object and call the postConstruct method.

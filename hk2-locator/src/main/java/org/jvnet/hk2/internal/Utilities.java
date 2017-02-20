@@ -918,7 +918,7 @@ public class Utilities {
      * @param locator
      * @param givenValues
      */
-    public static void justAssistedInject(Object injectMe, Method method, ServiceLocatorImpl locator, MethodParameter... givenValues) {
+    public static Object justAssistedInject(Object injectMe, Method method, ServiceLocatorImpl locator, ServiceHandle<?> root, MethodParameter... givenValues) {
         if (injectMe == null || method == null) {
             throw new IllegalArgumentException("injectMe=" + injectMe + " method=" + method);
         }
@@ -955,12 +955,12 @@ public class Utilities {
             }
             else {
                 InjectionResolver<?> resolver = locator.getPerLocatorUtilities().getInjectionResolver(locator, injectee);
-                args[lcv] = resolver.resolve(injectee, null);
+                args[lcv] = resolver.resolve(injectee, root);
             }
         }
         
         try {
-            ReflectionHelper.invoke(injectMe, method, args, locator.getNeutralContextClassLoader());
+            return ReflectionHelper.invoke(injectMe, method, args, locator.getNeutralContextClassLoader());
         }
         catch (MultiException me) {
             throw me;

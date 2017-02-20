@@ -42,6 +42,8 @@ package org.glassfish.hk2.tests.locator.injector;
 
 import javax.inject.Inject;
 
+import org.jvnet.hk2.annotations.Optional;
+
 /**
  * This class will be constructed by create, injected by the inject method,
  * post constructed and pre destroyed, but will never be managed by
@@ -57,6 +59,7 @@ public class DontManageMe {
     private SimpleService byField;
     private SimpleService byMethod;
     private SpecialService saturdayNight;
+    private UnknownService unknown;
     
     private SimpleService secondMethod;
     private SpecialService secondSpecial;
@@ -80,9 +83,10 @@ public class DontManageMe {
     }
     
     @Inject
-    private void setSpecialAndNormal(SimpleService byMethod, @Special SpecialService special) {
+    private void setSpecialAndNormal(SimpleService byMethod, @Special SpecialService special, @Optional UnknownService unknown) {
         this.secondMethod = byMethod;
         this.secondSpecial = special;
+        this.unknown = unknown;
     }
     
     @SuppressWarnings("unused")
@@ -126,6 +130,10 @@ public class DontManageMe {
     
     public SpecialService getSecondSpecial() {
         return secondSpecial;
+    }
+    
+    public UnknownService getUnknown() {
+        return unknown;
     }
 
     /**

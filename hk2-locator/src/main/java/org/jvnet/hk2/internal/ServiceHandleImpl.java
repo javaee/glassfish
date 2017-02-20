@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,7 +40,9 @@
 
 package org.jvnet.hk2.internal;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Context;
@@ -156,6 +158,7 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
         
         if (!root.isReified()) return;
         
+        List<ServiceHandleImpl<?>> localSubHandles;
         synchronized (lock) {
             serviceActive = isActive();
             
@@ -163,6 +166,9 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
             serviceDestroyed = true;
             
             localServiceSet = serviceSet;
+            
+            localSubHandles = new ArrayList<ServiceHandleImpl<?>>(subHandles);
+            subHandles.clear();
         }
         
         if (root.getScopeAnnotation().equals(PerLookup.class)) {
@@ -183,7 +189,7 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
             context.destroyOne(root);
         }
         
-        for (ServiceHandleImpl<?> subHandle : subHandles) {
+        for (ServiceHandleImpl<?> subHandle : localSubHandles) {
             subHandle.destroy();
         }
         
@@ -205,6 +211,13 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
         }
     }
     
+    @Override
+    public List<ServiceHandle<?>> getSubHandles() {
+        synchronized (lock) {
+            return new ArrayList<ServiceHandle<?>>(subHandles);
+        }
+    }
+    
     public void pushInjectee(Injectee push) {
         synchronized (lock) {
             injectees.add(push);
@@ -223,7 +236,9 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
      * @param subHandle A handle to add for proper destruction
      */
     public void addSubHandle(ServiceHandleImpl<?> subHandle) {
-        subHandles.add(subHandle);
+        synchronized (lock) {
+            subHandles.add(subHandle);
+        }
     }
     
     public Injectee getOriginalRequest() {
@@ -234,4 +249,6 @@ public class ServiceHandleImpl<T> implements ServiceHandle<T> {
     public String toString() {
         return "ServiceHandle(" + root + "," + System.identityHashCode(this) + ")"; 
     }
+
+    
 }

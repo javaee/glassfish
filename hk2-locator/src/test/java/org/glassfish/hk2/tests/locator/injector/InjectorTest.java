@@ -70,6 +70,7 @@ public class InjectorTest {
         Assert.assertNull(dmm.getSpecialService());
         Assert.assertNull(dmm.getSecondMethod());
         Assert.assertNull(dmm.getSecondSpecial());
+        Assert.assertNull(dmm.getUnknown());
         Assert.assertFalse(dmm.isPostConstructCalled());
         Assert.assertFalse(dmm.isPreDestroyCalled());
     }
@@ -88,6 +89,7 @@ public class InjectorTest {
         Assert.assertNotNull(dmm.getSpecialService());
         Assert.assertNotNull(dmm.getSecondMethod());
         Assert.assertNotNull(dmm.getSecondSpecial());
+        Assert.assertNull(dmm.getUnknown());
         Assert.assertFalse(dmm.isPostConstructCalled());
         Assert.assertFalse(dmm.isPreDestroyCalled());
     }
@@ -107,6 +109,7 @@ public class InjectorTest {
         Assert.assertNotNull(dmm.getSpecialService());
         Assert.assertNotNull(dmm.getSecondMethod());
         Assert.assertNotNull(dmm.getSecondSpecial());
+        Assert.assertNull(dmm.getUnknown());
         Assert.assertTrue(dmm.isPostConstructCalled());
         Assert.assertFalse(dmm.isPreDestroyCalled());
     }
@@ -127,6 +130,7 @@ public class InjectorTest {
         Assert.assertNotNull(dmm.getSpecialService());
         Assert.assertNotNull(dmm.getSecondMethod());
         Assert.assertNotNull(dmm.getSecondSpecial());
+        Assert.assertNull(dmm.getUnknown());
         Assert.assertTrue(dmm.isPostConstructCalled());
         Assert.assertTrue(dmm.isPreDestroyCalled());
     }
@@ -170,7 +174,8 @@ public class InjectorTest {
         AssistedInjectionService ais = new AssistedInjectionService();
         
         Method method = ais.getClass().getMethod("aMethod", Event.class,
-                SpecialService.class, SimpleService.class, double.class);
+                SpecialService.class, SimpleService.class, double.class,
+                UnknownService.class);
         
         Event event = new Event();
         Double fooMe = new Double(2.71);
@@ -181,5 +186,6 @@ public class InjectorTest {
         Assert.assertEquals(fooMe, new Double(ais.getFoo()));
         Assert.assertNotNull(ais.getSimple());
         Assert.assertNotNull(ais.getSpecial());
+        Assert.assertNull(ais.getUnknown());
     }
 }

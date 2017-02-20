@@ -987,10 +987,15 @@ public class ServiceLocatorImpl implements ServiceLocator {
     }
     
     @Override
-    public void assistedInject(Object injectMe, Method method, MethodParameter... params) {
+    public Object assistedInject(Object injectMe, Method method, MethodParameter... params) {
+        return assistedInject(injectMe, method, null, params);
+    }
+    
+    @Override
+    public Object assistedInject(Object injectMe, Method method, ServiceHandle<?> root, MethodParameter... params) {
         checkState();
         
-        Utilities.justAssistedInject(injectMe, method, this, params);
+        return Utilities.justAssistedInject(injectMe, method, this, root, params);
     }
 
     /* (non-Javadoc)
