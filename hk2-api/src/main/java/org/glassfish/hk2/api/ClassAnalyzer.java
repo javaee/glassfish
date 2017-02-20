@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2013-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2013-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -82,7 +82,10 @@ public interface ClassAnalyzer {
      * service
      * <p>
      * The default implementation will use the zero-arg constructor if no single
-     * constructor with Inject is found
+     * constructor with Inject is found.  Also will return any constructor
+     * that is covered by an {@link InjectionResolver} and the
+     * {@link InjectionResolver#isConstructorParameterIndicator()} is
+     * set to true
      * <p>
      * 
      * @param clazz the non-null class to analyze
@@ -98,6 +101,11 @@ public interface ClassAnalyzer {
      * this service
      * <p>
      * The default implementation will return all methods marked with Inject
+     * or that have a parameter that is covered by an {@link InjectionResolver}
+     * and the {@link InjectionResolver#isMethodParameterIndicator()} is set 
+     * to true.  Also, any method that has a parameter marked with
+     * {@link SubcribeTo} will NOT be returned, as these methods are instead
+     * meant to be called when an event is fired
      * 
      * @param clazz the non-null class to analyze
      * @return A non-null but possibly empty set of initialization methods
@@ -110,6 +118,7 @@ public interface ClassAnalyzer {
      * this service
      * <p>
      * The default implementation will return all fields marked with Inject
+     * or that have a parameter that is covered by an {@link InjectionResolver}
      * 
      * @param clazz the non-null class to analyze
      * @return A non-null but possibly empty set of initialization fields

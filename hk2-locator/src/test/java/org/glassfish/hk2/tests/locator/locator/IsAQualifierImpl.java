@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,58 +37,23 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.tests.locator.customresolver;
+package org.glassfish.hk2.tests.locator.locator;
 
-import javax.inject.Inject;
-
-import org.glassfish.hk2.api.ServiceLocator;
-import org.junit.Assert;
+import org.glassfish.hk2.api.AnnotationLiteral;
 
 /**
  * @author jwells
  *
  */
-public class ServiceWithCustomInjections2 {
-    private final static String FIELD = "Field";
-    private final static String CONSTRUCTOR = "Constructor";
-    private final static String METHOD = "Method";
+public class IsAQualifierImpl extends AnnotationLiteral<IsAQualifier> implements IsAQualifier {
+    private final String v;
     
-    @Inject @Path(FIELD)
-    private String byField;
-    
-    private final String byConstructor;
-    
-    private String byMethod;
-    
-    private boolean isValid = false;
-    
-    @Inject
-    private ServiceWithCustomInjections2(
-            ServiceLocator locator,
-            @Path(CONSTRUCTOR) String byConstructor) {
-        Assert.assertNotNull(locator);
-        this.byConstructor = byConstructor; 
+    public IsAQualifierImpl(String v) {
+        this.v = v;
     }
     
-    @Inject
-    private void viaMethod(@Path(METHOD) String byMethod) {
-        this.byMethod = byMethod;
-    }
-    
-    @SuppressWarnings("unused")
-    private void postConstruct() {
-        Assert.assertEquals(FIELD, byField);
-        Assert.assertEquals(CONSTRUCTOR, byConstructor);
-        Assert.assertEquals(METHOD, byMethod);
-        
-        isValid = true;
+    public String value() {
+        return v;
     }
 
-    /**
-     * Called by the test
-     * @return true if valid
-     */
-    public boolean isValid() {
-        return isValid;
-    }
 }

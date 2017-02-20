@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -59,7 +59,9 @@ import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.DescriptorImpl;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -79,6 +81,8 @@ public class LocatorTest {
     /* package */ final static int FORTRAN = 77;  // There really was a Fortran-77!
     /* package */ final static Float JAVA = new Float(0.0);
     /* package */ final static String JAVA_NAME = "CafeBabe";
+    
+    private final static String NAME ="Alice";
     
     /**
      * Gets all the services in the registry
@@ -142,6 +146,38 @@ public class LocatorTest {
     public void testForeignDescriptor() {
         FrenchService fs = locator.getService(FrenchService.class);
         Assert.assertNotNull(fs);
+    }
+    
+    /**
+     * Ensures reifying a descriptor fills in the qualifiers
+     */
+    @Test
+    public void testReifyFillsInQualifierAnnotations() {
+        AbstractActiveDescriptor<?> descriptor = BuilderHelper.activeLink(String.class).qualifiedBy(new IsAQualifierImpl(NAME)).in(PerLookup.class).build();
+        
+        ServiceLocator locator = LocatorHelper.create();
+        
+        ActiveDescriptor<?> added = ServiceLocatorUtilities.addOneDescriptor(locator, descriptor);
+        
+        added = locator.reifyDescriptor(added);
+        
+        Set<String> stringQualifiers = added.getQualifiers();
+        Set<Annotation> qualifiers = added.getQualifierAnnotations();
+        
+        Assert.assertEquals(1, stringQualifiers.size());
+        Assert.assertEquals(1, qualifiers.size());
+        
+        for (String stringQualifier : stringQualifiers) {
+            Assert.assertEquals(IsAQualifier.class.getName(), stringQualifier);
+        }
+        
+        for (Annotation qualifier : qualifiers) {
+            Assert.assertEquals(IsAQualifier.class, qualifier.annotationType());
+            
+            IsAQualifier iaq = (IsAQualifier) qualifier;
+            
+            Assert.assertEquals(NAME, iaq.value());
+        }
     }
     
     /**

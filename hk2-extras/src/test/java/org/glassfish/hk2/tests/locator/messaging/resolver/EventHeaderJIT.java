@@ -39,39 +39,64 @@
  */
 package org.glassfish.hk2.tests.locator.messaging.resolver;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Method;
+
+import javax.inject.Inject;
+
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.JustInTimeInjectionResolver;
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.tests.extras.internal.Utilities;
+import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
-import org.junit.Assert;
-import org.junit.Test;
+import org.jvnet.hk2.annotations.Service;
 
 /**
  * @author jwells
  *
  */
-public class CustomResolverTest {
-    public final static String HEADER = "Soccer";
-    
-    /**
-     * Tests that JIT resolvers can be used with
-     * event handler methods
+@Service
+public class EventHeaderJIT implements JustInTimeInjectionResolver {
+    @Inject
+    private ServiceLocator locator;
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.JustInTimeInjectionResolver#justInTimeResolution(org.glassfish.hk2.api.Injectee)
      */
-    @Test
-    // @org.junit.Ignore
-    public void testJITResolverInEventMethod() {
-        ServiceLocator locator = Utilities.getLocatorWithTopics(
-                EventHeaderJIT.class);
+    @Override
+    public boolean justInTimeResolution(Injectee failedInjectionPoint) {
+        AnnotatedElement ae = failedInjectionPoint.getParent();
+        if (!(ae instanceof Method)) return false;
         
-        ServiceLocatorUtilities.addClasses(locator, EventSender.class, EventHandler.class);
+        int paramIndex = failedInjectionPoint.getPosition();
+        if (paramIndex < 0) return false;
         
-        EventHandler handler = locator.getService(EventHandler.class);
-        EventSender sender = locator.getService(EventSender.class);
-        Event event = new Event();
+        Method method = (Method) ae;
         
-        sender.sendEvent(event);
+        if (!String.class.equals(method.getParameterTypes()[paramIndex])) return false;
         
-        Assert.assertEquals(event, handler.getLastEvent());
-        Assert.assertEquals(HEADER, handler.getLastHeader());
+        Annotation paramAnnotations[] = method.getParameterAnnotations()[paramIndex];
+        EventHeader header = null;
+        for (int lcv = 0; lcv < paramAnnotations.length; lcv++) {
+            Annotation paramAnnotation = paramAnnotations[lcv];
+            
+            if (paramAnnotation.annotationType().equals(EventHeader.class)) {
+                header = (EventHeader) paramAnnotation;
+                break;
+            }
+        }
+        
+        if (header == null) return false;
+        
+        // Well, we actually have it now, create a descriptor and add it
+        AbstractActiveDescriptor<?> descriptor = BuilderHelper.createConstantDescriptor(header.value(), null, String.class);
+        descriptor.addQualifierAnnotation(header);
+        
+        ServiceLocatorUtilities.addOneDescriptor(locator, descriptor, false);
+        
+        return true;
     }
 
 }

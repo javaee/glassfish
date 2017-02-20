@@ -56,5 +56,4 @@ public class EventSender {
     public void sendEvent(Event event) {
         topic.publish(event);
     }
-
 }

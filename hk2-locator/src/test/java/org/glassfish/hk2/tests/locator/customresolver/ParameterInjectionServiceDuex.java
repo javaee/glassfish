@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012-2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,51 +37,49 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.hk2.tests.locator.customresolver;
-
-import javax.inject.Singleton;
-
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.api.InjectionResolver;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
 
 /**
  * @author jwells
  *
  */
-public class CustomResolverModule implements TestModule {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
-     */
-    @Override
-    public void configure(DynamicConfiguration configurator) {
-        configurator.addActiveDescriptor(ServiceWithCustomInjections.class);
-
-        // Setting it to rank 1 makes it supercede the system injection resolver
-        configurator.bind(BuilderHelper.link(CustomInjectResolver.class).
-                to(InjectionResolver.class).
-                in(Singleton.class.getName()).
-                ofRank(1).build());
-
-        configurator.addActiveDescriptor(ConstructorOnlyInjectionResolver.class);
-        configurator.addActiveDescriptor(MethodOnlyInjectionResolver.class);
-        configurator.addActiveDescriptor(ParameterOnlyInjectionResolver.class);
-
-        configurator.addActiveDescriptor(ParameterAInjectionResolver.class);
-        configurator.addActiveDescriptor(ParameterBInjectionResolver.class);
-
-        configurator.bind(BuilderHelper.link(ConstructorOnlyInjectedService.class.getName()).build());
-        configurator.bind(BuilderHelper.link(MethodOnlyInjectedService.class.getName()).build());
-        configurator.bind(BuilderHelper.link(ParameterInjectionService.class.getName()).build());
-        configurator.bind(BuilderHelper.link(ParameterInjectionServiceDuex.class.getName()).build());
-
-        configurator.bind(BuilderHelper.link(ParameterABInjectionService.class.getName()).build());
-
-        configurator.addActiveDescriptor(SimpleService.class);
-        configurator.addActiveDescriptor(SimpleServiceDuex.class);
+public class ParameterInjectionServiceDuex {
+    private final SimpleService injectedViaConstructor;
+    private final SimpleServiceDuex injectedViaConstructorDuex;
+    
+    private SimpleService injectedViaMethod;
+    private SimpleServiceDuex injectedViaMethodDuex;
+    
+    public ParameterInjectionServiceDuex() {
+        injectedViaConstructor = null;
+        injectedViaConstructorDuex = null;
+    }
+    
+    
+    public ParameterInjectionServiceDuex(@ParameterInjectionPoint SimpleService ss, SimpleServiceDuex duex) {
+        injectedViaConstructor = ss;
+        injectedViaConstructorDuex = duex;
+    }
+    
+    public void setViaMethod(SimpleServiceDuex duex, @ParameterInjectionPoint SimpleService ss) {
+        injectedViaMethod = ss;
+        injectedViaMethodDuex = duex;
+    }
+    
+    public SimpleService getViaConstructor() {
+        return injectedViaConstructor;
+    }
+    
+    public SimpleServiceDuex getViaConstructorDuex() {
+        return injectedViaConstructorDuex;
+    }
+    
+    public SimpleService getViaMethod() {
+        return injectedViaMethod;
+    }
+    
+    public SimpleServiceDuex getViaMethodDuex() {
+        return injectedViaMethodDuex;
     }
 
 }

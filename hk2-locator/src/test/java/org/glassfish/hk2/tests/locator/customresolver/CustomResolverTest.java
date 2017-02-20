@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,9 +43,8 @@ package org.glassfish.hk2.tests.locator.customresolver;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
 import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.junit.Assert;
 import org.junit.Test;
-
-import junit.framework.Assert;
 
 /**
  * @author jwells
@@ -100,6 +99,21 @@ public class CustomResolverTest {
 
         Assert.assertNotNull(service.getViaConstructor());
         Assert.assertNotNull(service.getViaMethod());
+    }
+    
+    /**
+     * Tests custom resolution with the resolver on both the constructor and the method
+     */
+    @Test
+    public void testBothMethodAndConstructorDuex() {
+        ParameterInjectionServiceDuex service = locator.getService(ParameterInjectionServiceDuex.class);
+        Assert.assertNotNull(service);
+
+        Assert.assertNotNull(service.getViaConstructor());
+        Assert.assertNotNull(service.getViaMethod());
+        
+        Assert.assertNotNull(service.getViaConstructorDuex());
+        Assert.assertNotNull(service.getViaMethodDuex());
     }
 
     /**
