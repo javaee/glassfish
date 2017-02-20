@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -98,19 +98,26 @@ public interface DescriptorBuilder {
 	 */
 	public DescriptorBuilder in(Class<? extends Annotation> scope) throws IllegalArgumentException;
 	
-	/**
-   * A scope to be associated with this descriptor object. Note that at the current time a
-   * descriptor can only have one scope, hence this method will throw an IllegalArgumentException
-   * if in is called more than once.
-   * 
-   * @param scope The fully qualified class name of the scope this predicate is to have.
-   * @return A DescriptorBuilder with the given scope
-   * @throws IllegalArgumentException If in is called more than once
-   */
+   /**
+    * A scope to be associated with this descriptor object. Note that at the current time a
+    * descriptor can only have one scope, hence this method will throw an IllegalArgumentException
+    * if in is called more than once.
+    * 
+    * @param scope The fully qualified class name of the scope this predicate is to have.
+    * @return A DescriptorBuilder with the given scope
+    * @throws IllegalArgumentException If in is called more than once
+    */
   public DescriptorBuilder in(String scope) throws IllegalArgumentException;
 	
 	/**
-	 * A qualifier to be associated with this descriptor object
+	 * A qualifier to be associated with this descriptor object.  It is
+	 * dangerous to use this method with a ghost annotation (one that is
+	 * not on the object) if that annotation has fields, as these
+	 * fields will NOT survive being put into the {@link Descriptor}.
+	 * Use this method with care and ONLY with annotations that do
+	 * not have fields.  A safe version of this method for use
+	 * with ghost annotations is 
+	 * {@link ActiveDescriptorBuilder#qualifiedBy(Annotation)}
 	 * 
 	 * @param annotation The annotation to be associated with this descriptor
 	 * @return A DescriptorBuilder with the given annotation
