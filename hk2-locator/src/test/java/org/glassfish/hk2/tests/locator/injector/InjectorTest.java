@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,10 +40,12 @@
 
 package org.glassfish.hk2.tests.locator.injector;
 
-import junit.framework.Assert;
+import java.lang.reflect.Method;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.glassfish.hk2.utilities.MethodParameterImpl;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -65,6 +67,9 @@ public class InjectorTest {
         Assert.assertNotNull(dmm.getByConstructor());
         Assert.assertNull(dmm.getByField());
         Assert.assertNull(dmm.getByMethod());
+        Assert.assertNull(dmm.getSpecialService());
+        Assert.assertNull(dmm.getSecondMethod());
+        Assert.assertNull(dmm.getSecondSpecial());
         Assert.assertFalse(dmm.isPostConstructCalled());
         Assert.assertFalse(dmm.isPreDestroyCalled());
     }
@@ -80,6 +85,9 @@ public class InjectorTest {
         Assert.assertNotNull(dmm.getByConstructor());
         Assert.assertNotNull(dmm.getByField());
         Assert.assertNotNull(dmm.getByMethod());
+        Assert.assertNotNull(dmm.getSpecialService());
+        Assert.assertNotNull(dmm.getSecondMethod());
+        Assert.assertNotNull(dmm.getSecondSpecial());
         Assert.assertFalse(dmm.isPostConstructCalled());
         Assert.assertFalse(dmm.isPreDestroyCalled());
     }
@@ -96,6 +104,9 @@ public class InjectorTest {
         Assert.assertNotNull(dmm.getByConstructor());
         Assert.assertNotNull(dmm.getByField());
         Assert.assertNotNull(dmm.getByMethod());
+        Assert.assertNotNull(dmm.getSpecialService());
+        Assert.assertNotNull(dmm.getSecondMethod());
+        Assert.assertNotNull(dmm.getSecondSpecial());
         Assert.assertTrue(dmm.isPostConstructCalled());
         Assert.assertFalse(dmm.isPreDestroyCalled());
     }
@@ -113,6 +124,9 @@ public class InjectorTest {
         Assert.assertNotNull(dmm.getByConstructor());
         Assert.assertNotNull(dmm.getByField());
         Assert.assertNotNull(dmm.getByMethod());
+        Assert.assertNotNull(dmm.getSpecialService());
+        Assert.assertNotNull(dmm.getSecondMethod());
+        Assert.assertNotNull(dmm.getSecondSpecial());
         Assert.assertTrue(dmm.isPostConstructCalled());
         Assert.assertTrue(dmm.isPreDestroyCalled());
     }
@@ -144,5 +158,28 @@ public class InjectorTest {
         locator.preDestroy(lii);
         Assert.assertTrue(lii.isPostCalled());
         Assert.assertTrue(lii.isPreCalled());
+    }
+    
+    /**
+     * Tests an assisted injection
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testAssistedInjection() throws Exception {
+        AssistedInjectionService ais = new AssistedInjectionService();
+        
+        Method method = ais.getClass().getMethod("aMethod", Event.class,
+                SpecialService.class, SimpleService.class, double.class);
+        
+        Event event = new Event();
+        Double fooMe = new Double(2.71);
+        
+        locator.assistedInject(ais, method, new MethodParameterImpl(0, event), new MethodParameterImpl(3, fooMe));
+        
+        Assert.assertEquals(event, ais.getEvent());
+        Assert.assertEquals(fooMe, new Double(ais.getFoo()));
+        Assert.assertNotNull(ais.getSimple());
+        Assert.assertNotNull(ais.getSpecial());
     }
 }

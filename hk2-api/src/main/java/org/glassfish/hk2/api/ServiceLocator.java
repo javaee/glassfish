@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012-2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,6 +42,7 @@ package org.glassfish.hk2.api;
 import org.jvnet.hk2.annotations.Contract;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -634,6 +635,22 @@ public interface ServiceLocator {
      * null the default analyzer will be used
      */
     public void inject(Object injectMe, String strategy);
+    
+    /**
+     * This will invoke the given method on the given object.  The values for the
+     * method will either be taken from the params list or will be gotten from
+     * this ServiceLocator taking into account all injection resolvers
+     * 
+     * @param injectMe The non-null object to inject into
+     * @param method The non-null method to inject into
+     * @param params A list of parameter values known by the caller.  The indexes
+     * in params may not repeat and must be in the valid range of parameters
+     * for the passed in method
+     * @throws IllegalArgumentException if their is more than one of the same index
+     * in the params list or the index of one of the params is out of range of
+     * the parameters in the method
+     */
+    public void assistedInject(Object injectMe, Method method, MethodParameter... params);
     
     /**
      * This will analyze the given object and call the postConstruct method.

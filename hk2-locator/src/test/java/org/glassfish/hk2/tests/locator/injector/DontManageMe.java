@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -56,6 +56,10 @@ public class DontManageMe {
     @Inject
     private SimpleService byField;
     private SimpleService byMethod;
+    private SpecialService saturdayNight;
+    
+    private SimpleService secondMethod;
+    private SpecialService secondSpecial;
     
     private boolean postConstructCalled;
     private boolean preDestroyCalled;
@@ -65,10 +69,20 @@ public class DontManageMe {
         this.byConstructor = byConstructor;
     }
     
-    @SuppressWarnings("unused")
     @Inject
     private void setByMethod(SimpleService byMethod) {
         this.byMethod = byMethod;
+    }
+    
+    @Special
+    private void setToSpecial(SpecialService special) {
+        saturdayNight = special;
+    }
+    
+    @Inject
+    private void setSpecialAndNormal(SimpleService byMethod, @Special SpecialService special) {
+        this.secondMethod = byMethod;
+        this.secondSpecial = special;
     }
     
     @SuppressWarnings("unused")
@@ -100,6 +114,18 @@ public class DontManageMe {
      */
     public SimpleService getByMethod() {
         return byMethod;
+    }
+    
+    public SpecialService getSpecialService() {
+        return saturdayNight;
+    }
+    
+    public SimpleService getSecondMethod() {
+        return secondMethod;
+    }
+    
+    public SpecialService getSecondSpecial() {
+        return secondSpecial;
     }
 
     /**

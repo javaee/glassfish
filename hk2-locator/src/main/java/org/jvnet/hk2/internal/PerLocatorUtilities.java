@@ -47,6 +47,7 @@ import java.util.WeakHashMap;
 
 import javax.inject.Inject;
 
+import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InjectionPointIndicator;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.utilities.general.Hk2ThreadLocal;
@@ -184,7 +185,7 @@ public class PerLocatorUtilities {
      * @throws IllegalStateException If we could not find a valid resolver
      */
     public InjectionResolver<?> getInjectionResolver(
-            ServiceLocatorImpl locator, SystemInjecteeImpl injectee) throws IllegalStateException {
+            ServiceLocatorImpl locator, Injectee injectee) throws IllegalStateException {
         return getInjectionResolver(locator, injectee.getParent(), injectee.getPosition());
     }
     

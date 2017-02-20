@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,26 +37,49 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
 package org.glassfish.hk2.tests.locator.injector;
 
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
+import javax.inject.Singleton;
+
+import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.InjectionResolver;
+import org.glassfish.hk2.api.ServiceHandle;
 
 /**
+ * Creates one special service
+ * 
  * @author jwells
- *
  */
-public class InjectorModule implements TestModule {
+@Singleton
+public class SpecialInjectionResolver implements InjectionResolver<Special> {
+    private final static SpecialService INSTANCE = new SpecialService();
 
     /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
+     * @see org.glassfish.hk2.api.InjectionResolver#resolve(org.glassfish.hk2.api.Injectee, org.glassfish.hk2.api.ServiceHandle)
      */
     @Override
-    public void configure(DynamicConfiguration configurator) {
-        configurator.addActiveDescriptor(SpecialInjectionResolver.class);
-        configurator.bind(BuilderHelper.link(SimpleService.class).build());
+    public Object resolve(Injectee injectee, ServiceHandle<?> root) {
+        if (SpecialService.class.equals(injectee.getRequiredType())) {
+            return INSTANCE;
+        }
+        
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.InjectionResolver#isConstructorParameterIndicator()
+     */
+    @Override
+    public boolean isConstructorParameterIndicator() {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.api.InjectionResolver#isMethodParameterIndicator()
+     */
+    @Override
+    public boolean isMethodParameterIndicator() {
+        return true;
     }
 
 }

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,26 +37,36 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-
-package org.glassfish.hk2.tests.locator.injector;
-
-import org.glassfish.hk2.api.DynamicConfiguration;
-import org.glassfish.hk2.tests.locator.utilities.TestModule;
-import org.glassfish.hk2.utilities.BuilderHelper;
+package org.glassfish.hk2.api;
 
 /**
+ * This is used to describe the values to be given to
+ * the method in the {@link ServiceLocator#assistedInject(Object, java.lang.reflect.Method, MethodParameter...)}
+ * method
+ * 
  * @author jwells
  *
  */
-public class InjectorModule implements TestModule {
-
-    /* (non-Javadoc)
-     * @see org.glassfish.hk2.api.Module#configure(org.glassfish.hk2.api.Configuration)
+public interface MethodParameter {
+    /**
+     * Returns the index of the parameter for which
+     * the {@link #getParameterValue()} result should
+     * go
+     * 
+     * @return The index of the parameter in the
+     * method where the parameter value should go
      */
-    @Override
-    public void configure(DynamicConfiguration configurator) {
-        configurator.addActiveDescriptor(SpecialInjectionResolver.class);
-        configurator.bind(BuilderHelper.link(SimpleService.class).build());
-    }
+    public int getParameterPosition();
+    
+    /**
+     * The value that should be given to the
+     * method at the parameter position specified
+     * by {@link #getParameterPosition()}
+     * 
+     * @return The possibly null parameter value
+     * that should be passed to the method at the
+     * given index
+     */
+    public Object getParameterValue();
 
 }

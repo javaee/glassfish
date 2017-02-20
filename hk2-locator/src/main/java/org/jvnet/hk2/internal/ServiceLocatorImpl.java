@@ -44,6 +44,7 @@ import org.glassfish.hk2.utilities.cache.Computable;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.security.AccessController;
@@ -89,6 +90,7 @@ import org.glassfish.hk2.api.Injectee;
 import org.glassfish.hk2.api.InstanceLifecycleListener;
 import org.glassfish.hk2.api.InterceptionService;
 import org.glassfish.hk2.api.JustInTimeInjectionResolver;
+import org.glassfish.hk2.api.MethodParameter;
 import org.glassfish.hk2.api.Operation;
 import org.glassfish.hk2.api.InjectionResolver;
 import org.glassfish.hk2.api.IterableProvider;
@@ -982,6 +984,11 @@ public class ServiceLocatorImpl implements ServiceLocator {
     @Override
     public void inject(Object injectMe) {
         inject(injectMe, null);
+    }
+    
+    @Override
+    public void assistedInject(Object injectMe, Method method, MethodParameter... params) {
+        throw new AssertionError("not yet implemented");
     }
 
     /* (non-Javadoc)

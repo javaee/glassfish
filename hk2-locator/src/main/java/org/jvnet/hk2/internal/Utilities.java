@@ -1156,12 +1156,6 @@ public class Utilities {
         return null;
     }
 
-    
-
-
-
-    
-
     /**
      * Returns a constant ActiveDescriptor for the basic ServiceLocator
      *

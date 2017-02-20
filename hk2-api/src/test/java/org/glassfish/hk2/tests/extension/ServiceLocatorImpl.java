@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,6 +41,7 @@
 package org.glassfish.hk2.tests.extension;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -48,6 +49,7 @@ import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.Filter;
 import org.glassfish.hk2.api.Injectee;
+import org.glassfish.hk2.api.MethodParameter;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
@@ -448,6 +450,13 @@ public class ServiceLocatorImpl implements ServiceLocator {
      */
     @Override
     public void setDefaultUnqualified(Unqualified unqualified) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void assistedInject(Object injectMe, Method method,
+            MethodParameter... params) {
         // TODO Auto-generated method stub
         
     }
