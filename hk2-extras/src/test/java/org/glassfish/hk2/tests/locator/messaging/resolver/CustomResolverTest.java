@@ -57,7 +57,7 @@ public class CustomResolverTest {
      * event handler methods
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testJITResolverInEventMethod() {
         ServiceLocator locator = Utilities.getLocatorWithTopics(
                 EventHeaderJIT.class);
