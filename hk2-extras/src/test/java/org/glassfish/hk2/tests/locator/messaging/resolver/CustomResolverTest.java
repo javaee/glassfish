@@ -73,5 +73,27 @@ public class CustomResolverTest {
         Assert.assertEquals(event, handler.getLastEvent());
         Assert.assertEquals(HEADER, handler.getLastHeader());
     }
+    
+    /**
+     * Tests that custom resolvers can be used with
+     * event handler methods
+     */
+    @Test
+    @org.junit.Ignore
+    public void testCustomResolverInEventMethod() {
+        ServiceLocator locator = Utilities.getLocatorWithTopics(
+                EventHeaderInjectionResolver.class);
+        
+        ServiceLocatorUtilities.addClasses(locator, EventSender.class, EventHandler.class);
+        
+        EventHandler handler = locator.getService(EventHandler.class);
+        EventSender sender = locator.getService(EventSender.class);
+        Event event = new Event();
+        
+        sender.sendEvent(event);
+        
+        Assert.assertEquals(event, handler.getLastEvent());
+        Assert.assertEquals(HEADER, handler.getLastHeader());
+    }
 
 }
