@@ -57,5 +57,6 @@
         <module>main</module>
         <module>test1</module>
         <module>test2</module>
+        <module>schema</module>
     </modules>
 </project>
