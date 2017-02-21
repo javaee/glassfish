@@ -175,21 +175,25 @@ public class AnnotationMirrorAltAnnotationImpl implements AltAnnotation {
                     AltClass[] cValue = new AltClass[array.size()];
                     AltEnum[] eValue = new AltEnum[array.size()];
                     String[] sValue = new String[array.size()];
+                    AltAnnotation[] aValue = new AltAnnotation[array.size()];
                     
                     boolean isClass = true;
                     boolean isEnum = true;
+                    boolean isAnnos = false;
                     int lcv = 0;
                     for (AnnotationValue item : array) {
                         Object itemValue = item.getValue();
                         if (itemValue instanceof TypeMirror) {
                             isClass = true;
                             isEnum = false;
+                            isAnnos = false;
                             
                             cValue[lcv++] = Utilities.convertTypeMirror((TypeMirror) itemValue, processingEnv);
                         }
                         else if (itemValue instanceof VariableElement) {
                             isClass = false;
                             isEnum = true;
+                            isAnnos = false;
                             
                             VariableElement variable = (VariableElement) itemValue;
                             
@@ -203,10 +207,22 @@ public class AnnotationMirrorAltAnnotationImpl implements AltAnnotation {
                         else if (itemValue instanceof String) {
                             isClass = false;
                             isEnum = false;
+                            isAnnos = false;
                             
                             sValue[lcv++] = (String) itemValue;
                         }
+                        else if (itemValue instanceof List) {
+                            throw new AssertionError("Unimplemented declared List type in " + this);
+                        }
+                        else if (itemValue instanceof AnnotationMirror) {
+                            isClass = false;
+                            isEnum = false;
+                            isAnnos = true;
+                            
+                            aValue[lcv++] = new AnnotationMirrorAltAnnotationImpl((AnnotationMirror) itemValue, processingEnv);
+                        }
                         else {
+                            System.out.println("JRW(30) itemValue=" + itemValue + " in " + this);
                             throw new AssertionError("Unknown declared type: " + itemValue.getClass().getName());
                         }
                     }
@@ -216,6 +232,9 @@ public class AnnotationMirrorAltAnnotationImpl implements AltAnnotation {
                     }
                     else if (isEnum) {
                         value = eValue;
+                    }
+                    else if (isAnnos) {
+                        value = aValue;
                     }
                     else {
                         value = sValue;

@@ -39,7 +39,6 @@
  */
 package org.glassfish.hk2.xml.internal;
 
-import java.beans.Introspector;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Arrays;
@@ -63,6 +62,7 @@ import javassist.bytecode.ClassFile;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
 import javassist.bytecode.annotation.Annotation;
+import javassist.bytecode.annotation.AnnotationMemberValue;
 import javassist.bytecode.annotation.ArrayMemberValue;
 import javassist.bytecode.annotation.BooleanMemberValue;
 import javassist.bytecode.annotation.ByteMemberValue;
@@ -79,19 +79,16 @@ import javassist.bytecode.annotation.StringMemberValue;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.glassfish.hk2.api.AnnotationLiteral;
-import org.glassfish.hk2.api.Customize;
 import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
 import org.glassfish.hk2.xml.api.annotations.PluralOf;
-import org.glassfish.hk2.xml.api.annotations.XmlIdentifier;
 import org.glassfish.hk2.xml.internal.alt.AltAnnotation;
 import org.glassfish.hk2.xml.internal.alt.AltClass;
 import org.glassfish.hk2.xml.internal.alt.AltEnum;
@@ -714,6 +711,12 @@ public class Generator {
     
     private static void createAnnotationCopy(ConstPool parent, AltAnnotation javaAnnotation,
             AnnotationsAttribute retVal) throws Throwable {
+        Annotation addMe = createAnnotationCopyOnly(parent, javaAnnotation);
+        
+        retVal.addAnnotation(addMe);
+    }
+    
+    private static Annotation createAnnotationCopyOnly(ConstPool parent, AltAnnotation javaAnnotation) throws Throwable {
         Annotation annotation = new Annotation(javaAnnotation.annotationType(), parent);
         
         Map<String, Object> annotationValues = javaAnnotation.getAnnotationValues();
@@ -886,6 +889,16 @@ public class Generator {
                         arrayValue[lcv] = new ClassMemberValue(arrayElementClass.getName(), parent);
                     }
                 }
+                else if (AltAnnotation.class.isAssignableFrom(typeOfArray)) {
+                    AltAnnotation[] aVals = (AltAnnotation[]) value;
+                    
+                    arrayValue = new MemberValue[aVals.length];
+                    for (int lcv = 0; lcv < aVals.length; lcv++) {
+                        AltAnnotation arrayAnnotation = aVals[lcv];
+                        
+                        arrayValue[lcv] = new AnnotationMemberValue(createAnnotationCopyOnly(parent, arrayAnnotation), parent);
+                    }
+                }
                 else {
                     throw new AssertionError("Array type " + typeOfArray.getName() + " is not yet implemented for " + valueName);
                 }
@@ -902,7 +915,7 @@ public class Generator {
             
         }
         
-        retVal.addAnnotation(annotation);
+        return annotation;
     }
     
     private static String getMethodName(MethodType methodType, String unDecapitalizedVariable, AltAnnotation instructions) {
