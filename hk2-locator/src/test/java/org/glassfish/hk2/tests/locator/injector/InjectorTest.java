@@ -42,8 +42,11 @@ package org.glassfish.hk2.tests.locator.injector;
 
 import java.lang.reflect.Method;
 
+import org.glassfish.hk2.api.ActiveDescriptor;
+import org.glassfish.hk2.api.ServiceHandle;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
+import org.glassfish.hk2.utilities.BuilderHelper;
 import org.glassfish.hk2.utilities.MethodParameterImpl;
 import org.junit.Assert;
 import org.junit.Test;
@@ -187,5 +190,46 @@ public class InjectorTest {
         Assert.assertNotNull(ais.getSimple());
         Assert.assertNotNull(ais.getSpecial());
         Assert.assertNull(ais.getUnknown());
+    }
+    
+    /**
+     * Tests an assisted injection with a root
+     * @throws Exception
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    // @org.junit.Ignore
+    public void testAssistedInjectionWithRoot() throws Exception {
+        AssistedInjectionService ais = new AssistedInjectionService();
+        
+        Method method = ais.getClass().getMethod("aMethod", Event.class,
+                SpecialService.class, SimpleService.class, double.class,
+                UnknownService.class);
+        
+        Event event = new Event();
+        Double fooMe = new Double(2.71);
+        
+        ActiveDescriptor<?> descriptor = locator.getBestDescriptor(BuilderHelper.createContractFilter(ServiceLocator.class.getName()));
+        Assert.assertNotNull(descriptor);
+        
+        ServiceHandle<ServiceLocator> root = locator.getServiceHandle((ActiveDescriptor<ServiceLocator>) descriptor);
+        
+        Assert.assertTrue(root.getSubHandles().isEmpty());
+        
+        locator.assistedInject(ais, method, root, new MethodParameterImpl(0, event), new MethodParameterImpl(3, fooMe));
+        
+        Assert.assertEquals(event, ais.getEvent());
+        Assert.assertEquals(fooMe, new Double(ais.getFoo()));
+        Assert.assertNotNull(ais.getSimple());
+        Assert.assertNotNull(ais.getSpecial());
+        Assert.assertNull(ais.getUnknown());
+        
+        Assert.assertEquals(1, root.getSubHandles().size());
+        
+        ServiceHandle<?> found = root.getSubHandles().get(0);
+        Assert.assertNotNull(found);
+        
+        ActiveDescriptor<?> foundAD = found.getActiveDescriptor();
+        Assert.assertEquals(SimpleService.class.getName(), foundAD.getImplementation());
     }
 }
