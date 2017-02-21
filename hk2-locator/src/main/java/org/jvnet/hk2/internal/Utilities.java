@@ -924,7 +924,7 @@ public class Utilities {
         }
         if (givenValues == null) givenValues = new MethodParameter[0];
         
-        int numParameters = method.getParameters().length;
+        int numParameters = method.getParameterTypes().length;
         
         Map<Integer, MethodParameter> knownValues = new HashMap<Integer, MethodParameter>();
         for (MethodParameter mp : givenValues) {
