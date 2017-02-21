@@ -113,35 +113,6 @@ import org.jvnet.hk2.annotations.Contract;
 public interface Schema
     extends OpenAttrs
 {
-
-    @XmlElements({
-        @XmlElement(name = "include", type = Include.class),
-        @XmlElement(name = "import", type = Import.class),
-        @XmlElement(name = "redefine", type = Redefine.class),
-        @XmlElement(name = "annotation", type = Annotation.class)
-    })
-    public void setIncludeOrImportOrRedefine(List<OpenAttrs> includeOrImportOrRedefine);
-    
-    @XmlElements({
-        @XmlElement(name = "simpleType", type = TopLevelSimpleType.class),
-        @XmlElement(name = "complexType", type = TopLevelComplexType.class),
-        @XmlElement(name = "group", type = NamedGroup.class),
-        @XmlElement(name = "attributeGroup", type = NamedAttributeGroup.class),
-        @XmlElement(name = "element", type = TopLevelElement.class),
-        @XmlElement(name = "attribute", type = TopLevelAttribute.class),
-        @XmlElement(name = "notation", type = Notation.class),
-        @XmlElement(name = "annotation", type = Annotation.class)
-    })
-    public void setSimpleTypeOrComplexTypeOrGroup(List<OpenAttrs> simpleTypeOrComplexTypeOrGroup);
-    
-    @XmlAttribute(name = "finalDefault")
-    @XmlSchemaType(name = "fullDerivationSet")
-    public void setFinalDefault(List<String> finalDefault);
-    
-    @XmlAttribute(name = "blockDefault")
-    @XmlSchemaType(name = "blockSet")
-    public void setBlockDefault(List<String> blockDefault);
-    
     /**
      * Gets the value of the includeOrImportOrRedefine property.
      * 
@@ -167,6 +138,12 @@ public interface Schema
      * 
      * 
      */
+    @XmlElements({
+        @XmlElement(name = "include", type = Include.class),
+        @XmlElement(name = "import", type = Import.class),
+        @XmlElement(name = "redefine", type = Redefine.class),
+        @XmlElement(name = "annotation", type = Annotation.class)
+    })
     public List<OpenAttrs> getIncludeOrImportOrRedefine();
 
     /**
@@ -198,6 +175,16 @@ public interface Schema
      * 
      * 
      */
+    @XmlElements({
+        @XmlElement(name = "simpleType", type = TopLevelSimpleType.class),
+        @XmlElement(name = "complexType", type = TopLevelComplexType.class),
+        @XmlElement(name = "group", type = NamedGroup.class),
+        @XmlElement(name = "attributeGroup", type = NamedAttributeGroup.class),
+        @XmlElement(name = "element", type = TopLevelElement.class),
+        @XmlElement(name = "attribute", type = TopLevelAttribute.class),
+        @XmlElement(name = "notation", type = Notation.class),
+        @XmlElement(name = "annotation", type = Annotation.class)
+    })
     public List<OpenAttrs> getSimpleTypeOrComplexTypeOrGroup();
 
     /**
@@ -267,6 +254,8 @@ public interface Schema
      * 
      * 
      */
+    @XmlAttribute(name = "finalDefault")
+    @XmlSchemaType(name = "fullDerivationSet")
     public List<String> getFinalDefault();
 
     /**
@@ -291,6 +280,8 @@ public interface Schema
      * 
      * 
      */
+    @XmlAttribute(name = "blockDefault")
+    @XmlSchemaType(name = "blockSet")
     public List<String> getBlockDefault();
 
     /**

@@ -267,10 +267,10 @@ public class JAUtilities {
                   
                 }
                 catch (RuntimeException re) {
-                    throw re;
+                    throw new RuntimeException("Could not compile proxy for class " + iFaceName, re);
                 }
                 catch (Throwable th) {
-                    throw new RuntimeException(th);
+                    throw new RuntimeException("Could not compile proxy for class " + iFaceName, th);
                 }
             }
             else {

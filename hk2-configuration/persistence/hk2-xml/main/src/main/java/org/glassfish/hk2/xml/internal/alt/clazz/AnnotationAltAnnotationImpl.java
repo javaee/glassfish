@@ -41,6 +41,7 @@ package org.glassfish.hk2.xml.internal.alt.clazz;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
@@ -180,6 +181,17 @@ public class AnnotationAltAnnotationImpl implements AltAnnotation {
                 
                 for (int lcv = 0; lcv < eValue.length; lcv++) {
                     translatedValue[lcv] = new EnumAltEnumImpl(eValue[lcv]);
+                }
+                
+                value = translatedValue;
+            }
+            else if (value.getClass().isArray() && Annotation.class.isAssignableFrom(value.getClass().getComponentType())) {
+                Annotation aValue[] = (Annotation[]) value;
+                
+                AltAnnotation[] translatedValue = new AltAnnotation[aValue.length];
+                
+                for (int lcv = 0; lcv < aValue.length; lcv++) {
+                    translatedValue[lcv] = new AnnotationAltAnnotationImpl(aValue[lcv], helper);
                 }
                 
                 value = translatedValue;

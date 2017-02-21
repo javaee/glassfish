@@ -1073,6 +1073,9 @@ public class Utilities {
     private final static Float DEFAULT_FLOAT = new Float(0);
     private final static Double DEFAULT_DOUBLE = new Double((double) 0);
     
+    private final static String ENUM_FROM_VALUE_METHOD_NAME = "fromValue";
+    private final static Class<?> ENUM_FROM_VALUE_PARAM_TYPES[] = { String.class };
+    
     /**
      * Returns the default value given the string version of the default and
      * the expected result (non-child properties)
@@ -1142,8 +1145,26 @@ public class Utilities {
             return givenStringDefault.getBytes();
             // return DatatypeConverter.parseHexBinary(givenStringDefault);
         }
+        if (expectedClass.isEnum()) {
+            try {
+                Method m = expectedClass.getMethod(ENUM_FROM_VALUE_METHOD_NAME, ENUM_FROM_VALUE_PARAM_TYPES);
+                if (!ReflectionHelper.isStatic(m)) {
+                    throw new IllegalArgumentException("Method " + m + " is not static");
+                }
+                
+                Object params[] = new Object[1];
+                params[0] = givenStringDefault;
+                
+                return ReflectionHelper.invoke(null, m, params, true);
+            }
+            catch (Throwable th) {
+                // Ignore, we cannot get this default
+                throw new AssertionError("An enum with a default must have a fromValue(String) method to return the value for " +
+                  expectedClass.getName() + " and default value " + givenStringDefault, th);
+            }
+        }
         
-        throw new AssertionError("Default for type " + expectedClass.getName() + " not implemented");
+        throw new AssertionError("Default for type " + expectedClass.getName() + " not implemented with default " + givenStringDefault);
     }
     
     public static void fillInUnfinishedReferences(Map<ReferenceKey, BaseHK2JAXBBean> referenceMap,

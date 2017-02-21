@@ -111,7 +111,12 @@ public class ParentedModel implements Serializable {
                 throw new IllegalStateException("Interface " + childInterface + " could not be loaded by " + myLoader);
             }
             
-            childModel = jaUtilities.getModel(beanClass);
+            try {
+                childModel = jaUtilities.getModel(beanClass);
+            }
+            catch (RuntimeException re) {
+                throw new RuntimeException("Could not get model for " + beanClass.getName() + " in " + this, re);
+            }
             
             return childModel;
         }
