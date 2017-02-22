@@ -37,34 +37,36 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test.elements.beans;
+package org.glassfish.hk2.xml.jaxb.internal;
+
+import java.util.Arrays;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
+
+import org.glassfish.hk2.api.AnnotationLiteral;
 
 /**
+ * Implementation of the XmlElements annotation
  * @author jwells
  *
  */
-public enum ElementType {
-    EARTH("EARTH"),
-    FIRE("FIRE"),
-    WATER("WATER"),
-    WIND("WIND");
+public class XmlElementsImpl extends AnnotationLiteral<XmlElements> implements XmlElements {
+    private static final long serialVersionUID = -4972076348183489648L;
     
-    private final String value;
+    private final XmlElement value[];
     
-    ElementType(String v) {
-        value = v;
+    public XmlElementsImpl(XmlElement value[]) {
+        this.value = value;
     }
 
-    public String value() {
+    @Override
+    public XmlElement[] value() {
         return value;
     }
-    
-    public static ElementType fromValue(String v) {
-        for (ElementType c: ElementType.values()) {
-            if (c.value.equals(v)) {
-                return c;
-            }
-        }
-        throw new IllegalArgumentException(v);
+
+    @Override
+    public String toString() {
+        return "@XmlElementsImpl(" + Arrays.toString(value) + "," + System.identityHashCode(this) + ")";
     }
 }

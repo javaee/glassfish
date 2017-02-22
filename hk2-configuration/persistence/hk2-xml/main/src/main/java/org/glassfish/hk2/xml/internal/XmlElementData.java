@@ -50,26 +50,33 @@ public class XmlElementData {
     private final String alias;
     private final String defaultValue;
     private final boolean isElement;
+    private final String type;
     
     XmlElementData(String name, String defaultValue, boolean isElement) {
-        this(name, name, defaultValue, isElement);
+        this(name, name, defaultValue, isElement, null);
     }
     
-    XmlElementData(String name, String alias, String defaultValue, boolean isElement) {
+    XmlElementData(String name, String alias, String defaultValue, boolean isElement, String type) {
         this.name = name;
         this.alias = alias;
         this.defaultValue = defaultValue;
         this.isElement = isElement;
+        this.type = type;
     }
     
     public String getName() { return name; }
     public String getAlias() { return alias; }
     public String getDefaultValue() { return defaultValue; }
     public boolean isElement() { return isElement; }
+    public String getType() { return type; }
     
     @Override
     public String toString() {
-        return "XmlElementData(" + name + "," + alias + "," + Utilities.safeString(defaultValue) + "," +
-                    isElement + "," + System.identityHashCode(this) + ")";
+        return "XmlElementData(" + name +
+                "," + alias +
+                "," + Utilities.safeString(defaultValue) +
+                "," + isElement +
+                "," + type +
+                "," + System.identityHashCode(this) + ")";
     }
 }

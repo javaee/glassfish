@@ -99,6 +99,7 @@ import org.glassfish.hk2.xml.internal.alt.MethodInformationI;
 import org.glassfish.hk2.xml.internal.alt.clazz.AnnotationAltAnnotationImpl;
 import org.glassfish.hk2.xml.internal.alt.clazz.ClassAltClassImpl;
 import org.glassfish.hk2.xml.jaxb.internal.XmlElementImpl;
+import org.glassfish.hk2.xml.jaxb.internal.XmlElementsImpl;
 import org.glassfish.hk2.xml.jaxb.internal.XmlRootElementImpl;
 import org.jvnet.hk2.annotations.Contract;
 
@@ -526,6 +527,31 @@ public class Generator {
                     
                     createAnnotationCopy(methodConstPool, anno, ctAnnotations);
                 }
+                else if ((childType != null) && XmlElements.class.getName().equals(convertMeAnnotation.annotationType())) {
+                    
+                    AltAnnotation elements[] = convertMeAnnotation.getAnnotationArrayValue("value");
+                    if (elements == null) elements = new AltAnnotation[0];
+                    
+                    int lcv = 0;
+                    XmlElement elementsValue[] = new XmlElement[elements.length];
+                    for (AltAnnotation element : elements) {
+                        AltClass elementType = (AltClass) element.getAnnotationValues().get("type");
+                        String elementTranslatedClassName = Utilities.getProxyNameFromInterfaceName(elementType.getName());
+                            
+                        elementsValue[lcv] = new XmlElementImpl(
+                            element.getStringValue("name"),
+                            element.getBooleanValue("nillable"),
+                            element.getBooleanValue("required"),
+                            element.getStringValue("namespace"),
+                            element.getStringValue("defaultValue"),
+                            elementTranslatedClassName);
+                        lcv++;
+                    }
+                    
+                    XmlElementsImpl xei = new XmlElementsImpl(elementsValue);
+                    
+                    createAnnotationCopy(methodConstPool, xei, ctAnnotations);
+                }
                 else {  
                     createAnnotationCopy(methodConstPool, convertMeAnnotation, ctAnnotations);
                 }
@@ -544,7 +570,10 @@ public class Generator {
                         List<XmlElementData> aliases = xmlNameMap.getAliases(mi.getRepresentedProperty());
                         if (aliases != null) {
                             for (XmlElementData alias : aliases) {
-                                compiledModel.addChild(childType.getName(), alias.getName(), alias.getAlias(), getChildType(mi.isList(), mi.isArray()), alias.getDefaultValue());
+                                String aliasType = alias.getType();
+                                if (aliasType == null) aliasType = childType.getName();
+                                
+                                compiledModel.addChild(aliasType, alias.getName(), alias.getAlias(), getChildType(mi.isList(), mi.isArray()), alias.getDefaultValue());
                             }
                         }
                     }
@@ -1040,12 +1069,14 @@ public class Generator {
                         defaultValue = allXmlElement.getStringValue("defaultValue");
                         
                         String allXmlElementName = allXmlElement.getStringValue("name");
+                        AltClass allXmlElementType = (AltClass) allXmlElement.getAnnotationValues().get("type");
+                        String allXmlElementTypeName = (allXmlElementType == null) ? null : allXmlElementType.getName() ;
                         
                         if (JAXB_DEFAULT_STRING.equals(allXmlElementName)) {
                             throw new IllegalArgumentException("The name field of an XmlElement inside an XmlElements must have a specified name");
                         }
                         else {
-                            aliases.add(new XmlElementData(allXmlElementName, aliasName, defaultValue, true));
+                            aliases.add(new XmlElementData(allXmlElementName, aliasName, defaultValue, true, allXmlElementTypeName));
                         }
                     }
                 }
