@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.xml.internal;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -56,25 +57,32 @@ public class NameInformation {
     private final Map<String, String> removeMethodToVariableName;
     private final Map<String, String> lookupMethodToVariableName;
     private final Set<String> referenceSet;
+    private final Map<String, List<XmlElementData>> aliases;
     
     NameInformation(Map<String, XmlElementData> nameMapping,
             Set<String> unmappedNames,
             Map<String, String> addMethodToVariableName,
             Map<String, String> removeMethodToVariableName,
             Map<String, String> lookupMethodToVariableName,
-            Set<String> referenceSet) {
+            Set<String> referenceSet,
+            Map<String, List<XmlElementData>> aliases) {
         this.nameMapping = nameMapping;
         this.noXmlElement = unmappedNames;
         this.addMethodToVariableName = addMethodToVariableName;
         this.removeMethodToVariableName = removeMethodToVariableName;
         this.lookupMethodToVariableName = lookupMethodToVariableName;
         this.referenceSet = referenceSet;
+        this.aliases = aliases;
     }
     
     String getNameMap(String mapMe) {
         if (mapMe == null) return null;
         if (!nameMapping.containsKey(mapMe)) return mapMe;
         return nameMapping.get(mapMe).getName();
+    }
+    
+    public List<XmlElementData> getAliases(String variableName) {
+        return aliases.get(variableName);
     }
     
     String getDefaultNameMap(String mapMe) {

@@ -74,7 +74,7 @@ public class ElementsCommon {
         Assert.assertNotNull(root);
         
         List<ElementalBean> elementals = root.getEarthWindAndFire();
-        Assert.assertEquals(4, elementals.size());
+        Assert.assertEquals("elements found =" + elementals, 4, elementals.size());
         
         ElementalBean earth = elementals.get(0);
         ElementalBean wind = elementals.get(1);

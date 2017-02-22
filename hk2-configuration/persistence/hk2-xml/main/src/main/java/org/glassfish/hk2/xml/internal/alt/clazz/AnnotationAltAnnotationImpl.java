@@ -126,6 +126,13 @@ public class AnnotationAltAnnotationImpl implements AltAnnotation {
         
         return (String[]) values.get(methodName);
     }
+    
+    @Override
+    public AltAnnotation[] getAnnotationArrayValue(String methodName) {
+        if (values == null) getAnnotationValues();
+        
+        return (AltAnnotation[]) values.get(methodName);
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.internal.alt.AltAnnotation#getAnnotationValues()
@@ -207,4 +214,6 @@ public class AnnotationAltAnnotationImpl implements AltAnnotation {
     public String toString() {
         return "AnnotationAltAnnotationImpl(" + annotation + "," + System.identityHashCode(this) + ")";
     }
+
+    
 }

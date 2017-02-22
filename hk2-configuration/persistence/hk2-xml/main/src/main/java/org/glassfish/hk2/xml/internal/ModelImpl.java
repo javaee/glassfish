@@ -128,9 +128,10 @@ public class ModelImpl implements Model {
     public void addChild(
             String childInterface,
             String xmlTag,
+            String xmlAlias,
             ChildType childType,
             String givenDefault) {
-        ParentedModel pm = new ParentedModel(childInterface, xmlTag, childType, givenDefault);
+        ParentedModel pm = new ParentedModel(childInterface, xmlTag, xmlAlias, childType, givenDefault);
         childrenByName.put(xmlTag, pm);
         allChildren.put(xmlTag, new ChildDescriptor(pm));
     }

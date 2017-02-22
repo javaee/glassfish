@@ -2406,4 +2406,15 @@ public class Utilities {
         
         return retVal;
     }
+    
+    public static String safeString(String originalValue) {
+        if (originalValue == null) return null;
+        
+        if (Generator.JAXB_DEFAULT_DEFAULT.equals(originalValue)) {
+            return "\\u0000";
+        }
+        
+        return originalValue;
+        
+    }
 }

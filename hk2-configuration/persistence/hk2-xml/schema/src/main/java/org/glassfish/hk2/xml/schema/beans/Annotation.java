@@ -98,13 +98,6 @@ import org.jvnet.hk2.annotations.Contract;
 public interface Annotation
     extends OpenAttrs
 {
-
-    @XmlElements({
-        @XmlElement(name = "appinfo", type = Appinfo.class),
-        @XmlElement(name = "documentation", type = Documentation.class)
-    })
-    public void setAppinfoOrDocumentation(List<Object> appinfoOrDocumentation);
-
     /**
      * Gets the value of the appinfoOrDocumentation property.
      * 
@@ -128,6 +121,10 @@ public interface Annotation
      * 
      * 
      */
+    @XmlElements({
+        @XmlElement(name = "appinfo", type = Appinfo.class),
+        @XmlElement(name = "documentation", type = Documentation.class)
+    })
     public List<Object> getAppinfoOrDocumentation();
 
     /**

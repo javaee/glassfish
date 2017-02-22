@@ -41,6 +41,7 @@ package org.glassfish.hk2.xml.internal;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -79,6 +80,7 @@ import javassist.bytecode.annotation.StringMemberValue;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -532,11 +534,19 @@ public class Generator {
             if (getterOrSetter) {
                 if (childType != null) {
                     if (!isReference) {
+                        
                         compiledModel.addChild(
                             childType.getName(),
                             mi.getRepresentedProperty(),
+                            mi.getRepresentedProperty(),
                             getChildType(mi.isList(), mi.isArray()),
                             mi.getDefaultValue());
+                        List<XmlElementData> aliases = xmlNameMap.getAliases(mi.getRepresentedProperty());
+                        if (aliases != null) {
+                            for (XmlElementData alias : aliases) {
+                                compiledModel.addChild(childType.getName(), alias.getName(), alias.getAlias(), getChildType(mi.isList(), mi.isArray()), alias.getDefaultValue());
+                            }
+                        }
                     }
                     else {
                         compiledModel.addNonChild(mi.getRepresentedProperty(), mi.getDefaultValue(),
@@ -567,6 +577,10 @@ public class Generator {
                         JAXB_DEFAULT_DEFAULT,
                         translatedClassName);
                 
+                if (DEBUG_METHODS) {
+                    Logger.getLogger().debug("Adding ghost XmlElement for " + convertMe.getSimpleName() + " with data " + convertMeAnnotation);
+                }
+                
                 createAnnotationCopy(methodConstPool, convertMeAnnotation, ctAnnotations);
             }
             
@@ -592,6 +606,10 @@ public class Generator {
             
             CtMethod addMeCtMethod = CtNewMethod.make(sb.toString(), targetCtClass);
             targetCtClass.addMethod(addMeCtMethod);
+            
+            if (DEBUG_METHODS) {
+                Logger.getLogger().debug("Adding ghost setter method for " + convertMe.getSimpleName() + " with implementation " + sb);
+            }
         }
         
         generateStaticModelFieldAndAbstractMethodImpl(targetCtClass,
@@ -632,9 +650,11 @@ public class Generator {
             
             ParentedModel parentedModel = descriptor.getParentedModel();
             if (parentedModel != null) {
+                
                 sb.append("retVal.addChild(" +
                         asParameter(parentedModel.getChildInterface()) + "," +
                         asParameter(parentedModel.getChildXmlTag()) + "," +
+                        asParameter(parentedModel.getChildXmlAlias()) + "," +
                         asParameter(parentedModel.getChildType()) + "," +
                         asParameter(parentedModel.getGivenDefault()) + ");\n");
             }
@@ -980,6 +1000,7 @@ public class Generator {
         Map<String, String> removeMethodToVariableMap = new LinkedHashMap<String, String>();
         Map<String, String> lookupMethodToVariableMap = new LinkedHashMap<String, String>();
         Set<String> referenceSet = new LinkedHashSet<String>();
+        Map<String, List<XmlElementData>> aliasMap = new LinkedHashMap<String, List<XmlElementData>>();
         
         for (AltMethod originalMethod : convertMe.getMethods()) {
             String setterVariable = Utilities.isSetter(originalMethod);
@@ -994,17 +1015,52 @@ public class Generator {
             
             AltAnnotation pluralOf = null;
             AltAnnotation xmlElement = originalMethod.getAnnotation(XmlElement.class.getName());
-            if (xmlElement != null) {
-                // Get the pluralOf from the method
-                pluralOf = originalMethod.getAnnotation(PluralOf.class.getName());
-                
-                String defaultValue = xmlElement.getStringValue("defaultValue");
-                
-                if (JAXB_DEFAULT_STRING.equals(xmlElement.getStringValue("name"))) {
+            AltAnnotation xmlElements = originalMethod.getAnnotation(XmlElements.class.getName());
+            if (xmlElement != null && xmlElements != null) {
+                throw new IllegalArgumentException("The method " + originalMethod + " of " + convertMe + " has both @XmlElement and @XmlElements, which is illegal");
+            }
+            
+            if (xmlElement != null || xmlElements != null) {
+                if (xmlElements != null) {
+                    // First add the actual method so it is known to the system
+                    pluralOf = originalMethod.getAnnotation(PluralOf.class.getName());
+                    
+                    String defaultValue = JAXB_DEFAULT_DEFAULT;
+                    
                     xmlNameMap.put(setterVariable, new XmlElementData(setterVariable, defaultValue, true));
+                    
+                    
+                    String aliasName = setterVariable;
+                    
+                    AltAnnotation allXmlElements[] = xmlElements.getAnnotationArrayValue("value");
+                    List<XmlElementData> aliases = new ArrayList<XmlElementData>(allXmlElements.length);
+                    aliasMap.put(setterVariable, aliases);
+                    
+                    for (AltAnnotation allXmlElement : allXmlElements) {
+                        defaultValue = allXmlElement.getStringValue("defaultValue");
+                        
+                        String allXmlElementName = allXmlElement.getStringValue("name");
+                        
+                        if (JAXB_DEFAULT_STRING.equals(allXmlElementName)) {
+                            throw new IllegalArgumentException("The name field of an XmlElement inside an XmlElements must have a specified name");
+                        }
+                        else {
+                            aliases.add(new XmlElementData(allXmlElementName, aliasName, defaultValue, true));
+                        }
+                    }
                 }
                 else {
-                    xmlNameMap.put(setterVariable, new XmlElementData(xmlElement.getStringValue("name"), defaultValue, true));
+                    // Get the pluralOf from the method
+                    pluralOf = originalMethod.getAnnotation(PluralOf.class.getName());
+                    
+                    String defaultValue = xmlElement.getStringValue("defaultValue");
+                    
+                    if (JAXB_DEFAULT_STRING.equals(xmlElement.getStringValue("name"))) {
+                        xmlNameMap.put(setterVariable, new XmlElementData(setterVariable, defaultValue, true));
+                    }
+                    else {
+                        xmlNameMap.put(setterVariable, new XmlElementData(xmlElement.getStringValue("name"), defaultValue, true));
+                    } 
                 }
             }
             else {
@@ -1042,7 +1098,8 @@ public class Generator {
                 addMethodToVariableMap,
                 removeMethodToVariableMap,
                 lookupMethodToVariableMap,
-                referenceSet);
+                referenceSet,
+                aliasMap);
     }
     
     private static String convertXmlRootElementName(AltAnnotation root, AltClass clazz) {

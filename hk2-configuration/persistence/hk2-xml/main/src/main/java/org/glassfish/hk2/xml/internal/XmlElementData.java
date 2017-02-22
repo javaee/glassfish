@@ -47,22 +47,29 @@ package org.glassfish.hk2.xml.internal;
  */
 public class XmlElementData {
     private final String name;
+    private final String alias;
     private final String defaultValue;
     private final boolean isElement;
     
     XmlElementData(String name, String defaultValue, boolean isElement) {
+        this(name, name, defaultValue, isElement);
+    }
+    
+    XmlElementData(String name, String alias, String defaultValue, boolean isElement) {
         this.name = name;
+        this.alias = alias;
         this.defaultValue = defaultValue;
         this.isElement = isElement;
     }
     
     public String getName() { return name; }
+    public String getAlias() { return alias; }
     public String getDefaultValue() { return defaultValue; }
     public boolean isElement() { return isElement; }
     
     @Override
     public String toString() {
-        return "XmlElementData(" + name + "," + defaultValue + "," +
+        return "XmlElementData(" + name + "," + alias + "," + Utilities.safeString(defaultValue) + "," +
                     isElement + "," + System.identityHashCode(this) + ")";
     }
 }
