@@ -47,8 +47,12 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.elements.beans.BasicElementalBean;
+import org.glassfish.hk2.xml.test.elements.beans.EarthBean;
 import org.glassfish.hk2.xml.test.elements.beans.ElementType;
 import org.glassfish.hk2.xml.test.elements.beans.ElementalBean;
+import org.glassfish.hk2.xml.test.elements.beans.FireBean;
+import org.glassfish.hk2.xml.test.elements.beans.WaterBean;
+import org.glassfish.hk2.xml.test.elements.beans.WindBean;
 import org.junit.Assert;
 
 /**
@@ -76,10 +80,10 @@ public class ElementsCommon {
         List<ElementalBean> elementals = root.getEarthWindAndFire();
         Assert.assertEquals("elements found =" + elementals, 4, elementals.size());
         
-        ElementalBean earth = elementals.get(0);
-        ElementalBean wind = elementals.get(1);
-        ElementalBean water = elementals.get(2);
-        ElementalBean fire = elementals.get(3);
+        EarthBean earth = (EarthBean) elementals.get(0);
+        WindBean wind = (WindBean) elementals.get(1);
+        WaterBean water = (WaterBean) elementals.get(2);
+        FireBean fire = (FireBean) elementals.get(3);
         
         Assert.assertEquals(BENDER_EARTH, earth.getName());
         Assert.assertEquals(BENDER_WIND, wind.getName());

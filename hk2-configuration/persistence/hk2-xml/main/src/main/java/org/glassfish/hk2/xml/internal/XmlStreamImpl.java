@@ -218,6 +218,8 @@ public class XmlStreamImpl {
                 
                 ParentedModel informedChild = childProperties.get(elementTag);
                 if (informedChild != null) {
+                    String trueElementTag = (informedChild.getChildXmlAlias() == null) ? elementTag : informedChild.getChildXmlAlias() ;
+                    
                     ModelImpl grandChild = informedChild.getChildModel();
                     
                     BaseHK2JAXBBean hk2Root = Utilities.createBean(grandChild.getProxyAsClass());
@@ -229,21 +231,21 @@ public class XmlStreamImpl {
                     handleElement(hk2Root, target, reader, classReflectionHelper, listener, referenceMap, unresolved, elementTag);
                     
                     if (informedChild.getChildType().equals(ChildType.DIRECT)) {
-                        target._setProperty(elementTag, hk2Root);
+                        target._setProperty(trueElementTag, hk2Root);
                     }
                     else if (informedChild.getChildType().equals(ChildType.LIST)) {
-                        List<BaseHK2JAXBBean> cList = listChildren.get(elementTag);
+                        List<BaseHK2JAXBBean> cList = listChildren.get(trueElementTag);
                         if (cList == null) {
                             cList = new ArrayList<BaseHK2JAXBBean>();
-                            listChildren.put(elementTag, cList);
+                            listChildren.put(trueElementTag, cList);
                         }
                         cList.add(hk2Root);
                     }
                     else if (informedChild.getChildType().equals(ChildType.ARRAY)) {
-                        List<BaseHK2JAXBBean> cList = arrayChildren.get(elementTag);
+                        List<BaseHK2JAXBBean> cList = arrayChildren.get(trueElementTag);
                         if (cList == null) {
                             cList = new LinkedList<BaseHK2JAXBBean>();
-                            arrayChildren.put(elementTag, cList);
+                            arrayChildren.put(trueElementTag, cList);
                         }
                         cList.add(hk2Root);
                     }
