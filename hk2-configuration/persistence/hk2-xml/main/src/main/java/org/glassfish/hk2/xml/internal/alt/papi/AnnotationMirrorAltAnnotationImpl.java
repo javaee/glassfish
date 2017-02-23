@@ -229,7 +229,6 @@ public class AnnotationMirrorAltAnnotationImpl implements AltAnnotation {
                             aValue[lcv++] = new AnnotationMirrorAltAnnotationImpl((AnnotationMirror) itemValue, processingEnv);
                         }
                         else {
-                            System.out.println("JRW(30) itemValue=" + itemValue + " in " + this);
                             throw new AssertionError("Unknown declared type: " + itemValue.getClass().getName());
                         }
                     }
