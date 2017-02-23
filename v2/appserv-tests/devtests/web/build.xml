@@ -345,6 +345,7 @@
         <ant dir="localeEncodingMapping" target="all"/>
         <ant dir="servlet-4.0/setSessionTimeout" target="all"/>
         <ant dir="servlet-4.0/setJspFile" target="all"/>
+        <ant dir="servlet-4.0/defaultContextPath" target="all"/>
     </target>
 
     <target name="web-container" depends="init-report">
