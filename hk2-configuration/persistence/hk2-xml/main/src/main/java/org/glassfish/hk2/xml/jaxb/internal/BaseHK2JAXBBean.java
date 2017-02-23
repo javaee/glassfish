@@ -57,6 +57,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.xml.bind.annotation.XmlSchema;
+
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Customizer;
 import org.glassfish.hk2.api.MultiException;
@@ -170,9 +172,15 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
     private transient int addCost = -1;
     
     /**
+     * A map from the namespace prefix to the namespace URI
+     */
+    private final Map<String, String> namespacePrefixMap = new HashMap<String, String>();
+    
+    /**
      * For JAXB and Serialization
      */
     public BaseHK2JAXBBean() {
+        
     }
     
     public void _setProperty(String propName, Object propValue) {
@@ -432,7 +440,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         
         if (doDefaulting && (retVal == null) && !isSet) {
             if (expectedClass != null) {
-                retVal = Utilities.getDefaultValue(_getModel().getDefaultChildValue(propName), expectedClass, new HashMap<String, String>());
+                retVal = Utilities.getDefaultValue(_getModel().getDefaultChildValue(propName), expectedClass, namespacePrefixMap);
             }
             else if (parentNode != null) {
                 switch (parentNode.getChildType()) {
@@ -925,8 +933,21 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         return parent;
     }
     
+    /**
+     * When this is called all of the parents can be
+     * found and so the namespaces can be determined
+     * 
+     * @param parent
+     */
     public void _setParent(Object parent) {
         this.parent = parent;
+        
+        Package packageIns = getClass().getPackage();
+        XmlSchema xmlSchema = packageIns.getAnnotation(XmlSchema.class);
+        if (xmlSchema != null) {
+            
+            
+        }
     }
     
     public void _setSelfXmlTag(String selfXmlTag) {
@@ -1015,6 +1036,9 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         
         changeControl = change;
         this.root = root;
+        
+        Utilities.calculateNamespaces(this, root, namespacePrefixMap);
+        
         if (changeControl != null) active = true;
     }
     

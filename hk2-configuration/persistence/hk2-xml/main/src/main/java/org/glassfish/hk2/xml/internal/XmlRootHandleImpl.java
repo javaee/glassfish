@@ -426,6 +426,10 @@ public class XmlRootHandleImpl<T> implements XmlRootHandle<T> {
         }
     }
     
+    public Map<String, String> getPackageNamespace(Class<?> clazz) {
+        return parent.getPackageNamespace(clazz);
+    }
+    
     @Override
     public String toString() {
         return "XmlRootHandleImpl(" + root + "," + rootNode + "," + rootURI + "," + System.identityHashCode(this) + ")";

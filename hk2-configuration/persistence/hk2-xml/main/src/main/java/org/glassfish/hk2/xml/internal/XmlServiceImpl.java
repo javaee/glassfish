@@ -49,7 +49,9 @@ import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.xml.stream.XMLStreamReader;
@@ -65,6 +67,8 @@ import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.Visibility;
 import org.glassfish.hk2.configuration.hub.api.Hub;
 import org.glassfish.hk2.configuration.hub.api.WriteableBeanDatabase;
+import org.glassfish.hk2.utilities.cache.CacheUtilities;
+import org.glassfish.hk2.utilities.cache.WeakCARCache;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
@@ -109,6 +113,9 @@ public class XmlServiceImpl implements XmlService {
     
     @Inject @Self
     private ActiveDescriptor<?> selfDescriptor;
+    
+    private final WeakCARCache<Package, Map<String, String>> packageNamespaceCache =
+            CacheUtilities.createWeakCARCache(new PackageToNamespaceComputable(), 20, true);
     
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.api.XmlService#unmarshall(java.net.URI, java.lang.Class, boolean, boolean)
@@ -464,5 +471,16 @@ public class XmlServiceImpl implements XmlService {
     
     public XmlServiceParser getParser() {
         return parser.named(selfDescriptor.getName()).get();
+    }
+    
+    public Map<String, String> getPackageNamespace(Class<?> clazz) {
+        Package p = clazz.getPackage();
+        
+        return packageNamespaceCache.compute(p);
+    }
+    
+    @PreDestroy
+    private void preDestroy() {
+        packageNamespaceCache.clear();
     }
 }

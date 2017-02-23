@@ -86,7 +86,7 @@ public class DefaultingTest {
         Assert.assertEquals(0, Float.compare((float) 13.00, db.getFloatProp()));
         Assert.assertEquals(0, Double.compare(13.00, db.getDoubleProp()));
         Assert.assertEquals("13", db.getStringProp());
-        // Assert.assertEquals(new QName("http://qwerty.com/qwerty", "foo", "xyz"), db.getQNameProp());
+        Assert.assertEquals(new QName("http://qwerty.com/qwerty", "foo", "xyz"), db.getQNameProp());
     }
     
     /**

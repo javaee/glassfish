@@ -49,7 +49,8 @@ import org.jvnet.hk2.annotations.Contract;
  * @author jwells
  *
  */
-@XmlRootElement(name="defaulted-bean") @Contract
+@XmlRootElement(name="defaulted-bean",
+  namespace="http://hk2.java.net/hk2-xml/test/defaulting") @Contract
 public interface DefaultedBean {
     /**
      * This one has no setter

@@ -41,4 +41,4 @@
 
 -->
 
-<defaulted-bean xmlns:xyz="http://qwerty.com/qwerty"/>
+<defaulted-bean xmlns="http://hk2.java.net/hk2-xml/test/defaulting" xmlns:xyz="http://qwerty.com/qwerty"/>

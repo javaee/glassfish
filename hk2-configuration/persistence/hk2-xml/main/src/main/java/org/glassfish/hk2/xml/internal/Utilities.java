@@ -2429,6 +2429,21 @@ public class Utilities {
         }
         
         return originalValue;
+    }
+    
+    public static void calculateNamespaces(BaseHK2JAXBBean bean, XmlRootHandleImpl<?> root, Map<String, String> currentValues) {
+        BaseHK2JAXBBean parent = (BaseHK2JAXBBean) bean._getParent();
+        if (parent != null) {
+            calculateNamespaces(parent, root, currentValues);
+        }
         
+        Map<String, String> packageOnly;
+        if (root != null) {
+            packageOnly = root.getPackageNamespace(bean.getClass());
+        }
+        else {
+            packageOnly = PackageToNamespaceComputable.calculateNamespaces(bean.getClass());
+        }
+        currentValues.putAll(packageOnly);
     }
 }
