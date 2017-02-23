@@ -2,7 +2,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2013-2016 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013-2017 Oracle and/or its affiliates. All rights reserved.
 #
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
@@ -180,6 +180,7 @@ promote_nightly(){
         -X POST \
         -k \
         https://registry.hub.docker.com/u/glassfish/nightly/trigger/945d55fc-1d4c-4043-8221-74185d9a4d53/
+    ssh $SSH_MASTER `echo "echo $SVN_REVISION > /scratch/java_re/hudson/hudson_install/last_promoted_nightly_scm_revision"`    
     promote_finalize
 }
 
@@ -189,7 +190,13 @@ promote_weekly(){
     promote_bundle ${PROMOTED_BUNDLES}/glassfish-ips.zip ${PRODUCT_GF}-${PRODUCT_VERSION_GF}-${BUILD_ID}.zip
     promote_bundle ${PROMOTED_BUNDLES}/nucleus-new.zip nucleus-${PRODUCT_VERSION_GF}-${BUILD_ID}.zip
     promote_bundle ${PROMOTED_BUNDLES}/version-info.txt version-info-${PRODUCT_VERSION_GF}-${BUILD_ID}.txt
-    #promote_bundle ${PROMOTED_BUNDLES}/changes.txt changes-${PRODUCT_VERSION_GF}-${BUILD_ID}.txt
+    if [ -z ${RELEASE_VERSION} ]
+    then
+        promote_bundle ${PROMOTED_BUNDLES}/changes.txt changes-${PRODUCT_VERSION_GF}-${BUILD_ID}.txt
+        VERSION_INFO="${WORKSPACE_BUNDLES}/version-info-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.txt"
+        SVN_REVISION=`head -1 ${VERSION_INFO} | awk '{print $2}'`
+        ssh $SSH_MASTER `echo "echo $SVN_REVISION > /scratch/java_re/hudson/hudson_install/last_promoted_weekly_scm_revision"`
+    fi
     VERSION_INFO="${WORKSPACE_BUNDLES}/version-info-${PRODUCT_VERSION_GF}-${BUILD_ID}.txt"
     create_svn_tag
 
@@ -872,9 +879,25 @@ scp_jnet(){
         "scp /java/re/${ARCHIVE_MASTER_BUNDLES}/${file} ${JNET_DIR}/latest-${simple_name}"
 }
 
+create_promotion_changs(){
+    if [[ "nightly" == "${BUILD_KIND}" ]]; then
+        LAST_PROMOTED_SCM_REVISION=`cat ${HUDSON_HOME}/last_promoted_nightly_scm_revision`
+    fi
+    if [[ "weekly" == "${BUILD_KIND}" ]]; then
+        LAST_PROMOTED_SCM_REVISION=`cat ${HUDSON_HOME}/last_promoted_weekly_scm_revision`
+    fi
+    VERSION_INFO="${WORKSPACE_BUNDLES}/version-info-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.txt"
+    SCM_REVISION=`head -1 ${VERSION_INFO} | awk '{print $2}'`
+    svn log -r ${LAST_PROMOTED_SCM_REVISION}:${SCM_REVISION} ${GF_WORKSPACE_URL_SSH}/trunk/main > ${WORKSPACE_BUNDLES}/${1}
+}
+
 promote_bundle(){
     printf "\n==== PROMOTE_BUNDLE (%s) ====\n\n" ${2}
-    curl ${1} > ${WORKSPACE_BUNDLES}/${2}
+    if [[ ${1} == *"changes.txt" ]]; then
+        create_promotion_changs ${2}
+    else
+        curl ${1} > ${WORKSPACE_BUNDLES}/${2}
+    fi
     scp ${WORKSPACE_BUNDLES}/${2} ${SCP}
     scp_jnet ${WORKSPACE_BUNDLES}/${2}
     if [ "nightly" == "${BUILD_KIND}" ]
