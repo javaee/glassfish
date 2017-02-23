@@ -1085,7 +1085,7 @@ public class Utilities {
      * @param expectedClass
      * @return
      */
-    public static Object getDefaultValue(String givenStringDefault, Class<?> expectedClass) {
+    public static Object getDefaultValue(String givenStringDefault, Class<?> expectedClass, Map<String, String> namespaceMap) {
         if (givenStringDefault == null || JAUtilities.JAXB_DEFAULT_DEFAULT.equals(givenStringDefault)) {
             if (int.class.equals(expectedClass)) {
                 return DEFAULT_INTEGER;
@@ -1172,8 +1172,10 @@ public class Utilities {
             
             String prefix = givenStringDefault.substring(0, indexOfColon);
             String localPart = givenStringDefault.substring(indexOfColon + 1);
+            String namespaceURI = namespaceMap.get(prefix);
+            if (namespaceURI == null) return null;
             
-            return new QName(null, localPart, prefix);
+            return new QName(namespaceURI, localPart, prefix);
         }
         
         throw new AssertionError("Default for type " + expectedClass.getName() + " not implemented with default " + givenStringDefault);

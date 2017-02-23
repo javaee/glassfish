@@ -102,7 +102,14 @@ public class XmlStreamImpl {
                 if (DEBUG_PARSING) {
                     Logger.getLogger().debug("XmlServiceDebug starting document tag " + elementTag);
                 }
-                handleElement(hk2Root, null, reader, classReflectionHelper, listener, referenceMap, unresolved, elementTag);
+                
+                HashMap<String, String> rootNamespace = new HashMap<String, String>();
+                int namespaceCount = reader.getNamespaceCount();
+                for (int nLcv = 0; nLcv < namespaceCount; nLcv++) {
+                    rootNamespace.put(reader.getNamespacePrefix(nLcv), reader.getNamespaceURI(nLcv));
+                }
+                
+                handleElement(hk2Root, null, reader, classReflectionHelper, listener, referenceMap, unresolved, elementTag, rootNamespace);
                 
                 break;
             case XMLStreamConstants.END_DOCUMENT:
@@ -130,7 +137,8 @@ public class XmlStreamImpl {
             Listener listener,
             Map<ReferenceKey, BaseHK2JAXBBean> referenceMap,
             List<UnresolvedReference> unresolved,
-            String outerElementTag) throws Exception {
+            String outerElementTag,
+            Map<String, String> namespaceMap) throws Exception {
         listener.beforeUnmarshal(target, parent);
         
         Map<String, List<BaseHK2JAXBBean>> listChildren = new HashMap<String, List<BaseHK2JAXBBean>>();
@@ -155,7 +163,7 @@ public class XmlStreamImpl {
             Class<?> childType = targetModel.getNonChildType(attributeName);
             
             if (!childDataModel.isReference()) {
-                Object convertedValue = Utilities.getDefaultValue(attributeValue, childType);
+                Object convertedValue = Utilities.getDefaultValue(attributeValue, childType, namespaceMap);
                 target._setProperty(attributeName, convertedValue);
             }
             else {
@@ -189,6 +197,12 @@ public class XmlStreamImpl {
                     Logger.getLogger().debug("XmlServiceDebug starting parse of element " + elementTag);
                 }
                 
+                Map<String, String> effectiveNamespaceMap = new HashMap<String, String>(namespaceMap);
+                int namespaceCount = reader.getNamespaceCount();
+                for (int nLcv = 0; nLcv < namespaceCount; nLcv++) {
+                    effectiveNamespaceMap.put(reader.getNamespacePrefix(nLcv), reader.getNamespaceURI(nLcv));
+                }
+                
                 ChildDataModel cdm = nonChildProperties.get(elementTag);
                 if (cdm != null) {
                     String elementValue = advanceNonChildElement(reader, elementTag);
@@ -196,7 +210,7 @@ public class XmlStreamImpl {
                     Class<?> childType = cdm.getChildTypeAsClass();
                     
                     if (!cdm.isReference()) {
-                        Object convertedValue = Utilities.getDefaultValue(elementValue, childType);
+                        Object convertedValue = Utilities.getDefaultValue(elementValue, childType, effectiveNamespaceMap);
                         
                         target._setProperty(elementTag, convertedValue);
                     }
@@ -228,7 +242,7 @@ public class XmlStreamImpl {
                         Logger.getLogger().debug("XmlServiceBean created child bean of " + outerElementTag + " with model " + hk2Root._getModel());
                     }
                     
-                    handleElement(hk2Root, target, reader, classReflectionHelper, listener, referenceMap, unresolved, elementTag);
+                    handleElement(hk2Root, target, reader, classReflectionHelper, listener, referenceMap, unresolved, elementTag, effectiveNamespaceMap);
                     
                     if (informedChild.getChildType().equals(ChildType.DIRECT)) {
                         target._setProperty(trueElementTag, hk2Root);

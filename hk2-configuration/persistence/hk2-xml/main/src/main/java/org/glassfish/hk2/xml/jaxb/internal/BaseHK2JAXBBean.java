@@ -432,7 +432,7 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         
         if (doDefaulting && (retVal == null) && !isSet) {
             if (expectedClass != null) {
-                retVal = Utilities.getDefaultValue(_getModel().getDefaultChildValue(propName), expectedClass);
+                retVal = Utilities.getDefaultValue(_getModel().getDefaultChildValue(propName), expectedClass, new HashMap<String, String>());
             }
             else if (parentNode != null) {
                 switch (parentNode.getChildType()) {

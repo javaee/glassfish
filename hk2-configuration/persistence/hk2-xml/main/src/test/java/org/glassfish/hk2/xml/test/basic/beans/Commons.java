@@ -524,8 +524,9 @@ public class Commons {
         Assert.assertEquals(0, Float.compare((float) 3.14, types.getFType()));
         Assert.assertEquals(0, Double.compare(2.71828, types.getDType()));
         Assert.assertEquals(new QName("bar"), types.getQNameLocalOnly());
-        // Assert.assertEquals(new QName("http://www.acme.org/jmxoverjms", "foo", "xos"), types.getQName());
-        
+        Assert.assertEquals(new QName("http://www.acme.org/jmxoverjms", "foo", "xos"), types.getQName());
+        Assert.assertEquals(new QName("http://www.eagles.com/CarsonCity", "phillies", "sox"), types.getQNameElementPrefix());
+        Assert.assertNull(types.getQNameUnknownPrefix());
     }
     
     public static void testAnnotationWithEverythingCopied(ServiceLocator locator, URI uri) throws Exception {

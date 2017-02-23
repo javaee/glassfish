@@ -94,4 +94,10 @@ public interface TypeBean {
     
     @XmlElement(name="qname-local-only")
     public QName getQNameLocalOnly();
+    
+    @XmlElement(name="qname-unknown-prefix")
+    public QName getQNameUnknownPrefix();
+    
+    @XmlElement(name="qname-element-prefix")
+    public QName getQNameElementPrefix();
 }

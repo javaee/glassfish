@@ -51,4 +51,6 @@
   <double>2.71828</double>
   <qname>xos:foo</qname>
   <qname-local-only>bar</qname-local-only>
+  <qname-element-prefix xmlns:sox="http://www.eagles.com/CarsonCity">sox:phillies</qname-element-prefix>
+  <qname-unknown-prefix>sox:quux</qname-unknown-prefix>
 </type-bean>
