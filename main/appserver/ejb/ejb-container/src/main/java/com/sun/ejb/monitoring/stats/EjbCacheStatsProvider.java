@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -142,39 +142,39 @@ public class EjbCacheStatsProvider {
     @Description( "Number of times a user request fails to find an EJB in associated EJB cache instance")
     public RangeStatistic getCacheMisses() {
         cacheMisses.setCurrent(delegate.getCacheMisses());
-        return cacheMisses.getStatistic();
+        return cacheMisses;
     }
 
     @ManagedAttribute(id="cachehits")
     @Description( "Number of times a user request hits an EJB in associated EJB cache instance")
     public RangeStatistic getCacheHits() {
         cacheHits.setCurrent(delegate.getCacheHits());
-        return cacheHits.getStatistic();
+        return cacheHits;
     }
 
     @ManagedAttribute(id="numbeansincache")
     @Description( "Number of EJBs in the associated EJB Cache")
     public RangeStatistic getNumBeansInCache() {
         numBeans.setCurrent(delegate.getNumBeansInCache());
-        return numBeans.getStatistic();
+        return numBeans;
     }
 
     @ManagedAttribute(id="numexpiredsessionsremoved")
     @Description( "Number of expired sessions removed by the cleanup thread.")
     public CountStatistic getNumExpiredSessionsRemoved() {
-        return expiredSessionsRemovedStat.getStatistic();
+        return expiredSessionsRemovedStat;
     }
 
     @ManagedAttribute(id="numpassivations")
     @Description( "Number of passivated beans")
     public CountStatistic getNumPassivations() {
-        return passivations.getStatistic();
+        return passivations;
     }
 
     @ManagedAttribute(id="numpassivationerrors")
     @Description( "Number of errors during passivation.")
     public CountStatistic getNumPassivationErrors() {
-        return passivationErrors.getStatistic();
+        return passivationErrors;
     }
 
     @ManagedAttribute(id="numpassivationsuccess")

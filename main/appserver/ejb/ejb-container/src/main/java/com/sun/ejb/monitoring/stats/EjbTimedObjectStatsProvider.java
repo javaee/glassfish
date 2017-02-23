@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -121,18 +121,18 @@ public class EjbTimedObjectStatsProvider {
     @ManagedAttribute(id="numtimerscreated")
     @Description( "Number of timers created in the system")
     public CountStatistic getNumTimersCreated() {
-        return timerCreateStat.getStatistic();
+        return timerCreateStat;
     }
 
     @ManagedAttribute(id="numtimersremoved")
     @Description( "Number of timers removed from the system")
     public CountStatistic getNumTimersRemoved() {
-        return timerRemoveStat.getStatistic();
+        return timerRemoveStat;
     }
 
     @ManagedAttribute(id="numtimersdelivered")
     @Description( "Number of timers delivered by the system")
     public CountStatistic getNumTimersDelivered() {
-        return timerDeliveredStat.getStatistic();
+        return timerDeliveredStat;
     }
 }

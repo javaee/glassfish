@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -630,52 +630,52 @@ public class ConnectorConnPoolStatsProvider {
 
     @ManagedAttribute(id="numpotentialconnleak")
     public CountStatistic getNumPotentialConnLeakCount() {
-        return numPotentialConnLeak.getStatistic();
+        return numPotentialConnLeak;
     }
 
     @ManagedAttribute(id="numconnfailedvalidation")
     public CountStatistic getNumConnFailedValidation() {
-        return numConnFailedValidation.getStatistic();
+        return numConnFailedValidation;
     }
 
     @ManagedAttribute(id="numconntimedout")
     public CountStatistic getNumConnTimedOut() {
-        return numConnTimedOut.getStatistic();
+        return numConnTimedOut;
     }
 
     @ManagedAttribute(id="numconnused")
     public RangeStatistic getNumConnUsed() {
-        return numConnUsed.getStatistic();
+        return numConnUsed;
     }
 
     @ManagedAttribute(id="numconnfree")
     public RangeStatistic getNumConnFree() {
-        return numConnFree.getStatistic();
+        return numConnFree;
     }
 
     @ManagedAttribute(id="connrequestwaittime")
     public RangeStatistic getConnRequestWaitTime() {
-        return connRequestWaitTime.getStatistic();
+        return connRequestWaitTime;
     }
 
     @ManagedAttribute(id="numconndestroyed")
     public CountStatistic getNumConnDestroyed() {
-        return numConnDestroyed.getStatistic();
+        return numConnDestroyed;
     }
 
     @ManagedAttribute(id="numconnacquired")
     public CountStatistic getNumConnAcquired() {
-        return numConnAcquired.getStatistic();
+        return numConnAcquired;
     }
 
     @ManagedAttribute(id="numconncreated")
     public CountStatistic getNumConnCreated() {
-        return numConnCreated.getStatistic();
+        return numConnCreated;
     }
 
     @ManagedAttribute(id="numconnreleased")
     public CountStatistic getNumConnReleased() {
-        return numConnReleased.getStatistic();
+        return numConnReleased;
     }
     
     @ManagedAttribute(id="numconnsuccessfullymatched")

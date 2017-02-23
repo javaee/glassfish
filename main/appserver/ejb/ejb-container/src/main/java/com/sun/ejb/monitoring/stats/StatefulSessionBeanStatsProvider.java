@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -85,14 +85,14 @@ public class StatefulSessionBeanStatsProvider extends EjbMonitoringStatsProvider
     @Description( "Number of stateful session beans in MethodReady state")
     public RangeStatistic getMethodReadyCount() {
         methodReadyStat.setCurrent(methodReadyCount);
-        return methodReadyStat.getStatistic();
+        return methodReadyStat;
     }
 
     @ManagedAttribute(id="passivecount")
     @Description( "Number of stateful session beans in Passive state")
     public RangeStatistic getPassiveCount() {
         passiveCount.setCurrent(delegate.getPassiveCount());
-        return passiveCount.getStatistic();
+        return passiveCount;
     }
 
     @ProbeListener("glassfish:ejb:bean:methodReadyAddEvent")
