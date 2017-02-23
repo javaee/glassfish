@@ -40,7 +40,7 @@
 
 -->
 
-<type-bean>
+<type-bean xmlns:xos="http://www.acme.org/jmxoverjms" >
   <int>13</int>
   <long>-13</long>
   <boolean>true</boolean>
@@ -49,4 +49,6 @@
   <short>161</short>
   <float>3.14</float>
   <double>2.71828</double>
+  <qname>xos:foo</qname>
+  <qname-local-only>bar</qname-local-only>
 </type-bean>

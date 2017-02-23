@@ -45,6 +45,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamReader;
 
 import org.glassfish.hk2.api.ServiceLocator;
@@ -116,6 +117,8 @@ public class Commons {
     public final static String NON_KEY_TAG = "non-key-identifier";
     public final static String PORT_TAG = "port";
     public final static String PUBLIC_KEY_TAG = "public-key-location";
+    
+    public final static String TYPES_FILE = "types/types.xml";
     
     private Commons() {}
     
@@ -520,6 +523,9 @@ public class Commons {
         Assert.assertEquals((short) 161, types.getSType());
         Assert.assertEquals(0, Float.compare((float) 3.14, types.getFType()));
         Assert.assertEquals(0, Double.compare(2.71828, types.getDType()));
+        Assert.assertEquals(new QName("bar"), types.getQNameLocalOnly());
+        // Assert.assertEquals(new QName("http://www.acme.org/jmxoverjms", "foo", "xos"), types.getQName());
+        
     }
     
     public static void testAnnotationWithEverythingCopied(ServiceLocator locator, URI uri) throws Exception {
@@ -828,5 +834,4 @@ public class Commons {
         
         
     }
-
 }

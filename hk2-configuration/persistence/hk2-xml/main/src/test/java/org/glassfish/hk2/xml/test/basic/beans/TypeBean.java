@@ -43,6 +43,7 @@ import java.util.Set;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.namespace.QName;
 
 import org.jvnet.hk2.annotations.Contract;
 
@@ -87,5 +88,10 @@ public interface TypeBean {
     @XmlElement(name="set")
     public Set<String> getSetType();
     public void setSetType(Set<String> set);
-
+    
+    @XmlElement(name="qname")
+    public QName getQName();
+    
+    @XmlElement(name="qname-local-only")
+    public QName getQNameLocalOnly();
 }

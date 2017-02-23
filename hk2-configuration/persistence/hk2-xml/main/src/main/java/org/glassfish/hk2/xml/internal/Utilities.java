@@ -74,6 +74,7 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.namespace.QName;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Customize;
@@ -1162,6 +1163,17 @@ public class Utilities {
                 throw new AssertionError("An enum with a default must have a fromValue(String) method to return the value for " +
                   expectedClass.getName() + " and default value " + givenStringDefault, th);
             }
+        }
+        if (QName.class.equals(expectedClass)) {
+            int indexOfColon = givenStringDefault.indexOf(':');
+            if (indexOfColon < 0) {
+                return new QName(givenStringDefault);
+            }
+            
+            String prefix = givenStringDefault.substring(0, indexOfColon);
+            String localPart = givenStringDefault.substring(indexOfColon + 1);
+            
+            return new QName(null, localPart, prefix);
         }
         
         throw new AssertionError("Default for type " + expectedClass.getName() + " not implemented with default " + givenStringDefault);
