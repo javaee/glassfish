@@ -54,7 +54,7 @@ public class ElementsTest {
      * @throws Exception
      */
     @Test
-    // @org.junit.Ignore
+    @org.junit.Ignore
     public void testXmlElementsDom() throws Exception {
         ServiceLocator domLocator = Utilities.createDomLocator();
         
@@ -67,7 +67,7 @@ public class ElementsTest {
      * @throws Exception
      */
     @Test
-    // @org.junit.Ignore
+    @org.junit.Ignore
     public void testXmlElementsJaxb() throws Exception {
         ServiceLocator domLocator = Utilities.createLocator();
         

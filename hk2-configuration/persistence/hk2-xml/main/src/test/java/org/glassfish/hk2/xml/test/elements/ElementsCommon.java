@@ -42,8 +42,14 @@ package org.glassfish.hk2.xml.test.elements;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 
 import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.configuration.hub.api.BeanDatabase;
+import org.glassfish.hk2.configuration.hub.api.Hub;
+import org.glassfish.hk2.configuration.hub.api.Instance;
+import org.glassfish.hk2.configuration.hub.api.Type;
+import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
 import org.glassfish.hk2.xml.test.elements.beans.BasicElementalBean;
@@ -67,13 +73,23 @@ public class ElementsCommon {
     
     private final static String ONE_OF_EACH = "elemental/oneofeach.xml";
     
+    private final static String EARTH_TYPE = "/basic-elements/earth";
+    private final static String WIND_TYPE = "/basic-elements/wind";
+    private final static String WATER_TYPE = "/basic-elements/water";
+    private final static String FIRE_TYPE = "/basic-elements/fire";
+    
+    private final static String EARTH_INSTANCE = "basic-elements.Toph";
+    private final static String WIND_INSTANCE = "basic-elements.Ang";
+    private final static String WATER_INSTANCE = "basic-elements.Kitara";
+    private final static String FIRE_INSTANCE = "basic-elements.Zuko";
+    
     public static void testReadOneOfEachElement(ServiceLocator locator, ClassLoader cl) throws Exception {
         XmlService xmlService = locator.getService(XmlService.class);
         
         URL url = cl.getResource(ONE_OF_EACH);
         URI uri = url.toURI();
         
-        XmlRootHandle<BasicElementalBean> handle = xmlService.unmarshal(uri, BasicElementalBean.class, false, false);
+        XmlRootHandle<BasicElementalBean> handle = xmlService.unmarshal(uri, BasicElementalBean.class, true, true);
         BasicElementalBean root = handle.getRoot();
         Assert.assertNotNull(root);
         
@@ -94,6 +110,47 @@ public class ElementsCommon {
         Assert.assertEquals(ElementType.WIND, wind.getType());
         Assert.assertEquals(ElementType.WATER, water.getType());
         Assert.assertEquals(ElementType.FIRE, fire.getType());
+        
+        Assert.assertEquals(EARTH_TYPE, ((XmlHk2ConfigurationBean) earth)._getXmlPath());
+        Assert.assertEquals(WIND_TYPE, ((XmlHk2ConfigurationBean) wind)._getXmlPath());
+        Assert.assertEquals(WATER_TYPE, ((XmlHk2ConfigurationBean) water)._getXmlPath());
+        Assert.assertEquals(FIRE_TYPE, ((XmlHk2ConfigurationBean) fire)._getXmlPath());
+        
+        Hub hub = locator.getService(Hub.class);
+        
+        checkNamedInHub(hub, EARTH_TYPE, EARTH_INSTANCE, BENDER_EARTH);
+        checkNamedInHub(hub, WIND_TYPE, WIND_INSTANCE, BENDER_WIND);
+        checkNamedInHub(hub, WATER_TYPE, WATER_INSTANCE, BENDER_WATER);
+        checkNamedInHub(hub, FIRE_TYPE, FIRE_INSTANCE, BENDER_FIRE);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static void checkNamedInHub(Hub hub, String type, String instance, String name) {
+        BeanDatabase bd = hub.getCurrentDatabase();
+        
+        Type hubType = bd.getType(type);
+        Assert.assertNotNull(hubType);
+        
+        Instance i = null;
+        if (instance.contains(".*")) {
+            Map<String, Instance> instances = hubType.getInstances();
+            Assert.assertEquals(1, instances.size());
+            
+            for (Instance found : instances.values()) {
+                i = found;
+            }
+        }
+        else {
+            i = hubType.getInstance(instance);
+        }
+        
+        Assert.assertNotNull("Could not find instance " + instance + " in type " + type, i);
+        
+        Object bean = i.getBean();
+        Assert.assertNotNull(bean);
+        
+        String beanName = ((Map<String, String>) bean).get("name");
+        Assert.assertEquals(name, beanName);
     }
 
 }
