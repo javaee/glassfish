@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,6 +41,7 @@ package org.glassfish.hk2.xml.test.defaulting;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.namespace.QName;
 
 import org.jvnet.hk2.annotations.Contract;
 
@@ -106,6 +107,10 @@ public interface DefaultedBean {
     public String getStringProp();
     public void setStringProp(String prop);
     
+    @XmlElement(name="qname-prop", defaultValue="xyz:foo")
+    public QName getQNameProp();
+    public void setQNameProp(QName qname);
+    
     // Below are testing the default defaults which should all be zero
     
     public int getDefaultIntProp();
@@ -117,4 +122,5 @@ public interface DefaultedBean {
     public float getDefaultFloatProp();
     public double getDefaultDoubleProp();
     public String getDefaultStringProp();
+    public QName getDefaultQNameProp();
 }

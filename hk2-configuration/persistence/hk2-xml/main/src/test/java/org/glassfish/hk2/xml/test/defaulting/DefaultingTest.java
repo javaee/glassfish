@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015-2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,8 @@
 package org.glassfish.hk2.xml.test.defaulting;
 
 import java.net.URL;
+
+import javax.xml.namespace.QName;
 
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.configuration.hub.api.Hub;
@@ -84,6 +86,7 @@ public class DefaultingTest {
         Assert.assertEquals(0, Float.compare((float) 13.00, db.getFloatProp()));
         Assert.assertEquals(0, Double.compare(13.00, db.getDoubleProp()));
         Assert.assertEquals("13", db.getStringProp());
+        // Assert.assertEquals(new QName("http://qwerty.com/qwerty", "foo", "xyz"), db.getQNameProp());
     }
     
     /**
@@ -109,6 +112,7 @@ public class DefaultingTest {
         Assert.assertEquals(0, Float.compare((float) 0.00, db.getDefaultFloatProp()));
         Assert.assertEquals(0, Double.compare(0.00, db.getDefaultDoubleProp()));
         Assert.assertEquals(null, db.getDefaultStringProp());
+        Assert.assertNull(db.getDefaultQNameProp());
     }
     
     /**
