@@ -69,10 +69,10 @@ public class UnorderedCommons {
         UnorderedRootBean root = rootHandle.getRoot();
         
         List<ABean> as = root.getA();
-        List<BBean> bs = root.getB();
+        BBean bs[] = root.getB();
         
         Assert.assertEquals(4, as.size());
-        Assert.assertEquals(3, bs.size());
+        Assert.assertEquals(3, bs.length);
     }
 
 }

@@ -54,6 +54,7 @@ public class UnorderedTest {
      * @throws Exception
      */
     @Test
+    // @org.junit.Ignore
     public void testStreamingUnordered() throws Exception {
         ServiceLocator locator = Utilities.createDomLocator();
         
@@ -65,6 +66,7 @@ public class UnorderedTest {
      * @throws Exception
      */
     @Test
+    // @org.junit.Ignore
     public void testStreamingJaxb() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         

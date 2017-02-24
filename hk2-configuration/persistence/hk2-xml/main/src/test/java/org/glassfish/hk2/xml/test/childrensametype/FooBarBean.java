@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2014-2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -38,50 +38,27 @@
  * holder.
  */
 
-package org.glassfish.hk2.xml.test.negative.childrensametype;
+package org.glassfish.hk2.xml.test.childrensametype;
 
-import java.net.URL;
+import java.util.List;
 
-import org.junit.Assert;
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.xml.api.XmlRootHandle;
-import org.glassfish.hk2.xml.api.XmlService;
-import org.glassfish.hk2.xml.test.utilities.Utilities;
-import org.junit.Test;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import org.glassfish.hk2.xml.test.basic.beans.DataBean;
 
 /**
  * @author jwells
  *
  */
-public class ChildrenSameTypeTest {
-
-    /**
-     * FooBar has two children of the same type.  Since we can not easily
-     * disambiguate, at least we want to fail fast.  If the decision is
-     * made to change this implementation, this test will need to be
-     * removed
-     * 
-     * @throws Exception
-     */
-    @Test // @org.junit.Ignore
-    public void testNegativeTwoChildrenWithSameType() throws Exception {
-        ServiceLocator locator = Utilities.createLocator();
-        XmlService xmlService = locator.getService(XmlService.class);
-        
-        URL url = getClass().getClassLoader().getResource("foobar.xml");
-        
-        XmlRootHandle<FooBarBean> handle = xmlService.unmarshal(url.toURI(), FooBarBean.class);
-        
-        FooBarBean fooBar = handle.getRoot();
-        Assert.assertNotNull(fooBar);
-        
-        Assert.assertEquals(2, fooBar.getFoo().size());
-        Assert.assertEquals("foo1", fooBar.getFoo().get(0).getData());
-        Assert.assertEquals("foo2", fooBar.getFoo().get(1).getData());
-        
-        Assert.assertEquals(2, fooBar.getBar().size());
-        Assert.assertEquals("bar1", fooBar.getBar().get(0).getData());
-        Assert.assertEquals("bar2", fooBar.getBar().get(1).getData());
-    }
+@XmlRootElement(name="foobar")
+public interface FooBarBean {
+    @XmlElement(name="foo")
+    public void setFoo(List<DataBean> foos);
+    public List<DataBean> getFoo();
+    
+    @XmlElement(name="bar")
+    public void setBar(List<DataBean> bars);
+    public List<DataBean> getBar();
 
 }

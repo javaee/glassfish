@@ -61,6 +61,6 @@ public interface UnorderedRootBean {
     public List<ABean> getA();
     
     @XmlElement(name="B")
-    public List<BBean> getB();
+    public BBean[] getB();
 
 }
