@@ -44,11 +44,11 @@ import com.sun.ejte.ccl.reporter.*;
 import org.glassfish.grizzly.test.http2.*;
 
 /**
- * Unit test for ServletContext.setJspFile
+ * Unit test for ServletContext.addJspFile
  */
 public class WebTest {
 
-    private static final String TEST_NAME = "servlet-4.0-set-jsp-file";
+    private static final String TEST_NAME = "servlet-4.0-add-jsp-file";
 
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
@@ -64,7 +64,7 @@ public class WebTest {
     }
     
     public static void main(String[] args) {
-        stat.addDescription("Unit test for ServletContext.setJspFile");
+        stat.addDescription("Unit test for ServletContext.addJspFile");
         WebTest webTest = new WebTest(args);
         try {
             webTest.doTest();
