@@ -176,10 +176,6 @@ public class StandardContext
             mySecurityManager = AccessController.doPrivileged(
                     new PrivilegedCreateSecurityManager());
         }
-
-        //START PWC 6403328
-        this.logPrefix = logName() + " ServletContext.log():";
-        //END PWC 6403328
     }
 
     // ----------------------------------------------------- Instance Variables
@@ -377,13 +373,6 @@ public class StandardContext
      * The login configuration descriptor for this web application.
      */
     private LoginConfig loginConfig = null;
-
-    // START PWC 6403328
-    /**
-     * Log prefix string
-     */
-    private String logPrefix = null;
-    // END PWC 6403328
 
     /**
      * The mapper associated with this context.
@@ -7070,7 +7059,7 @@ public class StandardContext
             logger.log(context.logName() + message, Logger.INFORMATION);
             */
             //START PWC 6403328
-            logger.log(logPrefix + message, org.apache.catalina.Logger.INFORMATION);
+            logger.log(logName() + " ServletContext.log():" + message, org.apache.catalina.Logger.INFORMATION);
             //END PWC 6403328
         }
     }
