@@ -99,7 +99,6 @@ import org.glassfish.hk2.xml.internal.alt.MethodInformationI;
 import org.glassfish.hk2.xml.internal.alt.clazz.AnnotationAltAnnotationImpl;
 import org.glassfish.hk2.xml.internal.alt.clazz.ClassAltClassImpl;
 import org.glassfish.hk2.xml.jaxb.internal.XmlElementImpl;
-import org.glassfish.hk2.xml.jaxb.internal.XmlElementsImpl;
 import org.glassfish.hk2.xml.jaxb.internal.XmlRootElementImpl;
 import org.jvnet.hk2.annotations.Contract;
 
@@ -217,6 +216,7 @@ public class Generator {
         
         Set<String> setters = new LinkedHashSet<String>();
         Map<String, MethodInformationI> getters = new LinkedHashMap<String, MethodInformationI>();
+        Map<String, GhostXmlElementData> elementsMethods = new LinkedHashMap<String, GhostXmlElementData>();
         for (AltMethod wrapper : allMethods) {
             MethodInformationI mi = Utilities.getMethodInformation(wrapper, xmlNameMap);
             if (mi.isKey()) {
@@ -527,30 +527,15 @@ public class Generator {
                     
                     createAnnotationCopy(methodConstPool, anno, ctAnnotations);
                 }
-                else if ((childType != null) && XmlElements.class.getName().equals(convertMeAnnotation.annotationType())) {
+                else if (getterOrSetter && (childType != null) && XmlElements.class.getName().equals(convertMeAnnotation.annotationType())) {
+                    String representedProperty = mi.getRepresentedProperty();
                     
                     AltAnnotation elements[] = convertMeAnnotation.getAnnotationArrayValue("value");
                     if (elements == null) elements = new AltAnnotation[0];
                     
-                    int lcv = 0;
-                    XmlElement elementsValue[] = new XmlElement[elements.length];
-                    for (AltAnnotation element : elements) {
-                        AltClass elementType = (AltClass) element.getAnnotationValues().get("type");
-                        String elementTranslatedClassName = Utilities.getProxyNameFromInterfaceName(elementType.getName());
-                            
-                        elementsValue[lcv] = new XmlElementImpl(
-                            element.getStringValue("name"),
-                            element.getBooleanValue("nillable"),
-                            element.getBooleanValue("required"),
-                            element.getStringValue("namespace"),
-                            element.getStringValue("defaultValue"),
-                            elementTranslatedClassName);
-                        lcv++;
-                    }
+                    elementsMethods.put(representedProperty, new GhostXmlElementData(elements, mi.getGetterSetterType()));
                     
-                    XmlElementsImpl xei = new XmlElementsImpl(elementsValue);
-                    
-                    createAnnotationCopy(methodConstPool, xei, ctAnnotations);
+                    // Note the XmlElements is NOT copied to the proxy, the ghost methods will get the XmlElements
                 }
                 else {  
                     createAnnotationCopy(methodConstPool, convertMeAnnotation, ctAnnotations);
@@ -637,6 +622,63 @@ public class Generator {
             
             if (DEBUG_METHODS) {
                 Logger.getLogger().debug("Adding ghost setter method for " + convertMe.getSimpleName() + " with implementation " + sb);
+            }
+        }
+        
+        for (Map.Entry<String, GhostXmlElementData> entry : elementsMethods.entrySet()) {
+            String basePropName = entry.getKey();
+            GhostXmlElementData gxed = entry.getValue();
+            
+            AltAnnotation[] xmlElements = gxed.xmlElements;
+            
+            String baseSetSetterName = "set_" + basePropName;
+            String baseGetterName = "get_" + basePropName;
+            
+            for (AltAnnotation xmlElement : xmlElements) {
+                String elementName = xmlElement.getStringValue("name");
+                
+                String ghostMethodName = baseSetSetterName + "_" + elementName;
+                String ghostMethodGetName = baseGetterName + "_" + elementName;
+                
+                StringBuffer ghostBuffer = new StringBuffer("public void " + ghostMethodName + "(");
+                ghostBuffer.append(getCompilableClass(gxed.getterSetterType) +
+                        " arg0) { super._setProperty(\"" + basePropName + "\", \"" + elementName + "\", arg0); }");
+                
+                StringBuffer ghostBufferGetter = new StringBuffer("public " + getCompilableClass(gxed.getterSetterType) + " " + ghostMethodGetName +
+                        "() { return (" + getCompilableClass(gxed.getterSetterType) + ") super._getProperty(\"" + elementName + "\"); }");
+                
+                CtMethod elementsCtMethod = CtNewMethod.make(ghostBuffer.toString(), targetCtClass);
+                
+                if (DEBUG_METHODS) {
+                    Logger.getLogger().debug("Adding ghost elements method for " + convertMe.getSimpleName() + " with implementation " + ghostBuffer);
+                }
+                
+                MethodInfo elementsMethodInfo = elementsCtMethod.getMethodInfo();
+                ConstPool elementsMethodConstPool = elementsMethodInfo.getConstPool();
+                
+                AnnotationsAttribute aa = new AnnotationsAttribute(elementsMethodConstPool, AnnotationsAttribute.visibleTag);
+                    
+                XmlElement xElement = new XmlElementImpl(
+                    elementName,
+                    xmlElement.getBooleanValue("nillable"),
+                    xmlElement.getBooleanValue("required"),
+                    xmlElement.getStringValue("namespace"),
+                    xmlElement.getStringValue("defaultValue"),
+                    XmlElement.DEFAULT.class);
+                
+                createAnnotationCopy(elementsMethodConstPool, xElement, aa);
+                
+                elementsMethodInfo.addAttribute(aa);
+                
+                targetCtClass.addMethod(elementsCtMethod);
+                
+                CtMethod elementsCtMethodGetter = CtNewMethod.make(ghostBufferGetter.toString(), targetCtClass);
+                
+                if (DEBUG_METHODS) {
+                    Logger.getLogger().debug("Adding ghost elements getter method for " + convertMe.getSimpleName() + " with implementation " + ghostBufferGetter);
+                }
+                
+                targetCtClass.addMethod(elementsCtMethodGetter);
             }
         }
         
@@ -1252,6 +1294,16 @@ public class Generator {
             return PluralOf.USE_NORMAL_PLURAL_PATTERN;
         }
         
+    }
+    
+    private static class GhostXmlElementData {
+        private final AltAnnotation xmlElements[];
+        private final AltClass getterSetterType;
+        
+        private GhostXmlElementData(AltAnnotation xmlElements[], AltClass getterSetterType) {
+            this.xmlElements = xmlElements;
+            this.getterSetterType = getterSetterType;
+        }
     }
 
 }

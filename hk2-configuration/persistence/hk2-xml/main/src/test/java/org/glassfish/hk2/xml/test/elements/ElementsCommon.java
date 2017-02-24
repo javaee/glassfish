@@ -92,6 +92,8 @@ public class ElementsCommon {
         URL url = cl.getResource(ONE_OF_EACH);
         URI uri = url.toURI();
         
+        
+        
         XmlRootHandle<BasicElementalBean> handle = xmlService.unmarshal(uri, BasicElementalBean.class, true, true);
         BasicElementalBean root = handle.getRoot();
         Assert.assertNotNull(root);

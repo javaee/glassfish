@@ -188,6 +188,10 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         _setProperty(propName, propValue, true);
     }
     
+    public void _setProperty(String propName, String aliasName, Object propValue) {
+        throw new AssertionError("not yet implemented propName=" + propName + " aliasName=" + aliasName + " propValue=" + propValue);
+    }
+    
     public void _setProperty(String propName, Object propValue, boolean changeInHub) {
         _setProperty(propName, propValue, changeInHub, false);
     }
