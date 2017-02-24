@@ -70,6 +70,7 @@ public class ElementsCommon {
     private final static String BENDER_WIND = "Ang";
     private final static String BENDER_WATER = "Kitara";
     private final static String BENDER_FIRE = "Zuko";
+    private final static String BENDER_NONE = "CabbageVendor";
     
     private final static String ONE_OF_EACH = "elemental/oneofeach.xml";
     
@@ -77,11 +78,13 @@ public class ElementsCommon {
     private final static String WIND_TYPE = "/basic-elements/wind";
     private final static String WATER_TYPE = "/basic-elements/water";
     private final static String FIRE_TYPE = "/basic-elements/fire";
+    private final static String NONE_TYPE = "/basic-elements/none";
     
     private final static String EARTH_INSTANCE = "basic-elements.Toph";
     private final static String WIND_INSTANCE = "basic-elements.Ang";
     private final static String WATER_INSTANCE = "basic-elements.Kitara";
     private final static String FIRE_INSTANCE = "basic-elements.Zuko";
+    private final static String NONE_INSTANCE = "basic-elements.CabbageVendor";
     
     public static void testReadOneOfEachElement(ServiceLocator locator, ClassLoader cl) throws Exception {
         XmlService xmlService = locator.getService(XmlService.class);
@@ -94,27 +97,31 @@ public class ElementsCommon {
         Assert.assertNotNull(root);
         
         List<ElementalBean> elementals = root.getEarthWindAndFire();
-        Assert.assertEquals("elements found =" + elementals, 4, elementals.size());
+        Assert.assertEquals("elements found =" + elementals, 5, elementals.size());
         
         EarthBean earth = (EarthBean) elementals.get(0);
         WindBean wind = (WindBean) elementals.get(1);
         WaterBean water = (WaterBean) elementals.get(2);
         FireBean fire = (FireBean) elementals.get(3);
+        ElementalBean none = (ElementalBean) elementals.get(4);
         
         Assert.assertEquals(BENDER_EARTH, earth.getName());
         Assert.assertEquals(BENDER_WIND, wind.getName());
         Assert.assertEquals(BENDER_WATER, water.getName());
         Assert.assertEquals(BENDER_FIRE, fire.getName());
+        Assert.assertEquals(BENDER_NONE, none.getName());
         
         Assert.assertEquals(ElementType.EARTH, earth.getType());
         Assert.assertEquals(ElementType.WIND, wind.getType());
         Assert.assertEquals(ElementType.WATER, water.getType());
         Assert.assertEquals(ElementType.FIRE, fire.getType());
+        Assert.assertEquals(ElementType.NONE, none.getType());
         
         Assert.assertEquals(EARTH_TYPE, ((XmlHk2ConfigurationBean) earth)._getXmlPath());
         Assert.assertEquals(WIND_TYPE, ((XmlHk2ConfigurationBean) wind)._getXmlPath());
         Assert.assertEquals(WATER_TYPE, ((XmlHk2ConfigurationBean) water)._getXmlPath());
         Assert.assertEquals(FIRE_TYPE, ((XmlHk2ConfigurationBean) fire)._getXmlPath());
+        Assert.assertEquals(NONE_TYPE, ((XmlHk2ConfigurationBean) none)._getXmlPath());
         
         Hub hub = locator.getService(Hub.class);
         
@@ -122,6 +129,9 @@ public class ElementsCommon {
         checkNamedInHub(hub, WIND_TYPE, WIND_INSTANCE, BENDER_WIND);
         checkNamedInHub(hub, WATER_TYPE, WATER_INSTANCE, BENDER_WATER);
         checkNamedInHub(hub, FIRE_TYPE, FIRE_INSTANCE, BENDER_FIRE);
+        checkNamedInHub(hub, NONE_TYPE, NONE_INSTANCE, BENDER_NONE);
+        
+        hub.getCurrentDatabase().dumpDatabase(System.out);
     }
     
     @SuppressWarnings("unchecked")

@@ -59,6 +59,9 @@ public interface BasicElementalBean {
         , @XmlElement(name="fire", type=FireBean.class)
         , @XmlElement(name="water", type=WaterBean.class)
         , @XmlElement(name="wind", type=WindBean.class)
+        , @XmlElement(name="none", type=ElementalBean.class)
+        , @XmlElement(name="special", type=ElementalBean.class)
+        , @XmlElement(name="sand", type=EarthBean.class)
     })
     public List<ElementalBean> getEarthWindAndFire();
 }

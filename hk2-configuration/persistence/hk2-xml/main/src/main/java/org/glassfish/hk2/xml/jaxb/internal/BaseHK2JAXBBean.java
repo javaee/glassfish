@@ -75,6 +75,7 @@ import org.glassfish.hk2.xml.internal.ChildDataModel;
 import org.glassfish.hk2.xml.internal.ChildType;
 import org.glassfish.hk2.xml.internal.DynamicChangeInfo;
 import org.glassfish.hk2.xml.internal.ModelImpl;
+import org.glassfish.hk2.xml.internal.ModelPropertyType;
 import org.glassfish.hk2.xml.internal.ParentedModel;
 import org.glassfish.hk2.xml.internal.Utilities;
 import org.glassfish.hk2.xml.internal.XmlDynamicChange;
@@ -475,12 +476,19 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
      * @return Value
      */
     public Object _getProperty(String propName) {
-        if (!_getModel().isChildProperty(propName)) {
-            return _getProperty(propName, _getModel().getNonChildType(propName));
-        }
+        ModelImpl model = _getModel();
+        ModelPropertyType mpt = model.getModelPropertyType(propName);
         
-        ParentedModel parent = _getModel().getChild(propName);
-        return _getProperty(propName, null, parent);
+        switch(mpt) {
+        case FLAT_PROPERTY:
+            return _getProperty(propName, model.getNonChildType(propName));
+        case TREE_ROOT:
+            ParentedModel parent = model.getChild(propName);
+            return _getProperty(parent.getChildXmlAlias(), null, parent);
+        case UNKNOWN:
+        default:
+            throw new AssertionError("Unknown, this is probably an alias! " + propName + " in " + this);
+        }
     }
     
     /**

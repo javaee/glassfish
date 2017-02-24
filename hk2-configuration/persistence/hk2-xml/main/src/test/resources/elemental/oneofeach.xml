@@ -43,5 +43,6 @@
 	<earth name="Toph"/>
     <wind name="Ang" />
     <water name="Kitara" />
-    <fire name="Zuko"/>  
+    <fire name="Zuko"/>
+    <none name="CabbageVendor" />
 </basic-elements>

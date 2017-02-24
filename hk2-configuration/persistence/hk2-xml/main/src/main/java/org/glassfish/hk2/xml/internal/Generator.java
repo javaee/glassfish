@@ -560,13 +560,12 @@ public class Generator {
             if (getterOrSetter) {
                 if (childType != null) {
                     if (!isReference) {
-                        
                         compiledModel.addChild(
-                            childType.getName(),
-                            mi.getRepresentedProperty(),
-                            mi.getRepresentedProperty(),
-                            getChildType(mi.isList(), mi.isArray()),
-                            mi.getDefaultValue());
+                                childType.getName(),
+                                mi.getRepresentedProperty(),
+                                mi.getRepresentedProperty(),
+                                getChildType(mi.isList(), mi.isArray()),
+                                mi.getDefaultValue());
                         List<XmlElementData> aliases = xmlNameMap.getAliases(mi.getRepresentedProperty());
                         if (aliases != null) {
                             for (XmlElementData alias : aliases) {

@@ -140,6 +140,6 @@ public class ParentedModel implements Serializable {
                 ",xmlTag=" + childXmlTag +
                 ",xmlAlias=" + childXmlAlias +
                 ",type=" + childType +
-                ",givenDefault" + givenDefault + ")";
+                ",givenDefault=" + Utilities.safeString(givenDefault) + ")";
     }
 }

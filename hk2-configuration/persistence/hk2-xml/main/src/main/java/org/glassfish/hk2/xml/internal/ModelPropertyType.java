@@ -37,36 +37,19 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test.elements.beans;
+package org.glassfish.hk2.xml.internal;
 
 /**
  * @author jwells
  *
  */
-public enum ElementType {
-    EARTH("EARTH"),
-    FIRE("FIRE"),
-    WATER("WATER"),
-    WIND("WIND"),
-    NONE("NONE"),
-    SPECIAL("SPECIAL");
+public enum ModelPropertyType {
+    /** The root of a child tree (list, array or direct) */
+    TREE_ROOT,
     
-    private final String value;
+    /** A property on the stanza itself (element or attribute) */
+    FLAT_PROPERTY,
     
-    ElementType(String v) {
-        value = v;
-    }
-
-    public String value() {
-        return value;
-    }
-    
-    public static ElementType fromValue(String v) {
-        for (ElementType c: ElementType.values()) {
-            if (c.value.equals(v)) {
-                return c;
-            }
-        }
-        throw new IllegalArgumentException(v);
-    }
+    /** Unknown property for the model, is likely an alias from XmlElements */
+    UNKNOWN
 }

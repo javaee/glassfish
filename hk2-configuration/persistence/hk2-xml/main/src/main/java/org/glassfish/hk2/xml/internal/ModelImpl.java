@@ -244,12 +244,12 @@ public class ModelImpl implements Model {
         }
     }
     
-    public boolean isChildProperty(String propName) {
+    public ModelPropertyType getModelPropertyType(String propName) {
         synchronized (lock) {
-            if (nonChildProperty.containsKey(propName)) return false;
-            if (childrenByName.containsKey(propName)) return true;
+            if (nonChildProperty.containsKey(propName)) return ModelPropertyType.FLAT_PROPERTY;
+            if (childrenByName.containsKey(propName)) return ModelPropertyType.TREE_ROOT;
             
-            throw new AssertionError("Unknwn property " + propName + " for " + this);
+            return ModelPropertyType.UNKNOWN;
         }
     }
     

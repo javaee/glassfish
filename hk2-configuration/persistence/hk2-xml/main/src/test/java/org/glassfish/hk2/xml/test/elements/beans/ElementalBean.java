@@ -51,7 +51,7 @@ public interface ElementalBean {
     @XmlAttribute @XmlID
     public String getName();
     
-    @XmlElement
+    @XmlElement(defaultValue="NONE")
     public ElementType getType();
 
 }

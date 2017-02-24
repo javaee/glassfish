@@ -94,8 +94,14 @@ public class Hk2JAXBUnmarshallerListener extends Unmarshaller.Listener {
             Object children = targetBean._getProperty(parentedNode.getChildXmlTag());
             if (children == null) continue;
             
+            String proxyName = Utilities.getProxyNameFromInterfaceName(parentedNode.getChildInterface());
+            
             if (children instanceof List) {
                 for (Object child : (List<Object>) children) {
+                    if (!child.getClass().getName().equals(proxyName)) {
+                        continue;
+                    }
+                    
                     BaseHK2JAXBBean childBean = (BaseHK2JAXBBean) child;
                     
                     childBean._setSelfXmlTag(parentedNode.getChildXmlTag());
