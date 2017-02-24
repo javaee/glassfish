@@ -33,6 +33,7 @@ cd $APS_HOME
 
 echo "AS_ADMIN_PASSWORD=" > temppwd
 cat $APS_HOME/temppwd
+(jps |grep Main |cut -f1 -d" " | xargs kill -9  > /dev/null 2>&1) || true
 $S1AS_HOME/bin/asadmin --user anonymous --passwordfile $APS_HOME/temppwd create-domain --adminport ${ADMIN_PORT} --domainproperties jms.port=${JMS_PORT}:domain.jmxPort=${JMX_PORT}:orb.listener.port=${ORB_PORT}:http.ssl.port=${SSL_PORT}:orb.ssl.port=${ORB_SSL_PORT}:orb.mutualauth.port=${ORB_SSL_MUTUALAUTH_PORT} --instanceport ${INSTANCE_PORT} domain1
 
 #Create 
