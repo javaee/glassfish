@@ -127,11 +127,23 @@ public class ElementsCommon {
         
         Hub hub = locator.getService(Hub.class);
         
-        checkNamedInHub(hub, EARTH_TYPE, EARTH_INSTANCE, BENDER_EARTH);
-        checkNamedInHub(hub, WIND_TYPE, WIND_INSTANCE, BENDER_WIND);
-        checkNamedInHub(hub, WATER_TYPE, WATER_INSTANCE, BENDER_WATER);
-        checkNamedInHub(hub, FIRE_TYPE, FIRE_INSTANCE, BENDER_FIRE);
-        checkNamedInHub(hub, NONE_TYPE, NONE_INSTANCE, BENDER_NONE);
+        checkService(locator, hub, EARTH_TYPE, EARTH_INSTANCE, BENDER_EARTH);
+        checkService(locator, hub, WIND_TYPE, WIND_INSTANCE, BENDER_WIND);
+        checkService(locator, hub, WATER_TYPE, WATER_INSTANCE, BENDER_WATER);
+        checkService(locator, hub, FIRE_TYPE, FIRE_INSTANCE, BENDER_FIRE);
+        checkService(locator, hub, NONE_TYPE, NONE_INSTANCE, BENDER_NONE);
+    }
+    
+    private static void checkService(ServiceLocator locator, Hub hub, String type, String instance, String name) {
+        checkInLocator(locator, name);
+        checkNamedInHub(hub, type, instance, name);
+    }
+    
+    private static void checkInLocator(ServiceLocator locator, String name) {
+        ElementalBean eb = (ElementalBean) locator.getService(ElementalBean.class, name);
+        Assert.assertNotNull(eb);
+        
+        Assert.assertEquals(name, eb.getName());
     }
     
     @SuppressWarnings("unchecked")
