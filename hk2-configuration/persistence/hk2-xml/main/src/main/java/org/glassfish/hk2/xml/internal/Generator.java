@@ -669,6 +669,9 @@ public class Generator {
                 ConstPool elementsMethodConstPool = elementsMethodInfo.getConstPool();
                 
                 AnnotationsAttribute aa = new AnnotationsAttribute(elementsMethodConstPool, AnnotationsAttribute.visibleTag);
+                
+                AltClass ac = (AltClass) xmlElement.getAnnotationValues().get("type");
+                String translatedClassName = Utilities.getProxyNameFromInterfaceName(ac.getName());
                     
                 XmlElement xElement = new XmlElementImpl(
                     elementName,
@@ -676,7 +679,7 @@ public class Generator {
                     xmlElement.getBooleanValue("required"),
                     xmlElement.getStringValue("namespace"),
                     xmlElement.getStringValue("defaultValue"),
-                    XmlElement.DEFAULT.class);
+                    translatedClassName);
                 
                 createAnnotationCopy(elementsMethodConstPool, xElement, aa);
                 
