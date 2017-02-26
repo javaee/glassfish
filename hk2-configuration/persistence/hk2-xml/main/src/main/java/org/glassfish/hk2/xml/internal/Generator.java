@@ -648,11 +648,11 @@ public class Generator {
                 String ghostMethodName = baseSetSetterName + "_" + elementName;
                 String ghostMethodGetName = baseGetterName + "_" + elementName;
                 
-                StringBuffer ghostBuffer = new StringBuffer("public void " + ghostMethodName + "(");
+                StringBuffer ghostBuffer = new StringBuffer("private void " + ghostMethodName + "(");
                 ghostBuffer.append(getCompilableClass(gxed.getterSetterType) +
                         " arg0) { super._setProperty(\"" + elementName + "\", arg0); }");
                 
-                StringBuffer ghostBufferGetter = new StringBuffer("public " + getCompilableClass(gxed.getterSetterType) + " " + ghostMethodGetName +
+                StringBuffer ghostBufferGetter = new StringBuffer("private " + getCompilableClass(gxed.getterSetterType) + " " + ghostMethodGetName +
                         "() { return (" + getCompilableClass(gxed.getterSetterType) + ") super._getProperty(\"" + elementName + "\"); }");
                 
                 CtMethod elementsCtMethod = CtNewMethod.make(ghostBuffer.toString(), targetCtClass);
@@ -661,7 +661,11 @@ public class Generator {
                     Logger.getLogger().debug("Adding ghost elements method for " + convertMe.getSimpleName() + " with implementation " + ghostBuffer);
                 }
                 
-                MethodInfo elementsMethodInfo = elementsCtMethod.getMethodInfo();
+                targetCtClass.addMethod(elementsCtMethod);
+                
+                CtMethod elementsCtMethodGetter = CtNewMethod.make(ghostBufferGetter.toString(), targetCtClass);
+                
+                MethodInfo elementsMethodInfo = elementsCtMethodGetter.getMethodInfo();
                 ConstPool elementsMethodConstPool = elementsMethodInfo.getConstPool();
                 
                 AnnotationsAttribute aa = new AnnotationsAttribute(elementsMethodConstPool, AnnotationsAttribute.visibleTag);
@@ -677,10 +681,6 @@ public class Generator {
                 createAnnotationCopy(elementsMethodConstPool, xElement, aa);
                 
                 elementsMethodInfo.addAttribute(aa);
-                
-                targetCtClass.addMethod(elementsCtMethod);
-                
-                CtMethod elementsCtMethodGetter = CtNewMethod.make(ghostBufferGetter.toString(), targetCtClass);
                 
                 if (DEBUG_METHODS) {
                     Logger.getLogger().debug("Adding ghost elements getter method for " + convertMe.getSimpleName() + " with implementation " + ghostBufferGetter);
