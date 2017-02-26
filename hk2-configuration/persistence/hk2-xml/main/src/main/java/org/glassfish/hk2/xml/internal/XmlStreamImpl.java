@@ -232,8 +232,6 @@ public class XmlStreamImpl {
                 
                 ParentedModel informedChild = childProperties.get(elementTag);
                 if (informedChild != null) {
-                    String trueElementTag = (informedChild.getChildXmlAlias() == null) ? elementTag : informedChild.getChildXmlAlias() ;
-                    
                     ModelImpl grandChild = informedChild.getChildModel();
                     
                     BaseHK2JAXBBean hk2Root = Utilities.createBean(grandChild.getProxyAsClass());
@@ -245,21 +243,21 @@ public class XmlStreamImpl {
                     handleElement(hk2Root, target, reader, classReflectionHelper, listener, referenceMap, unresolved, elementTag, effectiveNamespaceMap);
                     
                     if (informedChild.getChildType().equals(ChildType.DIRECT)) {
-                        target._setProperty(trueElementTag, hk2Root);
+                        target._setProperty(elementTag, hk2Root);
                     }
                     else if (informedChild.getChildType().equals(ChildType.LIST)) {
-                        List<BaseHK2JAXBBean> cList = listChildren.get(trueElementTag);
+                        List<BaseHK2JAXBBean> cList = listChildren.get(elementTag);
                         if (cList == null) {
                             cList = new ArrayList<BaseHK2JAXBBean>();
-                            listChildren.put(trueElementTag, cList);
+                            listChildren.put(elementTag, cList);
                         }
                         cList.add(hk2Root);
                     }
                     else if (informedChild.getChildType().equals(ChildType.ARRAY)) {
-                        List<BaseHK2JAXBBean> cList = arrayChildren.get(trueElementTag);
+                        List<BaseHK2JAXBBean> cList = arrayChildren.get(elementTag);
                         if (cList == null) {
                             cList = new LinkedList<BaseHK2JAXBBean>();
-                            arrayChildren.put(trueElementTag, cList);
+                            arrayChildren.put(elementTag, cList);
                         }
                         cList.add(hk2Root);
                     }
@@ -299,7 +297,6 @@ public class XmlStreamImpl {
                     }
                     
                     target._setProperty(childTag, actualArray);
-                    
                 }
                 
                 listener.afterUnmarshal(target, parent);
@@ -531,5 +528,4 @@ public class XmlStreamImpl {
     }
     
     
-
 }

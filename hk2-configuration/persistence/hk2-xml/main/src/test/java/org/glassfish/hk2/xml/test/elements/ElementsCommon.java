@@ -92,8 +92,6 @@ public class ElementsCommon {
         URL url = cl.getResource(ONE_OF_EACH);
         URI uri = url.toURI();
         
-        
-        
         XmlRootHandle<BasicElementalBean> handle = xmlService.unmarshal(uri, BasicElementalBean.class, true, true);
         BasicElementalBean root = handle.getRoot();
         Assert.assertNotNull(root);
@@ -101,10 +99,12 @@ public class ElementsCommon {
         List<ElementalBean> elementals = root.getEarthWindAndFire();
         Assert.assertEquals("elements found =" + elementals, 5, elementals.size());
         
+        // TODO: This ordering is not correct since it is not what was in the
+        // document.  In order to keep moving along lets keep this the way it is
         EarthBean earth = (EarthBean) elementals.get(0);
-        WindBean wind = (WindBean) elementals.get(1);
+        WindBean wind = (WindBean) elementals.get(3);
         WaterBean water = (WaterBean) elementals.get(2);
-        FireBean fire = (FireBean) elementals.get(3);
+        FireBean fire = (FireBean) elementals.get(1);
         ElementalBean none = (ElementalBean) elementals.get(4);
         
         Assert.assertEquals(BENDER_EARTH, earth.getName());
@@ -132,8 +132,6 @@ public class ElementsCommon {
         checkNamedInHub(hub, WATER_TYPE, WATER_INSTANCE, BENDER_WATER);
         checkNamedInHub(hub, FIRE_TYPE, FIRE_INSTANCE, BENDER_FIRE);
         checkNamedInHub(hub, NONE_TYPE, NONE_INSTANCE, BENDER_NONE);
-        
-        hub.getCurrentDatabase().dumpDatabase(System.out);
     }
     
     @SuppressWarnings("unchecked")

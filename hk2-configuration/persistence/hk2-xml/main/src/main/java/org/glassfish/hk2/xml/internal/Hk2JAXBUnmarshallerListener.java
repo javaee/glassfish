@@ -91,7 +91,23 @@ public class Hk2JAXBUnmarshallerListener extends Unmarshaller.Listener {
         ModelImpl model = targetBean._getModel();
         
         for (ParentedModel parentedNode : model.getAllChildren()) {
-            Object children = targetBean._getProperty(parentedNode.getChildXmlTag());
+            String childXmlTag = parentedNode.getChildXmlTag();
+            
+            Object children;
+            switch (parentedNode.getAliasType()) {
+            case NORMAL:
+                children = targetBean._getProperty(childXmlTag);
+                break;
+            case IS_ALIAS:
+                children = targetBean._getProperty(childXmlTag);
+                targetBean.__fixAlias(childXmlTag, parentedNode.getChildXmlAlias());
+                
+                break;
+            case HAS_ALIASES:
+            default:
+                children = null;
+            }
+            
             if (children == null) continue;
             
             String proxyName = Utilities.getProxyNameFromInterfaceName(parentedNode.getChildInterface());

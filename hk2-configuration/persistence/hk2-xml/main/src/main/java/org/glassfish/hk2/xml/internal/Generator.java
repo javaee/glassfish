@@ -545,19 +545,27 @@ public class Generator {
             if (getterOrSetter) {
                 if (childType != null) {
                     if (!isReference) {
+                        List<XmlElementData> aliases = xmlNameMap.getAliases(mi.getRepresentedProperty());
+                        AliasType aType = (aliases == null) ? AliasType.NORMAL : AliasType.HAS_ALIASES ;
                         compiledModel.addChild(
                                 childType.getName(),
                                 mi.getRepresentedProperty(),
                                 mi.getRepresentedProperty(),
                                 getChildType(mi.isList(), mi.isArray()),
-                                mi.getDefaultValue());
-                        List<XmlElementData> aliases = xmlNameMap.getAliases(mi.getRepresentedProperty());
+                                mi.getDefaultValue(),
+                                aType);
+                        
                         if (aliases != null) {
                             for (XmlElementData alias : aliases) {
                                 String aliasType = alias.getType();
                                 if (aliasType == null) aliasType = childType.getName();
                                 
-                                compiledModel.addChild(aliasType, alias.getName(), alias.getAlias(), getChildType(mi.isList(), mi.isArray()), alias.getDefaultValue());
+                                compiledModel.addChild(aliasType,
+                                        alias.getName(),
+                                        alias.getAlias(),
+                                        getChildType(mi.isList(), mi.isArray()),
+                                        alias.getDefaultValue(),
+                                        AliasType.IS_ALIAS);
                             }
                         }
                     }
@@ -642,7 +650,7 @@ public class Generator {
                 
                 StringBuffer ghostBuffer = new StringBuffer("public void " + ghostMethodName + "(");
                 ghostBuffer.append(getCompilableClass(gxed.getterSetterType) +
-                        " arg0) { super._setProperty(\"" + basePropName + "\", \"" + elementName + "\", arg0); }");
+                        " arg0) { super._setProperty(\"" + elementName + "\", arg0); }");
                 
                 StringBuffer ghostBufferGetter = new StringBuffer("public " + getCompilableClass(gxed.getterSetterType) + " " + ghostMethodGetName +
                         "() { return (" + getCompilableClass(gxed.getterSetterType) + ") super._getProperty(\"" + elementName + "\"); }");
@@ -726,7 +734,8 @@ public class Generator {
                         asParameter(parentedModel.getChildXmlTag()) + "," +
                         asParameter(parentedModel.getChildXmlAlias()) + "," +
                         asParameter(parentedModel.getChildType()) + "," +
-                        asParameter(parentedModel.getGivenDefault()) + ");\n");
+                        asParameter(parentedModel.getGivenDefault()) + "," +
+                        asParameter(parentedModel.getAliasType()) + ");\n");
             }
             else {
                 ChildDataModel childDataModel = descriptor.getChildDataModel();
@@ -789,6 +798,19 @@ public class Generator {
             return ChildType.class.getName() + ".LIST";
         case ARRAY:
             return ChildType.class.getName() + ".ARRAY";
+        default:
+            throw new AssertionError("unknown ChildType " + ct);
+        }
+    }
+    
+    private static String asParameter(AliasType ct) {
+        switch(ct) {
+        case NORMAL:
+            return AliasType.class.getName() + ".NORMAL";
+        case HAS_ALIASES:
+            return AliasType.class.getName() + ".HAS_ALIASES";
+        case IS_ALIAS:
+            return AliasType.class.getName() + ".IS_ALIAS";
         default:
             throw new AssertionError("unknown ChildType " + ct);
         }

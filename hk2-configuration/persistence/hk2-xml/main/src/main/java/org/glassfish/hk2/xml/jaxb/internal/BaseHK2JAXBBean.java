@@ -188,10 +188,6 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
         _setProperty(propName, propValue, true);
     }
     
-    public void _setProperty(String propName, String aliasName, Object propValue) {
-        throw new AssertionError("not yet implemented propName=" + propName + " aliasName=" + aliasName + " propValue=" + propValue);
-    }
-    
     public void _setProperty(String propName, Object propValue, boolean changeInHub) {
         _setProperty(propName, propValue, changeInHub, false);
     }
@@ -488,10 +484,10 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
             return _getProperty(propName, model.getNonChildType(propName));
         case TREE_ROOT:
             ParentedModel parent = model.getChild(propName);
-            return _getProperty(parent.getChildXmlAlias(), null, parent);
+            return _getProperty(parent.getChildXmlTag(), null, parent);
         case UNKNOWN:
         default:
-            throw new AssertionError("Unknown, this is probably an alias! " + propName + " in " + this);
+            throw new AssertionError("Unknown type " + mpt + " for " + propName + " in " + this);
         }
     }
     
@@ -1270,6 +1266,32 @@ public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serial
     
     public int __getAddCost() {
         return addCost;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public void __fixAlias(String propName, String baseName) {
+        Object propNameValueRaw = beanLikeMap.get(propName);
+        if (propNameValueRaw == null) return;
+        if (!(propNameValueRaw instanceof List)) {
+            throw new AssertionError("Aliasing with XmlElements only works with List type.  Found " + propNameValueRaw);
+        }
+        
+        List<Object> propNameValue = (List<Object>) propNameValueRaw;
+        if (propNameValue.isEmpty()) return;
+        
+        Object baseNamePropertyRaw = beanLikeMap.get(baseName);
+        if (baseNamePropertyRaw == null) {
+            baseNamePropertyRaw = new ArrayList<Object>(propNameValue.size());
+            beanLikeMap.put(baseName, baseNamePropertyRaw);
+        }
+        
+        if (!(baseNamePropertyRaw instanceof List)) {
+            throw new AssertionError("Aliasing with XmlElements only works with List type.  Found " + baseNamePropertyRaw);
+        }
+        
+        List<Object> baseNameProperty = (List<Object>) baseNamePropertyRaw;
+        
+        baseNameProperty.addAll(propNameValue);
     }
     
     @Override

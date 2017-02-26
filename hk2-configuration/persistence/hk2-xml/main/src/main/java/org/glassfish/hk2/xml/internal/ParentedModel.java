@@ -64,6 +64,7 @@ public class ParentedModel implements Serializable {
     private String childXmlAlias;
     private ChildType childType;
     private String givenDefault;
+    private AliasType aliased;
     
     /** Set at runtime */
     private ClassLoader myLoader;
@@ -75,12 +76,13 @@ public class ParentedModel implements Serializable {
     public ParentedModel() {
     }
     
-    public ParentedModel(String childInterface, String childXmlTag, String childXmlAlias, ChildType childType, String givenDefault) {
+    public ParentedModel(String childInterface, String childXmlTag, String childXmlAlias, ChildType childType, String givenDefault, AliasType aliased) {
         this.childInterface = childInterface;
         this.childXmlTag = childXmlTag;
         this.childXmlAlias = childXmlAlias;
         this.childType = childType;
         this.givenDefault = givenDefault;
+        this.aliased = aliased;
     }
     
     public String getChildInterface() {
@@ -134,12 +136,18 @@ public class ParentedModel implements Serializable {
         }
     }
     
+    public AliasType getAliasType() {
+        return aliased;
+    }
+    
     @Override
     public String toString() {
         return "ParentedModel(interface=" + childInterface +
                 ",xmlTag=" + childXmlTag +
                 ",xmlAlias=" + childXmlAlias +
                 ",type=" + childType +
-                ",givenDefault=" + Utilities.safeString(givenDefault) + ")";
+                ",givenDefault=" + 
+                ",aliased=" + aliased +
+                Utilities.safeString(givenDefault) + ")";
     }
 }

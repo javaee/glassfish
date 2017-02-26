@@ -37,41 +37,21 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test.elements;
-
-import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.xml.test.utilities.Utilities;
-import org.junit.Test;
+package org.glassfish.hk2.xml.internal;
 
 /**
+ * They type of alias the child represents
+ * 
  * @author jwells
  *
  */
-public class ElementsTest {
-    /**
-     * The document has one of each type of Element
-     * using streaming service
-     * @throws Exception
-     */
-    @Test
-    // @org.junit.Ignore
-    public void testXmlElementsDom() throws Exception {
-        ServiceLocator domLocator = Utilities.createDomLocator();
-        
-        ElementsCommon.testReadOneOfEachElement(domLocator, getClass().getClassLoader());
-    }
+public enum AliasType {
+    /** A normal child, no aliasing */
+    NORMAL,
     
-    /**
-     * The document has one of each type of Element
-     * using jaxb service
-     * @throws Exception
-     */
-    @Test
-    @org.junit.Ignore
-    public void testXmlElementsJaxb() throws Exception {
-        ServiceLocator domLocator = Utilities.createLocator();
-        
-        ElementsCommon.testReadOneOfEachElement(domLocator, getClass().getClassLoader());
-    }
-
+    /** This child has aliases */
+    HAS_ALIASES,
+    
+    /** This is an alias */
+    IS_ALIAS
 }
