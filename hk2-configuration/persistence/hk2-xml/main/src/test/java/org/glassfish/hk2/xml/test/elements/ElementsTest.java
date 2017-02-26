@@ -73,5 +73,31 @@ public class ElementsTest {
         
         ElementsCommon.testReadOneOfEachElement(domLocator, getClass().getClassLoader());
     }
+    
+    /**
+     * The document has one of each type of Element
+     * using streaming service
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testXmlElementsMarshallDom() throws Exception {
+        ServiceLocator domLocator = Utilities.createDomLocator();
+        
+        ElementsCommon.testMarshal(domLocator, getClass().getClassLoader());
+    }
+    
+    /**
+     * The document has one of each type of Element
+     * using streaming service
+     * @throws Exception
+     */
+    @Test
+    // @org.junit.Ignore
+    public void testXmlElementsMarshallJaxb() throws Exception {
+        ServiceLocator domLocator = Utilities.createLocator();
+        
+        ElementsCommon.testMarshal(domLocator, getClass().getClassLoader());
+    }
 
 }

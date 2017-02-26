@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.xml.test.elements;
 
+import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.List;
@@ -62,6 +63,9 @@ import org.glassfish.hk2.xml.test.elements.beans.WindBean;
 import org.junit.Assert;
 
 /**
+ * Information on these names can be found here:
+ * http://avatar.wikia.com/wiki/
+ * 
  * @author jwells
  *
  */
@@ -72,7 +76,29 @@ public class ElementsCommon {
     private final static String BENDER_FIRE = "Zuko";
     private final static String BENDER_NONE = "CabbageVendor";
     
+    private final static String SPECIAL1 = "Sparky Sparky Boom Boom";
+    private final static String FIRE_OZAI = "Ozai";
+    private final static String NONE_SOKKA = "Sokka";
+    private final static String BENDER_SAND = "Ghashiun";
+    private final static String SPECIAL_MOMO = "Momo";
+    private final static String SPECIAL_APPA = "Appa";
+    
+    private final static String[] ALL_NAMES = {
+        BENDER_EARTH
+        , BENDER_WIND
+        , BENDER_WATER
+        , BENDER_FIRE
+        , BENDER_NONE
+        , SPECIAL1
+        , FIRE_OZAI
+        , NONE_SOKKA
+        , BENDER_SAND
+        , SPECIAL_MOMO
+        , SPECIAL_APPA
+    };
+    
     private final static String ONE_OF_EACH = "elemental/oneofeach.xml";
+    private final static String BENCHMARK = "elemental/benchmark.xml";
     
     private final static String EARTH_TYPE = "/basic-elements/earth";
     private final static String WIND_TYPE = "/basic-elements/wind";
@@ -132,6 +158,34 @@ public class ElementsCommon {
         checkService(locator, hub, WATER_TYPE, WATER_INSTANCE, BENDER_WATER);
         checkService(locator, hub, FIRE_TYPE, FIRE_INSTANCE, BENDER_FIRE);
         checkService(locator, hub, NONE_TYPE, NONE_INSTANCE, BENDER_NONE);
+    }
+    
+    public static void testMarshal(ServiceLocator locator, ClassLoader cl) throws Exception {
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = cl.getResource(BENCHMARK);
+        URI uri = url.toURI();
+        
+        XmlRootHandle<BasicElementalBean> handle = xmlService.unmarshal(uri, BasicElementalBean.class, true, true);
+        BasicElementalBean root = handle.getRoot();
+        Assert.assertNotNull(root);
+        
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try {
+            handle.marshal(baos);
+        }
+        finally {
+            baos.close();
+        }
+        
+        String asString = baos.toString();
+        
+        for (String name : ALL_NAMES) {
+            Assert.assertTrue(asString.contains(name));
+        }
+        
+        // This would be the name of the alias parent
+        Assert.assertFalse(asString.contains("earthWindAndFire"));
     }
     
     private static void checkService(ServiceLocator locator, Hub hub, String type, String instance, String name) {
