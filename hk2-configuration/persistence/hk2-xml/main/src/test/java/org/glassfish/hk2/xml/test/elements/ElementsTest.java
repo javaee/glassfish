@@ -99,5 +99,31 @@ public class ElementsTest {
         
         ElementsCommon.testMarshal(domLocator, getClass().getClassLoader());
     }
+    
+    /**
+     * The document has one of each type of Element
+     * using streaming service
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testXmlElementsScalarDom() throws Exception {
+        ServiceLocator domLocator = Utilities.createDomLocator();
+        
+        ElementsCommon.testScalarElements(domLocator, getClass().getClassLoader());
+    }
+    
+    /**
+     * The document has one of each type of Element
+     * using streaming service
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testXmlElementsScalarJaxb() throws Exception {
+        ServiceLocator domLocator = Utilities.createLocator();
+        
+        ElementsCommon.testScalarElements(domLocator, getClass().getClassLoader());
+    }
 
 }

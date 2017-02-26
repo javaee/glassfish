@@ -58,6 +58,7 @@ import org.glassfish.hk2.xml.test.elements.beans.EarthBean;
 import org.glassfish.hk2.xml.test.elements.beans.ElementType;
 import org.glassfish.hk2.xml.test.elements.beans.ElementalBean;
 import org.glassfish.hk2.xml.test.elements.beans.FireBean;
+import org.glassfish.hk2.xml.test.elements.beans.ScalarRootBean;
 import org.glassfish.hk2.xml.test.elements.beans.WaterBean;
 import org.glassfish.hk2.xml.test.elements.beans.WindBean;
 import org.junit.Assert;
@@ -99,6 +100,7 @@ public class ElementsCommon {
     
     private final static String ONE_OF_EACH = "elemental/oneofeach.xml";
     private final static String BENCHMARK = "elemental/benchmark.xml";
+    private final static String SCALAR1 = "elemental/scalar1.xml";
     
     private final static String EARTH_TYPE = "/basic-elements/earth";
     private final static String WIND_TYPE = "/basic-elements/wind";
@@ -186,6 +188,29 @@ public class ElementsCommon {
         
         // This would be the name of the alias parent
         Assert.assertFalse(asString.contains("earthWindAndFire"));
+    }
+    
+    public static void testScalarElements(ServiceLocator locator, ClassLoader cl) throws Exception {
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        URL url = cl.getResource(SCALAR1);
+        URI uri = url.toURI();
+        
+        XmlRootHandle<ScalarRootBean> handle = xmlService.unmarshal(uri, ScalarRootBean.class, true, true);
+        ScalarRootBean root = handle.getRoot();
+        Assert.assertNotNull(root);
+        
+        List<Integer> numbers = root.getNumbers();
+        Assert.assertEquals(3, numbers.size());
+        
+        Assert.assertEquals(12, numbers.get(0).intValue());
+        Assert.assertEquals(13, numbers.get(1).intValue());
+        Assert.assertEquals(14, numbers.get(2).intValue());
+        
+        List<Long> times = root.getTimes();
+        Assert.assertEquals(2, times.size());
+        Assert.assertEquals(10000000L, times.get(0).longValue());
+        Assert.assertEquals(20000000L, times.get(1).longValue());
     }
     
     private static void checkService(ServiceLocator locator, Hub hub, String type, String instance, String name) {
