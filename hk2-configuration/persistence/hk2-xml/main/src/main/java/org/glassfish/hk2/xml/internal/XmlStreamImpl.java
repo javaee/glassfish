@@ -478,6 +478,10 @@ public class XmlStreamImpl {
             
             ParentedModel parentedChild = descriptor.getParentedModel();
             if (parentedChild != null) {
+                if (AliasType.HAS_ALIASES.equals(parentedChild.getAliasType())) {
+                    continue;
+                }
+                
                 if (ChildType.LIST.equals(parentedChild.getChildType())) {
                     List<XmlHk2ConfigurationBean> asList = (List<XmlHk2ConfigurationBean>) value;
                     if (asList.isEmpty()) continue;
