@@ -140,7 +140,7 @@
 
     <target name="cli" depends="setup, monitoring, zombie, ports, instance, cluster,
                         configs, sync, domain, backup, tokens, validation, node,
-                        load-balancer, getset, misc-commands, all-jms, manual-sync, upgrade,
+                        logging-command,load-balancer, getset, misc-commands, all-jms, manual-sync, upgrade,
                         restart-domain, config-modularity, teardown"/>
 
     <target name="cluster" depends="init">
