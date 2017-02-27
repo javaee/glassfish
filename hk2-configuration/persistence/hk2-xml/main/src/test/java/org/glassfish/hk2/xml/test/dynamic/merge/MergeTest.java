@@ -115,7 +115,7 @@ public class MergeTest {
     private final static String ALICE_ADDRESS = "10.0.0.1";
     private final static String ALICE_SERVER0_NAME = "Server-0";
     private final static int ALICE_SERVER0_PORT = 12345;
-    private final static String DEFAULT_SUBNET = "0.0.0.255";
+    public final static String DEFAULT_SUBNET = "0.0.0.255";
     public final static String SERVER1_NAME = "Server-1";
     
     public final static String DOMAIN_TYPE = "/domain";

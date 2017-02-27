@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.xml.test.dynamic.transaction;
 
+import java.io.ByteArrayOutputStream;
 import java.net.URL;
 import java.util.Map;
 
@@ -252,6 +253,61 @@ public class TransactionTest {
         
         // Make sure nothing actually happened
         MergeTest.verifyDomain1Xml(rootHandle, hub, locator);
+    }
+    
+    /**
+     * Adds beans, removes beans and modifies the properties of
+     * a few beans, ensures none of them get done
+     * 
+     * @throws Exception
+     */
+    @Test 
+    // @org.junit.Ignore
+    public void testMarshalInsideATransaction() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        XmlService xmlService = locator.getService(XmlService.class);
+        Hub hub = locator.getService(Hub.class);
+        
+        URL url = getClass().getClassLoader().getResource(MergeTest.DOMAIN1_FILE);
+        
+        XmlRootHandle<DomainBean> rootHandle = xmlService.unmarshal(url.toURI(), DomainBean.class);
+        
+        MergeTest.verifyDomain1Xml(rootHandle, hub, locator);
+        
+        DomainBean domain = rootHandle.getRoot();
+        
+        XmlHandleTransaction<DomainBean> transaction = rootHandle.lockForTransaction();
+        boolean success = false;
+        try {
+            addRemoveAndModify(xmlService, domain);
+            
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            try {
+                rootHandle.marshal(baos);
+            }
+            finally {
+                baos.close();
+            }
+            
+            String asString = baos.toString();
+            
+            // Make sure the updated tree is written to the output stream
+            Assert.assertFalse(asString.contains(MergeTest.DAVE_NAME));
+            Assert.assertTrue(asString.contains(MergeTest.EDDIE_NAME));
+            Assert.assertTrue(asString.contains(MergeTest.SERVER1_NAME));
+            Assert.assertFalse(asString.contains(MergeTest.DEFAULT_SUBNET));
+            Assert.assertTrue(asString.contains(ALT_SUBNET));
+            
+            success = true;
+        }
+        finally {
+            if (success) {
+                transaction.commit();
+            }
+            else {
+                transaction.abandon();
+            }
+        }
     }
     
     /**
