@@ -42,6 +42,7 @@ package org.glassfish.hk2.xml.test.elements.beans;
 import java.util.List;
 
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.jvnet.hk2.annotations.Contract;
@@ -71,5 +72,18 @@ public interface ScalarRootBean {
     public List<String> getStrings();
     @XmlElement(name="string")
     public void setStrings(List<String> strings);
+    
+    @XmlElements ({
+        @XmlElement(name="e-integer", type=Integer.class)
+        , @XmlElement(name="e-long", type=Long.class)
+        , @XmlElement(name="e-boolean", type=Boolean.class)
+        , @XmlElement(name="e-short", type=Short.class)
+        , @XmlElement(name="e-character", type=Character.class)
+        , @XmlElement(name="e-float", type=Float.class)
+        , @XmlElement(name="e-double", type=Double.class)
+        , @XmlElement(name="e-string", type=String.class)
+        // , @XmlElement(name="e-earth", type=EarthBean.class)
+    })
+    List<Object> getTypesTypesAndMoreTypes();
 
 }
