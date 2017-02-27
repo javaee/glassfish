@@ -71,22 +71,29 @@ public class ChildDataModel implements Serializable {
     private String defaultAsString;
     private boolean isReference;
     private boolean isElement;
+    private String childListType;
     
     private ClassLoader myLoader;
     private Class<?> childTypeAsClass;
+    private Class<?> childListTypeAsClass;
     
     public ChildDataModel() {
     }
     
-    public ChildDataModel(String childType, String defaultAsString, boolean isReference, boolean isElement) {
+    public ChildDataModel(String childType, String childListType, String defaultAsString, boolean isReference, boolean isElement) {
         this.childType = childType;
         this.defaultAsString = defaultAsString;
         this.isReference = isReference;
         this.isElement = isElement;
+        this.childListType = childListType;
     }
     
     public String getChildType() {
         return childType;
+    }
+    
+    public String getChildListType() {
+        return childListType;
     }
     
     public String getDefaultAsString() {
@@ -121,9 +128,28 @@ public class ChildDataModel implements Serializable {
         
     }
     
+    public Class<?> getChildListTypeAsClass() {
+        synchronized (lock) {
+            if (childListType == null) return null;
+            if (childListTypeAsClass != null) return childListTypeAsClass;
+            
+            childListTypeAsClass = TYPE_MAP.get(childListType);
+            if (childListTypeAsClass != null) return childListTypeAsClass;
+            
+            childListTypeAsClass = GeneralUtilities.loadClass(myLoader, childListType);
+            
+            return childListTypeAsClass;
+        }
+        
+    }
+    
     @Override
     public String toString() {
-        return "ChildDataModel(" + childType + "," + defaultAsString + "," + isReference + "," + System.identityHashCode(this) + ")";
+        return "ChildDataModel(" + childType +
+                "," + defaultAsString +
+                "," + isReference +
+                "," + childListType +
+                "," + System.identityHashCode(this) + ")";
     }
 
 }

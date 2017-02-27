@@ -581,13 +581,15 @@ public class Generator {
                         }
                     }
                     else {
+                        String listPType = (mi.getListParameterizedType() == null) ? null : mi.getListParameterizedType().getName() ;
                         compiledModel.addNonChild(mi.getRepresentedProperty(), mi.getDefaultValue(),
-                                mi.getGetterSetterType().getName(), true, mi.isElement());
+                                mi.getGetterSetterType().getName(), listPType, true, mi.isElement());
                     }
                 }
                 else {
+                    String listPType = (mi.getListParameterizedType() == null) ? null : mi.getListParameterizedType().getName() ;
                     compiledModel.addNonChild(mi.getRepresentedProperty(), mi.getDefaultValue(),
-                            mi.getGetterSetterType().getName(), false, mi.isElement());
+                            mi.getGetterSetterType().getName(), listPType, false, mi.isElement());
                 }
             }
             
@@ -775,6 +777,7 @@ public class Generator {
                         asParameter(xmlTag) + "," +
                         asParameter(childDataModel.getDefaultAsString()) + "," +
                         asParameter(childDataModel.getChildType()) + "," +
+                        asParameter(childDataModel.getChildListType()) + "," +
                         asBoolean(childDataModel.isReference()) + "," +
                         asBoolean(childDataModel.isElement()) + ");\n");
             }

@@ -144,6 +144,9 @@ public class XmlStreamImpl {
         Map<String, List<BaseHK2JAXBBean>> listChildren = new HashMap<String, List<BaseHK2JAXBBean>>();
         Map<String, List<BaseHK2JAXBBean>> arrayChildren = new HashMap<String, List<BaseHK2JAXBBean>>();
         
+        Map<String, List<Object>> listNonChild = new HashMap<String, List<Object>>();
+        Map<String, ArrayInformation> arrayNonChild = new HashMap<String, ArrayInformation>();
+        
         ModelImpl targetModel = target._getModel();
         Map<String, ChildDataModel> nonChildProperties = targetModel.getNonChildProperties();
         Map<String, ParentedModel> childProperties = targetModel.getChildrenByName();
@@ -210,9 +213,37 @@ public class XmlStreamImpl {
                     Class<?> childType = cdm.getChildTypeAsClass();
                     
                     if (!cdm.isReference()) {
-                        Object convertedValue = Utilities.getDefaultValue(elementValue, childType, effectiveNamespaceMap);
+                        if (List.class.equals(childType)) {
+                            Class<?> listType = cdm.getChildListTypeAsClass();
+                            
+                            Object convertedValue = Utilities.getDefaultValue(elementValue, listType, effectiveNamespaceMap);
+                            
+                            List<Object> listObjects = listNonChild.get(elementTag);
+                            if (listObjects == null) {
+                                listObjects = new LinkedList<Object>();
+                                listNonChild.put(elementTag, listObjects);
+                            }
+                            
+                            listObjects.add(convertedValue);
+                        }
+                        else if (childType.isArray() && !byte.class.equals(childType.getComponentType())) {
+                            Class<?> aType = childType.getComponentType();
+                            
+                            Object convertedValue = Utilities.getDefaultValue(elementValue, aType, effectiveNamespaceMap);
+                            
+                            ArrayInformation ai = arrayNonChild.get(elementTag);
+                            if (ai == null) {
+                                ai = new ArrayInformation(aType);
+                                arrayNonChild.put(elementTag, ai);
+                            }
+                            
+                            ai.add(convertedValue);
+                        }
+                        else {
+                            Object convertedValue = Utilities.getDefaultValue(elementValue, childType, effectiveNamespaceMap);
                         
-                        target._setProperty(elementTag, convertedValue);
+                            target._setProperty(elementTag, convertedValue);
+                        }
                     }
                     else {
                         ReferenceKey referenceKey = new ReferenceKey(cdm.getChildType(), elementValue);
@@ -294,6 +325,27 @@ public class XmlStreamImpl {
                     int index = 0;
                     for (BaseHK2JAXBBean individual : individuals) {
                         Array.set(actualArray, index++, individual);
+                    }
+                    
+                    target._setProperty(childTag, actualArray);
+                }
+                
+                for (Map.Entry<String, List<Object>> entry : listNonChild.entrySet()) {
+                    String childTag = entry.getKey();
+                    List<Object> value = entry.getValue();
+                    
+                    target._setProperty(childTag, value);
+                }
+                
+                for (Map.Entry<String, ArrayInformation> entry : arrayNonChild.entrySet()) {
+                    String childTag = entry.getKey();
+                    ArrayInformation ai = entry.getValue();
+                    
+                    Object actualArray = Array.newInstance(ai.getAType(), ai.getValues().size());
+                    
+                    int lcv = 0;
+                    for (Object value : ai.getValues()) {
+                        Array.set(actualArray, lcv++, value);
                     }
                     
                     target._setProperty(childTag, actualArray);
@@ -531,5 +583,26 @@ public class XmlStreamImpl {
         indenter.writeEndElement();
     }
     
+    private static class ArrayInformation {
+        private final Class<?> aType;
+        private final List<Object> values = new LinkedList<Object>();
+        
+        private ArrayInformation(Class<?> aType) {
+            this.aType = aType;
+        }
+        
+        private void add(Object addMe) {
+            values.add(addMe);
+        }
+        
+        private Class<?> getAType() {
+            return aType;
+        }
+        
+        private List<Object> getValues() {
+            return values;
+        }
+        
+    }
     
 }

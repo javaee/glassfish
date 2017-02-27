@@ -137,8 +137,8 @@ public class ModelImpl implements Model {
         allChildren.put(xmlTag, new ChildDescriptor(pm));
     }
     
-    public void addNonChild(String xmlTag, String defaultValue, String childType, boolean isReference, boolean isElement) {
-        ChildDataModel cdm = new ChildDataModel(childType, defaultValue, isReference, isElement);
+    public void addNonChild(String xmlTag, String defaultValue, String childType, String childListType, boolean isReference, boolean isElement) {
+        ChildDataModel cdm = new ChildDataModel(childType, childListType, defaultValue, isReference, isElement);
         nonChildProperty.put(xmlTag, cdm);
         allChildren.put(xmlTag, new ChildDescriptor(cdm));
     }
@@ -418,7 +418,11 @@ public class ModelImpl implements Model {
     
     @Override
     public String toString() {
-        return "ModelImpl(interface=" + originalInterface + ",class=" + translatedClass + ",root=" + rootName + ",keyProperty=" + keyProperty + ")";
+        return "ModelImpl(interface=" + originalInterface + 
+                ",class=" + translatedClass +
+                ",root=" + rootName +
+                ",keyProperty=" + keyProperty + 
+                "," + System.identityHashCode(this) + ")";
     }
     
 }

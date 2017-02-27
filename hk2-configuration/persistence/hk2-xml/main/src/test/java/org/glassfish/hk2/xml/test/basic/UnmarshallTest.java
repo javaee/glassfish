@@ -235,7 +235,8 @@ public class UnmarshallTest {
      * 
      * @throws Exception
      */
-    @Test @org.junit.Ignore
+    @Test
+    @org.junit.Ignore
     public void testByteArrayNonChild() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         

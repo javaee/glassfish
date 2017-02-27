@@ -1087,28 +1087,28 @@ public class Utilities {
      */
     public static Object getDefaultValue(String givenStringDefault, Class<?> expectedClass, Map<String, String> namespaceMap) {
         if (givenStringDefault == null || JAUtilities.JAXB_DEFAULT_DEFAULT.equals(givenStringDefault)) {
-            if (int.class.equals(expectedClass)) {
+            if (int.class.equals(expectedClass) || Integer.class.equals(expectedClass)) {
                 return DEFAULT_INTEGER;
             }
-            if (long.class.equals(expectedClass)) {
+            if (long.class.equals(expectedClass) || Long.class.equals(expectedClass)) {
                 return DEFAULT_LONG;
             }
-            if (boolean.class.equals(expectedClass)) {
+            if (boolean.class.equals(expectedClass) || Boolean.class.equals(expectedClass)) {
                 return DEFAULT_BOOLEAN;
             }
-            if (short.class.equals(expectedClass)) {
+            if (short.class.equals(expectedClass) || Short.class.equals(expectedClass)) {
                 return DEFAULT_SHORT;
             }
-            if (byte.class.equals(expectedClass)) {
+            if (byte.class.equals(expectedClass) || Byte.class.equals(expectedClass)) {
                 return DEFAULT_BYTE;
             }
-            if (char.class.equals(expectedClass)) {
+            if (char.class.equals(expectedClass) || Character.class.equals(expectedClass)) {
                 return DEFAULT_CHARACTER;
             }
-            if (float.class.equals(expectedClass)) {
+            if (float.class.equals(expectedClass) || Float.class.equals(expectedClass)) {
                 return DEFAULT_FLOAT;
             }
-            if (double.class.equals(expectedClass)) {
+            if (double.class.equals(expectedClass) || Double.class.equals(expectedClass)) {
                 return DEFAULT_DOUBLE;
             }
             
@@ -1118,28 +1118,28 @@ public class Utilities {
         if (String.class.equals(expectedClass)) {
             return givenStringDefault;
         }
-        if (int.class.equals(expectedClass)) {
+        if (int.class.equals(expectedClass) || Integer.class.equals(expectedClass)) {
             return Integer.parseInt(givenStringDefault);
         }
-        if (long.class.equals(expectedClass)) {
+        if (long.class.equals(expectedClass) || Long.class.equals(expectedClass)) {
             return Long.parseLong(givenStringDefault);
         }
-        if (boolean.class.equals(expectedClass)) {
+        if (boolean.class.equals(expectedClass) || Boolean.class.equals(expectedClass)) {
             return Boolean.parseBoolean(givenStringDefault);
         }
-        if (short.class.equals(expectedClass)) {
+        if (short.class.equals(expectedClass) || Short.class.equals(expectedClass)) {
             return Short.parseShort(givenStringDefault);
         }
-        if (byte.class.equals(expectedClass)) {
+        if (byte.class.equals(expectedClass) || Byte.class.equals(expectedClass)) {
             return Byte.parseByte(givenStringDefault);
         }
-        if (char.class.equals(expectedClass)) {
+        if (char.class.equals(expectedClass) || Character.class.equals(expectedClass)) {
             return givenStringDefault.charAt(0);
         }
-        if (float.class.equals(expectedClass)) {
+        if (float.class.equals(expectedClass) || Float.class.equals(expectedClass)) {
             return Float.parseFloat(givenStringDefault);
         }
-        if (double.class.equals(expectedClass)) {
+        if (double.class.equals(expectedClass) || Double.class.equals(expectedClass)) {
             return Double.parseDouble(givenStringDefault);
         }
         if (expectedClass.isArray() && byte.class.equals(expectedClass.getComponentType())) {

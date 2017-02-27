@@ -228,6 +228,13 @@ public class ElementsCommon {
         Assert.assertEquals(50000000L, arrayTimes[2].longValue());
         
         Assert.assertEquals(15, root.getOneNumber());
+        
+        List<String> strings = root.getStrings();
+        Assert.assertEquals(3, strings.size());
+        
+        Assert.assertEquals("foo", strings.get(0));
+        Assert.assertEquals("bar", strings.get(1));
+        Assert.assertEquals("baz", strings.get(2));
     }
     
     private static void checkService(ServiceLocator locator, Hub hub, String type, String instance, String name) {

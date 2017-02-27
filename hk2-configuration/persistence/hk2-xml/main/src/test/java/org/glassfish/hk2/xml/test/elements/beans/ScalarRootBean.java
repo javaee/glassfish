@@ -67,5 +67,9 @@ public interface ScalarRootBean {
     
     @XmlElement(name="one-number")
     public int getOneNumber();
+    
+    public List<String> getStrings();
+    @XmlElement(name="string")
+    public void setStrings(List<String> strings);
 
 }
