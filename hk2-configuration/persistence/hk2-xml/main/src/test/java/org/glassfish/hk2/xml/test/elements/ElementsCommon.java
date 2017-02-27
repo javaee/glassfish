@@ -203,14 +203,31 @@ public class ElementsCommon {
         List<Integer> numbers = root.getNumbers();
         Assert.assertEquals(3, numbers.size());
         
+        Object foo = numbers.get(0);
+        Assert.assertTrue(foo instanceof Integer);
+        
         Assert.assertEquals(12, numbers.get(0).intValue());
         Assert.assertEquals(13, numbers.get(1).intValue());
         Assert.assertEquals(14, numbers.get(2).intValue());
+        
+        int arrayNumbers[] = root.getArrayNumbers();
+        Assert.assertEquals(1, arrayNumbers.length);
+        
+        Assert.assertEquals(16, arrayNumbers[0]);
         
         List<Long> times = root.getTimes();
         Assert.assertEquals(2, times.size());
         Assert.assertEquals(10000000L, times.get(0).longValue());
         Assert.assertEquals(20000000L, times.get(1).longValue());
+        
+        Long[] arrayTimes = root.getArrayTimes();
+        Assert.assertEquals(3, arrayTimes.length);
+        
+        Assert.assertEquals(30000000L, arrayTimes[0].longValue());
+        Assert.assertEquals(40000000L, arrayTimes[1].longValue());
+        Assert.assertEquals(50000000L, arrayTimes[2].longValue());
+        
+        Assert.assertEquals(15, root.getOneNumber());
     }
     
     private static void checkService(ServiceLocator locator, Hub hub, String type, String instance, String name) {

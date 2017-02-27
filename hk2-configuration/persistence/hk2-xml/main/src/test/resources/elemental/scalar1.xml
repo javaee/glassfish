@@ -43,6 +43,11 @@
 	<number>12</number>
 	<number>13</number>
 	<number>14</number>
+	<array-number>16</array-number>
     <time>10000000</time>
     <time>20000000</time>
+    <array-time>30000000</array-time>
+    <array-time>40000000</array-time>
+    <array-time>50000000</array-time>
+    <one-number>15</one-number>
 </scalars>

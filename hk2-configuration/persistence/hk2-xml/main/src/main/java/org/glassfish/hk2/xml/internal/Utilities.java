@@ -2098,6 +2098,7 @@ public class Utilities {
         String variable = null;
         boolean isList = false;
         boolean isArray = false;
+        AltClass listParameterizedType = null;
         if (getterVariable != null) {
             // This is a getter
             methodType = MethodType.GETTER;
@@ -2108,11 +2109,13 @@ public class Utilities {
             
             if (List.class.getName().equals(returnType.getName())) {
                 isList = true;
-                AltClass typeChildType = m.getFirstTypeArgument();
+                listParameterizedType = m.getFirstTypeArgument();
                 
-                baseChildType = typeChildType;
-                if (baseChildType == null) {
+                if (listParameterizedType == null) {
                     throw new RuntimeException("Cannot find child type of method " + m);
+                }
+                if (listParameterizedType.isInterface()) {
+                    baseChildType = listParameterizedType;
                 }
             }
             else if (returnType.isArray()) {
@@ -2136,11 +2139,14 @@ public class Utilities {
             
             if (List.class.getName().equals(setterType.getName())) {
                 isList = true;
-                AltClass typeChildType = m.getFirstTypeArgumentOfParameter(0);
                 
-                baseChildType = typeChildType;
-                if (baseChildType == null) {
+                listParameterizedType = m.getFirstTypeArgumentOfParameter(0);
+                
+                if (listParameterizedType == null) {
                     throw new RuntimeException("Cannot find child type of method " + m);
+                }
+                if (listParameterizedType.isInterface()) {
+                    baseChildType = listParameterizedType;
                 }
             }
             else if (setterType.isArray()) {
@@ -2200,7 +2206,8 @@ public class Utilities {
                 isList,
                 isArray,
                 isReference,
-                isElement);
+                isElement,
+                listParameterizedType);
     }
     
     private static MethodInformationI getAndSetMethodInformation(AltMethod am, NameInformation xmlMap) {

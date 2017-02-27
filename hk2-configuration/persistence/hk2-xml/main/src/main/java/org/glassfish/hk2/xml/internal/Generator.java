@@ -62,6 +62,10 @@ import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ClassFile;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.MethodInfo;
+import javassist.bytecode.SignatureAttribute;
+import javassist.bytecode.SignatureAttribute.ClassType;
+import javassist.bytecode.SignatureAttribute.MethodSignature;
+import javassist.bytecode.SignatureAttribute.TypeArgument;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.AnnotationMemberValue;
 import javassist.bytecode.annotation.ArrayMemberValue;
@@ -264,8 +268,10 @@ public class Generator {
             AltClass childType = null;
             boolean getterOrSetter = false;
             boolean isReference = false;
+            boolean isSetter = false;
             if (MethodType.SETTER.equals(mi.getMethodType())) {
                 getterOrSetter = true;
+                isSetter = true;
                 setters.add(mi.getRepresentedProperty());
                 
                 childType = mi.getBaseChildType();
@@ -501,6 +507,11 @@ public class Generator {
             if (wrapper.isVarArgs()) {
                 addMeCtMethod.setModifiers(addMeCtMethod.getModifiers() | Modifier.VARARGS);
             }
+            
+            if (mi.getListParameterizedType() != null) {
+                addListGenericSignature(addMeCtMethod, mi.getListParameterizedType(), isSetter);
+            }
+            
             MethodInfo methodInfo = addMeCtMethod.getMethodInfo();
             ConstPool methodConstPool = methodInfo.getConstPool();
            
@@ -627,6 +638,10 @@ public class Generator {
             
             CtMethod addMeCtMethod = CtNewMethod.make(sb.toString(), targetCtClass);
             targetCtClass.addMethod(addMeCtMethod);
+            
+            if (mi.getListParameterizedType() != null) {
+                addListGenericSignature(addMeCtMethod, mi.getListParameterizedType(), true);
+            }
             
             if (DEBUG_METHODS) {
                 Logger.getLogger().debug("Adding ghost setter method for " + convertMe.getSimpleName() + " with implementation " + sb);
@@ -1282,6 +1297,29 @@ public class Generator {
         if (defaultClassPool.getOrNull(fixerClass) == null) {
             defaultClassPool.makeInterface(fixerClass);
         }
+    }
+    
+    private static void addListGenericSignature(CtMethod method, AltClass listPT, boolean isSetter) {
+        ClassType intSignature = new ClassType(listPT.getName());
+        TypeArgument typeArguments[] = new TypeArgument[1];
+        typeArguments[0] = new TypeArgument(intSignature);
+    
+        ClassType listSignature = new ClassType(List.class.getName(), typeArguments);
+        
+        MethodSignature ms;
+        if (isSetter) {
+            SignatureAttribute.Type params[] = new SignatureAttribute.Type[1];
+            params[0] = listSignature;
+            
+            ms = new MethodSignature(null, params, null, null);
+        }
+        else {
+            ms = new MethodSignature(null, null, listSignature, null);
+            
+            
+        }
+        
+        method.setGenericSignature(ms.encode());
     }
     
     private static final class PluralOfDefault extends AnnotationLiteral<PluralOf> implements PluralOf {

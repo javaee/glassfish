@@ -74,24 +74,43 @@ public interface MethodInformationI {
     public AltClass getBaseChildType();
 
     /**
-     * @return the key
+     * @return true if this is a method that returns a key
      */
     public boolean isKey();
 
     /**
-     * @return the isList
+     * @return true if the method is for a List
      */
     public boolean isList();
 
     /**
-     * @return the isArray
+     * @return true if the method is for an array
      */
     public boolean isArray();
 
+    /**
+     * @return true if this is a reference method
+     */
     public boolean isReference();
 
+    /**
+     * @return The decapitilized version of the property name
+     */
     public String getDecapitalizedMethodProperty();
 
+    /**
+     * @return true if this is for an element (as opposed to an attribute)
+     */
     public boolean isElement();
+    
+    /**
+     * Returns the parameterized type of the
+     * list, or null if this is not a list or
+     * the type of the list is unknown
+     * 
+     * @return The fully qualified class name
+     * of the lists parameterized type
+     */
+    public AltClass getListParameterizedType();
 
 }

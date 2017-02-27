@@ -56,7 +56,16 @@ public interface ScalarRootBean {
     @XmlElement(name="number")
     List<Integer> getNumbers();
     
+    @XmlElement(name="array-number")
+    int[] getArrayNumbers();
+    
     @XmlElement(name="time")
     List<Long> getTimes();
+    
+    @XmlElement(name="array-time")
+    Long[] getArrayTimes();
+    
+    @XmlElement(name="one-number")
+    public int getOneNumber();
 
 }

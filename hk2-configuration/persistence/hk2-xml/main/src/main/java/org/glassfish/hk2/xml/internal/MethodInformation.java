@@ -110,6 +110,11 @@ public class MethodInformation implements MethodInformationI {
      */
     private final boolean isElement;
     
+    /**
+     * The parameterized type of the list if known
+     */
+    private final AltClass listParameterizedType;
+    
     public MethodInformation(AltMethod originalMethod,
             MethodType methodType,
             String decapitalizedMethodProperty,
@@ -121,7 +126,8 @@ public class MethodInformation implements MethodInformationI {
             boolean isList,
             boolean isArray,
             boolean isReference,
-            boolean isElement) {
+            boolean isElement,
+            AltClass listParameterizedType) {
         this.originalMethod = originalMethod;
         this.methodType = methodType;
         this.decapitalizedMethodProperty = decapitalizedMethodProperty;
@@ -134,6 +140,7 @@ public class MethodInformation implements MethodInformationI {
         this.isArray = isArray;
         this.isReference = isReference;
         this.isElement = isElement;
+        this.listParameterizedType = listParameterizedType;
     }
     
     /* (non-Javadoc)
@@ -233,6 +240,11 @@ public class MethodInformation implements MethodInformationI {
     }
     
     @Override
+    public AltClass getListParameterizedType() {
+        return listParameterizedType;
+    }
+    
+    @Override
     public String toString() {
         return "MethodInformation(name=" + originalMethod.getName() + "," +
           "type=" + methodType + "," +
@@ -246,7 +258,10 @@ public class MethodInformation implements MethodInformationI {
           "isArray=" + isArray + "," +
           "isReference=" + isReference + "," +
           "isElement=" + isElement + "," +
+          "listParameterizedType=" + listParameterizedType + "," +
           System.identityHashCode(this) + ")";
           
     }
+
+    
 }
