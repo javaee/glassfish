@@ -663,48 +663,61 @@ public class Generator {
                 String ghostMethodName = baseSetSetterName + "_" + elementName;
                 String ghostMethodGetName = baseGetterName + "_" + elementName;
                 
-                StringBuffer ghostBuffer = new StringBuffer("private void " + ghostMethodName + "(");
-                ghostBuffer.append(getCompilableClass(gxed.getterSetterType) +
+                AltClass ac = (AltClass) xmlElement.getAnnotationValues().get("type");
+                
+                {
+                    // Create the setter
+                    
+                    StringBuffer ghostBufferSetter = new StringBuffer("private void " + ghostMethodName + "(");
+                    ghostBufferSetter.append(getCompilableClass(gxed.getterSetterType) +
                         " arg0) { super._setProperty(\"" + elementName + "\", arg0); }");
                 
-                StringBuffer ghostBufferGetter = new StringBuffer("private " + getCompilableClass(gxed.getterSetterType) + " " + ghostMethodGetName +
+                    CtMethod elementsCtMethod = CtNewMethod.make(ghostBufferSetter.toString(), targetCtClass);
+                
+                    if (DEBUG_METHODS) {
+                        Logger.getLogger().debug("Adding ghost elements method for " + convertMe.getSimpleName() + " with implementation " + ghostBufferSetter);
+                    }
+                
+                    addListGenericSignature(elementsCtMethod, ac, true);
+                
+                    targetCtClass.addMethod(elementsCtMethod);
+                }
+                
+                {
+                    // Create the getter
+                    
+                    StringBuffer ghostBufferGetter = new StringBuffer("private " + getCompilableClass(gxed.getterSetterType) + " " + ghostMethodGetName +
                         "() { return (" + getCompilableClass(gxed.getterSetterType) + ") super._getProperty(\"" + elementName + "\"); }");
                 
-                CtMethod elementsCtMethod = CtNewMethod.make(ghostBuffer.toString(), targetCtClass);
+                    CtMethod elementsCtMethodGetter = CtNewMethod.make(ghostBufferGetter.toString(), targetCtClass);
                 
-                if (DEBUG_METHODS) {
-                    Logger.getLogger().debug("Adding ghost elements method for " + convertMe.getSimpleName() + " with implementation " + ghostBuffer);
-                }
+                    addListGenericSignature(elementsCtMethodGetter, ac, false);
                 
-                targetCtClass.addMethod(elementsCtMethod);
+                    MethodInfo elementsMethodInfo = elementsCtMethodGetter.getMethodInfo();
+                    ConstPool elementsMethodConstPool = elementsMethodInfo.getConstPool();
                 
-                CtMethod elementsCtMethodGetter = CtNewMethod.make(ghostBufferGetter.toString(), targetCtClass);
+                    AnnotationsAttribute aa = new AnnotationsAttribute(elementsMethodConstPool, AnnotationsAttribute.visibleTag);
                 
-                MethodInfo elementsMethodInfo = elementsCtMethodGetter.getMethodInfo();
-                ConstPool elementsMethodConstPool = elementsMethodInfo.getConstPool();
-                
-                AnnotationsAttribute aa = new AnnotationsAttribute(elementsMethodConstPool, AnnotationsAttribute.visibleTag);
-                
-                AltClass ac = (AltClass) xmlElement.getAnnotationValues().get("type");
-                String translatedClassName = Utilities.getProxyNameFromInterfaceName(ac.getName());
+                    String translatedClassName = Utilities.getProxyNameFromInterfaceName(ac.getName());
                     
-                XmlElement xElement = new XmlElementImpl(
-                    elementName,
-                    xmlElement.getBooleanValue("nillable"),
-                    xmlElement.getBooleanValue("required"),
-                    xmlElement.getStringValue("namespace"),
-                    xmlElement.getStringValue("defaultValue"),
-                    translatedClassName);
+                    XmlElement xElement = new XmlElementImpl(
+                        elementName,
+                        xmlElement.getBooleanValue("nillable"),
+                        xmlElement.getBooleanValue("required"),
+                        xmlElement.getStringValue("namespace"),
+                        xmlElement.getStringValue("defaultValue"),
+                        translatedClassName);
                 
-                createAnnotationCopy(elementsMethodConstPool, xElement, aa);
+                    createAnnotationCopy(elementsMethodConstPool, xElement, aa);
                 
-                elementsMethodInfo.addAttribute(aa);
+                    elementsMethodInfo.addAttribute(aa);
                 
-                if (DEBUG_METHODS) {
-                    Logger.getLogger().debug("Adding ghost elements getter method for " + convertMe.getSimpleName() + " with implementation " + ghostBufferGetter);
+                    if (DEBUG_METHODS) {
+                        Logger.getLogger().debug("Adding ghost elements getter method for " + convertMe.getSimpleName() + " with implementation " + ghostBufferGetter);
+                    }
+                
+                    targetCtClass.addMethod(elementsCtMethodGetter);
                 }
-                
-                targetCtClass.addMethod(elementsCtMethodGetter);
             }
         }
         
