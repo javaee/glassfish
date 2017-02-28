@@ -53,4 +53,22 @@
     <string>foo</string>
     <string>bar</string>
     <string>baz</string>
+    
+    <e-integer>17</e-integer>
+    <e-long>18</e-long>
+    <e-boolean>true</e-boolean>
+    <e-short>19</e-short>
+    <e-character>c</e-character>
+    <e-float>2.71</e-float>
+    <e-double>3.14</e-double>
+    <e-string>Hello</e-string>
+    
+    <e-string>Hello</e-string>
+    <e-double>2.71</e-double>
+    <e-float>3.14</e-float>
+    <e-character>d</e-character>
+    <e-short>20</e-short>
+    <e-boolean>false</e-boolean>
+    <e-long>21</e-long>
+    <e-integer>22</e-integer>
 </scalars>
