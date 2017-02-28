@@ -235,6 +235,33 @@ public class ElementsCommon {
         Assert.assertEquals("foo", strings.get(0));
         Assert.assertEquals("bar", strings.get(1));
         Assert.assertEquals("baz", strings.get(2));
+        
+        List<Object> ttamt = root.getTypesTypesAndMoreTypes();
+        Assert.assertEquals(16, ttamt.size());
+        
+        Assert.assertEquals(new Integer(17), ttamt.get(0));
+        Assert.assertEquals(new Integer(22), ttamt.get(1));
+        
+        Assert.assertEquals(new Long(18), ttamt.get(2));
+        Assert.assertEquals(new Long(21), ttamt.get(3));
+        
+        Assert.assertEquals(Boolean.TRUE, ttamt.get(4));
+        Assert.assertEquals(Boolean.FALSE, ttamt.get(5));
+        
+        Assert.assertEquals(new Short((short) 19), ttamt.get(6));
+        Assert.assertEquals(new Short((short) 20), ttamt.get(7));
+        
+        Assert.assertEquals(new Character('c'), ttamt.get(8));
+        Assert.assertEquals(new Character('d'), ttamt.get(9));
+        
+        Assert.assertEquals(new Float(2.71), ttamt.get(10));
+        Assert.assertEquals(new Float(3.14), ttamt.get(11));
+        
+        Assert.assertEquals(new Double(2.71), ttamt.get(12));
+        Assert.assertEquals(new Double(3.14), ttamt.get(13));
+        
+        Assert.assertEquals("Hello", ttamt.get(14));
+        Assert.assertEquals("Hello", ttamt.get(15));
     }
     
     private static void checkService(ServiceLocator locator, Hub hub, String type, String instance, String name) {
