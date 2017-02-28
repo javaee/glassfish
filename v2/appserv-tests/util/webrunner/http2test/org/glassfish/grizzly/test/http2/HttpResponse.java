@@ -40,7 +40,15 @@
 
 package org.glassfish.grizzly.test.http2;
 
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.glassfish.grizzly.http.HttpContent;
+import org.glassfish.grizzly.http.util.MimeHeaders;
 import org.glassfish.grizzly.http.HttpResponsePacket;
 import org.glassfish.grizzly.http2.Http2Stream;
 
@@ -54,11 +62,22 @@ public class HttpResponse {
     private HttpResponsePacket response;
     private boolean push = false;
     private HttpPushPromise pushPromise;
+    private Map<String, List<String>> headerMap = new HashMap<>();
 
     HttpResponse(HttpContent httpContent) {
         this.httpContent = httpContent;
         this.response = (HttpResponsePacket)httpContent.getHttpHeader();
         this.push = Http2Stream.getStreamFor(response).isPushStream();
+        MimeHeaders headers = response.getHeaders();
+        for (String name : headers.names()) {
+            List<String> list = new ArrayList<>();
+            for (String value : headers.values(name)) {
+                list.add(value);
+            }
+            list = Collections.unmodifiableList(list);
+            headerMap.put(name, list);
+        }
+        headerMap = Collections.unmodifiableMap(headerMap);
         if (this.push) {
             pushPromise = new HttpPushPromise(httpContent);
         }
@@ -76,8 +95,16 @@ public class HttpResponse {
         return response.getHeader(key);
     }
 
+    public Map<String, List<String>> getHeaders() {
+        return headerMap;
+    }
+
     public String getBody() {
         return httpContent.getContent().toStringContent();
+    }
+
+    public String getBody(String charset) {
+        return httpContent.getContent().toStringContent(Charset.forName(charset));
     }
 
     public boolean isPush() {
