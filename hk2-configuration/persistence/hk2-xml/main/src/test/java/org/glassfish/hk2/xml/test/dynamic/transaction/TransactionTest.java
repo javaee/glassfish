@@ -264,7 +264,7 @@ public class TransactionTest {
     @Test 
     // @org.junit.Ignore
     public void testMarshalInsideATransaction() throws Exception {
-        ServiceLocator locator = Utilities.createLocator();
+        ServiceLocator locator = Utilities.createDomLocator();
         XmlService xmlService = locator.getService(XmlService.class);
         Hub hub = locator.getService(Hub.class);
         
