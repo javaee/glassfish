@@ -430,14 +430,7 @@ release_build(){
         -Dbuild.id=${PKG_ID} \
         -Dgpg.passphrase="${GPG_PASSPHRASE}" \
         -Dgpg.executable=gpg2 \
-        -Dmaven.test.failure.ignore=true \
-        -Dips.compress=false \
-        -Dips.build.installer=false \
-        -Dtarget.repo.dir=${IPS_REPO_DIR} \
-        -Duc.toolkit.dir=${IPS_TOOLKIT} \
-        -Drepo.url=${IPS_REPO_URL}:${IPS_REPO_PORT}/ \
-        -DjavadocExecutable=${HOME}/jdk1.7.0_25/bin/javadoc \
-        -Dpython=${PYTHON_HOME}/bin/python
+        -Dmaven.test.failure.ignore=true
 }
 
 release_prepare(){
