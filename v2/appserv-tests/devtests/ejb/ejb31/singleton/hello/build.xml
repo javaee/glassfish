@@ -36,7 +36,9 @@
     
     <target name="deploy" 
             depends="init-common">
-        <antcall target="deploy-jar-common"/>
+        <antcall target="startDerby"/>
+        <sleep minutes="2"/>
+        <antcall target="deploy-jar-common"/>       
     </target>
 
     <target name="run" depends="init-common">
@@ -55,6 +57,7 @@
 
     <target name="undeploy" depends="init-common">
         <antcall target="undeploy-jar-common"/>
+        <antcall target="stopDerby"/>
     </target>   
 
     <target name="usage">
