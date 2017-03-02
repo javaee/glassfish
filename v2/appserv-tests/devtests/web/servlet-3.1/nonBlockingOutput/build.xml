@@ -95,7 +95,6 @@
                includes="WebTest.java">
             <classpath>
                 <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
-                <pathelement location="${env.APS_HOME}/lib/webtest.jar"/>
             </classpath>
         </javac>
     </target> 
@@ -112,7 +111,6 @@
             <arg value="${contextroot}"/>
             <classpath>
                 <pathelement location="${env.APS_HOME}/lib/reportbuilder.jar"/>
-                <pathelement location="${env.APS_HOME}/lib/webtest.jar"/>
                 <pathelement location="."/>
             </classpath>
         </java>
