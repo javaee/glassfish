@@ -126,6 +126,10 @@ public final class ApplicationContextFacade
         classCache.put("setSessionTrackingModes", new Class[]{Set.class});
         classCache.put("getSessionTimeout", new Class[]{});
         classCache.put("setSessionTimeout", new Class[]{Integer.class});
+        classCache.put("getRequestCharacterEncoding", new Class[]{});
+        classCache.put("setRequestCharacterEncoding", new Class[]{String.class});
+        classCache.put("getResponseCharacterEncoding", new Class[]{});
+        classCache.put("setResponseCharacterEncoding", new Class[]{String.class});
     }
     
     /**
@@ -922,6 +926,42 @@ public final class ApplicationContextFacade
             doPrivileged("getSessionTimeout", null);
         } else {
             context.setSessionTimeout(sessionTimeout);
+        }
+    }
+
+    @Override
+    public String getRequestCharacterEncoding() {
+        if (SecurityUtil.isPackageProtectionEnabled()) {
+            return (String)doPrivileged("getRequestCharacterEncoding", null);
+        } else {
+            return context.getRequestCharacterEncoding();
+        }
+    }
+
+    @Override
+    public void setRequestCharacterEncoding(String encoding) {
+        if (SecurityUtil.isPackageProtectionEnabled()) {
+            doPrivileged("setRequestCharacterEncoding", null);
+        } else {
+            context.setRequestCharacterEncoding(encoding);
+        }
+    }
+
+    @Override
+    public String getResponseCharacterEncoding() {
+        if (SecurityUtil.isPackageProtectionEnabled()) {
+            return (String)doPrivileged("getResponseCharacterEncoding", null);
+        } else {
+            return context.getResponseCharacterEncoding();
+        }
+    }
+
+    @Override
+    public void setResponseCharacterEncoding(String encoding) {
+        if (SecurityUtil.isPackageProtectionEnabled()) {
+            doPrivileged("setResponseCharacterEncoding", null);
+        } else {
+            context.setResponseCharacterEncoding(encoding);
         }
     }
 

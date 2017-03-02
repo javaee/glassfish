@@ -240,6 +240,16 @@ public class StandardContext
     private String charsetMapperClass = CharsetMapper.class.getName();
 
     /**
+     * The request character encoding.
+     */
+    private String requestCharacterEncoding = "ISO-8859-1";
+
+    /**
+     * The response character encoding.
+     */
+    private String responseCharacterEncoding = "ISO-8859-1";
+
+    /**
      * The path to a file to save this Context information.
      */
     private String configFile = null;
@@ -990,6 +1000,26 @@ public class StandardContext
             this.charsetMapperClass= mapper.getClass().getName();
         support.firePropertyChange("charsetMapper", oldCharsetMapper,
                                    this.charsetMapper);
+    }
+
+    @Override
+    public String getRequestCharacterEncoding() {
+        return this.requestCharacterEncoding;
+    }
+
+    @Override
+    public void setRequestCharacterEncoding(String encoding) {
+        this.requestCharacterEncoding = encoding;
+    }
+
+    @Override
+    public String getResponseCharacterEncoding() {
+        return this.responseCharacterEncoding;
+    }
+
+    @Override
+    public void setResponseCharacterEncoding(String encoding) {
+        this.responseCharacterEncoding = encoding;
     }
 
     /**

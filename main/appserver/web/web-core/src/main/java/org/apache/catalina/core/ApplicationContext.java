@@ -994,6 +994,42 @@ public class ApplicationContext implements ServletContext {
         context.setSessionTimeout(sessionTimeout);
     }
 
+    @Override
+    public String getRequestCharacterEncoding() {
+        if (isRestricted) {
+            throw new UnsupportedOperationException(
+                    rb.getString(LogFacade.UNSUPPORTED_OPERATION_EXCEPTION));
+        }
+        return context.getRequestCharacterEncoding();
+    }
+
+    @Override
+    public void setRequestCharacterEncoding(String encoding) {
+        if (isRestricted) {
+            throw new UnsupportedOperationException(
+                    rb.getString(LogFacade.UNSUPPORTED_OPERATION_EXCEPTION));
+        }
+        context.setRequestCharacterEncoding(encoding);
+    }
+
+    @Override
+    public String getResponseCharacterEncoding() {
+        if (isRestricted) {
+            throw new UnsupportedOperationException(
+                    rb.getString(LogFacade.UNSUPPORTED_OPERATION_EXCEPTION));
+        }
+        return context.getResponseCharacterEncoding();
+    }
+
+    @Override
+    public void setResponseCharacterEncoding(String encoding) {
+        if (isRestricted) {
+            throw new UnsupportedOperationException(
+                    rb.getString(LogFacade.UNSUPPORTED_OPERATION_EXCEPTION));
+        }
+        context.setResponseCharacterEncoding(encoding);
+    }
+
     // START PWC 1.2
     /**
      * Gets the underlying StandardContext to which this ApplicationContext is
