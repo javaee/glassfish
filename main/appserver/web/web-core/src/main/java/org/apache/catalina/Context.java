@@ -130,6 +130,12 @@ public interface Context extends Container {
      */
     CharsetMapper getCharsetMapper();
 
+    /**
+     * Return the boolean to indicate whether the response character encoding is set
+     * @return boolean true if the response character encoding is set
+     */
+    boolean isResponseCharacterEncodingSet();
+
 
     /**
      * Set the Locale to character set mapper for this Context.

@@ -107,6 +107,8 @@ public class WebBundleDescriptorImpl extends WebBundleDescriptor {
     private Set<SecurityRoleDescriptor> securityRoles;
     private Set<SecurityConstraint> securityConstraints;
     private String contextRoot;
+    private String requestEncoding;
+    private String responseEncoding;
     private LoginConfiguration loginConfiguration;
     private Set<EnvironmentEntry> environmentEntries;
     private LocaleEncodingMappingListDescriptor localeEncodingMappingListDesc = null;
@@ -159,6 +161,12 @@ public class WebBundleDescriptorImpl extends WebBundleDescriptor {
     public void addDefaultWebBundleDescriptor(WebBundleDescriptor webBundleDescriptor) {
         if (getWelcomeFilesSet().size() == 0) {
             getWelcomeFilesSet().addAll(webBundleDescriptor.getWelcomeFilesSet());
+        }
+        if (this.requestEncoding == null) {
+            this.requestEncoding = webBundleDescriptor.getRequestEncoding();
+        }
+        if (this.responseEncoding == null) {
+            this.responseEncoding = webBundleDescriptor.getResponseEncoding();
         }
         addCommonWebBundleDescriptor(webBundleDescriptor, true);
     }
@@ -330,6 +338,34 @@ public class WebBundleDescriptorImpl extends WebBundleDescriptor {
             getModuleDescriptor().setContextRoot(contextRoot);
         }
         this.contextRoot = contextRoot;
+    }
+
+    /**
+     * return the request encoding
+     */
+    public String getRequestEncoding() {
+        return this.requestEncoding;
+    }
+
+    /**
+     * Set the request encoding
+     */
+    public void setRequestEncoding(String requestEncoding) {
+        this.requestEncoding = requestEncoding;
+    }
+
+    /**
+     * return the response encoding
+     */
+    public String getResponseEncoding() {
+        return this.responseEncoding;
+    }
+
+    /**
+     * Set the response encoding
+     */
+    public void setResponseEncoding(String responseEncoding) {
+        this.responseEncoding = responseEncoding;
     }
 
     /**

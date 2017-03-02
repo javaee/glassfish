@@ -259,9 +259,19 @@ public class WebModule extends PwcWebModule implements Context {
     }
 
     /**
-     * Sets the parameter encoding (i18n) info from sun-web.xml.
+     * Sets the parameter encoding (i18n) info from web.xml and sun-web.xml.
      */
     public void setI18nInfo() {
+        if (webBundleDescriptor != null) {
+            String reqEncoding = webBundleDescriptor.getRequestEncoding();
+            if (reqEncoding != null) {
+                setRequestCharacterEncoding(reqEncoding);
+            }
+            String resEncoding = webBundleDescriptor.getResponseEncoding();
+            if (resEncoding != null) {
+                setResponseCharacterEncoding(resEncoding);
+            }
+        }
 
         if (iasBean == null) {
             return;
@@ -296,6 +306,11 @@ public class WebModule extends PwcWebModule implements Context {
                                         LocaleCharsetInfo.DEFAULT_CHARSET);
             }
             _lcMap = lcinfo.getLocaleCharsetMap();
+        }
+
+        if (defaultCharset != null) {
+            setRequestCharacterEncoding(defaultCharset);
+            setResponseCharacterEncoding(defaultCharset);
         }
     }
 
@@ -511,6 +526,14 @@ public class WebModule extends PwcWebModule implements Context {
         if (webBundleDescriptor != null) {
             showArchivedRealPathEnabled = webBundleDescriptor.isShowArchivedRealPathEnabled();
             servletReloadCheckSecs = webBundleDescriptor.getServletReloadCheckSecs();
+            String reqEncoding = webBundleDescriptor.getRequestEncoding();
+            if (reqEncoding != null) {
+                setRequestCharacterEncoding(reqEncoding);
+            }
+            String resEncoding = webBundleDescriptor.getResponseEncoding();
+            if (resEncoding != null) {
+                setResponseCharacterEncoding(resEncoding);
+            }
         }
 
         // Start and register Tomcat mbeans

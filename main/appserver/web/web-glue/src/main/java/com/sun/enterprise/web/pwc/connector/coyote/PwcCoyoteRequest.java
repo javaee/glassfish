@@ -171,9 +171,10 @@ public class PwcCoyoteRequest extends Request {
             
 
     /**
-     * Determines and sets the request charset using the locale-charset-info,
-     * locale-charset-map, and parameter-encoding elements provided in the
-     * sun-web.xml.
+     * Determines and sets the request charset using the request-encoding in
+     * the web.xml or
+     * the locale-charset-info,locale-charset-map, and parameter-encoding elements
+     * provided in the sun-web.xml.
      *
      * @return true if a request encoding has been determined and set,
      * false otherwise
@@ -190,7 +191,7 @@ public class PwcCoyoteRequest extends Request {
 
         String encoding = getFormHintFieldEncoding(wm);
         if (encoding == null) {
-            encoding = wm.getDefaultCharset();
+            encoding = wm.getRequestCharacterEncoding();
             if (encoding == null && wm.hasLocaleToCharsetMapping()) {
                 encoding = wm.mapLocalesToCharset(getLocales());
             }
