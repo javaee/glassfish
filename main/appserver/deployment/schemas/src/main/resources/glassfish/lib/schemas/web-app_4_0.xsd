@@ -298,7 +298,7 @@
           <xsd:documentation>
 
             When specified, this element provides a default request
-            encoding of the web application.
+            character encoding of the web application.
             
           </xsd:documentation>
         </xsd:annotation>
@@ -309,7 +309,7 @@
           <xsd:documentation>
 
             When specified, this element provides a default response
-            encoding of the web application.
+            character encoding of the web application.
             
           </xsd:documentation>
         </xsd:annotation>
