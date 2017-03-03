@@ -37,10 +37,10 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test.elements;
+package org.glassfish.hk2.xml.test.precompile.elements;
 
 import org.glassfish.hk2.api.ServiceLocator;
-import org.glassfish.hk2.xml.test.utilities.Utilities;
+import org.glassfish.hk2.xml.test1.utilities.Utilities;
 import org.junit.Test;
 
 /**

@@ -37,7 +37,7 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.test.elements;
+package org.glassfish.hk2.xml.test.precompile.elements;
 
 import java.io.ByteArrayOutputStream;
 import java.net.URI;
@@ -53,20 +53,10 @@ import org.glassfish.hk2.configuration.hub.api.Type;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
-import org.glassfish.hk2.xml.test.elements.beans.BasicElementalBean;
-import org.glassfish.hk2.xml.test.elements.beans.EarthBean;
-import org.glassfish.hk2.xml.test.elements.beans.ElementType;
-import org.glassfish.hk2.xml.test.elements.beans.ElementalBean;
-import org.glassfish.hk2.xml.test.elements.beans.FireBean;
-import org.glassfish.hk2.xml.test.elements.beans.ScalarRootBean;
-import org.glassfish.hk2.xml.test.elements.beans.WaterBean;
-import org.glassfish.hk2.xml.test.elements.beans.WindBean;
+
 import org.junit.Assert;
 
 /**
- * Information on these names can be found here:
- * http://avatar.wikia.com/wiki/
- * 
  * @author jwells
  *
  */

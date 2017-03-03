@@ -728,7 +728,13 @@ public class Generator {
                 
                     AnnotationsAttribute aa = new AnnotationsAttribute(elementsMethodConstPool, AnnotationsAttribute.visibleTag);
                 
-                    String translatedClassName = Utilities.getProxyNameFromInterfaceName(ac.getName());
+                    String translatedClassName;
+                    if (ac.isInterface()) {
+                        translatedClassName = Utilities.getProxyNameFromInterfaceName(ac.getName());
+                    }
+                    else {
+                        translatedClassName = ac.getName();
+                    } 
                     
                     XmlElement xElement = new XmlElementImpl(
                         elementName,
