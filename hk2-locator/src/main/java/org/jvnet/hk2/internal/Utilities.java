@@ -326,7 +326,7 @@ public class Utilities {
             return descriptor.getImplementationClass();
         }
 
-        return getFactoryProductionClass(descriptor.getImplementationClass());
+        return getFactoryProductionClass(descriptor);
     }
 
     /**
@@ -512,21 +512,29 @@ public class Utilities {
     }
 
     /**
-     * This method returns the class associated with the type of the
-     * factory
+     * This method returns the class associated with the type of the factory.
      *
-     * @param factoryClass The non-null factory class.  May not be null
-     * @return the CLASS version of what the factory produces.  Will
-     * not be null
-     * @throws MultiException if there was an error analyzing the class
+     * @param descriptor The descriptor (reified and not null) that will be used to find the implementation.
+     * @return the CLASS version of what the factory produces.  Will not be null.
+     * @throws MultiException if there was an error analyzing the class.
      */
-    private static Class<?> getFactoryProductionClass(Class<?> factoryClass) {
+    private static Class<?> getFactoryProductionClass(ActiveDescriptor<?> descriptor) {
+        Class<?> factoryClass = descriptor.getImplementationClass();
         Type factoryProvidedType = getFactoryProductionType(factoryClass);
 
         Class<?> retVal = ReflectionHelper.getRawClass(factoryProvidedType);
-        if (retVal != null) return retVal;
+        if (retVal == null && descriptor.getContractTypes().size() == 1) {
+            // If the type was not resolved from a generic type, try to use 
+            // contract type if only one was registered.
+            Type contract = descriptor.getContractTypes().iterator().next();
+            retVal = ReflectionHelper.getRawClass(contract);
+        }
 
-        throw new MultiException(new AssertionError("Could not find true produced type of factory " + factoryClass.getName()));
+        if (retVal == null) {
+            throw new MultiException(new AssertionError("Could not find true produced type of factory " 
+                    + factoryClass.getName()));
+        }
+        return retVal;
     }
 
     /**
