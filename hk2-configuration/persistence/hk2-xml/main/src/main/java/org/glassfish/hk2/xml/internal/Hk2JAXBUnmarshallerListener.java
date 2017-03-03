@@ -41,6 +41,7 @@ package org.glassfish.hk2.xml.internal;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.Unmarshaller;
 
@@ -141,6 +142,15 @@ public class Hk2JAXBUnmarshallerListener extends Unmarshaller.Listener {
                 childBean._setSelfXmlTag(parentedNode.getChildXmlTag());
                 
                 setUserKey(childBean, false);
+            }
+        }
+        
+        for (Map.Entry<String, ChildDataModel> nonChildEntry : model.getNonChildProperties().entrySet()) {
+            String nonChildProp = nonChildEntry.getKey();
+            ChildDataModel cdm = nonChildEntry.getValue();
+            
+            if (AliasType.IS_ALIAS.equals(cdm.getAliasType())) {
+                targetBean.__fixAlias(nonChildProp, cdm.getXmlAlias());
             }
         }
     }

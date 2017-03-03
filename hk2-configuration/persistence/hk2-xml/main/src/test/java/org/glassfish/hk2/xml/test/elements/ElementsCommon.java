@@ -257,8 +257,8 @@ public class ElementsCommon {
         Assert.assertEquals(new Float(2.71), ttamt.get(10));
         Assert.assertEquals(new Float(3.14), ttamt.get(11));
         
-        Assert.assertEquals(new Double(2.71), ttamt.get(12));
-        Assert.assertEquals(new Double(3.14), ttamt.get(13));
+        Assert.assertEquals(new Double(3.14), ttamt.get(12));
+        Assert.assertEquals(new Double(2.71), ttamt.get(13));
         
         Assert.assertEquals("Hello", ttamt.get(14));
         Assert.assertEquals("Hello", ttamt.get(15));

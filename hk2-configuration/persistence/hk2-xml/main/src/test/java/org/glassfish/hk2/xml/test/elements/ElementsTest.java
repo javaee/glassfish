@@ -106,7 +106,7 @@ public class ElementsTest {
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testXmlElementsScalarDom() throws Exception {
         ServiceLocator domLocator = Utilities.createDomLocator();
         

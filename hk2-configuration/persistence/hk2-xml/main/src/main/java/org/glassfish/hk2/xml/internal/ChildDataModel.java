@@ -72,6 +72,8 @@ public class ChildDataModel implements Serializable {
     private boolean isReference;
     private boolean isElement;
     private String childListType;
+    private AliasType aliasType;
+    private String aliasOf;
     
     private ClassLoader myLoader;
     private Class<?> childTypeAsClass;
@@ -80,12 +82,20 @@ public class ChildDataModel implements Serializable {
     public ChildDataModel() {
     }
     
-    public ChildDataModel(String childType, String childListType, String defaultAsString, boolean isReference, boolean isElement) {
+    public ChildDataModel(String childType,
+            String childListType,
+            String defaultAsString,
+            boolean isReference,
+            boolean isElement,
+            AliasType aliasType,
+            String aliasOf) {
         this.childType = childType;
         this.defaultAsString = defaultAsString;
         this.isReference = isReference;
         this.isElement = isElement;
         this.childListType = childListType;
+        this.aliasType = aliasType;
+        this.aliasOf = aliasOf;
     }
     
     public String getChildType() {
@@ -106,6 +116,14 @@ public class ChildDataModel implements Serializable {
     
     public boolean isElement() {
         return isElement;
+    }
+    
+    public AliasType getAliasType() {
+        return aliasType;
+    }
+    
+    public String getXmlAlias() {
+        return aliasOf;
     }
     
     public void setLoader(ClassLoader myLoader) {
@@ -149,6 +167,7 @@ public class ChildDataModel implements Serializable {
                 "," + defaultAsString +
                 "," + isReference +
                 "," + childListType +
+                "," + aliasType +
                 "," + System.identityHashCode(this) + ")";
     }
 
