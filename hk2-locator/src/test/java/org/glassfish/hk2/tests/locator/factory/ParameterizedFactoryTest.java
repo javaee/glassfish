@@ -45,6 +45,7 @@ import org.glassfish.hk2.api.Descriptor;
 import org.glassfish.hk2.api.DynamicConfiguration;
 import org.glassfish.hk2.api.Factory;
 import org.glassfish.hk2.api.FactoryDescriptors;
+import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.api.TypeLiteral;
 import org.glassfish.hk2.tests.locator.utilities.LocatorHelper;
@@ -52,6 +53,8 @@ import org.glassfish.hk2.tests.locator.utilities.TestModule;
 import org.glassfish.hk2.utilities.AbstractActiveDescriptor;
 import org.glassfish.hk2.utilities.ActiveDescriptorBuilder;
 import org.glassfish.hk2.utilities.BuilderHelper;
+import org.glassfish.hk2.utilities.ServiceLocatorUtilities;
+import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.hk2.utilities.reflection.ParameterizedTypeImpl;
 import org.junit.Test;
 
@@ -59,6 +62,8 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -165,6 +170,62 @@ public class ParameterizedFactoryTest {
         Assert.assertSame(INTEGER_LIST, integerList);
     }
 
+    /**
+     * Tests that the proxy creation process is able to resolve the concrete
+     * type from a register contract (must be only one) if the type is not
+     * resolved from factory generic.
+     */
+    @Test
+    public void testGenericFactoriesUsingProxy() {
+        ServiceLocator locator = LocatorHelper.create();
+        AbstractBinder hk2binder = new AbstractBinder() {
+            @Override
+            protected void configure() {
+                bindFactory(getFactory(new FooImpl()))
+                        .to(FooImpl.class)
+                        .proxy(true)
+                        .in(ProxiableSingleton.class);
+
+                bindFactory(getFactory(Collections.singletonList(new FooImpl())))
+                        .to(new TypeLiteral<ArrayList<FooImpl>>() {})
+                        .proxy(true)
+                        .in(ProxiableSingleton.class);
+
+                bindAsContract(InjecteeClassProxy.class);
+            }
+        };
+        ServiceLocatorUtilities.bind(locator, hk2binder);
+
+        InjecteeClassProxy service = locator.getService(InjecteeClassProxy.class);
+        Assert.assertNotNull(service.getFoo());
+        Assert.assertNotNull(service.getFooFactory());
+        Assert.assertNotNull(service.getFooList());
+        Assert.assertNotNull(service.getFooListFactory());
+    }
+
+    /**
+     * Tests must fail because type resolver is not able to resolver the concrete
+     * type from generic factory and there are registered more than one contract.
+     */
+    @Test(expected = MultiException.class)
+    public void testFailGenericFactoriesUsingProxyWithMultipleContracts() {
+        ServiceLocator locator = LocatorHelper.create();
+        AbstractBinder hk2binder = new AbstractBinder() {
+            @Override
+            protected void configure() {
+                bindFactory(getFactory(new FooImpl()))
+                        .to(FooImpl.class)
+                        .to(String.class)
+                        .proxy(true)
+                        .in(ProxiableSingleton.class);
+
+                bindAsContract(InjecteeClassProxy.class);
+            }
+        };
+        ServiceLocatorUtilities.bind(locator, hk2binder);
+        locator.getService(InjecteeClassProxy.class);
+    }
+
     // ----- inner test classes ---------------------------------------------
 
     public static interface Foo {
@@ -239,6 +300,37 @@ public class ParameterizedFactoryTest {
     }
 
     public static class EmptyClass2<T> implements EmptyInterface2<String, T> {
+    }
+
+    @Singleton
+    public static class InjecteeClassProxy {
+        @Inject
+        FooImpl foo;
+
+        @Inject
+        Factory<FooImpl> fooFactory;
+
+        @Inject
+        ArrayList<FooImpl> fooList;
+
+        @Inject
+        Factory<ArrayList<FooImpl>> fooListFactory;
+
+        public FooImpl getFoo() {
+            return foo;
+        }
+
+        public Factory<FooImpl> getFooFactory() {
+            return fooFactory;
+        }
+
+        public ArrayList<FooImpl> getFooList() {
+            return fooList;
+        }
+
+        public Factory<ArrayList<FooImpl>> getFooListFactory() {
+            return fooListFactory;
+        }
     }
 
     @Singleton
