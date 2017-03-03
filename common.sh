@@ -86,7 +86,7 @@ build_re_nightly(){
     init_nightly
     svn_checkout ${SVN_REVISION}
     run_findbugs
-    release_build "clean install" "ips,javaee-api"
+    release_build "clean install" "javaee-api"
     build_re_finalize
 }
 
