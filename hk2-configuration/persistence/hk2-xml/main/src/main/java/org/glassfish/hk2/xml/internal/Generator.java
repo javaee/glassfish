@@ -538,7 +538,7 @@ public class Generator {
                     
                     createAnnotationCopy(methodConstPool, anno, ctAnnotations);
                 }
-                else if (getterOrSetter && (childType != null) && XmlElements.class.getName().equals(convertMeAnnotation.annotationType())) {
+                else if (getterOrSetter && XmlElements.class.getName().equals(convertMeAnnotation.annotationType())) {
                     String representedProperty = mi.getRepresentedProperty();
                     
                     AltAnnotation elements[] = convertMeAnnotation.getAnnotationArrayValue("value");
@@ -554,42 +554,68 @@ public class Generator {
             }
             
             if (getterOrSetter) {
-                if (childType != null) {
+                List<XmlElementData> aliases = xmlNameMap.getAliases(mi.getRepresentedProperty());
+                if ((childType != null) || (aliases != null)) {
                     if (!isReference) {
-                        List<XmlElementData> aliases = xmlNameMap.getAliases(mi.getRepresentedProperty());
                         AliasType aType = (aliases == null) ? AliasType.NORMAL : AliasType.HAS_ALIASES ;
-                        compiledModel.addChild(
-                                childType.getName(),
+                        AltClass useChildType = (childType == null) ? mi.getListParameterizedType() : childType ;
+                        
+                        if (useChildType.isInterface()) {
+                            compiledModel.addChild(
+                                useChildType.getName(),
                                 mi.getRepresentedProperty(),
                                 mi.getRepresentedProperty(),
                                 getChildType(mi.isList(), mi.isArray()),
                                 mi.getDefaultValue(),
                                 aType);
+                        }
+                        else {
+                            compiledModel.addNonChild(mi.getRepresentedProperty(),
+                                    mi.getDefaultValue(),
+                                    mi.getGetterSetterType().getName(),
+                                    mi.getListParameterizedType().getName(),
+                                    false,
+                                    true,
+                                    aType,
+                                    null);
+                        }
                         
                         if (aliases != null) {
                             for (XmlElementData alias : aliases) {
                                 String aliasType = alias.getType();
-                                if (aliasType == null) aliasType = childType.getName();
+                                if (aliasType == null) aliasType = useChildType.getName();
                                 
-                                compiledModel.addChild(aliasType,
+                                if (alias.isTypeInterface()) {
+                                    compiledModel.addChild(aliasType,
                                         alias.getName(),
                                         alias.getAlias(),
                                         getChildType(mi.isList(), mi.isArray()),
                                         alias.getDefaultValue(),
                                         AliasType.IS_ALIAS);
+                                }
+                                else {
+                                    compiledModel.addNonChild(alias.getName(),
+                                            alias.getDefaultValue(),
+                                            mi.getGetterSetterType().getName(),
+                                            aliasType,
+                                            false,
+                                            true,
+                                            AliasType.IS_ALIAS,
+                                            alias.getAlias());
+                                }
                             }
                         }
                     }
                     else {
                         String listPType = (mi.getListParameterizedType() == null) ? null : mi.getListParameterizedType().getName() ;
                         compiledModel.addNonChild(mi.getRepresentedProperty(), mi.getDefaultValue(),
-                                mi.getGetterSetterType().getName(), listPType, true, mi.isElement());
+                                mi.getGetterSetterType().getName(), listPType, true, mi.isElement(), AliasType.NORMAL, null);
                     }
                 }
                 else {
                     String listPType = (mi.getListParameterizedType() == null) ? null : mi.getListParameterizedType().getName() ;
                     compiledModel.addNonChild(mi.getRepresentedProperty(), mi.getDefaultValue(),
-                            mi.getGetterSetterType().getName(), listPType, false, mi.isElement());
+                            mi.getGetterSetterType().getName(), listPType, false, mi.isElement(), AliasType.NORMAL, null);
                 }
             }
             
@@ -650,6 +676,7 @@ public class Generator {
             }
         }
         
+        int elementCount = 0;
         for (Map.Entry<String, GhostXmlElementData> entry : elementsMethods.entrySet()) {
             String basePropName = entry.getKey();
             GhostXmlElementData gxed = entry.getValue();
@@ -662,8 +689,9 @@ public class Generator {
             for (AltAnnotation xmlElement : xmlElements) {
                 String elementName = xmlElement.getStringValue("name");
                 
-                String ghostMethodName = baseSetSetterName + "_" + elementName;
-                String ghostMethodGetName = baseGetterName + "_" + elementName;
+                String ghostMethodName = baseSetSetterName + "_" + elementCount;
+                String ghostMethodGetName = baseGetterName + "_" + elementCount;
+                elementCount++;
                 
                 AltClass ac = (AltClass) xmlElement.getAnnotationValues().get("type");
                 
@@ -673,12 +701,12 @@ public class Generator {
                     StringBuffer ghostBufferSetter = new StringBuffer("private void " + ghostMethodName + "(");
                     ghostBufferSetter.append(getCompilableClass(gxed.getterSetterType) +
                         " arg0) { super._setProperty(\"" + elementName + "\", arg0); }");
-                
-                    CtMethod elementsCtMethod = CtNewMethod.make(ghostBufferSetter.toString(), targetCtClass);
-                
+                    
                     if (DEBUG_METHODS) {
                         Logger.getLogger().debug("Adding ghost elements method for " + convertMe.getSimpleName() + " with implementation " + ghostBufferSetter);
                     }
+                
+                    CtMethod elementsCtMethod = CtNewMethod.make(ghostBufferSetter.toString(), targetCtClass);
                 
                     addListGenericSignature(elementsCtMethod, ac, true);
                 
@@ -779,7 +807,9 @@ public class Generator {
                         asParameter(childDataModel.getChildType()) + "," +
                         asParameter(childDataModel.getChildListType()) + "," +
                         asBoolean(childDataModel.isReference()) + "," +
-                        asBoolean(childDataModel.isElement()) + ");\n");
+                        asBoolean(childDataModel.isElement()) + "," +
+                        asParameter(childDataModel.getAliasType()) + "," +
+                        asParameter(childDataModel.getXmlAlias()) + ");\n");
             }
         }
         
@@ -1155,7 +1185,6 @@ public class Generator {
                     
                     xmlNameMap.put(setterVariable, new XmlElementData(setterVariable, defaultValue, true));
                     
-                    
                     String aliasName = setterVariable;
                     
                     AltAnnotation allXmlElements[] = xmlElements.getAnnotationArrayValue("value");
@@ -1168,12 +1197,13 @@ public class Generator {
                         String allXmlElementName = allXmlElement.getStringValue("name");
                         AltClass allXmlElementType = (AltClass) allXmlElement.getAnnotationValues().get("type");
                         String allXmlElementTypeName = (allXmlElementType == null) ? null : allXmlElementType.getName() ;
+                        boolean allXmlElementTypeInterface = (allXmlElementType == null) ? true : allXmlElementType.isInterface();
                         
                         if (JAXB_DEFAULT_STRING.equals(allXmlElementName)) {
                             throw new IllegalArgumentException("The name field of an XmlElement inside an XmlElements must have a specified name");
                         }
                         else {
-                            aliases.add(new XmlElementData(allXmlElementName, aliasName, defaultValue, true, allXmlElementTypeName));
+                            aliases.add(new XmlElementData(allXmlElementName, aliasName, defaultValue, true, allXmlElementTypeName, allXmlElementTypeInterface));
                         }
                     }
                 }

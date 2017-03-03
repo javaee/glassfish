@@ -137,8 +137,15 @@ public class ModelImpl implements Model {
         allChildren.put(xmlTag, new ChildDescriptor(pm));
     }
     
-    public void addNonChild(String xmlTag, String defaultValue, String childType, String childListType, boolean isReference, boolean isElement) {
-        ChildDataModel cdm = new ChildDataModel(childType, childListType, defaultValue, isReference, isElement);
+    public void addNonChild(String xmlTag,
+            String defaultValue,
+            String childType,
+            String childListType,
+            boolean isReference,
+            boolean isElement,
+            AliasType aliasType,
+            String aliasOf) {
+        ChildDataModel cdm = new ChildDataModel(childType, childListType, defaultValue, isReference, isElement, aliasType, aliasOf);
         nonChildProperty.put(xmlTag, cdm);
         allChildren.put(xmlTag, new ChildDescriptor(cdm));
     }

@@ -51,17 +51,19 @@ public class XmlElementData {
     private final String defaultValue;
     private final boolean isElement;
     private final String type;
+    private final boolean isTypeInterface;
     
     XmlElementData(String name, String defaultValue, boolean isElement) {
-        this(name, name, defaultValue, isElement, null);
+        this(name, name, defaultValue, isElement, null, true);
     }
     
-    XmlElementData(String name, String alias, String defaultValue, boolean isElement, String type) {
+    XmlElementData(String name, String alias, String defaultValue, boolean isElement, String type, boolean isTypeInterface) {
         this.name = name;
         this.alias = alias;
         this.defaultValue = defaultValue;
         this.isElement = isElement;
         this.type = type;
+        this.isTypeInterface = isTypeInterface;
     }
     
     public String getName() { return name; }
@@ -69,6 +71,7 @@ public class XmlElementData {
     public String getDefaultValue() { return defaultValue; }
     public boolean isElement() { return isElement; }
     public String getType() { return type; }
+    public boolean isTypeInterface() { return isTypeInterface; }
     
     @Override
     public String toString() {
@@ -77,6 +80,7 @@ public class XmlElementData {
                 "," + Utilities.safeString(defaultValue) +
                 "," + isElement +
                 "," + type +
+                "," + isTypeInterface +
                 "," + System.identityHashCode(this) + ")";
     }
 }
