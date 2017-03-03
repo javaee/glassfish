@@ -248,9 +248,7 @@ public class StandardContext
     /**
      * The response character encoding.
      */
-    private String responseCharacterEncoding = "ISO-8859-1";
-
-    private boolean isResponseCharacterEncodingSet = false;
+    private String responseCharacterEncoding = null;
 
     /**
      * The path to a file to save this Context information.
@@ -1023,12 +1021,6 @@ public class StandardContext
     @Override
     public void setResponseCharacterEncoding(String encoding) {
         this.responseCharacterEncoding = encoding;
-        this.isResponseCharacterEncodingSet = true;
-    }
-
-    @Override
-    public boolean isResponseCharacterEncodingSet() {
-        return this.isResponseCharacterEncodingSet;
     }
 
     /**
@@ -5986,7 +5978,6 @@ public class StandardContext
 
         requestCharacterEncoding = null;
         responseCharacterEncoding = DEFAULT_RESPONSE_CHARACTER_ENCODING;
-        isResponseCharacterEncodingSet = false;
 
         if (log.isLoggable(Level.FINE)) {
             log.log(Level.FINE, "resetContext " + oname);

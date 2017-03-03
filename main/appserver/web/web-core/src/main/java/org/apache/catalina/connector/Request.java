@@ -745,8 +745,9 @@ public class Request
                 if (reqEncoding != null) {
                     setCharacterEncoding(reqEncoding);
                 }
-                if (context.isResponseCharacterEncodingSet()) {
-                    getResponse().getResponse().setCharacterEncoding(this.servletContext.getResponseCharacterEncoding());
+                String resEncoding = this.servletContext.getResponseCharacterEncoding();
+                if (resEncoding != null) {
+                    getResponse().getResponse().setCharacterEncoding(resEncoding);
                 }
             } catch(UnsupportedEncodingException e) {
                 throw new RuntimeException(e);
