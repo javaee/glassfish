@@ -43,6 +43,7 @@ package org.glassfish.web.admin.monitor;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.concurrent.atomic.AtomicLong;
 import com.sun.enterprise.util.StringUtils;
 import org.glassfish.external.statistics.CountStatistic;
 import org.glassfish.external.statistics.StringStatistic;
@@ -176,6 +177,7 @@ public class HttpServiceStatsProvider implements PostConstruct {
 
     private String virtualServerName = null;
     private String [] networkListeners = null;
+    private AtomicLong maxOpenConnectionsAtomic = new AtomicLong();
 
     private ThreadLocal<TimeStatData> individualData = new ThreadLocal<TimeStatData> (){
 
@@ -419,11 +421,19 @@ public class HttpServiceStatsProvider implements PostConstruct {
         for (String listener : networkListeners) {
             if (listener.equals(listenerName)) {
                 countOpenConnections.increment();
-            }
-            NetworkListener networkListener = networkConfig.getNetworkListener(listenerName);
-            if (networkListener != null) {
-                maxOpenConnections.setCount(
-                        Integer.parseInt(networkListener.findProtocol().getHttp().getMaxConnections()));
+                final long openConnections = countOpenConnections.getCount();
+
+                do {
+                    final long maxOpenConnectionsCount = maxOpenConnectionsAtomic.get();
+                    if (openConnections <= maxOpenConnectionsCount) break;
+
+                    if (maxOpenConnectionsAtomic.compareAndSet(maxOpenConnectionsCount, openConnections)) {
+                        synchronized(maxOpenConnectionsAtomic) {
+                            maxOpenConnections.setCount(openConnections);
+                            break;
+                        }
+                    }
+                } while (true);
             }
         }
         if (logger.isLoggable(Level.FINEST)) {
