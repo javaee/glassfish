@@ -611,7 +611,7 @@
         <echo message="#################################################"/>
     </target>
 
-    <target name="all" depends="init,init-report,comet,el,http-connector,jsp,security,servlet,taglib,web-container,weblogicDD,clustering,ha,misc,finish-report"/>
+    <target name="all" depends="init,init-report,comet,el,http-connector,jsp,security,servlet,taglib,web-container,weblogicDD,clustering,ha,finish-report"/>
     <target name="embedded-all" depends="embedded-setup,all"/>
 
     <target name="embedded-setup">
