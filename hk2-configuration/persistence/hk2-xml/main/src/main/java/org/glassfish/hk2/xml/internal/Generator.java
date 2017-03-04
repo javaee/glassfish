@@ -703,7 +703,7 @@ public class Generator {
                         " arg0) { super._setProperty(\"" + elementName + "\", arg0); }");
                     
                     if (DEBUG_METHODS) {
-                        Logger.getLogger().debug("Adding ghost elements method for " + convertMe.getSimpleName() + " with implementation " + ghostBufferSetter);
+                        Logger.getLogger().debug("Adding ghost XmlElements setter method for " + convertMe.getSimpleName() + " with implementation " + ghostBufferSetter);
                     }
                 
                     CtMethod elementsCtMethod = CtNewMethod.make(ghostBufferSetter.toString(), targetCtClass);
@@ -749,7 +749,8 @@ public class Generator {
                     elementsMethodInfo.addAttribute(aa);
                 
                     if (DEBUG_METHODS) {
-                        Logger.getLogger().debug("Adding ghost elements getter method for " + convertMe.getSimpleName() + " with implementation " + ghostBufferGetter);
+                        Logger.getLogger().debug("Adding ghost XmlElements getter method for " + convertMe.getSimpleName() + " with implementation " + ghostBufferGetter);
+                        Logger.getLogger().debug("with XmlElement " + xElement);
                     }
                 
                     targetCtClass.addMethod(elementsCtMethodGetter);

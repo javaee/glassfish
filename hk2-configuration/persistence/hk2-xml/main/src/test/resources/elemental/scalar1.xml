@@ -72,7 +72,5 @@
     <e-long>21</e-long>
     <e-integer>22</e-integer>
     
-    <e-earth>
-    	<name>Toph</name>
-    </e-earth>
+    <e-earth name="Toph" />
 </scalars>
