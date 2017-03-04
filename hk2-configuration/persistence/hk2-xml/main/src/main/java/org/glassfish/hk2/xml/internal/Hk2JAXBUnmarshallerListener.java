@@ -91,66 +91,70 @@ public class Hk2JAXBUnmarshallerListener extends Unmarshaller.Listener {
     private void setSelfXmlTagInAllChildren(BaseHK2JAXBBean targetBean) {
         ModelImpl model = targetBean._getModel();
         
-        for (ParentedModel parentedNode : model.getAllChildren()) {
-            String childXmlTag = parentedNode.getChildXmlTag();
+        for (Map.Entry<String, ChildDescriptor> childDescriptorEntry : model.getAllChildrenDescriptors().entrySet()) {
+            ParentedModel parentedNode = childDescriptorEntry.getValue().getParentedModel();
             
-            Object children;
-            switch (parentedNode.getAliasType()) {
-            case NORMAL:
-                children = targetBean._getProperty(childXmlTag);
-                break;
-            case IS_ALIAS:
-                children = targetBean._getProperty(childXmlTag);
-                targetBean.__fixAlias(childXmlTag, parentedNode.getChildXmlAlias());
+            if (parentedNode != null) {
+                String childXmlTag = parentedNode.getChildXmlTag();
                 
-                break;
-            case HAS_ALIASES:
-            default:
-                children = null;
-            }
-            
-            if (children == null) continue;
-            
-            String proxyName = Utilities.getProxyNameFromInterfaceName(parentedNode.getChildInterface());
-            
-            if (children instanceof List) {
-                for (Object child : (List<Object>) children) {
-                    if (!child.getClass().getName().equals(proxyName)) {
-                        continue;
+                Object children;
+                switch (parentedNode.getAliasType()) {
+                case NORMAL:
+                    children = targetBean._getProperty(childXmlTag);
+                    break;
+                case IS_ALIAS:
+                    children = targetBean._getProperty(childXmlTag);
+                    targetBean.__fixAlias(childXmlTag, parentedNode.getChildXmlAlias());
+                    
+                    break;
+                case HAS_ALIASES:
+                default:
+                    children = null;
+                }
+                
+                if (children == null) continue;
+                
+                String proxyName = Utilities.getProxyNameFromInterfaceName(parentedNode.getChildInterface());
+                
+                if (children instanceof List) {
+                    for (Object child : (List<Object>) children) {
+                        if (!child.getClass().getName().equals(proxyName)) {
+                            continue;
+                        }
+                        
+                        BaseHK2JAXBBean childBean = (BaseHK2JAXBBean) child;
+                        
+                        childBean._setSelfXmlTag(parentedNode.getChildXmlTag());
+                        
+                        setUserKey(childBean, true);
                     }
                     
-                    BaseHK2JAXBBean childBean = (BaseHK2JAXBBean) child;
+                }
+                else if (children.getClass().isArray()) {
+                    for (Object child : (Object[]) children) {
+                        BaseHK2JAXBBean childBean = (BaseHK2JAXBBean) child;
+                        
+                        childBean._setSelfXmlTag(parentedNode.getChildXmlTag());
+                        
+                        setUserKey(childBean, true);
+                    }
+                }
+                else {
+                    BaseHK2JAXBBean childBean = (BaseHK2JAXBBean) children;
                     
                     childBean._setSelfXmlTag(parentedNode.getChildXmlTag());
                     
-                    setUserKey(childBean, true);
+                    setUserKey(childBean, false);
                 }
                 
-            }
-            else if (children.getClass().isArray()) {
-                for (Object child : (Object[]) children) {
-                    BaseHK2JAXBBean childBean = (BaseHK2JAXBBean) child;
-                    
-                    childBean._setSelfXmlTag(parentedNode.getChildXmlTag());
-                    
-                    setUserKey(childBean, true);
-                }
             }
             else {
-                BaseHK2JAXBBean childBean = (BaseHK2JAXBBean) children;
+                String nonChildProp = childDescriptorEntry.getKey();
+                ChildDataModel cdm = childDescriptorEntry.getValue().getChildDataModel();
                 
-                childBean._setSelfXmlTag(parentedNode.getChildXmlTag());
-                
-                setUserKey(childBean, false);
-            }
-        }
-        
-        for (Map.Entry<String, ChildDataModel> nonChildEntry : model.getNonChildProperties().entrySet()) {
-            String nonChildProp = nonChildEntry.getKey();
-            ChildDataModel cdm = nonChildEntry.getValue();
-            
-            if (AliasType.IS_ALIAS.equals(cdm.getAliasType())) {
-                targetBean.__fixAlias(nonChildProp, cdm.getXmlAlias());
+                if (AliasType.IS_ALIAS.equals(cdm.getAliasType())) {
+                    targetBean.__fixAlias(nonChildProp, cdm.getXmlAlias());
+                }
             }
         }
     }

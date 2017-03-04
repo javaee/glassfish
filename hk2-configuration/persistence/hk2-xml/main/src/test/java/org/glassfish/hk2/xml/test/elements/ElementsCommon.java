@@ -237,7 +237,7 @@ public class ElementsCommon {
         Assert.assertEquals("baz", strings.get(2));
         
         List<Object> ttamt = root.getTypesTypesAndMoreTypes();
-        Assert.assertEquals(16, ttamt.size());
+        Assert.assertEquals(17, ttamt.size());
         
         Assert.assertEquals(new Integer(17), ttamt.get(0));
         Assert.assertEquals(new Integer(22), ttamt.get(1));
@@ -269,6 +269,17 @@ public class ElementsCommon {
         
         Assert.assertEquals("Hello", ttamt.get(14));
         Assert.assertEquals("Hello", ttamt.get(15));
+        
+        EarthBean tophBean = (EarthBean) ttamt.get(16);
+        Assert.assertEquals(BENDER_EARTH, tophBean.getName());
+        
+        XmlHk2ConfigurationBean tophConfigBean = (XmlHk2ConfigurationBean) tophBean;
+        Assert.assertEquals(tophConfigBean._getXmlPath(), "/scalars/e-earth");
+        Assert.assertEquals(tophConfigBean._getInstanceName(), "scalars.Toph");
+        
+        Hub hub = locator.getService(Hub.class);
+        
+        checkService(locator, hub, "/scalars/e-earth", "scalars.Toph", BENDER_EARTH);
     }
     
     private static void checkService(ServiceLocator locator, Hub hub, String type, String instance, String name) {

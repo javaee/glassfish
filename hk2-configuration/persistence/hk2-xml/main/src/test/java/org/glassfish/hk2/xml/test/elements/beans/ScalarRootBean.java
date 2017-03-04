@@ -82,7 +82,7 @@ public interface ScalarRootBean {
         , @XmlElement(name="e-float", type=Float.class)
         , @XmlElement(name="e-double", type=Double.class)
         , @XmlElement(name="e-string", type=String.class)
-        // , @XmlElement(name="e-earth", type=EarthBean.class)
+        , @XmlElement(name="e-earth", type=EarthBean.class)
     })
     List<Object> getTypesTypesAndMoreTypes();
 
