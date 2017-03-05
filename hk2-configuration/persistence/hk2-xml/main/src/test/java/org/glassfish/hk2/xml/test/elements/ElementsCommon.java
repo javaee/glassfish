@@ -276,6 +276,7 @@ public class ElementsCommon {
         XmlHk2ConfigurationBean tophConfigBean = (XmlHk2ConfigurationBean) tophBean;
         Assert.assertEquals(tophConfigBean._getXmlPath(), "/scalars/e-earth");
         Assert.assertEquals(tophConfigBean._getInstanceName(), "scalars.Toph");
+        Assert.assertEquals(BENDER_EARTH, tophConfigBean._getKeyValue());
         
         Hub hub = locator.getService(Hub.class);
         
