@@ -162,6 +162,7 @@ public class XmlStreamImpl {
             
             ChildDataModel childDataModel = nonChildProperties.get(attributeName);
             if (childDataModel == null) continue;
+            if (childDataModel.isElement()) continue;
             
             Class<?> childType = targetModel.getNonChildType(attributeName);
             
@@ -207,7 +208,7 @@ public class XmlStreamImpl {
                 }
                 
                 ChildDataModel cdm = nonChildProperties.get(elementTag);
-                if (cdm != null) {
+                if (cdm != null && cdm.isElement()) {
                     String elementValue = advanceNonChildElement(reader, elementTag);
                     
                     Class<?> childType = cdm.getChildTypeAsClass();

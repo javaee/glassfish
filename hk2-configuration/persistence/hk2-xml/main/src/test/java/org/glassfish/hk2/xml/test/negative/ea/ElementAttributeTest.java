@@ -80,7 +80,7 @@ public class ElementAttributeTest {
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testWhollyMixedDom() throws Exception {
         ServiceLocator domLocator = Utilities.createDomLocator();
         
@@ -106,7 +106,7 @@ public class ElementAttributeTest {
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testBothAttributesDom() throws Exception {
         ServiceLocator domLocator = Utilities.createDomLocator();
         
@@ -132,7 +132,7 @@ public class ElementAttributeTest {
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testBothElementsDom() throws Exception {
         ServiceLocator domLocator = Utilities.createDomLocator();
         
