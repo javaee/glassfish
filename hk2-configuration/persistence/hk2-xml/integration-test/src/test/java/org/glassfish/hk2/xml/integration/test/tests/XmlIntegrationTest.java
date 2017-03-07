@@ -45,6 +45,7 @@ import java.util.Map;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.api.XmlService;
+import org.glassfish.hk2.xml.integration.test.LeafBean;
 import org.glassfish.hk2.xml.integration.test.RootBean;
 import org.glassfish.hk2.xml.integration.test.utilities.IntegrationTestUtilities;
 import org.junit.Assert;
@@ -63,7 +64,7 @@ public class XmlIntegrationTest {
     public void testHk2IntegrationMap() {
         ServiceLocator locator = IntegrationTestUtilities.createDomLocator(LeafMapService.class);
         
-        XmlRootHandle<RootBean> handle = createBenchmarkRoot(locator);
+        createBenchmarkRoot(locator);
         
         List<LeafMapService> leaves = locator.getAllServices(LeafMapService.class);
         Assert.assertEquals(2, leaves.size());
@@ -80,6 +81,35 @@ public class XmlIntegrationTest {
             Map<String, Object> hatterBean = hatterLeaf.getLeafAsMap();
             Assert.assertNotNull(hatterBean);
             Assert.assertEquals(HATTER, hatterBean.get(NAME_KEY));
+        }
+        
+    }
+    
+    /**
+     * Tests integrating a child using a bean
+     */
+    @Test
+    @org.junit.Ignore
+    public void testHk2IntegrationBean() {
+        ServiceLocator locator = IntegrationTestUtilities.createLocator(LeafBeanService.class);
+        
+        createBenchmarkRoot(locator);
+        
+        List<LeafBeanService> leaves = locator.getAllServices(LeafBeanService.class);
+        Assert.assertEquals(2, leaves.size());
+        
+        {
+            LeafBeanService aliceLeaf = leaves.get(0);
+            LeafBean aliceBean = aliceLeaf.getBeanAsBean();
+            Assert.assertNotNull(aliceBean);
+            Assert.assertEquals(ALICE, aliceBean.getName());
+        }
+        
+        {
+            LeafBeanService hatterLeaf = leaves.get(1);
+            LeafBean hatterBean = hatterLeaf.getBeanAsBean();
+            Assert.assertNotNull(hatterBean);
+            Assert.assertEquals(HATTER, hatterBean.getName());
         }
         
     }
