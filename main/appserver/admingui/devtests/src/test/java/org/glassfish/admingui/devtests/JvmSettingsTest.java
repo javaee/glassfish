@@ -46,7 +46,7 @@ import static org.junit.Assert.*;
 public class JvmSettingsTest extends BaseSeleniumTestClass {
     public static final String TRIGGER_JVM_GENERAL_SETTINGS = "i18nc.jvm.GeneralTitle";
     public static final String TRIGGER_JVM_PATH_SETTINGS = "i18nc.jvm.PathSettingsTitle";
-    public static final String TRIGGER_JVM_OPTIONS = "i18nc.jvmOptions.PageHelp";
+    public static final String TRIGGER_JVM_OPTIONS = "Manage JVM options for the server.";
     public static final String TRIGGER_JVM_PROFILER_SETTINGS = "i18nc.jvm.ProfilerPageName";
     public static final String TRIGGER_JVM_PROFILER_CREATED = "i18nc.jvm.ProfilerCreated";
     public static final String TRIGGER_JVM_PROFILER_DELETED = "i18nc.jvm.ProfilerDeleted";

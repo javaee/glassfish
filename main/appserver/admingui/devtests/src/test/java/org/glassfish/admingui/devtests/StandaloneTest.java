@@ -116,8 +116,8 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         setFieldValue("propertyForm:sysPropsTable:rowGroup1:0:col2:col1St", "property"+generateRandomString());
         setFieldValue("propertyForm:sysPropsTable:rowGroup1:0:overrideValCol:overrideVal", "foo=bar");
         // FIXME: The app needs to be fixed here. should show success message
-        clickAndWait("propertyForm:clusterSysPropsPage:topButtons:topButtons:saveButton", TRIGGER_SYS_PROPS);
-        sleep(1000); // grr! FIXME
+        clickAndWait("propertyForm:clusterSysPropsPage:topButtons:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
+        //sleep(1000); // grr! FIXME
 
         // Go to instance props page
         clickAndWait("propertyForm:standaloneInstanceTabs:standaloneProp:instanceProps", "Additional Properties (0)"); // FIXME
@@ -129,7 +129,7 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         // Verify that properties were persisted
-        clickAndWait("propertyForm:standaloneInstanceTabs:standaloneProp:configProps", TRIGGER_SYS_PROPS);
+        clickAndWait("propertyForm:standaloneInstanceTabs:standaloneProp:configProps", "System Properties");
         sleep(1000); // grr
         assertTableRowCount("propertyForm:sysPropsTable", sysPropCount);
         clickAndWait("propertyForm:standaloneInstanceTabs:standaloneProp:instanceProps", "Additional Properties (1)"); // FIXME

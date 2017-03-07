@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -67,7 +67,7 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_JMS_CONN_FACT);
 
         setFieldValue("form:propertySheet:generalPropertySheet:jndiProp:jndiProp", poolName);
-        selectDropdownOption("form:propertySheet:generalPropertySheet:resType:resType", "javax.jms.TopicConnectionFactory");
+        selectDropdownOption("form:propertySheet:generalPropertySheet:resTyped:resType", "javax.jms.TopicConnectionFactory");
         setFieldValue("form:propertySheet:generalPropertySheet:descProp:descProp", description);
         selectDropdownOption("form:propertySheet:poolPropertySheet:transprop:trans", "LocalTransaction");
         clickAndWait("form:propertyContentPage:topButtons:newButton", TRIGGER_JMS_CONNECTION_FACTORIES);
@@ -75,17 +75,17 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
 
         // This can't currently use testDisableButton/testEnableButton because the table is different from the others
         // The table should be fixed to be like the others (in terms of IDs) so the standard test API can be used here.
-        selectTableRowByValue("propertyForm:resourcesTable", poolName, "colSelect", "colPoolName");
+        selectTableRowByValue("propertyForm:resourcesTable", poolName, "colSelect", "colName");
         waitForButtonEnabled("propertyForm:resourcesTable:topActionsGroup1:disableButton");
         pressButton("propertyForm:resourcesTable:topActionsGroup1:disableButton");
         waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:disableButton");
 
-        selectTableRowByValue("propertyForm:resourcesTable", poolName, "colSelect", "colPoolName");
+        selectTableRowByValue("propertyForm:resourcesTable", poolName, "colSelect", "colName");
         waitForButtonEnabled("propertyForm:resourcesTable:topActionsGroup1:enableButton");
         pressButton("propertyForm:resourcesTable:topActionsGroup1:enableButton");
         waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:enableButton");
 
-        deleteRow("propertyForm:resourcesTable:topActionsGroup1:deleteConnButton", "propertyForm:resourcesTable", poolName, "colSelect", "colPoolName");
+        deleteRow("propertyForm:resourcesTable:topActionsGroup1:deleteConnButton", "propertyForm:resourcesTable", poolName, "colSelect", "colName");
     }
 
     @Test
@@ -101,7 +101,7 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:resourcesTable:topActionsGroup1:newButton", TRIGGER_NEW_JMS_CONN_FACT);
 
         setFieldValue("form:propertySheet:generalPropertySheet:jndiProp:jndiProp", poolName);
-        selectDropdownOption("form:propertySheet:generalPropertySheet:resType:resType", "javax.jms.TopicConnectionFactory"); // i18n?
+        selectDropdownOption("form:propertySheet:generalPropertySheet:resTyped:resType", "javax.jms.TopicConnectionFactory"); // i18n?
         setFieldValue("form:propertySheet:generalPropertySheet:descProp:descProp", description);
         selectDropdownOption("form:propertySheet:poolPropertySheet:transprop:trans", "LocalTransaction"); //i18n
         
@@ -114,12 +114,12 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
 
         // This can't currently use testDisableButton/testEnableButton because the table is different from the others
         // The table should be fixed to be like the others (in terms of IDs) so the standard test API can be used here.
-        selectTableRowByValue("propertyForm:resourcesTable", poolName, "colSelect", "colPoolName");
+        selectTableRowByValue("propertyForm:resourcesTable", poolName, "colSelect", "colName");
         waitForButtonEnabled("propertyForm:resourcesTable:topActionsGroup1:disableButton");
         pressButton("propertyForm:resourcesTable:topActionsGroup1:disableButton");
         waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:disableButton");
      
-        selectTableRowByValue("propertyForm:resourcesTable", poolName, "colSelect", "colPoolName");
+        selectTableRowByValue("propertyForm:resourcesTable", poolName, "colSelect", "colName");
         waitForButtonEnabled("propertyForm:resourcesTable:topActionsGroup1:enableButton");
         pressButton("propertyForm:resourcesTable:topActionsGroup1:enableButton");
         waitForButtonDisabled("propertyForm:resourcesTable:topActionsGroup1:enableButton");
@@ -135,7 +135,7 @@ public class JmsResourcesTest extends BaseSeleniumTestClass {
                           TRIGGER_EDIT_JMS_CONN_FACT,
                           poolName,
                           instanceName);
-        deleteRow("propertyForm:resourcesTable:topActionsGroup1:deleteConnButton", "propertyForm:resourcesTable", poolName, "colSelect", "colPoolName");
+        deleteRow("propertyForm:resourcesTable:topActionsGroup1:deleteConnButton", "propertyForm:resourcesTable", poolName, "colSelect", "colName");
         //Delete the instance
         clickAndWait("treeForm:tree:standaloneTreeNode:standaloneTreeNode_link", instanceTest.TRIGGER_INSTANCES_PAGE);
         deleteRow("propertyForm:instancesTable:topActionsGroup1:button1", "propertyForm:instancesTable", instanceName);

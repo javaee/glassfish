@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,11 +47,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class NetworkConfigTest extends BaseSeleniumTestClass {
-    private static final String TRIGGER_NETWORK_LISTENERS = "i18n_web.grizzly.networkListenersPageTitleHelp";
+    private static final String TRIGGER_NETWORK_LISTENERS = "Click New to define a new network listener. Click the name of an existing listener to modify its settings.";
     private static final String TRIGGER_NEW_NETWORK_LISTENER = "i18n_web.grizzly.networkListenerNewPageTitle";
-    private static final String TRIGGER_PROTOCOLS = "Click New to define a new protocol.";
+    private static final String TRIGGER_PROTOCOLS = "Click New to define a new protocol. Click the name of an existing protocol to modify its settings. Select one or more protocols and click Delete to delete the protocols and any network listeners using them.";
     private static final String TRIGGER_NEW_PROTOCOL = "i18n_web.grizzly.protocolNewPageTitleHelp";
-    private static final String TRIGGER_TRANSPORTS = "i18n_web.transport.listPageTitleHelp";
+    private static final String TRIGGER_TRANSPORTS = "Click New to define a new transport. Click the name of an existing transport to modify its settings.";
     private static final String TRIGGER_NEW_TRANSPORT = "i18n_web.transport.newPageTitleHelp";
     private static final String TRIGGER_CONFIGURATION = "i18nc.configurations.PageTitleHelp";
     private static final String TRIGGER_NEW_CONFIGURATION = "i18nc.configurations.NewPageTitle";
@@ -166,7 +166,7 @@ public class NetworkConfigTest extends BaseSeleniumTestClass {
             assertEquals(headerBLength, getFieldValue("propertyForm:propertySheet:httpTextField:headerBLength:headerBLength"));
             assertEquals(maxPostSize, getFieldValue("propertyForm:propertySheet:httpTextField:MaxPostSize:headerBLength"));
             assertEquals(compressableMime, getFieldValue("propertyForm:propertySheet:httpTextField:compressableMime:compressableMime"));
-            assertEquals("true", getFieldValue("propertyForm:propertySheet:httpTextField:Comet:cometEnabled"));
+            assertEquals(true, isChecked("propertyForm:propertySheet:httpTextField:Comet:cometEnabled"));
 
             clickAndWait("propertyForm:protocolTabs:fileCacheTab", "Modify file cache settings for the protocol.");
             assertEquals(maxAge, getFieldValue("propertyForm:propertySheet:fileTextField:maxAge:maxAge"));

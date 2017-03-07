@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -136,7 +136,6 @@ public class NodeTest extends BaseSeleniumTestClass {
         selectDropdownOption("propertyForm:propertySheet:sshConnectorSection:psSelected:psSelected", "Password");
 
         setFieldValue("propertyForm:propertySheet:sshConnectorSection:newPasswordProp:NewPassword", "abcde");
-        setFieldValue("propertyForm:propertySheet:sshConnectorSection:confirmPasswordProp:ConfirmPassword", "abcde");
         clickAndWait(ID_CREATE_NODE_BUTTON, TRIGGER_NODES_PAGE);
         // Verify nodes information in table
         String prefix = getTableRowByValue(ID_NODES_TABLE, nodeName, "col1");
@@ -156,7 +155,6 @@ public class NodeTest extends BaseSeleniumTestClass {
 
         assertEquals("34", getFieldValue("propertyForm:propertySheet:sshConnectorSection:sshport:sshport"));
         assertEquals("abcde", getFieldValue("propertyForm:propertySheet:sshConnectorSection:newPasswordProp:NewPassword"));
-        assertEquals("abcde", getFieldValue("propertyForm:propertySheet:sshConnectorSection:confirmPasswordProp:ConfirmPassword"));
         clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_NODES_PAGE);
 
         //Test Delete Node
