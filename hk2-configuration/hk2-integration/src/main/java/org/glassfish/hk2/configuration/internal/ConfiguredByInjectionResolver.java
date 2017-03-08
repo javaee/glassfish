@@ -149,7 +149,7 @@ public class ConfiguredByInjectionResolver implements
             throw new IllegalStateException("Could not find a configuration bean for " + injectee + " with descriptor " + workingOn);
         }
         
-        return BeanUtilities.getBeanPropertyValue(parameterName, beanInfo);
+        return BeanUtilities.getBeanPropertyValue(injectee.getRequiredType(), parameterName, beanInfo);
     }
 
     /* (non-Javadoc)
@@ -168,8 +168,8 @@ public class ConfiguredByInjectionResolver implements
         return true;
     }
     
-    /* package */ synchronized BeanInfo addBean(ActiveDescriptor<?> descriptor, Object bean, String type) {
-        BeanInfo retVal = new BeanInfo(type, descriptor.getName(), bean);
+    /* package */ synchronized BeanInfo addBean(ActiveDescriptor<?> descriptor, Object bean, String type, Object metadata) {
+        BeanInfo retVal = new BeanInfo(type, descriptor.getName(), bean, metadata);
         beanMap.put(descriptor, retVal);
         return retVal;
     }

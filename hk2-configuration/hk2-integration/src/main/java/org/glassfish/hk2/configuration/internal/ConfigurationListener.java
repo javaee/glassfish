@@ -116,12 +116,12 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
         initialize(hub.getCurrentDatabase());
     }
     
-    private ActiveDescriptor<?> addInstanceDescriptor(DynamicConfiguration config, ActiveDescriptor<?> parent, String name, String type, Object bean) {
+    private ActiveDescriptor<?> addInstanceDescriptor(DynamicConfiguration config, ActiveDescriptor<?> parent, String name, String type, Object bean, Object metadata) {
         DelegatingNamedActiveDescriptor addMe = new DelegatingNamedActiveDescriptor(parent, name);
         
         ActiveDescriptor<?> systemDescriptor = config.addActiveDescriptor(addMe);
         
-        injectionResolver.addBean(systemDescriptor, bean, type);
+        injectionResolver.addBean(systemDescriptor, bean, type, metadata);
         
         return systemDescriptor;
     }
@@ -213,10 +213,11 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
     private void modifyInstanceDescriptor(ActiveDescriptor<?> parent,
             String name,
             Object bean,
+            Object metadata,
             String typeName,
             List<PropertyChangeEvent> changes
             ) {
-        BeanInfo modifiedInfo = injectionResolver.addBean(parent, bean, typeName);
+        BeanInfo modifiedInfo = injectionResolver.addBean(parent, bean, typeName, metadata);
         
         Object target = context.findOnly(parent);
         if (target == null) {
@@ -302,7 +303,7 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
                         params[injectee.getPosition()] = pce.getNewValue();
                     }
                     else {
-                        params[injectee.getPosition()] = BeanUtilities.getBeanPropertyValue(propName, modifiedInfo);
+                        params[injectee.getPosition()] = BeanUtilities.getBeanPropertyValue(injectee.getRequiredType(), propName, modifiedInfo);
                     }
                 }
                 
@@ -343,7 +344,8 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
                 
                 Map<String, Instance> typeInstances = type.getInstances();
                 for (Map.Entry<String, Instance> entry : typeInstances.entrySet()) {
-                    added.add(addInstanceDescriptor(config, typeDescriptor, entry.getKey(), typeName, entry.getValue().getBean()));
+                    added.add(addInstanceDescriptor(config, typeDescriptor, entry.getKey(), typeName, entry.getValue().getBean(),
+                            entry.getValue().getMetadata()));
                 }
             }
         }
@@ -415,17 +417,20 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
                 
                 String addedInstanceKey = change.getInstanceKey();
                 Object addedInstanceBean = change.getInstanceValue().getBean();
+                Object addedInstanceMetadata = change.getInstanceValue().getMetadata();
                 
                 List<ActiveDescriptor<?>> typeDescriptors = locator.getDescriptors(new NoNameTypeFilter(locator, change.getChangeType().getName(), null));
                 
                 for (ActiveDescriptor<?> typeDescriptor : typeDescriptors) {
                     // These match the type, so now we have to add one per instance
-                    added.add(addInstanceDescriptor(config, typeDescriptor, addedInstanceKey, typeName, addedInstanceBean));
+                    added.add(addInstanceDescriptor(config, typeDescriptor, addedInstanceKey, typeName, addedInstanceBean, addedInstanceMetadata));
                 }
             }
             else if (Change.ChangeCategory.MODIFY_INSTANCE.equals(change.getChangeCategory())) {
                 String modifiedInstanceKey = change.getInstanceKey();
-                Object modifiedInstanceBean = change.getInstanceValue();
+                Instance instance = change.getInstanceValue();
+                Object modifiedInstanceBean = (instance != null) ? instance.getBean() : null;
+                Object modifiedMetadata = (instance != null) ? instance.getMetadata() : null;
                 
                 List<ActiveDescriptor<?>> typeDescriptors = locator.getDescriptors(
                         new NoNameTypeFilter(locator, change.getChangeType().getName(), modifiedInstanceKey));
@@ -434,6 +439,7 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
                     modifyInstanceDescriptor(typeDescriptor,
                             modifiedInstanceKey,
                             modifiedInstanceBean,
+                            modifiedMetadata,
                             change.getChangeType().getName(),
                             change.getModifiedProperties());
                 }
@@ -563,8 +569,9 @@ public class ConfigurationListener implements BeanDatabaseUpdateListener {
                     for (Map.Entry<String, Instance> instance : type.getInstances().entrySet()) {
                         String addedInstanceKey = instance.getKey();
                         Object addedInstanceBean = instance.getValue().getBean();
+                        Object addedInstanceMetadata = instance.getValue().getMetadata();
                         
-                        addedList.add(addInstanceDescriptor(config, addMe, addedInstanceKey, typeName, addedInstanceBean));
+                        addedList.add(addInstanceDescriptor(config, addMe, addedInstanceKey, typeName, addedInstanceBean, addedInstanceMetadata));
                     }
                 }
             }

@@ -47,11 +47,13 @@ public class BeanInfo {
     private final String typeName;
     private final String instanceName;
     private final Object bean;
+    private final Object metadata;
     
-    /* package */ BeanInfo(String typeName, String instanceName, Object bean) {
+    /* package */ BeanInfo(String typeName, String instanceName, Object bean, Object metadata) {
         this.typeName = typeName;
         this.instanceName = instanceName;
         this.bean = bean;
+        this.metadata = metadata;
     }
 
     /**
@@ -75,5 +77,13 @@ public class BeanInfo {
         return bean;
     }
     
+    public Object getMetadata() {
+        return metadata;
+    }
+    
+    @Override
+    public String toString() {
+        return "BeanInfo(" + typeName + "," + instanceName + "," + bean + "," + metadata + "," + System.identityHashCode(this) + ")";
+    }
 
 }

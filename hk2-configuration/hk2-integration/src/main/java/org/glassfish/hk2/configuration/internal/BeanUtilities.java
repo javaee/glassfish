@@ -43,10 +43,12 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.Map;
 
 import org.glassfish.hk2.configuration.api.Configured;
 import org.glassfish.hk2.configuration.api.Dynamicity;
+import org.glassfish.hk2.utilities.reflection.TypeChecker;
 
 /**
  * For JavaBean or Bean-Like-Map utilities
@@ -77,8 +79,24 @@ public class BeanUtilities {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static Object getBeanPropertyValue(String attribute, BeanInfo beanInfo) {
-        if (Configured.BEAN_KEY.equals(attribute)) return beanInfo.getBean();
+    public static Object getBeanPropertyValue(Type requiredType, String attribute, BeanInfo beanInfo) {
+        if (Configured.BEAN_KEY.equals(attribute)) {
+            Object bean = beanInfo.getBean();
+            if (bean == null) return null;
+            
+            if (TypeChecker.isRawTypeSafe(requiredType, bean.getClass())) {
+                return bean;
+            }
+              
+            Object metadata = beanInfo.getMetadata();
+            if (metadata != null &&
+                TypeChecker.isRawTypeSafe(requiredType, metadata.getClass())) {
+                return metadata;
+            }
+            
+            // This isn't going to work, but the best shot is the bean itself
+            return bean;
+        }
         if (Configured.TYPE.equals(attribute)) return beanInfo.getTypeName();
         if (Configured.INSTANCE.equals(attribute)) return beanInfo.getInstanceName();
         

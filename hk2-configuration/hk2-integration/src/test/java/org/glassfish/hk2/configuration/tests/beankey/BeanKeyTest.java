@@ -77,7 +77,7 @@ public class BeanKeyTest extends HK2Runner {
      * Tests that beans can be injected with BEAN_KEY two different ways
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testDifferentBeanKeyTypesGetInjectedProperly() {
         addBeanLikeMapWithBeanMetadataToHub(ALICE, 0);
         addBeanLikeMapWithBeanMetadataToHub(BOB, 1);
@@ -89,7 +89,6 @@ public class BeanKeyTest extends HK2Runner {
         checkService(allServices.get(0), ALICE, 0);
         checkService(allServices.get(1), BOB, 1);
         checkService(allServices.get(2), CAROL, 2);
-        
     }
     
     private static void checkService(BeanKeyService service, String name, int data) {
