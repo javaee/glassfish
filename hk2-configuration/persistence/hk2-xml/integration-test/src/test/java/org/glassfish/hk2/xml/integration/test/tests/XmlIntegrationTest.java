@@ -89,7 +89,7 @@ public class XmlIntegrationTest {
      * Tests integrating a child using a bean
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testHk2IntegrationBean() {
         ServiceLocator locator = IntegrationTestUtilities.createLocator(LeafBeanService.class);
         
