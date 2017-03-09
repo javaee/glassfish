@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015-2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,48 +39,52 @@
  */
 package org.glassfish.hk2.xml.internal;
 
+import javax.xml.bind.annotation.XmlElementWrapper;
+
+import org.glassfish.hk2.api.AnnotationLiteral;
+
 /**
- * Information about the XmlElement annotation
- * 
  * @author jwells
  *
  */
-public class XmlElementData {
+public class XmlElementWrapperImpl extends AnnotationLiteral<XmlElementWrapper> implements XmlElementWrapper {
+    private static final long serialVersionUID = 3661729772479049681L;
+    
     private final String name;
-    private final String alias;
-    private final String defaultValue;
-    private final boolean isElement;
-    private final String type;
-    private final boolean isTypeInterface;
-    private final String xmlWrapperTag;
+    private final String namespace;
+    private final boolean nillable;
+    private final boolean required;
     
-    XmlElementData(String name, String alias, String defaultValue, boolean isElement, String type, boolean isTypeInterface, String xmlWrapperTag) {
+    public XmlElementWrapperImpl(String name, String namespace, boolean nillable, boolean required) {
         this.name = name;
-        this.alias = alias;
-        this.defaultValue = defaultValue;
-        this.isElement = isElement;
-        this.type = type;
-        this.isTypeInterface = isTypeInterface;
-        this.xmlWrapperTag = xmlWrapperTag;
+        this.namespace = namespace;
+        this.nillable = nillable;
+        this.required = required;
     }
-    
-    public String getName() { return name; }
-    public String getAlias() { return alias; }
-    public String getDefaultValue() { return defaultValue; }
-    public boolean isElement() { return isElement; }
-    public String getType() { return type; }
-    public boolean isTypeInterface() { return isTypeInterface; }
-    public String getXmlWrapperTag() { return xmlWrapperTag; }
+
+    @Override
+    public String name() {
+        return name;
+    }
+
+    @Override
+    public String namespace() {
+        return namespace;
+    }
+
+    @Override
+    public boolean nillable() {
+        return nillable;
+    }
+
+    @Override
+    public boolean required() {
+        return required;
+    }
     
     @Override
     public String toString() {
-        return "XmlElementData(" + name +
-                "," + alias +
-                "," + Utilities.safeString(defaultValue) +
-                "," + isElement +
-                "," + type +
-                "," + isTypeInterface +
-                "," + xmlWrapperTag +
-                "," + System.identityHashCode(this) + ")";
+        return "@XmlElemntWrapperImpl(" + name + "," + namespace + "," + nillable + "," + required + "," + System.identityHashCode(this) + ")";
     }
+
 }

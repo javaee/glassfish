@@ -40,13 +40,13 @@
 package org.glassfish.hk2.xml.test.elementwrapper.beans;
 
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlID;
 
 import org.jvnet.hk2.annotations.Contract;
 
 /**
+ * This is unkeyed
+ * 
  * @author jwells
- *
  */
 @Contract
 public interface WrapperLeafBean {

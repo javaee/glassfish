@@ -87,6 +87,8 @@ public class Hk2JAXBUnmarshallerListener extends Unmarshaller.Listener {
         bean._setKeyValue(key);
     }
     
+    
+    
     @SuppressWarnings("unchecked")
     private void setSelfXmlTagInAllChildren(BaseHK2JAXBBean targetBean) {
         ModelImpl model = targetBean._getModel();
@@ -96,6 +98,7 @@ public class Hk2JAXBUnmarshallerListener extends Unmarshaller.Listener {
             
             if (parentedNode != null) {
                 String childXmlTag = parentedNode.getChildXmlTag();
+                String xmlWrapperTag = parentedNode.getXmlWrapperTag();
                 
                 Object children;
                 switch (parentedNode.getAliasType()) {
@@ -124,7 +127,7 @@ public class Hk2JAXBUnmarshallerListener extends Unmarshaller.Listener {
                         
                         BaseHK2JAXBBean childBean = (BaseHK2JAXBBean) child;
                         
-                        childBean._setSelfXmlTag(parentedNode.getChildXmlTag());
+                        childBean._setSelfXmlTag(Utilities.constructXmlTag(xmlWrapperTag, parentedNode.getChildXmlTag()));
                         
                         setUserKey(childBean, true);
                     }
@@ -134,7 +137,7 @@ public class Hk2JAXBUnmarshallerListener extends Unmarshaller.Listener {
                     for (Object child : (Object[]) children) {
                         BaseHK2JAXBBean childBean = (BaseHK2JAXBBean) child;
                         
-                        childBean._setSelfXmlTag(parentedNode.getChildXmlTag());
+                        childBean._setSelfXmlTag(Utilities.constructXmlTag(xmlWrapperTag, parentedNode.getChildXmlTag()));
                         
                         setUserKey(childBean, true);
                     }
@@ -142,7 +145,7 @@ public class Hk2JAXBUnmarshallerListener extends Unmarshaller.Listener {
                 else {
                     BaseHK2JAXBBean childBean = (BaseHK2JAXBBean) children;
                     
-                    childBean._setSelfXmlTag(parentedNode.getChildXmlTag());
+                    childBean._setSelfXmlTag(Utilities.constructXmlTag(xmlWrapperTag, parentedNode.getChildXmlTag()));
                     
                     setUserKey(childBean, false);
                 }

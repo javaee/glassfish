@@ -84,6 +84,7 @@ import javassist.bytecode.annotation.StringMemberValue;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -567,7 +568,8 @@ public class Generator {
                                 mi.getRepresentedProperty(),
                                 getChildType(mi.isList(), mi.isArray()),
                                 mi.getDefaultValue(),
-                                aType);
+                                aType,
+                                mi.getWrapperTag());
                         }
                         else {
                             compiledModel.addNonChild(mi.getRepresentedProperty(),
@@ -591,7 +593,8 @@ public class Generator {
                                         alias.getAlias(),
                                         getChildType(mi.isList(), mi.isArray()),
                                         alias.getDefaultValue(),
-                                        AliasType.IS_ALIAS);
+                                        AliasType.IS_ALIAS,
+                                        mi.getWrapperTag());
                                 }
                                 else {
                                     compiledModel.addNonChild(alias.getName(),
@@ -803,7 +806,8 @@ public class Generator {
                         asParameter(parentedModel.getChildXmlAlias()) + "," +
                         asParameter(parentedModel.getChildType()) + "," +
                         asParameter(parentedModel.getGivenDefault()) + "," +
-                        asParameter(parentedModel.getAliasType()) + ");\n");
+                        asParameter(parentedModel.getAliasType()) + "," +
+                        asParameter(parentedModel.getXmlWrapperTag()) + ");\n");
             }
             else {
                 ChildDataModel childDataModel = descriptor.getChildDataModel();
@@ -1179,8 +1183,14 @@ public class Generator {
             AltAnnotation pluralOf = null;
             AltAnnotation xmlElement = originalMethod.getAnnotation(XmlElement.class.getName());
             AltAnnotation xmlElements = originalMethod.getAnnotation(XmlElements.class.getName());
+            AltAnnotation xmlElementWrapper = originalMethod.getAnnotation(XmlElementWrapper.class.getName());
             if (xmlElement != null && xmlElements != null) {
                 throw new IllegalArgumentException("The method " + originalMethod + " of " + convertMe + " has both @XmlElement and @XmlElements, which is illegal");
+            }
+            
+            String xmlElementWrapperName = (xmlElementWrapper == null) ? null : xmlElementWrapper.getStringValue("name");
+            if (xmlElementWrapperName != null && xmlElementWrapperName.isEmpty()) {
+                xmlElementWrapperName = setterVariable;
             }
             
             if (xmlElement != null || xmlElements != null) {
@@ -1190,7 +1200,7 @@ public class Generator {
                     
                     String defaultValue = JAXB_DEFAULT_DEFAULT;
                     
-                    xmlNameMap.put(setterVariable, new XmlElementData(setterVariable, defaultValue, true));
+                    xmlNameMap.put(setterVariable, new XmlElementData(setterVariable, setterVariable, defaultValue, true, null, true, xmlElementWrapperName));
                     
                     String aliasName = setterVariable;
                     
@@ -1210,7 +1220,13 @@ public class Generator {
                             throw new IllegalArgumentException("The name field of an XmlElement inside an XmlElements must have a specified name");
                         }
                         else {
-                            aliases.add(new XmlElementData(allXmlElementName, aliasName, defaultValue, true, allXmlElementTypeName, allXmlElementTypeInterface));
+                            aliases.add(new XmlElementData(allXmlElementName,
+                                    aliasName,
+                                    defaultValue,
+                                    true,
+                                    allXmlElementTypeName,
+                                    allXmlElementTypeInterface,
+                                    xmlElementWrapperName));
                         }
                     }
                 }
@@ -1221,10 +1237,22 @@ public class Generator {
                     String defaultValue = xmlElement.getStringValue("defaultValue");
                     
                     if (JAXB_DEFAULT_STRING.equals(xmlElement.getStringValue("name"))) {
-                        xmlNameMap.put(setterVariable, new XmlElementData(setterVariable, defaultValue, true));
+                        xmlNameMap.put(setterVariable, new XmlElementData(setterVariable,
+                                setterVariable,
+                                defaultValue,
+                                true,
+                                null,
+                                true,
+                                xmlElementWrapperName));
                     }
                     else {
-                        xmlNameMap.put(setterVariable, new XmlElementData(xmlElement.getStringValue("name"), defaultValue, true));
+                        xmlNameMap.put(setterVariable, new XmlElementData(
+                                xmlElement.getStringValue("name"),
+                                xmlElement.getStringValue("name"),
+                                defaultValue, true,
+                                null,
+                                true,
+                                xmlElementWrapperName));
                     } 
                 }
             }
@@ -1232,10 +1260,22 @@ public class Generator {
                 AltAnnotation xmlAttribute = originalMethod.getAnnotation(XmlAttribute.class.getName());
                 if (xmlAttribute != null) {
                     if (JAXB_DEFAULT_STRING.equals(xmlAttribute.getStringValue("name"))) {
-                        xmlNameMap.put(setterVariable, new XmlElementData(setterVariable, JAXB_DEFAULT_DEFAULT, false));
+                        xmlNameMap.put(setterVariable, new XmlElementData(setterVariable,
+                                setterVariable,
+                                JAXB_DEFAULT_DEFAULT,
+                                false,
+                                null,
+                                true,
+                                xmlElementWrapperName));
                     }
                     else {
-                        xmlNameMap.put(setterVariable, new XmlElementData(xmlAttribute.getStringValue("name"), JAXB_DEFAULT_DEFAULT, false));
+                        xmlNameMap.put(setterVariable, new XmlElementData(xmlAttribute.getStringValue("name"),
+                                xmlAttribute.getStringValue("name"),
+                                JAXB_DEFAULT_DEFAULT,
+                                false,
+                                null,
+                                true,
+                                xmlElementWrapperName));
                     }
                 }
                 else {

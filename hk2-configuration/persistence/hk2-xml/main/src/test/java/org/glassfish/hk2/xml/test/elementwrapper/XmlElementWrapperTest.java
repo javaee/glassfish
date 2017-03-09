@@ -67,7 +67,7 @@ public class XmlElementWrapperTest {
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testWrapperJaxb() throws Exception {
         ServiceLocator domLocator = Utilities.createLocator();
         

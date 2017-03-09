@@ -131,8 +131,9 @@ public class ModelImpl implements Model {
             String xmlAlias,
             ChildType childType,
             String givenDefault,
-            AliasType aliased) {
-        ParentedModel pm = new ParentedModel(childInterface, xmlTag, xmlAlias, childType, givenDefault, aliased);
+            AliasType aliased,
+            String childWrapperTag) {
+        ParentedModel pm = new ParentedModel(childInterface, xmlTag, xmlAlias, childType, givenDefault, aliased, childWrapperTag);
         childrenByName.put(xmlTag, pm);
         allChildren.put(xmlTag, new ChildDescriptor(pm));
     }

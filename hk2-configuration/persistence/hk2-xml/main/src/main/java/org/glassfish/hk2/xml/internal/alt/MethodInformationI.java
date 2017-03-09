@@ -67,6 +67,11 @@ public interface MethodInformationI {
      * @return the defaultValue
      */
     public String getDefaultValue();
+    
+    /**
+     * @return The wrapper tag or null if there is none
+     */
+    public String getWrapperTag();
 
     /**
      * @return the baseChildType

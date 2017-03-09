@@ -115,6 +115,11 @@ public class MethodInformation implements MethodInformationI {
      */
     private final AltClass listParameterizedType;
     
+    /**
+     * The XmlWrapper tag or null
+     */
+    private final String xmlWrapperTag;
+    
     public MethodInformation(AltMethod originalMethod,
             MethodType methodType,
             String decapitalizedMethodProperty,
@@ -127,7 +132,8 @@ public class MethodInformation implements MethodInformationI {
             boolean isArray,
             boolean isReference,
             boolean isElement,
-            AltClass listParameterizedType) {
+            AltClass listParameterizedType,
+            String xmlWrapperTag) {
         this.originalMethod = originalMethod;
         this.methodType = methodType;
         this.decapitalizedMethodProperty = decapitalizedMethodProperty;
@@ -141,6 +147,7 @@ public class MethodInformation implements MethodInformationI {
         this.isReference = isReference;
         this.isElement = isElement;
         this.listParameterizedType = listParameterizedType;
+        this.xmlWrapperTag = xmlWrapperTag;
     }
     
     /* (non-Javadoc)
@@ -245,6 +252,11 @@ public class MethodInformation implements MethodInformationI {
     }
     
     @Override
+    public String getWrapperTag() {
+        return xmlWrapperTag;
+    }
+    
+    @Override
     public String toString() {
         return "MethodInformation(name=" + originalMethod.getName() + "," +
           "type=" + methodType + "," +
@@ -259,9 +271,8 @@ public class MethodInformation implements MethodInformationI {
           "isReference=" + isReference + "," +
           "isElement=" + isElement + "," +
           "listParameterizedType=" + listParameterizedType + "," +
+          "xmlWrapperTag=" + xmlWrapperTag + "," +
           System.identityHashCode(this) + ")";
           
     }
-
-    
 }

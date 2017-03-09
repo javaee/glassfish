@@ -93,7 +93,13 @@ public class XmlElementWrapperCommon {
         XmlHk2ConfigurationBean leafConfigBean = (XmlHk2ConfigurationBean) leaf;
         
         Assert.assertEquals("/wrapper-root/middles/middle/leaves/leaf", leafConfigBean._getXmlPath());
-        Assert.assertTrue(leafConfigBean._getInstanceName().startsWith("wrapper-root.middles.Alice.leaves."));
-        Assert.assertNull(leafConfigBean._getKeyValue());
+        String instanceName = leafConfigBean._getInstanceName();
+        
+        Assert.assertNull(leafConfigBean._getKeyPropertyName());
+        String keyValue = leafConfigBean._getKeyValue();
+        Assert.assertNotNull(keyValue);
+        
+        String fullKeyName = "wrapper-root.middles.Alice.leaves." + keyValue;
+        Assert.assertEquals(fullKeyName, instanceName);
     }
 }

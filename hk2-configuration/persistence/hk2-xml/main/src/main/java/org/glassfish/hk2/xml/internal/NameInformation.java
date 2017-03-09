@@ -91,6 +91,12 @@ public class NameInformation {
         return nameMapping.get(mapMe).getDefaultValue();
     }
     
+    String getXmlWrapperTag(String mapMe) {
+        if (mapMe == null) return null;
+        if (!nameMapping.containsKey(mapMe)) return null;
+        return nameMapping.get(mapMe).getXmlWrapperTag();
+    }
+    
     boolean hasNoXmlElement(String variableName) {
         if (variableName == null) return true;
         return noXmlElement.contains(variableName);

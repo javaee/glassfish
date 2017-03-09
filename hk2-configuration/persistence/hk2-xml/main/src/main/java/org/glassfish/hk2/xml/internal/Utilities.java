@@ -113,6 +113,7 @@ import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
 public class Utilities {
     /** Separator for instance names */
     public final static char INSTANCE_PATH_SEPARATOR = '.';
+    private final static char XML_PATH_SEPARATOR = '/';
     
     private final static String CLASS_ADD_ON_NAME = "_Hk2_Jaxb";
     
@@ -178,9 +179,27 @@ public class Utilities {
     }
     
     private static String getKeySegment(BaseHK2JAXBBean bean) {
+        String selfXmlTag = bean._getSelfXmlTag();
         String baseKeySegment = bean._getKeyValue();
+        
         if (baseKeySegment == null) {
-            baseKeySegment = bean._getSelfXmlTag();
+            baseKeySegment = selfXmlTag;
+            if (baseKeySegment != null) {
+              baseKeySegment = baseKeySegment.replace(XML_PATH_SEPARATOR, INSTANCE_PATH_SEPARATOR);
+            }
+        }
+        else {
+            String xmlWrapperTag = null;
+            if (selfXmlTag != null) {
+                int pathSep = selfXmlTag.indexOf(XML_PATH_SEPARATOR);
+                if (pathSep > 0) {
+                    xmlWrapperTag = selfXmlTag.substring(0, pathSep);
+                }
+            }
+            
+            if (xmlWrapperTag != null) {
+                baseKeySegment = xmlWrapperTag + INSTANCE_PATH_SEPARATOR + baseKeySegment;
+            }
         }
         
         return baseKeySegment;
@@ -512,13 +531,13 @@ public class Utilities {
         }
         
         child._setParent(myParent);
-        child._setSelfXmlTag(childNode.getChildXmlTag());
+        child._setSelfXmlTag(constructXmlTag(childNode.getXmlWrapperTag(), childNode.getChildXmlTag()));
         child._setKeyValue(childKey);
         if (childKey != null) {
-            child._setInstanceName(myParent._getInstanceName() + Utilities.INSTANCE_PATH_SEPARATOR + child._getKeyValue());
+            child._setInstanceName(composeInstanceName(myParent._getInstanceName(), child._getKeyValue(), childNode.getXmlWrapperTag()));
         }
         else {
-            child._setInstanceName(myParent._getInstanceName() + Utilities.INSTANCE_PATH_SEPARATOR + childNode.getChildXmlTag());
+            child._setInstanceName(composeInstanceName(myParent._getInstanceName(), childNode.getChildXmlTag(), childNode.getXmlWrapperTag()));
         }
         
         // Now freeze it
@@ -571,6 +590,15 @@ public class Utilities {
         }
         
         return child;
+    }
+    
+    private static String composeInstanceName(String parentName, String mySegment, String xmlWrapperTag) {
+        if (xmlWrapperTag == null) {
+            return parentName + INSTANCE_PATH_SEPARATOR + mySegment;
+        }
+        
+        return parentName + INSTANCE_PATH_SEPARATOR + xmlWrapperTag +  INSTANCE_PATH_SEPARATOR + mySegment;
+        
     }
     
     /**
@@ -2187,6 +2215,8 @@ public class Utilities {
         
         String defaultValue = xmlNameMap.getDefaultNameMap(variable);
         
+        String xmlWrapperTag = xmlNameMap.getXmlWrapperTag(variable);
+        
         boolean key = false;
         if ((m.getAnnotation(XmlID.class.getName()) != null) || (m.getAnnotation(XmlIdentifier.class.getName()) != null)) {
             key = true;
@@ -2207,7 +2237,8 @@ public class Utilities {
                 isArray,
                 isReference,
                 isElement,
-                listParameterizedType);
+                listParameterizedType,
+                xmlWrapperTag);
     }
     
     private static MethodInformationI getAndSetMethodInformation(AltMethod am, NameInformation xmlMap) {
@@ -2452,5 +2483,10 @@ public class Utilities {
             packageOnly = PackageToNamespaceComputable.calculateNamespaces(bean.getClass());
         }
         currentValues.putAll(packageOnly);
+    }
+    
+    public static String constructXmlTag(String wrapper, String tag) {
+        if (wrapper == null) return tag;
+        return wrapper + "/" + tag;
     }
 }
