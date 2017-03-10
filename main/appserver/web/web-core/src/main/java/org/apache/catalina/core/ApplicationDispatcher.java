@@ -76,6 +76,7 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.text.MessageFormat;
+import javax.servlet.http.ServletMapping;
 
 
 import static org.apache.catalina.InstanceEvent.EventType.AFTER_DISPATCH_EVENT;
@@ -211,13 +212,14 @@ public final class ApplicationDispatcher
      *  else <code>null</code>
      */
     public ApplicationDispatcher
-        (Wrapper wrapper, String requestURI, String servletPath,
+        (Wrapper wrapper, ServletMapping mappingForDispatch, String requestURI, String servletPath,
          String pathInfo, String queryString, String name) {
 
         super();
 
         // Save all of our configuration parameters
         this.wrapper = wrapper;
+        this.mappingForDispatch = mappingForDispatch;
         this.context = (Context) wrapper.getParent();
         this.requestURI = requestURI;
         this.servletPath = servletPath;
@@ -282,6 +284,8 @@ public final class ApplicationDispatcher
      * or included.
      */
     private Wrapper wrapper = null;
+    
+    private ServletMapping mappingForDispatch;
 
 
     // ------------------------------------------------------------- Properties
@@ -1063,7 +1067,7 @@ public final class ApplicationDispatcher
             crossContextFlag = Boolean.valueOf(crossContext);
             //END OF 6364900
             wrapper = new ApplicationHttpRequest
-                (hcurrent, context, crossContext, state.dispatcherType);
+                (hcurrent, context, crossContext, mappingForDispatch, state.dispatcherType);
         } else {
             wrapper = new ApplicationRequest(current);
         }

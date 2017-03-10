@@ -78,6 +78,7 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.SecurityPermission;
 import java.util.*;
+import javax.servlet.http.ServletMapping;
 
 
 /**
@@ -431,8 +432,16 @@ public class RequestFacade
 
         return request.getInputStream();
     }
+    
+    public ServletMapping getServletMapping() {
 
-    @Override
+        if (request == null) {
+            throw new IllegalStateException(rb.getString(LogFacade.CANNOT_USE_REQUEST_OBJECT_OUTSIDE_SCOPE_EXCEPTION));
+        }
+
+        return request.getServletMapping();
+    }
+    
     public String getParameter(String name) {
 
         if (request == null) {

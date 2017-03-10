@@ -61,7 +61,6 @@ package org.apache.catalina.core;
 import org.glassfish.grizzly.http.server.util.AlternateDocBase;
 import org.glassfish.grizzly.http.server.util.Mapper;
 import org.glassfish.grizzly.http.server.util.MappingData;
-import org.glassfish.pfl.basic.logex.Log;
 import org.apache.catalina.*;
 import org.apache.catalina.deploy.*;
 import org.apache.catalina.loader.WebappLoader;
@@ -98,7 +97,6 @@ import javax.servlet.http.HttpUpgradeHandler;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URLDecoder;
-import java.net.URL;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.text.MessageFormat;
@@ -107,7 +105,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.servlet.http.ServletMapping;
+import org.apache.catalina.connector.MappingImpl;
 import org.glassfish.grizzly.http.util.CharChunk;
 import org.glassfish.grizzly.http.util.MessageBytes;
 
@@ -6998,7 +6997,7 @@ public class StandardContext
         if (wrapper == null)
             return (null);
 
-        return new ApplicationDispatcher(wrapper, null, null, null, null, name);
+        return new ApplicationDispatcher(wrapper, null, null, null, null, null, name);
 
     }
 
@@ -7400,12 +7399,13 @@ public class StandardContext
         Wrapper wrapper = (Wrapper) mappingData.wrapper;
         String wrapperPath = mappingData.wrapperPath.toString();
         String pathInfo = mappingData.pathInfo.toString();
+        ServletMapping mappingForDispatch = new MappingImpl(mappingData);
 
         mappingData.recycle();
 
         // Construct a RequestDispatcher to process this request
         return new ApplicationDispatcher
-            (wrapper, uriCC.toString(), wrapperPath, pathInfo,
+            (wrapper, mappingForDispatch, uriCC.toString(), wrapperPath, pathInfo,
              queryString, null);
     }
 
