@@ -44,6 +44,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -96,6 +97,8 @@ public class ModelImpl implements Model {
     /** A map from xml tag to child data, ordered */
     private final Map<String, ChildDescriptor> allChildren = new LinkedHashMap<String, ChildDescriptor>();
     
+   
+    
     /** If this node has a key, this is the property name of the key */
     private String keyProperty;
     
@@ -107,6 +110,7 @@ public class ModelImpl implements Model {
     private transient JAUtilities jaUtilities = null;
     private ClassLoader myLoader;
     private Map<String, String> keyToJavaNameMap = null;
+    private Set<String> allXmlWrappers;
     
     public ModelImpl() {
     }
@@ -193,6 +197,21 @@ public class ModelImpl implements Model {
     
     public Map<String, ChildDescriptor> getAllChildrenDescriptors() {
         return allChildren;
+    }
+    
+    public Set<String> getAllXmlWrappers() {
+        synchronized (lock) {
+            if (allXmlWrappers != null) return allXmlWrappers;
+            allXmlWrappers = new LinkedHashSet<String>();
+            
+            for (ParentedModel pm : childrenByName.values()) {
+                if (pm.getXmlWrapperTag() != null) {
+                    allXmlWrappers.add(pm.getXmlWrapperTag());
+                }
+            }
+            
+            return allXmlWrappers;
+        }
     }
     
     public ChildDescriptor getChildDescriptor(String xmlTag) {

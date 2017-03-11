@@ -47,6 +47,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.Unmarshaller.Listener;
@@ -150,6 +151,7 @@ public class XmlStreamImpl {
         ModelImpl targetModel = target._getModel();
         Map<String, ChildDataModel> nonChildProperties = targetModel.getNonChildProperties();
         Map<String, ParentedModel> childProperties = targetModel.getChildrenByName();
+        Set<String> allWrappers = targetModel.getAllXmlWrappers();
         
         int numAttributes = reader.getAttributeCount();
         for (int lcv = 0; lcv < numAttributes; lcv++) {
@@ -297,6 +299,22 @@ public class XmlStreamImpl {
                     break;
                 }
                 
+                if (allWrappers.contains(elementTag)) {
+                    skipWrapperElement(target,
+                            parent,
+                            reader,
+                            classReflectionHelper,
+                            listener,
+                            referenceMap,
+                            unresolved,
+                            elementTag,
+                            effectiveNamespaceMap,
+                            elementTag,
+                            listChildren,
+                            arrayChildren);
+                    break;
+                }
+                
                 // If here we have an unknown stanza, just skip it
                 if (DEBUG_PARSING) {
                     Logger.getLogger().debug("XmlServiceBean found unknown element in " + outerElementTag + " named " + elementTag + " skipping");
@@ -412,6 +430,89 @@ public class XmlStreamImpl {
         }
         
         return retVal;
+    }
+    
+    private static <T> void skipWrapperElement(BaseHK2JAXBBean target,
+            BaseHK2JAXBBean parent,
+            XMLStreamReader reader,
+            ClassReflectionHelper classReflectionHelper,
+            Listener listener,
+            Map<ReferenceKey, BaseHK2JAXBBean> referenceMap,
+            List<UnresolvedReference> unresolved,
+            String outerElementTag,
+            Map<String, String> namespaceMap,
+            String xmlWrapper,
+            Map<String, List<BaseHK2JAXBBean>> listChildren,
+            Map<String, List<BaseHK2JAXBBean>> arrayChildren) throws Exception {
+        ModelImpl targetModel = target._getModel();
+        Map<String, ParentedModel> childProperties = targetModel.getChildrenByName();
+        
+        while (reader.hasNext()) {
+            int event = reader.next();
+            
+            if (DEBUG_PARSING) {
+                String name = null;
+                
+                if (reader.hasName()) {
+                    name = reader.getName().getLocalPart();
+                }
+                
+                Logger.getLogger().debug("XmlServiceDebug got xml event (E) " + eventToString(event) + " with name " + name);
+            }
+            
+            switch (event) {
+            case XMLStreamConstants.START_ELEMENT:
+                String elementTag = reader.getName().getLocalPart();
+                
+                Map<String, String> effectiveNamespaceMap = new HashMap<String, String>(namespaceMap);
+                int namespaceCount = reader.getNamespaceCount();
+                for (int nLcv = 0; nLcv < namespaceCount; nLcv++) {
+                    effectiveNamespaceMap.put(reader.getNamespacePrefix(nLcv), reader.getNamespaceURI(nLcv));
+                }
+                
+                ParentedModel informedChild = childProperties.get(elementTag);
+                if (informedChild != null && GeneralUtilities.safeEquals(xmlWrapper, informedChild.getXmlWrapperTag())) {
+                    ModelImpl grandChild = informedChild.getChildModel();
+                    
+                    BaseHK2JAXBBean hk2Root = Utilities.createBean(grandChild.getProxyAsClass());
+                    hk2Root._setClassReflectionHelper(classReflectionHelper);
+                    if (DEBUG_PARSING) {
+                        Logger.getLogger().debug("XmlServiceBean created child bean of " + outerElementTag + " with model " + hk2Root._getModel());
+                    }
+                    
+                    handleElement(hk2Root, target, reader, classReflectionHelper, listener, referenceMap, unresolved, elementTag, effectiveNamespaceMap);
+                    
+                    if (informedChild.getChildType().equals(ChildType.DIRECT)) {
+                        target._setProperty(elementTag, hk2Root);
+                    }
+                    else if (informedChild.getChildType().equals(ChildType.LIST)) {
+                        List<BaseHK2JAXBBean> cList = listChildren.get(elementTag);
+                        if (cList == null) {
+                            cList = new ArrayList<BaseHK2JAXBBean>();
+                            listChildren.put(elementTag, cList);
+                        }
+                        cList.add(hk2Root);
+                    }
+                    else if (informedChild.getChildType().equals(ChildType.ARRAY)) {
+                        List<BaseHK2JAXBBean> cList = arrayChildren.get(elementTag);
+                        if (cList == null) {
+                            cList = new LinkedList<BaseHK2JAXBBean>();
+                            arrayChildren.put(elementTag, cList);
+                        }
+                        cList.add(hk2Root);
+                    }
+                    
+                }
+                break;
+            case XMLStreamConstants.END_ELEMENT:
+                reader.getName().getLocalPart();
+                return;
+            default:
+                // All others ignored
+            }
+            
+        }
+        
     }
     
     private static void skip(XMLStreamReader reader, String skipOverTag) throws Exception {
