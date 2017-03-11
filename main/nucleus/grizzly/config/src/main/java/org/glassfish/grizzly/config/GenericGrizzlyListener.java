@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2007-2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2007-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -61,7 +61,6 @@ import org.glassfish.grizzly.Grizzly;
 import org.glassfish.grizzly.IOStrategy;
 import org.glassfish.grizzly.SocketBinder;
 import org.glassfish.grizzly.config.dom.Http;
-import org.glassfish.grizzly.config.dom.Http2;
 import org.glassfish.grizzly.config.dom.NetworkListener;
 import org.glassfish.grizzly.config.dom.PortUnification;
 import org.glassfish.grizzly.config.dom.Protocol;
@@ -94,6 +93,8 @@ import org.glassfish.grizzly.http.server.ServerFilterConfiguration;
 import org.glassfish.grizzly.http.server.StaticHttpHandler;
 import org.glassfish.grizzly.http.server.filecache.FileCache;
 import org.glassfish.grizzly.http.util.MimeHeaders;
+import org.glassfish.grizzly.http2.Http2AddOn;
+import org.glassfish.grizzly.http2.Http2Configuration;
 import org.glassfish.grizzly.memory.AbstractMemoryManager;
 import org.glassfish.grizzly.memory.ByteBufferManager;
 import org.glassfish.grizzly.nio.NIOTransport;
@@ -314,7 +315,6 @@ public class GenericGrizzlyListener implements GrizzlyListener {
     protected void configureTransport(final NetworkListener networkListener,
                                       final Transport transportConfig,
                                       final FilterChainBuilder filterChainBuilder) {
-        
         final String transportClassName = transportConfig.getClassname();
         if (TCPNIOTransport.class.getName().equals(transportClassName)) {
             transport = configureTCPTransport(transportConfig);
@@ -713,8 +713,7 @@ public class GenericGrizzlyListener implements GrizzlyListener {
 //                serverConfig.getMonitoringConfig().getWebServerConfig().getProbes());
         filterChainBuilder.add(webServerFilter);
 
-        configureSpdySupport(habitat, networkListener, http.getSpdy(), filterChainBuilder, secure);
-        configureHttp2Support(habitat, networkListener, http.getHttp2(), filterChainBuilder, secure);
+        configureHttp2Support(habitat, networkListener, http, filterChainBuilder, secure);
 
         // TODO: evaluate comet/websocket support over SPDY.
         configureCometSupport(habitat, networkListener, http, filterChainBuilder);
@@ -730,89 +729,30 @@ public class GenericGrizzlyListener implements GrizzlyListener {
         return timeoutSeconds == 0 ? -1 : timeoutSeconds;
     }
 
-    protected void configureSpdySupport(final ServiceLocator locator,
-                                        final NetworkListener listener,
-                                        final Spdy spdyElement,
-                                        final FilterChainBuilder builder,
-                                        final boolean secure) {
-        if (spdyElement != null && spdyElement.getEnabled()) {
-
-            boolean isNpnMode = spdyElement.getMode() == null ||
-                    "npn".equalsIgnoreCase(spdyElement.getMode());
-            
-            // Spdy without NPN is supported, but warn that there may
-            // be consequences to this configuration.
-            if (!secure && isNpnMode) {
-                LOGGER.log(Level.WARNING,
-                        "SSL is not enabled for listener {0}.  SPDY support will be enabled, but will not be secured.  Some clients may not be able to use SPDY in this configuration.",
-                        listener.getName());
-            }
-
-            // first try to lookup a service appropriate for the mode
-            // that has been configured.
-            AddOn spdyAddon = locator.getService(AddOn.class, "spdy");
-
-            // if no service was found, attempt to load via reflection.
-            if (spdyAddon == null) {
-                Class<?> spdyMode;
-                try {
-                    spdyMode = Utils.loadClass("org.glassfish.grizzly.spdy.SpdyMode");
-                } catch (ClassNotFoundException cnfe) {
-                    if (LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.fine("Unable to load class org.glassfish.grizzly.spdy.SpdyMode.  SPDY support cannot be enabled");
-                    }
-                    return;
-                }
-                Object[] enumConstants = spdyMode.getEnumConstants();
-                Object mode = ((isNpnMode) ? enumConstants[1] : enumConstants[0]);
-                spdyAddon = loadAddOn("org.glassfish.grizzly.spdy.SpdyAddOn", new Class[]{spdyMode}, mode);
-            }
-
-            if (spdyAddon != null) {
-                // Configure SpdyAddOn
-                configureElement(locator, listener, spdyElement, spdyAddon);
-                
-                // Spdy requires access to more information compared to the other addons
-                // that are currently leveraged.  As such, we'll need to mock out a
-                // Grizzly NetworkListener to pass to the addon.  This mock object will
-                // only provide the information necessary for the addon to operate.
-                // It will be important to keep this mock in sync with the details the
-                // addon requires.
-                spdyAddon.setup(createMockListener(secure), builder);
-                isSpdyEnabled = true;
-            }
-        }
-    }
-
     protected void configureHttp2Support(final ServiceLocator locator,
                                         final NetworkListener listener,
-                                        final Http2 http2Element,
+                                        final Http httpElement,
                                         final FilterChainBuilder builder,
                                         final boolean secure) {
-        if (http2Element == null || http2Element.getEnabled()) {
+        if (httpElement != null && httpElement.isHttp2Enabled()) {
 
-            // first try to lookup a service appropriate for the mode
-            // that has been configured.
-            AddOn http2Addon = locator.getService(AddOn.class, "http2");
+            Http2AddOn http2Addon = new Http2AddOn(Http2Configuration.builder()
+                    .disableCipherCheck(httpElement.isHttp2DisableCipherCheck())
+                    .executorService(transport.getWorkerThreadPool())
+                    .initialWindowSize(httpElement.getHttp2InitialWindowSizeInBytes())
+                    .maxConcurrentStreams(httpElement.getHttp2MaxConcurrentStreams())
+                    .maxFramePayloadSize(httpElement.getHttp2MaxFramePayloadSizeInBytes())
+                    .maxHeaderListSize(httpElement.getHttp2MaxHeaderListSizeInBytes())
+                    .build());
 
-            // if no service was found, attempt to load via reflection.
-            if (http2Addon == null) {
-                http2Addon = loadAddOn("org.glassfish.grizzly.http2.Http2AddOn", new Class[]{});
-            }
-
-            if (http2Addon != null) {
-                // Configure SpdyAddOn
-                configureElement(locator, listener, http2Element, http2Addon);
-                
-                // Spdy requires access to more information compared to the other addons
-                // that are currently leveraged.  As such, we'll need to mock out a
-                // Grizzly NetworkListener to pass to the addon.  This mock object will
-                // only provide the information necessary for the addon to operate.
-                // It will be important to keep this mock in sync with the details the
-                // addon requires.
-                http2Addon.setup(createMockListener(secure), builder);
-                isHttp2Enabled = true;
-            }
+            // The Http2AddOn requires access to more information compared to the other addons
+            // that are currently leveraged.  As such, we'll need to mock out a
+            // Grizzly NetworkListener to pass to the AddOn.  This mock object will
+            // only provide the information necessary for the AddOn to operate.
+            // It will be important to keep this mock in sync with the details the
+            // AddOn requires.
+            http2Addon.setup(createMockListener(secure), builder);
+            isHttp2Enabled = true;
         }
     }
     
