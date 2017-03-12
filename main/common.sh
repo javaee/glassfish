@@ -87,7 +87,7 @@ build_re_nightly(){
     init_nightly
     svn_checkout ${SVN_REVISION}
     run_findbugs
-    release_build "clean install" "ips,javaee-api"
+    release_build "clean install" "javaee-api"
     build_re_finalize
 }
 
@@ -98,7 +98,7 @@ build_re_weekly(){
     delete_svn_tag ${RELEASE_VERSION}
     svn_checkout ${SVN_REVISION}
     release_prepare
-    release_build "clean deploy" "release-phase2,ips,embedded,javaee-api"
+    release_build "clean deploy" "release-phase2,embedded,javaee-api"
     build_re_finalize
     clean_and_zip_workspace
 }
@@ -165,8 +165,8 @@ EOF
 
 promote_nightly(){
     promote_init "nightly"
-    promote_bundle ${PROMOTED_BUNDLES}/web-ips.zip ${PRODUCT_GF}-${PRODUCT_VERSION_GF}-web-${BUILD_ID}-${MDATE}.zip
-    promote_bundle ${PROMOTED_BUNDLES}/glassfish-ips.zip ${PRODUCT_GF}-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.zip
+    promote_bundle ${PROMOTED_BUNDLES}/web.zip ${PRODUCT_GF}-${PRODUCT_VERSION_GF}-web-${BUILD_ID}-${MDATE}.zip
+    promote_bundle ${PROMOTED_BUNDLES}/glassfish.zip ${PRODUCT_GF}-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.zip
     promote_bundle ${PROMOTED_BUNDLES}/nucleus-new.zip nucleus-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.zip
     promote_bundle ${PROMOTED_BUNDLES}/version-info.txt version-info-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.txt
     promote_bundle ${PROMOTED_BUNDLES}/changes.txt changes-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.txt
@@ -186,8 +186,8 @@ promote_nightly(){
 
 promote_weekly(){
     promote_init "weekly"
-    promote_bundle ${PROMOTED_BUNDLES}/web-ips.zip ${PRODUCT_GF}-${PRODUCT_VERSION_GF}-web-${BUILD_ID}.zip
-    promote_bundle ${PROMOTED_BUNDLES}/glassfish-ips.zip ${PRODUCT_GF}-${PRODUCT_VERSION_GF}-${BUILD_ID}.zip
+    promote_bundle ${PROMOTED_BUNDLES}/web.zip ${PRODUCT_GF}-${PRODUCT_VERSION_GF}-web-${BUILD_ID}.zip
+    promote_bundle ${PROMOTED_BUNDLES}/glassfish.zip ${PRODUCT_GF}-${PRODUCT_VERSION_GF}-${BUILD_ID}.zip
     promote_bundle ${PROMOTED_BUNDLES}/nucleus-new.zip nucleus-${PRODUCT_VERSION_GF}-${BUILD_ID}.zip
     promote_bundle ${PROMOTED_BUNDLES}/version-info.txt version-info-${PRODUCT_VERSION_GF}-${BUILD_ID}.txt
     if [ -z ${RELEASE_VERSION} ]
@@ -439,12 +439,6 @@ release_build(){
         -Dgpg.passphrase="${GPG_PASSPHRASE}" \
         -Dgpg.executable=gpg2 \
         -Dmaven.test.failure.ignore=true \
-        -Dips.compress=false \
-        -Dips.build.installer=false \
-        -Dtarget.repo.dir=${IPS_REPO_DIR} \
-        -Duc.toolkit.dir=${IPS_TOOLKIT} \
-        -Drepo.url=${IPS_REPO_URL}:${IPS_REPO_PORT}/ \
-        -Dpython=${PYTHON_HOME}/bin/python
 }
 
 release_prepare(){
