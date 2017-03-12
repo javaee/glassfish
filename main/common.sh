@@ -438,7 +438,7 @@ release_build(){
         -Dbuild.id=${PKG_ID} \
         -Dgpg.passphrase="${GPG_PASSPHRASE}" \
         -Dgpg.executable=gpg2 \
-        -Dmaven.test.failure.ignore=true \
+        -Dmaven.test.failure.ignore=true
 }
 
 release_prepare(){
@@ -1205,5 +1205,3 @@ cat >> $1/$INDEX_FILENAME << EOF
 </html>
 EOF
 }
-
-
