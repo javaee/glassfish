@@ -352,13 +352,10 @@
     </target>
 
     <target name="web-container" depends="init-report">
-<!--
         <ant dir="accessLoggingDynamicReconfig" target="all"/>
         <ant dir="accessLoggingWriteIntervalSeconds" target="all"/>
         <ant dir="accessLoggingBadRequests" target="all"/>
--->
         <ant dir="allowEncodedSlash" target="all"/>
-<!--
         <ant dir="asadminDeletes" target="all"/>
         <ant dir="broken_webapp" target="all"/>
         <ant dir="classPathManifestAttribute" target="all"/>
@@ -476,7 +473,6 @@
         <ant dir="jsessionIdParameter" target="all"/>
         <ant dir="setWebContextParam" target="all"/>
         <ant dir="contextRootDuplicate" target="all"/>
--->
     </target>
 
     <target name="security" depends="init-report">
