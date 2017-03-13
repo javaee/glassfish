@@ -348,7 +348,6 @@
         <ant dir="servlet-4.0/defaultContextPath" target="all"/>
         <ant dir="servlet-4.0/contextCharEncoding" target="all"/>
         <ant dir="servlet-4.0/reqResEncoding" target="all"/>
-        <ant dir="servlet-4.0/mappingDiscovery" target="all"/>
     </target>
 
     <target name="web-container" depends="init-report">
