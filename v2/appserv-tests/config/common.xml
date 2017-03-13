@@ -200,6 +200,7 @@ Variables Used:
       <include name="**/*.gif"/>
       <include name="**/*.do"/>
       <include name="**/*.txt"/>
+      <include name="**/*.css"/>
       <include name="**/*.shtml"/>
       <include name="**/*.jar"/>
       <exclude name="**/*.java,**/*.xml,**/*.properties"/>
