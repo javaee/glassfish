@@ -69,6 +69,7 @@ import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http2.Http2BaseFilter;
 import org.glassfish.grizzly.http2.Http2ClientFilter;
+import org.glassfish.grizzly.http2.Http2Configuration;
 import org.glassfish.grizzly.http2.Http2Stream;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransport;
 import org.glassfish.grizzly.nio.transport.TCPNIOTransportBuilder;
@@ -172,7 +173,7 @@ public class HttpClient implements AutoCloseable {
         }
         
         builder.add(new HttpClientFilter());
-        builder.add(new Http2ClientFilter());
+        builder.add(new Http2ClientFilter(Http2Configuration.builder().build()));
         
         if (clientFilters != null) {
             for (Filter clientFilter : clientFilters) {
