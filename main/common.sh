@@ -638,10 +638,12 @@ create_svn_tag(){
 
     # download and unzip the workspace
     curl $PROMOTED_BUNDLES/workspace.zip > ${WORKSPACE_BUNDLES}/workspace.zip
-    rm -rf ${WORKSPACE}/tag ; unzip -d ${WORKSPACE}/tag ${WORKSPACE_BUNDLES}/workspace.zip
+    rm -rf ${WORKSPACE}/tag ; unzip -qd ${WORKSPACE}/tag ${WORKSPACE_BUNDLES}/workspace.zip
 
     # delete tag (for promotion forcing)
     svn del ${GF_WORKSPACE_URL_SSH}/tags/${RELEASE_VERSION} -m "del tag ${RELEASE_VERSION}" | true
+
+    svn upgrade ${WORKSPACE}/tag/main
 
     # copy the exact trunk used to run the release
     SVN_REVISION=`svn info ${WORKSPACE}/tag/main | grep 'Revision:' | awk '{print $2}'`
