@@ -107,8 +107,8 @@ public class WebBundleDescriptorImpl extends WebBundleDescriptor {
     private Set<SecurityRoleDescriptor> securityRoles;
     private Set<SecurityConstraint> securityConstraints;
     private String contextRoot;
-    private String requestEncoding;
-    private String responseEncoding;
+    private String requestCharacterEncoding;
+    private String responseCharacterEncoding;
     private LoginConfiguration loginConfiguration;
     private Set<EnvironmentEntry> environmentEntries;
     private LocaleEncodingMappingListDescriptor localeEncodingMappingListDesc = null;
@@ -162,11 +162,11 @@ public class WebBundleDescriptorImpl extends WebBundleDescriptor {
         if (getWelcomeFilesSet().size() == 0) {
             getWelcomeFilesSet().addAll(webBundleDescriptor.getWelcomeFilesSet());
         }
-        if (this.requestEncoding == null) {
-            this.requestEncoding = webBundleDescriptor.getRequestEncoding();
+        if (this.requestCharacterEncoding == null) {
+            this.requestCharacterEncoding = webBundleDescriptor.getRequestCharacterEncoding();
         }
-        if (this.responseEncoding == null) {
-            this.responseEncoding = webBundleDescriptor.getResponseEncoding();
+        if (this.responseCharacterEncoding == null) {
+            this.responseCharacterEncoding = webBundleDescriptor.getResponseCharacterEncoding();
         }
         addCommonWebBundleDescriptor(webBundleDescriptor, true);
     }
@@ -343,29 +343,29 @@ public class WebBundleDescriptorImpl extends WebBundleDescriptor {
     /**
      * return the request encoding
      */
-    public String getRequestEncoding() {
-        return this.requestEncoding;
+    public String getRequestCharacterEncoding() {
+        return this.requestCharacterEncoding;
     }
 
     /**
      * Set the request encoding
      */
-    public void setRequestEncoding(String requestEncoding) {
-        this.requestEncoding = requestEncoding;
+    public void setRequestCharacterEncoding(String requestCharacterEncoding) {
+        this.requestCharacterEncoding = requestCharacterEncoding;
     }
 
     /**
      * return the response encoding
      */
-    public String getResponseEncoding() {
-        return this.responseEncoding;
+    public String getResponseCharacterEncoding() {
+        return this.responseCharacterEncoding;
     }
 
     /**
      * Set the response encoding
      */
-    public void setResponseEncoding(String responseEncoding) {
-        this.responseEncoding = responseEncoding;
+    public void setResponseCharacterEncoding(String responseCharacterEncoding) {
+        this.responseCharacterEncoding = responseCharacterEncoding;
     }
 
     /**

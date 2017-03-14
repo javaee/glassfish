@@ -263,11 +263,11 @@ public class WebModule extends PwcWebModule implements Context {
      */
     public void setI18nInfo() {
         if (webBundleDescriptor != null) {
-            String reqEncoding = webBundleDescriptor.getRequestEncoding();
+            String reqEncoding = webBundleDescriptor.getRequestCharacterEncoding();
             if (reqEncoding != null) {
                 setRequestCharacterEncoding(reqEncoding);
             }
-            String resEncoding = webBundleDescriptor.getResponseEncoding();
+            String resEncoding = webBundleDescriptor.getResponseCharacterEncoding();
             if (resEncoding != null) {
                 setResponseCharacterEncoding(resEncoding);
             }
@@ -526,11 +526,11 @@ public class WebModule extends PwcWebModule implements Context {
         if (webBundleDescriptor != null) {
             showArchivedRealPathEnabled = webBundleDescriptor.isShowArchivedRealPathEnabled();
             servletReloadCheckSecs = webBundleDescriptor.getServletReloadCheckSecs();
-            String reqEncoding = webBundleDescriptor.getRequestEncoding();
+            String reqEncoding = webBundleDescriptor.getRequestCharacterEncoding();
             if (reqEncoding != null) {
                 setRequestCharacterEncoding(reqEncoding);
             }
-            String resEncoding = webBundleDescriptor.getResponseEncoding();
+            String resEncoding = webBundleDescriptor.getResponseCharacterEncoding();
             if (resEncoding != null) {
                 setResponseCharacterEncoding(resEncoding);
             }

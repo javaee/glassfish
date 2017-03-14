@@ -105,13 +105,13 @@ public abstract class WebBundleDescriptor extends CommonResourceBundleDescriptor
 
     public abstract void setContextRoot(String contextRoot);
 
-    public abstract String getRequestEncoding();
+    public abstract String getRequestCharacterEncoding();
 
-    public abstract void setRequestEncoding(String requestEcoding);
+    public abstract void setRequestCharacterEncoding(String requestCharacterEcoding);
 
-    public abstract String getResponseEncoding();
+    public abstract String getResponseCharacterEncoding();
 
-    public abstract void setResponseEncoding(String responseEncoding);
+    public abstract void setResponseCharacterEncoding(String responseCharacterEncoding);
 
     public abstract Set<WebComponentDescriptor> getWebComponentDescriptors();
 
