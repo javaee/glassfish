@@ -75,6 +75,15 @@
             </roles>
         </developer>
         <developer>
+            <id>edburns</id>
+            <name>Ed Burns</name>
+            <url>http://ridingthecrest.com/blog/</url>
+            <organization>Oracle</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
             <id>kchung</id>
             <name>Kin-man Chung</name>
             <organization>Oracle</organization>
