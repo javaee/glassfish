@@ -42,6 +42,6 @@
 -->
 
 <web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="4.0" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd">
-  <request-encoding>UTF-8</request-encoding>
-  <response-encoding>US-ASCII</response-encoding>
+  <request-character-encoding>UTF-8</request-character-encoding>
+  <response-character-encoding>US-ASCII</response-character-encoding>
 </web-app>

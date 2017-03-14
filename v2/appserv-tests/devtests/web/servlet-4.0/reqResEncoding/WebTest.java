@@ -46,7 +46,7 @@ import com.sun.ejte.ccl.reporter.*;
 import org.glassfish.grizzly.test.http2.*;
 
 /**
- * Unit test for request-encoding, response-encoding in web.xml
+ * Unit test for request-character-encoding, response-character-encoding in web.xml
  */
 public class WebTest {
 
@@ -70,7 +70,7 @@ public class WebTest {
     }
     
     public static void main(String[] args) {
-        stat.addDescription("Unit test for request-encoding, response-encoding in web.xml");
+        stat.addDescription("Unit test for request-character-encoding, response-character-encoding in web.xml");
         WebTest webTest = new WebTest(args);
         try {
             webTest.doTest();
