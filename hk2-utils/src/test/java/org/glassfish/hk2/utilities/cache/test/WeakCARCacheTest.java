@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -293,6 +293,38 @@ public class WeakCARCacheTest {
     public void testTakingOffOfB1Strong() {
         WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE, false);
         testTakingOffOfB1(car);
+    }
+    
+    /**
+     * Tests that the hit rate is calculated properly and is cleared by clear
+     */
+    @Test // @org.junit.Ignore
+    public void testHitRateMostlySuccess() {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE, false);
+        
+        for (int lcv = 0; lcv < 100; lcv++) {
+            Assert.assertEquals(new Integer(1), car.compute(new Integer(1)));
+        }
+        
+        Assert.assertEquals(0, Double.compare((double) 99.00, car.getHitRate()));
+        
+        car.clear();
+        
+        Assert.assertEquals(0, Double.compare((double) 0.00, car.getHitRate()));
+    }
+    
+    /**
+     * Tests that the hit rate is calculated properly even when there are no hits
+     */
+    @Test // @org.junit.Ignore
+    public void testHitRateZero() {
+        WeakCARCache<Integer, Integer> car = CacheUtilities.createWeakCARCache(INT_TO_INT, SMALL_CACHE_SIZE, false);
+        
+        for (int lcv = 0; lcv < 100; lcv++) {
+            Assert.assertEquals(new Integer(lcv), car.compute(new Integer(lcv)));
+        }
+        
+        Assert.assertEquals(0, Double.compare((double) 0.00, car.getHitRate()));
     }
     
     /**

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,7 @@
 package org.glassfish.hk2.utilities.cache.internal;
 
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.glassfish.hk2.utilities.cache.CacheKeyFilter;
 import org.glassfish.hk2.utilities.cache.Computable;
@@ -68,6 +69,9 @@ public class WeakCARCacheImpl<K,V> implements WeakCARCache<K, V> {
     
     // The target size of t1, adaptive
     private int p = 0;
+    
+    private final AtomicLong hits = new AtomicLong(0L);
+    private final AtomicLong tries = new AtomicLong(0L);
     
     public WeakCARCacheImpl(Computable<K,V> computable, int maxSize, boolean isWeak) {
         this.computable = computable;
@@ -103,12 +107,20 @@ public class WeakCARCacheImpl<K,V> implements WeakCARCache<K, V> {
     @SuppressWarnings("unchecked")
     @Override
     public V compute(K key) {
+        tries.getAndIncrement();
+        
         V value = getValueFromT(key);
-        if (value != null) return value;
+        if (value != null) {
+            hits.getAndIncrement();
+            return value;
+        }
         
         synchronized (this) {
             value = getValueFromT(key);
-            if (value != null) return value;
+            if (value != null) {
+                hits.getAndIncrement();
+                return value;
+            }
             
             // Cache Miss.  First, get the value.  Any failures
             // will bubble up prior to us messing with any data structures
@@ -245,6 +257,9 @@ public class WeakCARCacheImpl<K,V> implements WeakCARCache<K, V> {
         b2.clear();
         
         p = 0;
+        
+        tries.set(0);
+        hits.set(0);
     }
 
     /* (non-Javadoc)
@@ -371,11 +386,22 @@ public class WeakCARCacheImpl<K,V> implements WeakCARCache<K, V> {
     }
     
     @Override
+    public double getHitRate() {
+        long localHits = hits.get();
+        long localTries = tries.get();
+        if (localTries == 0) localTries = 1;
+        
+        return ((double) localHits / (double) localTries) * (double) 100.00;
+    }
+    
+    @Override
     public String toString() {
         return "WeakCARCacheImpl(t1size=" + t1.size() + ",t2Size=" + t2.size() +
                 ",b1Size=" + b1.size() + ",b2Size=" + b2.size() + ",p=" + p + "," +
-                System.identityHashCode(this) + ")";
+                "hitRate=" + getHitRate() + "%," + System.identityHashCode(this) + ")";
     }
+
+    
 
     
 

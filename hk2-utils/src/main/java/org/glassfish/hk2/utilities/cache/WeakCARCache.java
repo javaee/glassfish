@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2015-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -183,5 +183,12 @@ public interface WeakCARCache<K,V> {
      * @return A String containing the values of T1, T2, B1 and B2
      */
     public String dumpAllLists();
+    
+    /**
+     * Returns the hit rate from the last time clear was called
+     * @return The Hit rate from the last time clear was called 
+     * or 0 if there is no data
+     */
+    public double getHitRate();
 
 }
