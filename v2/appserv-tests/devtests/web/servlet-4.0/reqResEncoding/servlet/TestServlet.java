@@ -46,8 +46,8 @@ import javax.servlet.http.*;
 
 @WebServlet("/TestServlet")
 public class TestServlet extends HttpServlet {
-    
-    public void doPost(HttpServletRequest req, HttpServletResponse res)
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
         boolean passed = false;

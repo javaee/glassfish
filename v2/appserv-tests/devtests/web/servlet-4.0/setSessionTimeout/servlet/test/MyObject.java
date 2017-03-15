@@ -52,6 +52,7 @@ public class MyObject implements HttpSessionBindingListener {
      *
      * @param event The event that identifies the session 
      */
+    @Override
     public void valueBound(HttpSessionBindingEvent event) {
         // do nothing
     }
@@ -62,8 +63,8 @@ public class MyObject implements HttpSessionBindingListener {
      *
      * @param event The event that identifies the session 
      */
+    @Override
     public void valueUnbound(HttpSessionBindingEvent event) {
-
         HttpSession session = event.getSession();
         ServletContext sc = session.getServletContext();
         sc.setAttribute("successHttpSessionBindingListener", new Object());

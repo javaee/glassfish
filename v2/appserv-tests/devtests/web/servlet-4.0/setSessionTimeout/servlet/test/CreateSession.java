@@ -47,8 +47,8 @@ import javax.servlet.http.*;
 
 @WebServlet(urlPatterns="/CreateSession")
 public class CreateSession extends HttpServlet {
-
-    public void doGet(HttpServletRequest req, HttpServletResponse res)
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws ServletException, IOException {
 
         HttpSession session = req.getSession(true);

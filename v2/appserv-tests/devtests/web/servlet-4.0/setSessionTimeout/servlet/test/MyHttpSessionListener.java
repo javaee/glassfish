@@ -53,6 +53,7 @@ public class MyHttpSessionListener implements HttpSessionListener {
      *
      * @param hse The HttpSessionEvent
      */
+    @Override
     public void sessionCreated(HttpSessionEvent hse) {
         // Do nothing
     }
@@ -62,8 +63,8 @@ public class MyHttpSessionListener implements HttpSessionListener {
      *
      * @param hse The HttpSessionEvent
      */
+    @Override
     public void sessionDestroyed(HttpSessionEvent hse) {
-
         HttpSession session = hse.getSession();
         ServletContext sc = session.getServletContext();
         sc.setAttribute("successHttpSessionListener", new Object());

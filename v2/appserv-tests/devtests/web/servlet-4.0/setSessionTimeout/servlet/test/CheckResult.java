@@ -50,11 +50,13 @@ public class CheckResult extends HttpServlet {
 
     ServletContext sc;
 
+    @Override
     public void init(ServletConfig config) throws ServletException {
         sc = config.getServletContext();
     }
 
-    public void doGet(HttpServletRequest req, HttpServletResponse res)
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
 
         boolean passed = false;
