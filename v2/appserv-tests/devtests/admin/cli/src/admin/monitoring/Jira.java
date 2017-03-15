@@ -61,8 +61,7 @@ public class Jira extends MonTest {
                       test14389();
 		*/
 
-        // turn off this test as it is causing failure
-        // test21646();
+        test21646();
         test16313();
         test15397();
         test15054();
