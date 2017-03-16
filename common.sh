@@ -97,7 +97,7 @@ build_re_weekly(){
     delete_svn_tag ${RELEASE_VERSION}
     svn_checkout ${SVN_REVISION}
     release_prepare
-    release_build "clean deploy" "release-phase2,ips,embedded,javaee-api"
+    release_build "clean deploy" "release-phase2,embedded,javaee-api"
     build_re_finalize
     clean_and_zip_workspace
 }
@@ -196,8 +196,8 @@ promote_weekly(){
     # only when build parameter RELEASE_VERSION has been resolved (i.e not provided explicitly).
     if [ ! -z $INCREMENT_BUILD_ID ]
     then    
-        BUILD_ID=`cat ${HUDSON_HOME}/promote-trunk.version`
-        PKG_ID=`cat ${HUDSON_HOME}/pkgid-trunk.version`    
+        BUILD_ID=`cat ${HUDSON_HOME}/promote-412.version`
+        PKG_ID=`cat ${HUDSON_HOME}/pkgid-412.version`    
         NEXT_ID=$((PKG_ID+1))
 
         # prepend a 0 if less than 10
@@ -207,8 +207,8 @@ promote_weekly(){
         else
             NEXT_BUILD_ID="b$NEXT_ID"
         fi
-        ssh $SSH_MASTER `echo "echo $NEXT_BUILD_ID > /scratch/java_re/hudson/hudson_install/promote-trunk.version"`
-        ssh $SSH_MASTER `echo "echo $NEXT_ID > /scratch/java_re/hudson/hudson_install/pkgid-trunk.version"`
+        ssh $SSH_MASTER `echo "echo $NEXT_BUILD_ID > /scratch/java_re/hudson/hudson_install/promote-412.version"`
+        ssh $SSH_MASTER `echo "echo $NEXT_ID > /scratch/java_re/hudson/hudson_install/pkgid-412.version"`
     fi
 
     promote_finalize
@@ -251,8 +251,8 @@ init_nightly(){
 
 init_common(){
     require_env_var "HUDSON_HOME"
-    BUILD_ID=`cat ${HUDSON_HOME}/promote-trunk.version`
-    PKG_ID=`cat ${HUDSON_HOME}/pkgid-trunk.version`
+    BUILD_ID=`cat ${HUDSON_HOME}/promote-412.version`
+    PKG_ID=`cat ${HUDSON_HOME}/pkgid-412.version`
 
     PRODUCT_GF="glassfish"
     JAVAEE_VERSION=7.0
@@ -627,10 +627,12 @@ create_svn_tag(){
 
     # download and unzip the workspace
     curl $PROMOTED_BUNDLES/workspace.zip > ${WORKSPACE_BUNDLES}/workspace.zip
-    rm -rf ${WORKSPACE}/tag ; unzip -d ${WORKSPACE}/tag ${WORKSPACE_BUNDLES}/workspace.zip
+    rm -rf ${WORKSPACE}/tag ; unzip -qd ${WORKSPACE}/tag ${WORKSPACE_BUNDLES}/workspace.zip
 
     # delete tag (for promotion forcing)
     svn del ${GF_WORKSPACE_URL_SSH}/tags/${RELEASE_VERSION} -m "del tag ${RELEASE_VERSION}" | true
+
+    svn upgrade ${WORKSPACE}/tag/main
 
     # copy the exact trunk used to run the release
     SVN_REVISION=`svn info ${WORKSPACE}/tag/main | grep 'Revision:' | awk '{print $2}'`
