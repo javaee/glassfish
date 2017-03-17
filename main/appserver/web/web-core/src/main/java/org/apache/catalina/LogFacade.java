@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2016 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -3606,4 +3606,33 @@ public class LogFacade {
     )
     public static final String READ_FILE_EXCEPTION = prefix + "00543";
 
+    @LogMessageInfo(
+            message = "Unable to find the underlying Coyote request object (which is required to create a push request) from the request of type [{0}]",
+            level = "WARNING"
+    )
+    public static final String NO_PUSH_COYOTE_REQUEST_EXCEPTION = prefix + "00544";
+
+    @LogMessageInfo(
+            message = "It is illegal to call push() before setting a path",
+            level = "WARNING"
+    )                           
+    public static final String NO_PUSH_PATH_EXCEPTION = prefix + "00545";
+
+    @LogMessageInfo(
+            message = "The push method should not be null",
+            level = "WARNING"
+    )
+    public static final String NULL_PUSH_METHOD_EXCEPTION = prefix + "00546";
+
+    @LogMessageInfo(
+            message = "The push method should not be an empty String",
+            level = "WARNING"
+    )
+    public static final String EMPTY_PUSH_METHOD_EXCEPTION = prefix + "00547";
+
+    @LogMessageInfo(
+            message = "The push method '{0}' is not cacheable or safe",
+            level = "WARNING"
+    )
+    public static final String NONCACHEABLE_UNSAFE_PUSH_METHOD_EXCEPTION = prefix + "00548";
 }

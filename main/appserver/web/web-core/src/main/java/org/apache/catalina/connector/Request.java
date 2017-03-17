@@ -100,6 +100,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
+import javax.servlet.http.PushBuilder;
 import javax.servlet.http.WebConnection;
 
 import com.sun.appserv.ProxyHandler;
@@ -117,6 +118,7 @@ import org.apache.catalina.Session;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.authenticator.AuthenticatorBase;
 import org.apache.catalina.authenticator.SingleSignOn;
+import org.apache.catalina.core.ApplicationPushBuilder;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardHost;
 import org.apache.catalina.core.StandardWrapper;
@@ -141,6 +143,7 @@ import org.glassfish.grizzly.http.util.CharChunk;
 import org.glassfish.grizzly.http.util.DataChunk;
 import org.glassfish.grizzly.http.util.FastHttpDateFormat;
 import org.glassfish.grizzly.http.util.MessageBytes;
+import org.glassfish.grizzly.http2.Http2Stream;
 import org.glassfish.grizzly.memory.Buffers;
 import org.glassfish.grizzly.utils.Charsets;
 import org.glassfish.web.valve.GlassFishValve;
@@ -2584,6 +2587,19 @@ public class Request
             return servletContext.getRealPath(getPathInfo());
         }
 
+    }
+
+    @Override
+    public PushBuilder getPushBuilder() {
+        Http2Stream http2Stream = null;
+        if (coyoteRequest != null) {
+            http2Stream = (Http2Stream)coyoteRequest.getAttribute(Http2Stream.HTTP2_STREAM_ATTRIBUTE);
+        }
+        if (http2Stream != null && http2Stream.isPushEnabled()) {
+            return new ApplicationPushBuilder(this);
+        } else {
+            return null;
+        }
     }
 
     /**
