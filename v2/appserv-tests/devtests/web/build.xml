@@ -349,6 +349,9 @@
         <ant dir="servlet-4.0/contextCharEncoding" target="all"/>
         <ant dir="servlet-4.0/reqResEncoding" target="all"/>
         <ant dir="servlet-4.0/mappingDiscovery" target="all"/>
+        <ant dir="servlet-4.0/pushStatic" target="all"/>
+        <ant dir="servlet-4.0/pushCacheable" target="all"/>
+        <ant dir="servlet-4.0/pushAuthorization" target="all"/>
     </target>
 
     <target name="web-container" depends="init-report">
