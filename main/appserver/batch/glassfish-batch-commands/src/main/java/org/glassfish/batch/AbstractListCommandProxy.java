@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -107,6 +107,7 @@ public abstract class AbstractListCommandProxy
         ActionReport subReport = null;
         if (! preInvoke(context, actionReport)) {
             commandsExitCode = ActionReport.ExitCode.FAILURE;
+            actionReport.setActionExitCode(commandsExitCode);
             return;
         }
 
@@ -133,9 +134,9 @@ public abstract class AbstractListCommandProxy
                     postInvoke(context, subReport.getSubActionsReport().get(0));
                 } else {
                     actionReport.setMessage(subReport.getMessage());
-                    commandsExitCode = subReport.getActionExitCode();
                 }
             }
+            commandsExitCode = subReport.getActionExitCode();
         }
         actionReport.setActionExitCode(commandsExitCode);
     }

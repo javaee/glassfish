@@ -162,10 +162,8 @@ public class TemplateExecCommand extends AbstractResource implements OptionsCapa
         ActionReportResult results = new ActionReportResult(commandName, actionReport, option.getMetaData());
         results.getActionReport().getExtraProperties().putAll(option.getActionReport().getExtraProperties());
         results.setCommandDisplayName(commandDisplayName);
-
-        if (exitCode == ActionReport.ExitCode.FAILURE) {
-            results.setErrorMessage(actionReport.getCombinedMessage());
-        }
+        // GLASSFISH-21582: removed setting of error messasge because ActionReportResult object is used for constructing the response(with error message)
+        // setting error message again is showing error two times on GUI.
         return Response.status(status).entity(results).build();
     }
 
