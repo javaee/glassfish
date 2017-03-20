@@ -179,6 +179,9 @@ export AS_LOGFILE=$S1AS_HOME/cli.log
 
 rm -rf $S1AS_HOME/domains/domain1
 
+# workaround an OSGi time stamp issue
+find $S1AS_HOME -type f | xargs touch
+
 cd $APS_HOME
 
 echo "AS_ADMIN_PASSWORD=" > temppwd
