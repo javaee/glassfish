@@ -244,8 +244,10 @@ public class ConnectionQueueStatsProvider implements StatsProvider {
                 if (queued <= peakQueue) break;
 
                 if (peakQueuedAtomic.compareAndSet(peakQueue, queued)) {
-                    peakQueued.setCount(queued);
-                    break;
+                    synchronized (peakQueuedAtomic) {
+                        peakQueued.setCount(peakQueuedAtomic.get());
+                        break;
+                    }
                 }
             } while (true);
 
