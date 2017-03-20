@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -102,8 +102,9 @@ public class RuntimeInfo implements AdminCommand {
         report.setActionExitCode(SUCCESS);
         top = report.getTopMessagePart();
         logger = context.getLogger();
-        jpdaEnabled = Boolean.parseBoolean(ctx.getArguments().getProperty("-debug"));
+        javaEnabledOnCmd = Boolean.parseBoolean(ctx.getArguments().getProperty("-debug"));
         javaConfig = config.getJavaConfig();
+        jpdaEnabled = javaEnabledOnCmd || Boolean.parseBoolean(javaConfig.getDebugEnabled());
         int debugPort = parsePort(javaConfig.getDebugOptions());
         top.addProperty("debug", Boolean.toString(jpdaEnabled));
         top.addProperty("debugPort", Integer.toString(debugPort));
@@ -243,6 +244,7 @@ public class RuntimeInfo implements AdminCommand {
     @Param(name = "target", optional = true, defaultValue = SystemPropertyConstants.SERVER_NAME)
     String target;
     private boolean jpdaEnabled;
+    private boolean javaEnabledOnCmd;
     private JavaConfig javaConfig;
     private ActionReport report;
     private ActionReport.MessagePart top;
