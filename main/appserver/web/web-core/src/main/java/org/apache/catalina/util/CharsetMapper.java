@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -93,7 +93,7 @@ public class CharsetMapper implements Cloneable {
 
 
     // ---------------------------------------------------- Manifest Constants
-
+    private static final char HYPHEN = '-';
 
     /**
      * Default properties resource name.
@@ -195,7 +195,12 @@ public class CharsetMapper implements Cloneable {
      * @param charset The charset to be associated with the locale
      */
     public void addCharsetMappingFromDeploymentDescriptor(String locale,String charset) {
-        map.put( locale, charset );
+        if (((locale.indexOf(HYPHEN)) > -1)) {
+            map.put(Locale.forLanguageTag(locale).toString(),charset);
+        }
+        else{
+            map.put( locale, charset );
+        }
     }
 
 
