@@ -636,7 +636,7 @@ create_svn_tag(){
 
     # copy the exact trunk used to run the release
     SVN_REVISION=`svn info ${WORKSPACE}/tag/main | grep 'Revision:' | awk '{print $2}'`
-    svn cp ${GF_WORKSPACE_URL_SSH}/trunk/main@${SVN_REVISION} ${GF_WORKSPACE_URL_SSH}/tags/${RELEASE_VERSION} -m "create tag ${RELEASE_VERSION} based on r${SVN_REVISION}"
+    svn cp ${GF_WORKSPACE_URL_SSH}/branches/4.1.2@${SVN_REVISION} ${GF_WORKSPACE_URL_SSH}/tags/${RELEASE_VERSION} -m "create tag ${RELEASE_VERSION} based on r${SVN_REVISION}"
 
     # switch the workspace
     svn switch ${GF_WORKSPACE_URL_SSH}/tags/${RELEASE_VERSION} ${WORKSPACE}/tag/main
