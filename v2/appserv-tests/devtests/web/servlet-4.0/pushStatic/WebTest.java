@@ -100,7 +100,7 @@ public class WebTest {
         }
 
         if (push != response.isPush()) {
-            System.out.println("--> unexpected: no push!");
+            System.out.println("--> push boolean mismatched: " + push + ", " + response.isPush());
             return false;
         }
 
