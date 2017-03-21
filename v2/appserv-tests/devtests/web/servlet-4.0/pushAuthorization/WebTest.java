@@ -51,7 +51,7 @@ import org.glassfish.grizzly.test.http2.*;
  */
 public class WebTest {
 
-    private static String TEST_NAME = "servlet-4.0-push-static";
+    private static String TEST_NAME = "servlet-4.0-push-authorization";
     private static String AUTHORIZATION = "Authorization";
     private static String BASIC_AUTH_HEADER = "Basic amF2YWVlOmphdmFlZQ==";
     private static String EXPECTED_PUSH_BODY = "body { color: yellow; }";
@@ -104,6 +104,7 @@ public class WebTest {
         }
 
         if (push != response.isPush()) {
+            System.out.println("--> push boolean mismatched: " + push + ", " + response.isPush());
             return false;
         }
 
@@ -111,6 +112,7 @@ public class WebTest {
             HttpPushPromise pushPromise = response.getHttpPushPromise();
             System.out.println(pushPromise);
             if (!BASIC_AUTH_HEADER.equals(pushPromise.getHeader(AUTHORIZATION))) {
+                System.out.println("--> no basic auth header");
                 return false;
             }
         }
