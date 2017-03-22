@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -299,8 +299,9 @@
              for the test to pass. We are waiting for RE to release a newer version.
 	<ant dir="web/jruby" target="undeploy"/>
         -->
+	<!--GLASSFISH-21672: undeploy will be part of @AfterTest of jsr109tester
         <ant dir="wsit/JaxwsFromWsdl" target="undeploy"/>
-        <ant dir="wsit/jsr109tester" target="undeploy"/>
+        <ant dir="wsit/jsr109tester" target="undeploy"/> -->
         <ant dir="wsit/jaxbosgi" target="undeploy"/>
         <ant dir="security/appperms" target="undeploy"/>
     </target>
@@ -347,7 +348,7 @@
 	    <jvmarg value="-DAPPCLIENT=${APPCLIENT}"/>
             <sysproperty key="glassfish.home" value="${glassfish.home}"/>
             <sysproperty key="BASEDIR" value="${basedir}"/>
-            <!--<classfileset dir="classes/test" includes="**/SeleniumTest.class"/>-->         
+	    <!--<classfileset dir="classes/test" includes="**/SeleniumTest.class"/>-->         
             <xmlfileset dir="." includes="${testng.xml}"/>
         </testng>
         <record name="${basedir}/runtestng.output" action="stop"/>

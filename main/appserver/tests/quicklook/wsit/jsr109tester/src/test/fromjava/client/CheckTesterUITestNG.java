@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -47,6 +47,7 @@ import java.lang.reflect.*;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import test.admincli.util.RtExec;
 
 /**
  * Test very basic Webservice deployed using jsr109 deployment and tests that "?Tester" console page loads correctly
@@ -120,6 +121,22 @@ public class CheckTesterUITestNG {
                 in.close();
             }
         }
+    }
+
+   @AfterTest
+   public void undeploy() throws Exception {
+    
+    String asadmin = System.getProperty("ASADMIN");
+    System.out.println("undeploying Jaxws test apps");
+    RtExec.execute(asadmin + " undeploy JaxwsFromWsdl" );
+    RtExec.execute(asadmin + " undeploy JaxwsFromJava" );
+    
+    System.out.println("restarting domain");
+    RtExec.execute(asadmin + " stop-domain" );
+    RtExec.execute(asadmin + " start-domain" );
+   
+    System.out.println("done");
+      
     }
 
 }
