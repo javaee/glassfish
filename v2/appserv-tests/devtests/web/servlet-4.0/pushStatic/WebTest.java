@@ -81,8 +81,7 @@ public class WebTest {
             httpClient.request().path(contextRoot + "/test").build().send();
             HttpResponse httpResponse = httpClient.getHttpResponse();
             HttpResponse httpResponse2 = httpClient.getHttpResponse();
-            if (!verify(httpResponse, false, EXPECTED_BODY, false) ||
-                    !verify(httpResponse2, true, EXPECTED_PUSH_BODY, true)) {
+            if (!verify(httpResponse) || !verify(httpResponse2)) {
                 throw new Exception("Incorrect result");
             }
             stat.addStatus(TEST_NAME, stat.PASS);
@@ -92,20 +91,14 @@ public class WebTest {
         }
     }
 
-    private boolean verify(HttpResponse response, boolean push,
-            String expected, boolean exact) {
+    private boolean verify(HttpResponse response) {
         if (response == null) {
             System.out.println("--> response is null");
             return false;
         }
 
-        if (push != response.isPush()) {
-            System.out.println("--> push boolean mismatched: " + push + ", " + response.isPush());
-            return false;
-        }
-
         String body = response.getBody().trim();
         System.out.println("--> body: " + body);
-        return (exact ? expected.equals(body) : body.contains(expected));
+        return (response.isPush() ? EXPECTED_PUSH_BODY.equals(body) : body.contains(EXPECTED_BODY));
     }
 }

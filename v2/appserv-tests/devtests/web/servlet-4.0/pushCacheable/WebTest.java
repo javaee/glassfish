@@ -107,7 +107,8 @@ public class WebTest {
             return false;
         }
 
-        if (response.isPush()) {
+        boolean push = response.isPush();
+        if (push) {
             HttpPushPromise pushPromise = response.getHttpPushPromise();
             System.out.println(pushPromise);
             String testHeader = pushPromise.getHeader("test");
@@ -120,10 +121,6 @@ public class WebTest {
         String body = response.getBody().trim();
         System.out.println("--> headers: " + response.getHeaders());
         System.out.println("--> body: " + body);
-        if (response.isPush()) {
-            return EXPECTED_PUSH_BODY.equals(body);
-        } else {
-            return body.contains(EXPECTED_BODY);
-        }
+        return (push ? EXPECTED_PUSH_BODY.equals(body) : body.contains(EXPECTED_BODY));
     }
 }
