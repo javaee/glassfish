@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -101,14 +101,6 @@
        <class name="test.jdbc.jdbcusertx.JdbcUserTxTestNG" />
     </classes>
   </test>
- <!-- following tests are moved up so that it can be undeployed before the run of 
-	jpa_validation and bv_servlet_simple. This is work around fix for GLASSFISH-21672-->
- <test name="wsit_jaxws_tests">
-    <classes>
-      <class name="jaxwsfromwsdl.client.JaxwsFromWsdlTestNG"/>
-      <class name="fromjava.client.CheckTesterUITestNG"/>
-    </classes>
-  </test>
   <test name="jpa_inject_emf">
     <classes>
        <class name="test.jpa.jpainjectemf.JpaInjectEMFTestNG" />
@@ -201,7 +193,12 @@
       <class name="jaxbosgi.JaxbOsgiTestNG"/>
     </classes>
   </test>
- 
+  <test name="wsit_jaxws_tests">
+    <classes>
+      <class name="jaxwsfromwsdl.client.JaxwsFromWsdlTestNG"/>
+      <class name="fromjava.client.CheckTesterUITestNG"/>
+    </classes>
+  </test>
   <test name="cluster_setup">
     <classes>
         <class name="test.clustersetup.ClusterSetupTest"/>
