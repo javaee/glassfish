@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,7 +52,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
     public static final String TRIGGER_EDIT_REALM = "i18nc.realm.EditPageTitleHelp";
     public static final String TRIGGER_FILE_USERS = "i18nc.manageUsers.TablePageHelp";
     public static final String TRIGGER_NEW_FILE_REALM_USER = "i18nc.manageUsers.NewPageTitle";
-    public static final String TRIGGER_AUDIT_MODULES = "com.sun.enterprise.security.Audit";
+    public static final String TRIGGER_AUDIT_MODULES = "Use audit modules to develop an audit trail of all authentication and authorization decisions.";
     //"Use audit modules to develop an audit trail of all authentication and authorization decisions.";
     public static final String TRIGGER_NEW_AUDIT_MODULE = "i18nc.auditModule.NewPageTitle";
     public static final String TRIGGER_EDIT_AUDIT_MODULE = "i18nc.auditModule.EditPageTitle";
@@ -109,6 +109,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
         for (String configName : list) {
             createRealm(configName, realmName, contextName);
             deleteRow("propertyForm:realmsTable:topActionsGroup1:button1", "propertyForm:realmsTable", realmName);
+            reset();
         }
     }
 
@@ -122,6 +123,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
             addUserToRealm(configName, "file", userId, password);
 
             deleteRow("propertyForm:users:topActionsGroup1:button1", "propertyForm:users", userId);
+            reset();
         }
     }
 
@@ -151,6 +153,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
             clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_AUDIT_MODULES);
 
             deleteRow("propertyForm:configs:topActionsGroup1:button1", "propertyForm:configs", auditModuleName);
+            reset();
         }
     }
 
@@ -191,6 +194,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
             clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_JACC_PROVIDERS);
 
             deleteRow("propertyForm:configs:topActionsGroup1:button1", "propertyForm:configs", providerName);
+            reset();
         }
     }
 
@@ -221,18 +225,13 @@ public class SecurityTest extends BaseSeleniumTestClass {
             clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
             assertEquals(className, getFieldValue("propertyForm:propertySheet:providerConfSection:ClassNameProp:ClassName"));
             assertTableRowCount("propertyForm:basicTable", count);
+            reset();
         }
     }
 
     @Test
     public void testNewAdminPassword() {
-        final String userPassword = "";
-
-        clickAndWait("treeForm:tree:nodes:nodes_link", ADMIN_PWD_DOMAIN_ATTRIBUTES);
-        clickAndWait("propertyForm:domainTabs:adminPassword", ADMIN_PWD_NEW_ADMINPWD);
-        setFieldValue("propertyForm:propertySheet:propertSectionTextField:newPasswordProp:NewPassword", userPassword);
-        setFieldValue("propertyForm:propertySheet:propertSectionTextField:confirmPasswordProp:ConfirmPassword", userPassword);
-        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
+        updateAdminPassword("");
     }
 
     /*
@@ -267,26 +266,12 @@ public class SecurityTest extends BaseSeleniumTestClass {
      */
     @Test
     public void testSecureAdministration() {
-        clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_GENERAL_INFORMATION);
-        clickAndWait("propertyForm:propertyContentPage:secureAdmin", TRIGGER_SECURE_ADMINISTRATION);
-        if (isTextPresent(TRIGGER_ADMIN_ALIAS)) {
-            selenium.click("form:propertyContentPage:topButtons:enableSecureAdminButton");
-            getConfirmation();
-            waitForPageLoad(TRIGGER_RESTART_DOMAIN, TIMEOUT);
-            sleep(10000);
-            clickAndWait("link=here", "Common Tasks");
-            clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_GENERAL_INFORMATION);
-            clickAndWait("propertyForm:propertyContentPage:secureAdmin", TRIGGER_SECURE_ADMINISTRATION);
-            selenium.click("form:propertyContentPage:topButtons:disableSecureAdminButton");
-            getConfirmation();
-            waitForPageLoad(TRIGGER_RESTART_DOMAIN, TIMEOUT);
-            sleep(10000);
-        } else {
-            selenium.click("form:propertyContentPage:topButtons:disableSecureAdminButton");
-            getConfirmation();
-            waitForPageLoad(TRIGGER_RESTART_DOMAIN, TIMEOUT);
-            sleep(10000);
-        }
+      try {
+          enableSecureAdministration(true);
+      } finally {
+          enableSecureAdministration(false);
+          updateAdminPassword("");          
+      }
     }
 
     @Test
@@ -301,8 +286,8 @@ public class SecurityTest extends BaseSeleniumTestClass {
             reset();
             pressButton("Masthead:logoutLink");
             waitForLoginPageLoad(30);
+            handleLogin(newUser, newPass, TRIGGER_COMMON_TASKS);
             open ("http://localhost:4848/common/help/help.jsf?contextRef=/resource/common/en/help/ref-developercommontasks.html");
-            handleLogin(newUser, newPass, "The Common Tasks page provides shortcuts for common Administration Console tasks.");
         } finally {
             reset();
             pressButton("Masthead:logoutLink");
@@ -356,5 +341,47 @@ public class SecurityTest extends BaseSeleniumTestClass {
 
         clickAndWait("form1:propertyContentPage:manageUsersButton", TRIGGER_FILE_USERS);
         deleteRow("propertyForm:users:topActionsGroup1:button1", "propertyForm:users", userName);
+    }
+    public void updateAdminPassword(String userPassword) {
+        clickAndWait("treeForm:tree:nodes:nodes_link", ADMIN_PWD_DOMAIN_ATTRIBUTES);
+        clickAndWait("propertyForm:domainTabs:adminPassword", ADMIN_PWD_NEW_ADMINPWD);
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:newPasswordProp:NewPassword", userPassword);
+        setFieldValue("propertyForm:propertySheet:propertSectionTextField:confirmPasswordProp:ConfirmPassword", userPassword);
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
+    }
+    
+    public void enableSecureAdministration(boolean enable) {
+        boolean isSecureAdminEnabled = isSecureAdminEnabled();
+        if (enable && !isSecureAdminEnabled) {
+            updateAdminPassword("admin");
+            clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_GENERAL_INFORMATION);
+            clickAndWait("propertyForm:propertyContentPage:secureAdmin", TRIGGER_SECURE_ADMINISTRATION);
+            selenium.click("form:propertyContentPage:topButtons:enableSecureAdminButton");
+            getConfirmation();
+            sleep(10000);
+            clickLink("here");
+            waitForLoginPageLoad(TIMEOUT);
+            handleLogin("admin", "admin", TRIGGER_COMMON_TASKS);
+        } else if (isSecureAdminEnabled && !enable) {
+            clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_GENERAL_INFORMATION);
+            clickAndWait("propertyForm:propertyContentPage:secureAdmin", TRIGGER_SECURE_ADMINISTRATION);
+            selenium.click("form:propertyContentPage:topButtons:disableSecureAdminButton");
+            getConfirmation();
+            sleep(10000);
+            clickLink("here");
+            waitForLoginPageLoad(TIMEOUT);
+            handleLogin("admin", "admin", TRIGGER_COMMON_TASKS);
+            updateAdminPassword("");//Make sure admin password changed to "" after disabling            
+        }
+    }
+    
+    public boolean isSecureAdminEnabled() {
+       clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_GENERAL_INFORMATION);
+        clickAndWait("propertyForm:propertyContentPage:secureAdmin", TRIGGER_SECURE_ADMINISTRATION);
+        sleep(10000);
+        if (isElementPresent("form:propertyContentPage:topButtons:disableSecureAdminButton")) {
+          return true;
+        }
+        return false;
     }
 }

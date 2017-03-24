@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -71,35 +71,41 @@ public class AdminServiceTest extends BaseSeleniumTestClass {
         final String keystore = "keystore"+generateRandomString()+".jks";
         final String maxCertLength = Integer.toString(generateRandomNumber(10));
 
-        clickAndWait("treeForm:tree:configurations:server-config:adminService:adminService_link", TRIGGER_EDIT_JMX_CONNECTOR);
-        clickAndWait("form1:jmxConnectorTab:jmxSSLEdit", TRIGGER_SSL);
+        SecurityTest securityTest = new SecurityTest();
+        securityTest.enableSecureAdministration(true);
+        try {
+            clickAndWait("treeForm:tree:configurations:server-config:adminService:adminService_link", TRIGGER_EDIT_JMX_CONNECTOR);
+            clickAndWait("form1:jmxConnectorTab:jmxSSLEdit", TRIGGER_SSL);
 
-        clearCheckbox("propertyForm:propertySheet:propertySheetSection:SSL3Prop:SSL3");
-        clearCheckbox("propertyForm:propertySheet:propertySheetSection:TLSProp:TLS");
-        markCheckbox("propertyForm:propertySheet:propertySheetSection:ClientAuthProp:ClientAuth");
-        setFieldValue("propertyForm:propertySheet:propertySheetSection:CertNicknameProp:CertNickname", nickname);
-        setFieldValue("propertyForm:propertySheet:propertySheetSection:keystore:keystore", keystore);
-        setFieldValue("propertyForm:propertySheet:propertySheetSection:maxCertLength:maxCertLength", maxCertLength);
+            clearCheckbox("propertyForm:propertySheet:propertySheetSection:SSL3Prop:SSL3");
+            clearCheckbox("propertyForm:propertySheet:propertySheetSection:TLSProp:TLS");
+            markCheckbox("propertyForm:propertySheet:propertySheetSection:ClientAuthProp:ClientAuth");
+            setFieldValue("propertyForm:propertySheet:propertySheetSection:CertNicknameProp:CertNickname", nickname);
+            setFieldValue("propertyForm:propertySheet:propertySheetSection:keystore:keystore", keystore);
+            setFieldValue("propertyForm:propertySheet:propertySheetSection:maxCertLength:maxCertLength", maxCertLength);
 //        selenium.click("propertyForm:propertySheet:sun_propertySheetSection433:CommonCiphersProp:commonAddRemove:commonAddRemove_addAllButton");
 //        selenium.click("propertyForm:propertySheet:sun_propertySheetSection433:EphemeralCiphersProp:ephemeralAddRemove:ephemeralAddRemove_addAllButton");
 //        selenium.click("propertyForm:propertySheet:sun_propertySheetSection433:OtherCiphersProp:otherAddRemove:otherAddRemove_addAllButton");
-        if (isElementPresent("propertyForm:propertyContentPage:topButtons:newButton")) {
-            clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_NEW_VALUES_SAVED);
-        } else {
-            clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
-        }
-        clickAndWait("treeForm:tree:configurations:server-config:adminService:adminService_link", TRIGGER_EDIT_JMX_CONNECTOR);
-        clickAndWait("form1:jmxConnectorTab:jmxSSLEdit", TRIGGER_SSL);
+            if (isElementPresent("propertyForm:propertyContentPage:topButtons:newButton")) {
+                clickAndWait("propertyForm:propertyContentPage:topButtons:newButton", TRIGGER_NEW_VALUES_SAVED);
+            } else {
+                clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
+            }
+            clickAndWait("treeForm:tree:configurations:server-config:adminService:adminService_link", TRIGGER_EDIT_JMX_CONNECTOR);
+            clickAndWait("form1:jmxConnectorTab:jmxSSLEdit", TRIGGER_SSL);
 
-        assertEquals(false, isChecked("propertyForm:propertySheet:propertySheetSection:SSL3Prop:SSL3"));
-        assertEquals(false, isChecked("propertyForm:propertySheet:propertySheetSection:TLSProp:TLS"));
-        assertEquals(true, isChecked("propertyForm:propertySheet:propertySheetSection:ClientAuthProp:ClientAuth"));
-        assertEquals(nickname, getFieldValue("propertyForm:propertySheet:propertySheetSection:CertNicknameProp:CertNickname"));
-        assertEquals(keystore, getFieldValue("propertyForm:propertySheet:propertySheetSection:keystore:keystore"));
-        assertEquals(maxCertLength, getFieldValue("propertyForm:propertySheet:propertySheetSection:maxCertLength:maxCertLength"));
+            assertEquals(false, isChecked("propertyForm:propertySheet:propertySheetSection:SSL3Prop:SSL3"));
+            assertEquals(false, isChecked("propertyForm:propertySheet:propertySheetSection:TLSProp:TLS"));
+            assertEquals(true, isChecked("propertyForm:propertySheet:propertySheetSection:ClientAuthProp:ClientAuth"));
+            assertEquals(nickname, getFieldValue("propertyForm:propertySheet:propertySheetSection:CertNicknameProp:CertNickname"));
+            assertEquals(keystore, getFieldValue("propertyForm:propertySheet:propertySheetSection:keystore:keystore"));
+            assertEquals(maxCertLength, getFieldValue("propertyForm:propertySheet:propertySheetSection:maxCertLength:maxCertLength"));
 //        assertTrue(selenium.isTextPresent("SSL_RSA_WITH_RC4_128_MD5 SSL_RSA_WITH_RC4_128_SHA TLS_RSA_WITH_AES_128_CBC_SHA TLS_RSA_WITH_AES_256_CBC_SHA SSL_RSA_WITH_3DES_EDE_CBC_SHA __________________________________"));
 //        assertTrue(selenium.isTextPresent("TLS_DHE_RSA_WITH_AES_128_CBC_SHA TLS_DHE_RSA_WITH_AES_256_CBC_SHA SSL_DHE_RSA_WITH_3DES_EDE_CBC_SHA TLS_DHE_DSS_WITH_AES_128_CBC_SHA TLS_DHE_DSS_WITH_AES_256_CBC_SHA SSL_DHE_DSS_WITH_3DES_EDE_CBC_SHA ______________________________________"));
 //        assertTrue(selenium.isTextPresent("SSL_RSA_WITH_DES_CBC_SHA SSL_DHE_RSA_WITH_DES_CBC_SHA SSL_DHE_DSS_WITH_DES_CBC_SHA SSL_RSA_EXPORT_WITH_RC4_40_MD5 SSL_RSA_EXPORT_WITH_DES40_CBC_SHA SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA __________________________________________"));
         
+         } finally {
+             securityTest.enableSecureAdministration(false);
+         }
     }
 }

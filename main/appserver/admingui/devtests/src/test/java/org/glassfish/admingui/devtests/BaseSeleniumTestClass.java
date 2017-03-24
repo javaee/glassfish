@@ -300,8 +300,15 @@ public class BaseSeleniumTestClass {
     }
 
     protected void selectFile(String uploadElement, String archivePath) {
-        waitForElement(uploadElement);
-        selenium.attachFile(uploadElement, archivePath);
+        //Switch to frame
+        driver.switchTo().frame(driver.findElement(By.tagName("iframe")));
+        WebDriverWait wait = new WebDriverWait(driver, 5);
+
+        // while the following loop runs, the DOM changes - 
+        // page is refreshed, or element is removed and re-added
+        wait.until(presenceOfElementLocated(By.id(uploadElement)));
+        //Select the file path for upload.
+        driver.findElement(By.id(uploadElement)).sendKeys(archivePath);
     }
 
     protected boolean isAlertPresent() {
@@ -404,12 +411,14 @@ public class BaseSeleniumTestClass {
 
     protected void clickAndWait(String id, String triggerText, int seconds) {
         log ("Clicking on {0} \"{1}\"", id, triggerText);
+        waitForElement(id);
         insureElementIsVisible(id);
         pressButton(id);
         waitForPageLoad(triggerText, seconds);
     }
 
     protected void clickAndWait(String id, WaitForLoadCallBack callback) {
+        waitForElement(id);
         insureElementIsVisible(id);
         pressButton(id);
         waitForLoad(TIMEOUT, callback);
@@ -433,6 +442,10 @@ public class BaseSeleniumTestClass {
     protected void clickAndWaitForButtonEnabled(String id) {
         pressButton(id);
         waitForButtonEnabled(id);
+    }
+
+    protected void clickLink(String linkText) {
+        driver.findElement(By.linkText(linkText)).click();
     }
 
     protected void sleep(int millis) {

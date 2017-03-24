@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -111,6 +111,7 @@ public class JavaMessageServiceTest extends BaseSeleniumTestClass {
         final String LINK_HOSTS = "treeForm:tree:configurations:" + instanceName + "-config:jmsConfiguration:jmsHosts:jmsHosts_link";
 
         StandaloneTest sat = new StandaloneTest();
+        sat.deleteAllStandaloneInstances();
         sat.createStandAloneInstance(instanceName);
         sat.startInstance(instanceName);
 
@@ -144,7 +145,8 @@ public class JavaMessageServiceTest extends BaseSeleniumTestClass {
         sat.deleteAllStandaloneInstances();
     }
 
-    @Test
+    //TODO-IDCINTER-41
+    //@Test
     public void testJmsPhysicalDestinations() {
         final String name = "dest" + generateRandomString();
         final String maxUnconsumed = Integer.toString(generateRandomNumber(100));
@@ -195,7 +197,8 @@ public class JavaMessageServiceTest extends BaseSeleniumTestClass {
         deleteRow("propertyForm:configs:topActionsGroup1:deleteButton", "propertyForm:configs", name);
     }
 
-    @Test
+    //TODO-IDCINTER-41
+    //@Test
     public void testMasterBroker() {
         ClusterTest ct = new ClusterTest();
         try {

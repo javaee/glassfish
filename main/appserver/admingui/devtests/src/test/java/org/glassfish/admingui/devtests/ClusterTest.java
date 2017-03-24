@@ -188,7 +188,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
         int sysPropCount = addTableRow("propertyForm:sysPropsTable", "propertyForm:sysPropsTable:topActionsGroup1:addSharedTableButton");
         setFieldValue("propertyForm:sysPropsTable:rowGroup1:0:col2:col1St", "property" + generateRandomString());
         setFieldValue("propertyForm:sysPropsTable:rowGroup1:0:overrideValCol:overrideVal", "value");
-        clickAndWait("propertyForm:clusterSysPropsPage:topButtons:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
+        clickAndWait("propertyForm:clusterSysPropsPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
 
         // Go to cluster props page
         pressButton("propertyForm:clusterTabs:clusterProps:clusterInstanceProps");
@@ -234,7 +234,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
 
             waitForPageLoad("i18ncs.cluster.jms.ClusterTypeName", TIMEOUT);
 
-            clickAndWait("propertyForm:jmsTypePropertySheet:jmsTypeSection:jmsTypeProp:optLocal", "i18ncs.cluster.jms.mqClusterTypeEnhanced");
+            selenium.check("propertyForm:jmsTypePropertySheet:jmsTypeSection:jmsTypeProp:optLocal");
             selenium.check("propertyForm:jmsPropertySheet:configureJmsClusterSection:ClusterTypeProp:optConventional");
     //        selectDropdownOption("propertyForm:jmsPropertySheet:configureJmsClusterSection:ClusterTypeProp:clusterType", "Conventional");
 
@@ -326,7 +326,8 @@ public class ClusterTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:clusterTabs:clusterInst", TRIGGER_CLUSTER_INSTANCES_PAGE);
     }
 
-    @Test
+    //TODO-IDCINTER-41
+    //@Test
     public void testClusterResourcesPage() {
         final String jndiName = "jdbcResource" + generateRandomString();
         String target = "cluster" + generateRandomString();
