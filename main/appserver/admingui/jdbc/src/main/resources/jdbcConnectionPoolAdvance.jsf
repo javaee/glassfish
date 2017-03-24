@@ -99,7 +99,7 @@
         }
         gf.filterMap(map="#{pageSession.valueMap}" attrNames="#{pageSession.poolGeneralAttrs}" keep="#{false}" resultMap="#{pageSession.valueMap}");
 
-        setPageSessionAttribute(key="convertToFalseList" value={"wrapJdbcObjects" "pooling" "connectionLeakReclaim"
+        setPageSessionAttribute(key="convertToFalseList" value={"wrapJdbcObjects" "pooling" "connectionLeakReclaim" "statementLeakReclaim"
                                                                 "lazyConnectionAssociation" "lazyConnectionEnlistment"
                                                                 "associateWithThread" "matchConnections" "allowNonComponentCallers"
                                                                 "isConnectionValidationRequired" "failAllConnections"});
