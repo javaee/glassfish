@@ -79,7 +79,7 @@ monitoring     web  800
       setAttribute(key="configName" value="#{pageSession.configsList[0]}");
       gf.encodeId(id="${configName}" result="#{requestScope.configNameId}");
     />
-    <h:commandButton id="update" style="display: none;">
+    <!--<h:commandButton id="update" style="display: none;">
         <!command
             setResourceBundle(key="i18n" bundle="org.glassfish.admingui.core.Strings");
 
@@ -100,7 +100,7 @@ monitoring     web  800
             buildUIComponentTree(layoutElement="$attribute{desc}" parent="#{parent}" result=>$attribute{newComp});
             replaceUIComponent(old="${temp}" new="$attribute{newComp}");
         />
-    </h:commandButton>
+    </h:commandButton>-->
     <sun:tree id="tree" 
               text="$resource{i18n.tree.commonTasks}"
               url="/common/commonTask.jsf"

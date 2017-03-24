@@ -42,7 +42,7 @@
 -->
 
 <console-config id="updateCenter">
-        <integration-point
+        <!--<integration-point
                 id="updateCenter_node"
                 type="org.glassfish.admingui:navNode"
                 priority="800"
@@ -61,5 +61,5 @@
                 type="org.glassfish.admingui:mastheadStatusArea"
                 priority="200"
                 content="updatesAvailable.inc"
-        />
+        />-->
 </console-config>
