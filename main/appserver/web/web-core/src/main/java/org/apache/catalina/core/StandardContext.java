@@ -2859,7 +2859,7 @@ public class StandardContext
      */
     @Override
     public Set<SessionTrackingMode> getDefaultSessionTrackingModes() {
-        return DEFAULT_SESSION_TRACKING_MODES;
+        return EnumSet.copyOf(DEFAULT_SESSION_TRACKING_MODES);
     }
 
     /**
@@ -2871,8 +2871,8 @@ public class StandardContext
      */
     @Override
     public Set<SessionTrackingMode> getEffectiveSessionTrackingModes() {
-        return (sessionTrackingModes != null ? sessionTrackingModes :
-            DEFAULT_SESSION_TRACKING_MODES);
+        return (sessionTrackingModes != null ? new HashSet<>(sessionTrackingModes) :
+                getDefaultSessionTrackingModes());
     }
 
     /**
