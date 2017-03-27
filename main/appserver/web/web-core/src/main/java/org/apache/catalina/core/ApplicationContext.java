@@ -555,8 +555,8 @@ public class ApplicationContext implements ServletContext {
 
         // Name cannot be null
         if (name == null)
-            throw new IllegalArgumentException
-                    (rb.getString(LogFacade.ILLEGAL_ARGUMENT_EXCEPTION));
+            throw new NullPointerException
+                    (rb.getString(LogFacade.NULL_NAME_EXCEPTION));
 
         // Null value is the same as removeAttribute()
         if (value == null) {

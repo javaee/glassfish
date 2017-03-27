@@ -616,7 +616,7 @@ public class LogFacade {
         message = "Name cannot be null",
         level = "INFO"
     )
-    public static final String ILLEGAL_ARGUMENT_EXCEPTION = prefix + "00085";
+    public static final String NULL_NAME_EXCEPTION = prefix + "00085";
 
     @LogMessageInfo(
         message = "Cannot forward after response has been committed",
