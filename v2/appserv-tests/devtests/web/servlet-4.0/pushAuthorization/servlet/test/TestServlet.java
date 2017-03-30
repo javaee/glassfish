@@ -59,7 +59,7 @@ public class TestServlet extends HttpServlet {
         if (!"javaee".equals(remoteUser)) {
             throw new ServletException("Remote user = " + remoteUser);
         }
-        PushBuilder pushBuilder = req.getPushBuilder().
+        PushBuilder pushBuilder = req.newPushBuilder().
             path("my.css");
         pushBuilder.push();
         res.getWriter().println("<html><head><title>HTTP2 Test</title><link rel=\"stylesheet\" href=\"my.css\"></head><body>Hello</body></html>");

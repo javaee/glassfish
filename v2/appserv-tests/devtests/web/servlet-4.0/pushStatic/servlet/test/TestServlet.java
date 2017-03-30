@@ -61,7 +61,7 @@ public class TestServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse res)
             throws IOException, ServletException {
-        PushBuilder pushBuilder = req.getPushBuilder().
+        PushBuilder pushBuilder = req.newPushBuilder().
             path("my.css");
         pushBuilder.push();
         res.getWriter().println("<html><head><title>HTTP2 Test</title><link rel=\"stylesheet\" href=\"my.css\"></head><body>Hello</body></html>");

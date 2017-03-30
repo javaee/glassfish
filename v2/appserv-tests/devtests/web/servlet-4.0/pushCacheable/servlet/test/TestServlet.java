@@ -66,7 +66,7 @@ public class TestServlet extends HttpServlet {
             throws IOException, ServletException {
         HttpSession session = req.getSession(true);
         session.putValue("info", "...");
-        PushBuilder pushBuilder = req.getPushBuilder().
+        PushBuilder pushBuilder = req.newPushBuilder().
             addHeader("test", "gf2").
             setHeader("test", "gf").
             addHeader("cookie", "JSESSIONID=" + session.getId()).
