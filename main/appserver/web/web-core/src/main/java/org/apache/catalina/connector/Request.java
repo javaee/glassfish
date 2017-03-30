@@ -2590,7 +2590,7 @@ public class Request
     }
 
     @Override
-    public PushBuilder getPushBuilder() {
+    public PushBuilder newPushBuilder() {
         Http2Stream http2Stream = null;
         if (coyoteRequest != null) {
             http2Stream = (Http2Stream)coyoteRequest.getAttribute(Http2Stream.HTTP2_STREAM_ATTRIBUTE);
