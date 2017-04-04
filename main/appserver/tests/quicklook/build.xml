@@ -94,7 +94,7 @@
         <antcall target="stop-derby"/>
 		<copy file="test-output/emailable-report.html" tofile="test-output/QL-WP-report.html"/>
 		<antcall target="check-logged-messages"/>
-        <antcall target="testng-summary"/>
+        <antcall target="testng-summary_wd"/>
         <record name="${basedir}/allrun.output" action="stop"/>
     </target>
 
@@ -116,7 +116,7 @@
 
 		<copy file="test-output/emailable-report.html" tofile="test-output/QL-WP-report.html"/>
 		<antcall target="check-logged-messages"/>
-        <antcall target="testng-summary"/>
+        <antcall target="testng-summary_wd"/>
         <record name="${basedir}/allrun.output" action="stop"/>
     </target>
 
@@ -493,6 +493,16 @@
 	<echo message="${testng1_output}"/>
 	<echo message="              Jsr109tester Tests"/>
 	<echo message="${testng2_output}"/>
+
+        <echo message="${testng_output}"/>
+    </target>
+ <!--created new target for web-distribution summary as it is different from glassfish distribution summary-->
+   <target name="testng-summary_wd">
+	<loadfile srcfile="runtestng.output" property="testng_output">
+	   <filterchain>
+	      <tailfilter lines="6"/>
+	   </filterchain>
+	</loadfile>
         <echo message="${testng_output}"/>
     </target>
 
