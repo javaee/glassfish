@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -146,8 +146,8 @@
         <antcall target="verify-xml"/>
         <antcall target="start-derby"/>
         <antcall target="start-server-felix"/>
-        <antcall target="build-deploy"/>
         <antcall target="build-deploy-gd"/>
+        <antcall target="build-deploy"/>
         <antcall target="build-cluster"/>
         <antcall target="runtest">
         <param name="testng.xml" value="testng/testng_gd.xml"/> </antcall>
@@ -299,8 +299,8 @@
              for the test to pass. We are waiting for RE to release a newer version.
 	<ant dir="web/jruby" target="undeploy"/>
         -->
-        <ant dir="wsit/JaxwsFromWsdl" target="undeploy"/>
-        <ant dir="wsit/jsr109tester" target="undeploy"/>
+       <!-- <ant dir="wsit/JaxwsFromWsdl" target="undeploy"/>
+        <ant dir="wsit/jsr109tester" target="undeploy"/>-->
         <ant dir="wsit/jaxbosgi" target="undeploy"/>
         <ant dir="security/appperms" target="undeploy"/>
     </target>
@@ -474,13 +474,25 @@
             <pathelement location="${build.class.dir}/../EJB_Embedded/app"/>
         </path>
     </target>
-    
+    <!-- added few messages in order to show testng summary of wsit related tests along with final summary as wsit tests are ran seperately as a workaround for GLASSFISH-21672 -->
     <target name="testng-summary">
 	<loadfile srcfile="runtestng.output" property="testng_output">
 	   <filterchain>
 	      <tailfilter lines="6"/>
 	   </filterchain>
+	</loadfile><loadfile srcfile="wsit/JaxwsFromWsdl/wsit1run.output" property="testng1_output">
+	   <filterchain>
+	      <tailfilter lines="3"/>
+	   </filterchain>
+	</loadfile><loadfile srcfile="wsit/jsr109tester/wsit2run.output" property="testng2_output">
+	   <filterchain>
+	      <tailfilter lines="3"/>
+	   </filterchain>
 	</loadfile>
+	<echo message="              JaxwsFromWsdl Tests"/>
+	<echo message="${testng1_output}"/>
+	<echo message="              Jsr109tester Tests"/>
+	<echo message="${testng2_output}"/>
         <echo message="${testng_output}"/>
     </target>
 

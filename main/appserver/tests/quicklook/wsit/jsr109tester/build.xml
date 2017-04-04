@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2014 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2014-2017 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -50,7 +50,7 @@
     <import file="${ws.root}/gfproject/build-impl.xml"/>
     <import file="${ws.root}/gfproject/${deploy.platform}-targets.xml"/>
 
-    <target name="build-deploy" depends="server,client"/>
+    <target name="build-deploy" depends="server,client, runtest, undeploy"/>
     <target name="all" depends="server, client, runtest, undeploy"/>
 
     <!--<target name="server" depends="build-server-wsdl, create-war, deploy"/>-->
@@ -127,10 +127,12 @@
 
 
     <target name="runtest">
+	<record name="${basedir}/wsit2run.output" action="start"/>
         <antcall target="runtest-impl">
             <param name="testng.test.name" value="${testng.test.name}"/>
             <param name="testng.testclient" value="jsr109tester"/>
         </antcall>
+	<record name="${basedir}/wsit2run.output" action="stop"/>
     </target>
 
     <target name="deploy">
@@ -138,7 +140,7 @@
     </target>
 
     <target name="undeploy">
-        <!--<antcall target="undeploy-${deploy.platform}-impl"/>-->
+        <antcall target="undeploy-${deploy.platform}-impl"/>
     </target>
 
     <target name="help">
