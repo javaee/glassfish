@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,9 +40,7 @@
 
 package com.sun.enterprise.tools.verifier.apiscan.classfile;
 
-import org.objectweb.asm.Label;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.commons.EmptyVisitor;
+import org.objectweb.asm.*;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -52,7 +50,7 @@ import java.lang.ref.SoftReference;
 /**
  * @author Sanjeeb.Sahoo@Sun.COM
  */
-class ASMMethod extends EmptyVisitor implements Method {
+class ASMMethod extends MethodVisitor implements Method{
 
     private static String resourceBundleName = "com.sun.enterprise.tools.verifier.apiscan.LocalStrings";    
     private static Logger logger = Logger.getLogger("apiscan.classfile", resourceBundleName); // NOI18N
@@ -79,6 +77,7 @@ class ASMMethod extends EmptyVisitor implements Method {
     public ASMMethod(
             ClassFile owningClass, String name, String descriptor, int access,
             String signature, String[] exceptions) {
+        super(Opcodes.ASM6);
         this.owningClass = new SoftReference<ClassFile>(owningClass);
         this.name = name;
         this.descriptor = descriptor;

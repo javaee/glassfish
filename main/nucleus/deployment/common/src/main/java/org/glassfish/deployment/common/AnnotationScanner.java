@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,23 +40,21 @@
 
 package org.glassfish.deployment.common;
 
+import org.glassfish.api.deployment.archive.ReadableArchive;
+import org.glassfish.logging.annotation.LogMessageInfo;
 import org.objectweb.asm.*;
 
-import java.io.InputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.logging.Logger;
-import java.util.logging.LogRecord;
 import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
-import org.glassfish.api.deployment.archive.ReadableArchive;
-
-import org.glassfish.logging.annotation.LogMessageInfo;
-
-public class AnnotationScanner implements ClassVisitor {
+public class AnnotationScanner extends ClassVisitor {
 
     public static final Logger deplLogger = org.glassfish.deployment.common.DeploymentContextImpl.deplLogger;
 
@@ -68,6 +66,10 @@ public class AnnotationScanner implements ClassVisitor {
 
     @LogMessageInfo(message = "Failed to scan archive for annotations", level="WARNING")
     private static final String FAILED_ANNOTATION_SCAN = "NCLS-DEPLOYMENT-00003";
+
+    public AnnotationScanner(int api) {
+        super(api);
+    }
 
     public void visit(int version,
            int access,

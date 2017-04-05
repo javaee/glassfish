@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.objectweb.asm.*;
 
-public class DocClassVisitor implements ClassVisitor {
+public class DocClassVisitor extends ClassVisitor {
     private boolean hasConfiguredAnnotation = false;
     private String className;
     private List<String> interfaces;
@@ -52,6 +52,7 @@ public class DocClassVisitor implements ClassVisitor {
     private boolean showDeprecated;
 
     public DocClassVisitor(final boolean showDep) {
+        super(Opcodes.ASM6);
         showDeprecated = showDep;
     }
 
@@ -127,6 +128,11 @@ public class DocClassVisitor implements ClassVisitor {
      */
     @Override
     public void visitEnd() {
+    }
+
+    @Override
+    public ModuleVisitor visitModule() {
+        return null;
     }
 
     public boolean isConfigured() {

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -56,7 +56,7 @@ import java.io.InputStream;
  * 
  */
 class NodeInfo
-        implements ClassVisitor {
+        extends ClassVisitor {
 
     private int nodeId;
 
@@ -88,7 +88,12 @@ class NodeInfo
 
     private static final Set<NodeInfo> EMPTY_NODEINFO_SET = new HashSet<NodeInfo>();
 
+    public NodeInfo(int api) {
+        super(api);
+    }
+
     NodeInfo(byte[] classData) {
+        super(Opcodes.ASM6);
         ClassReader cr = new ClassReader(classData);
 
         cr.accept(this, ClassReader.SKIP_CODE);
@@ -136,6 +141,7 @@ class NodeInfo
     }
 
     NodeInfo(String className) {
+        super(Opcodes.ASM6);
         this.className = className;
     }
 

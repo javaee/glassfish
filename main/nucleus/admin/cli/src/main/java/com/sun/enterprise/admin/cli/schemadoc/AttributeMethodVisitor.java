@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,6 +44,7 @@ import org.objectweb.asm.AnnotationVisitor;
 import org.glassfish.api.admin.config.PropertiesDesc;
 import org.glassfish.api.admin.config.PropertyDesc;
 import org.jvnet.hk2.config.Attribute;
+import org.objectweb.asm.Opcodes;
 
 public class AttributeMethodVisitor extends EmptyVisitor {
     private ClassDef def;
@@ -52,6 +53,7 @@ public class AttributeMethodVisitor extends EmptyVisitor {
     private boolean duckTyped;
 
     public AttributeMethodVisitor(ClassDef classDef, String method, String aggType) {
+        super(Opcodes.ASM6);
         def = classDef;
         name = method;
         type = aggType;

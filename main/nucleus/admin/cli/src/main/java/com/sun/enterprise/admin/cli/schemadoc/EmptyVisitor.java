@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -42,23 +42,12 @@ package com.sun.enterprise.admin.cli.schemadoc;
 
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
-public class EmptyVisitor implements ClassVisitor, FieldVisitor, MethodVisitor, AnnotationVisitor {
-    @Override
-    public void visit(int i, int i1, String s, String s1, String s2,
-        String[] strings) {
-    }
-
-    @Override
-    public void visitSource(String s, String s1) {
-    }
-
-    @Override
-    public void visitOuterClass(String s, String s1, String s2) {
+public class EmptyVisitor extends MethodVisitor {
+    public EmptyVisitor(int api) {
+        super(api);
     }
 
     @Override
@@ -71,40 +60,7 @@ public class EmptyVisitor implements ClassVisitor, FieldVisitor, MethodVisitor, 
     }
 
     @Override
-    public void visitInnerClass(String s, String s1, String s2, int i) {
-    }
-
-    @Override
-    public FieldVisitor visitField(int i, String s, String s1, String s2, Object o) {
-        return null;
-    }
-
-    @Override
-    public MethodVisitor visitMethod(int i, String s, String s1, String s2,
-        String[] strings) {
-        return null;
-    }
-
-    @Override
     public void visitEnd() {
-    }
-
-    @Override
-    public void visit(String s, Object o) {
-    }
-
-    @Override
-    public void visitEnum(String s, String s1, String s2) {
-    }
-
-    @Override
-    public AnnotationVisitor visitAnnotation(String s, String s1) {
-        return null;
-    }
-
-    @Override
-    public AnnotationVisitor visitArray(String s) {
-        return null;
     }
 
     @Override

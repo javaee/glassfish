@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -306,10 +306,10 @@ public class ProbeProviderClassFileTransformer implements ClassFileTransformer {
     }
 
     private class ProbeProviderClassVisitor
-            extends ClassAdapter {
+            extends ClassVisitor {
 
         ProbeProviderClassVisitor(ClassVisitor cv) {
-            super(cv);
+            super(Opcodes.ASM6);
             if (Log.getLogger().isLoggable(Level.FINER)) {
                 for (String methodDesc : probes.keySet()) {
                     Log.finer("visit" + methodDesc);
@@ -338,7 +338,7 @@ public class ProbeProviderClassFileTransformer implements ClassFileTransformer {
         private Label startFinally;
 
         ProbeProviderMethodVisitor(MethodVisitor mv, int access, String name, String desc, FlashlightProbe probe) {
-            super(mv, access, name, desc);
+            super(Opcodes.ASM6, mv, access, name, desc);
             this.probe = probe;
         }
 

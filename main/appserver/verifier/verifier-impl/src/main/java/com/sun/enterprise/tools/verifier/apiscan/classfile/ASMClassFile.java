@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -41,9 +41,7 @@
 package com.sun.enterprise.tools.verifier.apiscan.classfile;
 
 import static org.objectweb.asm.Opcodes.*;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.commons.EmptyVisitor;
+import org.objectweb.asm.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -155,14 +153,15 @@ class ASMClassFile implements ClassFile {
         return sb.toString();
     }
 
-    private static class MyVisitor extends EmptyVisitor {
+    private static class MyVisitor extends ClassVisitor {
         ASMClassFile cf;
 
         public MyVisitor(ASMClassFile cf) {
+            super(ASM6);
             this.cf = cf;
         }
 
-        @Override public void visit(
+        public void visit(
                 int version, int access, String name, String signature,
                 String superName, String[] interfaces) {
             logger.entering(
@@ -180,7 +179,7 @@ class ASMClassFile implements ClassFile {
             cf.access = access;
         }
 
-        @Override public MethodVisitor visitMethod(
+        public MethodVisitor visitMethod(
                 int access, String name, String desc, String signature,
                 String[] exceptions) {
             logger.entering(

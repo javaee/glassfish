@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -153,13 +153,13 @@ public class ProviderSubClassImplGenerator {
     }
 
     private static class ProbeProviderSubClassGenerator
-            extends ClassAdapter {
+            extends ClassVisitor {
         String superClassName;
         String token;
         String id;
 
         ProbeProviderSubClassGenerator(ClassVisitor cv, String token, String id) {
-            super(cv);
+            super(Opcodes.ASM6);
             this.id = id;
             this.token = token;
         }
@@ -202,11 +202,12 @@ public class ProviderSubClassImplGenerator {
     }
 
     private static class ProbeProviderAnnotationVisitor
-            implements AnnotationVisitor {
+            extends AnnotationVisitor {
         private AnnotationVisitor delegate;
         private String token;
 
         ProbeProviderAnnotationVisitor(AnnotationVisitor delegate, String token) {
+            super(Opcodes.ASM6);
             this.delegate = delegate;
             this.token = token;
         }

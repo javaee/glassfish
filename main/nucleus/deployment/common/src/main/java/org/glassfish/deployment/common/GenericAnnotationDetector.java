@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,6 +40,7 @@
 
 package org.glassfish.deployment.common;
 
+import javassist.bytecode.Opcode;
 import org.objectweb.asm.*;
 
 import java.io.FileNotFoundException;
@@ -85,6 +86,7 @@ public class GenericAnnotationDetector extends AnnotationScanner {
     List<String> annotations = new ArrayList<String>();; 
 
     public GenericAnnotationDetector(Class[] annotationClasses) {
+        super(Opcodes.ASM6);
         if (annotationClasses != null) {
             for (Class annClass : annotationClasses) {
                 annotations.add(Type.getDescriptor(annClass));

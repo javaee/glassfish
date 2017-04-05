@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,6 +52,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.sun.enterprise.config.serverbeans.Domain;
 import org.glassfish.api.Param;
@@ -85,6 +87,7 @@ public class GenerateDomainSchema implements AdminCommand {
     private ServiceLocator habitat;
     @Param(name = "format", defaultValue = "html", optional = true)
     private String format;
+    private static final Logger logger =  Logger.getLogger(GenerateDomainSchema.class.getPackage().getName());;
     File docDir;
     private Map<String, ClassDef> classDefs = new HashMap<String, ClassDef>();
     @Param(name = "showSubclasses", defaultValue = "false", optional = true)
@@ -127,9 +130,15 @@ public class GenerateDomainSchema implements AdminCommand {
 
     private void findClasses(Map<String, ClassDef> classDefs, List<JarFile> jarFiles) throws IOException {
         for (JarFile jf : jarFiles) {
+            if (logger.isLoggable(Level.FINE)) {
+                logger.finer("GenerateDomainSchema: Jar name = " + jf.getName());
+            }
             for (Enumeration<JarEntry> entries = jf.entries(); entries.hasMoreElements();) {
                 JarEntry entry = entries.nextElement();
                 if (entry.getName().endsWith(".class")) {
+                    if (logger.isLoggable(Level.FINE)) {
+                        logger.finer("GenerateDomainSchema: Parsing class = " + entry.getName());
+                    }
                     ClassDef def = parse(jf.getInputStream(entry));
                     if (def != null) {
                         classDefs.put(def.getDef(), def);

@@ -175,7 +175,7 @@
         <v3-docs.version>4.1</v3-docs.version>
         <v3-docs-l10n.version>4.0-b07</v3-docs-l10n.version>
         <l10n.version>3.1-b41</l10n.version>
-        <asm.version>3.1</asm.version>
+        <asm.version>6.0_ALPHA</asm.version>
         <shoal.version>1.6.18</shoal.version>
         <ha-api.version>3.1.8</ha-api.version>
         <glassfishbuild.version>3.2.20</glassfishbuild.version>
@@ -1061,7 +1061,7 @@
             <dependency>
                 <groupId>org.glassfish.external</groupId>
                 <artifactId>asm-all</artifactId>
-                <version>3.3</version>
+                <version>${asm.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.javassist</groupId>
