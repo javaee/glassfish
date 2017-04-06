@@ -1,0 +1,4 @@
+## Flashlight issue after updating to new ASM
+monitorHttpService
+monitorServletInstance
+monitorWebRequest
