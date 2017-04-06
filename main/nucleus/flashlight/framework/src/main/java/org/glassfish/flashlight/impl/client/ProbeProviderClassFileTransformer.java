@@ -309,7 +309,7 @@ public class ProbeProviderClassFileTransformer implements ClassFileTransformer {
             extends ClassVisitor {
 
         ProbeProviderClassVisitor(ClassVisitor cv) {
-            super(Opcodes.ASM6);
+            super(Opcodes.ASM6, cv);
             if (Log.getLogger().isLoggable(Level.FINER)) {
                 for (String methodDesc : probes.keySet()) {
                     Log.finer("visit" + methodDesc);
