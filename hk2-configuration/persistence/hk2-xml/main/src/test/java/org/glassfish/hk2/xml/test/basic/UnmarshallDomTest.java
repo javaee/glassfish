@@ -273,4 +273,20 @@ public class UnmarshallDomTest {
         
         Commons.testJaxbStyleForwardReference(locator, uri);
     }
+    
+    /**
+     * Tests that XmlJavaTypeAdapter works with these beans
+     * 
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testXmlJavaTypeAdapter() throws Exception {
+        ServiceLocator locator = Utilities.createDomLocator();
+        
+        URL url = getClass().getClassLoader().getResource(Commons.ROOT_BEAN_WITH_PROPERTIES);
+        URI uri = url.toURI();
+        
+        Commons.testXmlJavaTypeAdapter(locator, uri);
+    }
 }

@@ -425,5 +425,34 @@ public class UnmarshallXMLStreamTest {
             is.close();
         }
     }
+    
+    /**
+     * Tests that JaxB style references work
+     * even if the referenced object is AFTER the stanza
+     * being referenced
+     * 
+     * These are references that use XmlID and XmlIDREF
+     * 
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testXmlJavaTypeAdapter() throws Exception {
+        ServiceLocator locator = Utilities.createDomLocator();
+        
+        InputStream is = getStream(Commons.ROOT_BEAN_WITH_PROPERTIES);
+        try {
+            XMLStreamReader reader = xif.createXMLStreamReader(is);
+            try {
+                Commons.testXmlJavaTypeAdapter(locator, reader);
+            }
+            finally {
+                reader.close();
+            }
+        }
+        finally {
+            is.close();
+        }
+    }
 
 }

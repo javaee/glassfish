@@ -45,6 +45,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamReader;
 
@@ -78,6 +79,7 @@ public class Commons {
     public final static String TYPE1_FILE = "type1.xml";
     public final static String FOOBAR_FILE = "foobar.xml";
     public final static String REFERENCE1_FILE = "reference1.xml";
+    public final static String ROOT_BEAN_WITH_PROPERTIES = "xmljavatypeadapter/root-bean-with-properties.xml";
     
     public final static String BEN_FRANKLIN = "Ben Franklin";
     public final static String ACME = "Acme";
@@ -830,9 +832,37 @@ public class Commons {
         
             Assert.assertEquals(bob, bobFromTie);
             Assert.assertEquals(carol, carolFromTie);
+        } 
+    }
+    
+    public static void testXmlJavaTypeAdapter(ServiceLocator locator, URI uri) throws Exception {
+        testXmlJavaTypeAdapter(locator, uri, null);
+    }
+    
+    public static void testXmlJavaTypeAdapter(ServiceLocator locator, XMLStreamReader reader) throws Exception {
+        testXmlJavaTypeAdapter(locator, null, reader);
+    }
+    
+    /**
+     * Tests the most basic of xml files can be unmarshalled with an interface
+     * annotated with jaxb annotations
+     * 
+     * @throws Exception
+     */
+    private static void testXmlJavaTypeAdapter(ServiceLocator locator, URI uri, XMLStreamReader reader) throws Exception {
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        XmlRootHandle<RootBeanWithProperties> rootHandle;
+        if (uri != null) {
+            rootHandle = xmlService.unmarshal(uri, RootBeanWithProperties.class);
         }
+        else {
+            rootHandle = xmlService.unmarshal(reader, RootBeanWithProperties.class, true, true);
+        }
+        RootBeanWithProperties rbwp = rootHandle.getRoot();
         
-        
-        
+        Map<String, String> props = rbwp.getProperties();
+        Assert.assertEquals(BOB, props.get(ALICE));
+        Assert.assertEquals(DAVE, props.get(CAROL));
     }
 }

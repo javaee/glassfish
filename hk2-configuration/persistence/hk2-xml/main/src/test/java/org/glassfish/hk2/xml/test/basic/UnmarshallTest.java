@@ -263,6 +263,22 @@ public class UnmarshallTest {
     }
     
     /**
+     * Tests that XmlJavaTypeAdapter works with these beans
+     * 
+     * @throws Exception
+     */
+    @Test
+    @org.junit.Ignore
+    public void testXmlJavaTypeAdapter() throws Exception {
+        ServiceLocator locator = Utilities.createLocator();
+        
+        URL url = getClass().getClassLoader().getResource(Commons.ROOT_BEAN_WITH_PROPERTIES);
+        URI uri = url.toURI();
+        
+        Commons.testXmlJavaTypeAdapter(locator, uri);
+    }
+    
+    /**
      * Tests that JaxB style references work
      * even if the referenced object is AFTER the stanza
      * being referenced
