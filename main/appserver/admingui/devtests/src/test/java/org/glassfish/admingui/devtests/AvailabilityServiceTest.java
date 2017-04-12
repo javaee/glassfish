@@ -69,9 +69,12 @@ public class AvailabilityServiceTest extends BaseSeleniumTestClass {
         setFieldValue("propertyForm:basicTable:rowGroup1:0:col4:col1St", generateRandomString());
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         assertTableRowCount("propertyForm:basicTable", count);
+        deleteAllTableRows("propertyForm:basicTable", 1);
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
     }
 
-    @Test
+    //TODO IDCINTER-41 and GLASSFISH-21710
+    //@Test
     public void testWebContainerAvailability() {
         if (!isTextPresent(TRIGGER_AVAILABILTY_SERVICE_NODE)) {
             clickAndWait(ID_DEFAULT_CONFIG_TURNER, TRIGGER_AVAILABILTY_SERVICE_NODE);
@@ -86,9 +89,11 @@ public class AvailabilityServiceTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
         assertTableRowCount("propertyForm:basicTable", count);
         deleteAllTableRows("propertyForm:basicTable", 1);
+        clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
     }
 
-    @Test
+    //TODO IDCINTER-41 and GLASSFISH-21710
+    //@Test
     public void testEjbContainerAvailability() {
         if (!isTextPresent(TRIGGER_AVAILABILTY_SERVICE_NODE)) {
             clickAndWait(ID_DEFAULT_CONFIG_TURNER, TRIGGER_AVAILABILTY_SERVICE_NODE);
@@ -106,8 +111,7 @@ public class AvailabilityServiceTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
     }
 
-    //TODO-IDCINTER-41-Cluster JMS values are not getting the correct values. 
-    //@Test
+    @Test
     public void testJMSAvailability() {
         final String clusterName = "cluster" + generateRandomString();
         final String CLUSTER_TYPE = "enhanced";
@@ -120,10 +124,12 @@ public class AvailabilityServiceTest extends BaseSeleniumTestClass {
         ct.createCluster(clusterName);
 
         try {
-            clickAndWait("treeForm:tree:configurations:" + clusterName + "-config:availabilityService:availabilityService_link", TRIGGER_AVAILABILTY_SERVICE_PAGE);
+            String TRIGGER_AVAILABILTY_SERVICE_PAGE_LINK = "treeForm:tree:configurations:" + clusterName + "-config:availabilityService:availabilityService_link";
+            clickAndWaitForElement("Masthead:homeLink", TRIGGER_AVAILABILTY_SERVICE_PAGE_LINK);
+            clickAndWait(TRIGGER_AVAILABILTY_SERVICE_PAGE_LINK, TRIGGER_AVAILABILTY_SERVICE_PAGE);
             clickAndWait("propertyForm:availabilityTabs:jmsAvailabilityTab", TRIGGER_JMS_AVAILABILTY);
 
-            selenium.check("propertyForm:propertySheet:propertSectionTextField:AvailabilityEnabledProp:avail");
+            markCheckbox("propertyForm:propertySheet:propertSectionTextField:AvailabilityEnabledProp:avail");
 //            selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:ClusterTypeProp:clusterType", CLUSTER_TYPE);
             
             setFieldValue("propertyForm:propertySheet:propertSectionTextField:DbVendorProp:DbVendor", DB_VENDOR);

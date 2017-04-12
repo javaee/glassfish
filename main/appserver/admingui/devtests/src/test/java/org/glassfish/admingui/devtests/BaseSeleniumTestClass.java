@@ -172,6 +172,7 @@ public class BaseSeleniumTestClass {
      * @return
      */
     public String getFieldValue(String elem) {
+        waitForElement(elem);
         return selenium.getValue(elem);
     }
     /**
@@ -180,6 +181,7 @@ public class BaseSeleniumTestClass {
      * @param text
      */
     public void setFieldValue(String elem, String text) {
+        waitForElement(elem);
         selenium.focus(elem);
         selenium.type(elem, text);
     }
@@ -257,6 +259,7 @@ public class BaseSeleniumTestClass {
     protected void selectDropdownOption(String id, String label) {
         try {
             label = resolveTriggerText(label);
+            waitForElement(id);
             selenium.select(id, "label="+label);
         } catch (SeleniumException se) {
             try {
@@ -279,6 +282,7 @@ public class BaseSeleniumTestClass {
     protected void addSelectSelection(String elem, String label) {
         try {
             label = resolveTriggerText(label);
+            waitForElement(elem);
             selenium.addSelection(elem, "label="+label);
         } catch (SeleniumException se) {
             logger.info("An invalid option was requested.  Here are the valid options:");
@@ -513,7 +517,7 @@ public class BaseSeleniumTestClass {
             boolean loginFormIsDisplayed = false;
 
             try {
-                loginFormIsDisplayed = isElementPresent("j_username");
+                loginFormIsDisplayed = isElementPresent("j_username") || isElementPresent("Login.username");
             } catch (Exception ex) {
             }
             if (loginFormIsDisplayed) {
@@ -530,8 +534,8 @@ public class BaseSeleniumTestClass {
 
     protected void handleLogin(String userName, String password, String triggerText) {
         processingLogin = true;
-        setFieldValue("j_username", userName);
-        setFieldValue("j_password", password);
+        setFieldValue("Login.username", userName);
+        setFieldValue("Login.password", password);
         clickAndWait("loginButton", triggerText);
         processingLogin = false;
     }
@@ -773,6 +777,17 @@ public class BaseSeleniumTestClass {
     protected void assertTableRowCount(String tableId, int count) {
         Assert.assertEquals(count, getTableRowCount(tableId));
     }
+ 
+    protected void waitForTableRowCount(String tableID, int count) {
+        WebDriverWait wait = new WebDriverWait(driver, 5);
+        wait.until(presenceOfElementLocated(By.id(tableID)));
+        try {
+            int tableCount = getTableRowCount(tableID);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        sleep(500);
+    }
 
     // Look at all those params. Maybe this isn't such a hot idea.
     /**
@@ -819,7 +834,7 @@ public class BaseSeleniumTestClass {
         waitForButtonEnabled(enableButtonId);
         pressButton(enableButtonId);
         waitForButtonDisabled(enableButtonId);
-
+        waitForPageLoad(resourceName, false);
         clickAndWait(getLinkIdByLinkText(tableId, resourceName), editTriggerText);
         // TODO: this is an ugly, ugly hack and needs to be cleaned up
         if(state.contains("Target")) {
@@ -872,6 +887,7 @@ public class BaseSeleniumTestClass {
 
         reset();
         clickAndWait(resourcesLinkId, resourcesTriggerText);
+        waitForPageLoad(jndiName, false);
         clickAndWait(getLinkIdByLinkText(resourcesTableId, jndiName), resEditTriggerText);
         //Click on the target tab and verify whether the target is in the target table or not.
         clickAndWait(resTargetTabId, TRIGGER_EDIT_RESOURCE_TARGETS);
@@ -906,6 +922,7 @@ public class BaseSeleniumTestClass {
         //Test the issue : 13280
         //If server instance is not one of the target, edit resource was failing. Fixed that and added a test
         clickAndWait(resourcesLinkId, resourcesTriggerText);
+        waitForPageLoad(jndiName, false);
         clickAndWait(getLinkIdByLinkText(resourcesTableId, jndiName), resEditTriggerText);
         Assert.assertTrue(isTextPresent(jndiName));
         clickAndWait(resTargetTabId, TRIGGER_EDIT_RESOURCE_TARGETS);

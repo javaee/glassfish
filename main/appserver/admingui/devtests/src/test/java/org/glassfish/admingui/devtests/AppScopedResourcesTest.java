@@ -224,7 +224,7 @@ public class AppScopedResourcesTest extends BaseSeleniumTestClass {
         selectTableRowByValue(ELEMENT_DEPLOY_TABLE, applicationName);
         pressButton(ELEMENT_UNDEPLOY_BUTTON);
         getConfirmation();
-        waitForPageLoad(applicationName, true);
+        waitForTableRowCount(ELEMENT_DEPLOY_TABLE, (preCount-1));
         int postUndeployCount = this.getTableRowCount(ELEMENT_DEPLOY_TABLE);
         assertTrue (preCount > postUndeployCount);
     }

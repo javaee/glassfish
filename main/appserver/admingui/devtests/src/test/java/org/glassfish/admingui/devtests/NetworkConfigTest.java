@@ -62,7 +62,9 @@ public class NetworkConfigTest extends BaseSeleniumTestClass {
         final String listenerName = "listener"+generateRandomString();
         createConfig("new-config");
         for (String configName : list) {
-            clickAndWait("treeForm:tree:configurations:" + configName + ":networkConfig:networkListeners:networkListeners_link", TRIGGER_NETWORK_LISTENERS);
+            String TRIGGER_NETWORK_LISTENERS_LINK = "treeForm:tree:configurations:" + configName + ":networkConfig:networkListeners:networkListeners_link";
+            clickAndWaitForElement("Masthead:homeLink", TRIGGER_NETWORK_LISTENERS_LINK);
+            clickAndWait(TRIGGER_NETWORK_LISTENERS_LINK, TRIGGER_NETWORK_LISTENERS);
             clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_NETWORK_LISTENER);
             setFieldValue("propertyForm:propertySheet:propertSectionTextField:nameNew:name", listenerName);
             pressButton("propertyForm:propertySheet:propertSectionTextField:prop1:existingRdBtn");
@@ -98,7 +100,9 @@ public class NetworkConfigTest extends BaseSeleniumTestClass {
         final String transportName = "transport"+generateRandomString();
         createConfig("new-config");
         for (String configName : list) {
-            clickAndWait("treeForm:tree:configurations:" + configName + ":networkConfig:transports:transports_link", TRIGGER_TRANSPORTS);
+            String TRIGGER_TRANSPORTS_LINK = "treeForm:tree:configurations:" + configName + ":networkConfig:transports:transports_link";
+            clickAndWaitForElement("Masthead:homeLink", TRIGGER_TRANSPORTS_LINK);
+            clickAndWait(TRIGGER_TRANSPORTS_LINK, TRIGGER_TRANSPORTS);
             clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_TRANSPORT);
             setFieldValue("propertyForm:propertySheet:propertSectionTextField:IdTextProp:IdText", transportName);
             selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:ByteBufferType:ByteBufferType", "DIRECT");
@@ -134,7 +138,9 @@ public class NetworkConfigTest extends BaseSeleniumTestClass {
 
         createConfig("new-config");
         for (String configName : list) {
-            clickAndWait("treeForm:tree:configurations:" + configName +":networkConfig:protocols:protocols_link", TRIGGER_PROTOCOLS);
+            String TRIGGER_PROTOCOLS_LINK = "treeForm:tree:configurations:" + configName +":networkConfig:protocols:protocols_link";
+            clickAndWaitForElement("Masthead:homeLink", TRIGGER_PROTOCOLS_LINK);
+            clickAndWait(TRIGGER_PROTOCOLS_LINK, TRIGGER_PROTOCOLS);
             clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_PROTOCOL);
             setFieldValue("propertyForm:propertySheet:propertSectionTextField:nameNew:name", protocol);
             setFieldValue("propertyForm:propertySheet:fileTextField:maxAge:maxAge", maxAge);

@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2017 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -63,7 +63,6 @@
             <!command
                 getUIComponent(clientId="$pageSession{configsTableRowGroupId}", component=>$attribute{tableRowGroup});
                 getSelectedSingleMapRows(TableRowGroup="${tableRowGroup}" selectedRows=>$attribute{selectedRows});
-                prepareSuccessfulMsg();
                 foreach (var="dest" list="$attribute{selectedRows}") {
                      createMap(result="#{requestScope.attrsMap}");
                      mapPut(map="#{requestScope.attrsMap}" key="desttype" value="#{dest.type}" );
@@ -72,7 +71,7 @@
                         attrs="#{requestScope.attrsMap}", method="delete", result="#{requestScope.result}");
                 }
                 setAttribute(key="selectedRows" value="${selectedRows}");
-                gf.redirect(page="#{pageSession.selfPage}");
+                gf.redirect(page="#{request.contextPath}/#{pageSession.selfPage}");
             />
             </sun:button>
             <sun:button id="flushButton" text="$resource{i18njms.jmsPhysDestinations.purge}" disabled="#{true}" primary="#{false}"

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -53,7 +53,7 @@ import static org.junit.Assert.*;
  *
  * @author jasonlee
  */
-public class RestResponseTest {
+/*public class RestResponseTest {
     private static final SeleniumHelper helper = SeleniumHelper.getInstance();
     public static final String BASE_URL = helper.getBaseUrl() + "/management/domain";
     static final String URL_UPTIME = BASE_URL + "/uptime";
@@ -83,4 +83,4 @@ public class RestResponseTest {
         response = RestUtil.get(URL_UPTIME + "/forceFailure");
         assertFalse(response.isSuccess());
     }
-}
+}*/

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -43,7 +43,7 @@ package org.glassfish.admingui.devtests;
 import org.glassfish.admingui.devtests.util.SeleniumHelper;
 import org.junit.Test;
 
-public class RegistrationTest extends BaseSeleniumTestClass {
+/*public class RegistrationTest extends BaseSeleniumTestClass {
 
     // this test connects to an external site on the internet. It will fail if the site is down or there is no internet.
     @Test
@@ -56,5 +56,5 @@ public class RegistrationTest extends BaseSeleniumTestClass {
         markCheckbox("acceptTOU");
         pressButton("submitButton");
     }            
-}
+}*/
 

@@ -57,10 +57,10 @@ import static org.junit.Assert.*;*/
  *
  * @author jasonlee
  */
-public class RestSessionTimeoutTest extends BaseSeleniumTestClass {
+/*public class RestSessionTimeoutTest extends BaseSeleniumTestClass {
 
 //    protected Client client = Client.create();
-/*    protected final String baseUrl = "http://localhost:" + SeleniumHelper.getParameter("admin.port", "4848") + "/management/domain";
+    protected final String baseUrl = "http://localhost:" + SeleniumHelper.getParameter("admin.port", "4848") + "/management/domain";
     protected static final String RESPONSE_TYPE = MediaType.APPLICATION_JSON;
     protected static final String AUTH_USER_NAME = "admin";
     protected static final String AUTH_PASSWORD = "admin";
@@ -184,5 +184,4 @@ public class RestSessionTimeoutTest extends BaseSeleniumTestClass {
         }
     }
     //**************************************************************************
-*/
-}
+}*/

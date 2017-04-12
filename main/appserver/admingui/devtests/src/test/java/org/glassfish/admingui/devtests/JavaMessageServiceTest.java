@@ -116,6 +116,7 @@ public class JavaMessageServiceTest extends BaseSeleniumTestClass {
         sat.startInstance(instanceName);
 
         // Create new JMS Host for the standalone instance's config
+        clickAndWaitForElement("Masthead:homeLink", LINK_HOSTS);
         clickAndWait(LINK_HOSTS, TRIGGER_JMS_HOSTS);
         clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_JMS_HOST);
         setFieldValue("propertyForm:propertySheet:propertSectionTextField:JmsHostTextProp:JmsHostText", hostText);
@@ -145,7 +146,7 @@ public class JavaMessageServiceTest extends BaseSeleniumTestClass {
         sat.deleteAllStandaloneInstances();
     }
 
-    //TODO-IDCINTER-41
+    //TODO IDCINTER-41 Intermittent failures
     //@Test
     public void testJmsPhysicalDestinations() {
         final String name = "dest" + generateRandomString();
@@ -197,7 +198,7 @@ public class JavaMessageServiceTest extends BaseSeleniumTestClass {
         deleteRow("propertyForm:configs:topActionsGroup1:deleteButton", "propertyForm:configs", name);
     }
 
-    //TODO-IDCINTER-41
+    //TODO-IDCINTER-41 GLASSFISH-21713
     //@Test
     public void testMasterBroker() {
         ClusterTest ct = new ClusterTest();

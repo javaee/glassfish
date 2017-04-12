@@ -112,6 +112,11 @@ public class AdminObjectTest extends BaseSeleniumTestClass {
         final String disableStatus = "Enabled on 0 of 2 Target(s)";
 
         StandaloneTest instanceTest = new StandaloneTest();
+        ClusterTest clusterTest = new ClusterTest();
+
+        instanceTest.deleteAllStandaloneInstances();
+        clusterTest.deleteAllClusters();
+
         instanceTest.createStandAloneInstance(instanceName);
 
         //Go to Admin Object Resources Page.

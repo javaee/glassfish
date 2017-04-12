@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -223,7 +223,9 @@ public class MsgSecurityTest extends BaseSeleniumTestClass {
 
     public void createMsgSecurityConfig(String configName, String layer, String providerName, String type, boolean isDefault, String propertyName){
 
-        clickAndWait("treeForm:tree:configurations:" + configName + ":security:messageSecurity:messageSecurity_link", TRIGGER_MESSAGE_SECURITY_CONFIGURATIONS);
+        String TRIGGER_MESSAGE_SECURITY_CONFIGURATIONS_LINK = "treeForm:tree:configurations:" + configName + ":security:messageSecurity:messageSecurity_link";
+        clickAndWaitForElement("Masthead:homeLink", TRIGGER_MESSAGE_SECURITY_CONFIGURATIONS_LINK);
+        clickAndWait(TRIGGER_MESSAGE_SECURITY_CONFIGURATIONS_LINK, TRIGGER_MESSAGE_SECURITY_CONFIGURATIONS);
         clickAndWait(ID_MSG_SECURITY_TABLE_NEW_BUTTON,  TRIGGER_NEW_MESSAGE_SECURITY_CONFIGURATION);
         selectDropdownOption("propertyForm:propertySheet:propertySheetSection:AuthLayerProp:AuthLayer", layer);
         setFieldValue("propertyForm:propertySheet:providerConfSection:ProviderIdTextProp:ProviderIdText", providerName);
@@ -247,6 +249,6 @@ public class MsgSecurityTest extends BaseSeleniumTestClass {
         setFieldValue("propertyForm:propertySheet:propertSectionTextField:NameProp:Name", newConfigName);
         selectDropdownOption("propertyForm:propertySheet:propertSectionTextField:ConfigProp:Config", srcName);
         clickAndWait("propertyForm:propertyContentPage:topButtons:okButton", TRIGGER_CONFIGURATION);
-        assertTrue(isTextPresent(newConfigName));
+        assertTrue(tableContainsRow("propertyForm:configs", "col1", newConfigName));
     }
 }

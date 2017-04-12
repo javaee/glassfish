@@ -326,7 +326,7 @@ public class ClusterTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:clusterTabs:clusterInst", TRIGGER_CLUSTER_INSTANCES_PAGE);
     }
 
-    //TODO-IDCINTER-41
+    //TODO-IDCINTER-41 Intermittent failures
     //@Test
     public void testClusterResourcesPage() {
         final String jndiName = "jdbcResource" + generateRandomString();
@@ -345,12 +345,11 @@ public class ClusterTest extends BaseSeleniumTestClass {
         int jdbcCount = getTableRowCountByValue(tableID, "JDBC Resources", "col3:type");
         int customCount = getTableRowCountByValue(tableID, "Custom Resources", "col3:type");
 
-        EnterpriseServerTest adminServerTest = new EnterpriseServerTest();
         selectDropdownOption("propertyForm:resourcesTable:topActionsGroup1:filter_list", "Custom Resources");
-        adminServerTest.waitForTableRowCount(tableID, customCount);
+        waitForTableRowCount(tableID, customCount);
 
         selectDropdownOption("propertyForm:resourcesTable:topActionsGroup1:filter_list", "JDBC Resources");
-        adminServerTest.waitForTableRowCount(tableID, jdbcCount);
+        waitForTableRowCount(tableID, jdbcCount);
 
         selectTableRowByValue("propertyForm:resourcesTable", jndiName);
         waitForButtonEnabled("propertyForm:resourcesTable:topActionsGroup1:button1");

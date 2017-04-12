@@ -52,13 +52,16 @@ public class IiopListenerTest extends BaseSeleniumTestClass {
     private static final String TRIGGER_ORB = "i18n_corba.orb.OrbInfo";
     private static final String TRIGGER_EDIT_IIOP_SSL = "i18n_corba.sslPageTitleHelp";
 
-    @Test
+    //@Test
     public void testAddIiopListener() {
         final String iiopName = "testIiopListener" + generateRandomString();
         final String networkAddress = "0.0.0.0";
         final String listenerPort = Integer.toString(generateRandomNumber(32768));;
         final String certName = "s1as";
 
+        SecurityTest securityTest = new SecurityTest();
+        securityTest.enableSecureAdministration(true);
+        try{
         clickAndWait("treeForm:tree:configurations:server-config:orb:iiopListeners:iiopListeners_link", TRIGGER_IIOP_LISTENERS);
         clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_IIOP_LISTENER);
         setFieldValue("propertyForm:propertySheet:generalSettingsSetion:IiopNameTextProp:IiopNameText", iiopName);
@@ -87,6 +90,7 @@ public class IiopListenerTest extends BaseSeleniumTestClass {
         clickAndWait("propertyForm:propertyContentPage:topButtons:cancelButton", TRIGGER_IIOP_LISTENERS);
 
         deleteRow("propertyForm:configs:topActionsGroup1:button1", "propertyForm:configs", iiopName);
+        } finally{ securityTest.enableSecureAdministration(false); }
     }
 
     @Test
@@ -104,6 +108,5 @@ public class IiopListenerTest extends BaseSeleniumTestClass {
         //clickAndWaitForButtonEnabled("form1:propertyContentPage:loadDefaultsButton");
         //assertEquals("1024", getFieldValue("form1:propertySheet:propertySectionTextField:TotalConnsProp:TotalConns"));
         //assertEquals("1024", getFieldValue("form1:propertySheet:propertySectionTextField:MaxMsgSizeProp:MaxMsgSize"));
-
     }
 }

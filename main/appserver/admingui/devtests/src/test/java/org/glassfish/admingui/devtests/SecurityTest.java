@@ -303,12 +303,15 @@ public class SecurityTest extends BaseSeleniumTestClass {
             clickAndWait("propertyForm:configs:topActionsGroup1:newButton", TRIGGER_NEW_CONFIGURATION);
             setFieldValue("propertyForm:propertySheet:propertSectionTextField:NameProp:Name", configName);
             clickAndWait("propertyForm:propertyContentPage:topButtons:okButton", TRIGGER_CONFIGURATION);
-            assertTrue(isTextPresent(configName));
+            assertTrue(tableContainsRow("propertyForm:configs", "col1", configName));
+            clickAndWaitForElement("Masthead:homeLink", "treeForm:tree:configurations:" + configName + ":" + configName + "_link");
         }
     }
 
     public void createRealm(String configName, String realmName, String contextName) {
-            clickAndWait("treeForm:tree:configurations:" + configName + ":security:realms:realms_link", TRIGGER_SECURITY_REALMS);
+            String TRIGGER_SECURITY_REALMS_LINK = "treeForm:tree:configurations:" + configName + ":security:realms:realms_link";
+            clickAndWaitForElement("Masthead:homeLink", TRIGGER_SECURITY_REALMS_LINK);
+            clickAndWait(TRIGGER_SECURITY_REALMS_LINK, TRIGGER_SECURITY_REALMS);
             clickAndWait("propertyForm:realmsTable:topActionsGroup1:newButton", TRIGGER_NEW_REALM);
             setFieldValue("form1:propertySheet:propertySectionTextField:NameTextProp:NameText", realmName);
             selectDropdownOption("form1:propertySheet:propertySectionTextField:cp:Classname", "com.sun.enterprise.security.auth.realm.file.FileRealm");
@@ -320,7 +323,9 @@ public class SecurityTest extends BaseSeleniumTestClass {
 
     public void addUserToRealm(String configName, String realmName, String userName, String password) {
         reset();
-        clickAndWait("treeForm:tree:configurations:" + configName + ":security:realms:realms_link", TRIGGER_SECURITY_REALMS);
+        String TRIGGER_SECURITY_REALMS_LINK = "treeForm:tree:configurations:" + configName + ":security:realms:realms_link";
+        clickAndWaitForElement("Masthead:homeLink", TRIGGER_SECURITY_REALMS_LINK);
+        clickAndWait(TRIGGER_SECURITY_REALMS_LINK, TRIGGER_SECURITY_REALMS);
         clickAndWait(getLinkIdByLinkText("propertyForm:realmsTable", realmName), TRIGGER_EDIT_REALM);
 
         clickAndWait("form1:propertyContentPage:manageUsersButton", TRIGGER_FILE_USERS);
@@ -336,15 +341,18 @@ public class SecurityTest extends BaseSeleniumTestClass {
 
     public void deleteUserFromRealm(String configName, String realmName, String userName) {
         reset();
-        clickAndWait("treeForm:tree:configurations:" + configName + ":security:realms:realms_link", TRIGGER_SECURITY_REALMS);
+        String TRIGGER_SECURITY_REALMS_LINK = "treeForm:tree:configurations:" + configName + ":security:realms:realms_link";
+        clickAndWaitForElement("Masthead:homeLink", TRIGGER_SECURITY_REALMS_LINK);
+        clickAndWait(TRIGGER_SECURITY_REALMS_LINK, TRIGGER_SECURITY_REALMS);	
         clickAndWait(getLinkIdByLinkText("propertyForm:realmsTable", realmName), TRIGGER_EDIT_REALM);
 
         clickAndWait("form1:propertyContentPage:manageUsersButton", TRIGGER_FILE_USERS);
         deleteRow("propertyForm:users:topActionsGroup1:button1", "propertyForm:users", userName);
     }
     public void updateAdminPassword(String userPassword) {
-        clickAndWait("treeForm:tree:nodes:nodes_link", ADMIN_PWD_DOMAIN_ATTRIBUTES);
-        clickAndWait("propertyForm:domainTabs:adminPassword", ADMIN_PWD_NEW_ADMINPWD);
+        reset();
+        clickAndWaitForElement("treeForm:tree:nodes:nodes_link", "propertyForm:domainTabs:adminPassword");
+        clickAndWaitForElement("propertyForm:domainTabs:adminPassword", "propertyForm:propertySheet:propertSectionTextField:newPasswordProp:NewPassword");
         setFieldValue("propertyForm:propertySheet:propertSectionTextField:newPasswordProp:NewPassword", userPassword);
         setFieldValue("propertyForm:propertySheet:propertSectionTextField:confirmPasswordProp:ConfirmPassword", userPassword);
         clickAndWait("propertyForm:propertyContentPage:topButtons:saveButton", TRIGGER_NEW_VALUES_SAVED);
@@ -352,10 +360,11 @@ public class SecurityTest extends BaseSeleniumTestClass {
     
     public void enableSecureAdministration(boolean enable) {
         boolean isSecureAdminEnabled = isSecureAdminEnabled();
+        reset();
         if (enable && !isSecureAdminEnabled) {
             updateAdminPassword("admin");
-            clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_GENERAL_INFORMATION);
-            clickAndWait("propertyForm:propertyContentPage:secureAdmin", TRIGGER_SECURE_ADMINISTRATION);
+            clickAndWaitForElement("treeForm:tree:applicationServer:applicationServer_link", "propertyForm:propertyContentPage:secureAdmin");
+            clickAndWaitForElement("propertyForm:propertyContentPage:secureAdmin", "form:propertyContentPage:topButtons:enableSecureAdminButton");
             selenium.click("form:propertyContentPage:topButtons:enableSecureAdminButton");
             getConfirmation();
             sleep(10000);
@@ -363,8 +372,8 @@ public class SecurityTest extends BaseSeleniumTestClass {
             waitForLoginPageLoad(TIMEOUT);
             handleLogin("admin", "admin", TRIGGER_COMMON_TASKS);
         } else if (isSecureAdminEnabled && !enable) {
-            clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_GENERAL_INFORMATION);
-            clickAndWait("propertyForm:propertyContentPage:secureAdmin", TRIGGER_SECURE_ADMINISTRATION);
+            clickAndWaitForElement("treeForm:tree:applicationServer:applicationServer_link", "propertyForm:propertyContentPage:secureAdmin");
+            clickAndWaitForElement("propertyForm:propertyContentPage:secureAdmin", "form:propertyContentPage:topButtons:disableSecureAdminButton");
             selenium.click("form:propertyContentPage:topButtons:disableSecureAdminButton");
             getConfirmation();
             sleep(10000);
@@ -376,7 +385,7 @@ public class SecurityTest extends BaseSeleniumTestClass {
     }
     
     public boolean isSecureAdminEnabled() {
-       clickAndWait("treeForm:tree:applicationServer:applicationServer_link", TRIGGER_GENERAL_INFORMATION);
+       clickAndWaitForElement("treeForm:tree:applicationServer:applicationServer_link", "propertyForm:propertyContentPage:secureAdmin");
         clickAndWait("propertyForm:propertyContentPage:secureAdmin", TRIGGER_SECURE_ADMINISTRATION);
         sleep(10000);
         if (isElementPresent("form:propertyContentPage:topButtons:disableSecureAdminButton")) {

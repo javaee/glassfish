@@ -138,7 +138,8 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         deleteStandAloneInstance(instanceName);
     }
 
-    @Test
+    //TODO IDCINTER-41 Intermittent failures
+    //@Test
     public void testStandaloneInstanceResourcesPage() {
         final String jndiName = "jdbcResource"+generateRandomString();
         String target = INSTANCE_PREFIX + generateRandomString();
@@ -156,12 +157,11 @@ public class StandaloneTest  extends BaseSeleniumTestClass {
         int jdbcCount = getTableRowCountByValue(tableID, "JDBC Resources", "col3:type");
         int customCount = getTableRowCountByValue(tableID, "Custom Resources", "col3:type");
 
-        EnterpriseServerTest adminServerTest = new EnterpriseServerTest();
         selectDropdownOption("propertyForm:resourcesTable:topActionsGroup1:filter_list", "Custom Resources");
-        adminServerTest.waitForTableRowCount(tableID, customCount);
+        waitForTableRowCount(tableID, customCount);
 
         selectDropdownOption("propertyForm:resourcesTable:topActionsGroup1:filter_list", "JDBC Resources");
-        adminServerTest.waitForTableRowCount(tableID, jdbcCount);
+        waitForTableRowCount(tableID, jdbcCount);
 
         selectTableRowByValue("propertyForm:resourcesTable", jndiName);
         waitForButtonEnabled("propertyForm:resourcesTable:topActionsGroup1:button1");

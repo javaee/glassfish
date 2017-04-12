@@ -116,7 +116,8 @@ public class EnterpriseServerTest extends BaseSeleniumTestClass {
         assertTableRowCount("propertyForm:sysPropsTable", count);
     }
 
-    @Test
+    //TODO IDCINTER-41 Intermittent failures
+    //@Test
     public void testServerResourcesPage() {
         final String jndiName = "jdbcResource"+generateRandomString();
         final String description = "devtest test for server->resources page- " + jndiName;
@@ -148,23 +149,6 @@ public class EnterpriseServerTest extends BaseSeleniumTestClass {
         clickAndWait("form:propertyContentPage:topButtons:cancelButton", JdbcTest.TRIGGER_JDBC_RESOURCES);*/
 
         jdbcTest.deleteJDBCResource(jndiName, "server", MonitoringTest.TARGET_SERVER_TYPE);
-    }
-
-    public void waitForTableRowCount(String tableID, int count) {
-        for (int i = 0;; i++) {
-            if (i >= 1000) {
-                Assert.fail("timeout");
-            }
-            try {
-                int tableCount = getTableRowCount(tableID);
-                if (tableCount == count) {
-                    break;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            sleep(500);
-        }
     }
 
     public void gotoDasPage() {
