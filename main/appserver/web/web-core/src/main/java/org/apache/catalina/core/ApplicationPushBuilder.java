@@ -359,7 +359,7 @@ public class ApplicationPushBuilder implements PushBuilder {
         }
 
         PushEvent.PushEventBuilder pushEventBuilder = PushEvent.builder();
-        pushEventBuilder.method(Method.valueOf(method));
+        pushEventBuilder.method(method);
         pushEventBuilder.headers(headers);
         pushEventBuilder.path(pathLocal);
         pushEventBuilder.httpRequest(coyoteRequest.getRequest());
