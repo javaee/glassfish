@@ -40,13 +40,18 @@
 package org.glassfish.hk2.xml.internal.alt.clazz;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.MethodWrapper;
+import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.internal.ClassReflectionHelperImpl;
 import org.glassfish.hk2.xml.internal.alt.AltAnnotation;
 import org.glassfish.hk2.xml.internal.alt.AltClass;
@@ -68,11 +73,13 @@ public class ClassAltClassImpl implements AltClass {
     public static final AltClass FLOAT = new ClassAltClassImpl(float.class, SCALAR_HELPER);
     public static final AltClass DOUBLE = new ClassAltClassImpl(double.class, SCALAR_HELPER);
     public static final AltClass OBJECT = new ClassAltClassImpl(Object.class, SCALAR_HELPER);
+    public static final AltClass XML_ADAPTER = new ClassAltClassImpl(XmlAdapter.class, SCALAR_HELPER);
     
     private final Class<?> clazz;
     private final ClassReflectionHelper helper;
     private List<AltMethod> methods;
     private List<AltAnnotation> annotations;
+    private AltClass getSuperclass;
     
     public ClassAltClassImpl(Class<?> clazz, ClassReflectionHelper helper) {
         this.clazz = clazz;
@@ -134,6 +141,35 @@ public class ClassAltClassImpl implements AltClass {
         methods = Collections.unmodifiableList(retVal);
         return methods;
     }
+    
+    @Override
+    public AltClass getSuperParameterizedType(AltClass superType, int paramIndex) {
+        Class<?> previousClazz = clazz;
+        
+        Class<?> superClass = previousClazz.getSuperclass();
+        while (superClass != null) {
+            if (superType.getName().equals(superClass.getName())) {
+                Type genericType = previousClazz.getGenericSuperclass();
+                if (!(genericType instanceof ParameterizedType)) {
+                    return null;
+                }
+                
+                ParameterizedType pt = (ParameterizedType) genericType;
+                Type actualType = pt.getActualTypeArguments()[paramIndex];
+                
+                Class<?> rawType = ReflectionHelper.getRawClass(actualType);
+                if (rawType == null) return null;
+                
+                return new ClassAltClassImpl(rawType, helper);
+                
+            }
+            
+            previousClazz = superClass;
+            superClass = previousClazz.getSuperclass();
+        }
+        
+        return null;
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.internal.alt.AltClass#isInterface()
@@ -164,7 +200,7 @@ public class ClassAltClassImpl implements AltClass {
     
     @Override
     public int hashCode() {
-        return clazz.getName().hashCode();
+        return getName().hashCode();
     }
     
     @Override
@@ -174,11 +210,15 @@ public class ClassAltClassImpl implements AltClass {
         
         AltClass other = (AltClass) o;
         
-        return clazz.getName().equals(other.getName());
+        return getName().equals(other.getName());
     }
 
     @Override
     public String toString() {
         return "ClassAltClassImpl(" + clazz.getName() + "," + System.identityHashCode(this) + ")";
     }
+
+    
+
+    
 }

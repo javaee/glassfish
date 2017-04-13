@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,29 +37,68 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.internal.alt;
+package org.glassfish.hk2.xml.internal;
 
-import java.util.List;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+
+import org.glassfish.hk2.xml.internal.alt.AdapterInformation;
+import org.glassfish.hk2.xml.internal.alt.AltClass;
 
 /**
  * @author jwells
  *
  */
-public interface AltClass {
-    public String getName();
+public class AdapterInformationImpl implements AdapterInformation {
+    private final boolean isChild;
+    private final AltClass valueType;
+    private final AltClass boundType;
+    private final AltClass adapter;
     
-    public String getSimpleName();
+    public AdapterInformationImpl(AltClass adapter,
+            AltClass valueType,
+            AltClass boundType) {
+        this.adapter = adapter;
+        this.valueType = valueType;
+        this.boundType = boundType;
+        
+        isChild = valueType.isInterface();
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.internal.alt.AdapterInformation#isChild()
+     */
+    @Override
+    public boolean isChild() {
+        return isChild;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.internal.alt.AdapterInformation#getValueType()
+     */
+    @Override
+    public AltClass getValueType() {
+        return valueType;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.internal.alt.AdapterInformation#getBoundType()
+     */
+    @Override
+    public AltClass getBoundType() {
+        return boundType;
+    }
+
+    /* (non-Javadoc)
+     * @see org.glassfish.hk2.xml.internal.alt.AdapterInformation#getAdapter()
+     */
+    @Override
+    public AltClass getAdapter() {
+        return adapter;
+    }
     
-    List<AltAnnotation> getAnnotations();
-    
-    List<AltMethod> getMethods();
-    
-    AltClass getSuperParameterizedType(AltClass superclass, int paramIndex);
-    
-    public boolean isInterface();
-    
-    public boolean isArray();
-    
-    public AltClass getComponentType();
+    @Override
+    public String toString() {
+        return "AdapterInformationImpl(" + adapter + "," + valueType + "," + boundType + "," + isChild + "," + System.identityHashCode(this) + ")";
+    }
 
 }

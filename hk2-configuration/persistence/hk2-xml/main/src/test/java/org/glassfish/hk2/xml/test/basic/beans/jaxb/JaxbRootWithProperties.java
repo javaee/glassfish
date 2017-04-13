@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,29 +37,27 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.internal.alt;
+package org.glassfish.hk2.xml.test.basic.beans.jaxb;
 
-import java.util.List;
+import java.util.Map;
+
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.jvnet.hk2.annotations.Contract;
 
 /**
+ * This is here mainly to help understand how JAXB will handle this case
+ * 
  * @author jwells
  *
  */
-public interface AltClass {
-    public String getName();
-    
-    public String getSimpleName();
-    
-    List<AltAnnotation> getAnnotations();
-    
-    List<AltMethod> getMethods();
-    
-    AltClass getSuperParameterizedType(AltClass superclass, int paramIndex);
-    
-    public boolean isInterface();
-    
-    public boolean isArray();
-    
-    public AltClass getComponentType();
+@XmlRootElement(name="root-bean-with-properties")
+@Contract
+public interface JaxbRootWithProperties {
+    @XmlElement(name="properties")
+    @XmlJavaTypeAdapter(JaxbPropertyAdapter.class)
+    public Map<String, String> getProperties();
 
 }

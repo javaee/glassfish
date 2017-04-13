@@ -52,6 +52,7 @@ public interface AltAnnotation {
     public boolean getBooleanValue(String methodName);
     public String[] getStringArrayValue(String methodName);
     public AltAnnotation[] getAnnotationArrayValue(String methodName);
+    public AltClass getClassValue(String methodName);
     
     public Map<String, Object> getAnnotationValues();
 

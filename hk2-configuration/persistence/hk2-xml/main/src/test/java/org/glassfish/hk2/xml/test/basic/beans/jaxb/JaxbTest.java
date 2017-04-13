@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,29 +37,50 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.internal.alt;
+package org.glassfish.hk2.xml.test.basic.beans.jaxb;
 
-import java.util.List;
+import java.net.URI;
+import java.net.URL;
+import java.util.Map;
+
+import org.glassfish.hk2.api.ServiceLocator;
+import org.glassfish.hk2.xml.api.XmlRootHandle;
+import org.glassfish.hk2.xml.api.XmlService;
+import org.glassfish.hk2.xml.test.basic.beans.Commons;
+import org.glassfish.hk2.xml.test.utilities.Utilities;
+import org.junit.Assert;
+import org.junit.Test;
 
 /**
+ * This is a test that sees what JAXB does with normal classes
+ * 
  * @author jwells
  *
  */
-public interface AltClass {
-    public String getName();
-    
-    public String getSimpleName();
-    
-    List<AltAnnotation> getAnnotations();
-    
-    List<AltMethod> getMethods();
-    
-    AltClass getSuperParameterizedType(AltClass superclass, int paramIndex);
-    
-    public boolean isInterface();
-    
-    public boolean isArray();
-    
-    public AltClass getComponentType();
+public class JaxbTest {
+    /**
+     * Tests the most basic of xml files can be unmarshalled with an interface
+     * annotated with jaxb annotations
+     * 
+     * @throws Exception
+     */
+    @Test
+    public void testXmlJavaTypeAdapter() throws Exception {
+       ServiceLocator locator = Utilities.createLocator();
+        
+        URL url = getClass().getClassLoader().getResource(Commons.ROOT_BEAN_WITH_PROPERTIES);
+        URI uri = url.toURI();
+        XmlService xmlService = locator.getService(XmlService.class);
+        
+        XmlRootHandle<JaxbRootWithProperties> rootHandle;
+        
+        rootHandle = xmlService.unmarshal(uri, JaxbRootWithProperties.class);
+        
+        JaxbRootWithProperties rbwp = rootHandle.getRoot();
+        
+        Map<String, String> props = rbwp.getProperties();
+        Assert.assertEquals(Commons.BOB, props.get(Commons.ALICE));
+        Assert.assertEquals(Commons.DAVE, props.get(Commons.CAROL));
+    }
 
 }

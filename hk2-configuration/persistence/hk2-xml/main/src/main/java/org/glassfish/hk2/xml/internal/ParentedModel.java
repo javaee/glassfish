@@ -41,7 +41,10 @@ package org.glassfish.hk2.xml.internal;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
+import org.glassfish.hk2.xml.internal.alt.AltClass;
 
 /**
  * This contains the model for children who have a specific
@@ -66,6 +69,7 @@ public class ParentedModel implements Serializable {
     private ChildType childType;
     private String givenDefault;
     private AliasType aliased;
+    private String adapterClassName;
     
     /** Set at runtime */
     private ClassLoader myLoader;
@@ -83,7 +87,8 @@ public class ParentedModel implements Serializable {
             ChildType childType,
             String givenDefault,
             AliasType aliased,
-            String childXmlWrapperTag) {
+            String childXmlWrapperTag,
+            String adapterClassName) {
         this.childInterface = childInterface;
         this.childXmlTag = childXmlTag;
         this.childXmlAlias = childXmlAlias;
@@ -91,6 +96,7 @@ public class ParentedModel implements Serializable {
         this.givenDefault = givenDefault;
         this.aliased = aliased;
         this.childXmlWrapperTag = childXmlWrapperTag;
+        this.adapterClassName = adapterClassName;
     }
     
     public String getChildInterface() {
@@ -115,6 +121,39 @@ public class ParentedModel implements Serializable {
     
     public String getXmlWrapperTag() {
         return childXmlWrapperTag;
+    }
+    
+    public String getAdapter() {
+        return adapterClassName;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public XmlAdapter<?, ?> getAdapterObject() {
+        synchronized (lock) {
+            if (myLoader == null) {
+                throw new IllegalStateException("Cannot call getChildModel before the classloader has been determined");
+            }
+            
+            if (adapterClassName == null) return null;
+            
+            Class<? extends XmlAdapter<?,?>> adapterClass = (Class<? extends XmlAdapter<?,?>>) GeneralUtilities.loadClass(myLoader, adapterClassName);
+            if (adapterClass == null) {
+                throw new IllegalStateException("Adapter " + adapterClass + " could not be loaded by " + myLoader);
+            }
+            
+            try {
+              XmlAdapter<?,?> xa = adapterClass.newInstance();
+              
+              return xa;
+            }
+            catch (RuntimeException re) {
+                throw re;
+            }
+            catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        
     }
     
     public ModelImpl getChildModel() {
@@ -161,6 +200,7 @@ public class ParentedModel implements Serializable {
                 ",type=" + childType +
                 ",givenDefault=" + Utilities.safeString(givenDefault) +
                 ",aliased=" + aliased +
+                ",adapter=" + adapterClassName +
                 ")";
     }
 }

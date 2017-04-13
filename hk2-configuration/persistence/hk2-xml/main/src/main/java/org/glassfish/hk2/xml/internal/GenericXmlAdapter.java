@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,29 +37,35 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.internal.alt;
+package org.glassfish.hk2.xml.internal;
 
-import java.util.List;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * @author jwells
  *
  */
-public interface AltClass {
-    public String getName();
+public class GenericXmlAdapter<ValueType, BoundType> extends XmlAdapter<ValueType, BoundType> {
+    private final XmlAdapter<ValueType, BoundType> delegate;
     
-    public String getSimpleName();
-    
-    List<AltAnnotation> getAnnotations();
-    
-    List<AltMethod> getMethods();
-    
-    AltClass getSuperParameterizedType(AltClass superclass, int paramIndex);
-    
-    public boolean isInterface();
-    
-    public boolean isArray();
-    
-    public AltClass getComponentType();
+    public GenericXmlAdapter(XmlAdapter<ValueType, BoundType> delegate) {
+        super();
+        
+        this.delegate = delegate;
+    }
 
+    @Override
+    public BoundType unmarshal(ValueType v) throws Exception {
+        return delegate.unmarshal(v);
+    }
+
+    @Override
+    public ValueType marshal(BoundType v) throws Exception {
+        return delegate.marshal(v);
+    }
+    
+    @Override
+    public String toString() {
+        return "GenericXmlAdapter(" + delegate + "," + System.identityHashCode(this) + ")";
+    }
 }

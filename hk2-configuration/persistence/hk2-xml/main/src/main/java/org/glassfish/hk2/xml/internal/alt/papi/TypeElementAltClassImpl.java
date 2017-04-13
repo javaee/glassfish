@@ -55,9 +55,12 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.TypeParameterElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeMirror;
 
+import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.xml.internal.Utilities;
 import org.glassfish.hk2.xml.internal.alt.AltAnnotation;
 import org.glassfish.hk2.xml.internal.alt.AltClass;
@@ -178,6 +181,8 @@ public class TypeElementAltClassImpl implements AltClass {
         
         
     }
+    
+    
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.internal.alt.AltClass#getMethods()
@@ -229,6 +234,55 @@ public class TypeElementAltClassImpl implements AltClass {
         methods = Collections.unmodifiableList(retVal);
         return methods;
     }
+    
+    @Override
+    public AltClass getSuperParameterizedType(AltClass superclass,
+            int paramIndex) {
+        if (paramIndex < 0) return null;
+        
+        String stopName = superclass.getName();
+        
+        TypeElement currentClass = clazz;
+        while (currentClass != null) {
+            String currentName = Utilities.convertNameToString(processingEnv.getElementUtils().getBinaryName(currentClass));
+            TypeMirror superMirror = currentClass.getSuperclass();
+            if (superMirror == null) return null;
+            
+            if (!(superMirror instanceof DeclaredType)) return null;
+            
+            DeclaredType superDeclared = (DeclaredType) superMirror;
+            
+            TypeElement nextClass = (TypeElement) superDeclared.asElement();
+            
+            String superName = Utilities.convertNameToString(processingEnv.getElementUtils().getBinaryName(nextClass));
+            
+            if (GeneralUtilities.safeEquals(superName, stopName)) {
+                List<? extends TypeMirror> genericParams = superDeclared.getTypeArguments();
+                if (genericParams == null || genericParams.isEmpty()) {
+                    throw new IllegalStateException("Class " + currentName + " which is a superclass of " + stopName +
+                            " does is not a parameterized type");
+                }
+                
+                if (paramIndex >= genericParams.size()) {
+                    throw new IllegalStateException("Class " + currentName + " which is a superclass of " + stopName +
+                            " does not have " + paramIndex + " types.  It only has " + genericParams.size());
+                    
+                }
+                
+                TypeMirror tpe = genericParams.get(paramIndex);
+                if (!(tpe instanceof DeclaredType)) return null;
+                DeclaredType retValDecl = (DeclaredType) tpe;
+                
+                TypeElement retValElement = (TypeElement) retValDecl.asElement();
+                
+                return new TypeElementAltClassImpl(retValElement, processingEnv);
+            }
+            
+            currentClass = nextClass;
+        }
+        
+        return null;
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.internal.alt.AltClass#isInterface()
@@ -253,9 +307,27 @@ public class TypeElementAltClassImpl implements AltClass {
     public AltClass getComponentType() {
         return null;
     }
+    
+    @Override
+    public int hashCode() {
+        return getName().hashCode();
+    }
+    
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) return false;
+        if (!(o instanceof AltClass)) return false;
+        AltClass oac = (AltClass) o;
+        
+        return GeneralUtilities.safeEquals(oac.getName(), getName());
+    }
 
     @Override
     public String toString() {
         return "TypeElementAltClassImpl(" + clazz.getQualifiedName() + "," + System.identityHashCode(this) + ")";
     }
+
+    
+
+    
 }

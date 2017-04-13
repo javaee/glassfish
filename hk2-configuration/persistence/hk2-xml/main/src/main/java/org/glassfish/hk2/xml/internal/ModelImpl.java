@@ -50,6 +50,7 @@ import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
@@ -136,8 +137,9 @@ public class ModelImpl implements Model {
             ChildType childType,
             String givenDefault,
             AliasType aliased,
-            String childWrapperTag) {
-        ParentedModel pm = new ParentedModel(childInterface, xmlTag, xmlAlias, childType, givenDefault, aliased, childWrapperTag);
+            String childWrapperTag,
+            String adapter) {
+        ParentedModel pm = new ParentedModel(childInterface, xmlTag, xmlAlias, childType, givenDefault, aliased, childWrapperTag, adapter);
         childrenByName.put(xmlTag, pm);
         allChildren.put(xmlTag, new ChildDescriptor(pm));
     }

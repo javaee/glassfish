@@ -90,7 +90,7 @@ public class Hk2JAXBUnmarshallerListener extends Unmarshaller.Listener {
     
     
     @SuppressWarnings("unchecked")
-    private void setSelfXmlTagInAllChildren(BaseHK2JAXBBean targetBean) {
+    private void setSelfXmlTagInAllChildren(BaseHK2JAXBBean targetBean, BaseHK2JAXBBean parent) {
         ModelImpl model = targetBean._getModel();
         
         for (Map.Entry<String, ChildDescriptor> childDescriptorEntry : model.getAllChildrenDescriptors().entrySet()) {
@@ -99,6 +99,9 @@ public class Hk2JAXBUnmarshallerListener extends Unmarshaller.Listener {
             if (parentedNode != null) {
                 String childXmlTag = parentedNode.getChildXmlTag();
                 String xmlWrapperTag = parentedNode.getXmlWrapperTag();
+                if (parentedNode.getAdapter() != null) {
+                    continue;
+                }
                 
                 Object children;
                 switch (parentedNode.getAliasType()) {
@@ -175,7 +178,8 @@ public class Hk2JAXBUnmarshallerListener extends Unmarshaller.Listener {
         if (parentBean == null) {
             targetBean._setSelfXmlTag(targetNode.getRootName());
         }
-        setSelfXmlTagInAllChildren(targetBean);
+        
+        setSelfXmlTagInAllChildren(targetBean, parentBean);
     }
     
     @Override

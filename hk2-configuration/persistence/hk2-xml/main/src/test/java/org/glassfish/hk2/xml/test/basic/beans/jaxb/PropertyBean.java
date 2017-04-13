@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,29 +37,24 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.internal.alt;
+package org.glassfish.hk2.xml.test.basic.beans.jaxb;
 
-import java.util.List;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlValue;
 
 /**
  * @author jwells
  *
  */
-public interface AltClass {
-    public String getName();
+public class PropertyBean {
+    private String key;
+    private String value;
     
-    public String getSimpleName();
+    @XmlAttribute(name="key")
+    public String getKey() { return key; }
+    public void setKey(String key) { this.key = key; }
     
-    List<AltAnnotation> getAnnotations();
-    
-    List<AltMethod> getMethods();
-    
-    AltClass getSuperParameterizedType(AltClass superclass, int paramIndex);
-    
-    public boolean isInterface();
-    
-    public boolean isArray();
-    
-    public AltClass getComponentType();
-
+    @XmlValue
+    public String getValue() { return value; }
+    public void setValue(String value) { this.value = value; }
 }

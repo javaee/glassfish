@@ -96,6 +96,7 @@ import org.glassfish.hk2.api.MultiException;
 import org.glassfish.hk2.utilities.reflection.Logger;
 import org.glassfish.hk2.xml.api.annotations.Hk2XmlPreGenerate;
 import org.glassfish.hk2.xml.api.annotations.PluralOf;
+import org.glassfish.hk2.xml.internal.alt.AdapterInformation;
 import org.glassfish.hk2.xml.internal.alt.AltAnnotation;
 import org.glassfish.hk2.xml.internal.alt.AltClass;
 import org.glassfish.hk2.xml.internal.alt.AltEnum;
@@ -490,6 +491,9 @@ public class Generator {
                 }
                 sb.append("super." + superMethodName + "(\"" + name + "\", mParams, mVars);}");
             }
+            else {
+                throw new AssertionError("Unknown method type: " + mi.getMethodType());
+            }
             
             if (DEBUG_METHODS) {
                 // Hidden behind static because of potential expensive toString costs
@@ -560,6 +564,8 @@ public class Generator {
                     if (!isReference) {
                         AliasType aType = (aliases == null) ? AliasType.NORMAL : AliasType.HAS_ALIASES ;
                         AltClass useChildType = (childType == null) ? mi.getListParameterizedType() : childType ;
+                        AdapterInformation ai = mi.getAdapterInformation();
+                        String adapterClass = (ai == null) ? null : ai.getAdapter().getName();
                         
                         if (useChildType.isInterface()) {
                             compiledModel.addChild(
@@ -569,7 +575,8 @@ public class Generator {
                                 getChildType(mi.isList(), mi.isArray()),
                                 mi.getDefaultValue(),
                                 aType,
-                                mi.getWrapperTag());
+                                mi.getWrapperTag(),
+                                adapterClass);
                         }
                         else {
                             compiledModel.addNonChild(mi.getRepresentedProperty(),
@@ -594,7 +601,8 @@ public class Generator {
                                         getChildType(mi.isList(), mi.isArray()),
                                         alias.getDefaultValue(),
                                         AliasType.IS_ALIAS,
-                                        mi.getWrapperTag());
+                                        mi.getWrapperTag(),
+                                        adapterClass);
                                 }
                                 else {
                                     compiledModel.addNonChild(alias.getName(),
@@ -807,7 +815,8 @@ public class Generator {
                         asParameter(parentedModel.getChildType()) + "," +
                         asParameter(parentedModel.getGivenDefault()) + "," +
                         asParameter(parentedModel.getAliasType()) + "," +
-                        asParameter(parentedModel.getXmlWrapperTag()) + ");\n");
+                        asParameter(parentedModel.getXmlWrapperTag()) + "," +
+                        asParameter(parentedModel.getAdapter()) + ");\n");
             }
             else {
                 ChildDataModel childDataModel = descriptor.getChildDataModel();

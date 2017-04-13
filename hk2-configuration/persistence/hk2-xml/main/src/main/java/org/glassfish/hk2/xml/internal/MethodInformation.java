@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.xml.internal;
 
+import org.glassfish.hk2.xml.internal.alt.AdapterInformation;
 import org.glassfish.hk2.xml.internal.alt.AltClass;
 import org.glassfish.hk2.xml.internal.alt.AltMethod;
 import org.glassfish.hk2.xml.internal.alt.MethodInformationI;
@@ -120,6 +121,8 @@ public class MethodInformation implements MethodInformationI {
      */
     private final String xmlWrapperTag;
     
+    private final AdapterInformation adapterInfo;
+    
     public MethodInformation(AltMethod originalMethod,
             MethodType methodType,
             String decapitalizedMethodProperty,
@@ -133,7 +136,8 @@ public class MethodInformation implements MethodInformationI {
             boolean isReference,
             boolean isElement,
             AltClass listParameterizedType,
-            String xmlWrapperTag) {
+            String xmlWrapperTag,
+            AdapterInformation adapterInfo) {
         this.originalMethod = originalMethod;
         this.methodType = methodType;
         this.decapitalizedMethodProperty = decapitalizedMethodProperty;
@@ -148,6 +152,7 @@ public class MethodInformation implements MethodInformationI {
         this.isElement = isElement;
         this.listParameterizedType = listParameterizedType;
         this.xmlWrapperTag = xmlWrapperTag;
+        this.adapterInfo = adapterInfo;
     }
     
     /* (non-Javadoc)
@@ -257,6 +262,11 @@ public class MethodInformation implements MethodInformationI {
     }
     
     @Override
+    public AdapterInformation getAdapterInformation() {
+        return adapterInfo;
+    }
+    
+    @Override
     public String toString() {
         return "MethodInformation(name=" + originalMethod.getName() + "," +
           "type=" + methodType + "," +
@@ -272,7 +282,7 @@ public class MethodInformation implements MethodInformationI {
           "isElement=" + isElement + "," +
           "listParameterizedType=" + listParameterizedType + "," +
           "xmlWrapperTag=" + xmlWrapperTag + "," +
+          "adapterInfo=" + adapterInfo + "," +
           System.identityHashCode(this) + ")";
-          
     }
 }

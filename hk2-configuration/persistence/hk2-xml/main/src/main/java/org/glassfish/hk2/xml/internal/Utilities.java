@@ -74,6 +74,7 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import javax.xml.namespace.QName;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
@@ -97,6 +98,7 @@ import org.glassfish.hk2.xml.internal.Differences.AddRemoveMoveDifference;
 import org.glassfish.hk2.xml.internal.Differences.Difference;
 import org.glassfish.hk2.xml.internal.Differences.MoveData;
 import org.glassfish.hk2.xml.internal.Differences.RemoveData;
+import org.glassfish.hk2.xml.internal.alt.AdapterInformation;
 import org.glassfish.hk2.xml.internal.alt.AltAnnotation;
 import org.glassfish.hk2.xml.internal.alt.AltClass;
 import org.glassfish.hk2.xml.internal.alt.AltMethod;
@@ -1959,6 +1961,22 @@ public class Utilities {
         return (customAnnotation != null);
     }
     
+    private static AltAnnotation isSpecifiedAdapted(AltMethod method) {
+        AltAnnotation adapterAnnotation = method.getAnnotation(XmlJavaTypeAdapter.class.getName());
+        return adapterAnnotation;
+    }
+    
+    private static AdapterInformation getAdapterInformation(AltMethod method) {
+        AltAnnotation adapterAnnotation = isSpecifiedAdapted(method);
+        if (adapterAnnotation == null) return null;
+        
+        AltClass adapter = adapterAnnotation.getClassValue("value");
+        AltClass valueType = adapter.getSuperParameterizedType(ClassAltClassImpl.XML_ADAPTER, 0);
+        AltClass boundType = adapter.getSuperParameterizedType(ClassAltClassImpl.XML_ADAPTER, 1);
+        
+        return new AdapterInformationImpl(adapter, valueType, boundType);
+    }
+    
     public static String isSetter(AltMethod method) {
         String name = method.getName();
         
@@ -2092,12 +2110,31 @@ public class Utilities {
         return null;
     }
     
+    private static AltClass getTrueChildTypeFromAdapter(AltAnnotation adapter) {
+        AltClass adapterClass = adapter.getClassValue("value");
+        if (adapterClass == null) return null;
+        
+        return adapterClass.getSuperParameterizedType(ClassAltClassImpl.XML_ADAPTER, 0);
+    }
+    
+    private static AltClass getReturnTypeFromAdapter(AltAnnotation adapter) {
+        AltClass adapterClass = adapter.getClassValue("value");
+        if (adapterClass == null) return null;
+        
+        return adapterClass.getSuperParameterizedType(ClassAltClassImpl.XML_ADAPTER, 1);
+    }
+    
     public static MethodInformationI getMethodInformation(AltMethod m, NameInformation xmlNameMap) {
         if (m.getMethodInformation() != null) {
             return m.getMethodInformation();
         }
         
         boolean isCustom = isSpecifiedCustom(m);
+        AdapterInformation adapter = getAdapterInformation(m);
+        if (isCustom && adapter != null) {
+            throw new RuntimeException("The method " + m + " must not be marked both with @Custom and @XmlJavaTypeAdapter");
+        }
+        
         String setterVariable = null;
         String getterVariable = null;
         String lookupVariable = null;
@@ -2142,15 +2179,49 @@ public class Utilities {
                 if (listParameterizedType == null) {
                     throw new RuntimeException("Cannot find child type of method " + m);
                 }
-                if (listParameterizedType.isInterface()) {
+                
+                if (adapter != null) {
+                    AltClass adapterReturnType = adapter.getBoundType();
+                    if (!GeneralUtilities.safeEquals(listParameterizedType, adapterReturnType)) {
+                        throw new RuntimeException("The return type of an adapted method (" + listParameterizedType + ") must match the annotation " + adapterReturnType +
+                                " in " + m);
+                    }
+                    
+                    if (adapter.isChild()) {
+                      baseChildType = adapter.getValueType();
+                    }
+                }
+                else if (listParameterizedType.isInterface()) {
                     baseChildType = listParameterizedType;
                 }
             }
             else if (returnType.isArray()) {
                 AltClass arrayType = returnType.getComponentType();
-                if (arrayType.isInterface()) {
+                if (adapter != null) {
+                    AltClass adapterReturnType = adapter.getBoundType();
+                    if (!GeneralUtilities.safeEquals(arrayType, adapterReturnType)) {
+                        throw new RuntimeException("The return type of an adapted method (" + arrayType + ") must match the annotation " + adapterReturnType +
+                                " in " + m);
+                    }
+                    
+                    if (adapter.isChild()) {
+                      baseChildType = adapter.getValueType();
+                    }
+                }
+                else if (arrayType.isInterface()) {
                     isArray = true;
                     baseChildType = arrayType;
+                }
+            }
+            else if (adapter != null){
+                AltClass adapterReturnType = adapter.getBoundType();
+                if (!GeneralUtilities.safeEquals(returnType, adapterReturnType)) {
+                    throw new RuntimeException("The return type of an adapted method (" + returnType + ") must match the annotation " + adapterReturnType +
+                            " in " + m);
+                }
+                
+                if (adapter.isChild()) {
+                  baseChildType = adapter.getValueType();
                 }
             }
             else if (returnType.isInterface() && !returnType.getName().startsWith(Generator.NO_CHILD_PACKAGE)) {
@@ -2173,15 +2244,48 @@ public class Utilities {
                 if (listParameterizedType == null) {
                     throw new RuntimeException("Cannot find child type of method " + m);
                 }
-                if (listParameterizedType.isInterface()) {
+                if (adapter != null) {
+                    AltClass adapterReturnType = adapter.getBoundType();
+                    if (!GeneralUtilities.safeEquals(listParameterizedType, adapterReturnType)) {
+                        throw new RuntimeException("The return type of an adapted method (" + listParameterizedType + ") must match the annotation " + adapterReturnType +
+                                " in " + m);
+                    }
+                    
+                    if (adapter.isChild()) {
+                      baseChildType = adapter.getValueType();
+                    }
+                }
+                else if (listParameterizedType.isInterface()) {
                     baseChildType = listParameterizedType;
                 }
             }
             else if (setterType.isArray()) {
                 AltClass arrayType = setterType.getComponentType();
-                if (arrayType.isInterface()) {
+                if (adapter != null) {
+                    AltClass adapterReturnType = adapter.getBoundType();
+                    if (!GeneralUtilities.safeEquals(listParameterizedType, adapterReturnType)) {
+                        throw new RuntimeException("The return type of an adapted method (" + arrayType + ") must match the annotation " + adapterReturnType +
+                                " in " + m);
+                    }
+                    
+                    if (adapter.isChild()) {
+                      baseChildType = adapter.getValueType();
+                    }
+                }
+                else if (arrayType.isInterface()) {
                     isArray = true;
                     baseChildType = arrayType;
+                }
+            }
+            else if (adapter != null) {
+                AltClass adapterReturnType = adapter.getBoundType();
+                if (!GeneralUtilities.safeEquals(setterType, adapterReturnType)) {
+                    throw new RuntimeException("The return type of an adapted method (" + setterType + ") must match the annotation " + adapterReturnType +
+                            " in " + m);
+                }
+                
+                if (adapter.isChild()) {
+                  baseChildType = adapter.getValueType();
                 }
             }
             else if (setterType.isInterface() && !setterType.getName().startsWith(Generator.NO_CHILD_PACKAGE)) {
@@ -2238,7 +2342,8 @@ public class Utilities {
                 isReference,
                 isElement,
                 listParameterizedType,
-                xmlWrapperTag);
+                xmlWrapperTag,
+                adapter);
     }
     
     private static MethodInformationI getAndSetMethodInformation(AltMethod am, NameInformation xmlMap) {

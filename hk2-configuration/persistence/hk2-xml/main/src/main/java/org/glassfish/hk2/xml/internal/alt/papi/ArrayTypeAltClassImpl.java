@@ -181,6 +181,12 @@ public class ArrayTypeAltClassImpl implements AltClass {
     public List<AltMethod> getMethods() {
         return Collections.emptyList();
     }
+    
+    @Override
+    public AltClass getSuperParameterizedType(AltClass superclass,
+            int paramIndex) {
+        return null;
+    }
 
     /* (non-Javadoc)
      * @see org.glassfish.hk2.xml.internal.alt.AltClass#isInterface()
@@ -207,5 +213,7 @@ public class ArrayTypeAltClassImpl implements AltClass {
         
         return Utilities.convertTypeMirror(compTypeAsMirror, processingEnv);
     }
+
+    
 
 }

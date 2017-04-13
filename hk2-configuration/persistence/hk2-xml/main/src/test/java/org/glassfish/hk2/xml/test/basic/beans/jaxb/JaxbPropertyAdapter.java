@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -37,29 +37,33 @@
  * only if the new code is made subject to such option by the copyright
  * holder.
  */
-package org.glassfish.hk2.xml.internal.alt;
+package org.glassfish.hk2.xml.test.basic.beans.jaxb;
 
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * @author jwells
  *
  */
-public interface AltClass {
-    public String getName();
-    
-    public String getSimpleName();
-    
-    List<AltAnnotation> getAnnotations();
-    
-    List<AltMethod> getMethods();
-    
-    AltClass getSuperParameterizedType(AltClass superclass, int paramIndex);
-    
-    public boolean isInterface();
-    
-    public boolean isArray();
-    
-    public AltClass getComponentType();
+public class JaxbPropertyAdapter extends XmlAdapter<PropertiesBean, Map<String, String>> {
+
+    @Override
+    public Map<String, String> unmarshal(PropertiesBean v) throws Exception {
+        LinkedHashMap<String, String> retVal = new LinkedHashMap<String, String>();
+        
+        for (PropertyBean pb : v.getProperty()) {
+            retVal.put(pb.getKey(), pb.getValue());
+        }
+        
+        return retVal;
+    }
+
+    @Override
+    public PropertiesBean marshal(Map<String, String> v) throws Exception {
+        throw new AssertionError("not implemented");
+    }
 
 }

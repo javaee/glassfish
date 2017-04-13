@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -39,27 +39,17 @@
  */
 package org.glassfish.hk2.xml.internal.alt;
 
-import java.util.List;
-
 /**
  * @author jwells
  *
  */
-public interface AltClass {
-    public String getName();
+public interface AdapterInformation {
+    public boolean isChild();
     
-    public String getSimpleName();
+    public AltClass getValueType();
     
-    List<AltAnnotation> getAnnotations();
+    public AltClass getBoundType();
     
-    List<AltMethod> getMethods();
-    
-    AltClass getSuperParameterizedType(AltClass superclass, int paramIndex);
-    
-    public boolean isInterface();
-    
-    public boolean isArray();
-    
-    public AltClass getComponentType();
+    public AltClass getAdapter();
 
 }

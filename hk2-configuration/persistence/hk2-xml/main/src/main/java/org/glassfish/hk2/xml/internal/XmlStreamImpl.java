@@ -51,6 +51,7 @@ import java.util.Set;
 
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.Unmarshaller.Listener;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
@@ -61,6 +62,7 @@ import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.general.IndentingXMLStreamWriter;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
 import org.glassfish.hk2.utilities.reflection.Logger;
+import org.glassfish.hk2.utilities.reflection.ReflectionHelper;
 import org.glassfish.hk2.xml.api.XmlHk2ConfigurationBean;
 import org.glassfish.hk2.xml.api.XmlRootHandle;
 import org.glassfish.hk2.xml.jaxb.internal.BaseHK2JAXBBean;
@@ -276,8 +278,15 @@ public class XmlStreamImpl {
                     
                     handleElement(hk2Root, target, reader, classReflectionHelper, listener, referenceMap, unresolved, elementTag, effectiveNamespaceMap);
                     
+                    Object realThing = hk2Root;
+                    if (informedChild.getAdapter() != null) {
+                        XmlAdapter<Object,Object> adapter = ReflectionHelper.cast(informedChild.getAdapterObject());
+                        
+                        realThing = adapter.unmarshal(hk2Root);
+                    }
+                    
                     if (informedChild.getChildType().equals(ChildType.DIRECT)) {
-                        target._setProperty(elementTag, hk2Root);
+                        target._setProperty(elementTag, realThing);
                     }
                     else if (informedChild.getChildType().equals(ChildType.LIST)) {
                         List<BaseHK2JAXBBean> cList = listChildren.get(elementTag);

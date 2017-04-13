@@ -117,5 +117,15 @@ public interface MethodInformationI {
      * of the lists parameterized type
      */
     public AltClass getListParameterizedType();
+    
+    /**
+     * Returns information about the type adapter for
+     * this method.  Returns null if there is no
+     * adapter
+     * 
+     * @return The adapter information on this method
+     * or null if there is none
+     */
+    public AdapterInformation getAdapterInformation();
 
 }
