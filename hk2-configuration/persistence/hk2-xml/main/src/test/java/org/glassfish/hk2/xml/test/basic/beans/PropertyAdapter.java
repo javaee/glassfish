@@ -44,6 +44,11 @@ import java.util.Map;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
+/**
+ * The adapter for the test
+ * @author jwells
+ *
+ */
 public class PropertyAdapter extends XmlAdapter<PropertiesBean, Map<String, String>> {
 
     @Override

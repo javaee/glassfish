@@ -58,6 +58,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.xml.bind.annotation.XmlSchema;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.glassfish.hk2.api.ActiveDescriptor;
 import org.glassfish.hk2.api.Customizer;
@@ -85,6 +86,7 @@ import org.glassfish.hk2.xml.internal.XmlRootHandleImpl;
  * @author jwells
  *
  */
+@XmlTransient
 public abstract class BaseHK2JAXBBean implements XmlHk2ConfigurationBean, Serializable {
     private static final long serialVersionUID = 8149986319033910297L;
 

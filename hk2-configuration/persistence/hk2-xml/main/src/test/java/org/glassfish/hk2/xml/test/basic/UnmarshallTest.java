@@ -268,7 +268,7 @@ public class UnmarshallTest {
      * @throws Exception
      */
     @Test
-    @org.junit.Ignore
+    // @org.junit.Ignore
     public void testXmlJavaTypeAdapter() throws Exception {
         ServiceLocator locator = Utilities.createLocator();
         
