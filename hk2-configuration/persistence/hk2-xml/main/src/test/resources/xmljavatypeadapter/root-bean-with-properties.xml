@@ -45,4 +45,6 @@
     	<property key="Alice">Bob</property>
     	<property key="Carol">Dave</property>
   </properties>
+  
+  <collapsed-property>       Had leading and trailing whitespace     </collapsed-property>
 </root-bean-with-properties>

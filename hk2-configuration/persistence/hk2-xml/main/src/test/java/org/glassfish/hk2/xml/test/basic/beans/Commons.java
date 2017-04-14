@@ -843,6 +843,8 @@ public class Commons {
         testXmlJavaTypeAdapter(locator, null, reader);
     }
     
+    private final static String NO_LEADING_OR_TRAILING = "Had leading and trailing whitespace";     
+    
     /**
      * Tests the most basic of xml files can be unmarshalled with an interface
      * annotated with jaxb annotations
@@ -864,5 +866,8 @@ public class Commons {
         Map<String, String> props = rbwp.getProperties();
         Assert.assertEquals(BOB, props.get(ALICE));
         Assert.assertEquals(DAVE, props.get(CAROL));
+        
+        String collapsed = rbwp.getCollapsedProperty();
+        Assert.assertEquals(NO_LEADING_OR_TRAILING, collapsed);
     }
 }
