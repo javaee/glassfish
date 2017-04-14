@@ -107,10 +107,10 @@ public class NameInformation {
         return referenceSet.contains(variableName);
     }
     
-    boolean isElement(String variableName) {
-        if (variableName == null) return false;
-        if (!nameMapping.containsKey(variableName)) return false;
-        return nameMapping.get(variableName).isElement();
+    Format getFormat(String variableName) {
+        if (variableName == null) return Format.ATTRIBUTE;
+        if (!nameMapping.containsKey(variableName)) return Format.ATTRIBUTE;
+        return nameMapping.get(variableName).getFormat();
     }
     
     String getAddVariableName(String methodName) {

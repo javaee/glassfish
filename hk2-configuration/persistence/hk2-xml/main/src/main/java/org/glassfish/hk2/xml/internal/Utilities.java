@@ -2327,7 +2327,7 @@ public class Utilities {
         }
         
         boolean isReference = xmlNameMap.isReference(variable);
-        boolean isElement = xmlNameMap.isElement(variable);
+        Format format = xmlNameMap.getFormat(variable);
         
         return new MethodInformation(m,
                 methodType,
@@ -2340,7 +2340,7 @@ public class Utilities {
                 isList,
                 isArray,
                 isReference,
-                isElement,
+                format,
                 listParameterizedType,
                 xmlWrapperTag,
                 adapter);

@@ -107,9 +107,9 @@ public class MethodInformation implements MethodInformationI {
     private final boolean isReference;
     
     /**
-     * True if this is considered an element, false if it is an attribute
+     * The format of the data
      */
-    private final boolean isElement;
+    private final Format format;
     
     /**
      * The parameterized type of the list if known
@@ -134,7 +134,7 @@ public class MethodInformation implements MethodInformationI {
             boolean isList,
             boolean isArray,
             boolean isReference,
-            boolean isElement,
+            Format format,
             AltClass listParameterizedType,
             String xmlWrapperTag,
             AdapterInformation adapterInfo) {
@@ -149,7 +149,7 @@ public class MethodInformation implements MethodInformationI {
         this.isList = isList;
         this.isArray = isArray;
         this.isReference = isReference;
-        this.isElement = isElement;
+        this.format = format;
         this.listParameterizedType = listParameterizedType;
         this.xmlWrapperTag = xmlWrapperTag;
         this.adapterInfo = adapterInfo;
@@ -247,8 +247,8 @@ public class MethodInformation implements MethodInformationI {
      * @see org.glassfish.hk2.xml.internal.MethodInformationI#isElement()
      */
     @Override
-    public boolean isElement() {
-        return isElement;
+    public Format getFormat() {
+        return format;
     }
     
     @Override
@@ -279,7 +279,7 @@ public class MethodInformation implements MethodInformationI {
           "isList=" + isList + "," +
           "isArray=" + isArray + "," +
           "isReference=" + isReference + "," +
-          "isElement=" + isElement + "," +
+          "format=" + format + "," +
           "listParameterizedType=" + listParameterizedType + "," +
           "xmlWrapperTag=" + xmlWrapperTag + "," +
           "adapterInfo=" + adapterInfo + "," +

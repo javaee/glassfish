@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2015-2017 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -40,47 +40,17 @@
 package org.glassfish.hk2.xml.internal;
 
 /**
- * Information about the XmlElement annotation
- * 
  * @author jwells
  *
  */
-public class XmlElementData {
-    private final String name;
-    private final String alias;
-    private final String defaultValue;
-    private final Format format;
-    private final String type;
-    private final boolean isTypeInterface;
-    private final String xmlWrapperTag;
+public enum Format {
+    /** An Xml Attribute */
+    ATTRIBUTE,
     
-    XmlElementData(String name, String alias, String defaultValue, Format format, String type, boolean isTypeInterface, String xmlWrapperTag) {
-        this.name = name;
-        this.alias = alias;
-        this.defaultValue = defaultValue;
-        this.format = format;
-        this.type = type;
-        this.isTypeInterface = isTypeInterface;
-        this.xmlWrapperTag = xmlWrapperTag;
-    }
+    /** An Xml Element */
+    ELEMENT,
     
-    public String getName() { return name; }
-    public String getAlias() { return alias; }
-    public String getDefaultValue() { return defaultValue; }
-    public Format getFormat() { return format; }
-    public String getType() { return type; }
-    public boolean isTypeInterface() { return isTypeInterface; }
-    public String getXmlWrapperTag() { return xmlWrapperTag; }
-    
-    @Override
-    public String toString() {
-        return "XmlElementData(" + name +
-                "," + alias +
-                "," + Utilities.safeString(defaultValue) +
-                "," + format +
-                "," + type +
-                "," + isTypeInterface +
-                "," + xmlWrapperTag +
-                "," + System.identityHashCode(this) + ")";
-    }
+    /** An Xml Element where the data is the value */
+    VALUE
+
 }

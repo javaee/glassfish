@@ -50,7 +50,6 @@ import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.glassfish.hk2.utilities.general.GeneralUtilities;
 import org.glassfish.hk2.utilities.reflection.ClassReflectionHelper;
@@ -149,10 +148,10 @@ public class ModelImpl implements Model {
             String childType,
             String childListType,
             boolean isReference,
-            boolean isElement,
+            Format format,
             AliasType aliasType,
             String aliasOf) {
-        ChildDataModel cdm = new ChildDataModel(childType, childListType, defaultValue, isReference, isElement, aliasType, aliasOf);
+        ChildDataModel cdm = new ChildDataModel(childType, childListType, defaultValue, isReference, format, aliasType, aliasOf);
         nonChildProperty.put(xmlTag, cdm);
         allChildren.put(xmlTag, new ChildDescriptor(cdm));
     }
@@ -343,7 +342,7 @@ public class ModelImpl implements Model {
             String xmlKey = candidate.getKey();
             ChildDataModel childDataModel = candidate.getValue();
             
-            if (childDataModel.isElement()) continue;
+            if (!Format.ATTRIBUTE.equals(childDataModel.getFormat())) continue;
             
             retVal.put(xmlKey, childDataModel);
         }
@@ -366,7 +365,7 @@ public class ModelImpl implements Model {
             
             ChildDataModel childDataModel = childDescriptor.getChildDataModel();
             
-            if (!childDataModel.isElement()) continue;
+            if (!Format.ELEMENT.equals(childDataModel.getFormat())) continue;
             
             retVal.put(xmlKey, childDescriptor);
         }

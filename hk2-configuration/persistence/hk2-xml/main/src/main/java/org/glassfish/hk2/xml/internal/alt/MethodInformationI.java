@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.xml.internal.alt;
 
+import org.glassfish.hk2.xml.internal.Format;
 import org.glassfish.hk2.xml.internal.MethodType;
 
 public interface MethodInformationI {
@@ -104,9 +105,9 @@ public interface MethodInformationI {
     public String getDecapitalizedMethodProperty();
 
     /**
-     * @return true if this is for an element (as opposed to an attribute)
+     * @return Attribute, Element or Value
      */
-    public boolean isElement();
+    public Format getFormat();
     
     /**
      * Returns the parameterized type of the

@@ -584,7 +584,7 @@ public class Generator {
                                     mi.getGetterSetterType().getName(),
                                     mi.getListParameterizedType().getName(),
                                     false,
-                                    true,
+                                    Format.ELEMENT,
                                     aType,
                                     null);
                         }
@@ -610,7 +610,7 @@ public class Generator {
                                             mi.getGetterSetterType().getName(),
                                             aliasType,
                                             false,
-                                            true,
+                                            Format.ELEMENT,
                                             AliasType.IS_ALIAS,
                                             alias.getAlias());
                                 }
@@ -620,13 +620,13 @@ public class Generator {
                     else {
                         String listPType = (mi.getListParameterizedType() == null) ? null : mi.getListParameterizedType().getName() ;
                         compiledModel.addNonChild(mi.getRepresentedProperty(), mi.getDefaultValue(),
-                                mi.getGetterSetterType().getName(), listPType, true, mi.isElement(), AliasType.NORMAL, null);
+                                mi.getGetterSetterType().getName(), listPType, true, mi.getFormat(), AliasType.NORMAL, null);
                     }
                 }
                 else {
                     String listPType = (mi.getListParameterizedType() == null) ? null : mi.getListParameterizedType().getName() ;
                     compiledModel.addNonChild(mi.getRepresentedProperty(), mi.getDefaultValue(),
-                            mi.getGetterSetterType().getName(), listPType, false, mi.isElement(), AliasType.NORMAL, null);
+                            mi.getGetterSetterType().getName(), listPType, false, mi.getFormat(), AliasType.NORMAL, null);
                 }
             }
             
@@ -827,7 +827,7 @@ public class Generator {
                         asParameter(childDataModel.getChildType()) + "," +
                         asParameter(childDataModel.getChildListType()) + "," +
                         asBoolean(childDataModel.isReference()) + "," +
-                        asBoolean(childDataModel.isElement()) + "," +
+                        asParameter(childDataModel.getFormat()) + "," +
                         asParameter(childDataModel.getAliasType()) + "," +
                         asParameter(childDataModel.getXmlAlias()) + ");\n");
             }
@@ -872,6 +872,20 @@ public class Generator {
     
     private static String asBoolean(boolean bool) {
         return bool ? "true" : "false" ;
+    }
+    
+    private static String asParameter(Format format) {
+        String preCursor = Format.class.getName() + ".";
+        switch (format) {
+        case ATTRIBUTE:
+            return preCursor + "ATTRIBUTE";
+        case ELEMENT:
+            return preCursor + "ELEMENT";
+        case VALUE:
+            return preCursor + "VALUE";
+        default:
+            throw new AssertionError("unknown Format " + format);
+        }
     }
     
     private static String asParameter(ChildType ct) {
@@ -1209,7 +1223,7 @@ public class Generator {
                     
                     String defaultValue = JAXB_DEFAULT_DEFAULT;
                     
-                    xmlNameMap.put(setterVariable, new XmlElementData(setterVariable, setterVariable, defaultValue, true, null, true, xmlElementWrapperName));
+                    xmlNameMap.put(setterVariable, new XmlElementData(setterVariable, setterVariable, defaultValue, Format.ELEMENT, null, true, xmlElementWrapperName));
                     
                     String aliasName = setterVariable;
                     
@@ -1232,7 +1246,7 @@ public class Generator {
                             aliases.add(new XmlElementData(allXmlElementName,
                                     aliasName,
                                     defaultValue,
-                                    true,
+                                    Format.ELEMENT,
                                     allXmlElementTypeName,
                                     allXmlElementTypeInterface,
                                     xmlElementWrapperName));
@@ -1249,7 +1263,7 @@ public class Generator {
                         xmlNameMap.put(setterVariable, new XmlElementData(setterVariable,
                                 setterVariable,
                                 defaultValue,
-                                true,
+                                Format.ELEMENT,
                                 null,
                                 true,
                                 xmlElementWrapperName));
@@ -1258,7 +1272,7 @@ public class Generator {
                         xmlNameMap.put(setterVariable, new XmlElementData(
                                 xmlElement.getStringValue("name"),
                                 xmlElement.getStringValue("name"),
-                                defaultValue, true,
+                                defaultValue, Format.ELEMENT,
                                 null,
                                 true,
                                 xmlElementWrapperName));
@@ -1272,7 +1286,7 @@ public class Generator {
                         xmlNameMap.put(setterVariable, new XmlElementData(setterVariable,
                                 setterVariable,
                                 JAXB_DEFAULT_DEFAULT,
-                                false,
+                                Format.ATTRIBUTE,
                                 null,
                                 true,
                                 xmlElementWrapperName));
@@ -1281,7 +1295,7 @@ public class Generator {
                         xmlNameMap.put(setterVariable, new XmlElementData(xmlAttribute.getStringValue("name"),
                                 xmlAttribute.getStringValue("name"),
                                 JAXB_DEFAULT_DEFAULT,
-                                false,
+                                Format.ATTRIBUTE,
                                 null,
                                 true,
                                 xmlElementWrapperName));

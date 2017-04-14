@@ -70,7 +70,7 @@ public class ChildDataModel implements Serializable {
     private String childType;
     private String defaultAsString;
     private boolean isReference;
-    private boolean isElement;
+    private Format format;
     private String childListType;
     private AliasType aliasType;
     private String aliasOf;
@@ -86,13 +86,13 @@ public class ChildDataModel implements Serializable {
             String childListType,
             String defaultAsString,
             boolean isReference,
-            boolean isElement,
+            Format format,
             AliasType aliasType,
             String aliasOf) {
         this.childType = childType;
         this.defaultAsString = defaultAsString;
         this.isReference = isReference;
-        this.isElement = isElement;
+        this.format = format;
         this.childListType = childListType;
         this.aliasType = aliasType;
         this.aliasOf = aliasOf;
@@ -114,8 +114,8 @@ public class ChildDataModel implements Serializable {
         return isReference;
     }
     
-    public boolean isElement() {
-        return isElement;
+    public Format getFormat() {
+        return format;
     }
     
     public AliasType getAliasType() {
@@ -168,6 +168,7 @@ public class ChildDataModel implements Serializable {
                 "," + isReference +
                 "," + childListType +
                 "," + aliasType +
+                "," + format +
                 "," + System.identityHashCode(this) + ")";
     }
 
