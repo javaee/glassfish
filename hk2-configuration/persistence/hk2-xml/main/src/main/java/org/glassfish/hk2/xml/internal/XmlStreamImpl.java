@@ -205,10 +205,13 @@ public class XmlStreamImpl {
                     Logger.getLogger().debug("XmlServiceDebug starting parse of element " + elementTag);
                 }
                 
-                Map<String, String> effectiveNamespaceMap = new HashMap<String, String>(namespaceMap);
-                int namespaceCount = reader.getNamespaceCount();
-                for (int nLcv = 0; nLcv < namespaceCount; nLcv++) {
-                    effectiveNamespaceMap.put(reader.getNamespacePrefix(nLcv), reader.getNamespaceURI(nLcv));
+                Map<String, String> effectiveNamespaceMap = null;
+                {
+                    effectiveNamespaceMap = new HashMap<String, String>(namespaceMap);
+                    int namespaceCount = reader.getNamespaceCount();
+                    for (int nLcv = 0; nLcv < namespaceCount; nLcv++) {
+                        effectiveNamespaceMap.put(reader.getNamespacePrefix(nLcv), reader.getNamespaceURI(nLcv));
+                    }
                 }
                 
                 ChildDataModel cdm = nonChildProperties.get(elementTag);
@@ -333,7 +336,17 @@ public class XmlStreamImpl {
                 
                 break;
             case XMLStreamConstants.CHARACTERS:
-                // Do nothing
+                ChildDataModel valueModel = targetModel.getValueData();
+                if (valueModel != null) {
+                    String text = reader.getText();
+                    
+                    Class<?> childType = valueModel.getChildTypeAsClass();
+                    String propName = targetModel.getValueProperty();
+                    
+                    Object convertedValue = Utilities.getDefaultValue(text, childType, namespaceMap);
+                    
+                    target._setProperty(propName, convertedValue);
+                }
                 break;
             case XMLStreamConstants.END_ELEMENT:
                 for (Map.Entry<String, List<BaseHK2JAXBBean>> entry : listChildren.entrySet()) {

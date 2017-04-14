@@ -58,6 +58,7 @@ public class NameInformation {
     private final Map<String, String> lookupMethodToVariableName;
     private final Set<String> referenceSet;
     private final Map<String, List<XmlElementData>> aliases;
+    private final XmlElementData valueData;
     
     NameInformation(Map<String, XmlElementData> nameMapping,
             Set<String> unmappedNames,
@@ -65,7 +66,8 @@ public class NameInformation {
             Map<String, String> removeMethodToVariableName,
             Map<String, String> lookupMethodToVariableName,
             Set<String> referenceSet,
-            Map<String, List<XmlElementData>> aliases) {
+            Map<String, List<XmlElementData>> aliases,
+            XmlElementData valueData) {
         this.nameMapping = nameMapping;
         this.noXmlElement = unmappedNames;
         this.addMethodToVariableName = addMethodToVariableName;
@@ -73,6 +75,7 @@ public class NameInformation {
         this.lookupMethodToVariableName = lookupMethodToVariableName;
         this.referenceSet = referenceSet;
         this.aliases = aliases;
+        this.valueData = valueData;
     }
     
     String getNameMap(String mapMe) {
@@ -109,6 +112,7 @@ public class NameInformation {
     
     Format getFormat(String variableName) {
         if (variableName == null) return Format.ATTRIBUTE;
+        if ((valueData != null) && valueData.getName().equals(variableName)) return Format.VALUE;
         if (!nameMapping.containsKey(variableName)) return Format.ATTRIBUTE;
         return nameMapping.get(variableName).getFormat();
     }
@@ -123,5 +127,9 @@ public class NameInformation {
     
     String getLookupVariableName(String methodName) {
         return lookupMethodToVariableName.get(methodName);
+    }
+    
+    public XmlElementData getValueData() {
+        return valueData;
     }
 }

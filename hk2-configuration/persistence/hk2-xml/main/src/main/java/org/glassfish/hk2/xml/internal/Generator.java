@@ -90,6 +90,7 @@ import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.XmlValue;
 
 import org.glassfish.hk2.api.AnnotationLiteral;
 import org.glassfish.hk2.api.MultiException;
@@ -618,6 +619,7 @@ public class Generator {
                         }
                     }
                     else {
+                        // Is a reference
                         String listPType = (mi.getListParameterizedType() == null) ? null : mi.getListParameterizedType().getName() ;
                         compiledModel.addNonChild(mi.getRepresentedProperty(), mi.getDefaultValue(),
                                 mi.getGetterSetterType().getName(), listPType, true, mi.getFormat(), AliasType.NORMAL, null);
@@ -1191,7 +1193,9 @@ public class Generator {
         Map<String, String> lookupMethodToVariableMap = new LinkedHashMap<String, String>();
         Set<String> referenceSet = new LinkedHashSet<String>();
         Map<String, List<XmlElementData>> aliasMap = new LinkedHashMap<String, List<XmlElementData>>();
+        XmlElementData valueData = null;
         
+        boolean hasAnElement = false;
         for (AltMethod originalMethod : convertMe.getMethods()) {
             String setterVariable = Utilities.isSetter(originalMethod);
             if (setterVariable == null) {
@@ -1207,103 +1211,130 @@ public class Generator {
             AltAnnotation xmlElement = originalMethod.getAnnotation(XmlElement.class.getName());
             AltAnnotation xmlElements = originalMethod.getAnnotation(XmlElements.class.getName());
             AltAnnotation xmlElementWrapper = originalMethod.getAnnotation(XmlElementWrapper.class.getName());
-            if (xmlElement != null && xmlElements != null) {
-                throw new IllegalArgumentException("The method " + originalMethod + " of " + convertMe + " has both @XmlElement and @XmlElements, which is illegal");
-            }
+            AltAnnotation xmlAttribute = originalMethod.getAnnotation(XmlAttribute.class.getName());
+            AltAnnotation xmlValue = originalMethod.getAnnotation(XmlValue.class.getName());
             
             String xmlElementWrapperName = (xmlElementWrapper == null) ? null : xmlElementWrapper.getStringValue("name");
             if (xmlElementWrapperName != null && xmlElementWrapperName.isEmpty()) {
                 xmlElementWrapperName = setterVariable;
             }
             
-            if (xmlElement != null || xmlElements != null) {
-                if (xmlElements != null) {
-                    // First add the actual method so it is known to the system
-                    pluralOf = originalMethod.getAnnotation(PluralOf.class.getName());
+            if (xmlElement != null && xmlElements != null) {
+                throw new IllegalArgumentException("The method " + originalMethod + " of " + convertMe + " has both @XmlElement and @XmlElements, which is illegal");
+            }
+            
+            if ((xmlElement != null || xmlElements != null) && xmlAttribute != null) {
+                throw new IllegalArgumentException("The method " + originalMethod + " of " + convertMe + " has both @XmlElement and @XmlAttribute, which is illegal");
+            }
+            
+            if ((xmlElement != null || xmlElements != null) && xmlValue != null) {
+                throw new IllegalArgumentException("The method " + originalMethod + " of " + convertMe + " has both @XmlElement and @XmlValue, which is illegal");
+            }
+            
+            if (xmlAttribute != null && xmlValue != null) {
+                throw new IllegalArgumentException("The method " + originalMethod + " of " + convertMe + " has both @XmlAttribute and @XmlValue, which is illegal");
+            }
+            
+            if (xmlElements != null) {
+                hasAnElement = true;
+                
+                // First add the actual method so it is known to the system
+                pluralOf = originalMethod.getAnnotation(PluralOf.class.getName());
                     
-                    String defaultValue = JAXB_DEFAULT_DEFAULT;
+                String defaultValue = JAXB_DEFAULT_DEFAULT;
                     
-                    xmlNameMap.put(setterVariable, new XmlElementData(setterVariable, setterVariable, defaultValue, Format.ELEMENT, null, true, xmlElementWrapperName));
+                xmlNameMap.put(setterVariable, new XmlElementData(setterVariable, setterVariable, defaultValue, Format.ELEMENT, null, true, xmlElementWrapperName));
                     
-                    String aliasName = setterVariable;
+                String aliasName = setterVariable;
                     
-                    AltAnnotation allXmlElements[] = xmlElements.getAnnotationArrayValue("value");
-                    List<XmlElementData> aliases = new ArrayList<XmlElementData>(allXmlElements.length);
-                    aliasMap.put(setterVariable, aliases);
+                AltAnnotation allXmlElements[] = xmlElements.getAnnotationArrayValue("value");
+                List<XmlElementData> aliases = new ArrayList<XmlElementData>(allXmlElements.length);
+                aliasMap.put(setterVariable, aliases);
                     
-                    for (AltAnnotation allXmlElement : allXmlElements) {
-                        defaultValue = allXmlElement.getStringValue("defaultValue");
+                for (AltAnnotation allXmlElement : allXmlElements) {
+                    defaultValue = allXmlElement.getStringValue("defaultValue");
                         
-                        String allXmlElementName = allXmlElement.getStringValue("name");
-                        AltClass allXmlElementType = (AltClass) allXmlElement.getAnnotationValues().get("type");
-                        String allXmlElementTypeName = (allXmlElementType == null) ? null : allXmlElementType.getName() ;
-                        boolean allXmlElementTypeInterface = (allXmlElementType == null) ? true : allXmlElementType.isInterface();
+                    String allXmlElementName = allXmlElement.getStringValue("name");
+                    AltClass allXmlElementType = (AltClass) allXmlElement.getAnnotationValues().get("type");
+                    String allXmlElementTypeName = (allXmlElementType == null) ? null : allXmlElementType.getName() ;
+                    boolean allXmlElementTypeInterface = (allXmlElementType == null) ? true : allXmlElementType.isInterface();
                         
-                        if (JAXB_DEFAULT_STRING.equals(allXmlElementName)) {
-                            throw new IllegalArgumentException("The name field of an XmlElement inside an XmlElements must have a specified name");
-                        }
-                        else {
-                            aliases.add(new XmlElementData(allXmlElementName,
-                                    aliasName,
-                                    defaultValue,
-                                    Format.ELEMENT,
-                                    allXmlElementTypeName,
-                                    allXmlElementTypeInterface,
-                                    xmlElementWrapperName));
-                        }
+                    if (JAXB_DEFAULT_STRING.equals(allXmlElementName)) {
+                        throw new IllegalArgumentException("The name field of an XmlElement inside an XmlElements must have a specified name");
                     }
-                }
-                else {
-                    // Get the pluralOf from the method
-                    pluralOf = originalMethod.getAnnotation(PluralOf.class.getName());
-                    
-                    String defaultValue = xmlElement.getStringValue("defaultValue");
-                    
-                    if (JAXB_DEFAULT_STRING.equals(xmlElement.getStringValue("name"))) {
-                        xmlNameMap.put(setterVariable, new XmlElementData(setterVariable,
-                                setterVariable,
+                    else {
+                        aliases.add(new XmlElementData(allXmlElementName,
+                                aliasName,
                                 defaultValue,
                                 Format.ELEMENT,
-                                null,
-                                true,
+                                allXmlElementTypeName,
+                                allXmlElementTypeInterface,
                                 xmlElementWrapperName));
                     }
-                    else {
-                        xmlNameMap.put(setterVariable, new XmlElementData(
-                                xmlElement.getStringValue("name"),
-                                xmlElement.getStringValue("name"),
-                                defaultValue, Format.ELEMENT,
-                                null,
-                                true,
-                                xmlElementWrapperName));
-                    } 
                 }
             }
-            else {
-                AltAnnotation xmlAttribute = originalMethod.getAnnotation(XmlAttribute.class.getName());
-                if (xmlAttribute != null) {
-                    if (JAXB_DEFAULT_STRING.equals(xmlAttribute.getStringValue("name"))) {
-                        xmlNameMap.put(setterVariable, new XmlElementData(setterVariable,
-                                setterVariable,
-                                JAXB_DEFAULT_DEFAULT,
-                                Format.ATTRIBUTE,
-                                null,
-                                true,
-                                xmlElementWrapperName));
-                    }
-                    else {
-                        xmlNameMap.put(setterVariable, new XmlElementData(xmlAttribute.getStringValue("name"),
-                                xmlAttribute.getStringValue("name"),
-                                JAXB_DEFAULT_DEFAULT,
-                                Format.ATTRIBUTE,
-                                null,
-                                true,
-                                xmlElementWrapperName));
-                    }
+            else if (xmlElement != null) {
+                hasAnElement = true;
+                
+                // Get the pluralOf from the method
+                pluralOf = originalMethod.getAnnotation(PluralOf.class.getName());
+                    
+                String defaultValue = xmlElement.getStringValue("defaultValue");
+                    
+                if (JAXB_DEFAULT_STRING.equals(xmlElement.getStringValue("name"))) {
+                    xmlNameMap.put(setterVariable, new XmlElementData(setterVariable,
+                            setterVariable,
+                            defaultValue,
+                            Format.ELEMENT,
+                            null,
+                            true,
+                            xmlElementWrapperName));
                 }
                 else {
-                    unmappedNames.add(setterVariable);
+                    xmlNameMap.put(setterVariable, new XmlElementData(
+                            xmlElement.getStringValue("name"),
+                            xmlElement.getStringValue("name"),
+                            defaultValue,
+                            Format.ELEMENT,
+                            null,
+                            true,
+                            xmlElementWrapperName));
                 }
+            }
+            else if (xmlAttribute != null) {
+                if (JAXB_DEFAULT_STRING.equals(xmlAttribute.getStringValue("name"))) {
+                    xmlNameMap.put(setterVariable, new XmlElementData(setterVariable,
+                            setterVariable,
+                            JAXB_DEFAULT_DEFAULT,
+                            Format.ATTRIBUTE,
+                            null,
+                            true,
+                            xmlElementWrapperName));
+                }
+                else {
+                    xmlNameMap.put(setterVariable, new XmlElementData(xmlAttribute.getStringValue("name"),
+                            xmlAttribute.getStringValue("name"),
+                            JAXB_DEFAULT_DEFAULT,
+                            Format.ATTRIBUTE,
+                            null,
+                            true,
+                            xmlElementWrapperName));
+                }
+            }
+            else if (xmlValue != null) {
+                if (valueData != null) {
+                    throw new IllegalArgumentException("There may be only one XmlValue method on " + convertMe);
+                }
+                valueData = new XmlElementData(setterVariable,
+                        setterVariable,
+                        null,
+                        Format.VALUE,
+                        null,
+                        false,
+                        xmlElementWrapperName);
+            }
+            else {
+                unmappedNames.add(setterVariable);
             }
             
             if (pluralOf == null) pluralOf = new AnnotationAltAnnotationImpl(new PluralOfDefault(), null);
@@ -1313,6 +1344,10 @@ public class Generator {
             addMethodToVariableMap.put(getMethodName(MethodType.ADD, unDecapitalizedVariable, pluralOf), setterVariable);
             removeMethodToVariableMap.put(getMethodName(MethodType.REMOVE, unDecapitalizedVariable, pluralOf), setterVariable);
             lookupMethodToVariableMap.put(getMethodName(MethodType.LOOKUP, unDecapitalizedVariable, pluralOf), setterVariable);
+        }
+        
+        if (valueData != null && hasAnElement) {
+            throw new IllegalArgumentException("A bean cannot both have XmlElements and XmlValue methods in " + convertMe);
         }
         
         Set<String> noXmlElementNames = new LinkedHashSet<String>();
@@ -1327,7 +1362,8 @@ public class Generator {
                 removeMethodToVariableMap,
                 lookupMethodToVariableMap,
                 referenceSet,
-                aliasMap);
+                aliasMap,
+                valueData);
     }
     
     private static String convertXmlRootElementName(AltAnnotation root, AltClass clazz) {

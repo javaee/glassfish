@@ -97,8 +97,6 @@ public class ModelImpl implements Model {
     /** A map from xml tag to child data, ordered */
     private final Map<String, ChildDescriptor> allChildren = new LinkedHashMap<String, ChildDescriptor>();
     
-   
-    
     /** If this node has a key, this is the property name of the key */
     private String keyProperty;
     
@@ -111,6 +109,9 @@ public class ModelImpl implements Model {
     private ClassLoader myLoader;
     private Map<String, String> keyToJavaNameMap = null;
     private Set<String> allXmlWrappers;
+    
+    private String valueProperty;
+    private ChildDataModel valueData;
     
     public ModelImpl() {
     }
@@ -154,6 +155,10 @@ public class ModelImpl implements Model {
         ChildDataModel cdm = new ChildDataModel(childType, childListType, defaultValue, isReference, format, aliasType, aliasOf);
         nonChildProperty.put(xmlTag, cdm);
         allChildren.put(xmlTag, new ChildDescriptor(cdm));
+        if (Format.VALUE.equals(format)) {
+            valueProperty = xmlTag;
+            valueData = cdm;
+        }
     }
 
     /**
@@ -198,6 +203,14 @@ public class ModelImpl implements Model {
     
     public Map<String, ChildDescriptor> getAllChildrenDescriptors() {
         return allChildren;
+    }
+    
+    public String getValueProperty() {
+        return valueProperty;        
+    }
+    
+    public ChildDataModel getValueData() {
+        return valueData;
     }
     
     public Set<String> getAllXmlWrappers() {
