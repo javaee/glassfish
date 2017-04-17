@@ -869,5 +869,11 @@ public class Commons {
         
         String collapsed = rbwp.getCollapsedProperty();
         Assert.assertEquals(NO_LEADING_OR_TRAILING, collapsed);
+        
+        List<PropertyBean> nakedProperties = rbwp.getNakedProperties();
+        Assert.assertEquals(1, nakedProperties.size());
+        
+        Assert.assertEquals(ENGLEBERT, nakedProperties.get(0).getKey());
+        Assert.assertEquals(FRANK, nakedProperties.get(0).getValue());
     }
 }

@@ -47,4 +47,6 @@
   </properties>
   
   <collapsed-property>       Had leading and trailing whitespace     </collapsed-property>
+  
+  <naked-property key="Englebert">Frank</naked-property>
 </root-bean-with-properties>

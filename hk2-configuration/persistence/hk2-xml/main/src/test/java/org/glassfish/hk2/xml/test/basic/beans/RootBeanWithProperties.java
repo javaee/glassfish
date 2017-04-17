@@ -39,6 +39,7 @@
  */
 package org.glassfish.hk2.xml.test.basic.beans;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -62,4 +63,8 @@ public interface RootBeanWithProperties {
     @XmlElement(name="collapsed-property")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     public String getCollapsedProperty();
+    
+    @XmlElement(name="naked-property")
+    public List<PropertyBean> getNakedProperties();
+    public void setNakedProperties(List<PropertyBean> beans);
 }
