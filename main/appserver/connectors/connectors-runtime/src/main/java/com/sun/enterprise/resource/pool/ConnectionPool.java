@@ -1017,7 +1017,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
             freeUnenlistedResource(h);
         }
         
-        if (poolLifeCycleListener != null) {
+        if (poolLifeCycleListener != null && !h.getDestroyByLeakTimeOut()) {
             poolLifeCycleListener.connectionReleased(h.getId());
         }
         if (_logger.isLoggable(Level.FINE)) {
@@ -1063,7 +1063,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
                 // Put it back to the free collection.
                 ds.returnResource(resourceHandle);
                 //update the monitoring data
-                if (poolLifeCycleListener != null) {
+                if (poolLifeCycleListener != null && !resourceHandle.getDestroyByLeakTimeOut()) {
                     poolLifeCycleListener.decrementConnectionUsed(resourceHandle.getId());
                     poolLifeCycleListener.incrementNumConnFree(false, steadyPoolSize);
                 }
@@ -1641,6 +1641,7 @@ public class ConnectionPool implements ResourcePool, ConnectionLeakListener,
         String msg = localStrings.getString("reclaim.leaked.connection", poolInfo);
         _logger.log(Level.INFO, msg);
         ds.removeResource(handle);
+        handle.setDestroyByLeakTimeOut(true);
         notifyWaitingThreads();
 
     }

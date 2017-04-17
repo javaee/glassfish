@@ -96,6 +96,7 @@ public class ResourceHandle implements
     private long lastValidated; //holds the latest time at which the connection was validated.
     private int usageCount; //holds the no. of times the handle(connection) is used so far.
     private int partition;
+    private boolean isDestroyByLeakTimeOut = false;
 
     static private long getNextId() {
         synchronized (ResourceHandle.class) {
@@ -387,5 +388,13 @@ public class ResourceHandle implements
 
     public boolean isBusy(){
         return busy;
+    }
+
+    public boolean getDestroyByLeakTimeOut(){
+        return isDestroyByLeakTimeOut;
+    }
+
+    public void setDestroyByLeakTimeOut(boolean isDestroyByLeakTimeOut){
+        this.isDestroyByLeakTimeOut = isDestroyByLeakTimeOut;
     }
 }
