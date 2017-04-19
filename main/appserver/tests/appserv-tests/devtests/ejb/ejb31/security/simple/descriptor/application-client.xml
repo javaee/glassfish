@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application-client xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application-client_6.xsd">
+ <env-entry>
+         <env-entry-name>java:app/env/enventry1</env-entry-name>
+         <env-entry-type>java.lang.String</env-entry-type>
+         <env-entry-value>app level blah </env-entry-value>
+       </env-entry>
+ <env-entry>
+         <env-entry-name>java:global/enventry2</env-entry-name>
+         <env-entry-type>java.lang.String</env-entry-type>
+         <env-entry-value>global level blah</env-entry-value>
+       </env-entry>
+   <env-entry>
+         <env-entry-name>envEntry3</env-entry-name>
+         <env-entry-type>java.lang.Integer</env-entry-type>
+	 <lookup-name>java:app/env/value1</lookup-name>
+       </env-entry>
+
+</application-client>
+

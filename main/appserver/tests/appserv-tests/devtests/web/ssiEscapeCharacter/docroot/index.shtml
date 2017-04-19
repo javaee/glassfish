@@ -1,0 +1,3 @@
+Hello, it is <!--#echo var="DATE_LOCAL"-->.
+<!--#set var="test" value="Happy\"\"" -->
+<!--#echo var="test"-->

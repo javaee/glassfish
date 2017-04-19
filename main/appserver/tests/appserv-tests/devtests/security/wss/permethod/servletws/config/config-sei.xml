@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration
+	xmlns="http://java.sun.com/xml/ns/jax-rpc/ri/config">
+	<service name="HelloServletService"
+		targetNamespace="http://hello.org/wsdl"
+		typeNamespace="http://hello.org/types"
+		packageName="com.sun.s1asdev.security.wss.permethod.servlet">
+		<interface name="com.sun.s1asdev.security.wss.permethod.servlet.HelloIF"
+			servantName="com.sun.s1asdev.security.wss.permethod.servlet.HelloServlet"/>
+		</interface>
+	</service>
+</configuration>
+

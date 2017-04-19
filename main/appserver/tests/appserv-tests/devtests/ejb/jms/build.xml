@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../config/common.xml">
+<!ENTITY reporting   SYSTEM "../report.xml">
+]>
+
+<project name="jms" default="usage" basedir=".">
+    &commonSetup;
+    &commonBuild;
+    &reporting;
+
+    <target name="all">
+        <antcall target="jmsejb"/>
+    </target>
+
+    <target name="jmsejb">
+        <record name="jmsejb.output" action="start" />
+            <ant dir="jmsejb" target="all"/>
+        <record name="jmsejb.output" action="stop" />
+    </target>
+
+    <target name="jmsejb2">
+        <record name="jmsejb2.output" action="start" />
+            <ant dir="jmsejb2" target="all"/>
+        <record name="jmsejb2.output" action="stop" />
+    </target>
+
+    <target name="usage">
+	<echo>
+		Usage:
+			ant jmsejb (Executes the ejb-jms jmsejb test)
+			ant jmsejb2 (Executes the ejb-jms jmsejb2 test)
+			ant all (Executes all the ejb-jms tests)
+	</echo>
+    </target>
+</project>

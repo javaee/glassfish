@@ -1,0 +1,7 @@
+create-jms-resource --restype javax.jms.QueueConnectionFactory jms/ejb_timer_sessiontimersecurity_TQCF
+
+create-jmsdest --desttype queue ejb_timer_sessiontimersecurity_TQueue
+create-jms-resource --restype javax.jms.Queue --property imqDestinationName=ejb_timer_sessiontimersecurity_TQueue jms/ejb_timer_sessiontimersecurity_TQueue
+
+
+quit

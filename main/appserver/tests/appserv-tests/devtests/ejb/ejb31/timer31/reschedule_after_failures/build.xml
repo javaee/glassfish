@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../../../config/common.xml">
+<!ENTITY commonRun SYSTEM "../../../../../config/run.xml">
+<!ENTITY testproperties SYSTEM "build.properties">
+]>
+
+<project name="ejb-timer-reschedule-after-failures-App" default="usage" basedir=".">
+
+    &commonSetup;
+    &commonBuild;
+    &commonRun;
+    &testproperties;
+
+    <target name="all" depends="clean,build,deploy,run,undeploy"/>
+
+    <target name="clean" depends="init-common">
+      <antcall  target="clean-common"/>
+    </target>
+ 
+    <target name="compile" depends="clean">
+        <antcall target="compile-common">
+            <param name="src" value="ejb"/>
+        </antcall>
+        <antcall target="compile-common">
+            <param name="src" value="client"/>
+        </antcall>
+    </target>
+
+    <target name="build" depends="compile">
+        <antcall target="build-ear-common">
+            <param name="ejbjar.classes" 
+              value="**/Stles*.class" />
+            <param name="appclientjar.classes" 
+              value="**/Client.class,**/Stles.class" />
+        </antcall>
+    </target> 
+    
+    <target name="deploy" depends="init-common">
+        <antcall  target="reset">
+            <param name="reset-value" value="true"/>
+        </antcall>
+        <antcall target="deploy-common"/>
+    </target> 
+    
+    <target name="reset" depends="init-common">
+        <antcall target="asadmin-common">
+          <param name="admin.command" value="set"/>
+          <param name="operand.props"
+              value="configs.config.server-config.ejb-container.ejb-timer-service.property.reschedule-failed-timer=${reset-value}"/>
+       </antcall>
+        <antcall target="restart-server-instance-common"/>
+    </target>
+
+    <target name="run" depends="init-common">
+        <antcall target="runclient-common"/>
+    </target>
+ 
+    <target name="undeploy" depends="init-common">
+        <antcall target="undeploy-common"/>
+        <antcall  target="reset">
+            <param name="reset-value" value=""/>
+        </antcall>
+    </target>   
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+</project>

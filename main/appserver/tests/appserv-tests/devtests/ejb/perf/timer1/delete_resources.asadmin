@@ -1,0 +1,6 @@
+delete-jms-resource jms/ejb_perf_timer1_TQCF
+
+delete-jms-resource jms/ejb_perf_timer1_TQueue
+delete-jmsdest --desttype queue ejb_perf_timer1_TQueue
+
+quit

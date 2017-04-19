@@ -1,0 +1,559 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
+<!ENTITY commonSecurity SYSTEM "file:../common.xml">
+<!ENTITY testproperties SYSTEM "file:./build.properties">
+]>
+
+<project name="security-multirolemapping" default="usage" basedir=".">
+  
+  &commonSetup;
+  &commonBuild;
+  &testproperties;
+  &commonSecurity;
+  
+  <target name="all" depends="clean, setup, build, deploy, run, undeploy, unsetup"/>
+  
+  <target name="clean" depends="init-common">
+    <antcall target="clean-common"/>
+  </target>
+  
+  <target name="setup" depends="init-common">
+    <!-- see readme for list of how all the users are used -->
+    <antcall target="create-user-common">
+      <param name="user" value="r1p1"/>
+      <param name="password" value="javaee"/>
+      <param name="groups" value="abc"/>
+    </antcall>
+    <antcall target="create-user-common">
+      <param name="user" value="r1p2"/>
+      <param name="password" value="javaee"/>
+      <param name="groups" value="abc"/>
+    </antcall>
+    <antcall target="create-user-common">
+      <param name="user" value="r1p3"/>
+      <param name="password" value="javaee"/>
+      <param name="groups" value="abc"/>
+    </antcall>
+    <antcall target="create-user-common">
+      <param name="user" value="r1g1user"/>
+      <param name="password" value="javaee"/>
+      <param name="groups" value="r1g1"/>
+    </antcall>
+    <antcall target="create-user-common">
+      <param name="user" value="r2p1"/>
+      <param name="password" value="javaee"/>
+      <param name="groups" value="abc"/>
+    </antcall>
+    <antcall target="create-user-common">
+      <param name="user" value="r2p2"/>
+      <param name="password" value="javaee"/>
+      <param name="groups" value="abc"/>
+    </antcall>
+    <antcall target="create-user-common">
+      <param name="user" value="r2g1user"/>
+      <param name="password" value="javaee"/>
+      <param name="groups" value="r2g1"/>
+    </antcall>
+    <antcall target="create-user-common">
+      <param name="user" value="r2g2user"/>
+      <param name="password" value="javaee"/>
+      <param name="groups" value="r2g2"/>
+    </antcall>
+    <antcall target="create-user-common">
+      <param name="user" value="r2g3user"/>
+      <param name="password" value="javaee"/>
+      <param name="groups" value="r2g3"/>
+    </antcall>
+    <antcall target="create-user-common">
+      <param name="user" value="r3p1"/>
+      <param name="password" value="javaee"/>
+      <param name="groups" value="abc"/>
+    </antcall>
+    <antcall target="create-user-common">
+      <param name="user" value="r3p2"/>
+      <param name="password" value="javaee"/>
+      <param name="groups" value="abc"/>
+    </antcall>
+    <antcall target="create-user-common">
+      <param name="user" value="r3g1user"/>
+      <param name="password" value="javaee"/>
+      <param name="groups" value="r3g1"/>
+    </antcall>
+    <antcall target="create-user-common">
+      <param name="user" value="r4p1"/>
+      <param name="password" value="javaee"/>
+      <param name="groups" value="abc"/>
+    </antcall>
+    <antcall target="create-user-common">
+      <param name="user" value="r4g1user"/>
+      <param name="password" value="javaee"/>
+      <param name="groups" value="r4g1"/>
+    </antcall>
+    <antcall target="create-user-common">
+      <param name="user" value="r5p1"/>
+      <param name="password" value="javaee"/>
+      <param name="groups" value="abc"/>
+    </antcall>
+    <antcall target="create-user-common">
+      <param name="user" value="r5p2"/>
+      <param name="password" value="javaee"/>
+      <param name="groups" value="abc"/>
+    </antcall>
+    <antcall target="create-user-common">
+      <param name="user" value="r5g1user"/>
+      <param name="password" value="javaee"/>
+      <param name="groups" value="r5g1"/>
+    </antcall>
+    <antcall target="create-user-common">
+      <param name="user" value="r6p1"/>
+      <param name="password" value="javaee"/>
+      <param name="groups" value="abc"/>
+    </antcall>
+    <antcall target="create-user-common">
+      <param name="user" value="r6p2"/>
+      <param name="password" value="javaee"/>
+      <param name="groups" value="abc"/>
+    </antcall>
+    <antcall target="create-user-common">
+      <param name="user" value="r6g1user"/>
+      <param name="password" value="javaee"/>
+      <param name="groups" value="r6g1"/>
+    </antcall>
+    <antcall target="create-user-common">
+      <param name="user" value="r7p1"/>
+      <param name="password" value="javaee"/>
+      <param name="groups" value="abc"/>
+    </antcall>
+    <antcall target="create-user-common">
+      <param name="user" value="r7p2"/>
+      <param name="password" value="javaee"/>
+      <param name="groups" value="abc"/>
+    </antcall>
+    
+  <!--  <antcall target="reconfig-common"/>-->
+  </target>
+  
+  <target name="unsetup" depends="init-common">
+    <antcall target="delete-user-common">
+      <param name="user" value="r1p1"/>
+    </antcall>
+    <antcall target="delete-user-common">
+      <param name="user" value="r1p2"/>
+    </antcall>
+    <antcall target="delete-user-common">
+      <param name="user" value="r1p3"/>
+    </antcall>
+    <antcall target="delete-user-common">
+      <param name="user" value="r1g1user"/>
+    </antcall>
+    <antcall target="delete-user-common">
+      <param name="user" value="r2p1"/>
+    </antcall>
+    <antcall target="delete-user-common">
+      <param name="user" value="r2p2"/>
+    </antcall>
+    <antcall target="delete-user-common">
+      <param name="user" value="r2g1user"/>
+    </antcall>
+    <antcall target="delete-user-common">
+      <param name="user" value="r2g2user"/>
+    </antcall>
+    <antcall target="delete-user-common">
+      <param name="user" value="r2g3user"/>
+    </antcall>
+    <antcall target="delete-user-common">
+      <param name="user" value="r3p1"/>
+    </antcall>
+    <antcall target="delete-user-common">
+      <param name="user" value="r3p2"/>
+    </antcall>
+    <antcall target="delete-user-common">
+      <param name="user" value="r3g1user"/>
+    </antcall>
+    <antcall target="delete-user-common">
+      <param name="user" value="r4p1"/>
+    </antcall>
+    <antcall target="delete-user-common">
+      <param name="user" value="r4g1user"/>
+    </antcall>
+    <antcall target="delete-user-common">
+      <param name="user" value="r5p1"/>
+    </antcall>
+    <antcall target="delete-user-common">
+      <param name="user" value="r5p2"/>
+    </antcall>
+    <antcall target="delete-user-common">
+      <param name="user" value="r5g1user"/>
+    </antcall>
+    <antcall target="delete-user-common">
+      <param name="user" value="r6p1"/>
+    </antcall>
+    <antcall target="delete-user-common">
+      <param name="user" value="r6p2"/>
+    </antcall>
+    <antcall target="delete-user-common">
+      <param name="user" value="r6g1user"/>
+    </antcall>
+    <antcall target="delete-user-common">
+      <param name="user" value="r7p1"/>
+    </antcall>
+    <antcall target="delete-user-common">
+      <param name="user" value="r7p2"/>
+    </antcall>
+  </target>
+  
+  <target name="compile" depends="clean">
+    <antcall target="compile-common">
+      <param name="src" value="ejb1"/>
+      <param name="build.classes.dir" value="${build.classes.dir}/nonweb1"/>
+    </antcall>
+    <antcall target="compile-common">
+      <param name="src" value="ejb2"/>
+      <param name="build.classes.dir" value="${build.classes.dir}/nonweb2"/>
+    </antcall>
+    <antcall target="compile-common">
+      <param name="src" value="web"/>
+      <param name="build.classes.dir" value="${build.classes.dir}/web"/>
+      <!-- overriding classpath to include classes from ejb modules -->
+      <param name="s1astest.classpath"
+             value="${s1astest.classpath}:${build.classes.dir}/nonweb1:${build.classes.dir}/nonweb2"/>
+    </antcall>
+    <!-- Am leaving in the commented appclient fragments to add
+      an appclient test later. -->
+    <!--
+        <antcall target="compile-common">
+            <param name="src" value="client"/>
+            <param name="build.classes.dir" value="${build.classes.dir}/nonweb"/>
+        </antcall>
+        -->
+  </target>
+  
+  <target name="build" depends="compile">
+    <mkdir dir="${assemble.dir}"/>
+    <mkdir dir="${build.classes.dir}/META-INF"/> 
+    
+    <antcall target="package-ejbjar-common">
+      <param name="ejbjar.files" value="${build.classes.dir}/nonweb1"/>
+      <param name="ejb.jar" value="${assemble.dir}/${appname}1-ejb.jar"/>
+      <param name="ejbjar.classes" value="com/sun/**/ejb1/*.class"/>
+      <param name="sun-ejb-jar.xml" value="${sun-ejb-jar1.xml}"/>
+    </antcall>
+    <antcall target="package-ejbjar-common">
+      <param name="ejbjar.files" value="${build.classes.dir}/nonweb2"/>
+      <param name="ejb.jar" value="${assemble.dir}/${appname}2-ejb.jar"/>
+      <param name="ejbjar.classes" value="com/sun/**/ejb2/*.class"/>
+      <param name="sun-ejb-jar.xml" value="${sun-ejb-jar2.xml}"/>
+    </antcall>
+    <antcall target="package-war-common">
+      <param name="war.classes" value="${build.classes.dir}/web"/>
+      <param name="war.file" value="${assemble.dir}/${appname}-web.war"/>
+      <param name="sun-web.xml" value="descriptor/sun-web.xml"/>
+    </antcall>
+    
+    <!--
+    <antcall target="package-appclientjar-common">
+      <param name="appclientjar.files" value="${build.classes.dir}/nonweb"/>
+      <param name="appclient.jar" 
+             value="${assemble.dir}/${appname}-client.jar"/>
+      <param name="appclientjar.classes" 
+             value="com/sun/**/client/*.class,com/sun/**/ejb/Hello.class"/>
+    </antcall>
+    -->
+    
+    <copy file="${application.xml}" tofile="${build.classes.dir}/META-INF/application.xml" failonerror="false"/> 
+    <copy file="${sun-application.xml}" tofile="${build.classes.dir}/META-INF/sun-application.xml" failonerror="false"/> 
+    <jar jarfile="${assemble.dir}/${appname}App.ear"> 
+      <fileset dir="${assemble.dir}">
+        <include name="*.jar"/>
+        <include name="*.war"/>
+      </fileset>
+      <fileset dir="${build.classes.dir}">
+        <include name="META-INF/application.xml"/>
+        <include name="META-INF/sun-application.xml"/>
+      </fileset>
+      <fileset dir="${env.APS_HOME}/lib" includes="reporter.jar"/>
+    </jar>   
+    
+    <copy file="${sun-application.xml}" tofile="${build.classes.dir}/META-INF/sun-application.xml" failonerror="false"/> 
+    <jar jarfile="${assemble.dir}/${appname}App.ear">
+      <fileset dir="${assemble.dir}">
+        <include name="*.jar"/>
+        <include name="*.war"/>
+      </fileset>
+      <fileset dir="${build.classes.dir}">
+        <include name="META-INF/sun-application.xml"/>
+      </fileset>
+    </jar>   
+  </target>
+  
+  <target name="deploy" depends="init-common">
+    <antcall target="deploy-common"/>
+  </target>
+
+  <!-- see readme for explanation of test cases -->
+  <target name="run" depends="init-common">
+    <!--
+    <exec executable="${APPCLIENT}">
+      <arg line="-client" />
+      <arg line="${assemble.dir}/${appname}AppClient.jar"/>
+      <arg line="-textauth"/>
+      <arg line="-user"/>
+      <arg line="javaee"/>
+      <arg line="-password"/>
+      <arg line="javaee"/>
+      <arg line="${http.host} ${http.port}"/>
+    </exec>
+    -->
+    
+    <antcall target="runweb">
+      <param name="servlet" value="role1"/>
+      <param name="webuser" value="r1p1"/>
+      <param name="webpassword" value="javaee"/>
+      <param name="httpMethod" value="GET"/>
+      <param name="goldenfile" value="goldenfiles/role1.html"/>
+      <param name="testcaseid" value="user-auth-r1p1"/>
+    </antcall>
+    <antcall target="runweb">
+      <param name="servlet" value="role1"/>
+      <param name="webuser" value="r1p2"/>
+      <param name="webpassword" value="javaee"/>
+      <param name="httpMethod" value="GET"/>
+      <param name="goldenfile" value="goldenfiles/role1.html"/>
+      <param name="testcaseid" value="user-auth-r1p2"/>
+    </antcall>
+    <antcall target="runweb-403">
+      <param name="servlet" value="role1"/>
+      <param name="webuser" value="r1p3"/>
+      <param name="webpassword" value="javaee"/>
+      <param name="httpMethod" value="GET"/>
+      <param name="testcaseid" value="user-auth-r1p3-fail"/>
+    </antcall>
+    <antcall target="runweb-403">
+      <param name="servlet" value="role1"/>
+      <param name="webuser" value="r2p1"/>
+      <param name="webpassword" value="javaee"/>
+      <param name="httpMethod" value="GET"/>
+      <param name="testcaseid" value="user-auth-r2p1-fail"/>
+    </antcall>
+    <antcall target="runweb-403">
+      <param name="servlet" value="role1"/>
+      <param name="webuser" value="r1g1user"/>
+      <param name="webpassword" value="javaee"/>
+      <param name="httpMethod" value="GET"/>
+      <param name="testcaseid" value="user-auth-r1g1user-fail"/>
+    </antcall>
+    <antcall target="runweb">
+      <param name="servlet" value="role2"/>
+      <param name="webuser" value="r2p1"/>
+      <param name="webpassword" value="javaee"/>
+      <param name="httpMethod" value="GET"/>
+      <param name="goldenfile" value="goldenfiles/role2.html"/>
+      <param name="testcaseid" value="user-auth-r2p1"/>
+    </antcall>
+    <antcall target="runweb">
+      <param name="servlet" value="role2"/>
+      <param name="webuser" value="r2g1user"/>
+      <param name="webpassword" value="javaee"/>
+      <param name="httpMethod" value="GET"/>
+      <param name="goldenfile" value="goldenfiles/role2.html"/>
+      <param name="testcaseid" value="user-auth-r2g1user"/>
+    </antcall>
+    <antcall target="runweb">
+      <param name="servlet" value="role2"/>
+      <param name="webuser" value="r2g2user"/>
+      <param name="webpassword" value="javaee"/>
+      <param name="httpMethod" value="GET"/>
+      <param name="goldenfile" value="goldenfiles/role2.html"/>
+      <param name="testcaseid" value="user-auth-r2g2user"/>
+    </antcall>
+    <antcall target="runweb-403">
+      <param name="servlet" value="role2"/>
+      <param name="webuser" value="r2p2"/>
+      <param name="webpassword" value="javaee"/>
+      <param name="httpMethod" value="GET"/>
+      <param name="testcaseid" value="user-auth-r2p2-fail"/>
+    </antcall>
+    <antcall target="runweb-403">
+      <param name="servlet" value="role2"/>
+      <param name="webuser" value="r2g3user"/>
+      <param name="webpassword" value="javaee"/>
+      <param name="httpMethod" value="GET"/>
+      <param name="testcaseid" value="user-auth-r2g3user-fail"/>
+    </antcall>
+    <antcall target="runweb-403">
+      <param name="servlet" value="role2"/>
+      <param name="webuser" value="r1p1"/>
+      <param name="webpassword" value="javaee"/>
+      <param name="httpMethod" value="GET"/>
+      <param name="testcaseid" value="user-auth-r1p1-fail"/>
+    </antcall>
+    <antcall target="runweb">
+      <param name="servlet" value="role3"/>
+      <param name="webuser" value="r3p1"/>
+      <param name="webpassword" value="javaee"/>
+      <param name="httpMethod" value="GET"/>
+      <param name="goldenfile" value="goldenfiles/role3.html"/>
+      <param name="testcaseid" value="user-auth-r3p1"/>
+    </antcall>
+    <antcall target="runweb">
+      <param name="servlet" value="role3"/>
+      <param name="webuser" value="r3g1user"/>
+      <param name="webpassword" value="javaee"/>
+      <param name="httpMethod" value="GET"/>
+      <param name="goldenfile" value="goldenfiles/role3.html"/>
+      <param name="testcaseid" value="user-auth-r3g1user"/>
+    </antcall>
+    <antcall target="runweb-403">
+      <param name="servlet" value="role3"/>
+      <param name="webuser" value="r3p2"/>
+      <param name="webpassword" value="javaee"/>
+      <param name="httpMethod" value="GET"/>
+      <param name="testcaseid" value="user-auth-r3p2-fail"/>
+    </antcall>
+    <antcall target="runweb">
+      <param name="servlet" value="role4"/>
+      <param name="webuser" value="r4p1"/>
+      <param name="webpassword" value="javaee"/>
+      <param name="httpMethod" value="GET"/>
+      <param name="goldenfile" value="goldenfiles/role4.html"/>
+      <param name="testcaseid" value="user-auth-r4p1"/>
+    </antcall>
+    <antcall target="runweb">
+      <param name="servlet" value="role4"/>
+      <param name="webuser" value="r4g1user"/>
+      <param name="webpassword" value="javaee"/>
+      <param name="httpMethod" value="GET"/>
+      <param name="goldenfile" value="goldenfiles/role4.html"/>
+      <param name="testcaseid" value="user-auth-r4g1user"/>
+    </antcall>
+    <antcall target="runweb-403">
+      <param name="servlet" value="role5"/>
+      <param name="webuser" value="r5p1"/>
+      <param name="webpassword" value="javaee"/>
+      <param name="httpMethod" value="GET"/>
+      <param name="testcaseid" value="user-auth-r5p1-fail"/>
+    </antcall>
+    <antcall target="runweb-403">
+      <param name="servlet" value="role5"/>
+      <param name="webuser" value="r5p2"/>
+      <param name="webpassword" value="javaee"/>
+      <param name="httpMethod" value="GET"/>
+      <param name="testcaseid" value="user-auth-r5p2-fail"/>
+    </antcall>
+    <antcall target="runweb-403">
+      <param name="servlet" value="role5"/>
+      <param name="webuser" value="r5g1user"/>
+      <param name="webpassword" value="javaee"/>
+      <param name="httpMethod" value="GET"/>
+      <param name="testcaseid" value="user-auth-r5g1user-fail"/>
+    </antcall>
+    <antcall target="runweb-403">
+      <param name="servlet" value="role6"/>
+      <param name="webuser" value="r6p1"/>
+      <param name="webpassword" value="javaee"/>
+      <param name="httpMethod" value="GET"/>
+      <param name="testcaseid" value="user-auth-r6p1-fail"/>
+    </antcall>
+    <antcall target="runweb-403">
+      <param name="servlet" value="role6"/>
+      <param name="webuser" value="r6p2"/>
+      <param name="webpassword" value="javaee"/>
+      <param name="httpMethod" value="GET"/>
+      <param name="testcaseid" value="user-auth-r6p2-fail"/>
+    </antcall>
+    <antcall target="runweb-403">
+      <param name="servlet" value="role6"/>
+      <param name="webuser" value="r6g1user"/>
+      <param name="webpassword" value="javaee"/>
+      <param name="httpMethod" value="GET"/>
+      <param name="testcaseid" value="user-auth-r6g1user-fail"/>
+    </antcall>
+    <antcall target="runweb">
+      <param name="servlet" value="role7"/>
+      <param name="webuser" value="r7p1"/>
+      <param name="webpassword" value="javaee"/>
+      <param name="httpMethod" value="GET"/>
+      <param name="goldenfile" value="goldenfiles/role7.html"/>
+      <param name="testcaseid" value="user-auth-r7p1"/>
+    </antcall>
+    <antcall target="runweb">
+      <param name="servlet" value="role7"/>
+      <param name="webuser" value="r7p2"/>
+      <param name="webpassword" value="javaee"/>
+      <param name="httpMethod" value="GET"/>
+      <param name="goldenfile" value="goldenfiles/role7.html"/>
+      <param name="testcaseid" value="user-auth-r7p2"/>
+    </antcall>
+  </target>
+  
+  <target name="runweb" depends="init-common">
+    <taskdef name="webtest" classname="${webtest.classname}"
+             classpath="${webtest.classpath}" />
+    <webtest request="${httpMethod} /security-multirolemapping/${servlet} HTTP/1.0"
+             debug="9"
+             host="${http.host}"
+             port="${http.port}"
+             authMethod="BASIC"
+             userName="${webuser}"
+             password="${webpassword}"
+             firstTask="true"
+             lastTest="true"
+             lastCase="true"
+             lastTask="true"
+             resultFileName="${webtest.report.dir}/security-gtest-results.xml"
+             testSession="security-multirolemapping"
+             requestHeaders="Host:${http.host}:${http.port}"
+             goldenFile="${env.APS_HOME}/devtests/security/multiRoleMapping/${goldenfile}"
+             testSuiteId="security-multirolemapping"
+             testSuiteName="security-multirolemapping"
+             testSuiteDescription="Security Test"
+             testId="security-multirolemapping"
+             testName="security-multirolemapping"
+             testDescription="Testing role mapping: ${testcaseid}"
+             testCaseId="${testcaseid}"
+             testCaseName="${testcaseid}"
+             testCaseDescription="Testing role mapping"
+             testStrategy="Testing role mapping"/>
+  </target>
+  
+  <target name="runweb-403" depends="init-common">
+    <taskdef name="webtest" classname="${webtest.classname}"
+        classpath="${webtest.classpath}" />
+    <webtest request="${httpMethod} /security-multirolemapping/${servlet} HTTP/1.0"
+        debug="9"
+        host="${http.host}"
+        port="${http.port}"
+        authMethod="BASIC"
+        userName="${webuser}"
+        password="${webpassword}"
+        firstTask="true"
+        lastTest="true"
+        lastCase="true"
+        lastTask="true"
+        resultFileName="${webtest.report.dir}/security-gtest-results.xml"
+        testSession="security-multirolemapping"
+        requestHeaders="Host:${http.host}:${http.port}"
+        returnCode="HTTP/1.1 403"
+        testSuiteId="security-multirolemapping"
+        testSuiteName="security-multirolemapping"
+        testSuiteDescription="Security Test"
+        testId="security-multirolemapping"
+        testName="security-multirolemapping"
+        testDescription="Testing mapping disabled: ${testcaseid}"
+        testCaseId="${testcaseid}"
+        testCaseName="${testcaseid}"
+        testCaseDescription="Testing mapping disabled"
+        testStrategy="Testing mapping disabled"/>
+    </target>
+
+  <target name="undeploy" depends="init-common">
+    <antcall target="undeploy-common"/>
+  </target>
+  
+  <target name="usage">
+    <antcall target="usage-common"/>
+  </target>
+</project>

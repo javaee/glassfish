@@ -1,0 +1,35 @@
+<project name="Coffee Break, common" default="build" basedir="."> 
+  <target name="init"> 
+      <tstamp/> 
+  </target> 
+
+  <property name="build" value="build" />
+  <property name="src" value="src" />
+ 
+  <target name="prepare" depends="init" 
+   	description="Create build directories."> 
+    <mkdir dir="${build}" /> 
+  </target> 
+ 
+  <!-- Executable Targets --> 
+ 
+  <target name="compile" depends="prepare"  
+     description="Compile .java files." > 
+    <javac 
+       srcdir="${src}" 
+       destdir="${build}" 
+       includes="**/*.java" 
+     />
+  </target>	  
+
+  <target name="build" depends="compile"
+     description="Compiles source.">
+  </target>
+
+  <target name="clean"
+     description="Removes the build directory.">
+    <delete dir="${build}" />
+  </target>
+
+</project> 
+ 

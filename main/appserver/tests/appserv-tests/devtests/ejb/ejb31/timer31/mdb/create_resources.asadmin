@@ -1,0 +1,2 @@
+create-jmsdest --desttype queue ejb_ejb31_timer31_mdb_InQueue 
+create-jms-resource --restype javax.jms.Queue --property imqDestinationName=ejb_ejb31_timer31_mdb_InQueue jms/ejb_ejb31_timer31_mdb_InQueue

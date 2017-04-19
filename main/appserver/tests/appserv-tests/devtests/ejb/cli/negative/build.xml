@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "./../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "./../../../../config/common.xml">
+<!ENTITY commonRun SYSTEM "./../../../../config/run.xml">
+<!ENTITY testproperties SYSTEM "build.properties">
+]>
+
+<project name="ejb-cli-negative" default="usage" basedir=".">
+
+
+    &commonSetup;
+    &commonBuild;
+    &commonRun;
+    &testproperties;
+
+    <!-- executed list of targets: clean,build,deploy,undeploy -->
+    <target name="all" depends="clean,build,deploy,undeploy"/>
+
+    <target name="deploy" depends="init-common">
+        <echo message="deploying application"/>
+        <java  fork="on"
+              failonerror="true"
+              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
+              classname="${se.client}">
+           <arg line="deploy"/>
+           <arg line="${assemble.dir}/${appname}App.ear"/>
+        </java>
+    </target>
+    
+    <target name="undeploy" depends="init-common">
+      <antcall target="undeploy-common"/>
+    </target>
+
+    <target name="build">
+      <antcall target="compile-common">
+        <param name="src" value="ejb"/>
+      </antcall>
+      <antcall target="compile-client"/>
+      <antcall target="build-ear-common">
+        <param name="application.xml" 
+            value="descriptor/application.xml" />
+        <param name="application-client.xml" 
+            value="descriptor/application-client.xml" />
+      </antcall>
+    </target>
+
+    <target name="compile-client" >
+        <javac fork="true" includeAntRuntime="false" destdir="${build.classes.dir}" debug="true" 
+               classpath="${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}"
+               srcdir="${env.APS_HOME}/devtests/admin/cli/src" includes="**/*BaseDevTest.java">
+        </javac>
+        <javac fork="true" includeAntRuntime="false" 
+               classpath="${env.APS_HOME}/lib/reportbuilder.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
+               destdir="${build.classes.dir}" debug="true" srcdir="client" includes="**/*.java">
+            <classpath path="${classpath}"/>
+        </javac>
+    </target>
+
+    <target name="clean" depends="init-common">
+      <antcall  target="clean-common"/>
+    </target>
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+
+</project>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../../config/common.xml">
+<!ENTITY reporting   SYSTEM "../../report.xml">
+]>
+
+<project name="hello" default="usage" basedir=".">
+    &commonSetup;
+    &commonBuild;
+    &reporting;
+
+    <target name="all">
+        <antcall target="session"/>
+        <antcall target="session2"/>
+        <antcall target="session2full"/>
+        <antcall target="nopkg"/>
+        <antcall target="mdb"/>  
+        <antcall target="mdb2"/>  
+        <antcall target="session4"/>
+        <antcall target="session5"/> 
+        <antcall target="session3"/>
+        <antcall target="session_standalone"/>
+    </target>
+
+    <target name="mdb">
+        <record name="mdb.output" action="start" />
+            <ant dir="mdb" target="all"/>
+        <record name="mdb.output" action="stop" />
+    </target>
+
+    <target name="mdb2">
+        <record name="mdb2.output" action="start" />
+            <ant dir="mdb2" target="all"/>
+        <record name="mdb2.output" action="stop" />
+    </target>
+
+    <target name="session">
+        <record name="session.output" action="start" />
+            <ant dir="session" target="all"/>
+        <record name="session.output" action="stop" />
+    </target>
+
+    <target name="session_standalone">
+        <record name="session_standalone.output" action="start" />
+            <ant dir="session_standalone" target="all"/>
+        <record name="session_standalone.output" action="stop" />
+    </target>
+
+    <target name="session2">
+        <record name="session2.output" action="start" />
+            <ant dir="session2" target="build"/>
+            <ant dir="session2" target="deploy"/>
+            <ant dir="session2" target="run"/>
+
+	<!-- needs handle support
+            <ant dir="dcode" target="build"/>
+            <ant dir="dcode" target="deploy"/>
+            <ant dir="dcode" target="run"/>
+            <ant dir="dcode" target="run"/>
+            <ant dir="dcode" target="undeploy"/>
+	-->
+            <ant dir="session2" target="undeploy"/>
+        <record name="session2.output" action="stop" />
+    </target>
+
+    <target name="session2full">
+        <record name="session2full.output" action="start" />
+            <ant dir="session2full" target="all"/>
+        <record name="session2full.output" action="stop" />
+    </target>
+
+    <target name="session3">
+        <record name="session3.output" action="start" />
+            <ant dir="session3" target="all"/>
+        <record name="session3.output" action="stop" />
+    </target>
+
+    <target name="session4">
+        <record name="session4.output" action="start" />
+            <ant dir="session4" target="all"/>
+        <record name="session4.output" action="stop" />
+    </target>
+
+    <target name="session5">
+        <record name="session5.output" action="start" />
+            <ant dir="session5" target="all"/>
+        <record name="session5.output" action="stop" />
+    </target>
+
+    <target name="nopkg">
+        <record name="nopkg.output" action="start" />
+            <ant dir="nopkg" target="all"/>
+        <record name="nopkg.output" action="stop" />
+    </target>
+
+    <target name="usage">
+	<echo>
+		Usage:
+			ant all (Executes all the ejb-ejb30-hello tests)
+	</echo>
+    </target>
+</project>

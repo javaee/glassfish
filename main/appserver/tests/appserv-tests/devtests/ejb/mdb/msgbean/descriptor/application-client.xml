@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application-client version="1.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/application-client_1_4.xsd">
+  <display-name>ejb-mdb-msgbeanClient</display-name>
+  <resource-ref>
+    <res-ref-name>jms/QCF</res-ref-name>
+    <res-type>javax.jms.QueueConnectionFactory</res-type>
+    <res-auth>Container</res-auth>
+    <res-sharing-scope>Shareable</res-sharing-scope>
+  </resource-ref>
+  <resource-ref>
+    <res-ref-name>jms/TCF</res-ref-name>
+    <res-type>javax.jms.TopicConnectionFactory</res-type>
+    <res-auth>Container</res-auth>
+    <res-sharing-scope>Shareable</res-sharing-scope>
+  </resource-ref>
+  <message-destination-ref>
+     <description>test destination</description>
+     <message-destination-ref-name>jms/client_queue
+     </message-destination-ref-name>
+     <message-destination-type>javax.jms.Queue</message-destination-type>
+     <message-destination-usage>Produces</message-destination-usage>
+     <message-destination-link>client_queue</message-destination-link>
+  </message-destination-ref>
+  <message-destination-ref>
+     <description>test destination</description>
+     <message-destination-ref-name>jms/client_topic
+     </message-destination-ref-name>
+     <message-destination-type>javax.jms.Topic</message-destination-type>
+     <message-destination-usage>Produces</message-destination-usage>
+     <message-destination-link>client_topic</message-destination-link>
+  </message-destination-ref>
+  <message-destination-ref>
+     <description>test destination</description>
+     <message-destination-ref-name>jms/queue_cmt
+     </message-destination-ref-name>
+     <message-destination-type>javax.jms.Queue</message-destination-type>
+     <message-destination-usage>Produces</message-destination-usage>
+     <message-destination-link>queue_cmt</message-destination-link>
+  </message-destination-ref>
+  <message-destination-ref>
+     <description>test destination</description>
+     <message-destination-ref-name>jms/queue_bmt
+     </message-destination-ref-name>
+     <message-destination-type>javax.jms.Queue</message-destination-type>
+     <message-destination-usage>Produces</message-destination-usage>
+     <message-destination-link>queue_bmt</message-destination-link>
+  </message-destination-ref>
+  <message-destination-ref>
+     <description>test destination</description>
+     <message-destination-ref-name>jms/queue_cmtns
+     </message-destination-ref-name>
+     <message-destination-type>javax.jms.Queue</message-destination-type>
+     <message-destination-usage>Produces</message-destination-usage>
+     <message-destination-link>queue_cmtns</message-destination-link>
+  </message-destination-ref>
+  <message-destination-ref>
+     <description>test destination</description>
+     <message-destination-ref-name>jms/topic_cmt
+     </message-destination-ref-name>
+     <message-destination-type>javax.jms.Topic</message-destination-type>
+     <message-destination-usage>Produces</message-destination-usage>
+     <message-destination-link>topic_cmt</message-destination-link>
+  </message-destination-ref>
+  <message-destination-ref>
+     <description>test destination</description>
+     <message-destination-ref-name>jms/topic_bmt
+     </message-destination-ref-name>
+     <message-destination-type>javax.jms.Topic</message-destination-type>
+     <message-destination-usage>Produces</message-destination-usage>
+     <message-destination-link>topic_cmt</message-destination-link>
+  </message-destination-ref>
+  <message-destination>
+    <message-destination-name>client_queue</message-destination-name>
+  </message-destination>
+  <message-destination>
+    <message-destination-name>client_topic</message-destination-name>
+  </message-destination>
+  <message-destination>
+    <message-destination-name>queue_cmt</message-destination-name>
+  </message-destination>
+  <message-destination>
+    <message-destination-name>queue_bmt</message-destination-name>
+  </message-destination>
+  <message-destination>
+    <message-destination-name>queue_cmtns</message-destination-name>
+  </message-destination>
+  <message-destination>
+    <message-destination-name>topic_cmt</message-destination-name>
+  </message-destination>
+  <message-destination>
+    <message-destination-name>topic_bmt</message-destination-name>
+  </message-destination>
+</application-client>
+

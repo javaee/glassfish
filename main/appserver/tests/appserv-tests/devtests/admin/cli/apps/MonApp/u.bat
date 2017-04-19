@@ -1,0 +1,1 @@
+asadmin undeploy MonApp

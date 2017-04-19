@@ -1,0 +1,5 @@
+<jsp:root xmlns:jsp="http://java.sun.com/JSP/Page"
+          xmlns:test="http://test"
+          version="2.0">
+  ${test:foo()}
+</jsp:root>

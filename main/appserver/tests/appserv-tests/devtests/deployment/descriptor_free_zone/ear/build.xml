@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "./../../config/common.xml">
+]>
+
+<project name="ear" default="all" basedir=".">
+
+	&commonBuild;
+
+	<target name="private-all">
+		<ant dir="no_appxml" target="private-all">
+			<property name="build" value="${build}/no_appxml"/>
+		</ant>
+		<ant dir="dir_deploy" target="private-all">
+			<property name="build" value="${build}/dir_deploy"/>
+		</ant>
+		<ant dir="no_appxml_2" target="private-all">
+			<property name="build" value="${build}/no_appxml_2"/>
+		</ant>
+	</target>
+</project>

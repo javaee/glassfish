@@ -1,0 +1,3 @@
+Unit tests for Remote ejb stub generation.
+*All tests depend on ejbapp being deployed*
+ejbapp can also be run standalone.

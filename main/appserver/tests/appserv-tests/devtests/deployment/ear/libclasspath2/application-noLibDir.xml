@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : application.xml
+    Created on : November 14, 2005, 8:24 AM
+    Author     : tjquinn
+    Description:
+        descriptor for <library-directory> element test
+-->
+<application xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="5" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_5.xsd">
+  <module>
+      <ejb>libdirtest-EJBModule.jar</ejb>
+  </module>
+  <module>
+      <java>client/libdirtest-client.jar</java>
+  </module>
+  <library-directory/> <!-- suppress library directory handling -->  
+</application>

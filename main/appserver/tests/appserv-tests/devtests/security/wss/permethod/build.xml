@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:../../../../config/common.xml">
+<!ENTITY commonRun SYSTEM "file:../../../../config/run.xml">
+<!ENTITY commonSecurity SYSTEM "file:../../common.xml">
+]>
+
+
+<project name="wss-permethod" default="usage" basedir=".">
+    &commonSetup;
+    &commonBuild;
+    &commonSecurity;
+    &commonRun;
+
+    <property name="ws-target" value="all"/>
+
+<!-- ======== Targets by execution granularity ========== -->
+    <target name="all">
+	<antcall target="setup"/>
+        <antcall target="runwstargets">
+            <param name="ws-target" value="all"/>
+        </antcall>
+	<antcall target="unsetup"/>
+    </target>
+            
+    <target name="run-test">
+        <antcall target="runwstargets">
+            <param name="ws-target" value="run-test"/>
+        </antcall>
+    </target>
+            
+    <target name="clean">
+        <antcall target="runwstargets">
+            <param name="ws-target" value="clean"/>
+        </antcall>
+    </target>
+            
+    <target name="build">
+        <antcall target="runwstargets">
+            <param name="ws-target" value="build"/>
+        </antcall>
+    </target>
+            
+    <target name="deploy">
+        <antcall target="runwstargets">
+            <param name="ws-target" value="deploy"/>
+        </antcall>
+    </target>
+            
+    <target name="undeploy">
+        <antcall target="runwstargets">
+            <param name="ws-target" value="undeploy"/>
+        </antcall>
+    </target>
+            
+    <target name="run">
+        <antcall target="runwstargets">
+            <param name="ws-target" value="run"/>
+        </antcall>
+    </target>
+            
+    <target name="setup" depends="init-common">
+	<!-- exports certdb stuff and imports into keystore -->
+	<antcall target="prepare-store-nickname-common">
+            <param name="cert.nickname" value="s1as"/>
+        </antcall>
+    </target>
+            
+    <target name="unsetup" depends="init-common" >
+    </target>
+
+
+    <target name="runwstargets">
+        <antcall target="servletws"/>
+    </target>
+
+<!-- ======== Targets by technology ========== -->
+
+    <target name="servletws">
+        <record name="security-wss.output" action="start" />
+            <ant dir="servletws" target="${ws-target}"/>
+        <record name="security-wss.output" action="stop" />
+    </target>
+    <target name="usage">
+	<echo> Usage:
+    ======== Targets by execution granularity =========
+
+    ant clean (Cleans all ws tests)
+    ant build (builds all ws tests)
+    ant setup (setup all required resources)
+    ant deploy (deploy all test apps)
+    ant run (Executes all tests)
+    ant undeploy (undeploy all test apps)
+    ant unsetup (remove all set resources)
+
+    ======== Targets by technology =========
+
+    ant servletws (Executes the servletws tests)
+    ant all (Executes all the ws tests)
+
+    ===== Targets by technoloy and execution granularity ======
+    Note: Run the command of the following type: 
+
+            % ant servletws -Dws-target=clean
+
+    to run the 'clean' target for 'servletws' tests
+	</echo>
+    </target>
+</project>

@@ -1,0 +1,849 @@
+Results of deployment dev tests with v3
+===========================================================
+
+1. Running with PE installation and EE installation on DAS
+
+PASS: 268 
+FAIL: 0
+UNKNOWN: 0
+
+[PASSED] servletonly : war/servletonly Test asadmin deploy (server)  
+[PASSED] servletonly : war/servletonly Test .reload (server)
+[PASSED] servletonly : war/servletonly Test asadmin redeploy (server)  
+[PASSED] servletonly : war/servletonly Test v3 asadmin redeploy (server)  
+[PASSED] servletonly : war/servletonly Test asadmin disable (server)  
+[PASSED] servletonly : war/servletonly Test asadmin enable (server)  
+[PASSED] servletonly : war/servletonly Test asadmin dotted disable ref (server) 
+[PASSED] servletonly : war/servletonly Test asadmin dotted enableref  (server)
+[PASSED] servletonly : war/servletonly Test asadmin dotted disable application (server)
+[PASSED] servletonly : war/servletonly Test asadmin dotted enable application (server)
+[PASSED] servletonly : war/servletonly Test asadmin dotted disable ref and application (server)
+[PASSED] servletonly : war/servletonly Test asadmin dotted disable ref and enable application (server)
+[PASSED] servletonly : war/servletonly Test asadmin dotted disable application and enable ref (server)
+[PASSED] servletonly : war/servletonly Test asadmin dotted enable application and enable ref (server)
+[PASSED] servletonly : war/servletonly Test asadmin deploy with runtime altdd (server)
+[PASSED] servletonly : war/servletonly Test jsr88 deploy (server)  
+[PASSED] servletonly : war/servletonly Test jsr88 stopped state (server)  
+[PASSED] servletonly : war/servletonly Test jsr88 started state (server)  
+[PASSED] servletonly : war/servletonly Test jsr88 redeploy stop (server)  
+[PASSED] servletonly : war/servletonly Test jsr88 redeploy start (server)  
+[PASSED] jsponly : war/jsponly Test asadmin deploy (server)  
+[PASSED] jsponly : war/jsponly Test asadmin redeploy (server)  
+[PASSED] jsponly : war/jsponly Test jsr88 deploy (server)  
+[PASSED] jsponly : war/jsponly Test jsr88 stopped state (server)  
+[PASSED] jsponly : war/jsponly Test jsr88 started state (server)  
+[PASSED] jsponly : war/jsponly Test jsr88 redeploy stop (server)  
+[PASSED] jsponly : war/jsponly Test jsr88 redeploy start (server)  
+[PASSED] htmlonly : war/htmlonly Test asadmin deploy (server)  
+[PASSED] htmlonly : war/htmlonly Test asadmin redeploy (server)  
+[PASSED] htmlonly : war/htmlonly Test asadmin disable (server)  
+[PASSED] htmlonly : war/htmlonly Test asadmin enable (server)  
+[PASSED] htmlonly : war/htmlonly Test jsr88 deploy (server)  
+[PASSED] htmlonly : war/htmlonly Test jsr88 stopped state (server)  
+[PASSED] htmlonly : war/htmlonly Test jsr88 started state (server)  
+[PASSED] htmlonly : war/htmlonly Test jsr88 redeploy (server)  
+[PASSED] webinflib : war/webinflib Test asadmin deploy (server)  
+[PASSED] webinflib : war/webinflib Test asadmin redeploy (server)  
+[PASSED] webinflib : war/webinflib Test jsr88 deploy (server)  
+[PASSED] webinflib : war/webinflib Test jsr88 stopped state (server)  
+[PASSED] webinflib : war/webinflib Test jsr88 started state (server)  
+[PASSED] webinflib : war/webinflib Test jsr88 redeploy (server)  
+[PASSED] deploydir : war/deploydir Test asadmin deploydir  
+[PASSED] deploydir : war/deploydir Test asadmin redeploydir  
+[PASSED] deploydir : war/deploydir Test asadmin v3 redeploydir  
+[PASSED] deploydir : war/deploydir Test asadmin v3 redeploy  
+[PASSED] deploydir : war/deploydir Test asadmin deploydir with a different context root  
+[PASSED] deploydir : war/deploydir Test asadmin redeploydir preserves context root  
+[PASSED] deploydir : war/deploydir Test v3 asadmin redeploydir preserves context root  
+[PASSED] deploydir : war/deploydir Test asadmin undeploydir  
+[PASSED] nojarexpansion : war/nojarexpansion Test asadmin deploy (server)  
+[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after deploy  
+[PASSED] nojarexpansion : war/nojarexpansion Test asadmin redeploy (server)  
+[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after redeploy  
+[PASSED] nojarexpansion : war/nojarexpansionTest jsr88 deploy (server)  
+[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after jsr88 deploy  
+[PASSED] nojarexpansion : war/nojarexpansion Test jsr88 redeploy (server)  
+[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after jsr88 redeploy  
+[PASSED] appmgt : war/appmgt Check app's original config [1.1] (server)  
+[PASSED] appmgt : war/appmgt Make sure a non-existent customization is absent [1.2] (server)  
+[PASSED] appmgt : war/appmgt Make sure a customization used during the test is absent when it should be [1.3] (server)  
+[PASSED] appmgt : war/appmgt Check app's original config plus additive customization [2.1] (server)  
+[PASSED] appmgt : war/appmgt Check for added env and param customization [3.1.1] (server)  
+[PASSED] appmgt : war/appmgt Check for env-entry in the web app's descr being (correctly) ignored [3.2.1] (server)  
+[PASSED] appmgt : war/appmgt Check for context-param in the web app's descr being (correctly) ignored [3.2.2] (server)  
+[PASSED] appmgt : war/appmgt Check for added env and param customization [4.1.1] (server)  
+[PASSED] appmgt : war/appmgt Check for env-entry in the web app's descr being (correctly) ignored [4.2.1] (server)  
+[PASSED] appmgt : war/appmgt Check for context-param in the web app's descr being (correctly) ignored [4.2.2] (server)  
+[PASSED] appmgt : war/appmgt Check for added env and param customization [5.1.1] (server)  
+[PASSED] appmgt : war/appmgt Check for env-entry in the web app's descr being (correctly) ignored [5.2.1] (server)  
+[PASSED] appmgt : war/appmgt Check for context-param in the web app's descr being (correctly) ignored [5.2.2] (server)  
+[PASSED] appmgt : war/appmgt Check app's original config [6.1] (server)  
+[PASSED] appmgt : war/appmgt Make sure a non-existent customization is absent [6.2] (server)  
+[PASSED] appmgt : war/appmgt Make sure a customization used during the test is absent when it should be [6.3] (server)  
+[PASSED] appmgt : war/appmgt Check app's original config [7.1] (server)  
+[PASSED] appmgt : war/appmgt Make sure a non-existent customization is absent [7.2] (server)  
+[PASSED] appmgt : war/appmgt Make sure a customization used during the test is absent when it should be [7.3] (server)  
+[PASSED] statelesshello : ejb/statelessejb Test asadmin deploy (server)  
+[PASSED] statelesshello : ejb/statelessejb Test asadmin redeploy (server)  
+[PASSED] statelesshello : ejb/statelessejb Test jsr88 deploy (server)  
+[PASSED] statelesshello : ejb/statelessejb Test jsr88 stopped state (server)  
+[PASSED] statelesshello : ejb/statelessejb Test jsr88 started state (server)  
+[PASSED] statelesshello : ejb/statelessejb Test jsr88 redeploy stop (server)  
+[PASSED] earwithwar : ear/earwithwar Test asadmin deploy (server)  
+[PASSED] earwithwar : ear/earwithwar Test asadmin redeploy (server)  
+[PASSED] earwithwar : ear/earwithwar Test asadmin disable (server)  
+[PASSED] earwithwar : ear/earwithwar Test asadmin enable (server)  
+[PASSED] earwithwar : ear/earwithwar Test asadmin deploy with altdd (server)
+[PASSED] earwithwar : ear/earwithwar Test jsr88 deploy (server)  
+[PASSED] earwithwar : ear/earwithwar Test jsr88 stopped state (server)  
+[PASSED] earwithwar : ear/earwithwar Test jsr88 started state (server)  
+[PASSED] earwithwar : ear/earwithwar Test jsr88 redeploy stop (server)  
+[PASSED] earwithwar : ear/earwithwar Test jsr88 redeploy start (server)  
+[PASSED] earwithejb : ear/earwithejb Test asadmin deploy (server)
+[PASSED] earwithejb : ear/earwithejb Test asadmin redeploy (server)
+[PASSED] earwithall2 : ear/earwithall2 Test asadmin deploy (server)  
+[PASSED] earwithall2 : ear/earwithall2 Test asadmin disable (server)  
+[PASSED] earwithall2 : ear/earwithall2 Test asadmin enable (server)  
+[PASSED] earwithall2 : ear/earwithall2 Test asadmin redeploy (server)  
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 deploy (server)  
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 stopped state (server)  
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 started state (server)  
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 redeploy stop (server)  
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 redeploy start (server)  
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 deploy using InputStream (server)  
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 redeploy using InputStream (server)  
+[PASSED] libClassPath : libClasspath Test asadmin deploy (server)  
+[PASSED] libclasspath2 : ear/libclasspath2 Testing for noLibUsed
+[PASSED] libclasspath2 : ear/libclasspath2 Testing for defaultLibUsed
+[PASSED] libclasspath2 : ear/libclasspath2 Testing for explicitLibWithDir
+[PASSED] manifestClassPath : libClasspath Test asadmin deploy (server)  
+[PASSED] appmgt : earwithall/appmgt Check app's original config [1.1] (server)  
+[PASSED] appmgt : earwithall/appmgt Make sure a non-existent customization is absent [1.2] (server)  
+[PASSED] appmgt : earwithall/appmgt Make sure a customization used during the test is absent when it should be [1.3] (server)  
+[PASSED] appmgt : earwithall/appmgt Check app's original config plus additive customization [2.1] (server)  
+[PASSED] appmgt : earwithall/appmgt Check for added env and param customization [3.1.1] (server)  
+[PASSED] appmgt : earwithall/appmgt Check for env-entry in the web app's descr being (correctly) ignored [3.2.1] (server)  
+[PASSED] appmgt : earwithapp/appmgt Check for context-param in the web app's descr being (correctly) ignored [3.2.2] (server)  
+[PASSED] appmgt : earwithall/appmgt Check for added env and param customization [4.1.1] (server)  
+[PASSED] appmgt : earwithall/appmgt Check for env-entry in the web app's descr being (correctly) ignored [4.2.1] (server)  
+[PASSED] appmgt : earwithapp/appmgt Check for context-param in the web app's descr being (correctly) ignored [4.2.2] (server)  
+[PASSED] appmgt : earwithall/appmgt Check for added env and param customization [5.1.1] (server)  
+[PASSED] appmgt : earwithall/appmgt Check for env-entry in the web app's descr being (correctly) ignored [5.2.1] (server)  
+[PASSED] appmgt : earwithapp/appmgt Check for context-param in the web app's descr being (correctly) ignored [5.2.2] (server)  
+[PASSED] appmgt : earwithall/appmgt Check app's original config [6.1] (server)  
+[PASSED] appmgt : earwithall/appmgt Make sure a non-existent customization is absent [6.2] (server)  
+[PASSED] appmgt : earwithall/appmgt Make sure a customization used during the test is absent when it should be [6.3] (server)  
+[PASSED] appmgt : earwithall/appmgt Check app's original config [7.1] (server)  
+[PASSED] appmgt : earwithall/appmgt Make sure a non-existent customization is absent [7.2] (server)  
+[PASSED] appmgt : earwithall/appmgt Make sure a customization used during the test is absent when it should be [7.3] (server)  
+[PASSED] simple : jsr88/war/simple deploy test  
+[PASSED] simple : jsr88/war/simple redeploy test  
+[PASSED] validation : dol/validation Test standalone war
+[PASSED] validation : dol/validation Test standalone ejb jar
+[PASSED] validation : dol/validation Test standalone rar
+[PASSED] validation : dol/validation Test standalone car
+[PASSED] validation : dol/validation Test ear
+[PASSED] validation : dol/validation Test ear
+[PASSED] validation : dol/validation Test WLS Ear
+[PASSED] validation : dol/validation Test WLS Ear2
+[PASSED] validation : dol/validation Test WLS Ear3
+[PASSED] override : dol/override Test
+[PASSED] session : ejb30/session Test asadmin deploy  
+[PASSED] session : ejb30/session Test asadmin redeploy  
+[PASSED] session2 : ejb30/session2 Test asadmin deploy  
+[PASSED] session2 : ejb30/session2 Test asadmin redeploy  
+[PASSED] webclient : ejb30/mdb/webClient Test asadmin deploy (server)  
+[PASSED] webclient : ejb30/mdb/webClient Test asadmin redeploy (server)  
+[PASSED] security : ejb30/security Test asadmin deploy  
+[PASSED] security : ejb30/security Test asadmin redeploy  
+[PASSED] xmloverride : ejb30/security Test asadmin deploy  
+[PASSED] xmloverride : ejb30/security Test asadmin redeploy  
+[PASSED] jsp : ejb30/war/jsp Test asadmin deploy  
+[PASSED] jsp : ejb30/war/jsp Test asadmin redeploy  
+[PASSED] servlet : ejb30/war/servlet Test asadmin deploy  
+[PASSED] servlet : ejb30/war/servlet Test asadmin redeploy  
+[PASSED] javamodule : ejb31/ejblite/javamodule Test asadmin deploy
+[PASSED] javamodule : ejb31/ejblite/javamodule Test asadmin redeploy
+[PASSED] no_appxml : descriptor_free/ear/no_appxml Test asadmin deploy  
+[PASSED] no_appxml : descriptor_free/ear/no_appxml Test asadmin re-deploy  
+[PASSED] dir_deploy : descriptor_free/ear/dir_deploy asadmin deploydir  
+[PASSED] dir_deploy : descriptor_free/ear/dir_deploy asadmin re-deploy  
+[PASSED] no_appxml_2 : descriptor_free/ear/no_appxml_2 Test asadmin deploy  
+[PASSED] no_appxml_2 : descriptor_free/ear/no_appxml_2 Test asadmin re-deploy  
+[PASSED] ear : directorydeploy/ear Test asadmin deploydir  
+[PASSED] ear : directorydeploy/ear Test asadmin redeploydir  
+[PASSED] ear : directorydeploy/ear Test asadmin undeploydir  
+[PASSED] earwithsuffix : directorydeploy/earWithSuffix Test asadmin deploydir  
+[PASSED] earwithsuffix : directorydeploy/earWithSuffix Test asadmin redeploydir  
+[PASSED] earwithsuffix : directorydeploy/earWithSuffix Test asadmin undeploydir  
+[PASSED] ejb : directorydeploy/ejb Test asadmin deploydir  
+[PASSED] ejb : directorydeploy/ejb Test asadmin redeploydir  
+[PASSED] ejb : directorydeploy/ejb Test asadmin undeploydir  
+[PASSED] ejbwithsuffix : directorydeploy/ejbWithSuffix Test asadmin deploydir  
+[PASSED] ejbwithsuffix : directorydeploy/ejbWithSuffix Test asadmin redeploydir  
+[PASSED] ejbwithsuffix : directorydeploy/ejbWithSuffix Test asadmin undeploydir  
+[PASSED] war : directorydeploy/war Test asadmin deploydir  
+[PASSED] war : directorydeploy/war Test asadmin redeploydir  
+[PASSED] war : directorydeploy/war Test asadmin undeploydir  
+[PASSED] warwithsuffix : directorydeploy/warWithSuffix Test asadmin deploydir  
+[PASSED] warwithsuffix : directorydeploy/warWithSuffix Test asadmin redeploydir  
+[PASSED] warwithsuffix : directorydeploy/warWithSuffix Test asadmin undeploydir
+[PASSED] simple-versioned-servlet : versioned.vs.unversioned(1) untagged - logID=1 (server)  
+[PASSED] simple-versioned-servlet : versioned.vs.unversioned(2) untagged - logID=2 (server)  
+[PASSED] simple-versioned-servlet : versioned.vs.unversioned(3) ALPHA-1.0.0 - logID=3 (server)  
+[PASSED] simple-versioned-servlet : deployment(1) untagged - logID=4 (server)  
+[PASSED] simple-versioned-servlet : deployment(2) ALPHA-1.0.0 - logID=5 (server)  
+[PASSED] simple-versioned-servlet : deployment(3) ALPHA-1.0.1 (enabled=false) - logID=6 (server)  
+[PASSED] simple-versioned-servlet : deployment(4) RC-1.0.0 (enabled=false) - logID=7 (server)  
+[PASSED] simple-versioned-servlet : deployment(5) RC-1.0.1 - logID=8 (server)  
+[PASSED] simple-versioned-servlet : deactivation(1) untagged - logID=9 (server)  
+[PASSED] simple-versioned-servlet : deactivation(2) ALPHA-1.0.0 - logID=10 (server)  
+[PASSED] simple-versioned-servlet : deactivation(3) ALPHA* - logID=11 (server)  
+[PASSED] simple-versioned-servlet : deactivation(4) * - logID=12 (server)  
+[PASSED] simple-versioned-servlet : redeployment(1) untagged - logID=13 (server)  
+[PASSED] simple-versioned-servlet : redeployment(2) untagged - logID=14 (server)  
+[PASSED] simple-versioned-servlet : redeployment(3) ALPHA-1.0.0 - logID=15 (server)  
+[PASSED] simple-versioned-servlet : redeployment(4) ALPHA-1.0.0 - logID=16 (server)  
+[PASSED] simple-versioned-servlet : undeployment(1) untagged - logID=17 - (server) - (fail expected)  
+[PASSED] simple-versioned-servlet : undeployment(2) ALPHA-1.0.0 - logID=18 - (server) - (fail expected)  
+[PASSED] simple-versioned-servlet : undeployment(3) ALPHA* - logID=19 - (server) - (fail expected)  
+[PASSED] simple-versioned-servlet : undeployment(4) * - logID=20 - (server) - (fail expected)  
+[PASSED] simple-versioned-servlet : sample.scenarios(1) - logID=21 (server)  
+[PASSED] simple-versioned-servlet : sample.scenarios(2) - logID=22 (server)  
+[PASSED] simple-versioned-servlet : sample.scenarios(3) - logID=23 (server)  
+[PASSED] simple-versioned-servlet : sample.scenarios(4) - logID=24 (server)  
+[PASSED] simple-versioned-servlet : sample.scenarios(5) - logID=25 (server)  
+[PASSED] simple-versioned-servlet : sample.scenarios(6) - logID=26 (server)  
+[PASSED] simple-versioned-servlet : sample.scenarios(7) - logID=27 - (server) - (fail expected)  
+[PASSED] simple-versioned-servlet : sample.scenarions(8) - logID=28 (server)  
+[PASSED] simple-versioned-servlet : sample.scenarios(9) - logID=29 - (server) - (fail expected)  
+[PASSED] simple-versioned-servlet : sample.scenarios(10) - logID=30 - (server) - (fail expected)  
+[PASSED] simple-versioned-servlet : switch(1) untagged - logID=31 (server)  
+[PASSED] simple-versioned-servlet : switch(2) ALPHA-1.0.0 - logID=32 (server)  
+[PASSED] simple-versioned-servlet : switch(3) ALPHA-1.0.1 - logID=33 (server)  
+[PASSED] simple-versioned-servlet : switch(4) RC-1.0.0 - logID=34 (server)  
+[PASSED] simple-versioned-servlet : switch(5) RC-1.0.1 - logID=35 (server)  
+[PASSED] simple-versioned-servlet : xml.version(1) - logID=36 - (server) - (sucess expected)  
+[PASSED] simple-versioned-servlet : xml.version(2) - logID=37 - (server) - (sucess expected)  
+[PASSED] simple-versioned-servlet : xml.version(3) deploy jsr88 - logID=38 - (server) - (sucess expected)  
+[PASSED] simple-versioned-servlet : xml.version(4) deploy jsr88 - logID=39 - (server) - (sucess expected)  
+[PASSED] simple-versioned-servlet : xml.version(5) redeploy jsr88 - logID=40 - (server) - (sucess expected)  
+[PASSED] simple-versioned-servlet : xml.version(6) autodeploy - logID=41 - (server) - (sucess expected)  
+[PASSED] simple-versioned-servlet : xml.version(7) deploy-stream jsr88 - logID=42 - (server) - (sucess expected)
+[PASSED] simple-versioned-servlet : xml.version(8) deploy-stream jsr88 - logID=43 - (server) - (sucess expected)
+[PASSED] simple-versioned-servlet : get-client-stubs(1) untagged - logID=42 - (server) - (sucess expected)  
+[PASSED] simple-versioned-servlet : get-client-stubs(2) ALPHA-1.0.0 - logID=43 - (server) - (sucess expected)  
+[PASSED] simple-versioned-appclient : xml.version(1) - logID=1 - (server) - (sucess expected)  
+[PASSED] simple-versioned-appclient : xml.version(2) - logID=2 - (server) - (sucess expected)  
+[PASSED] simple-versioned-appclient : xml.version(3) deploy jsr88 - logID=3 - (server) - (sucess expected)  
+[PASSED] simple-versioned-appclient : xml.version(4) deploy jsr88 - logID=4 - (server) - (sucess expected)  
+[PASSED] simple-versioned-appclient : xml.version(5) redeploy jsr88 - logID=5 - (server) - (sucess expected)  
+[PASSED] simple-versioned-appclient : xml.version(6) autodeploy - logID=6 - (server) - (sucess expected)  
+[PASSED] simple-versioned-appclient : xml.version(7) deploy-stream jsr88 - logID=7 - (server) - (sucess expected)
+[PASSED] simple-versioned-appclient : xml.version(8) deploy-stream jsr88 - logID=8 - (server) - (sucess expected
+[PASSED] simple-versioned-appclient : sample.scenarios(1) - logID=7 (server)  
+[PASSED] simple-versioned-appclient : sample.scenarios(2) - logID=8 (server)  
+[PASSED] simple-versioned-appclient : sample.scenarios(3) - logID=9 (server)  
+[PASSED] simple-versioned-appclient : sample.scenarios(4) - logID=10 (server)  
+[PASSED] simple-versioned-appclient : sample.scenarios(5) - logID=11 (server)  
+[PASSED] simple-versioned-appclient : sample.scenarios(6) - logID=12 (server)  
+[PASSED] simple-versioned-appclient : sample.scenarios(7) - logID=13 - (server) - (fail expected)  
+[PASSED] simple-versioned-appclient : sample.scenarions(8) - logID=14 (server)  
+[PASSED] simple-versioned-appclient : sample.scenarios(9) - logID=15 - (server) - (fail expected)  
+[PASSED] simple-versioned-appclient : sample.scenarios(10) - logID=16 - (server) - (fail expected)  
+[PASSED] simple-versioned-ejb : xml.version(1) - logID=1 - (server) - (sucess expected)  
+[PASSED] simple-versioned-ejb : xml.version(2) - logID=2 - (server) - (sucess expected)  
+[PASSED] simple-versioned-ejb : xml.version(3) deploy jsr88 - logID=3 - (server) - (sucess expected)  
+[PASSED] simple-versioned-ejb : xml.version(4) deploy jsr88 - logID=4 - (server) - (sucess expected)  
+[PASSED] simple-versioned-ejb : xml.version(5) redeploy jsr88 - logID=5 - (server) - (sucess expected)  
+[PASSED] simple-versioned-ejb : xml.version(6) autodeploy - logID=6 - (server) - (sucess expected)  
+[PASSED] simple-versioned-ejb : xml.version(7) deploy-stream jsr88 - logID=7 - (server) - (sucess expected)
+[PASSED] simple-versioned-ejb : xml.version(8) deploy-stream jsr88 - logID=8 - (server) - (sucess expected)
+[PASSED] simple-versioned-ear : xml.version(1) - logID=1 - (server) - (sucess expected)  
+[PASSED] simple-versioned-ear : xml.version(2) - logID=2 - (server) - (sucess expected)  
+[PASSED] simple-versioned-ear : xml.version(3) deploy jsr88 - logID=3 - (server) - (sucess expected)  
+[PASSED] simple-versioned-ear : xml.version(4) deploy jsr88 - logID=4 - (server) - (sucess expected)  
+[PASSED] simple-versioned-ear : xml.version(5) redeploy jsr88 - logID=5 - (server) - (sucess expected)  
+[PASSED] simple-versioned-ear : xml.version(6) autodeploy - logID=6 - (server) - (sucess expected)
+[PASSED] simple-versioned-ear : xml.version(7) deploy-stream jsr88 - logID=7 - (server) - (sucess expected)
+[PASSED] simple-versioned-ear : xml.version(8) deploy-stream jsr88 - logID=8 - (server) - (sucess expected)
+[PASSED] simple : osgi/simple Test asadmin deploy (server)
+[PASSED] simple : osgi/simple Test asadmin redeploy (server)
+[PASSED] simple : osgi/simple Test asadmin disable (server)
+[PASSED] simple : osgi/simple Test asadmin enable (server)
+[PASSED] earwithall2 : test deployment order
+[PASSED] AppClientAnnotationTest : testDescriptors,
+[PASSED] EjbAnnotationTest : testDescriptors,
+[PASSED] InheritanceAnnotationTest : testDescriptors,
+[PASSED] WebAnnotationTest : testDescriptors,
+
+===========================================================
+
+2. Running with EE installation on Remote Instance 
+   (DEPL_TARGET=SERVER)
+
+PASS: 196
+FAIL: 0
+UNKNOWN: 0
+
+[PASSED] servletonly : war/servletonly Test asadmin deploy (server)
+[PASSED] servletonly : war/servletonly Test asadmin redeploy (server)
+[PASSED] servletonly : war/servletonly Test v3 asadmin redeploy (server)
+[PASSED] servletonly : war/servletonly Test asadmin disable (server)
+[PASSED] servletonly : war/servletonly Test asadmin enable (server)
+[PASSED] servletonly : war/servletonly Test asadmin dotted disable ref (server) 
+[PASSED] servletonly : war/servletonly Test asadmin dotted enableref  (server)
+[PASSED] servletonly : war/servletonly Test asadmin dotted disable application (server)
+[PASSED] servletonly : war/servletonly Test asadmin dotted enable application (server)
+[PASSED] servletonly : war/servletonly Test asadmin dotted disable ref and application (server)
+[PASSED] servletonly : war/servletonly Test asadmin dotted disable ref and enable application (server)
+[PASSED] servletonly : war/servletonly Test asadmin dotted disable application and enable ref (server)
+[PASSED] servletonly : war/servletonly Test asadmin dotted enable application and enable ref (server)
+[PASSED] servletonly : war/servletonly Test asadmin deploy with runtime altdd (server)
+[PASSED] servletonly : war/servletonly Test jsr88 deploy (server)
+[PASSED] servletonly : war/servletonly Test jsr88 stopped state (server)
+[PASSED] servletonly : war/servletonly Test jsr88 started state (server)
+[PASSED] servletonly : war/servletonly Test jsr88 redeploy stop (server)
+[PASSED] servletonly : war/servletonly Test jsr88 redeploy start (server)
+[PASSED] jsponly : war/jsponly Test asadmin deploy (server)
+[PASSED] jsponly : war/jsponly Test asadmin redeploy (server)
+[PASSED] jsponly : war/jsponly Test jsr88 deploy (server)
+[PASSED] jsponly : war/jsponly Test jsr88 stopped state (server)
+[PASSED] jsponly : war/jsponly Test jsr88 started state (server)
+[PASSED] jsponly : war/jsponly Test jsr88 redeploy stop (server)
+[PASSED] jsponly : war/jsponly Test jsr88 redeploy start (server)
+[PASSED] htmlonly : war/htmlonly Test asadmin deploy (server)
+[PASSED] htmlonly : war/htmlonly Test asadmin redeploy (server)
+[PASSED] htmlonly : war/htmlonly Test asadmin disable (server)
+[PASSED] htmlonly : war/htmlonly Test asadmin enable (server)
+[PASSED] htmlonly : war/htmlonly Test jsr88 deploy (server)
+[PASSED] htmlonly : war/htmlonly Test jsr88 stopped state (server)
+[PASSED] htmlonly : war/htmlonly Test jsr88 started state (server)
+[PASSED] htmlonly : war/htmlonly Test jsr88 redeploy (server)
+[PASSED] webinflib : war/webinflib Test asadmin deploy (server)
+[PASSED] webinflib : war/webinflib Test asadmin redeploy (server)
+[PASSED] webinflib : war/webinflib Test jsr88 deploy (server)
+[PASSED] webinflib : war/webinflib Test jsr88 stopped state (server)
+[PASSED] webinflib : war/webinflib Test jsr88 started state (server)
+[PASSED] webinflib : war/webinflib Test jsr88 redeploy (server)
+[PASSED] nojarexpansion : war/nojarexpansion Test asadmin deploy (server)
+[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after deploy
+[PASSED] nojarexpansion : war/nojarexpansion Test asadmin redeploy (server)
+[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after redeploy
+[PASSED] nojarexpansion : war/nojarexpansionTest jsr88 deploy (server)
+[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after jsr88 deploy
+[PASSED] nojarexpansion : war/nojarexpansion Test jsr88 redeploy (server)
+[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after jsr88 redeploy
+[PASSED] statelesshello : ejb/statelessejb Test asadmin deploy (server)
+[PASSED] statelesshello : ejb/statelessejb Test asadmin redeploy (server)
+[PASSED] statelesshello : ejb/statelessejb Test jsr88 deploy (server)
+[PASSED] statelesshello : ejb/statelessejb Test jsr88 stopped state (server)
+[PASSED] statelesshello : ejb/statelessejb Test jsr88 started state (server)
+[PASSED] statelesshello : ejb/statelessejb Test jsr88 redeploy stop (server)
+[PASSED] earwithwar : ear/earwithwar Test asadmin deploy (server)
+[PASSED] earwithwar : ear/earwithwar Test asadmin redeploy (server)
+[PASSED] earwithwar : ear/earwithwar Test asadmin disable (server)
+[PASSED] earwithwar : ear/earwithwar Test asadmin enable (server)
+[PASSED] earwithwar : ear/earwithwar Test asadmin deploy with altdd (server)
+[PASSED] earwithwar : ear/earwithwar Test jsr88 deploy (server)
+[PASSED] earwithwar : ear/earwithwar Test jsr88 stopped state (server)
+[PASSED] earwithwar : ear/earwithwar Test jsr88 started state (server)
+[PASSED] earwithwar : ear/earwithwar Test jsr88 redeploy stop (server)
+[PASSED] earwithwar : ear/earwithwar Test jsr88 redeploy start (server)
+[PASSED] earwithejb : ear/earwithejb Test asadmin deploy (server)
+[PASSED] earwithejb : ear/earwithejb Test asadmin redeploy (server)
+[PASSED] earwithall2 : ear/earwithall2 Test asadmin deploy (server)
+[PASSED] earwithall2 : ear/earwithall2 Test asadmin disable (server)
+[PASSED] earwithall2 : ear/earwithall2 Test asadmin enable (server)
+[PASSED] earwithall2 : ear/earwithall2 Test asadmin redeploy (server)
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 deploy (server)
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 stopped state (server)
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 started state (server)
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 redeploy stop (server)
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 redeploy start (server)
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 deploy using InputStream (server)
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 redeploy using InputStream (server)
+[PASSED] earwithall2 : ear/earwithall2 Test create-application-ref (server)
+[PASSED] earwithall2 : ear/earwithall2 Test delete-application-ref (server)
+[PASSED] earwithall2 : ear/earwithall2 Test redeploy to domain (server)
+[PASSED] earwithall2 : ear/earwithall2 Test disable on domain (server)
+[PASSED] earwithall2 : ear/earwithall2 Test enable domain (server)
+[PASSED] uniquecr : ear/uniquecr Test1  (server)
+[PASSED] uniquecr : ear/uniquecr Test2 (server)
+[PASSED] libClassPath : libClasspath Test asadmin deploy (server)
+[PASSED] manifestClassPath : libClasspath Test asadmin deploy (server)
+[PASSED] simple : jsr88/war/simple deploy test
+[PASSED] simple : jsr88/war/simple redeploy test
+[PASSED] validation : dol/validation Test standalone war
+[PASSED] validation : dol/validation Test standalone ejb jar
+[PASSED] validation : dol/validation Test standalone rar
+[PASSED] validation : dol/validation Test standalone car
+[PASSED] validation : dol/validation Test ear
+[PASSED] validation : dol/validation Test ear
+[PASSED] validation : dol/validation Test WLS Ear
+[PASSED] validation : dol/validation Test WLS Ear2
+[PASSED] validation : dol/validation Test WLS Ear3
+[PASSED] override : dol/override Test
+[PASSED] session : ejb30/session Test asadmin deploy  
+[PASSED] session : ejb30/session Test asadmin redeploy  
+[PASSED] session2 : ejb30/session2 Test asadmin deploy  
+[PASSED] session2 : ejb30/session2 Test asadmin redeploy   
+[PASSED] security : ejb30/security Test asadmin deploy
+[PASSED] security : ejb30/security Test asadmin redeploy
+[PASSED] xmloverride : ejb30/security Test asadmin deploy
+[PASSED] xmloverride : ejb30/security Test asadmin redeploy
+[PASSED] jsp : ejb30/war/jsp Test asadmin deploy
+[PASSED] jsp : ejb30/war/jsp Test asadmin redeploy
+[PASSED] servlet : ejb30/war/servlet Test asadmin deploy
+[PASSED] servlet : ejb30/war/servlet Test asadmin redeploy
+[PASSED] javamodule : ejb31/ejblite/javamodule Test asadmin deploy
+[PASSED] javamodule : ejb31/ejblite/javamodule Test asadmin redeploy
+[PASSED] no_appxml : descriptor_free/ear/no_appxml Test asadmin deploy  
+[PASSED] no_appxml : descriptor_free/ear/no_appxml Test asadmin re-deploy
+[PASSED] no_appxml_2 : descriptor_free/ear/no_appxml_2 Test asadmin deploy  
+[PASSED] no_appxml_2 : descriptor_free/ear/no_appxml_2 Test asadmin re-deploy
+[PASSED] simple-versioned-servlet : versioned.vs.unversioned(1) untagged - logID=1 (server)  
+[PASSED] simple-versioned-servlet : versioned.vs.unversioned(2) untagged - logID=2 (server)  
+[PASSED] simple-versioned-servlet : versioned.vs.unversioned(3) ALPHA-1.0.0 - logID=3 (server)  
+[PASSED] simple-versioned-servlet : deployment(1) untagged - logID=4 (server)  
+[PASSED] simple-versioned-servlet : deployment(2) ALPHA-1.0.0 - logID=5 (server)  
+[PASSED] simple-versioned-servlet : deployment(3) ALPHA-1.0.1 (enabled=false) - logID=6 (server)  
+[PASSED] simple-versioned-servlet : deployment(4) RC-1.0.0 (enabled=false) - logID=7 (server)  
+[PASSED] simple-versioned-servlet : deployment(5) RC-1.0.1 - logID=8 (server)  
+[PASSED] simple-versioned-servlet : deactivation(1) untagged - logID=9 (server)  
+[PASSED] simple-versioned-servlet : deactivation(2) ALPHA-1.0.0 - logID=10 (server)  
+[PASSED] simple-versioned-servlet : deactivation(3) ALPHA* - logID=11 (server)  
+[PASSED] simple-versioned-servlet : deactivation(4) * - logID=12 (server)  
+[PASSED] simple-versioned-servlet : redeployment(1) untagged - logID=13 (server)  
+[PASSED] simple-versioned-servlet : redeployment(2) untagged - logID=14 (server)  
+[PASSED] simple-versioned-servlet : redeployment(3) ALPHA-1.0.0 - logID=15 (server)  
+[PASSED] simple-versioned-servlet : redeployment(4) ALPHA-1.0.0 - logID=16 (server)  
+[PASSED] simple-versioned-servlet : undeployment(1) untagged - logID=17 - (depltest-server) - (fail expected)  
+[PASSED] simple-versioned-servlet : undeployment(2) ALPHA-1.0.0 - logID=18 - (depltest-server) - (fail expected)  
+[PASSED] simple-versioned-servlet : undeployment(3) ALPHA* - logID=19 - (depltest-server) - (fail expected)  
+[PASSED] simple-versioned-servlet : undeployment(4) * - logID=20 - (depltest-server) - (fail expected)  
+[PASSED] simple-versioned-servlet : sample.scenarios(1) - logID=21 (server)  
+[PASSED] simple-versioned-servlet : sample.scenarios(2) - logID=22 (server)  
+[PASSED] simple-versioned-servlet : sample.scenarios(3) - logID=23 (server)  
+[PASSED] simple-versioned-servlet : sample.scenarios(4) - logID=24 (server)  
+[PASSED] simple-versioned-servlet : sample.scenarios(5) - logID=25 (server)  
+[PASSED] simple-versioned-servlet : sample.scenarios(6) - logID=26 (server)  
+[PASSED] simple-versioned-servlet : sample.scenarios(7) - logID=27 - (depltest-server) - (fail expected)  
+[PASSED] simple-versioned-servlet : sample.scenarions(8) - logID=28 (server)  
+[PASSED] simple-versioned-servlet : sample.scenarios(9) - logID=29 - (depltest-server) - (fail expected)  
+[PASSED] simple-versioned-servlet : sample.scenarios(10) - logID=30 - (depltest-server) - (fail expected)  
+[PASSED] simple-versioned-servlet : switch(1) untagged - logID=31 (server)  
+[PASSED] simple-versioned-servlet : switch(2) ALPHA-1.0.0 - logID=32 (server)  
+[PASSED] simple-versioned-servlet : switch(3) ALPHA-1.0.1 - logID=33 (server)  
+[PASSED] simple-versioned-servlet : switch(4) RC-1.0.0 - logID=34 (server)  
+[PASSED] simple-versioned-servlet : switch(5) RC-1.0.1 - logID=35 (server)  
+[PASSED] simple-versioned-servlet : xml.version(1) - logID=36 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-servlet : xml.version(2) - logID=37 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-servlet : xml.version(3) deploy jsr88 - logID=38 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-servlet : xml.version(4) deploy jsr88 - logID=39 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-servlet : xml.version(5) redeploy jsr88 - logID=40 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-servlet : xml.version(7) deploy-stream jsr88 - logID=41 - (depltest-server) - (sucess expected)
+[PASSED] simple-versioned-servlet : xml.version(8) deploy-stream jsr88 - logID=42 - (depltest-server) - (sucess expected)
+[PASSED] simple-versioned-appclient : xml.version(1) - logID=1 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-appclient : xml.version(2) - logID=2 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-appclient : xml.version(3) deploy jsr88 - logID=3 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-appclient : xml.version(4) deploy jsr88 - logID=4 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-appclient : xml.version(5) redeploy jsr88 - logID=5 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-appclient : xml.version(7) deploy-stream jsr88 - logID=6 - (depltest-server) - (sucess expected)
+[PASSED] simple-versioned-appclient : xml.version(8) deploy-stream jsr88 - logID=7 - (depltest-server) - (sucess expected)
+[PASSED] simple-versioned-appclient : sample.scenarios(1) - logID=6 (server)  
+[PASSED] simple-versioned-appclient : sample.scenarios(2) - logID=7 (server)  
+[PASSED] simple-versioned-appclient : sample.scenarios(3) - logID=8 (server)  
+[PASSED] simple-versioned-appclient : sample.scenarios(4) - logID=9 (server)  
+[PASSED] simple-versioned-appclient : sample.scenarios(5) - logID=10 (server)  
+[PASSED] simple-versioned-appclient : sample.scenarios(6) - logID=11 (server)  
+[PASSED] simple-versioned-appclient : sample.scenarios(7) - logID=12 - (depltest-server) - (fail expected)  
+[PASSED] simple-versioned-appclient : sample.scenarions(8) - logID=13 (server)  
+[PASSED] simple-versioned-appclient : sample.scenarios(9) - logID=14 - (depltest-server) - (fail expected)  
+[PASSED] simple-versioned-appclient : sample.scenarios(10) - logID=15 - (depltest-server) - (fail expected)  
+[PASSED] simple-versioned-ejb : xml.version(1) - logID=1 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-ejb : xml.version(2) - logID=2 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-ejb : xml.version(3) deploy jsr88 - logID=3 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-ejb : xml.version(4) deploy jsr88 - logID=4 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-ejb : xml.version(5) redeploy jsr88 - logID=5 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-ejb : xml.version(7) deploy-stream jsr88 - logID=6 - (depltest-server) - (sucess expected)
+[PASSED] simple-versioned-ejb : xml.version(8) deploy-stream jsr88 - logID=7 - (depltest-server) - (sucess expected)
+[PASSED] simple-versioned-ear : xml.version(1) - logID=1 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-ear : xml.version(2) - logID=2 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-ear : xml.version(3) deploy jsr88 - logID=3 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-ear : xml.version(4) deploy jsr88 - logID=4 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-ear : xml.version(5) redeploy jsr88 - logID=5 - (depltest-server) - (sucess expected)
+[PASSED] simple-versioned-ear : xml.version(7) deploy-stream jsr88 - logID=6 - (depltest-server) - (sucess expected)
+[PASSED] simple-versioned-ear : xml.version(8) deploy-stream jsr88 - logID=7 - (depltest-server) - (sucess expected)
+[PASSED] simple : osgi/simple Test asadmin deploy (server)
+[PASSED] simple : osgi/simple Test asadmin redeploy (server)
+[PASSED] simple : osgi/simple Test asadmin disable (server)
+[PASSED] simple : osgi/simple Test asadmin enable (server)
+[PASSED] AppClientAnnotationTest : testDescriptors,
+[PASSED] EjbAnnotationTest : testDescriptors,
+[PASSED] InheritanceAnnotationTest : testDescriptors,
+[PASSED] WebAnnotationTest : testDescriptors,
+===========================================================
+
+3. Running with EE installation on Remote Instance and Cluster
+   (DEPL_TARGET=CLUSTER)
+
+PASS: 354
+FAIL: 0
+UNKNOWN: 0
+
+[PASSED] servletonly : war/servletonly Test asadmin deploy (server)
+[PASSED] servletonly : war/servletonly Test asadmin deploy (cluster-inst1)
+[PASSED] servletonly : war/servletonly Test asadmin redeploy (server)
+[PASSED] servletonly : war/servletonly Test asadmin redeploy (cluster-inst1)
+[PASSED] servletonly : war/servletonly Test v3 asadmin redeploy (server)
+[PASSED] servletonly : war/servletonly Test v3 asadmin redeploy (cluster-inst1) 
+[PASSED] servletonly : war/servletonly Test asadmin disable (server)
+[PASSED] servletonly : war/servletonly Test asadmin disable (cluster-inst1)
+[PASSED] servletonly : war/servletonly Test asadmin enable (server)
+[PASSED] servletonly : war/servletonly Test asadmin enable (cluster-inst1)
+[PASSED] servletonly : war/servletonly Test asadmin dotted disable ref (server) 
+[PASSED] servletonly : war/servletonly Test asadmin dotted disable ref (cluster-inst1)
+[PASSED] servletonly : war/servletonly Test asadmin dotted enableref  (server)
+[PASSED] servletonly : war/servletonly Test asadmin dotted enableref  (cluster-inst1)
+[PASSED] servletonly : war/servletonly Test asadmin dotted disable application (server)
+[PASSED] servletonly : war/servletonly Test asadmin dotted disable application (cluster-inst1)
+[PASSED] servletonly : war/servletonly Test asadmin dotted enable application (server)
+[PASSED] servletonly : war/servletonly Test asadmin dotted enable application (cluster-inst1)
+[PASSED] servletonly : war/servletonly Test asadmin dotted disable ref and application (server)
+[PASSED] servletonly : war/servletonly Test asadmin dotted disable ref and application (cluster-inst1)
+[PASSED] servletonly : war/servletonly Test asadmin dotted disable ref and enable application (server)
+[PASSED] servletonly : war/servletonly Test asadmin dotted disable ref and enable application (cluster-inst1)
+[PASSED] servletonly : war/servletonly Test asadmin dotted disable application and enable ref (server)
+[PASSED] servletonly : war/servletonly Test asadmin dotted disable application and enable ref (cluster-inst1)
+[PASSED] servletonly : war/servletonly Test asadmin dotted enable application and enable ref (server)
+[PASSED] servletonly : war/servletonly Test asadmin dotted enable application and enable ref (cluster-inst1)
+[PASSED] servletonly : war/servletonly Test asadmin deploy with runtime altdd (server)
+[PASSED] servletonly : war/servletonly Test asadmin deploy with runtime altdd (cluster-inst1)
+[PASSED] servletonly : war/servletonly Test jsr88 deploy (server)
+[PASSED] servletonly : war/servletonly Test jsr88 deploy (cluster-inst1)
+[PASSED] servletonly : war/servletonly Test jsr88 stopped state (server)
+[PASSED] servletonly : war/servletonly Test jsr88 stopped state (cluster-inst1) 
+[PASSED] servletonly : war/servletonly Test jsr88 started state (server)
+[PASSED] servletonly : war/servletonly Test jsr88 started state (cluster-inst1) 
+[PASSED] servletonly : war/servletonly Test jsr88 redeploy stop (server)
+[PASSED] servletonly : war/servletonly Test jsr88 redeploy stop (cluster-inst1) 
+[PASSED] servletonly : war/servletonly Test jsr88 redeploy start (server)
+[PASSED] servletonly : war/servletonly Test jsr88 redeploy start (cluster-inst1)
+[PASSED] jsponly : war/jsponly Test asadmin deploy (server)
+[PASSED] jsponly : war/jsponly Test asadmin deploy (cluster-inst1)
+[PASSED] jsponly : war/jsponly Test asadmin redeploy (server)
+[PASSED] jsponly : war/jsponly Test asadmin redeploy (cluster-inst1)
+[PASSED] jsponly : war/jsponly Test jsr88 deploy (server)
+[PASSED] jsponly : war/jsponly Test jsr88 deploy (cluster-inst1)
+[PASSED] jsponly : war/jsponly Test jsr88 stopped state (server)
+[PASSED] jsponly : war/jsponly Test jsr88 stopped state (cluster-inst1)
+[PASSED] jsponly : war/jsponly Test jsr88 started state (server)
+[PASSED] jsponly : war/jsponly Test jsr88 started state (cluster-inst1)
+[PASSED] jsponly : war/jsponly Test jsr88 redeploy stop (server)
+[PASSED] jsponly : war/jsponly Test jsr88 redeploy stop (cluster-inst1)
+[PASSED] jsponly : war/jsponly Test jsr88 redeploy start (server)
+[PASSED] jsponly : war/jsponly Test jsr88 redeploy start (cluster-inst1)
+[PASSED] htmlonly : war/htmlonly Test asadmin deploy (server)
+[PASSED] htmlonly : war/htmlonly Test asadmin deploy (cluster-inst1)
+[PASSED] htmlonly : war/htmlonly Test asadmin redeploy (server)
+[PASSED] htmlonly : war/htmlonly Test asadmin redeploy (cluster-inst1)
+[PASSED] htmlonly : war/htmlonly Test asadmin disable (server)
+[PASSED] htmlonly : war/htmlonly Test asadmin disable (cluster-inst1)
+[PASSED] htmlonly : war/htmlonly Test asadmin enable (server)
+[PASSED] htmlonly : war/htmlonly Test asadmin enable (cluster-inst1)
+[PASSED] htmlonly : war/htmlonly Test jsr88 deploy (server)
+[PASSED] htmlonly : war/htmlonly Test jsr88 deploy (cluster-inst1)
+[PASSED] htmlonly : war/htmlonly Test jsr88 stopped state (server)
+[PASSED] htmlonly : war/htmlonly Test jsr88 stopped state (cluster-inst1)
+[PASSED] htmlonly : war/htmlonly Test jsr88 started state (server)
+[PASSED] htmlonly : war/htmlonly Test jsr88 started state (cluster-inst1)
+[PASSED] htmlonly : war/htmlonly Test jsr88 redeploy (server)
+[PASSED] htmlonly : war/htmlonly Test jsr88 redeploy (cluster-inst1)
+[PASSED] webinflib : war/webinflib Test asadmin deploy (server)
+[PASSED] webinflib : war/webinflib Test asadmin deploy (cluster-inst1)
+[PASSED] webinflib : war/webinflib Test asadmin redeploy (server)
+[PASSED] webinflib : war/webinflib Test asadmin redeploy (cluster-inst1)
+[PASSED] webinflib : war/webinflib Test jsr88 deploy (server)
+[PASSED] webinflib : war/webinflib Test jsr88 deploy (cluster-inst1)
+[PASSED] webinflib : war/webinflib Test jsr88 stopped state (server)
+[PASSED] webinflib : war/webinflib Test jsr88 stopped state (cluster-inst1)
+[PASSED] webinflib : war/webinflib Test jsr88 started state (server)
+[PASSED] webinflib : war/webinflib Test jsr88 started state (cluster-inst1)
+[PASSED] webinflib : war/webinflib Test jsr88 redeploy (server)
+[PASSED] webinflib : war/webinflib Test jsr88 redeploy (cluster-inst1)
+[PASSED] nojarexpansion : war/nojarexpansion Test asadmin deploy (server)
+[PASSED] nojarexpansion : war/nojarexpansion Test asadmin deploy (cluster-inst1)
+[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after deploy
+[PASSED] nojarexpansion : war/nojarexpansion Test asadmin redeploy (server)
+[PASSED] nojarexpansion : war/nojarexpansion Test asadmin redeploy (cluster-inst1)
+[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after redeploy
+[PASSED] nojarexpansion : war/nojarexpansionTest jsr88 deploy (server)
+[PASSED] nojarexpansion : war/nojarexpansionTest jsr88 deploy (cluster-inst1)
+[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after jsr88 deploy
+[PASSED] nojarexpansion : war/nojarexpansion Test jsr88 redeploy (server)
+[PASSED] nojarexpansion : war/nojarexpansion Test jsr88 redeploy (cluster-inst1)
+[PASSED] nojarexpansion : war/nojarexpansion Test verify jar was not expanded after jsr88 redeploy
+[PASSED] statelesshello : ejb/statelessejb Test asadmin deploy (server)
+[PASSED] statelesshello : ejb/statelessejb Test asadmin deploy (cluster-inst1)
+[PASSED] statelesshello : ejb/statelessejb Test asadmin redeploy (server)
+[PASSED] statelesshello : ejb/statelessejb Test asadmin redeploy (cluster-inst1)
+[PASSED] statelesshello : ejb/statelessejb Test jsr88 deploy (server)
+[PASSED] statelesshello : ejb/statelessejb Test jsr88 deploy (cluster-inst1)
+[PASSED] statelesshello : ejb/statelessejb Test jsr88 stopped state (server)
+[PASSED] statelesshello : ejb/statelessejb Test jsr88 stopped state (cluster-inst1)
+[PASSED] statelesshello : ejb/statelessejb Test jsr88 started state (server)
+[PASSED] statelesshello : ejb/statelessejb Test jsr88 started state (cluster-inst1)
+[PASSED] statelesshello : ejb/statelessejb Test jsr88 redeploy stop (server)
+[PASSED] statelesshello : ejb/statelessejb Test jsr88 redeploy stop (cluster-inst1)
+[PASSED] earwithwar : ear/earwithwar Test asadmin deploy (server)
+[PASSED] earwithwar : ear/earwithwar Test asadmin deploy (cluster-inst1)
+[PASSED] earwithwar : ear/earwithwar Test asadmin redeploy (server)
+[PASSED] earwithwar : ear/earwithwar Test asadmin redeploy (cluster-inst1)
+[PASSED] earwithwar : ear/earwithwar Test asadmin disable (server)
+[PASSED] earwithwar : ear/earwithwar Test asadmin disable (cluster-inst1)
+[PASSED] earwithwar : ear/earwithwar Test asadmin enable (server)
+[PASSED] earwithwar : ear/earwithwar Test asadmin enable (cluster-inst1)
+[PASSED] earwithwar : ear/earwithwar Test asadmin deploy with altdd (server)
+[PASSED] earwithwar : ear/earwithwar Test asadmin deploy with altdd (cluster-inst1)
+[PASSED] earwithwar : ear/earwithwar Test jsr88 deploy (server)
+[PASSED] earwithwar : ear/earwithwar Test jsr88 deploy (cluster-inst1)
+[PASSED] earwithwar : ear/earwithwar Test jsr88 stopped state (server)
+[PASSED] earwithwar : ear/earwithwar Test jsr88 stopped state (cluster-inst1)
+[PASSED] earwithwar : ear/earwithwar Test jsr88 started state (server)
+[PASSED] earwithwar : ear/earwithwar Test jsr88 started state (cluster-inst1)
+[PASSED] earwithwar : ear/earwithwar Test jsr88 redeploy stop (server)
+[PASSED] earwithwar : ear/earwithwar Test jsr88 redeploy stop (cluster-inst1)
+[PASSED] earwithwar : ear/earwithwar Test jsr88 redeploy start (server)
+[PASSED] earwithwar : ear/earwithwar Test jsr88 redeploy start (cluster-inst1)
+[PASSED] earwithejb : ear/earwithejb Test asadmin deploy (server)
+[PASSED] earwithejb : ear/earwithejb Test asadmin deploy (cluster-inst1)
+[PASSED] earwithejb : ear/earwithejb Test asadmin redeploy (server)
+[PASSED] earwithejb : ear/earwithejb Test asadmin redeploy (cluster-inst1)
+[PASSED] earwithall2 : ear/earwithall2 Test asadmin deploy (server)
+[PASSED] earwithall2 : ear/earwithall2 Test asadmin deploy (cluster-inst1)
+[PASSED] earwithall2 : ear/earwithall2 Test asadmin disable (server)
+[PASSED] earwithall2 : ear/earwithall2 Test asadmin disable (cluster-inst1)
+[PASSED] earwithall2 : ear/earwithall2 Test asadmin enable (server)
+[PASSED] earwithall2 : ear/earwithall2 Test asadmin enable (cluster-inst1)
+[PASSED] earwithall2 : ear/earwithall2 Test asadmin redeploy (server)
+[PASSED] earwithall2 : ear/earwithall2 Test asadmin redeploy (cluster-inst1)
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 deploy (server)
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 deploy (cluster-inst1)
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 stopped state (server)
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 stopped state (cluster-inst1) 
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 started state (server)
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 started state (cluster-inst1) 
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 redeploy stop (server)
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 redeploy stop (cluster-inst1) 
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 redeploy start (server)
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 redeploy start (cluster-inst1)
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 deploy using InputStream (server)
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 deploy using InputStream (cluster-inst1)
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 redeploy using InputStream (server)
+[PASSED] earwithall2 : ear/earwithall2 Test jsr88 redeploy using InputStream (cluster-inst1)
+[PASSED] earwithall2 : ear/earwithall2 Test create-application-ref (server)
+[PASSED] earwithall2 : ear/earwithall2 Test create-application-ref (cluster-inst1)
+[PASSED] earwithall2 : ear/earwithall2 Test delete-application-ref (server)
+[PASSED] earwithall2 : ear/earwithall2 Test delete-application-ref (cluster-inst1)
+[PASSED] earwithall2 : ear/earwithall2 Test redeploy to domain (server)
+[PASSED] earwithall2 : ear/earwithall2 Test redeploy to domain (cluster-inst1)
+[PASSED] earwithall2 : ear/earwithall2 Test disable on domain (server)
+[PASSED] earwithall2 : ear/earwithall2 Test disable on domain (cluster-inst1)
+[PASSED] earwithall2 : ear/earwithall2 Test enable domain (server)
+[PASSED] earwithall2 : ear/earwithall2 Test enable domain (cluster-inst1)
+[PASSED] uniquecr : ear/uniquecr Test1  (server)
+[PASSED] uniquecr : ear/uniquecr Test1  (cluster-inst1)
+[PASSED] uniquecr : ear/uniquecr Test2 (server)
+[PASSED] libClassPath : libClasspath Test asadmin deploy (server)
+[PASSED] libClassPath : libClasspath Test asadmin deploy (cluster-inst1)
+[PASSED] manifestClassPath : libClasspath Test asadmin deploy (server)
+[PASSED] manifestClassPath : libClasspath Test asadmin deploy (cluster-inst1)
+[PASSED] simple : jsr88/war/simple deploy test
+[PASSED] simple : jsr88/war/simple redeploy test
+[PASSED] validation : dol/validation Test standalone war
+[PASSED] validation : dol/validation Test standalone ejb jar
+[PASSED] validation : dol/validation Test standalone rar
+[PASSED] validation : dol/validation Test standalone car
+[PASSED] validation : dol/validation Test ear
+[PASSED] validation : dol/validation Test ear
+[PASSED] validation : dol/validation Test WLS Ear
+[PASSED] validation : dol/validation Test WLS Ear2
+[PASSED] validation : dol/validation Test WLS Ear3
+[PASSED] override : dol/override Test
+[PASSED] session : ejb30/session Test asadmin deploy
+[PASSED] session : ejb30/session Test asadmin redeploy
+[PASSED] session2 : ejb30/session2 Test asadmin deploy
+[PASSED] session2 : ejb30/session2 Test asadmin redeploy
+[PASSED] security : ejb30/security Test asadmin deploy
+[PASSED] security : ejb30/security Test asadmin redeploy
+[PASSED] xmloverride : ejb30/security Test asadmin deploy
+[PASSED] xmloverride : ejb30/security Test asadmin redeploy
+[PASSED] jsp : ejb30/war/jsp Test asadmin deploy
+[PASSED] jsp : ejb30/war/jsp Test asadmin redeploy
+[PASSED] servlet : ejb30/war/servlet Test asadmin deploy
+[PASSED] servlet : ejb30/war/servlet Test asadmin redeploy
+[PASSED] javamodule : ejb31/ejblite/javamodule Test asadmin deploy
+[PASSED] javamodule : ejb31/ejblite/javamodule Test asadmin redeploy
+[PASSED] no_appxml : descriptor_free/ear/no_appxml Test asadmin deploy
+[PASSED] no_appxml : descriptor_free/ear/no_appxml Test asadmin re-deploy
+[PASSED] no_appxml_2 : descriptor_free/ear/no_appxml_2 Test asadmin deploy
+[PASSED] no_appxml_2 : descriptor_free/ear/no_appxml_2 Test asadmin re-deploy
+[PASSED] simple-versioned-servlet : versioned.vs.unversioned(1) untagged - logID=1 (server)  
+[PASSED] simple-versioned-servlet : versioned.vs.unversioned(1) untagged - logID=1 (cluster-inst1)  
+[PASSED] simple-versioned-servlet : versioned.vs.unversioned(2) untagged - logID=2 (server)  
+[PASSED] simple-versioned-servlet : versioned.vs.unversioned(2) untagged - logID=2 (cluster-inst1)  
+[PASSED] simple-versioned-servlet : versioned.vs.unversioned(3) ALPHA-1.0.0 - logID=3 (server)  
+[PASSED] simple-versioned-servlet : versioned.vs.unversioned(3) ALPHA-1.0.0 - logID=3 (cluster-inst1)  
+[PASSED] simple-versioned-servlet : deployment(1) untagged - logID=4 (server)  
+[PASSED] simple-versioned-servlet : deployment(1) untagged - logID=4 (cluster-inst1)  
+[PASSED] simple-versioned-servlet : deployment(2) ALPHA-1.0.0 - logID=5 (server)  
+[PASSED] simple-versioned-servlet : deployment(2) ALPHA-1.0.0 - logID=5 (cluster-inst1)  
+[PASSED] simple-versioned-servlet : deployment(3) ALPHA-1.0.1 (enabled=false) - logID=6 (server)  
+[PASSED] simple-versioned-servlet : deployment(3) ALPHA-1.0.1 (enabled=false) - logID=6 (cluster-inst1)  
+[PASSED] simple-versioned-servlet : deployment(4) RC-1.0.0 (enabled=false) - logID=7 (server)  
+[PASSED] simple-versioned-servlet : deployment(4) RC-1.0.0 (enabled=false) - logID=7 (cluster-inst1)  
+[PASSED] simple-versioned-servlet : deployment(5) RC-1.0.1 - logID=8 (server)  
+[PASSED] simple-versioned-servlet : deployment(5) RC-1.0.1 - logID=8 (cluster-inst1)  
+[PASSED] simple-versioned-servlet : deactivation(1) untagged - logID=9 (server)  
+[PASSED] simple-versioned-servlet : deactivation(1) untagged - logID=9 (cluster-inst1)  
+[PASSED] simple-versioned-servlet : deactivation(2) ALPHA-1.0.0 - logID=10 (server)  
+[PASSED] simple-versioned-servlet : deactivation(2) ALPHA-1.0.0 - logID=10 (cluster-inst1)  
+[PASSED] simple-versioned-servlet : deactivation(3) ALPHA* - logID=11 (server)  
+[PASSED] simple-versioned-servlet : deactivation(3) ALPHA* - logID=11 (cluster-inst1)  
+[PASSED] simple-versioned-servlet : deactivation(4) * - logID=12 (server)  
+[PASSED] simple-versioned-servlet : deactivation(4) * - logID=12 (cluster-inst1)  
+[PASSED] simple-versioned-servlet : redeployment(1) untagged - logID=13 (server)  
+[PASSED] simple-versioned-servlet : redeployment(1) untagged - logID=13 (cluster-inst1)  
+[PASSED] simple-versioned-servlet : redeployment(2) untagged - logID=14 (server)  
+[PASSED] simple-versioned-servlet : redeployment(2) untagged - logID=14 (cluster-inst1)  
+[PASSED] simple-versioned-servlet : redeployment(3) ALPHA-1.0.0 - logID=15 (server)  
+[PASSED] simple-versioned-servlet : redeployment(3) ALPHA-1.0.0 - logID=15 (cluster-inst1)  
+[PASSED] simple-versioned-servlet : redeployment(4) ALPHA-1.0.0 - logID=16 (server)  
+[PASSED] simple-versioned-servlet : redeployment(4) ALPHA-1.0.0 - logID=16 (cluster-inst1)  
+[PASSED] simple-versioned-servlet : undeployment(1) untagged - logID=17 - (depltest-cluster) - (fail expected)  
+[PASSED] simple-versioned-servlet : undeployment(1) untagged - logID=18 - (depltest-server) - (fail expected)  
+[PASSED] simple-versioned-servlet : undeployment(2) ALPHA-1.0.0 - logID=19 - (depltest-cluster) - (fail expected)  
+[PASSED] simple-versioned-servlet : undeployment(2) ALPHA-1.0.0 - logID=20 - (depltest-server) - (fail expected)  
+[PASSED] simple-versioned-servlet : undeployment(3) ALPHA* - logID=21 - (depltest-cluster) - (fail expected)  
+[PASSED] simple-versioned-servlet : undeployment(3) ALPHA* - logID=22 - (depltest-server) - (fail expected)  
+[PASSED] simple-versioned-servlet : undeployment(4) * - logID=23 - (depltest-cluster) - (fail expected)  
+[PASSED] simple-versioned-servlet : undeployment(4) * - logID=24 - (depltest-server) - (fail expected)  
+[PASSED] simple-versioned-servlet : sample.scenarios(1) - logID=25 (server)  
+[PASSED] simple-versioned-servlet : sample.scenarios(1) - logID=25 (cluster-inst1)  
+[PASSED] simple-versioned-servlet : sample.scenarios(2) - logID=26 (server)  
+[PASSED] simple-versioned-servlet : sample.scenarios(2) - logID=26 (cluster-inst1)  
+[PASSED] simple-versioned-servlet : sample.scenarios(3) - logID=27 (server)  
+[PASSED] simple-versioned-servlet : sample.scenarios(3) - logID=27 (cluster-inst1)  
+[PASSED] simple-versioned-servlet : sample.scenarios(4) - logID=28 (server)  
+[PASSED] simple-versioned-servlet : sample.scenarios(4) - logID=28 (cluster-inst1)  
+[PASSED] simple-versioned-servlet : sample.scenarios(5) - logID=29 (server)  
+[PASSED] simple-versioned-servlet : sample.scenarios(5) - logID=29 (cluster-inst1)  
+[PASSED] simple-versioned-servlet : sample.scenarios(6) - logID=30 (server)  
+[PASSED] simple-versioned-servlet : sample.scenarios(6) - logID=30 (cluster-inst1)  
+[PASSED] simple-versioned-servlet : sample.scenarios(7) - logID=31 - (depltest-cluster) - (fail expected)  
+[PASSED] simple-versioned-servlet : sample.scenarios(7) - logID=32 - (depltest-server) - (fail expected)  
+[PASSED] simple-versioned-servlet : sample.scenarions(8) - logID=33 (server)  
+[PASSED] simple-versioned-servlet : sample.scenarions(8) - logID=33 (cluster-inst1)  
+[PASSED] simple-versioned-servlet : sample.scenarios(9) - logID=34 - (depltest-cluster) - (fail expected)  
+[PASSED] simple-versioned-servlet : sample.scenarios(9) - logID=35 - (depltest-server) - (fail expected)  
+[PASSED] simple-versioned-servlet : sample.scenarios(10) - logID=36 - (depltest-cluster) - (fail expected)  
+[PASSED] simple-versioned-servlet : sample.scenarios(10) - logID=37 - (depltest-server) - (fail expected)  
+[PASSED] simple-versioned-servlet : switch(1) untagged - logID=38 (server)  
+[PASSED] simple-versioned-servlet : switch(1) untagged - logID=38 (cluster-inst1)  
+[PASSED] simple-versioned-servlet : switch(2) ALPHA-1.0.0 - logID=39 (server)  
+[PASSED] simple-versioned-servlet : switch(2) ALPHA-1.0.0 - logID=39 (cluster-inst1)  
+[PASSED] simple-versioned-servlet : switch(3) ALPHA-1.0.1 - logID=40 (server)  
+[PASSED] simple-versioned-servlet : switch(3) ALPHA-1.0.1 - logID=40 (cluster-inst1)  
+[PASSED] simple-versioned-servlet : switch(4) RC-1.0.0 - logID=41 (server)  
+[PASSED] simple-versioned-servlet : switch(4) RC-1.0.0 - logID=41 (cluster-inst1)  
+[PASSED] simple-versioned-servlet : switch(5) RC-1.0.1 - logID=42 (server)  
+[PASSED] simple-versioned-servlet : switch(5) RC-1.0.1 - logID=42 (cluster-inst1)  
+[PASSED] simple-versioned-servlet : xml.version(1) - logID=43 - (depltest-cluster) - (sucess expected)  
+[PASSED] simple-versioned-servlet : xml.version(1) - logID=44 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-servlet : xml.version(2) - logID=45 - (depltest-cluster) - (sucess expected)  
+[PASSED] simple-versioned-servlet : xml.version(2) - logID=46 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-servlet : xml.version(3) deploy jsr88 - logID=47 - (depltest-cluster) - (sucess expected)  
+[PASSED] simple-versioned-servlet : xml.version(3) deploy jsr88 - logID=48 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-servlet : xml.version(4) deploy jsr88 - logID=49 - (depltest-cluster) - (sucess expected)  
+[PASSED] simple-versioned-servlet : xml.version(4) deploy jsr88 - logID=50 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-servlet : xml.version(5) redeploy jsr88 - logID=51 - (depltest-cluster) - (sucess expected)  
+[PASSED] simple-versioned-servlet : xml.version(5) redeploy jsr88 - logID=52 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-servlet : xml.version(7) deploy-stream jsr88 - logID=53 - (depltest-cluster) - (sucess expected)
+[PASSED] simple-versioned-servlet : xml.version(7) deploy-stream jsr88 - logID=54 - (depltest-server) - (sucess expected)
+[PASSED] simple-versioned-servlet : xml.version(8) deploy-stream jsr88 - logID=55 - (depltest-cluster) - (sucess expected)
+[PASSED] simple-versioned-servlet : xml.version(8) deploy-stream jsr88 - logID=56 - (depltest-server) - (sucess expected)
+[PASSED] simple-versioned-appclient : xml.version(1) - logID=1 - (depltest-cluster) - (sucess expected)  
+[PASSED] simple-versioned-appclient : xml.version(1) - logID=2 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-appclient : xml.version(2) - logID=3 - (depltest-cluster) - (sucess expected)  
+[PASSED] simple-versioned-appclient : xml.version(2) - logID=4 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-appclient : xml.version(3) deploy jsr88 - logID=5 - (depltest-cluster) - (sucess expected)  
+[PASSED] simple-versioned-appclient : xml.version(3) deploy jsr88 - logID=6 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-appclient : xml.version(4) deploy jsr88 - logID=7 - (depltest-cluster) - (sucess expected)  
+[PASSED] simple-versioned-appclient : xml.version(4) deploy jsr88 - logID=8 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-appclient : xml.version(5) redeploy jsr88 - logID=9 - (depltest-cluster) - (sucess expected)  
+[PASSED] simple-versioned-appclient : xml.version(5) redeploy jsr88 - logID=10 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-appclient : xml.version(7) deploy-stream jsr88 - logID=11 - (depltest-cluster) - (sucess expected)
+[PASSED] simple-versioned-appclient : xml.version(7) deploy-stream jsr88 - logID=12 - (depltest-server) - (sucess expected)
+[PASSED] simple-versioned-appclient : xml.version(8) deploy-stream jsr88 - logID=13 - (depltest-cluster) - (sucess expected)
+[PASSED] simple-versioned-appclient : xml.version(8) deploy-stream jsr88 - logID=14 - (depltest-server) - (sucess expected)
+[PASSED] simple-versioned-appclient : sample.scenarios(1) - logID=11 (server)  
+[PASSED] simple-versioned-appclient : sample.scenarios(1) - logID=11 (cluster-inst1)  
+[PASSED] simple-versioned-appclient : sample.scenarios(2) - logID=12 (server)  
+[PASSED] simple-versioned-appclient : sample.scenarios(2) - logID=12 (cluster-inst1)  
+[PASSED] simple-versioned-appclient : sample.scenarios(3) - logID=13 (server)  
+[PASSED] simple-versioned-appclient : sample.scenarios(3) - logID=13 (cluster-inst1)  
+[PASSED] simple-versioned-appclient : sample.scenarios(4) - logID=14 (server)  
+[PASSED] simple-versioned-appclient : sample.scenarios(4) - logID=14 (cluster-inst1)  
+[PASSED] simple-versioned-appclient : sample.scenarios(5) - logID=15 (server)  
+[PASSED] simple-versioned-appclient : sample.scenarios(5) - logID=15 (cluster-inst1)  
+[PASSED] simple-versioned-appclient : sample.scenarios(6) - logID=16 (server)  
+[PASSED] simple-versioned-appclient : sample.scenarios(6) - logID=16 (cluster-inst1)  
+[PASSED] simple-versioned-appclient : sample.scenarios(7) - logID=17 - (depltest-cluster) - (fail expected)  
+[PASSED] simple-versioned-appclient : sample.scenarios(7) - logID=18 - (depltest-server) - (fail expected)  
+[PASSED] simple-versioned-appclient : sample.scenarions(8) - logID=19 (server)  
+[PASSED] simple-versioned-appclient : sample.scenarions(8) - logID=19 (cluster-inst1)  
+[PASSED] simple-versioned-appclient : sample.scenarios(9) - logID=20 - (depltest-cluster) - (fail expected)  
+[PASSED] simple-versioned-appclient : sample.scenarios(9) - logID=21 - (depltest-server) - (fail expected)  
+[PASSED] simple-versioned-appclient : sample.scenarios(10) - logID=22 - (depltest-cluster) - (fail expected)  
+[PASSED] simple-versioned-appclient : sample.scenarios(10) - logID=23 - (depltest-server) - (fail expected)  
+[PASSED] simple-versioned-ejb : xml.version(1) - logID=1 - (depltest-cluster) - (sucess expected)  
+[PASSED] simple-versioned-ejb : xml.version(1) - logID=2 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-ejb : xml.version(2) - logID=3 - (depltest-cluster) - (sucess expected)  
+[PASSED] simple-versioned-ejb : xml.version(2) - logID=4 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-ejb : xml.version(3) deploy jsr88 - logID=5 - (depltest-cluster) - (sucess expected)  
+[PASSED] simple-versioned-ejb : xml.version(3) deploy jsr88 - logID=6 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-ejb : xml.version(4) deploy jsr88 - logID=7 - (depltest-cluster) - (sucess expected)  
+[PASSED] simple-versioned-ejb : xml.version(4) deploy jsr88 - logID=8 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-ejb : xml.version(5) redeploy jsr88 - logID=9 - (depltest-cluster) - (sucess expected)  
+[PASSED] simple-versioned-ejb : xml.version(5) redeploy jsr88 - logID=10 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-ejb : xml.version(7) deploy-stream jsr88 - logID=11 - (depltest-cluster) - (sucess expected)
+[PASSED] simple-versioned-ejb : xml.version(7) deploy-stream jsr88 - logID=12 - (depltest-server) - (sucess expected)
+[PASSED] simple-versioned-ejb : xml.version(8) deploy-stream jsr88 - logID=13 - (depltest-cluster) - (sucess expected)
+[PASSED] simple-versioned-ejb : xml.version(8) deploy-stream jsr88 - logID=14 - (depltest-server) - (sucess expected)
+[PASSED] simple-versioned-ear : xml.version(1) - logID=1 - (depltest-cluster) - (sucess expected)  
+[PASSED] simple-versioned-ear : xml.version(1) - logID=2 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-ear : xml.version(2) - logID=3 - (depltest-cluster) - (sucess expected)  
+[PASSED] simple-versioned-ear : xml.version(2) - logID=4 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-ear : xml.version(3) deploy jsr88 - logID=5 - (depltest-cluster) - (sucess expected)  
+[PASSED] simple-versioned-ear : xml.version(3) deploy jsr88 - logID=6 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-ear : xml.version(4) deploy jsr88 - logID=7 - (depltest-cluster) - (sucess expected)  
+[PASSED] simple-versioned-ear : xml.version(4) deploy jsr88 - logID=8 - (depltest-server) - (sucess expected)  
+[PASSED] simple-versioned-ear : xml.version(5) redeploy jsr88 - logID=9 - (depltest-cluster) - (sucess expected)  
+[PASSED] simple-versioned-ear : xml.version(5) redeploy jsr88 - logID=10 - (depltest-server) - (sucess expected)
+[PASSED] simple-versioned-ear : xml.version(7) deploy-stream jsr88 - logID=11 - (depltest-cluster) - (sucess expected)
+[PASSED] simple-versioned-ear : xml.version(7) deploy-stream jsr88 - logID=12 - (depltest-server) - (sucess expected)
+[PASSED] simple-versioned-ear : xml.version(8) deploy-stream jsr88 - logID=13 - (depltest-cluster) - (sucess expected)
+[PASSED] simple-versioned-ear : xml.version(8) deploy-stream jsr88 - logID=14 - (depltest-server) - (sucess expected)
+[PASSED] simple : osgi/simple Test asadmin deploy (server)
+[PASSED] simple : osgi/simple Test asadmin deploy (cluster-inst1)
+[PASSED] simple : osgi/simple Test asadmin redeploy (server)
+[PASSED] simple : osgi/simple Test asadmin redeploy (cluster-inst1)
+[PASSED] simple : osgi/simple Test asadmin disable (server)
+[PASSED] simple : osgi/simple Test asadmin disable (cluster-inst1)
+[PASSED] simple : osgi/simple Test asadmin enable (server)
+[PASSED] simple : osgi/simple Test asadmin enable (cluster-inst1)
+[PASSED] AppClientAnnotationTest : testDescriptors,
+[PASSED] EjbAnnotationTest : testDescriptors,
+[PASSED] InheritanceAnnotationTest : testDescriptors,
+[PASSED] WebAnnotationTest : testDescriptors,

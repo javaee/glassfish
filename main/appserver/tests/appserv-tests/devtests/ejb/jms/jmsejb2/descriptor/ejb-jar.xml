@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ejb-jar PUBLIC "-//Sun Microsystems, Inc.//DTD Enterprise JavaBeans 2.0//EN" "http://java.sun.com/dtd/ejb-jar_2_0.dtd">
+<ejb-jar>
+  <display-name>Ejb1</display-name>
+  <enterprise-beans>
+    <session>
+      <display-name>HelloBeanBMT</display-name>
+      <ejb-name>HelloBeanBMT</ejb-name>
+      <home>com.sun.s1asdev.ejb.jms.jmsejb2.HelloHome</home>
+      <remote>com.sun.s1asdev.ejb.jms.jmsejb2.Hello</remote>
+      <ejb-class>com.sun.s1asdev.ejb.jms.jmsejb2.HelloBean</ejb-class>
+      <session-type>Stateful</session-type>
+      <transaction-type>Bean</transaction-type>
+      <security-identity>
+        <use-caller-identity/>
+      </security-identity>
+      <resource-ref>
+        <description>description</description>
+        <res-ref-name>jms/MyQueueConnectionFactory</res-ref-name>
+        <res-type>javax.jms.QueueConnectionFactory</res-type>
+        <res-auth>Container</res-auth>
+        <res-sharing-scope>Shareable</res-sharing-scope>
+      </resource-ref>
+      <resource-env-ref>
+        <resource-env-ref-name>jms/QueueName</resource-env-ref-name>
+        <resource-env-ref-type>javax.jms.Queue</resource-env-ref-type>
+      </resource-env-ref>
+    </session>
+  </enterprise-beans>
+  <assembly-descriptor>
+  </assembly-descriptor>
+</ejb-jar>

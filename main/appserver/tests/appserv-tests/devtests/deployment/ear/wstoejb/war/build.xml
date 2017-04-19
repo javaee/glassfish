@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+ <!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
+]>
+
+<project name="WebServiceToEjb" default="all" basedir=".">
+
+	&commonBuild;
+    <property name="archivedir" value="${build}/archives"/>
+
+	<target name="prepare" depends="init">
+		<property name="binary" value="${build}/WEB-INF/classes"/>
+		<property name="wsdl" value="${build}/WEB-INF/wsdl"/>
+		<mkdir dir="${binary}" />
+		<mkdir dir="${wsdl}"/>
+		<mkdir dir="${archivedir}" />
+	</target>
+	
+	<target name="compile" depends="prepare, import-dep">
+		<javac srcdir="wstoejb" destdir="${binary}">
+	    	<classpath>
+	    	  <path refid="gfv3.classpath"/>
+    		  <path location="${build}/WEB-INF/lib/library.jar"/>
+		    </classpath>		
+		 </javac>
+		<echo message="invoking wscompile to generate wsdl file"/>
+		<exec executable="${WSCOMPILE}">
+			<arg line="-define config-interface.xml  -d ${binary} -nd ${wsdl} -classpath ${binary} -mapping ${build}/mapping.xml"/>
+	 	</exec>					
+	</target>
+	
+	<target name="import-dep">
+		<mkdir dir="${build}/WEB-INF/lib" />
+		<mkdir dir="${build}/tmp/wstoejb" />		
+		<copy file="${build}/../ejb/wstoejb/StatefulSessionBean.class" todir="${build}/tmp/wstoejb"/>
+		<copy file="${build}/../ejb/wstoejb/StatefulSessionBeanHome.class" todir="${build}/tmp/wstoejb"/>
+		<jar destfile="${build}/WEB-INF/lib/library.jar" basedir="${build}/tmp"/>
+		<delete dir="${build}/tmp"/>
+	</target>
+	
+	<target name="assemble" depends="compile">
+		<copy file="web.xml" todir="${build}/WEB-INF"/>
+		<copy file="webservices.xml" todir="${build}/WEB-INF"/>
+		<jar destfile="${archivedir}/sayhello-portable.war" basedir="${build}"/>
+		<copy file="sun-web.xml" todir="${build}/WEB-INF" failonerror="false"/>
+		<jar destfile="${archivedir}/sayhello.war" basedir="${build}"/>
+	</target>
+
+	<target name="private-all" depends="assemble"/>
+
+</project>

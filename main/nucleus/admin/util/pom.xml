@@ -111,6 +111,9 @@
                 <includes>
                     <include>**/*</include>
                 </includes>
+                <excludes>
+                    <exclude>**/.gitkeep_empty_dir</exclude>
+                </excludes>
             </resource>
         </resources>
     </build>

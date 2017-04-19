@@ -211,6 +211,9 @@
     <delete file="${app.file.ext}"/>
     <mkdir dir="${class.output}"/>
     <mkdir dir="${dist.dir}"/>
+    <mkdir dir="web/html"/>
+    <mkdir dir="web/jsp"/>
+    <mkdir dir="src/java"/>
     <javac   debug="true"
     source="1.5"
     target="1.5"

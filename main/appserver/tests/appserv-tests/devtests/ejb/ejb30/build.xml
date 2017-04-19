@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../config/common.xml">
+<!ENTITY reporting   SYSTEM "../report.xml">
+]>
+
+<project name="clientview" default="usage" basedir=".">
+    &commonSetup;
+    &commonBuild;
+    &reporting;
+
+    <target name="all">
+	<!--- currently use SE client . switch back to appclient -->
+        <antcall target="allowed"/>
+        <antcall target="clientview"/>
+        <antcall target="hello"/>
+        <antcall target="interceptors"/>
+        <antcall target="persistence"/> 
+
+    </target>
+
+    <target name="allowed">
+        <record name="allowed.output" action="start" />
+            <ant dir="allowed" target="all"/>
+        <record name="allowed.output" action="stop" />
+    </target>
+
+    <target name="clientview">
+        <record name="clientview.output" action="start" />
+            <ant dir="clientview" target="all"/>
+        <record name="clientview.output" action="stop" />
+    </target>
+
+    <target name="hello">
+        <record name="hello.output" action="start" />
+            <ant dir="hello" target="all"/>
+        <record name="hello.output" action="stop" />
+    </target>
+
+    <target name="interceptors">
+        <record name="interceptors.output" action="start" />
+            <ant dir="interceptors" target="all"/>
+        <record name="interceptors.output" action="stop" />
+    </target>
+
+    <target name="persistence">
+        <record name="persistence.output" action="start" />
+            <ant dir="persistence" target="all"/>
+        <record name="persistence.output" action="stop" />
+    </target>
+
+    <target name="usage">
+	<echo>
+		Usage:
+			ant all (Executes all the ejb-ejb30 tests)
+	</echo>
+    </target>
+</project>

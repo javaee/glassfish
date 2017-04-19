@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "./../../config/common.xml">
+<!ENTITY commonVersioning SYSTEM "../versioning-common.xml">
+<!ENTITY basicScenarios SYSTEM "../basic-scenarios.xml">
+]>
+
+<project name="simple-versioned-appclient" default="usage" basedir=".">
+
+  &commonBuild;
+  &commonVersioning;
+  &basicScenarios;
+
+  <loadproperties srcFile="../build.properties"/>
+  <!--
+        versionInfos: the property file included in the archives, this
+        file contains a version identifier as a property and is used by the
+        appclient to display the version informations.
+  -->
+  <property name="versionInfos" value="version-infos.properties"/>
+  <property name="testPackage" value="versionedappclient"/>
+  <property name="preparatorClassName" value="${testPackage}.client.GetJWSClientStubs"/>
+  <property name="gfDDFile" value="glassfish-application-client.xml"/>
+  <property name="gfDDDir" value="META-INF"/>
+  <!-- untaggedName: the name of the application, its the version's prefix -->
+  <property name="untaggedName" value="simple-versioned-appclient"/>
+  <!-- packaging: the file archive's extention -->
+  <property name="packaging" value="jar"/>
+  <!-- link: the context root of the servlet -->
+  <!-- appType: used to detect the application type and perform special process -->
+  <property name="appType" value="appClient"/>
+
+  <!-- classRunclient: the full name of the client class for runclient's target -->
+  <property name="classRunclient" value="org.glassfish.appclient.client.AppClientFacade"/>
+
+  <!-- some properties to build the jvm.arguments property -->
+  <property name="gfClientJar" value="${inst}/lib/gf-client.jar"/>
+  <property name="sunAccXml" value="${inst}/domains/domain1/config/glassfish-acc.xml"/>
+  <property name="appClientStubsFile" value="${build}/${untaggedName}Client.jar"/>
+
+  <!-- the jvm args used in the runclient target -->
+  <property name="jvm.arg1" value="-Djava.security.policy=${inst}/lib/appclient/client.policy"/>
+  <property name="jvm.arg2" value="-Djava.system.class.loader=org.glassfish.appclient.client.acc.agent.ACCAgentClassLoader"/>
+  <property name="jvm.arg3" value="-javaagent:${gfClientJar}=mode=ascript,arg=-configxml,arg=${sunAccXml},client=jar=${appClientStubsFile}"/>
+  <property name="jvm.arguments" value="${jvm.arg1} ${jvm.arg2} ${jvm.arg3}"/>
+
+  <!-- the classpath used in the runclient target -->
+  <property name="runClientClassPath" value="${appClientStubsFile}"/>
+
+  <target name="prepare" depends="init">
+    <mkdir dir="${build}"/>
+  </target>
+
+  <!--
+    compile: compiles the appclient class
+  -->
+  <target name="compile" depends="prepare, process.versionexpression">
+    <javac srcdir="./src/"
+           destdir="${build}"
+           debug="on"
+           failonerror="true">
+      <classpath refid="gfv3.classpath" />
+    </javac>
+
+    <!--
+        generation of the property from witch the class client read the
+        version information.
+    -->
+    <propertyfile file="${build}/${testPackage}/${versionInfos}">
+      <entry  key="version.identifier" value="${versionExpression}"/>
+    </propertyfile>
+    <property name="xmlFile" value="${gfDDDir}/${gfDDFile}"/>
+    <antcall target="generate.xml.identifier"/>
+  </target>
+
+  <!-- assemble: package the jar archive -->
+  <target name="assemble" depends="compile">
+    <jar destfile="${archiveFile}" manifest="META-INF/MANIFEST.MF">
+      <fileset dir="${classPath}" includes="**/*.class, **/*.properties">
+          <exclude name="**/versionedappclient/client/*.class"/>
+      </fileset>
+      <fileset dir="." includes="META-INF/*.xml"/>
+    </jar>
+  </target>
+
+  <target name="main-all">
+    <antcall target="xml.version.information"/>
+    <antcall target="samples.scenarios"/>
+<!--    <antcall target="deployment">
+      <param name="withTest" value="true"/>
+    </antcall>
+    <antcall target="switch"/>
+    <antcall target="undeployment"/>
+    <antcall target="deactivation"/>
+    <antcall target="redeployment"/>-->
+    <antcall target="clean.scenario"/>
+  </target>
+</project>

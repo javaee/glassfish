@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ejb-jar xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.1" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd">
+  <display-name>ejb31_timer31_schedule_ann</display-name>
+  <enterprise-beans>
+    <session>
+      <ejb-name>StlesEJB</ejb-name>
+      <timer>
+        <description>DD-overridden timer</description>
+        <schedule>
+            <second>*/2</second>
+            <minute>*</minute>
+            <hour>*</hour>
+            <day-of-month>*</day-of-month>
+            <month>*</month>
+            <day-of-week>*</day-of-week>
+            <year>*</year>
+        </schedule>
+        <timeout-method>
+          <method-name>ddTimeout</method-name>
+        </timeout-method>
+        <info>dd_timer1</info>
+      </timer>
+      <timer>
+        <description>DD-based timer</description>
+        <schedule>
+            <second>*/4</second>
+            <minute>*</minute>
+            <hour>*</hour>
+        </schedule>
+        <timeout-method>
+          <method-name>ddTimeout</method-name>
+        </timeout-method>
+        <info>dd_timer2</info>
+      </timer>
+    </session>
+  </enterprise-beans>
+</ejb-jar>
+
+

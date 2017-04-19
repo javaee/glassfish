@@ -1,0 +1,41 @@
+version: 1
+
+# entry-id: 10
+dn: uid=munta,ou=People, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
+changetype: delete
+
+# entry-id: 11
+dn: uid=harpreet,ou=People, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
+changetype: delete
+
+# entry-id: 14
+dn: uid=j2ee,ou=People, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
+changetype: delete
+
+# entry-id: 17
+dn: uid=javajoe,ou=People, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
+changetype: delete
+
+# entry-id: 4
+dn: ou=People, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
+changetype: delete
+
+# entry-id: 16
+#dn: cn=sqedynamicgroup,ou=Groups, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
+#changetype: delete
+
+
+# entry-id: 18
+#dn: cn=sqestaticgroup,ou=Groups, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
+#changetype: delete
+
+# entry-id: 3
+dn: ou=Groups, dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
+changetype: delete
+
+# entry-id: 1
+dn: dc=UNIQUE_SUB_CONTEXT,dc=sfbay,dc=sun,dc=com
+changetype: delete
+
+dn: dc=sfbay,dc=sun,dc=com
+changetype: delete

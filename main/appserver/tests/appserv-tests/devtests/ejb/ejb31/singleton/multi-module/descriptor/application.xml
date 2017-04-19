@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application version="6" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_6.xsd">
+  <description>Singleton Application</description>
+  <module>
+    <ejb>ejb-ejb31-singleton-multimodule-ejb1.jar</ejb>
+  </module>
+  <module>
+    <ejb>ejb-ejb31-singleton-multimodule-ejb2.jar</ejb>
+  </module>
+  <module>
+    <ejb>ejb-ejb31-singleton-multimodule-ejb.jar</ejb>
+  </module>
+  <module>
+    <java>ejb-ejb31-singleton-multimodule-client.jar</java>
+  </module>
+</application>

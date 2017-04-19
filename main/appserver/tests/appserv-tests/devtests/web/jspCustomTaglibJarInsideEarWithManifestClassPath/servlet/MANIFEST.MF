@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Class-Path: mytaglib.jar test.jar
+Created-By: 1.6.0_14 (Sun Microsystems Inc.)
+

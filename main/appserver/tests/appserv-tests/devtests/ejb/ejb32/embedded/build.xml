@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../../config/common.xml">
+<!ENTITY embeddedCommon SYSTEM "../../ejb31/embedded/embedded.xml">
+<!ENTITY reporting   SYSTEM "../../report.xml">
+]>
+
+<project name="embedded" default="usage" basedir=".">
+    &embeddedCommon;
+    &commonSetup;
+    &commonBuild;
+    &reporting;
+
+    <target name="all-report">
+        <antcall target="clean-result"/>
+        <antcall target="all"/>
+        <antcall target="dev-report"/>
+    </target>
+
+    <target name="lite-report">
+        <antcall target="clean-result"/>
+        <antcall target="lite"/>
+        <antcall target="dev-report"/>
+    </target>
+
+    <target name="all">
+        <!-- disallow individual tests from starting and stopping database -->
+        <property name="skip.start.database" value="true"/>
+        <property name="skip.stop.database" value="true"/>
+        <property name="timer.test.type" value="all"/>
+        <antcall target="start-derby"/>
+        <antcall target="run-lite"/>
+        <antcall target="run-full"/>
+        <antcall target="stop-derby"/>
+    </target>
+
+    <target name="lite">
+        <!-- disallow individual tests from starting and stopping database -->
+        <property name="skip.start.database" value="true"/>
+        <property name="skip.stop.database" value="true"/>
+        <property name="timer.test.type" value="lite"/>
+        <antcall target="startdb"/>
+        <antcall target="run-lite"/>
+        <antcall target="stop-derby"/>
+    </target>
+
+    <target name="startdb">
+        <!-- disallow individual tests from starting and stopping database -->
+        <property name="skip.start.database" value="true"/>
+        <property name="skip.stop.database" value="true"/>
+        <antcall target="start-derby"/>
+    </target>
+
+    <target name="stopdb">
+        <antcall target="stop-derby"/>
+    </target>
+
+    <target name="run-lite">
+        <antcall target="autoclose"/>
+    </target>
+
+    <target name="run-full">
+        <!-- Add tests require Full Profile -->
+    </target>
+
+    <target name="autoclose">
+        <record name="autoclose.output" action="start" />
+            <ant dir="autoclose" target="all"/>
+        <record name="autoclose.output" action="stop" />
+    </target>
+
+    <target name="usage">
+	<echo>
+		Usage:
+			ant all (Executes all the ejb-ejb31-embedded tests)
+	</echo>
+    </target>
+</project>

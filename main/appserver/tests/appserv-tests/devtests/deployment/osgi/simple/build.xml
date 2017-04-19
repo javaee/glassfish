@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "./../../config/common.xml">
+]>
+
+<project name="simpleApp" default="usage" basedir=".">
+
+    &commonBuild;
+
+    <property name="contextRoot" value="simple_osgi"/>
+    <property name="testName" value="simple"/>
+
+    <target name="prepare" depends="init">
+        <property name="all.war" value="${build}/${testName}.war"/>
+        <mkdir dir="${build}"/>
+    </target>
+
+    <target name="compile" depends="prepare">
+        <javac srcdir="."
+               destdir="${build}"
+               debug="on"
+               failonerror="true">
+            <classpath refid="test.compile.classpath"/>
+        </javac>
+    </target>
+
+    <target name="assemble" depends="prepare">
+        <war destfile="${all.war}" webxml="web.xml" manifest="META-INF/MANIFEST.MF">
+            <webinf dir="." includes="sun-web.xml"/>
+            <fileset dir="." includes="*.html"/>
+        </war>
+    </target>
+
+    <target name="deploy.osgi.asadmin" depends="prepare">
+        <antcall target="common.deploy.osgi.asadmin">
+            <param name="arg.list" value="${all.war}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="redeploy.osgi.asadmin" depends="prepare">
+        <antcall target="common.redeploy.osgi.asadmin">
+            <param name="arg.list" value="${all.war}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="undeploy.asadmin">
+        <antcall target="common.undeploy.asadmin">
+            <param name="arg.list" value="${testName}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="enable.asadmin"> 
+        <antcall target="common.enable.asadmin">
+            <param name="arg.list" 
+                   value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="disable.asadmin">
+        <antcall target="common.disable.asadmin">
+            <param name="arg.list" 
+                   value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="run" depends="run.positive"/>
+
+    <target name="run.positive" depends="setHttpPort">
+        <antcall target="common.run.positive">
+            <param name="link" value="${contextRoot}"/>
+            <param name="log.id" value="${log.id}"/>
+        </antcall>
+    </target>
+
+    <target name="run.negative" depends="setHttpPort">
+        <antcall target="common.run.negative">
+            <param name="link" value="${contextRoot}"/>
+            <param name="log.id" value="${log.id}"/>
+        </antcall>
+    </target>
+
+    <target name="runclient" depends="compile">
+        <echo message="TestClient ${arg.list}"/>
+        <javaWithResult
+            fork="true"
+            failonerror="false"
+            jvm="${JAVA}"
+            classname="simple.client.TestClient"
+            output="${build}/${log.id}.output.log"
+            resultproperty="result">
+            <jvmarg value="-Dorg.omg.CORBA.ORBInitialHost=${http.host}"/>
+            <jvmarg value="-Dorg.omg.CORBA.ORBInitialPort=${orb.port}"/>
+            <jvmarg value="-Djava.endorsed.dirs=${inst}/lib/endorsed"/>
+
+            <classpath>
+                <path location="${inst}/lib/j2ee.jar"/>
+                <path location="${build}"/>
+            </classpath>
+
+            <arg line="${arg.list}"/>
+        </javaWithResult>
+
+        <antcall target="processResult">
+            <param name="result" value="${result}"/>
+            <param name="log" value="${build}/${log.id}.output.log"/>
+        </antcall>
+    </target>
+
+    <target name="private-all">
+        <antcall target="assemble"/>
+        
+        <antcall target="deploy.osgi.asadmin"/>
+
+        <!-- put in a 30s sleep time to make sure the asynchronous osgi 
+             deployment finishes before accessing the application -->
+
+        <sleep seconds="30"/>
+
+        <antcall target="run.positive">
+            <param name="log.id" value="1"/>
+            <param name="desc" value="osgi/simple Test asadmin deploy"/>
+        </antcall>
+
+        <antcall target="redeploy.osgi.asadmin"/>
+
+        <!-- add the sleep time for redeploy also -->
+        <sleep seconds="30"/>
+
+        <antcall target="run.positive">
+            <param name="log.id" value="2"/>
+            <param name="desc" value="osgi/simple Test asadmin redeploy"/>
+        </antcall>
+
+        <antcall target="disable.asadmin"/>
+        <antcall target="run.negative">
+            <param name="log.id" value="3"/>
+            <param name="desc" value="osgi/simple Test asadmin disable"/>
+        </antcall>
+
+        <antcall target="enable.asadmin"/>
+        <antcall target="run.positive">
+            <param name="log.id" value="4"/>
+            <param name="desc" value="osgi/simple Test asadmin enable"/>
+        </antcall>
+        <antcall target="undeploy.asadmin"/>
+    </target>
+
+    <target name="clobber" depends="clean">
+        <delete file="${all.war}"/>
+        <delete dir="${build}"/>
+    </target>
+
+    <target name="usage">
+        <antcall target="all"/>
+    </target>
+</project>

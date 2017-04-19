@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
+<!ENTITY testproperties SYSTEM "file:./build.properties">
+<!ENTITY commonSecurity SYSTEM "file:./../common.xml">
+]>
+
+<project name="PLoginConverterApp" default="usage" basedir=".">
+
+    &commonSetup;
+    &commonBuild;
+    &testproperties;
+    &commonSecurity;
+
+    <!-- cf config/common.xml -->
+    <target name="all" depends="build,setup,deploy,run,undeploy,unsetup"/>
+    <!-- run-test target added to have setup/unsetup commonly -->
+    <target name="run-test" depends="build,deploy,run,undeploy"/>
+
+    <target name="clean" depends="init-common">
+      <antcall target="clean-common"/>
+    </target>
+ 
+    <target name="compile" depends="clean">
+        <antcall target="compile-common">
+            <param name="src" value="ejb"/>
+        </antcall>
+        <antcall target="compile-common">
+            <param name="src" value="client"/>
+        </antcall>
+    </target>
+
+    <target name="build" depends="compile">
+        <antcall target="build-ear-common"/>
+    </target> 
+
+    <target name="setup" depends="init-common">
+        <antcall target="create-auth-filerealm">
+            <param name="file.realm.name" value="file2"/>
+            <param name="keyfile.path" value="${admin.domain.dir}/${admin.domain}/config/keyfile2"/>
+        </antcall>
+        <!--<antcall target="reconfig-common"/>-->
+
+        <antcall target="create-user-common">
+            <param name="user" value="shingwai"/>
+            <param name="password" value="shingwai"/>
+            <param name="groups" value="employee"/>
+            <param name="authrealmname" value="file2"/>
+        </antcall>
+        <antcall target="create-user-common">
+            <param name="user" value="swchan"/>
+            <param name="password" value="swchan"/>
+            <param name="groups" value="employee"/>
+            <param name="authrealmname" value="file2"/>
+        </antcall>
+        <antcall target="create-permission"/>
+    </target>
+
+    <target name="unsetup" depends="init-common">
+        <antcall target="delete-user-common">
+            <param name="user" value="shingwai"/>
+            <param name="authrealmname" value="file2"/>
+        </antcall>
+        <antcall target="delete-user-common">
+            <param name="user" value="swchan"/>
+            <param name="authrealmname" value="file2"/>
+        </antcall>
+        <antcall target="asadmin-common">
+            <param name="admin.command" value="delete-auth-realm" />
+            <param name="operand.props" value="file2"/>
+        </antcall>
+
+        <antcall target="restore-permission"/>
+    </target>
+
+    <target name="create-permission" depends="init-common">
+      <copy file="${admin.domain.dir}/../lib/appclient/client.policy" 
+        tofile="${admin.domain.dir}/../lib/appclient/client.policy.org"
+        overwrite="true"/>
+      <!-- replace "\" by "/" in PC env -->
+      <echo message="jassembledir=${assemble.dir}" file="temp.txt"/>
+      <replace file="temp.txt" token="\" value="/"/>
+      <loadproperties srcFile="temp.txt"/>
+      <delete file="temp.txt"/>
+      <echo message="grant codeBase &quot;file:${jassembledir}/${appname}AppClient.jar&quot; {
+        permission com.sun.appserv.security.ProgrammaticLoginPermission &quot;login&quot;;
+        permission com.sun.appserv.security.ProgrammaticLoginPermission &quot;logout&quot;;
+};"
+        file="${admin.domain.dir}/../lib/appclient/client.policy"
+        append="true"/>
+    </target>
+
+    <target name="restore-permission" depends="init-common">
+      <copy file="${admin.domain.dir}/../lib/appclient/client.policy.org" 
+        tofile="${admin.domain.dir}/../lib/appclient/client.policy"
+        overwrite="true"/> 
+    </target>
+    
+    <target name="deploy" depends="init-common">
+        <antcall target="deploy-common"/>
+    </target>
+    
+    <target name="run" depends="init-common">
+        <antcall target="runclient-local"/> 
+ 	<antcall target="run-standalone-client"/>
+    </target>
+
+    <target name="runclient-local" depends="init-common">
+      <echo message="Running appclient ..."/>
+      <exec executable="${APPCLIENT}">
+        <arg value="-client" />
+        <arg value="${assemble.dir}/${appname}AppClient.jar"/>
+  	<!-- dummy user added as appclient throwing login window -->	
+      </exec>
+    </target>
+    <target name="undeploy" depends="init-common">
+        <antcall target="undeploy-common"/>
+    </target>   
+
+  <!-- =============================================== -->
+    <!-- Target to run the standalone client without ACC -->
+    <!-- =============================================== -->
+    <target name="run-standalone-client" depends="init-common">
+        <property name="jndi.name" value="PLoginConverter"/>
+        <property name="provider.url" value="iiop://${admin.host}:${orb.port}"/>
+        <property name="ctxfactory"
+            value="com.sun.enterprise.naming.SerialInitContextFactory"/>
+        <echo message="Running standalone client ..."/>
+        <echo message="provider.url used is ${provider.url}"/>
+      <java classname="${test.client}"
+        classpath="${admin.domain.dir}/../lib/appserv-rt.jar:${s1astest.classpath}:${assemble.dir}/${appname}AppClient.jar:${admin.domain.dir}/../imq/lib/imq.jar"
+        failonerror="true" fork="true">
+        <jvmarg value="-Djava.security.auth.login.config=${admin.domain.dir}/../lib/appclient/appclientlogin.conf"/>
+        <jvmarg value="-Dorg.omg.CORBA.ORBInitialHost=${admin.host}"/>
+        <jvmarg value="-Dorg.omg.CORBA.ORBInitialPort=${orb.port}"/>
+	<jvmarg value="-Dcom.sun.CORBA.connection.ORBSocketFactoryClass=com.sun.enterprise.iiop.IIOPSSLSocketFactory"/>
+<!--
+        <jvmarg value="-Djavax.rmi.CORBA.UtilClass=com.sun.corba.ee.impl.javax.rmi.CORBA.Util"/>
+        <jvmarg value="-Djavax.rmi.CORBA.StubClass=com.sun.corba.ee.impl.javax.rmi.CORBA.StubDelegateImpl"/>
+        <jvmarg value="-Djavax.rmi.CORBA.PortableRemoteObjectClass=com.sun.corba.ee.impl.javax.rmi.PortableRemoteObject"/>
+        <jvmarg value="-Dorg.omg.CORBA.ORBClass=com.sun.corba.ee.impl.orb.ORBImpl"/>
+        <jvmarg value="-Dorg.omg.CORBA.ORBSingletonClass=com.sun.corba.ee.impl.orb.ORBSingleton"/>
+-->
+        <arg value="${provider.url}"/>
+        <arg value="${ctxfactory}"/>
+        <arg value="${jndi.name}"/>
+      </java>
+    </target>
+
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+</project>

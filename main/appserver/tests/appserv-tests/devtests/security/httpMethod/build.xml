@@ -1,0 +1,176 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
+<!ENTITY commonRun SYSTEM "file:./../../../config/run.xml">
+<!ENTITY commonSecurity SYSTEM "file:./../common.xml">
+<!ENTITY testProperties SYSTEM "./build.properties">
+]>
+
+
+<project name="security-httpMethod" basedir="." default="usage">
+
+    &commonSetup;
+    &commonBuild;
+    &commonRun;
+    &commonSecurity;
+    &testProperties;
+    
+    <target name="all" depends="build, setup, deploy, run, undeploy, unsetup"/>
+    <target name="clean" depends="init-common">
+        <delete dir="${build.classes.dir}"/>
+        <delete dir="${assemble.dir}"/>
+    </target>
+
+    <target name="compile" depends="clean">
+        <antcall target="compile-common">
+            <param name="src" value="web"/>
+        </antcall>
+    </target>
+
+    <target name="build" depends="compile">
+        <antcall target="webclient-war-common">
+            <param name="hasWebclient" value="yes" /> 
+        </antcall>
+    </target>
+
+    <target name="deploy" depends="init-common">
+        <antcall target="deploy-war-common">
+            <param name="contextroot" value="${appname}"/>
+        </antcall>
+    </target>
+
+    <target name="run" depends="init-common">
+        <antcall target="runweb">
+            <param name="servlet" value="TestServlet"/>
+            <param name="webuser" value="shingwai"/>
+            <param name="webpassword" value="shingwai"/>
+            <param name="httpMethod" value="FOO"/>
+            <param name="goldenfile" value="goldenfiles/foo.html"/>
+            <param name="testcaseid" value="user-auth-with-foo"/>
+        </antcall>
+        <antcall target="runweb">
+            <param name="servlet" value="TestServlet"/>
+            <param name="webuser" value="shingwai"/>
+            <param name="webpassword" value="shingwai"/>
+            <param name="httpMethod" value="GET"/>
+            <param name="goldenfile" value="goldenfiles/get.html"/>
+            <param name="testcaseid" value="user-auth-with-get"/>
+        </antcall>
+        <antcall target="runweb-403">
+            <param name="servlet" value="TestServlet"/>
+            <param name="webuser" value="swchan"/>
+            <param name="webpassword" value="swchan"/>
+            <param name="httpMethod" value="FOO"/>
+            <param name="testcaseid" value="user-with-no-authorization"/>
+        </antcall>
+        <antcall target="runweb">
+            <param name="servlet" value="TestServlet2"/>
+            <param name="webuser" value="shingwai"/>
+            <param name="webpassword" value="shingwai"/>
+            <param name="httpMethod" value="FOO"/>
+            <param name="goldenfile" value="goldenfiles/foo.html"/>
+            <param name="testcaseid" value="user-auth-with-foo2"/>
+        </antcall>
+        <antcall target="runweb-403">
+            <param name="servlet" value="TestServlet2"/>
+            <param name="webuser" value="swchan"/>
+            <param name="webpassword" value="swchan"/>
+            <param name="httpMethod" value="FOO"/>
+            <param name="testcaseid" value="user-with-no-authorization2"/>
+        </antcall>
+    </target>
+
+    <target name="runweb" depends="init-common">
+       <taskdef name="webtest" classname="${webtest.classname}" classpath="${webtest.classpath}" />
+       <webtest request="${httpMethod} /security-httpMethod/${servlet} HTTP/1.0"
+           debug="9"
+           host="${http.host}"
+           port="${http.port}"
+           authMethod="BASIC"
+           userName="${webuser}"
+           password="${webpassword}"
+           firstTask="true"
+           lastTest="true"
+           lastCase="true"
+           lastTask="true"
+           resultFileName="${webtest.report.dir}/security-gtest-results.xml"
+           testSession="security-httpMethod"
+           requestHeaders="Host:${http.host}:${http.port}"
+           goldenFile="${env.APS_HOME}/devtests/security/httpMethod/${goldenfile}"
+           testSuiteId="security-httpMethod"
+           testSuiteName="security-httpMethod"
+           testSuiteDescription="Security Test"
+           testId="security-httpMethod"
+           testName="security-httpMethod"
+           testDescription="Basic JSR 115 test for custom Http Method: ${testcaseid}"
+           testCaseId="${testcaseid}"
+           testCaseName="${testcaseid}"
+           testCaseDescription="Basic JSR 115 test for Http method"
+           testStrategy="Basic JSR 115 test for Http method"
+       />
+    </target>
+
+    <target name="runweb-403" depends="init-common">
+       <taskdef name="webtest" classname="${webtest.classname}" classpath="${webtest.classpath}" />
+       <webtest request="${httpMethod} /security-httpMethod/TestServlet HTTP/1.0"
+           debug="9"
+           host="${http.host}"
+           port="${http.port}"
+           authMethod="BASIC"
+           userName="${webuser}"
+           password="${webpassword}"
+           firstTask="true"
+           lastTest="true"
+           lastCase="true"
+           lastTask="true"
+           resultFileName="${webtest.report.dir}/security-gtest-results.xml"
+           testSession="security-httpMethod"
+           requestHeaders="Host:${http.host}:${http.port}"
+           returnCode="HTTP/1.1 403"
+           testSuiteId="security-httpMethod"
+           testSuiteName="security-httpMethod"
+           testSuiteDescription="Security Test"
+           testId="security-httpMethod"
+           testName="security-httpMethod"
+           testDescription="Basic JSR 115 test for custom Http Method: ${testcaseid}"
+           testCaseId="${testcaseid}"
+           testCaseName="${testcaseid}"
+           testCaseDescription="Basic JSR 115 negative test for Http method"
+           testStrategy="Basic JSR 115 negative test for Http method"
+       />
+    </target>
+
+    <target name="undeploy" depends="init-common">
+        <antcall target="undeploy-war-common"/>
+    </target>
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+
+    <target name="setup">
+        <antcall target="create-user-common">
+	    <param name="user" value="shingwai"/>
+	    <param name="password" value="shingwai"/>
+	    <param name="groups" value="employee"/>
+       </antcall>
+        <antcall target="create-user-common">
+	    <param name="user" value="swchan"/>
+	    <param name="password" value="swchan"/>
+	    <param name="groups" value="staff"/>
+       </antcall>
+   <!--   <antcall target="reconfig-common"/>-->
+    </target>
+ 
+    <target name="unsetup">
+      <!-- remove test users, just cleanup. -->
+      <antcall target="delete-user-common">
+        <param name="user" value="shingwai"/>
+      </antcall>
+      <antcall target="delete-user-common">
+        <param name="user" value="swchan"/>
+      </antcall>
+    </target>
+</project>

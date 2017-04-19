@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "./../../config/common.xml">
+]>
+
+<project name="uniquecrApp" default="usage" basedir=".">
+
+    &commonBuild;
+
+    <property name="contextRoot" value="war"/>
+    <property name="testName" value="servletonly"/>
+    <property name="testName2" value="servletonly2"/>
+
+    <target name="prepare" depends="init">
+        <mkdir dir="${build}"/>
+        <mkdir dir="${build}/archive"/>
+        <mkdir dir="${build}/archive/META-INF"/>
+        <property name="portable.ear" value="${build}/${testName}-portable.ear"/>
+        <property name="portable.war" value="${build}/${testName}-portable.war"/>
+        <property name="all.war" value="${build}/${testName}.war"/>
+        <property name="all.ear" value="${build}/${testName2}.ear"/>
+        <property name="deployplan.jar" value="${build}/${testName}-deployplan.jar"/>
+    </target>
+
+    <target name="assemble" depends="prepare">
+        <ant dir="../../war/servletonly" target="compile">
+            <property name="build" value="${build}/war"/>
+        </ant>
+        <war destfile="${portable.war}" webxml="../../war/servletonly/web.xml">
+            <classes dir="${build}/war"/>
+        </war>
+        <jar destfile="${deployplan.jar}">
+            <fileset dir="${basedir}" includes="sun-web.xml"/>
+        </jar>
+        <war destfile="${all.war}" webxml="../../war/servletonly/web.xml">
+            <webinf dir="." includes="sun-web.xml"/>
+            <classes dir="${build}/war"/>
+        </war>
+        <copy file="portable-app.xml" tofile="${build}/archive/META-INF/application.xml"/>
+        <copy file="${portable.war}" todir="${build}/archive"/>
+        <jar destfile="${portable.ear}" basedir="${build}/archive"/>
+        <delete file="${build}/archive/${testName}-portable.war"/>
+        <delete file="${build}/archive/META-INF/application.xml"/>
+        <copy file="application.xml" todir="${build}/archive/META-INF"/>
+        <copy file="${all.war}" todir="${build}/archive"/>
+        <jar destfile="${all.ear}" basedir="${build}/archive"/>
+    </target>
+
+    <target name="deploy.asadmin" depends="prepare">
+        <antcall target="common.deploy.asadmin">
+            <param name="arg.list" value="${all.ear}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="undeploy.asadmin">
+        <antcall target="common.undeploy.asadmin">
+            <param name="arg.list" value="${testName}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="run" depends="run.positive"/>
+
+    <target name="run.positive" depends="setHttpPort">
+        <antcall target="common.run.positive">
+            <param name="link" value="${contextRoot}/${testName}"/>
+            <param name="log.id" value="${log.id}"/>
+        </antcall>
+    </target>
+
+    <target name="run.positive.2">
+        <property name="test-details" value="${desc}"/>
+        <property name="sub-url" value="${contextRoot}/${testName}"/>
+        <property name="url" value="http://${http.host}:${http.port}/${sub-url}"/>
+        <property name="state" value="true"/>
+        <property name="log-file" value="${log.id}"/>
+        <antcall target="declare-test">
+            <param name="description" value="${test-details} (server)"/>
+        </antcall>
+        <antcall target="runclient">
+            <param name="arg.list" value="${url} ${state}"/>
+            <param name="log.id" value="${log-file}"/>
+        </antcall>
+    </target>
+
+    <target name="runclient" depends="init">
+        <javaWithResult
+            fork="true"
+            failonerror="false"
+            jvm="${JAVA}"
+            classname="servletonly.client.TestClient"
+            output="${build}/${log.id}.output.log"
+            resultproperty="result">
+
+            <jvmarg value="-Dorg.omg.CORBA.ORBInitialHost=${http.host}"/>
+            <jvmarg value="-Dorg.omg.CORBA.ORBInitialPort=${orb.port}"/>
+            <jvmarg value="-Djava.endorsed.dirs=${inst}/lib/endorsed"/>
+
+            <classpath>
+                <path location="${inst}/lib/j2ee.jar"/>
+                <path location="${build}/war"/>
+                <path location="../../build/war/servletonly"/>
+            </classpath>
+
+            <arg line="${arg.list}"/>
+        </javaWithResult>
+
+        <antcall target="processResult">
+            <param name="result" value="${result}"/>
+            <param name="log" value="${build}/${log.id}.output.log"/>
+        </antcall>
+    </target>
+
+    <target name="addClusterRefs" depends="prepare" if="doCluster">
+        <!-- create-app-ref to cluster -->
+        <antcall target="common.run.asadmin">
+            <param name="arg.list"
+                   value="create-application-ref --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} --target ${testCluster} ${testName2}"/>      
+        </antcall>
+    </target>
+
+    <target name="delClusterRefs" depends="prepare" if="doCluster">
+        <!-- delete-app-ref to remote instance server -->
+        <antcall target="common.run.asadmin">
+            <param name="arg.list"
+                   value="delete-application-ref --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} --target ${testCluster} ${testName2}"/>
+        </antcall>
+    </target>
+
+       <!-- the following is run only in EE environment -->
+    <target name="private-all-ee" depends="assemble" if="EE">
+        <echo message="Running tests specific to EE"/>
+
+        <!-- deploy ear to remote instance server/cluster -->
+        <antcall target="common.run.asadmin">
+            <param name="arg.list"
+                   value="deploy --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} --target ${testServer} ${all.ear}"/>
+        </antcall>
+        <antcall target="addClusterRefs"/>
+
+        <antcall target="run.positive">
+            <param name="log.id" value="1"/>
+            <param name="desc" value="ear/uniquecr Test1 "/>
+        </antcall>
+
+        <!-- deploy war to DAS server instance -->
+        <!-- this should succeed because it's different instance -->
+       <antcall target="common.run.asadmin">
+            <param name="arg.list"
+                   value="deploy --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} --target server ${all.war}"/>
+        </antcall>
+
+        <antcall target="run.positive.2">
+            <param name="log.id" value="2"/>
+            <param name="desc" value="ear/uniquecr Test2"/>
+        </antcall>
+
+       <!-- undeploy ear from remote server instance/cluster -->
+        <antcall target="delClusterRefs"/>
+        <antcall target="common.run.asadmin">
+            <param name="arg.list"
+                   value="undeploy --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} --target ${testServer} ${testName2}"/>
+        </antcall>
+
+        <!-- undeploy war from DAS server instance-->
+        <antcall target="common.run.asadmin">
+            <param name="arg.list"
+                   value="undeploy --port ${admin.port} --user ${admin.user} --passwordfile ${passwordFile} --target server ${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="private-all"  depends="private-all-ee"/>
+
+    <target name="clobber" depends="clean">
+        <delete file="${portable.war}"/>
+        <delete file="${all.war}"/>
+        <delete file="${deployplan.war}"/>
+        <delete dir="${build}"/>
+    </target>
+
+    <target name="usage">
+        <antcall target="all"/>
+    </target>
+</project>

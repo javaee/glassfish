@@ -1,0 +1,2 @@
+#javac -classpath .:$S1AS_HOME/lib/newclasses:$S1AS_HOME/lib/appserv-rt.jar Client.java ; clear ; java -classpath .:$S1AS_HOME/lib/newclasses:$S1AS_HOME/lib/appserv-rt.jar Client
+javac -classpath .:$S1AS_HOME/lib/gf-client.jar Client.java ; clear ; java -classpath .:$S1AS_HOME/lib/gf-client.jar Client

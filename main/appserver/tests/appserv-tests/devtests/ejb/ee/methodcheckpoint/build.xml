@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../../config/common.xml">
+<!ENTITY reporting SYSTEM "../../report.xml">
+]>
+
+<project name="ejb-ee" default="usage" basedir=".">
+    &commonSetup;
+    &commonBuild;
+    &reporting;
+
+    <target name="all">
+        <antcall target="multi"/>
+        <antcall target="simple"/>
+    </target>
+
+    <target name="multi">
+        <record name="methodcp-multi.output" action="start" />
+            <ant dir="multi" target="all"/>
+        <record name="methodcp-multi.output" action="stop" />
+    </target>
+
+
+    <target name="simple">
+        <record name="methodcp-simple.output" action="start" />
+            <ant dir="simple" target="all"/>
+        <record name="methodcp-simple.output" action="stop" />
+    </target>
+
+    <target name="usage">
+	<echo>
+		Usage:
+			ant all (Executes all the ejb-ee tests)
+	</echo>
+    </target>
+</project>

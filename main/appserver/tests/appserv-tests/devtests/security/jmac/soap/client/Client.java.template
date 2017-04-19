@@ -1,0 +1,64 @@
+/*
+ * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
+ * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+ */
+package com.sun.s1asdev.security.jmac.soap.client;
+
+import java.util.Map;
+
+import javax.jws.HandlerChain;
+import javax.xml.ws.WebServiceRef;
+
+import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
+
+import com.sun.s1asdev.security.jmac.soap.ejbws.HelloEjb;
+import com.sun.s1asdev.security.jmac.soap.ejbws.JmacSoapEjbService;
+import com.sun.s1asdev.security.jmac.soap.servletws.HelloServlet;
+import com.sun.s1asdev.security.jmac.soap.servletws.JmacSoapServletService;
+
+public class Client {
+    private static SimpleReporterAdapter stat =
+            new SimpleReporterAdapter("appserv-tests");
+    private static String testSuite = "Sec::Jmac SOAP test ";
+
+    @HandlerChain(file="myhandler.xml")
+    @WebServiceRef(wsdlLocation="http://@HOST@:@PORT@/JmacSoapEjbService/HelloEjb?WSDL")
+    private static JmacSoapEjbService ejbService;
+
+    @HandlerChain(file="myhandler.xml")
+    @WebServiceRef(wsdlLocation="http://@HOST@:@PORT@/security-jmac-soap-web/webservice/JmacSoapServletService/HelloServlet?WSDL")
+    private static JmacSoapServletService servletService;
+
+
+    public static void main(String[] args) {
+        stat.addDescription("security-jmac-soap");
+        String description = null;
+        try {
+            HelloEjb ejbPort = ejbService.getHelloEjbPort();
+
+            description = testSuite + " ejbws: hello";
+            String ejbMsg = ejbPort.hello("Sun");
+            System.out.println(ejbMsg);
+            if ("InboundHandler ValResp SecResp HelloEjb ValReq SecReq OutboundHandler Sun".equals(ejbMsg)) {
+                stat.addStatus(description, stat.PASS);  
+            } else {
+                stat.addStatus(description, stat.FAIL);  
+            }
+
+            HelloServlet servletPort = servletService.getHelloServletPort();
+            description = testSuite + " serlvetws: hello";
+            String servletMsg = servletPort.hello("Sun");
+            System.out.println(servletMsg);
+            if ("InboundHandler ValResp SecResp HelloServlet ValReq SecReq OutboundHandler Sun".equals(servletMsg)) {
+                stat.addStatus(description, stat.PASS);  
+            } else {
+                stat.addStatus(description, stat.FAIL);  
+            }
+        } catch(Exception ex) {
+            ex.printStackTrace();
+            stat.addStatus(description, stat.FAIL);
+        }
+
+        stat.printSummary("security-jmac-soap");
+    }
+}

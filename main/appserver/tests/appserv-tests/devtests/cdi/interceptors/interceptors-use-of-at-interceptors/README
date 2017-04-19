@@ -1,0 +1,3 @@
+Test
+- Use of business method interceptors 
+    - Use of the old-style Interceptors on a CDI bean

@@ -1,0 +1,2 @@
+Non-CDI usecase
+Injection of a ManagedBean into a servlet through @Resource and invoking an overridden toString on that ManagedBean reference. [see issue 11528]

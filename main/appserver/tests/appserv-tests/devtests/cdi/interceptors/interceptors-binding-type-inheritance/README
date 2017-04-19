@@ -1,0 +1,5 @@
+Test
+- Use of business method interceptors 
+    - Interceptor binding type inheritance
+    - bean annotated with @Action bound to TranscationInterceptor, 
+    SecureInterceptor, TransactionalSecureInterceptor

@@ -101,6 +101,7 @@
 
         <copy file="src/java/jaxb1/jaxb.properties" todir="${class.output}/jaxb1/" failonerror="false"/>
 
+        <mkdir dir="web/html"/>
         <mkdir dir="${class.output}/META-INF"/>
         <copy file="metadata/persistence.xml" todir="${class.output}/META-INF" failonerror="false"/>
 

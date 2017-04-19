@@ -1,0 +1,31 @@
+This test, when run with 'all' target performs the following steps:
+
+- build
+- setup
+  - start-database
+  - startDomain
+  - setup-database (add jdbc resource for the timer resource and set it as the timer resource)
+  - setup-cluster (create cluster of 2 instances, enable  resource in the cluster)
+
+- run-test
+  - deploy 
+    - deploy-to-domain - deploy application with the target 'domain' (no automatic timers should be created at this time)
+    - add-app-ref-for-target - execute add-application-ref on target 'c1' (enable the application which automatically starts ''timer01'' randomly on one of the instances - check the instance logs to see which one)
+  - verify
+    Expected result: only one timer belongs to this ejb
+  - add-cluster
+    - setup-cluster (create another cluster of 2 instances, enable  resource in the cluster)
+    - add-app-ref-for-target - execute add-application-ref on target 'c2' (enable the application on cluster c2, no new timers should be created)
+  - verify
+    Expected result: only one timer belongs to this ejb
+  - redeploy - redeploy application with the target 'domain' (automatic timer should be created only on one instance of 4 instances)
+  - verify
+    Expected result: only one timer belongs to this ejb
+  - undeploy
+
+- unsetup
+  - unsetup-cluster (stop and delete the cluster)
+  - unsetup-database (remove resource and unset timer resource)
+  - stop-database
+  - stopDomain
+

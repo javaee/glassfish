@@ -1,0 +1,32 @@
+<connector xmlns="http://java.sun.com/xml/ns/j2ee"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
+           http://java.sun.com/xml/ns/j2ee/connector_1_5.xsd"
+           version="1.5">
+
+  <description>Generic ResourceAdapter</description>
+  <display-name>Generic ResourceAdapter</display-name>
+
+  <vendor-name>Generic Connector</vendor-name>
+
+  <eis-type>Generic Adapter</eis-type>
+
+  <resourceadapter-version>1.0</resourceadapter-version>
+
+  <resourceadapter id="CommandResourceAdapter">
+
+    <resourceadapter-class>com.sun.s1asdev.ejb.ejb32.mdb.ra.CommandResourceAdapter</resourceadapter-class>
+
+    <inbound-resourceadapter>
+      <messageadapter>
+        <messagelistener>
+          <messagelistener-type>com.sun.s1asdev.ejb.ejb32.mdb.ra.CommandListener</messagelistener-type>
+          <activationspec>
+            <activationspec-class>com.sun.s1asdev.ejb.ejb32.mdb.ra.CommandActivationSpec</activationspec-class>
+          </activationspec>
+        </messagelistener>
+      </messageadapter>
+    </inbound-resourceadapter>
+
+  </resourceadapter>
+</connector>

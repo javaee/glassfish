@@ -1,0 +1,184 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
+<!ENTITY commonRun SYSTEM "file:./../../../config/run.xml">
+<!ENTITY commonSecurity SYSTEM "file:./../common.xml">
+<!ENTITY testProperties SYSTEM "./build.properties">
+]>
+
+
+<project name="jsp2sful" basedir="." default="usage">
+
+    &commonSetup;
+    &commonBuild;
+    &commonRun;
+    &commonSecurity;
+    &testProperties;
+    
+    <target name="all" depends="build, setup, deploy, run, undeploy, unsetup"/>
+    <target name="clean" depends="init-common">
+        <delete dir="${build.classes.dir}"/>
+        <delete dir="${assemble.dir}"/>
+    </target>
+
+    <target name="compile" depends="clean">
+        <antcall target="compile-common">
+            <param name="src" value="profile"/>
+        </antcall>
+    </target>
+
+    <target name="build" depends="compile">
+        <antcall target="webclient-war-common">
+            <param name="hasWebclient" value="yes" /> 
+        </antcall>
+
+        <antcall target="ejb-jar-common" />
+        <antcall target="ear-common" />
+    </target>
+
+    <target name="deploy" depends="init-common">
+        <antcall target="deploy-common"/>
+    </target>
+
+    <target name="run" depends="init-common">
+        <antcall target="runweb">
+            <param name="webuser" value="shingwai"/>
+            <param name="webpassword" value="shingwai"/>
+            <param name="goldenfile" value="goldenfiles/AllAuth.html"/>
+            <param name="testcaseid" value="user-with-all-authorization"/>
+        </antcall>
+        <antcall target="runweb">
+            <param name="webuser" value="swchan"/>
+            <param name="webpassword" value="swchan"/>
+            <param name="goldenfile" value="goldenfiles/PartialEJBAuth.html"/>
+            <param name="testcaseid" value="user-with-partial-ejb-authorization"/>
+        </antcall>
+        <antcall target="runweb">
+            <param name="webuser" value="webuser"/>
+            <param name="webpassword" value="webuser"/>
+            <param name="goldenfile" value="goldenfiles/WebOnlyAuth.html"/>
+            <param name="testcaseid" value="user-with-web-authorization-only"/>
+        </antcall>
+        <antcall target="runweb-403">
+            <param name="webuser" value="noauthuser"/>
+            <param name="webpassword" value="noauthuser"/>
+            <param name="testcaseid" value="user-with-no-authorization"/>
+        </antcall>
+        <antcall target="runweb">
+            <param name="webuser" value="nosuchuser"/>
+            <param name="webpassword" value="nosuchuser"/>
+            <param name="goldenfile" value="docroot/error.html"/>
+            <param name="testcaseid" value="invalid-user"/>
+        </antcall>
+    </target>
+
+    <target name="runweb" depends="init-common">
+       <taskdef name="webtest" classname="${webtest.classname}" classpath="${webtest.classpath}" />
+       <webtest request="GET /jsp2sful/index.jsp HTTP/1.0"
+           debug="9"
+           host="${http.host}"
+           port="${http.port}"
+           authMethod="FORM"
+           userName="${webuser}"
+           password="${webpassword}"
+           firstTask="true"
+           lastTest="true"
+           lastCase="true"
+           lastTask="true"
+           resultFileName="${webtest.report.dir}/security-gtest-results.xml"
+           testSession="form-auth-web"
+           requestHeaders="Host:${http.host}:${http.port}"
+           goldenFile="${env.APS_HOME}/devtests/security/jsp2sful/${goldenfile}"
+           testSuiteId="form-auth-web"
+           testSuiteName="form-auth-jsp-web"
+           testSuiteDescription="Security Test"
+           testId="form-auth-jsp-web"
+           testName="form-auth-jsp-web"
+           testDescription="Form auth test from JSP to Stateful EJB: ${testcaseid}"
+           testCaseId="${testcaseid}"
+           testCaseName="${testcaseid}"
+           testCaseDescription="Form auth test from JSP to Stateful EJB"
+           testStrategy="Form auth tests, both positive and negative from JSP to Stateful EJB"
+       />
+    </target>
+
+    <target name="runweb-403" depends="init-common">
+       <taskdef name="webtest" classname="${webtest.classname}" classpath="${webtest.classpath}" />
+       <webtest request="GET /jsp2sful/index.jsp HTTP/1.0"
+           debug="9"
+           host="${http.host}"
+           port="${http.port}"
+           authMethod="FORM"
+           userName="${webuser}"
+           password="${webpassword}"
+           firstTask="true"
+           lastTest="true"
+           lastCase="true"
+           lastTask="true"
+           resultFileName="${webtest.report.dir}/security-gtest-results.xml"
+           testSession="form-auth-web"
+           requestHeaders="Host:${http.host}:${http.port}"
+           returnCode="HTTP/1.1 403"
+           testSuiteId="form-auth-web"
+           testSuiteName="form-auth-jsp-web"
+           testSuiteDescription="Security Test"
+           testId="form-auth-jsp-web"
+           testName="form-auth-jsp-web"
+           testDescription="Form auth test from JSP to Stateful EJB: ${testcaseid}"
+           testCaseId="${testcaseid}"
+           testCaseName="${testcaseid}"
+           testCaseDescription="Form auth test from JSP to Stateful EJB"
+           testStrategy="Form auth tests, both positive and negative from JSP to Stateful EJB"
+       />
+    </target>
+
+    <target name="undeploy" depends="init-common">
+        <antcall target="undeploy-common"/>
+    </target>
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+
+    <target name="setup">
+        <antcall target="create-user-common">
+	    <param name="user" value="shingwai"/>
+	    <param name="password" value="shingwai"/>
+	    <param name="groups" value="employee"/>
+       </antcall>
+        <antcall target="create-user-common">
+	    <param name="user" value="swchan"/>
+	    <param name="password" value="swchan"/>
+	    <param name="groups" value="staff"/>
+       </antcall>
+        <antcall target="create-user-common">
+	    <param name="user" value="webuser"/>
+	    <param name="password" value="webuser"/>
+	    <param name="groups" value="employee"/>
+       </antcall>
+        <antcall target="create-user-common">
+	    <param name="user" value="noauthuser"/>
+	    <param name="password" value="noauthuser"/>
+	    <param name="groups" value="employee"/>
+       </antcall>
+    <!--  <antcall target="reconfig-common"/>-->
+    </target>
+ 
+    <target name="unsetup">
+      <!-- remove test users, just cleanup. -->
+      <antcall target="delete-user-common">
+        <param name="user" value="shingwai"/>
+      </antcall>
+      <antcall target="delete-user-common">
+        <param name="user" value="swchan"/>
+      </antcall>
+      <antcall target="delete-user-common">
+        <param name="user" value="webuser"/>
+      </antcall>
+      <antcall target="delete-user-common">
+        <param name="user" value="noauthuser"/>
+      </antcall>
+    </target>
+</project>

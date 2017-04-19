@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../../../config/common.xml">
+<!ENTITY testproperties SYSTEM "build.properties">
+]>
+
+<project name="ejb-ejb31-full-jcdifull-App" default="usage" basedir=".">
+
+    &commonSetup;
+    &commonBuild;
+    &testproperties;
+
+    <target name="all" depends="build,deploy,run,undeploy"/>
+
+    <target name="clean" depends="init-common">
+      <antcall  target="clean-common"/>
+    </target>
+ 
+    <target name="compile" depends="clean">
+      <mkdir dir="${build.classes.dir}"/>
+      <javac classpath="${env.S1AS_HOME}/modules/weld-osgi-bundle.jar:${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar" srcdir="ejb" destdir="${build.classes.dir}" debug="on" failonerror="true" includeantruntime="false" >
+          <compilerarg line="-endorseddirs ${env.S1AS_HOME}/modules/endorsed${path.separator}${env.S1AS_HOME}/modules"/>
+        </javac>
+    </target>
+
+    <target name="build" depends="compile">
+        <antcall target="ejb-jar-common">
+            <param name="ejbjar.classes" 
+              value="**/*.class"/>
+        </antcall>
+	<jar jarfile="${assemble.dir}/${appname}-ejb.jar" 
+             basedir="${build.classes.dir}" 
+             update="true">
+             <metainf dir="descriptor">
+                  <include name="beans.xml"/>
+             </metainf> 
+        </jar>
+	<!-- do client compile after so the classes aren't part of ejb-jar -->
+        <antcall target="compile-common">
+            <param name="src" value="client"/>
+        </antcall>
+    </target> 
+    
+    <target name="deploy" 
+            depends="init-common">
+        <antcall target="deploy-jar-common"/>
+    </target>
+
+    <target name="run" depends="init-common">
+        <antcall target="run_se"/>
+    </target>
+ 
+    <target name="run_se" depends="init-common">
+       <java  fork="on" 
+              failonerror="true"
+              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
+              classname="${se.client}">
+           <sysproperty key="org.omg.CORBA.ORBInitialPort" value="${orb.port}"/>
+           <arg line="${jndiroot}"/>
+           <arg line="ejb-ejb31-full-jcdifull-ejb"/>
+        </java>
+    </target>
+
+    <target name="undeploy" depends="init-common">
+        <antcall target="undeploy-jar-common"/>
+    </target>   
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+</project>

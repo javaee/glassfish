@@ -91,7 +91,7 @@
     srcdir="src/java"
     failonerror="false"
     destdir="${class.output}"/>
-
+        <mkdir dir="web/html"/>
         <mkdir dir="${class.output}/META-INF"/>
         <copy todir="${class.output}/META-INF">
             <fileset dir="src/java/META-INF"/>

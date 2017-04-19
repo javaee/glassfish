@@ -1,0 +1,5 @@
+GLASSFISH-15735 scenario
+with the ordering reversed.
+alpha.jar has "Bar"(that requires Foo to be injected)
+bravo.jar has "Foo"
+

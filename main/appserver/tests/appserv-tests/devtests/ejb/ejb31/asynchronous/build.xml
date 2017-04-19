@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../../config/common.xml">
+<!ENTITY reporting   SYSTEM "../../report.xml">
+]>
+
+<project name="remote" default="usage" basedir=".">
+    &commonSetup;
+    &commonBuild;
+    &reporting;
+
+    <target name="all">
+        <antcall target="remote"/>
+        <antcall target="localandremote"/>
+    </target>
+
+    <target name="remote">
+        <record name="remote.output" action="start" />
+            <ant dir="remote" target="all"/>
+        <record name="remote.output" action="stop" />
+    </target>
+
+    <target name="localandremote">
+        <record name="localandremote.output" action="start" />
+            <ant dir="localandremote" target="all"/>
+        <record name="localandremote.output" action="stop" />
+    </target>
+
+    <target name="usage">
+	<echo>
+		Usage:
+			ant all (Executes all the ejb-ejb31-asynchronous tests)
+	</echo>
+    </target>
+</project>

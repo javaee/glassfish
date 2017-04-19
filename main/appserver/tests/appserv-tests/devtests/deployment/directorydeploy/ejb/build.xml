@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "./../../config/common.xml">
+]>
+
+<!--
+  Test directory deployment for ejb with directory structure such 
+  as bar
+-->
+ 
+<project name="directoryDeploy-Ejb" default="all" basedir=".">
+
+ 	&commonBuild;
+
+    <property name="testName" value="dirDeployEjb"/>
+    <property name="ejb.build.dir" 
+              value="${build}/${testName}"/>
+    <property name="client.build.dir" value="${build}/client"/>
+        
+    <target name="prepare" depends="init">
+       <mkdir dir="${build}" />
+       <mkdir dir="${ejb.build.dir}" />
+       <mkdir dir="${client.build.dir}" />
+    </target>
+
+    <target name="compile" depends="prepare">
+         <javac srcdir="ejb" destdir="${ejb.build.dir}">
+                        <classpath refid="gfv3.classpath"/>
+         </javac>
+         <javac destdir="${client.build.dir}/">
+                         <src path="../client"/>
+                         <include name="HelloClient.java"/>
+            <classpath>
+                <path refid="gfv3.classpath"/>
+                <path location="${ejb.build.dir}"/>
+            </classpath>
+          </javac>
+    </target>
+                                                                                
+    <target name="assemble" depends="compile">
+             <mkdir dir="${ejb.build.dir}/META-INF"/>
+             <copy file="descriptor/ejb-jar.xml"
+                   todir="${ejb.build.dir}/META-INF"/>
+             <copy file="descriptor/sun-ejb-jar.xml"
+                   todir="${ejb.build.dir}/META-INF"
+                   failonerror="false"/>
+    </target>
+
+    <target name="deploydir.asadmin" depends="prepare">
+        <antcall target="common.deploydir.asadmin">
+            <param name="arg.list"
+                   value="--name ${testName} --retrieve ${client.build.dir} ${build}/${testName}"/>
+        </antcall>
+    </target>
+
+   <target name="redeploydir.asadmin" depends="prepare">
+        <antcall target="common.redeploydir.asadmin">
+            <param name="arg.list"
+                   value="--name ${testName} --retrieve ${client.build.dir} ${build}/${testName}"/>
+        </antcall>
+    </target>
+                                                                                
+    <target name="undeploy.asadmin">
+        <antcall target="common.undeploy.asadmin">
+            <param name="arg.list"
+                   value="${testName}"/>
+        </antcall>
+    </target>
+
+   <target name="run" depends="run.positive"/>
+
+   <target name="run.positive" depends="init,setOrbPort">
+        <antcall target="runclient">
+            <param name="arg.list" value="true"/>
+            <param name="log.id" value="${log.id}"/>
+            <param name="tgtPort" value="${depltest.orbport}"/>
+        </antcall>
+    </target>
+                                                                                
+    <target name="run.negative" depends="init,setOrbPort">
+        <antcall target="runclient">
+            <param name="arg.list" value="false"/>
+            <param name="log.id" value="${log.id}"/>
+            <param name="tgtPort" value="${depltest.orbport}"/>
+        </antcall>
+    </target>
+
+    <target name="runclient" depends="init, setOrbPort">
+        <javaWithResult
+            fork="true"
+            failonerror="false"
+            jvm="${JAVA}"
+            classname="standaloneclient.HelloClient"
+            output="${build}/${log.id}.output.log"
+            resultproperty="result">
+                                                                                
+            <jvmarg value="-Dorg.omg.CORBA.ORBInitialHost=${http.host}"/>
+            <jvmarg value="-Dorg.omg.CORBA.ORBInitialPort=${tgtPort}"/>
+            <jvmarg value="-Djava.endorsed.dirs=${inst}/lib/endorsed"/>
+                                                                                
+            <classpath>
+                <path refid="gfv3.classpath"/>
+                <path location="${ejb.build.dir}"/>
+                <path location="${client.build.dir}"/>
+                <path location="${client.build.dir}/dirDeployEjbClient.jar"/>
+            </classpath>
+                                                                                
+            <arg line="${arg.list}"/>
+        </javaWithResult>
+                                                                                
+        <antcall target="processResult">
+            <param name="result" value="${result}"/>
+            <param name="log" value="${build}/${log.id}.output.log"/>
+        </antcall>
+        </target>
+
+                                                                                
+    <target name="private-all">
+        <antcall target="assemble"/>
+       <antcall target="declare-test">
+            <param name="description" value="directorydeploy/ejb Test asadmin deploydir"/>
+        </antcall>
+        <antcall target="deploydir.asadmin"/>
+        <antcall target="run.positive">
+          <param name="log.id" value="1"/>
+        </antcall>
+        <antcall target="declare-test">
+            <param name="description" value="directorydeploy/ejb Test asadmin redeploydir"/>
+        </antcall>
+        <antcall target="redeploydir.asadmin"/>
+        <antcall target="run.positive">
+           <param name="log.id" value="2"/>
+        </antcall>
+        <antcall target="declare-test">
+            <param name="description" value="directorydeploy/ejb Test asadmin undeploydir"/>
+        </antcall>
+        <antcall target="undeploy.asadmin"/>
+        <antcall target="run.negative">
+         <param name="log.id" value="3"/>
+        </antcall>
+    </target>
+
+    <target name="clobber" depends="clean">
+        <delete dir="${build}"/>
+    </target>
+
+    
+</project>

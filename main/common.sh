@@ -53,50 +53,50 @@
 #NOTIFICATION_FROM
 #GPG_PASSPHRASE
 #HUDSON_HOME
+HUDSON_JOB_NAME=gf-master-continous-check
+# OS-specific section
+if [ `uname | grep -i "sunos" | wc -l | awk '{print $1}'` -eq 1 ] ; then
+  GREP="ggrep"
+  AWK="gawk"
+  SED="gsed"
+  BC="gbc"
+  export PATH=/gf-hudson-tools/bin:${PATH}
+else
+  GREP="grep"
+  AWK="awk"
+  SED="sed"
+  BC="bc"
+fi
+
+export GREP AWK SED BC
 
 build_init(){
     init_common
     kill_glassfish
     print_env_info
-    get_svn_rev
     create_version_info
-}
-
-build_re_init(){
-    build_init
-    kill_ips_repo
-    install_uc_toolkit
-    start_ips_repository
 }
 
 build_re_finalize(){
     archive_bundles
     zip_tests_workspace
     zip_tests_maven_repo
+    zip_gf_source
 }
 
 build_re_dev(){
     build_init
     dev_build
-    build_re_finalize
-}
-
-build_re_nightly(){
-    export BUILD_KIND="nightly"
-    build_re_init
-    init_nightly
-    svn_checkout ${SVN_REVISION}
-    run_findbugs
-    release_build "clean install" "javaee-api"
+    merge_junits
     build_re_finalize
 }
 
 build_re_weekly(){
     export BUILD_KIND="weekly"
-    build_re_init
+    build_init
     init_weekly
-    delete_svn_tag ${RELEASE_VERSION}
-    svn_checkout ${SVN_REVISION}
+    # delete_svn_tag ${RELEASE_VERSION}
+    # svn_checkout ${SVN_REVISION}
     release_prepare
     release_build "clean deploy" "release-phase2,embedded,javaee-api"
     build_re_finalize
@@ -105,16 +105,9 @@ build_re_weekly(){
 
 promote_init(){
     init_common
-    if [ "nightly" == "${1}" ]
-    then
-		init_nightly
-    elif [ "weekly" == "${1}" ]
-    then
-		init_weekly
-    fi
-
+	init_weekly
     export PROMOTION_SUMMARY=${WORKSPACE_BUNDLES}/${BUILD_KIND}-promotion-summary.txt
-    rm -f $PROMOTION_SUMMARY
+    rm -f ${PROMOTION_SUMMARY}
     export JNET_DIR=${JNET_USER}@${JNET_STORAGE_HOST}:/dlc/${ARCHIVE_PATH}
     export JNET_DIR_HTTP=http://download.java.net/${ARCHIVE_PATH}
     export ARCHIVE_STORAGE_BUNDLES=/java/re/${ARCHIVE_MASTER_BUNDLES}
@@ -122,7 +115,6 @@ promote_init(){
     export SSH_STORAGE=${RE_USER}@${STORAGE_HOST}
     export SCP=${SSH_STORAGE}:${ARCHIVE_STORAGE_BUNDLES}
     export ARCHIVE_URL=http://${STORAGE_HOST_HTTP}/java/re/${ARCHIVE_MASTER_BUNDLES}
-
     init_storage_area
 }
 
@@ -132,73 +124,13 @@ promote_finalize(){
     send_notification
 }
 
-purge_old_nightlies(){
-#########################
-# PURGE OLDER NIGHTLIES #
-#########################
-
-    rm -rf /tmp/purgeNightlies.sh
-    cat <<EOF > /tmp/purgeNightlies.sh
-#!/bin/bash
-# Max builds to keep around
-    MAX_BUILDS=21
-    cd \$1
-    LISTING=\`ls -trd b*\`
-    nbuilds=0
-    for i in \$LISTING; do
-	nbuilds=\`expr \$nbuilds + 1\`
-    done
-    echo "Total number of builds is \$nbuilds"
-    
-    while [ \$nbuilds -gt \$MAX_BUILDS ]; do
-	oldest_dir=\`ls -trd b* | head -n1\`
-	echo "rm -rf \$oldest_dir"
-	rm -rf \$oldest_dir
-	nbuilds=\`expr \$nbuilds - 1\`
-	echo "Number of builds is now \$nbuilds"
-    done    
-EOF
-    ssh ${SSH_MASTER} "rm -rf /tmp/purgeNightlies.sh"
-    scp /tmp/purgeNightlies.sh ${SSH_MASTER}:/tmp
-    ssh ${SSH_MASTER} "chmod +x /tmp/purgeNightlies.sh ; bash -e /tmp/purgeNightlies.sh /java/re/${ARCHIVE_PATH}"
-}
-
-promote_nightly(){
-    promote_init "nightly"
-    promote_bundle ${PROMOTED_BUNDLES}/web.zip ${PRODUCT_GF}-${PRODUCT_VERSION_GF}-web-${BUILD_ID}-${MDATE}.zip
-    promote_bundle ${PROMOTED_BUNDLES}/glassfish.zip ${PRODUCT_GF}-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.zip
-    promote_bundle ${PROMOTED_BUNDLES}/nucleus-new.zip nucleus-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.zip
-    promote_bundle ${PROMOTED_BUNDLES}/version-info.txt version-info-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.txt
-    promote_bundle ${PROMOTED_BUNDLES}/changes.txt changes-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.txt
-    VERSION_INFO="${WORKSPACE_BUNDLES}/version-info-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.txt"
-    SVN_REVISION=`head -1 ${VERSION_INFO} | awk '{print $2}'`
-    #record_svn_rev ${SVN_REVISION}
-    purge_old_nightlies
-    # hook for the docker image of the nightly
-    curl -H "Content-Type: application/json" \
-        --data '{"build": true}' \
-        -X POST \
-        -k \
-        https://registry.hub.docker.com/u/glassfish/nightly/trigger/945d55fc-1d4c-4043-8221-74185d9a4d53/
-    ssh $SSH_MASTER `echo "echo $SVN_REVISION > /scratch/java_re/hudson/hudson_install/last_promoted_nightly_scm_revision"`    
-    promote_finalize
-}
-
 promote_weekly(){
     promote_init "weekly"
     promote_bundle ${PROMOTED_BUNDLES}/web.zip ${PRODUCT_GF}-${PRODUCT_VERSION_GF}-web-${BUILD_ID}.zip
     promote_bundle ${PROMOTED_BUNDLES}/glassfish.zip ${PRODUCT_GF}-${PRODUCT_VERSION_GF}-${BUILD_ID}.zip
     promote_bundle ${PROMOTED_BUNDLES}/nucleus-new.zip nucleus-${PRODUCT_VERSION_GF}-${BUILD_ID}.zip
     promote_bundle ${PROMOTED_BUNDLES}/version-info.txt version-info-${PRODUCT_VERSION_GF}-${BUILD_ID}.txt
-    if [ -z ${RELEASE_VERSION} ]
-    then
-        promote_bundle ${PROMOTED_BUNDLES}/changes.txt changes-${PRODUCT_VERSION_GF}-${BUILD_ID}.txt
-        VERSION_INFO="${WORKSPACE_BUNDLES}/version-info-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.txt"
-        SVN_REVISION=`head -1 ${VERSION_INFO} | awk '{print $2}'`
-        ssh $SSH_MASTER `echo "echo $SVN_REVISION > /scratch/java_re/hudson/hudson_install/last_promoted_weekly_scm_revision"`
-    fi
     VERSION_INFO="${WORKSPACE_BUNDLES}/version-info-${PRODUCT_VERSION_GF}-${BUILD_ID}.txt"
-    create_svn_tag
 
     # increment build value in both promote-trunk.version and pkgid-trunk.version
     # only when build parameter RELEASE_VERSION has been resolved (i.e not provided explicitly).
@@ -227,8 +159,6 @@ promote_dev(){
     init_common
     mkdir -p ${WORKSPACE}/dev-bundles
     curl ${PROMOTED_BUNDLES}/version-info.txt > ${WORKSPACE}/dev-bundles/version-info.txt
-    SVN_REVISION=`cat ${WORKSPACE}/dev-bundles/version-info.txt | head -1 | awk '{print $2}'`
-    record_svn_rev ${SVN_REVISION}
 }
 
 init_weekly(){
@@ -248,15 +178,6 @@ init_weekly(){
     init_version 
 }
 
-init_nightly(){
-    BUILD_KIND="nightly"
-    ARCHIVE_PATH=${PRODUCT_GF}/${PRODUCT_VERSION_GF}/nightly
-    ARCHIVE_MASTER_BUNDLES=${ARCHIVE_PATH}/${BUILD_ID}-${MDATE}
-    export BUILD_KIND ARCHIVE_PATH ARCHIVE_MASTER_BUNDLES
-    init_bundles_dir
-    init_version
-}
-
 init_common(){
     require_env_var "HUDSON_HOME"
     BUILD_ID=`cat ${HUDSON_HOME}/promote-trunk.version`
@@ -274,8 +195,6 @@ init_common(){
 
     PROMOTED_JOB_URL=${HUDSON_URL}/job/${PROMOTED_JOB_NAME}/${PROMOTED_NUMBER}
     PROMOTED_BUNDLES=${PROMOTED_JOB_URL}/artifact/bundles/
-    GF_WORKSPACE_URL_SSH=svn+ssh://${RE_USER}@svn.java.net/glassfish~svn
-    GF_WORKSPACE_URL_HTTP=https://svn.java.net/svn/glassfish~svn
 
     IPS_REPO_URL=http://localhost
     IPS_REPO_DIR=${WORKSPACE}/promorepo
@@ -412,23 +331,35 @@ kill_glassfish(){
     kill_clean `jps | grep ASMain | awk '{print $1}'`
 }
 
-kill_ips_repo(){
-    kill_clean `ps -auwwx | grep "depot.py" | grep -v grep | awk '{print $2}'`
-}
-
 print_env_info(){
     printf "\n%s \n\n" "==== ENVIRONMENT INFO ===="
     pwd
     uname -a
     java -version
     mvn --version
-    svn --version
+    git --version
 }
 
 dev_build(){
     printf "\n%s \n\n" "===== DO THE BUILD! ====="
     mvn ${MAVEN_ARGS} -f main/pom.xml clean install \
         -Dmaven.test.failure.ignore=true
+}
+
+merge_junits(){
+  TEST_ID="build-unit-tests"
+  rm -rf ${WORKSPACE}/test-results
+  mkdir -p ${WORKSPACE}/test-results/$TEST_ID/results/junitreports
+  JUD="${WORKSPACE}/test-results/${TEST_ID}/results/junitreports/test_results_junit.xml"
+  echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" > ${JUD}
+  echo "<testsuites>" >> ${JUD}
+  for i in `find . -type d -name "surefire-reports"`
+  do    
+    ls -d -1 ${i}/*.xml | xargs cat | ${SED} 's/<?xml version=\"1.0\" encoding=\"UTF-8\" *?>//g' >> ${JUD}
+  done
+  echo "</testsuites>" >> ${JUD}
+  ${SED} -i 's/\([a-zA-Z-]\w*\)\./\1-/g' ${JUD}
+  ${SED} -i "s/\bclassname=\"/classname=\"${TEST_ID}./g" ${JUD}
 }
 
 release_build(){
@@ -490,229 +421,45 @@ run_findbugs(){
     done
 }
 
-get_svn_rev(){
-    # can be a build parameter
-    # value can be either "HEAD" or an SVN revision
-    if [ ! -z ${SYNCHTO} ] && [ ${#SYNCHTO} -gt 0 ]
-    then
-        SVN_REVISION=${SYNCHTO}
-    elif [ "${BUILD_KIND}" == "nightly" ]
-    then
-        export triggering_build_url=$(wget -q -O - "${TRIGGER_JOB_URL}/dev-build/api/xml?xpath=//url/text()")
-    fi
-
-    if [ -z ${SVN_REVISION} ] \
-        || [ `grep -i 'head' <<< "${SVN_REVISION}" | wc -l | awk '{print $1}'` -eq 1 ]
-    then
-        svn co --depth=files ${GF_WORKSPACE_URL_SSH}/trunk/main tmp
-
-        # if not defined, we are looking for last known good revisions
-        if [ -z ${SVN_REVISION} ]
-        then
-            SVN_REVISION=`get_clean_svn_rev tmp`
-        fi
-
-        # if still not defined or empty or equal to 'head' or 'HEAD'
-        # we retrieve the current HEAD's value
-        if [ -z ${SVN_REVISION} ] || \
-           [ ${#SVN_REVISION} -eq 0 ] || \
-           [ `grep -i 'head' <<< "${SVN_REVISION}" | wc -l | awk '{print $1}'` -eq 1 ]
-        then
-            SVN_REVISION=`get_current_svn_rev tmp`
-        fi
-        rm -rf tmp
-    fi
-    export SVN_REVISION
-}
-
-get_svn_rev_from_version_info(){
-    export SVN_REVISION=`cat ${VERSION_INFO} | head -1 | awk '{print $2}'`
-}
-
-record_svn_rev(){
-    printf "\n%s \n\n" "===== RECORD CLEAN REVISION ====="
-
-    if [ -z ${1} ] || [ ${#1} -eq 0 ]
-    then
-        printf "\n%s \n\n" "===== ERROR: revision supplied to record_svn_rev function is not set or empty ====="
-        exit 1
-    fi  
-
-    svn co --depth=empty ${GF_WORKSPACE_URL_SSH}/trunk/main tmp-co
-
-    COMMIT_MSG="setting clean revision"
-    LOG=`svn propget svn:log --revprop -r ${1} tmp-co`
-
-    # record one clean_revision only once !
-    if [ "${LOG}" != "${COMMIT_MSG}" ] && [ "${1}" != "`get_clean_svn_rev tmp-co`" ]
-    then
-        echo ${1} > svn-keywords
-        svn propset --force -F svn-keywords svn:keyword tmp-co
-        svn commit ${WORKSPACE}/tmp-co -m "${COMMIT_MSG}"
-        rm -rf tmp-co svn-keywords
-    else
-        echo "Nothing to do. Current clean_revision is already recorded"
-        exit 0
-    fi
-}
-
-get_clean_svn_rev(){
-    svn propget svn:keyword ${1} | head -1 | awk '{print $1}'
-}
-
-get_current_svn_rev(){
-    svn info ${1} | grep 'Revision:' | awk '{print $2}'
-}
-
-delete_svn_tag(){
-    printf "\n%s \n\n" "===== DELETE TAG ====="
-    svn delete ${GF_WORKSPACE_URL_SSH}/tags/${1} -m "delete tag ${1}" | true
-}
-
-svn_checkout(){
-    printf "\n%s \n\n" "===== CHECKOUT ====="
-    svn checkout ${GF_WORKSPACE_URL_SSH}/trunk/main -r ${1}
-}
-
 create_version_info(){
-    # create version-info.txt
-    # TODO, put env desc
-    # OS, arch, build node, mvn version, jdk version
-    echo "${GF_WORKSPACE_URL_HTTP}/trunk/main ${SVN_REVISION}" > ${WORKSPACE}/version-info.txt
-    
-    # RELEASE_VERSION has not be provided
-    # releasing next promoted build
-    if [ "${BUILD_KIND}" = "weekly" ] && [ ${#RELEASE_VERSION} -eq 0 ]
-    then
-    	RELEASE_VERSION="${PRODUCT_VERSION_GF}-${BUILD_ID}"
-    fi
-
-    if [ ! -z ${RELEASE_VERSION} ]
-    then
-	   echo "Maven-Version: ${RELEASE_VERSION}" >> ${WORKSPACE}/version-info.txt
-    fi
-
-    if [ ! -z ${triggering_build_url} ]
-    then
-        echo "triggering_url ${triggering_build_url}" >> ${WORKSPACE}/version-info.txt
-    fi
-
     printf "\n%s\n\n" "==== VERSION INFO ===="
-    echo "Date: `date`" >> ${WORKSPACE}/version-info.txt
-    cat ${WORKSPACE}/version-info.txt
-
-    create_changes_info
-}
-
-create_changes_info(){
-    curl $JOB_URL/lastSuccessfulBuild/artifact/bundles/version-info.txt > ${WORKSPACE}/previous-version-info.txt
-    PREVIOUS_SVN_REV=`cat ${WORKSPACE}/previous-version-info.txt | head -1 | awk '{print $2}'`
-    touch ${WORKSPACE}/changes.txt
-    if [ "${PREVIOUS_SVN_REV}" != "${SVN_REVISION}" ] ; then
-        PREVIOUS_SVN_REV=$((PREVIOUS_SVN_REV+1))
-        svn log -r ${PREVIOUS_SVN_REV}:${SVN_REVISION} ${GF_WORKSPACE_URL_SSH}/trunk/main > ${WORKSPACE}/changes.txt
-	# Use nawk on Solaris
-    	if [ `uname | grep -i sunos | wc -l` -eq 1 ]
-    	then
-            AWK="nawk"
-    	else
-            AWK="awk"
-     	fi
-
-        # Remove all changes marked with 'setting clean revision'.
-        awk '{a[i++]=$0}END{for(j=i-1;j>=0;j--)print a[j];}' ${WORKSPACE}/changes.txt | ${AWK} '/setting clean revision/ {c=5} c && c-- {next}1' | awk '{a[i++]=$0}END{for(j=i-1;j>=0;j--)print a[j];}' | tee ${WORKSPACE}/changes.txt
-
-	# Clear out change log if empty (contains only a single line && starts with ---)
-        if [ `cat ${WORKSPACE}/changes.txt | wc -l` -eq 1 ] && [[ `cat ${WORKSPACE}/changes.txt` == -----* ]]
-	then
-            echo "" > ${WORKSPACE}/changes.txt
-	fi
-        
-        printf "\n%s\n\n" "==== CHANGELOG ===="
-        cat ${WORKSPACE}/changes.txt
-    fi
-}
-
-create_svn_tag(){
-    printf "\n%s \n\n" "===== CREATE SVN TAG ====="
-
-    # download and unzip the workspace
-    curl $PROMOTED_BUNDLES/workspace.zip > ${WORKSPACE_BUNDLES}/workspace.zip
-    rm -rf ${WORKSPACE}/tag ; unzip -qd ${WORKSPACE}/tag ${WORKSPACE_BUNDLES}/workspace.zip
-
-    # delete tag (for promotion forcing)
-    svn del ${GF_WORKSPACE_URL_SSH}/tags/${RELEASE_VERSION} -m "del tag ${RELEASE_VERSION}" | true
-
-    svn upgrade ${WORKSPACE}/tag/main
-
-    # copy the exact trunk used to run the release
-    SVN_REVISION=`svn info ${WORKSPACE}/tag/main | grep 'Revision:' | awk '{print $2}'`
-    svn cp ${GF_WORKSPACE_URL_SSH}/trunk/main@${SVN_REVISION} ${GF_WORKSPACE_URL_SSH}/tags/${RELEASE_VERSION} -m "create tag ${RELEASE_VERSION} based on r${SVN_REVISION}"
-
-    # switch the workspace
-    svn switch ${GF_WORKSPACE_URL_SSH}/tags/${RELEASE_VERSION} ${WORKSPACE}/tag/main
-
-    # commit the local changes
-    svn commit ${WORKSPACE}/tag/main -m "commit tag ${RELEASE_VERSION}"
-}
-
-install_uc_toolkit(){
-    IPS_TOOLKIT_ZIP=pkg-toolkit-${UC2_VERSION}-b${UC2_BUILD}-${IPS_REPO_TYPE}.zip
-
-    printf "\n%s \n\n" "===== DOWNLOAD IPS TOOLKIT ====="
-    curl ${UC_HOME_URL}/${IPS_TOOLKIT_ZIP} > ${IPS_TOOLKIT_ZIP}
-    printf "\n%s \n\n" "===== UNZIP IPS TOOLKIT ====="
-    unzip -o ${IPS_TOOLKIT_ZIP}
-    IPS_TOOLKIT=${WORKSPACE}/pkg-toolkit-$IPS_REPO_TYPE ; export IPS_TOOLKIT
-}
-
-start_ips_repository(){
-    # Increase timeout to 10 min to UC servers (default is 1 min).
-    PKG_CLIENT_CONNECT_TIMEOUT=600 ; export PKG_CLIENT_CONNECT_TIMEOUT
-    PKG_CLIENT_READ_TIMEOUT=600 ; export PKG_CLIENT_READ_TIMEOUT
-
-    # enforce usage of bundled python
-    PYTHON_HOME=${IPS_TOOLKIT}/pkg/python2.4-minimal; export PYTHON_HOME
-    LD_LIBRARY_PATH=${PYTHON_HOME}/lib ; export LD_LIBRARY_PATH
-    PATH=${PYTHON_HOME}/bin:${IPS_TOOLKIT}/pkg/bin:$PATH; export PATH
-
-    printf "\n%s \n\n" "===== START IPS REPOSITORY ====="
-    # start the repository
-    mkdir -p ${IPS_REPO_DIR}
-    ${IPS_TOOLKIT}/pkg/bin/pkg.depotd \
-        -d ${IPS_REPO_DIR} \
-        -p ${IPS_REPO_PORT} \
-        > ${IPS_REPO_DIR}/repo.log 2>&1 &
+    CURRENT_COMMIT=`git rev-parse --short HEAD`
+    echo Git Revision:  ${CURRENT_COMMIT} > ${WORKSPACE}/version-info.txt
+    echo Git Branch: `git branch | grep ^\* | cut -d ' ' -f 2` >> ${WORKSPACE}/version-info.txt
+    echo Build Date: `date` >> ${WORKSPACE}/version-info.txt
+    export CURRENT_COMMIT
 }
 
 archive_bundles(){
     printf "\n%s \n\n" "===== ARCHIVE BUNDLES ====="
     rm -rf ${WORKSPACE}/bundles ; mkdir ${WORKSPACE}/bundles
-
     mv ${WORKSPACE}/version-info.txt $WORKSPACE/bundles
-    mv ${WORKSPACE}/changes.txt ${WORKSPACE}/bundles
-    cp ${WORKSPACE}/main/appserver/distributions/glassfish/target/*.zip ${WORKSPACE}/bundles
-    cp ${WORKSPACE}/main/appserver/distributions/web/target/*.zip ${WORKSPACE}/bundles
-    cp ${WORKSPACE}/main/nucleus/distributions/nucleus/target/*.zip ${WORKSPACE}/bundles
+    cp ${WORKSPACE}/$GF_ROOT/main/appserver/distributions/glassfish/target/*.zip ${WORKSPACE}/bundles
+    cp ${WORKSPACE}/$GF_ROOT/main/appserver/distributions/web/target/*.zip ${WORKSPACE}/bundles
+    cp ${WORKSPACE}/$GF_ROOT/main/nucleus/distributions/nucleus/target/*.zip ${WORKSPACE}/bundles
 }
 
 clean_and_zip_workspace(){
     printf "\n%s \n\n" "===== CLEAN AND ZIP THE WORKSPACE ====="
-    svn status main | grep ? | awk '{print $2}' | xargs rm -rf
-    zip ${WORKSPACE}/bundles/workspace.zip -r main
+    zip ${WORKSPACE}/bundles/workspace.zip -r main > /dev/null
     # zip promorepo without top-leveldir for sdk build and to push IPS pkgs.
     (cd ${WORKSPACE}/promorepo; zip -ry - .) > ${WORKSPACE}/bundles/promorepo.zip
 }
 
 zip_tests_workspace(){
     printf "\n%s \n\n" "===== ZIP THE TESTS WORKSPACE ====="
-    svn status main | grep ? | awk '{print $2}' | xargs rm -rf
     zip -r ${WORKSPACE}/bundles/tests-workspace.zip \
         main/nucleus/pom.xml \
         main/nucleus/tests/ \
         main/appserver/pom.xml \
         main/appserver/tests/ \
-        -x *.svn/*
+        -x *.git/* > /dev/null
+    cp -p  ${WORKSPACE}/$GF_ROOT/main/appserver/tests/gftest.sh ${WORKSPACE}/bundles
+}
+
+zip_gf_source(){
+    printf "\n%s \n\n" "===== ZIP THE SOURCE CODE ====="
+    zip -r ${WORKSPACE}/bundles/main.zip main/ -x **/target\* > /dev/null
 }
 
 zip_tests_maven_repo(){
@@ -739,7 +486,7 @@ zip_tests_maven_repo(){
         org/glassfish/main/security/security/* \
         org/glassfish/main/security/security-services/* \
         org/glassfish/main/security/ssl-impl/* \
-        org/glassfish/main/security/nucleus-security/*
+        org/glassfish/main/security/nucleus-security/* > /dev/null
     popd
 }
 
@@ -875,25 +622,9 @@ scp_jnet(){
         "scp /java/re/${ARCHIVE_MASTER_BUNDLES}/${file} ${JNET_DIR}/latest-${simple_name}"
 }
 
-create_promotion_changs(){
-    if [[ "nightly" == "${BUILD_KIND}" ]]; then
-        LAST_PROMOTED_SCM_REVISION=`cat ${HUDSON_HOME}/last_promoted_nightly_scm_revision`
-    fi
-    if [[ "weekly" == "${BUILD_KIND}" ]]; then
-        LAST_PROMOTED_SCM_REVISION=`cat ${HUDSON_HOME}/last_promoted_weekly_scm_revision`
-    fi
-    VERSION_INFO="${WORKSPACE_BUNDLES}/version-info-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.txt"
-    SCM_REVISION=`head -1 ${VERSION_INFO} | awk '{print $2}'`
-    svn log -r ${LAST_PROMOTED_SCM_REVISION}:${SCM_REVISION} ${GF_WORKSPACE_URL_SSH}/trunk/main > ${WORKSPACE_BUNDLES}/${1}
-}
-
 promote_bundle(){
     printf "\n==== PROMOTE_BUNDLE (%s) ====\n\n" ${2}
-    if [[ ${1} == *"changes.txt" ]]; then
-        create_promotion_changs ${2}
-    else
-        curl ${1} > ${WORKSPACE_BUNDLES}/${2}
-    fi
+    curl ${1} > ${WORKSPACE_BUNDLES}/${2}
     scp ${WORKSPACE_BUNDLES}/${2} ${SCP}
     scp_jnet ${WORKSPACE_BUNDLES}/${2}
     if [ "nightly" == "${BUILD_KIND}" ]
@@ -915,7 +646,8 @@ promote_bundle(){
 }
 
 send_notification(){
-    get_svn_rev_from_version_info
+    local commit=`${GREP} 'Git Revision' ${VERSION_INFO} | cut -d ':' -f2 | ${AWK} '{print $1}'`
+    local branch=`${GREP} 'Git Branch' ${VERSION_INFO} | cut -d ':' -f2 | ${AWK} '{print $1}'`
     /usr/lib/sendmail -t << MESSAGE
 From: ${NOTIFICATION_FROM}
 To: ${NOTIFICATION_SENDTO}
@@ -928,7 +660,8 @@ Version : ${VERSION}
 External: ${JNET_DIR_HTTP}
 Internal: ${ARCHIVE_URL}
 Hudson job: ${PROMOTED_JOB_URL}
-SVN revision: ${SVN_REVISION}
+Git Commit Id: ${commit}
+Git Branch: ${branch}
 
 Aggregated tests summary:
 
@@ -1207,3 +940,5 @@ cat >> $1/$INDEX_FILENAME << EOF
 </html>
 EOF
 }
+
+

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+ DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+ Copyright 2010 Sun Microsystems, Inc. All rights reserved.
+
+ The contents of this file are subject to the terms of either the GNU
+ General Public License Version 2 only ("GPL") or the Common Development
+ and Distribution License("CDDL") (collectively, the "License").  You
+ may not use this file except in compliance with the License. You can obtain
+ a copy of the License at https://glassfish.dev.java.net/public/CDDL+GPL.html
+ or glassfish/bootstrap/legal/LICENSE.txt.  See the License for the specific
+ language governing permissions and limitations under the License.
+
+ When distributing the software, include this License Header Notice in each
+ file and include the License file at glassfish/bootstrap/legal/LICENSE.txt.
+ Sun designates this particular file as subject to the "Classpath" exception
+ as provided by Sun in the GPL Version 2 section of the License file that
+ accompanied this code.  If applicable, add the following below the License
+ Header, with the fields enclosed by brackets [] replaced by your own
+ identifying information: "Portions Copyrighted [year]
+ [name of copyright owner]"
+
+ Contributor(s):
+
+ If you wish your version of this file to be governed by only the CDDL or
+ only the GPL Version 2, indicate your decision by adding "[Contributor]
+ elects to include this software in this distribution under the [CDDL or GPL
+ Version 2] license."  If you don't indicate a single choice of license, a
+ recipient has the option to distribute your version of this file under
+ either the CDDL, the GPL Version 2 or to extend the choice of license to
+ its licensees as provided above.  However, if you add GPL Version 2 code
+ and therefore, elected the GPL Version 2 license, then the option applies
+ only if the new code is made subject to such option by the copyright
+ holder.
+-->
+
+<project name="javaee-comp-test" default="usage" basedir=".">
+
+    <property name="javaee-comp-target" value="all"/>
+
+    <target name="run-test">
+        <antcall target="javaee-comp">
+        <param name="javaee-comp-target" value="run-test"/>
+        </antcall>
+    </target>
+
+    <target name="all">
+        <antcall target="javaee-comp">
+        <param name="javaee-comp-target" value="all"/>
+        </antcall>
+    </target>
+
+    <target name="clean">
+        <antcall target="javaee-comp">
+        <param name="javaee-comp-target" value="clean"/>
+        </antcall>
+    </target>
+
+    <target name="build">
+        <antcall target="javaee-comp">
+        <param name="javaee-comp-target" value="build"/>
+        </antcall>
+    </target>
+
+    <target name="setup">
+        <antcall target="javaee-comp">
+        <param name="javaee-comp-target" value="setup"/>
+        </antcall>
+    </target>
+
+    <target name="deploy">
+        <antcall target="javaee-comp">
+        <param name="javaee-comp-target" value="deploy"/>
+        </antcall>
+    </target>
+
+    <target name="undeploy">
+        <antcall target="javaee-comp">
+        <param name="javaee-comp-target" value="undeploy"/>
+        </antcall>
+    </target>
+
+    <target name="unsetup">
+        <antcall target="javaee-comp">
+        <param name="javaee-comp-target" value="unsetup"/>
+        </antcall>
+    </target>
+
+    <target name="run">
+        <antcall target="javaee-comp">
+        <param name="javaee-comp-target" value="run"/>
+        </antcall>
+    </target>
+
+    <target name="javaee-comp">
+        <record name="javaee-comp.output" action="start" />
+            <ant dir="javaee-component-resource-typesafe-injection" target="${javaee-comp-target}"/>
+            <ant dir="jpa-resource-injection" target="${javaee-comp-target}"/>
+            <ant dir="jpa-resource-injection-non-serializable" target="${javaee-comp-target}"/>
+            <ant dir="jpa-resource-injection-passivating-scope" target="${javaee-comp-target}"/>
+            <ant dir="jpa-resource-injection-with-singleton-ejb-producer" target="${javaee-comp-target}"/>
+            <ant dir="no-interface-ejb" target="${javaee-comp-target}"/>
+            <ant dir="jms-resource-producer-field" target="${javaee-comp-target}"/>
+<!-- TODO: Investigate 
+            <ant dir="jms-resource-producer-field-in-library-jar" target="${javaee-comp-target}"/>
+-->
+            <ant dir="em-resource-injection" target="${javaee-comp-target}"/>
+            <ant dir="em-injection-no-interface-ejb" target="${javaee-comp-target}"/>
+            <ant dir="em-resource-injection-with-resource-declaration-in-another-jar" target="${javaee-comp-target}"/>
+            <ant dir="slsb-injection-into-sessionscoped" target="${javaee-comp-target}"/>
+        <record name="javaee-comp.output" action="stop" />
+    </target>
+
+    <target name="usage">
+	<echo> Usage:
+		ant all (Executes all the javaee-comp tests)
+		ant clean (cleans all the javaee-comp tests)
+		ant build (builds all the javaee-comp tests)
+		ant setup (sets up all resources for javaee-comp tests)
+		ant deploy (deploys all the javaee-comp apps)
+		ant run (Executes all the javaee-comp tests)
+		ant undeploy (undeploys all the  javaee-comp apps)
+		ant unsetup (unsets all resources for javaee-comp tests)
+	</echo>
+    </target>
+</project>

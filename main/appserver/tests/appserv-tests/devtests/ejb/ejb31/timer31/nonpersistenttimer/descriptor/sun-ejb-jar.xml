@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sun-ejb-jar PUBLIC "-//Sun Microsystems, Inc.//DTD Sun ONE Application Server 8.0 EJB 2.1//EN" "http://www.sun.com/software/sunone/appserver/dtds/sun-ejb-jar_2_1-0.dtd">
+<sun-ejb-jar>
+   <enterprise-beans>
+    <ejb>
+      <ejb-name>StatefulWrapperEJB</ejb-name>
+      <jndi-name>ejb/nonpStatefulWrapperImpl</jndi-name>
+    </ejb>
+      <ejb>
+         <ejb-name>FooEJB_CMT</ejb-name>
+         <jndi-name>ejbs/Foo_CMT</jndi-name>
+<!--
+         <resource-ref>
+            <res-ref-name>jms/MyQueueConnectionFactory</res-ref-name>
+            <jndi-name>jms/ejb_timer_timertests_QCF</jndi-name>
+            <default-resource-principal>
+                <name>guest</name>
+                <password>guest</password>
+            </default-resource-principal>
+         </resource-ref>
+-->
+         <gen-classes/>
+      </ejb>
+      <ejb>
+         <ejb-name>FooEJB_BMT</ejb-name>
+         <jndi-name>ejbs/Foo_BMT</jndi-name>
+<!--
+         <resource-ref>
+            <res-ref-name>jms/MyQueueConnectionFactory</res-ref-name>
+            <jndi-name>jms/ejb_timer_timertests_QCF</jndi-name>
+            <default-resource-principal>
+                <name>guest</name>
+                <password>guest</password>
+            </default-resource-principal>
+         </resource-ref>
+-->
+         <gen-classes/>
+      </ejb>
+      <ejb>
+         <ejb-name>FooEJB_UNSPECIFIED_TX</ejb-name>
+         <jndi-name>ejbs/Foo_UNSPECIFIED_TX</jndi-name>
+<!--
+         <resource-ref>
+            <res-ref-name>jms/MyQueueConnectionFactory</res-ref-name>
+            <jndi-name>jms/ejb_timer_timertests_QCF</jndi-name>
+            <default-resource-principal>
+                <name>guest</name>
+                <password>guest</password>
+            </default-resource-principal>
+         </resource-ref>
+-->
+         <gen-classes/>
+      </ejb>
+<!--
+      <ejb>
+         <ejb-name>msgbean_CMT</ejb-name>
+         <jndi-name>jms/ejb_timer_timertests_mdb_cmt</jndi-name>
+
+         <resource-ref>
+            <res-ref-name>jms/MyQueueConnectionFactory</res-ref-name>
+            <jndi-name>jms/ejb_timer_timertests_QCF</jndi-name>
+            <default-resource-principal>
+                <name>guest</name>
+                <password>guest</password>
+            </default-resource-principal>
+         </resource-ref>
+      </ejb>
+      <ejb>
+         <ejb-name>msgbean_BMT</ejb-name>
+         <jndi-name>jms/ejb_timer_timertests_mdb_bmt</jndi-name>
+
+         <resource-ref>
+            <res-ref-name>jms/MyQueueConnectionFactory</res-ref-name>
+            <jndi-name>jms/ejb_timer_timertests_QCF</jndi-name>
+            <default-resource-principal>
+                <name>guest</name>
+                <password>guest</password>
+            </default-resource-principal>
+         </resource-ref>
+      </ejb>
+-->
+<!--
+      <message-destination>
+         <message-destination-name>TimerQueue</message-destination-name>
+         <jndi-name>jms/ejb_timer_timertests_queue</jndi-name>
+      </message-destination>
+      <message-destination>
+         <message-destination-name>TimerMDBQueue_CMT</message-destination-name>
+         <jndi-name>jms/ejb_timer_timertests_mdb_cmt</jndi-name>
+      </message-destination>
+      <message-destination>
+         <message-destination-name>TimerMDBQueue_BMT</message-destination-name>
+         <jndi-name>jms/ejb_timer_timertests_mdb_bmt</jndi-name>
+      </message-destination>
+-->
+   </enterprise-beans>
+</sun-ejb-jar>

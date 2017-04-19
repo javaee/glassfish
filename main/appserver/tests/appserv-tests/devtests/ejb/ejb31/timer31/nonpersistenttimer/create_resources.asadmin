@@ -1,0 +1,16 @@
+create-jms-resource --restype javax.jms.QueueConnectionFactory  jms/ejb_timer_nonpersistenttimer_QCF
+create-jms-resource --restype javax.jms.TopicConnectionFactory  jms/ejb_timer_nonpersistenttimer_TCF
+
+create-jms-resource --restype javax.jms.Queue --enabled=true --property imqDestinationName=ejb_timer_nonpersistenttimer_queue jms/ejb_timer_nonpersistenttimer_queue
+create-jms-resource --restype javax.jms.Topic --enabled=true --property imqDestinationName=ejb_timer_nonpersistenttimer_topic jms/ejb_timer_nonpersistenttimer_topic
+create-jms-resource --restype javax.jms.Queue --enabled=true --property imqDestinationName=ejb_timer_nonpersistenttimer_mdb_cmt jms/ejb_timer_nonpersistenttimer_mdb_cmt
+create-jms-resource --restype javax.jms.Queue --enabled=true --property imqDestinationName=ejb_timer_nonpersistenttimer_mdb_bmt jms/ejb_timer_nonpersistenttimer_mdb_bmt
+
+create-jmsdest --desttype queue ejb_timer_nonpersistenttimer_queue
+create-jmsdest --desttype topic ejb_timer_nonpersistenttimer_topic
+
+create-jmsdest --desttype queue ejb_timer_nonpersistenttimer_mdb_cmt
+create-jmsdest --desttype queue ejb_timer_nonpersistenttimer_mdb_bmt
+
+
+quit

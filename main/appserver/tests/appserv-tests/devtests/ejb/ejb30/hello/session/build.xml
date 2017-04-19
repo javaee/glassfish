@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../../../config/common.xml">
+<!ENTITY testproperties SYSTEM "build.properties">
+]>
+
+<project name="ejb-ejb30-hello-session-App" default="usage" basedir=".">
+
+    &commonSetup;
+    &commonBuild;
+    &testproperties;
+
+    <target name="all" depends="build,deploy,run,undeploy"/>
+
+    <target name="clean" depends="init-common">
+      <antcall  target="clean-common"/>
+      <delete file="client/Client.java"/>
+    </target>
+ 
+    <target name="compile" depends="clean">
+        <copy file="client/Client.java.token" tofile="client/Client.java"/>
+        <replace file="client/Client.java"
+          token="@ORB_PORT@" value="${orb.port}"/>
+
+        <antcall target="compile-common">
+            <param name="src" value="ejb"/>
+        </antcall>
+        <antcall target="compile-common">
+            <param name="src" value="client"/>
+        </antcall>
+    </target>
+
+    <target name="build" depends="compile">
+        <antcall target="build-ear-common">
+            <param name="ejbjar.classes" 
+              value="**/Sful*.class,**/Sless*.class"/>
+            <param name="appclientjar.classes" 
+              value="**/Client.class,**/Sful.class,**/Sless.class"/>
+        </antcall>
+    </target> 
+    
+    <target name="deploy" 
+            depends="init-common">
+        <antcall target="deploy-common"/>
+    </target>
+
+    <target name="run" depends="init-common">
+        <antcall target="runclient-common"/>
+        <antcall target="run_standaloneclient"/>
+        <antcall target="run_standaloneclient2"/>
+    </target>
+
+ 
+    <target name="run_standaloneclient" depends="init-common">
+       <java  fork="on" 
+              failonerror="true"
+              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
+              classname="${simple.client}">
+        <sysproperty key="org.omg.CORBA.ORBInitialPort" value="${orb.port}"/>
+        </java>
+    </target>
+
+    <target name="run_standaloneclient2" depends="init-common">
+       <java  fork="on" 
+              failonerror="true"
+              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
+              classname="${simple.client2}">
+              <jvmarg
+                   value="-Djava.naming.factory.initial=com.sun.jndi.cosnaming.CNCtxFactory"/>
+              <jvmarg
+                   value="-Djava.naming.provider.url=iiop://localhost:${orb.port}"/>
+              <jvmarg
+                   value="-Dorg.omg.CORBA.ORBInitialPort=${orb.port}"/>
+
+        </java>
+    </target>
+
+    <target name="undeploy" depends="init-common">
+        <antcall target="undeploy-common"/>
+    </target>   
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+</project>

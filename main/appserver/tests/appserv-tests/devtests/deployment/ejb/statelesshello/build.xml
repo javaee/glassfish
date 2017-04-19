@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "./../../config/common.xml">
+]>
+ 
+<project name="statelesshello" default="all" basedir=".">
+
+ 	&commonBuild;
+    <property name="archivedir" value="${build}/archives"/>
+
+        <property name="testName" value="StatelessHelloEjb"/>
+	<target name="prepare" depends="init">
+		<property name="portable.jar" value="${archivedir}/statelesshelloejb-portable.jar"/>
+		<property name="all.jar" value="${archivedir}/statelesshelloejb.jar"/>
+		<property name="deployplan.jar" value="${archivedir}/statelesshelloejb-plan.jar"/>
+		<mkdir dir="${build}" />
+		<mkdir dir="${archivedir}" />
+	</target>
+	
+	<target name="compile" depends="prepare">
+		<javac srcdir="statelesshello" destdir="${build}">
+                    <classpath refid="gfv3.classpath"/>
+	        </javac>		
+	</target>
+	
+	<target name="assemble" depends="compile">
+		<mkdir dir="${build}/META-INF"/>
+		<copy file="ejb-jar.xml" todir="${build}/META-INF"/>
+		<jar destfile="${portable.jar}" basedir="${build}" excludes="**/archives/**"/>
+		<copy file="sun-ejb-jar.xml" todir="${build}/META-INF" failonerror="false"/>
+		<jar destfile="${all.jar}" basedir="${build}" excludes="**/archives/**"/>
+		<jar destfile="${deployplan.jar}">
+			<fileset dir="${basedir}" includes="sun-ejb-jar.xml" excludes="**/archives/**"/>
+		</jar>
+	</target>
+	
+    <target name="deploy.asadmin" depends="prepare">
+        <antcall target="common.deploy.asadmin">
+            <param name="arg.list" value="--retrieve ${archivedir} --name ${testName} ${all.jar}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="redeploy.asadmin" depends="prepare">
+        <antcall target="common.redeploy.asadmin">
+            <param name="arg.list" value="--retrieve ${archivedir} --name ${testName} ${all.jar}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="undeploy.asadmin">
+        <antcall target="common.undeploy.asadmin">
+            <param name="arg.list" value="${testName}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>
+    <target name="deploy.jsr88" depends="prepare">
+        <antcall target="common.deploy.jsr88">
+            <param name="arg.list" value="${portable.jar} ${deployplan.jar}"/>
+        </antcall>
+    </target>
+
+    <target name="redeploy.jsr88" depends="prepare">
+        <antcall target="common.run.jsr88">
+            <param name="command" value="redeploy"/>
+            <param name="arg.list" value="statelesshelloejb-portable ${portable.jar} ${deployplan.jar}"/>
+        </antcall>
+    </target>
+
+    <target name="undeploy.jsr88">
+        <antcall target="common.undeploy.jsr88">
+            <param name="arg.list" value="statelesshelloejb-portable"/>
+        </antcall>
+    </target>
+
+    <target name="start.jsr88">
+        <antcall target="common.run.jsr88">
+            <param name="command" value="start"/>
+            <param name="arg.list" value="statelesshelloejb-portable"/>
+        </antcall>
+    </target>
+
+    <target name="stop.jsr88">
+        <antcall target="common.run.jsr88">
+            <param name="command" value="stop"/>
+            <param name="arg.list" value="statelesshelloejb-portable"/>
+        </antcall>
+    </target>
+
+    <target name="deploy.autodeploy">
+    </target>
+
+    <target name="run" depends="run.positive"/>
+
+    <target name="run.positive" depends="init,setOrbPort">
+        <antcall target="declare-test">
+            <param name="description" value="${description} (server)"/>
+        </antcall>
+        <antcall target="runclient">
+            <param name="arg.list" value="true"/>
+            <param name="log.id" value="${log.id}"/>
+            <param name="tgtPort" value="${depltest.orbport}"/>
+        </antcall>
+        <antcall target="pingCluster">
+            <param name="state" value="true"/>
+            <param name="log.id" value="${log.id}"/>
+            <param name="testDet" value="${description}"/>
+        </antcall>
+    </target>
+
+    <target name="run.negative" depends="init,setOrbPort">
+        <antcall target="declare-test">
+            <param name="description" value="${description} (server)"/>
+        </antcall>
+        <antcall target="runclient">
+            <param name="arg.list" value="false"/>
+            <param name="log.id" value="${log.id}"/>
+            <param name="tgtPort" value="${depltest.orbport}"/>
+        </antcall>
+        <antcall target="pingCluster">
+            <param name="state" value="false"/>
+            <param name="log.id" value="${log.id}"/>
+            <param name="testDet" value="${description}"/>
+        </antcall>
+    </target>
+
+    <target name="pingCluster" if="doCluster">
+        <antcall target="declare-test">
+            <param name="description" value="${testDet} (cluster-inst1)"/>
+        </antcall>
+        <antcall target="runclient">
+            <param name="arg.list" value="${state}"/>
+            <param name="log.id" value="${log.id}"/>
+            <param name="tgtPort" value="${deploy.clusterinstance1.orbport}"/>
+        </antcall>
+    </target>
+
+    <target name="runclient" depends="init, setOrbPort">
+        <javac srcdir="standaloneclient" destdir="${build}">
+         <classpath refid="gfv3.classpath"/>
+        </javac>
+        <javaWithResult
+            fork="true"
+            failonerror="false"
+            jvm="${JAVA}"	
+            classname="standaloneclient.HelloClient"
+            output="${build}/${log.id}.output.log"
+            resultproperty="result">
+
+            <jvmarg value="-Dorg.omg.CORBA.ORBInitialHost=${http.host}"/>
+            <jvmarg value="-Dorg.omg.CORBA.ORBInitialPort=${tgtPort}"/>
+            <jvmarg value="-Djava.endorsed.dirs=${inst}/lib/endorsed"/>
+
+            <classpath>
+                <path refid="gfv3.classpath"/>
+                <path location="${build}"/>
+		<path location="${archivedir}/StatelessHelloEjbClient.jar"/>
+            </classpath>
+
+            <arg line="${arg.list}"/>
+        </javaWithResult>
+
+        <antcall target="processResult">
+            <param name="result" value="${result}"/>
+            <param name="log" value="${build}/${log.id}.output.log"/>
+        </antcall>
+	</target>
+			
+    <target name="private-all">
+        <antcall target="assemble"/>
+        <antcall target="deploy.asadmin"/>
+        <antcall target="run.positive">
+            <param name="log.id" value="1"/>
+            <param name="description" value="ejb/statelessejb Test asadmin deploy"/>
+        </antcall>
+
+        <antcall target="redeploy.asadmin"/>
+        <antcall target="run.positive">
+            <param name="log.id" value="2"/>
+            <param name="description" value="ejb/statelessejb Test asadmin redeploy"/>
+        </antcall>
+        <antcall target="undeploy.asadmin"/>
+
+        <antcall target="deploy.jsr88"/>
+        <antcall target="run.positive">
+            <param name="log.id" value="3"/>
+            <param name="description" value="ejb/statelessejb Test jsr88 deploy"/>
+        </antcall>
+
+        <antcall target="stop.jsr88"/>
+        <antcall target="run.negative">
+            <param name="log.id" value="4"/>
+            <param name="description" value="ejb/statelessejb Test jsr88 stopped state"/>
+        </antcall>
+
+        <antcall target="start.jsr88"/>
+        <antcall target="run.positive">
+            <param name="log.id" value="5"/>
+            <param name="description" value="ejb/statelessejb Test jsr88 started state"/>
+        </antcall>
+
+        <antcall target="stop.jsr88"/>
+        <antcall target="redeploy.jsr88"/>
+        <antcall target="run.negative">
+            <param name="log.id" value="6"/>
+            <param name="description" value="ejb/statelessejb Test jsr88 redeploy stop"/>
+        </antcall>
+
+        <antcall target="undeploy.jsr88"/>
+    </target>
+</project>

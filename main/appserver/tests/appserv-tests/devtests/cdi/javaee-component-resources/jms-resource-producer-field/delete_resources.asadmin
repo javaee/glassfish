@@ -1,0 +1,3 @@
+delete-jms-resource jms/ConnectionFactory
+delete-jms-resource jms/Queue
+delete-jmsdest --desttype queue Q1

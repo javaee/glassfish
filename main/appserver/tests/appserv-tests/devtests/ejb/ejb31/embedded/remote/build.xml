@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../../../config/common.xml">
+<!ENTITY commonRun SYSTEM "../../../../../config/run.xml">
+<!ENTITY embeddedCommon SYSTEM "../embedded.xml">
+<!ENTITY testproperties SYSTEM "build.properties">
+]>
+
+<project name="ejb-ejb31-embedded-remote-App" default="usage" basedir=".">
+
+    &embeddedCommon;
+    &commonSetup;
+    &commonBuild;
+    &commonRun;
+    &testproperties;
+
+    <target name="all" depends="build,run,warn"/>
+
+    <target name="clean" depends="init-common">
+      <antcall  target="clean-common"/>
+    </target>
+ 
+    <target name="compile" depends="clean">
+        <antcall target="compile-common">
+            <param name="src" value="ejb"/>
+        </antcall>
+        <antcall target="compile-common">
+            <param name="src" value="client"/>
+        </antcall>
+    </target>
+
+    <target name="build" depends="compile">
+        <!-- package ourselves to include persistence.xml -->
+        <mkdir dir="${assemble.dir}"/>
+        <jar jarfile="${assemble.dir}/${appname}-ejb.jar" 
+             basedir="${build.classes.dir}" 
+             update="true"
+             includes ="**/S*.class">
+        </jar>
+        <delete dir="${build.classes.dir}/org"/>
+    </target> 
+    
+    <target name="run" depends="init-common">
+        <antcall target="stopDomain"/>
+        <echo message="Domain has beed STOPPED to run the test"/>
+
+        <antcall target="run_se"/>
+    </target> 
+    
+    <target name="warn" depends="init-common">
+        <echo message="Domain was STOPPED to run the test"/>
+    </target>
+ 
+    <target name="run_se" depends="init-common">
+       <echo message="Running with ${embedded.classpath} in classpath"/>
+       <java  fork="on" 
+              failonerror="true"
+              classpath="${assemble.dir}/${appname}-ejb.jar:${embedded.classpath}:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
+              classname="${se.client}">
+           <arg line="${jndiroot}"/>
+        </java>
+    </target>
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+</project>

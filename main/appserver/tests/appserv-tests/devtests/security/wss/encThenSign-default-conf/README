@@ -1,0 +1,35 @@
+A Simple WSS test. It is a simple servlet based webservice. Runs on j2sdk1.4.2
+It performs the following:
+1. Signs then Encrypts the message. (aka before-content)
+2. It is setup manually for now. To set up do the following:
+	Domain.xml
+	    <provider-config class-name="com.sun.xml.wss.provider.ClientSecurityAuthModule" provider-id="ClientProvider" provider-type="client">
+            <request-policy auth-recipient="before-content" auth-source="content"/>
+            <response-policy auth-recipient="after-content" auth-source="content"/>
+            <property name="security.config" value="${com.sun.aas.instanceRoot}/config/wss-server-config.xml"/>
+            </provider-config>
+            <provider-config class-name="com.sun.xml.wss.provider.ServerSecurityAuthModule" provider-id="ServerProvider" provider-type="server">
+            <request-policy auth-recipient="before-content" auth-source="content"/>
+            <response-policy auth-recipient="after-content" auth-source="content"/>
+            <property name="security.config" value="${com.sun.aas.instanceRoot}/config/wss-server-config.xml"/>
+           </provider-config>
+
+	sun-acc.xml
+
+	  <message-security-config auth-layer="SOAP" default-client-provider="ClientProvider">
+	  <provider-config class-name="com.sun.xml.wss.provider.ClientSecurityAuthModule" provider-id="ClientProvider" provider-type="client">
+          <request-policy auth-source="content" auth-recipient="before-content"/>
+          <response-policy auth-source="content" auth-recipient="after-content"/>
+          <property name="security.config" value="/export/local/hsingh/SUNWappserver.ssl/lib/appclient/wss-client-config.xml"/>
+          </provider-config>
+
+3. setup bouncy-castle provider
+	Copy bouncy castle to jre/lib/ext directory
+	java.security
+		security.provider.1=sun.security.provider.Sun
+		security.provider.2=org.bouncycastle.jce.provider.BouncyCastleProvider
+		security.provider.3=com.sun.net.ssl.internal.ssl.Provider
+		security.provider.4=com.sun.rsajca.Provider
+		security.provider.5=com.sun.crypto.provider.SunJCE
+		security.provider.6=sun.security.jgss.SunProvider
+

@@ -1,0 +1,8 @@
+1. Modify the config.properties in this directory and set a unique value 
+   for the property named 'unique-ldap-sub-context-id'
+2. For now the jar file - ldapjdk.jar is not checked in to the 
+   appserv-tests/lib directory. The classes in this jar are used
+   to populate/unpopulate the LDAP server. 
+   This file comes with Sun Directory Server 5.2 which can be downloaded
+   from http://www.sun.com 
+3. Currently(5/3/06) the ldap over ssl tests work with PE only

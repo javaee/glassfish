@@ -1,0 +1,4 @@
+Test
+ Test for issue: 11135
+ Extension sets its own InjectionTarget and check if that object is used
+ for injection

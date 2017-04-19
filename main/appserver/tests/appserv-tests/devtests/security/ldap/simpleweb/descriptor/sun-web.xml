@@ -1,0 +1,12 @@
+<!-- sun-web-app -->
+<sun-web-app>
+  <security-role-mapping>
+    <role-name>Employee</role-name>
+    <principal-name>munta</principal-name>
+    <principal-name>j2ee</principal-name>
+  </security-role-mapping>
+  <security-role-mapping>
+    <role-name>Manager</role-name>
+    <principal-name>javajoe</principal-name>
+  </security-role-mapping>
+</sun-web-app>

@@ -1,0 +1,596 @@
+<!-- ================================================================ -->
+<!-- Target to create nodeagent  -->
+<!-- ================================================================ -->
+<target name="create-nodeagent-common" depends="init-common">
+<echo message="Creating nodeagent ${nodeagent.name}" level="verbose"/>
+  <antcall target="asadmin-common-ignore-fail">
+    <param name="admin.command"
+      value="create-node-agent
+            ${as.props}
+            --savemasterpassword"/>
+    <param name="operand.props" value="${nodeagent.name}"/>
+  </antcall>
+</target>
+
+<!-- ================================================================ -->
+<!-- Target to delete nodeagent  -->
+<!-- ================================================================ -->
+<target name="delete-nodeagent-common" depends="init-common">
+<echo message="Deleting nodeagent ${nodeagent.name}" level="verbose"/>
+  <antcall target="asadmin-common-ignore-fail">
+    <param name="admin.command"
+      value="delete-node-agent"/>
+    <param name="as.props" value=""/>
+    <param name="operand.props" value="${nodeagent.name}"/>
+  </antcall>
+</target>
+
+<!-- ================================================================ -->
+<!-- Target to delete nodeagent config -->
+<!-- ================================================================ -->
+<target name="delete-nodeagent-config-common" depends="init-common">
+<echo message="Deleting nodeagent ${nodeagent.name}" level="verbose"/>
+  <antcall target="asadmin-common-ignore-fail">
+    <param name="admin.command"
+      value="delete-node-agent-config
+            --user ${admin.user}
+            --host ${admin.host}
+            --port ${admin.port}
+            --passwordfile ${admin.password.file}"/>
+    <param name="as.props" value=""/>
+    <param name="operand.props" value="${nodeagent.name}"/>
+  </antcall>
+</target>
+
+<!-- ================================================================ -->
+<!-- Target to start nodeagent -->
+<!-- ================================================================ -->
+<target name="start-nodeagent-common" depends="init-common">
+<echo message="Starting nodeagent ${nodeagent.name}" level="verbose"/>
+  <antcall target="asadmin-common-ignore-fail">
+    <param name="admin.command" 
+      value="start-node-agent
+        --user ${admin.user}
+        --passwordfile ${admin.password.file}
+        --startinstances=true"/>
+    <param name="as.props" value=""/>
+    <param name="operand.props"
+      value="${nodeagent.name}" />
+  </antcall>
+</target>
+
+<target name="start-nodeagent" depends="start-nodeagent-unix, start-nodeagent-windows"/>
+
+<target name="start-nodeagent-unix" depends="init-common" if="isUnix">
+    <exec executable="${ASADMIN}" failonerror="true">
+        <arg line="start-node-agent"/>
+        <arg line="--user ${admin.user}"/>
+        <arg line="--passwordfile ${admin.password.file}"/>
+        <arg line="--syncinstances=true"/>
+        <arg line="--startinstances=true"/>
+        <arg line="${nodeagent.name}"/>
+    </exec>
+</target>
+
+<target name="start-nodeagent-windows" depends="init-common" if="isWindows">
+    <exec executable="${ASADMIN}" spawn="true">
+        <arg line="start-node-agent"/>
+        <arg line="--user ${admin.user}"/>
+        <arg line="--passwordfile ${admin.password.file}"/>
+        <arg line="--syncinstances=true"/>
+        <arg line="--startinstances=true"/>
+        <arg line="${nodeagent.name}"/>
+    </exec>
+</target>
+
+<!-- ================================================================ -->
+<!-- Target to stop nodeagent -->
+<!-- ================================================================ -->
+<target name="stop-nodeagent-common" depends="init-common">
+<echo message="Stopping nodeagent ${nodeagent.name}" level="verbose"/>
+  <antcall target="asadmin-common-ignore-fail">
+    <param name="admin.command" 
+      value="stop-node-agent" />
+    <param name="as.props" value=""/>
+    <param name="operand.props"
+      value="${nodeagent.name}" />
+  </antcall>
+</target>
+
+<!-- ================================================================ -->
+<!-- Target to create cluster -->
+<!-- ================================================================ -->
+<target name="create-cluster-common" depends="init-common">
+<echo message="Creating cluster ${cluster.name}" level="verbose"/>
+  <antcall target="asadmin-common-ignore-fail">
+    <param name="admin.command" 
+      value="create-cluster" />
+    <param name="operand.props"
+      value="${cluster.name}" />
+  </antcall>
+</target>
+
+<!-- ================================================================ -->
+<!-- Target to delete cluster  -->
+<!-- ================================================================ -->
+<target name="delete-cluster-common" depends="init-common">
+<echo message="Deleting cluster ${cluster.name}" level="verbose"/>
+  <antcall target="asadmin-common-ignore-fail">
+    <param name="admin.command"
+      value="delete-cluster"/>
+    <param name="operand.props" value="${cluster.name}"/>
+  </antcall>
+</target>
+
+<!-- ================================================================ -->
+<!-- Target to start cluster -->
+<!-- ================================================================ -->
+<target name="start-cluster-common" depends="init-common">
+<echo message="Starting cluster ${cluster.name}" level="verbose"/>
+  <antcall target="asadmin-common-ignore-fail">
+    <param name="admin.command" 
+      value="start-cluster" />
+    <param name="operand.props"
+      value="${cluster.name}" />
+  </antcall>
+</target>
+
+<!-- ================================================================ -->
+<!-- Target to stop cluster -->
+<!-- ================================================================ -->
+<target name="stop-cluster-common" depends="init-common">
+<echo message="Stopping cluster ${cluster.name}" level="verbose"/>
+  <antcall target="asadmin-common-ignore-fail">
+    <param name="admin.command" 
+      value="stop-cluster" />
+    <param name="operand.props"
+      value="${cluster.name}" />
+  </antcall>
+</target>
+
+<!-- ================================================================ -->
+<!-- Target to create clustered instance -->
+<!-- ================================================================ -->
+<target name="create-clustered-instance-common" depends="init-common">
+<echo message="Creating clustered instance ${clustered.server.name} in ${cluster.name}" level="verbose"/>
+  <exec executable="${ASADMIN}" failonerror="false">
+    <arg line="create-instance"/>
+    <arg line="--cluster ${cluster.name}"/>
+    <arg line="--nodeagent ${nodeagent.name}"/>
+    <arg line="--systemproperties HTTP_LISTENER_PORT=${instance.http.port}:HTTP_SSL_LISTENER_PORT=${instance.https.port}:IIOP_LISTENER_PORT=${orb.listener1.port}:IIOP_SSL_LISTENER_PORT=${ssl.port}:IIOP_SSL_MUTUALAUTH_PORT=${ssl.mutualauth.port}:JMX_SYSTEM_CONNECTOR_PORT=${jmx.system.connector.port}"/>
+    <arg line="${as.props}"/>
+    <arg line="${clustered.server.name}"/>
+  </exec>
+</target>
+
+<!-- ================================================================ -->
+<!-- Target to delete clustered instance  -->
+<!-- ================================================================ -->
+<target name="delete-clustered-instance-common" depends="init-common">
+<echo message="Deleting clustered instance ${clustered.server.name} in ${cluster.name}" level="verbose"/>
+  <exec executable="${ASADMIN}" failonerror="false">
+    <arg line="delete-instance"/>
+    <arg line="${as.props}"/>
+    <arg line="${clustered.server.name}"/>
+  </exec>
+</target>
+
+<!-- ================================================================ -->
+<!-- Target to create instance -->
+<!-- ================================================================ -->
+<target name="create-instance-common" depends="init-common">
+<echo message="Creating instance ${instance.name}" level="verbose"/>
+  <exec executable="${ASADMIN}" failonerror="false">
+    <arg line="create-instance"/>
+    <arg line="--nodeagent ${nodeagent.name}"/>
+    <arg line="${as.props}"/>
+    <arg line="--systemproperties HTTP_LISTENER_PORT=${instance.http.port}:HTTP_SSL_LISTENER_PORT=${instance.https.port}:IIOP_LISTENER_PORT=${orb.listener1.port}:IIOP_SSL_LISTENER_PORT=${ssl.port}:IIOP_SSL_MUTUALAUTH_PORT=${ssl.mutualauth.port}:JMX_SYSTEM_CONNECTOR_PORT=${jmx.system.connector.port}"/>
+    <arg line="${instance.name}"/>
+  </exec>
+</target>
+
+<!-- ================================================================ -->
+<!-- Target to start instance  -->
+<!-- ================================================================ -->
+<target name="start-instance-common" depends="init-common">
+<echo message="Starting instance " level="verbose"/>
+  <exec executable="${ASADMIN}" failonerror="false">
+    <arg line="start-instance"/>
+    <arg line="${as.props}"/>
+    <arg line="${instance.name}"/>
+  </exec>
+</target>
+
+
+<!-- ================================================================ -->
+<!-- Target to stop instance  -->
+<!-- ================================================================ -->
+<target name="stop-instance-common" depends="init-common">
+<echo message="Stopping instance " level="verbose"/>
+  <exec executable="${ASADMIN}" failonerror="false">
+    <arg line="stop-instance"/>
+    <arg line="${as.props}"/>
+    <arg line="${instance.name}"/>
+  </exec>
+</target>
+
+<!-- ================================================================ -->
+<!-- Target to delete instance  -->
+<!-- ================================================================ -->
+<target name="delete-instance-common" depends="init-common">
+<echo message="Deleting instance ${instance.name}" level="verbose"/>
+  <exec executable="${ASADMIN}" failonerror="false">
+    <arg line="delete-instance"/>
+    <arg line="${as.props}"/>
+    <arg line="${instance.name}"/>
+  </exec>
+</target>
+
+<!-- ================================================================ -->
+<!-- Target to create local instance -->
+<!-- ================================================================ -->
+<target name="create-local-instance-common" depends="init-common">
+<echo message="Creating local instance ${instance.name}" level="verbose"/>
+  <exec executable="${ASADMIN}" failonerror="false">
+    <arg line="create-local-instance"/>
+    <arg line="${as.props}"/>
+    <arg line="--cluster ${cluster.name}"/>
+    <arg line="--systemproperties HTTP_LISTENER_PORT=${instance.http.port}:HTTP_SSL_LISTENER_PORT=${instance.https.port}:IIOP_LISTENER_PORT=${orb.listener1.port}:IIOP_SSL_LISTENER_PORT=${ssl.port}:IIOP_SSL_MUTUALAUTH_PORT=${ssl.mutualauth.port}:JMX_SYSTEM_CONNECTOR_PORT=${jmx.system.connector.port}"/>
+    <arg line="${instance.name}"/>
+  </exec>
+</target>
+
+<!-- ================================================================ -->
+<!-- Target to start local instance  -->
+<!-- ================================================================ -->
+<target name="start-local-instance-common" depends="init-common">
+<echo message="Starting local instance " level="verbose"/>
+  <exec executable="${ASADMIN}" failonerror="false">
+    <arg line="start-local-instance"/>
+    <arg line="${as.props}"/>
+    <arg line="${instance.name}"/>
+  </exec>
+</target>
+
+<!-- ================================================================ -->
+<!-- Target to stop local instance  -->
+<!-- ================================================================ -->
+<target name="stop-local-instance-common" depends="init-common">
+<echo message="Stopping local instance " level="verbose"/>
+  <exec executable="${ASADMIN}" failonerror="false">
+    <arg line="stop-local-instance"/>
+    <arg line="${as.props}"/>
+    <arg line="${instance.name}"/>
+  </exec>
+</target>
+
+<!-- ================================================================ -->
+<!-- Target to delete local instance  -->
+<!-- ================================================================ -->
+<target name="delete-local-instance-common" depends="init-common">
+<echo message="Deleting local instance ${instance.name}" level="verbose"/>
+  <exec executable="${ASADMIN}" failonerror="false">
+    <arg line="delete-local-instance"/>
+    <arg line="${as.props}"/>
+    <arg line="${instance.name}"/>
+  </exec>
+</target>
+
+<!-- ================================================================ -->
+<!-- Target to create a default cluster with two instances  -->
+<!-- ================================================================ -->
+<target name="setup-default-cluster-common" depends="init-common">
+
+    <!-- creates a node agent -->
+    <antcall target="create-nodeagent-common"/>
+
+    <!-- creates cluster -->
+    <antcall target="create-cluster-common"/>
+
+    <!-- creates 1st clustered instance -->
+    <antcall target="create-clustered-instance-common"/>
+
+    <!-- creates 2nd clustered instance -->
+    <antcall target="create-clustered-instance-common">
+        <param name="http.listener1.port" value="${http.listener1.port.two}"/>
+        <param name="http.listener2.port" value="${http.listener2.port.two}"/>
+        <param name="orb.listener1.port" value="${orb.listener1.port.two}"/>
+        <param name="ssl.port" value="${ssl.port.two}"/>
+        <param name="ssl.mutualauth.port" value="${ssl.mutualauth.port.two}"/>
+        <param name="jmx.system.connector.port" 
+          value="${jmx.system.connector.port.two}"/>
+        <param name="clustered.server.name" 
+          value="${clustered.server.name.two}"/>
+    </antcall>
+</target>
+
+<!-- ================================================================ -->
+<!-- Target to start default cluster -->
+<!-- ================================================================ -->
+<target name="start-default-cluster-common" depends="init-common">
+<echo message="Starting default cluster ${cluster.name}" level="verbose"/>
+  <antcall target="start-nodeagent-common"/>
+  <antcall target="start-cluster-common"/>
+</target>
+
+<!-- ================================================================ -->
+<!-- Target to stop default cluster -->
+<!-- ================================================================ -->
+<target name="stop-default-cluster-common" depends="init-common">
+<echo message="Stopping default cluster ${cluster.name}" level="verbose"/>
+  <antcall target="stop-cluster-common"/>
+  <antcall target="stop-nodeagent-common"/>
+</target>
+
+<!-- ================================================================ -->
+<!-- Target to remove the default cluster with two instances  -->
+<!-- ================================================================ -->
+<target name="remove-default-cluster-common" depends="init-common">
+    <antcall target="delete-clustered-instance-common">
+        <param name="clustered.server.name" 
+          value="${clustered.server.name.two}"/>
+    </antcall>
+    <antcall target="delete-clustered-instance-common"/>
+    <antcall target="delete-cluster-common"/>
+    <antcall target="delete-nodeagent-common"/>
+    <antcall target="delete-nodeagent-config-common"/>
+</target>
+
+
+<!-- ================================================================ -->
+<!-- Target to delete resource reference  -->
+<!-- ================================================================ -->
+<target name="delete-resource-reference-common" depends="init-common">
+<echo message="Deleting resource reference ${resource.name} from ${cluster.name}" level="verbose"/>
+  <exec executable="${ASADMIN}" failonerror="false">
+    <arg line="delete-resource-ref"/>
+    <arg line="${as.props}"/>
+    <arg line="--target ${target.name}"/>
+    <arg line="${resource.name}"/>
+  </exec>
+</target>
+
+
+<!-- ================================================================ -->
+<!-- Target to add a custom resource  -->
+<!-- ================================================================ -->
+<target name="create-custom-resource-common" depends="init-common">
+<echo message="Creating custom resource ${custom.resource.name}" level="verbose"/>
+   <property name="extra.params" value=""/>
+   <property name="custom.resource.enable" value="true"/>
+   <property name="target.name" value="server"/>
+  <exec executable="${ASADMIN}" failonerror="false">
+    <arg line="create-custom-resource"/>
+    <arg line="${as.props}"/>
+    <arg line="--restype ${custom.resource.type}"/>
+    <arg line="--factoryclass ${custom.resource.class}"/>
+    <arg line="--enabled=${custom.resource.enable}"/>
+    <arg line="--target ${target.name}"/>
+    <arg line=" ${extra.params}"/>
+    <arg line="${custom.resource.name}"/>
+  </exec>
+</target>
+
+<!-- ================================================================ -->
+<!-- Target to delete a custom resource  -->
+<!-- ================================================================ -->
+<target name="delete-custom-resource-common" depends="init-common">
+   <property name="target.name" value="server"/>
+<echo message="Deleting custom resource ${custom.resource.name}" level="verbose"/>
+  <exec executable="${ASADMIN}" failonerror="false">
+    <arg line="delete-custom-resource"/>
+    <arg line="${as.props}"/>
+    <arg line="--target ${target.name}"/>
+    <arg line="${custom.resource.name}"/>
+  </exec>
+</target>
+
+<!-- ================================================================ -->
+<!-- Target to add a jndi resource  -->
+<!-- ================================================================ -->
+<target name="create-jndi-resource-common" depends="init-common">
+<echo message="Creating jndi resource ${custom.resource.name}" level="verbose"/>
+  <exec executable="${ASADMIN}" failonerror="false">
+    <arg line="create-jndi-resource"/>
+    <arg line="${as.props}"/>
+    <arg line="--restype ${jndi.resource.type}"/>
+    <arg line="--factoryclass ${jndi.resource.class}"/>
+    <arg line="--enabled ${jndi.resource.enable}"/>
+    <arg line="--jndilookupname ${jndi.resource.lookupname}"/>
+    <arg line="--target ${target.name}"/>
+    <arg line="${custom.resource.name}"/>
+  </exec>
+</target>
+
+<!-- ================================================================ -->
+<!-- Target to delete a jndi resource  -->
+<!-- ================================================================ -->
+<target name="delete-jndi-resource-common" depends="init-common">
+<echo message="Deleting custom resource ${custom.resource.name}" level="verbose"/>
+  <exec executable="${ASADMIN}" failonerror="false">
+    <arg line="delete-jndi-resource"/>
+    <arg line="${as.props}"/>
+    <arg line="--target ${target.name}"/>
+    <arg line="${jndi.resource.name}"/>
+  </exec>
+</target>
+
+<!-- ================================================================ -->
+<!-- Renaming PE Files for EE and cleanup  -->
+<!-- ================================================================ -->
+<target name="rename_results">
+   <echo message="Renaming PE results before running EE" level="verbose"/>
+   <move file="${env.APS_HOME}/count.txt" tofile="${env.APS_HOME}/PE_count.txt" failonerror="false"/>
+   <move file="${env.APS_HOME}/test_results.html" tofile="${env.APS_HOME}/PE_test_results.html" failonerror="false"/>
+   <move file="${env.APS_HOME}/runtest.output" tofile="${env.APS_HOME}/PE_runtest.output" failonerror="false"/>
+   <move file="${env.APS_HOME}/test_results.xml" tofile="${env.APS_HOME}/PE_test_results.xml" failonerror="false"/>
+   <move file="${env.APS_HOME}/test_resultsValid.xml" tofile="${env.APS_HOME}/PE_test_resultsValid.xml" failonerror="false"/>
+</target>
+
+<!-- ================================================================ -->
+<!-- Running eeconfig/eeunsetup  -->
+<!-- ================================================================ -->
+<!-- target name="eeunsetup">
+<echo message="Cleaning up last EE setup" level="verbose"/>
+  <exec executable="sh" failonerror="false">
+    <arg line="${env.APS_HOME}/eeconfig/eeunsetup"/>
+  </exec>
+</target -->
+
+<target name="eeunsetup">
+  <echo message="Cleaning up last EE setup" level="verbose"/>
+  <antcall target="eeunsetup-ant"/>
+</target>
+
+<!-- ================================================================ -->
+<!-- Running eeconfig/eesetup  -->
+<!-- ================================================================ -->
+<!-- target name="eesetup" depends="init-common">
+  <echo message="Setting up EE configuration in background, waiting ..." level="verbose"/>
+  <exec executable="sh" spawn="true" >
+    <arg line="${env.APS_HOME}/eeconfig/eesetup"/>
+  </exec>
+  <waitfor maxwait="3600000">
+    <http url="http://${http.host}:${http.port}"/>
+  </waitfor>
+  <sleep seconds="80"/>
+</target -->
+
+<target name="eesetup">
+  <echo message="Setting up EE configuration..." level="verbose"/>
+  <antcall target="eesetup-ant"/>
+</target>
+
+<!-- ================================================================ -->
+<!-- Stopping eeconfig/stopee  -->
+<!-- ================================================================ -->
+<!-- target name="stopee">
+<echo message="Stopping EE setup" level="verbose"/>
+  <exec executable="sh" failonerror="false">
+    <arg line="${env.APS_HOME}/eeconfig/stopee"/>
+  </exec>
+</target -->
+
+<target name="stopee">
+  <echo message="Stopping EE setup" level="verbose"/>
+  <antcall target="stopee-ant"/>
+</target>
+
+<!-- ================================================================ -->
+<!-- Running eesetup-ant  -->
+<!-- ================================================================ -->
+<target name="eesetup-ant" depends="env-ee">
+   <echo file="${admin.password.file}" append="false">
+	AS_ADMIN_USERPASSWORD=${password}
+	AS_ADMIN_PASSWORD=${admin.password}
+	AS_ADMIN_ADMINPASSWORD=${admin.password}
+	AS_ADMIN_MASTERPASSWORD=${master.password}
+   </echo>
+   <antcall target="createDomain"/>
+   <antcall target="startDomain">
+    <param name="http.port" value="${admin.http.port}"/>
+   </antcall>
+   <antcall target="create-nodeagent-common"/>
+   <antcall target="create-instance-common"/>
+   <antcall target="start-nodeagent"/>
+   <sleep seconds="30"/>   
+   <echo message="Done eesetup-ant!"/>
+</target>
+
+<!-- ================================================================ -->
+<!-- Running eeunsetup-ant  -->
+<!-- ================================================================ -->
+<target name="eeunsetup-ant" depends="env-ee">
+   <antcall target="stop-instance-common"/>
+   <antcall target="delete-instance-common"/>
+   <antcall target="stop-nodeagent-common"/>
+   <antcall target="delete-nodeagent-common"/>
+   <antcall target="delete-nodeagent-config-common"/>
+   <antcall target="stop-domain-common"/>
+   <antcall target="delete-domain-common"/>
+   <delete dir="${env.S1AS_HOME}/domains/${admin.domain}"/>
+   <delete dir="${env.S1AS_HOME}/nodeagents/${nodeagent.name}"/>
+</target>
+
+<!-- ================================================================ -->
+<!-- Running stopee-ant  -->
+<!-- ================================================================ -->
+<target name="stopee-ant" depends="env-ee">
+   <antcall target="stop-instance-common"/>
+   <antcall target="stop-nodeagent-common"/>
+   <antcall target="stopDomain"/>
+</target>
+
+<!-- ================================================================ -->
+<!-- Running startee -->
+<!-- ================================================================ -->
+<target name="startee" depends="env-ee">
+   <antcall target="startDomain">
+    <param name="http.port" value="${admin.http.port}"/>
+   </antcall>
+   <antcall target="start-nodeagent"/>
+   <antcall target="verify-setup"/>
+</target>
+
+<!-- ================================================================ -->
+<!-- Running stopee-ant  -->
+<!-- ================================================================ -->
+<target name="env-ee">
+   <property file="${env.APS_HOME}/eeconfig/ee-config.properties"/>
+</target>
+
+<target name="verify-setup" depends="env-ee">
+   <waitfor maxwait="3600000">
+     <http url="http://${http.host}:${http.port}"/>
+   </waitfor>
+   <sleep seconds="80"/>
+</target>
+
+<target name="createDomain" depends="init-common">
+    <exec executable="${ASADMIN}">
+        <arg line="create-domain"/>
+        <arg line="--echo=true --terse=true" />
+        <arg line="--domaindir ${admin.domain.dir}"/>
+        <arg line="--adminport ${admin.port}"/>
+        <arg line="--instanceport ${admin.http.port}"/> 
+        <arg line="--adminuser ${admin.user}"/>
+        <arg line="--passwordfile ${admin.password.file}"/>
+        <arg line="${admin.domain}"/>
+    </exec>
+</target>
+
+<target name="stop-domain-common" depends="init-common">
+    <echo message="run.xml:stopping domain..."/>
+    <exec executable="${ASADMIN}" failonerror="false">
+        <arg line="stop-domain"/>
+        <arg line="--domaindir ${admin.domain.dir}"/>
+        <arg line="${admin.domain}"/>
+    </exec>
+</target>
+
+<!-- ================================================================ -->
+<!-- Target to create node ssh  -->
+<!-- ================================================================ -->
+<target name="create-node-ssh-common" depends="init-common">
+<echo message="Creating node ssh ${node.name}"/>
+  <exec executable="${ASADMIN}" failonerror="false">
+    <arg line="create-node-ssh"/>
+    <arg line="--nodehost ${http.host}"/>
+    <arg line="--installdir ${env.S1AS_HOME}"/>
+    <arg line="--force ${force}"/>
+    <arg line="${node.name}"/>
+  </exec>
+</target>
+
+<!-- ================================================================ -->
+<!-- Target to delete node ssh  -->
+<!-- ================================================================ -->
+<target name="delete-node-ssh-common" depends="init-common">
+<echo message="Deleting node ssh ${node.name}"/>
+  <exec executable="${ASADMIN}" failonerror="false">
+    <arg line="delete-node-ssh"/>
+    <arg line="${node.name}"/>
+  </exec>
+</target>
+
+

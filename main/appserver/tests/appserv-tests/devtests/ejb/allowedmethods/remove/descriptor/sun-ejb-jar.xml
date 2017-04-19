@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sun-ejb-jar PUBLIC "-//Sun Microsystems, Inc.//DTD Sun ONE Application Server 7.0 EJB 2.0//EN" "http://www.sun.com/software/sunone/appserver/dtds/sun-ejb-jar_2_0-0.dtd">
+<sun-ejb-jar>
+  <enterprise-beans>
+    <ejb>
+      <ejb-name>DriverBean</ejb-name>
+      <jndi-name>ejb/ejb_allowedmethods_remove_DriverBean</jndi-name>
+    </ejb>
+    <ejb>
+      <ejb-name>HereLocalBean</ejb-name>
+      <jndi-name>ejb/ejb_allowedmethods_remove_HereLocalBean</jndi-name>
+    </ejb>
+  </enterprise-beans>
+</sun-ejb-jar>

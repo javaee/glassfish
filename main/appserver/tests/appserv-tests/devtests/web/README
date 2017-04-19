@@ -1,0 +1,17 @@
+FOR RUNNING THE WEB DEVTESTS:
+----------------------------------------
+
+0. Set the following environment variables as below:
+   S1AS_HOME=<glassfish v3 installation>
+   APS_HOME=<appserv-tests>
+
+1. Simply type "ant all" from appserv-tests/devtests/web.  At the end
+   of the run, check appserv-tests/test_results.html for test results.
+   appserv-tests/devtests/web/web.output has all output from test run
+
+2. To run individual tests, go to the test directory and type "ant all". 
+
+3. To run subset of tests, type ant followed up the component name.  
+   For example, "ant http-connector", "ant servlet", or "ant web-container".
+
+

@@ -1,0 +1,16 @@
+
+<!--
+ Copyright 2002 Sun Microsystems, Inc. All rights reserved.
+ SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+-->
+
+
+<!DOCTYPE request-prices
+    PUBLIC "-//Sun Microsystems, Inc.//DTD priceRequest//EN"
+    "http://java.sun.com/webservices/dtds/request-prices.dtd">
+
+<request-prices>
+    <request>
+		"Send current price list."
+	</request>
+</request-prices>

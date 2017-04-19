@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../../config/common.xml">
+<!ENTITY reporting SYSTEM "../../report.xml">
+]>
+
+
+<project name="timer" default="usage" basedir=".">
+    &commonSetup;
+    &commonBuild;
+    &reporting;
+
+    <target name="all">
+        <antcall target="getalltimers"/>
+        <antcall target="opallowed"/>
+
+    </target>
+
+    <target name="getalltimers">
+        <record name="getalltimers.output" action="start" />
+            <ant dir="getalltimers" target="all"/>
+        <record name="getalltimers.output" action="stop" />
+    </target>
+
+    <target name="opallowed">
+        <record name="opallowed.output" action="start" />
+            <ant dir="opallowed" target="all"/>
+        <record name="opallowed.output" action="stop" />
+    </target>
+
+    <target name="usage">
+	<echo>
+		Usage:
+			ant all (Executes all the ejb-timer tests)
+
+			ant getalltimers (Executes the getAllTimers ejb-timer test)
+			ant opallowed (Executes the operation allowed ejb-timer test)
+
+	</echo>
+    </target>
+</project>

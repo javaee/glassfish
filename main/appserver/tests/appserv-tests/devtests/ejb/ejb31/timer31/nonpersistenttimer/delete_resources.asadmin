@@ -1,0 +1,17 @@
+delete-jms-resource jms/ejb_timer_nonpersistenttimer_QCF
+delete-jms-resource jms/ejb_timer_nonpersistenttimer_TCF
+
+delete-jms-resource jms/ejb_timer_nonpersistenttimer_queue
+delete-jms-resource jms/ejb_timer_nonpersistenttimer_topic
+
+delete-jms-resource jms/ejb_timer_nonpersistenttimer_mdb_cmt
+delete-jms-resource jms/ejb_timer_nonpersistenttimer_mdb_bmt
+
+delete-jmsdest --desttype queue ejb_timer_nonpersistenttimer_queue
+delete-jmsdest --desttype topic ejb_timer_nonpersistenttimer_topic
+
+delete-jmsdest --desttype queue ejb_timer_nonpersistenttimer_mdb_cmt
+delete-jmsdest --desttype queue ejb_timer_nonpersistenttimer_mdb_bmt
+
+
+quit

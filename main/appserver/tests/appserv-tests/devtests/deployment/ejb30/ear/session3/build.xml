@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "./../../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
+<!ENTITY common2Build SYSTEM "./../../../../../config/common.xml">
+]>
+
+<project name="deployment-ejb30-ear-session3-App" default="all" basedir=".">
+
+    &commonSetup;
+    &common2Build;
+    &commonBuild;
+
+    <property name="testName" value="ejb-ejb30-hello-session3"/>
+    <property name="ear.build.dir" value="${build}/${testName}App.ear"/>
+    <property name="ejb.build.dir"
+              value="${ear.build.dir}/${testName}-ejb.jar"/>
+    <property name="persistence.build.dir"
+              value="${build}"/>
+    <property name="web.build.dir"
+              value="${ear.build.dir}/${testName}-web.war"/>
+    <property name="client.build.dir"
+              value="${ear.build.dir}/${testName}-client.jar"/>
+
+    <target name="prepare" depends="init">
+       <mkdir dir="${build}" />
+       <mkdir dir="${ear.build.dir}" />
+       <mkdir dir="${ejb.build.dir}" />
+       <mkdir dir="${persistence.build.dir}" />
+       <mkdir dir="${web.build.dir}" />
+       <mkdir dir="${web.build.dir}/WEB-INF/classes" />
+       <mkdir dir="${client.build.dir}" />
+    </target>
+
+    <target name="setup_sql" depends="init">
+      <antcall target="execute-ejb-sql-common">
+        <param name="sql.file" value="sql/create.sql"/>
+      </antcall>
+    </target>
+                                                                                
+    <target name="unsetup_sql" depends="init">
+      <antcall target="execute-ejb-sql-common">
+        <param name="sql.file" value="sql/drop.sql"/>
+      </antcall>
+    </target>
+                                                                                
+    <target name="compile" depends="prepare">
+        <javac srcdir="ejb" destdir="${ejb.build.dir}">
+         <classpath refid="gfv3.classpath"/>
+         </javac>
+        <javac srcdir="servlet" destdir="${web.build.dir}/WEB-INF/classes">
+             <classpath>
+                <path refid="gfv3.classpath"/>
+                <path location="${ejb.build.dir}"/>
+            </classpath>
+         </javac>
+
+        <javac srcdir="client" destdir="${client.build.dir}">
+             <classpath>
+                <path refid="gfv3.classpath"/>
+                <path location="${ejb.build.dir}"/>
+            </classpath>
+         </javac>
+
+        <javac srcdir="persistence" destdir="${persistence.build.dir}">
+         <classpath refid="gfv3.classpath"/>
+         </javac>
+    </target>
+
+    <target name="assemble" depends="compile">
+           <jar destfile="${ear.build.dir}/${testName}-persistence.jar"
+             basedir="${persistence.build.dir}"
+             includes="com/sun/s1asdev/ejb/ejb30/hello/session3/Person.class">
+             <metainf file="descriptor/persistence.xml"/>
+           </jar>
+
+           <copy file="descriptor/web.xml" todir="${web.build.dir}/WEB-INF"/>
+            <copy file="descriptor/sun-web.xml"
+                  todir="${web.build.dir}/WEB-INF"
+                  failonerror="false"/>
+             <copy todir="${web.build.dir}">
+                  <fileset dir="servlet" includes="*.jsp, *.html"/>
+             </copy>
+             <copy todir="${web.build.dir}/WEB-INF/classes">
+                  <fileset dir="servlet" includes="*properties"/>
+             </copy>
+             <mkdir dir="${client.build.dir}/META-INF"/>
+             <copy file="descriptor/application-client.xml"
+                   todir="${client.build.dir}/META-INF"/>
+             <copy file="descriptor/sun-application-client.xml"
+                   todir="${client.build.dir}/META-INF"
+                   failonerror="false"/>
+             <copy file="client/MANIFEST.MF"
+                   todir="${client.build.dir}/META-INF"/>
+                                                                                
+             <copy file="descriptor/application.xml"
+			   todir="${ear.build.dir}/META-INF"/>
+    </target> 
+    
+   <target name="deploydir.asadmin" depends="prepare">
+        <antcall target="common.deploydir.asadmin">
+            <param name="arg.list"
+                   value="--name ${testName}App ${build}/${testName}App.ear"/>
+        </antcall>
+    </target>
+
+  <target name="getclientstubs.asadmin" depends="prepare">
+        <antcall target="common.getclientstubs.asadmin">
+            <param name="arg.list"
+                   value="--appname ${testName}App ${build}"/>
+        </antcall>
+    </target>
+
+                                                                                
+    <target name="undeploy.asadmin">
+        <antcall target="common.undeploy.asadmin">
+            <param name="arg.list"
+                   value="${testName}App"/>
+        </antcall>
+    </target>
+
+    <target name="runclient" depends="prepare,setOrbPort2">
+        <exec executable="${APPCLIENT}" resultproperty="result" failonerror="false" output="${build}/${log.id}.output.log">
+            <arg line="-targetserver ${appclient.targetservers} -client ${build}/${testName}AppClient.jar"/>
+        </exec>
+        <antcall target="processResult">
+            <param name="result" value="${result}"/>
+            <param name="log" value="${build}/${log.id}.output.log"/>
+        </antcall>    
+    </target>
+ 
+    <target name="private-all">
+        <!--
+        <antcall target="startDerby"/>
+        -->
+        <antcall target="setup_sql"/>
+        <antcall target="assemble"/>
+        <antcall target="declare-test">
+            <param name="description" value="ejb30/session3 Test asadmin deploy"/>
+        </antcall>
+        <antcall target="deploydir.asadmin"/>
+        <antcall target="getclientstubs.asadmin"/>
+        <antcall target="runclient">
+            <param name="log.id" value="1"/>
+        </antcall>
+        <antcall target="undeploy.asadmin"/>
+        <antcall target="unsetup_sql"/>
+<!--
+        <antcall target="stopDerby"/>
+-->
+    </target>
+</project>

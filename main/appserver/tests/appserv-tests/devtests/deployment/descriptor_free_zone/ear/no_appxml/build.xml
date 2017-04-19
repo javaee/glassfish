@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
+]>
+
+<project name="NoAppXml" default="usage" basedir=".">
+
+    &commonBuild;
+
+    <property name="testName" value="NoAppXml"/>
+
+    <target name="prepare" depends="init">
+        <property name="util.jar" value="${build}/util.jar"/>
+        <property name="ejb.jar" value="${build}/ejb.jar"/>
+        <property name="portable.ear" value="${build}/${testName}.ear"/>
+        <property name="appclient.jar" value="${build}/appclient.jar"/>
+        <property name="deployplan.jar" value="${build}/${testName}-deployplan.jar"/>
+    </target>
+
+    <target name="compile" depends="prepare">
+        <mkdir dir="${build}"/>
+        <javac srcdir="."
+               destdir="${build}"
+               debug="on"
+               failonerror="true">
+            <classpath refid="gfv3.classpath"/>
+        </javac>
+    </target>
+
+    <target name="assemble" depends="compile">
+        <jar destfile="${util.jar}">
+            <fileset dir="${build}"
+                     includes="com/sun/s1asdev/deployment/noappxml/util/**.class"/>
+        </jar>
+        <jar destfile="${ejb.jar}" manifest="ejb/MANIFEST.MF">
+            <fileset dir="${build}"
+                     includes="com/sun/s1asdev/deployment/noappxml/ejb/**.class"/>
+        </jar>
+        <jar destfile="${portable.ear}"> 
+            <fileset dir="${build}" includes="util.jar, ejb.jar"/>
+        </jar>
+        <jar destfile="${appclient.jar}" manifest="client/MANIFEST.MF">
+            <fileset dir="${build}"
+                     includes="com/sun/s1asdev/deployment/noappxml/client/**.class,
+                               com/sun/s1asdev/deployment/noappxml/ejb/Sful.class,
+                               com/sun/s1asdev/deployment/noappxml/ejb/Sless.class"/>
+        </jar>
+    </target>
+
+    <target name="deploy.asadmin" depends="prepare">
+        <antcall target="common.deploy.asadmin">
+            <param name="arg.list" value="${portable.ear}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="redeploy.asadmin" depends="prepare">
+        <antcall target="common.redeploy.asadmin">
+            <param name="arg.list" value="${portable.ear}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="undeploy.asadmin">
+        <antcall target="common.undeploy.asadmin">
+            <param name="arg.list" value="${testName}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>
+    
+    <target name="deploy.jsr88" depends="prepare">
+        <antcall target="common.deploy.jsr88">
+            <param name="arg.list" value="${portable.ear} ${deployplan.jar}"/>
+        </antcall>
+    </target>
+
+    <target name="deploy-stream.jsr88" depends="prepare">
+        <antcall target="common.deploy-stream.jsr88">
+            <param name="arg.list" value="${portable.ear} ${deployplan.jar}"/>
+        </antcall>
+    </target>
+
+    <target name="redeploy.jsr88" depends="prepare">
+        <antcall target="common.run.jsr88">
+            <param name="command" value="redeploy"/>
+            <param name="arg.list" value="${testName}-portable ${portable.ear} ${deployplan.jar}"/>
+        </antcall>
+    </target>
+
+    <target name="redeploy-stream.jsr88" depends="prepare">
+        <antcall target="common.run.jsr88">
+            <param name="command" value="redeploy-stream"/>
+            <param name="arg.list" value="${testName}-portable ${portable.ear} ${deployplan.jar}"/>
+        </antcall>
+    </target>
+
+    <target name="undeploy.jsr88">
+        <antcall target="common.undeploy.jsr88">
+            <param name="arg.list" value="${testName}-portable"/>
+        </antcall>
+    </target>
+
+    <target name="undeploy-stream.jsr88">
+        <antcall target="common.undeploy.jsr88">
+            <param name="arg.list" value="all"/>
+        </antcall>
+    </target>
+
+    <target name="runclient" depends="prepare,setOrbPort2">
+        <exec executable="${APPCLIENT}" 
+              resultproperty="result" 
+              failonerror="false" 
+              output="${build}/${log.id}.output.log">
+          <arg line="-targetserver ${appclient.targetservers} -client ${appclient.jar}"/>
+        </exec>
+        <antcall target="processResult">
+            <param name="result" value="${result}"/>
+            <param name="log" value="${build}/${log.id}.output.log"/>
+        </antcall>
+    </target>
+
+    <target name="private-all" depends="private-all-pe-ee, private-all-ee"/>
+
+    <!-- the following is run in both PE and EE environment -->
+    <target name="private-all-pe-ee">
+        <antcall target="assemble"/>
+
+        <antcall target="declare-test">
+            <param name="description" value="descriptor_free/ear/no_appxml Test asadmin deploy"/>
+        </antcall>
+        <antcall target="deploy.asadmin"/>
+        <antcall target="runclient">
+            <param name="log.id" value="1"/>
+        </antcall>
+
+        <antcall target="declare-test">
+            <param name="description" value="descriptor_free/ear/no_appxml Test asadmin re-deploy"/>
+        </antcall>
+        <antcall target="redeploy.asadmin"/>
+        <antcall target="runclient">
+            <param name="log.id" value="2"/>
+        </antcall>
+        <antcall target="undeploy.asadmin"/>
+    </target>
+
+    <!-- the following is run only in EE environment -->
+    <target name="private-all-ee" depends="prepare" if="EE">
+        <echo message="Running tests specific to EE"/>
+    </target>
+
+    <target name="clobber" depends="clean">
+        <delete dir="${build}"/>
+        <delete file="client.log"/>
+        <delete file="results.html"/>
+        <delete file="tests-results.xml"/>
+    </target>
+
+    <target name="usage">
+        <antcall target="all"/>
+    </target>
+
+</project>

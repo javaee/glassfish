@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../config/common.xml">
+<!ENTITY reporting   SYSTEM "../report.xml">
+]>
+
+<project name="stubs" default="usage" basedir=".">
+    &commonSetup;
+    &commonBuild;
+    &reporting;
+
+    <target name="all">
+        <antcall target="proxy"/>
+        <antcall target="stubser"/>
+
+        <antcall target="ejbapp"/>
+        <!-- standaloneclient must be executed right after ejbapp 
+             to be able to use the generated stubs from the app client
+        -->
+        <antcall target="standaloneclient"/>
+
+        <antcall target="ejbclient"/>
+        <antcall target="appclient"/>
+
+        <antcall target="webclient"/>
+
+        <ant dir="ejbapp" target="undeploy"/>
+
+
+    </target>
+
+    <target name="ejbapp">
+        <record name="ejbapp.output" action="start" />
+            <ant dir="ejbapp" target="all"/>
+        <record name="ejbapp.output" action="stop" />
+    </target>
+
+    <target name="ejbclient">
+        <record name="ejbclient.output" action="start" />
+            <ant dir="ejbclient" target="all"/>
+        <record name="ejbclient.output" action="stop" />
+    </target>
+
+    <target name="appclient">
+        <record name="appclient.output" action="start" />
+            <ant dir="appclient" target="all"/>
+        <record name="appclient.output" action="stop" />
+    </target>
+
+    <target name="webclient">
+        <record name="webclient.output" action="start" />
+            <ant dir="webclient" target="all"/>
+        <record name="webclient.output" action="stop" />
+    </target>
+
+    <target name="standaloneclient">
+        <record name="standaloneclient.output" action="start" />
+            <ant dir="standaloneclient" target="all"/>
+        <record name="standaloneclient.output" action="stop" />
+    </target>
+
+
+    <target name="proxy">
+        <record name="proxy.output" action="start" />
+            <ant dir="proxy" target="all"/>
+        <record name="proxy.output" action="stop" />
+    </target>
+
+    <target name="stubser">
+        <record name="stubser.output" action="start" />
+            <ant dir="stubser" target="all"/>
+        <record name="stubser.output" action="stop" />
+    </target>
+
+    <target name="usage">
+	<echo>
+		Usage:
+			ant ejbapp (Executes the ejb-stubs ejbapp test)
+			ant ejbclient (Executes the ejb-stubs ejbclient test)
+			ant appclient (Executes the ejb-stubs appclient test)
+			ant webclient (Executes the ejb-stubs webclient test)
+                        ant proxy (Executes the ejb-stubs proxy test)
+			ant all (Executes all the ejb-stubs tests)
+	</echo>
+    </target>
+</project>

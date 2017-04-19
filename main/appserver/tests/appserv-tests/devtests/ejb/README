@@ -1,0 +1,82 @@
+----------------------------------------
+Steps for running EJB Development Tests
+----------------------------------------
+
+1. Set the following variables:
+
+APS_HOME to the location of where v2/appserv-tests are checked out
+S1AS_HOME to <GlassFish install location>/glassfish3/glassfish
+
+2. Make sure ant is in your path.  
+
+Also, in some cases the ant test clients run out of memory during the test run.  
+If you see this problem, add -Xmx999m to the command that starts the ant java vm, e.g :
+
+    % cat `which ant`
+
+
+    (... towards bottom of ant script)
+
+    "$JAVACMD" -Xmx999m -classpath "$LOCALCLASSPATH" -Dant.home="${ANT_HOME}" $ANT_OPTS org.apache.tools.ant.Main $ANT_ARGS "$@"
+
+3. Install GlassFish by unzipping glassfish.zip for running the tests against Java EE Full Profile, or web.zip for running the tests against the Web Profile.
+
+4. Run the tests.  
+
+  4.1 The "all" target starts the server and the database, runs the tests, and then stops the server and database.  
+
+     % ant all
+
+  4.2 The "lite" target starts the server and the database, runs the tests that do not require any EJB container features beyond EJB Lite, and then stops the server and database.  
+
+  % ant all
+
+5. The results should look something like this : 
+
+   [exec] input file=/Volumes/Fantom1/work/v2/appserv-tests/test_resultsValid.xml
+     [exec] 
+     [exec] ************************
+     [exec] PASSED=        <total>
+     [exec] ------------  =========
+     [exec] FAILED=          0
+     [exec] ------------  =========
+     [exec] DID NOT RUN=   0
+     [exec] ------------  =========
+     [exec] Total Expected=<total>
+     [exec] ************************
+     [exec] 
+
+( <total> is equal to the TOTAL value in the result_count.sh file.  We keep this total count up to date based on the total number of test framework PASS assertions in the set of tests run by the ant all target )
+
+  
+6. To start the server and Derby database, and to cleanup resultset, do 
+
+   % ant setup
+
+7. To stop the server and Derby database, and to report the result, do 
+
+   % ant unsetup
+
+Note: partial result will show <total>-<tests-executed> as a DID NOT RUN number
+
+8. Keeping the score...
+
+   8.1 If an assertion is added to a new test, and the status is not populated from this assertion, no extra change is necessary.
+
+   8.2 If a status of the new assertion is reported explicitly via call:
+
+           stat.addStatus("XYZ", stat.PASS);
+
+       the resultCount.sh total need to be incremented by one.
+
+       NOTE: the status counter prefers that each status has its own name, so if "XYZ" had been already used, find a different name. If the same test is executed more than once, add some modifier to the name to make it unique.
+
+   8.3 If a new test suite is added, the resultCount.sh should be incremented by the number of total tests reported by the suite. See the note above for the test reporting rules.
+
+   8.4 If a test needs to be executed against web.zip, it should be referenced from the "test-lite" target, and its count added to the TOTAL_LITE. Otherwise it should be added to the "test-all" target and TOTAL count be updated.
+
+9. Clustered tests
+
+   Clustered tests are not part of this suite and are located under ee/ directory.
+
+   Only ee/timer tests are automated in their own suite at this time.

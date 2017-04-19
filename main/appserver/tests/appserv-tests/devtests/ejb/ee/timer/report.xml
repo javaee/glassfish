@@ -1,0 +1,13 @@
+<property name="stylesheet" value="${env.APS_HOME}/config/j2eeReporter.xsl" />
+<property name="xmlfile" value="${env.APS_HOME}/test_resultsValid.xml" />
+<property name="htmlfile" value="${env.APS_HOME}/test_results.html" />
+
+<target name="report">
+    <xslt style="${stylesheet}"
+            in="${xmlfile}" out="${htmlfile}"
+            basedir="." destdir="." />
+    <echo message="Comparing results with expected results"/>
+    <exec executable="sh">
+        <arg value="./resultCount.sh"/>
+    </exec>
+</target>

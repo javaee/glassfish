@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../../config/common.xml">
+<!ENTITY testproperties SYSTEM "build.properties">
+]>
+
+<project name="ejb-sfsb-stress-App" default="usage" basedir=".">
+
+    &commonSetup;
+    &commonBuild;
+    &testproperties;
+
+    <target name="all" depends="clean,build,create-resources,deploy,run,undeploy,delete-resources"/>
+    <target name="deployapp" depends="clean,build,create-resources,deploy"/>
+    <target name="undeployapp" depends="undeploy,delete-resources"/>
+
+    <target name="clean" depends="init-common">
+      <antcall  target="clean-common"/>
+    </target>
+ 
+    <target name="compile" depends="clean">
+        <antcall target="compile-common">
+            <param name="src" value="ejb"/>
+        </antcall>
+        <antcall target="compile-common">
+            <param name="src" value="client"/>
+        </antcall>
+    </target>
+
+    <target name="build" depends="compile">
+        <antcall target="build-ear-common">
+            <param name="ejbjar.classes" 
+              value="**/**.class" />
+            <param name="appclientjar.classes" 
+              value="**/*Client*.class, **/*Load*.class **/*SFSB*.class" />
+        </antcall>
+    </target> 
+    
+    <target name="deploy" depends="build,init-common">
+        <antcall target="execute-ejb-sql-common">
+            <param name="sql.file" value="sql/create_pointbase.sql"/>
+        </antcall>
+        <antcall target="deploy-common"/>
+    </target>
+
+    <target name="create-resources" depends="init-common">
+    <!--
+        <antcall target="asadmin-batch-common">
+          <param name="asadmin.file" value="create_resources.asadmin"/>
+        </antcall>
+    -->
+    </target>
+    
+    <target name="delete-resources" depends="init-common">
+    <!--
+        <antcall target="asadmin-batch-common">
+          <param name="asadmin.file" value="delete_resources.asadmin"/>
+        </antcall>
+    -->
+    </target>
+
+    <target name="run" depends="init-common">
+        <antcall target="runclient-common"/>
+    </target>
+ 
+    <target name="undeploy" depends="init-common">
+        <antcall target="undeploy-common"/>
+           <antcall target="execute-ejb-sql-common">
+            <param name="sql.file" value="sql/drop_pointbase.sql"/>
+        </antcall>
+    </target>   
+
+    <target name="runloadgenerator">
+       <java  fork="true" failonerror="true"
+              classpath="${env.S1AS_HOME}/lib/j2ee.jar:${env.S1AS_HOME}/lib/appserv-rt.jar:${build.classes.dir}:${assemble.dir}/ejb-sfsb-stressAppClient.jar:${env.APS_HOME}/lib/reporter.jar"
+           classname="${loadgenerator.client}">
+           <jvmarg value="-Dorg.omg.CORBA.ORBInitialPort=${orb.port}"/>
+           <arg value="ejb/ejb_sfsb_stress_StressSFSBHome"/>
+           <arg value="${ictx.props}"/>
+        </java>
+    </target>     
+
+    <target name="run_cosnaming" depends="init-common">
+        <antcall target="runloadgenerator">
+            <param name="ictx.props"
+                   value="jndi.properties.cosnaming"/>
+        </antcall>
+    </target>
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+        <echo>         
+          ant create-resources Create all destinations and connection factories
+          ant delete-resources Delete all destinations and connection factories
+        </echo>
+    </target>
+</project>

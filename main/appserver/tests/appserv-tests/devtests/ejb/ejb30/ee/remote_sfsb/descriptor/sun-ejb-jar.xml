@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sun-ejb-jar PUBLIC "-//Sun Microsystems, Inc.//DTD Sun ONE Application Server 8.0 EJB 2.1//EN" "http://www.sun.com/software/sunone/appserver/dtds/sun-ejb-jar_2_1-0.dtd">
+<sun-ejb-jar>
+    <enterprise-beans>
+    <ejb>
+      <ejb-name>SfulDriverEJB</ejb-name>
+     <bean-cache>
+         <max-cache-size>8</max-cache-size>
+      </bean-cache>
+        <checkpoint-at-end-of-method>
+            <method>
+                <method-name>doCheckpoint</method-name>
+            </method>
+        </checkpoint-at-end-of-method>
+    </ejb>
+    <ejb>
+      <ejb-name>RemoteSfulEJB</ejb-name>
+     <bean-cache>
+         <max-cache-size>8</max-cache-size>
+      </bean-cache>
+        <checkpoint-at-end-of-method>
+            <method>
+                <method-name>sayNamaste</method-name>
+            </method>
+        </checkpoint-at-end-of-method>
+    </ejb>
+    </enterprise-beans>
+</sun-ejb-jar>

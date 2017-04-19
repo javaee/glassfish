@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
+]>
+
+<project name="ear" default="all" basedir=".">
+
+	&commonBuild;
+    <property name="archivedir" value="${build}/archives"/>
+
+	<target name="build-deployment-plan">
+		<mkdir dir="${build}/plan"/>
+		<copy file="sun-web.xml" tofile="${build}/plan/sun-web.xml"/>
+		<jar destfile="${archivedir}/plan.jar" basedir="${build}/plan"/>
+	</target>
+
+	<target name="build-portable">
+		<war destfile="${archivedir}/simple.war" webxml="web.xml">
+			<fileset file="Simple_Page.html"/>
+		</war>
+	</target>
+
+	<target name="undeploy">
+		<antcall target="common.run.jsr88">
+			<param name="command" value="undeploy"/>
+			<param name="arg.list" value="simple"/>
+		</antcall>
+	</target> 
+
+	<target name="deploy-test" depends="setHttpPort">
+        <mkdir dir="${archivedir}"/>
+		<antcall target="declare-test">
+                    <param name="description" value="jsr88/war/simple deploy test"/>
+                </antcall>
+		<antcall target="build-portable"/>
+		<antcall target="build-deployment-plan"/>
+		<antcall target="common.run.jsr88">
+			<param name="command" value="deploy"/>
+			<param name="arg.list" value="true ${archivedir}/simple.war ${archivedir}/plan.jar"/>
+		</antcall>
+		<echo message="getting http://${http.host}:${depltest.port}/simple/Simple_Page.html"/>
+		<condition property="success">
+			<http url="http://${http.host}:${depltest.port}/simple/Simple_Page.html"/>
+		</condition>
+                <antcall target="testSuccess"><param name="log.id" value="1"/></antcall>
+                <antcall target="testFailure"><param name="log.id" value="2"/></antcall>
+                <!--
+		<antcall target="undeploy"/>
+                -->
+	</target>
+
+        <target name="redeploy-test" depends="setHttpPort">
+                <antcall target="declare-test">
+                    <param name="description" value="jsr88/war/simple redeploy test"/>
+                </antcall>
+                <!--
+                <antcall target="build-portable"/>
+                <antcall target="build-deployment-plan"/>
+                <antcall target="common.run.jsr88">
+                        <param name="command" value="deploy"/>
+                        <param name="arg.list" value="true ${archivedir}/simple.war ${archivedir}/plan.jar"/>
+                </antcall>
+                -->
+                <antcall target="common.run.jsr88">
+                        <param name="command" value="redeploy"/>
+                        <param name="arg.list" value="simple ${archivedir}/simple.war ${archivedir}/plan.jar"/>
+                </antcall>
+
+                <echo message="getting http://${http.host}:${depltest.port}/simple/Simple_Page.html"/>
+                <condition property="success">
+                        <http url="http://${http.host}:${depltest.port}/simple/Simple_Page.html"/>
+                </condition>
+                <antcall target="testSuccess"><param name="log.id" value="3"/></antcall>
+                <antcall target="testFailure"><param name="log.id" value="4"/></antcall>
+                <antcall target="undeploy"/>
+        </target>
+
+
+        <target name="private-all">
+            <antcall target="deploy-test"/>
+            <antcall target="redeploy-test"/>
+        </target>
+
+	<target name="testSuccess" if="success">
+            <antcall target="processResult">
+                <param name="result" value="0"/>
+                <param name="log" value="${build}/${log.id}.output.log"/>
+            </antcall> 
+	</target>
+	<target name="testFailure" unless="success">
+            <antcall target="processResult">
+                <param name="result" value="-1"/>
+                <param name="log" value="${build}/${log.id}.output.log"/>
+            </antcall> 
+	</target>
+</project>

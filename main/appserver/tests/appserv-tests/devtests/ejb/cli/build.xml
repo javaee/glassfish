@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../config/common.xml">
+<!ENTITY reporting SYSTEM "../report.xml">
+]>
+
+
+<project name="cli" default="usage" basedir=".">
+    &commonSetup;
+    &commonBuild;
+    &reporting;
+
+    <target name="all">
+        <antcall target="negative"/>
+    </target>
+
+    <target name="negative">
+        <record name="negative.output" action="start" />
+            <ant dir="negative" target="all"/>
+        <record name="negative.output" action="stop" />
+    </target>
+
+    <target name="usage">
+	<echo>
+		Usage:
+			ant all (Executes all the ejb-cli tests)
+
+			ant negative (Executes the ejb-cli negative test)
+	</echo>
+    </target>
+</project>

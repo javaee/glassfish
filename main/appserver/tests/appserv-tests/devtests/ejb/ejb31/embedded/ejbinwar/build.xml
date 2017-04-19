@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../../../config/common.xml">
+<!ENTITY embeddedCommon SYSTEM "../embedded.xml">
+<!ENTITY testproperties SYSTEM "build.properties">
+]>
+
+<project name="ejb-ejb31-embedded-ejbinwar-App" default="usage" basedir=".">
+
+    &embeddedCommon;
+    &commonSetup;
+    &commonBuild;
+    &testproperties;
+
+    <target name="all" depends="start-database,build,run,stop-database"/>
+
+    <target name="clean" depends="init-common">
+      <antcall  target="clean-common"/>
+    </target>
+ 
+    <target name="compile" depends="clean">
+        <antcall target="compile-common">
+            <param name="src" value="ejb"/>
+        </antcall>
+        <antcall target="compile-common">
+            <param name="src" value="client"/>
+        </antcall>
+        <antcall target="compile-common">
+            <param name="src" value="servlet"/>
+        </antcall>
+    </target>
+
+    <target name="build" depends="compile">
+        <mkdir dir="${assemble.dir}"/>
+        <!-- package war ourselves to include persistence.xml -->
+        <mkdir dir="${build.classes.dir}/tmp"/>
+        <mkdir dir="${build.classes.dir}/tmp/WEB-INF"/>
+        <mkdir dir="${build.classes.dir}/tmp/WEB-INF/classes"/>
+        <mkdir dir="${build.classes.dir}/tmp/WEB-INF/classes/META-INF"/>
+        <copy todir="${build.classes.dir}/tmp/WEB-INF/classes">
+            <fileset dir="${build.classes.dir}">
+                <exclude name="**/Client.class"/>
+                <exclude name="**/Other*.class"/>
+            </fileset>
+        </copy>
+        <copy file="${persistence.xml}"
+              tofile="${build.classes.dir}/tmp/WEB-INF/classes/META-INF/persistence.xml" failonerror="false"/>
+        <copy file="${web.xml}"
+              tofile="${build.classes.dir}/tmp/WEB-INF/web.xml" failonerror="false"/>
+
+        <jar jarfile="${assemble.dir}/${appname}-web.war" update="true">
+                <fileset dir="${build.classes.dir}/tmp" casesensitive="yes"/>
+        </jar>
+        <delete>
+            <fileset dir="${build.classes.dir}/org" excludes="**/*Simple.class"/>
+        </delete>
+
+        <move file="${build.classes.dir}/tmp" tofile="${assemble.dir}/tmp"/>
+    </target> 
+    
+    <target name="run" depends="init-common">
+        <antcall target="run_war"/>
+        <antcall target="run_dir"/>
+    </target>
+ 
+    <target name="run_war" depends="init-common">
+       <java  fork="on" 
+              failonerror="true"
+              classpath="${assemble.dir}/${appname}-web.war:${assemble.dir}/${appname}-pu.jar:${embedded.classpath}:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
+              classname="${se.client}">
+           <arg line="${appname}"/>
+        </java>
+    </target>
+
+    <target name="run_war_installed_instance" depends="init-common">
+       <antcall  target="start-database"/>
+       <java  fork="on" 
+              failonerror="true"
+              classpath="${assemble.dir}/${appname}-web.war:${assemble.dir}/${appname}-pu.jar:${embedded.classpath}:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
+              classname="${se.client}">
+           <arg line="${jndiroot}"/>
+           <arg line="installed_instance"/>
+        </java>
+       <antcall  target="stop-database"/>
+    </target>
+
+    <target name="run_war_servlet" depends="init-common">
+       <java  fork="on"
+              failonerror="true"
+              classpath="${assemble.dir}/${appname}-web.war:${assemble.dir}/${appname}-pu.jar:${embedded.classpath}:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
+              classname="${se.client}">
+           <arg line="${appname}"/>
+           <arg line="servlet"/>
+        </java>
+    </target>
+
+    <target name="run_dir" depends="init-common">
+       <java  fork="on" 
+              failonerror="true"
+              classpath="${assemble.dir}/tmp:${assemble.dir}/${appname}-pu.jar:${embedded.classpath}:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
+              classname="${se.client}">
+           <arg line="${jndiroot}"/>
+        </java>
+    </target>
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+</project>

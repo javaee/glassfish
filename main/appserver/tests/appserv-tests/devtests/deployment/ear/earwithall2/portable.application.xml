@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application xmlns="http://java.sun.com/xml/ns/javaee"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee Http://java.sun.com/xml/ns/javaee/application_6.xsd">
+  <application-name>foo</application-name>
+  <description>Application description</description>
+  <display-name>WebNBean-DisplayName</display-name>
+  <module>
+    <ejb>WebNBean-portable.jar</ejb>
+  </module>
+  <!--
+  <module>
+    <java>app-client-ic.jar</java>
+  </module>
+  -->
+  <module>
+    <web>
+      <web-uri>WebNBean-portable.war</web-uri>
+      <context-root>/webnbean</context-root>
+    </web>
+  </module>
+</application>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE glassfish-ejb-jar PUBLIC "-//GlassFish.org//DTD GlassFish Application Server 3.1 EJB 3.1//EN" "http://glassfish.org/dtds/glassfish-ejb-jar_3_1-1.dtd">
+<glassfish-ejb-jar>
+  <enterprise-beans>
+    <ejb>
+      <ejb-name>MessageBean</ejb-name>
+
+      <!-- http://java.net/jira/browse/GLASSFISH-7302 and sun bug 6335445
+      have been fixed and no need to have jndi-name for the MDB -->
+
+      <resource-ref>
+        <res-ref-name>jms/MyQueueConnectionFactory</res-ref-name>
+        <jndi-name>jms/ejb_ejb30_hello_mdb2_QCF</jndi-name>
+        <default-resource-principal>
+          <name>guest</name>
+          <password>guest</password>
+        </default-resource-principal>
+      </resource-ref>
+    </ejb>
+  </enterprise-beans>
+</glassfish-ejb-jar>

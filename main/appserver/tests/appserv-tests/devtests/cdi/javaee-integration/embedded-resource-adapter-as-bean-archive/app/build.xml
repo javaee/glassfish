@@ -1,0 +1,97 @@
+<!--
+ Copyright 2002 Sun Microsystems, Inc. All rights reserved.
+ SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+-->
+
+<!DOCTYPE project [
+  <!ENTITY common SYSTEM "../../../../../config/common.xml">
+  <!ENTITY testcommon SYSTEM "../../../../../config/properties.xml">
+  <!ENTITY database SYSTEM "../../../config/database.xml">
+]>
+
+<project name="connector1.5 MDB" default="all" basedir=".">
+
+  <property name="j2ee.home" value="../../.."/>
+  <property name="earfile" value="generic-embedded.ear"/>
+
+
+  <!-- include common.xml and testcommon.xml -->
+  &database;
+  &common;
+  &testcommon;
+
+  <target name="all" depends="init-common, clean-common">
+   <ant dir="src" inheritAll="false" target="all"/>
+   <antcall target="build-ear"/>
+ <!--
+   <antcall target="ear-common">
+	<param name="appname" value="generic-embedded"/>
+	<param name="application.xml" value="META-INF/application.xml"/>
+   </antcall>
+ -->
+  </target>
+
+  <target name="build-ear">
+
+     <delete file="${assemble.dir}/generic-embeddedApp.ear"/>
+     <mkdir dir="${assemble.dir}"/>
+     <mkdir dir="${build.classes.dir}/META-INF"/>
+     <ear earfile="${assemble.dir}/generic-embeddedApp.ear"
+       appxml="META-INF/application.xml">
+            
+       <fileset dir="${assemble.dir}">
+            <include name="*.jar"/>
+            <include name="*.war"/>
+       </fileset>
+       <fileset dir="../ra">
+           <include name="*.rar"/>
+       </fileset>
+       <fileset dir="${env.APS_HOME}/lib">
+           <include name="reporter.jar"/>
+       </fileset>
+     </ear>
+
+  </target>
+
+  <target name="setupJdbc" depends="init-common">
+      <antcall target="create-jdbc-conpool-connector">
+        <param name="db.class" value="org.apache.derby.jdbc.ClientXADataSource"/>
+        <param name="jdbc.conpool.name" value="jdbc-pointbase-pool1"/>
+        <param name="jdbc.resource.type" value="javax.sql.XADataSource"/>
+      </antcall>
+      <antcall target="create-jdbc-resource-common">
+        <param name="jdbc.conpool.name" value="jdbc-pointbase-pool1"/>
+        <param name="jdbc.resource.name" value="jdbc/XAPointbase"/>
+      </antcall>
+
+      <antcall target="execute-sql-connector">
+        <param name="sql.file" value="createdb.sql"/>
+      </antcall>
+   </target>
+
+  <target name="unsetJdbc" depends="init-common">
+      <antcall target="delete-jdbc-resource-common">
+        <param name="jdbc.resource.name" value="jdbc/XAPointbase"/>
+      </antcall>
+     <antcall target="delete-jdbc-connpool-common">
+        <param name="jdbc.conpool.name" value="jdbc-pointbase-pool1"/>
+      </antcall>
+  </target>
+
+  <target name="deploy-ear" depends="init-common">
+    <antcall target="deploy-common">
+      <param name="appname" value="generic-embedded"/>
+    </antcall>
+  </target>
+
+  <target name="undeploy" depends="init-common">
+    <antcall target="undeploy-common">
+      <param name="deployedapp.name" value="generic-embeddedApp"/>
+      <param name="appname" value="generic-embedded"/>
+    </antcall>
+  </target>
+
+  <target name="clean">
+    <antcall target="clean-common"/>
+  </target>
+</project>

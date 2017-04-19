@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "./../../config/common.xml">
+]>
+
+<project name="appMgtTestApp" default="usage" basedir=".">
+
+    &commonBuild;
+
+    <property name="testName" value="appmgt"/>
+    <property name="webModuleName" value="appmgt-web.war"/>
+    <property name="asadminCmdArg" value="${testName}/${webModuleName}"/>
+    <property name="all.ear" value="${build}/archive/${testName}.ear"/>
+    <property name="testCategory" value="ear/appmgt"/>
+    <property name="urlToContact" value="${testName}/war"/>
+
+    <property name="original.config.client.args" value="-param builtin=in-app -env builtin(java.lang.String)=in-app"/>
+    <property name="customized.config.client.args" value="-env env1(java.lang.String)=env-val1 -param par1=par-val1"/>
+
+    <target name="prepare" depends="init">
+        <property name="all.war" value="${build}/${webModuleName}"/>
+        <mkdir dir="${build}"/>
+    </target>
+
+    <target name="compile" depends="prepare">
+        <javac srcdir="."
+               destdir="${build}"
+               debug="on"
+               failonerror="true">
+            <classpath refid="gfv3.classpath" />
+        </javac>
+    </target>
+
+    <target name="assemble" depends="compile">
+        <ant dir="../../war/appmgt" target="compile">
+            <property name="build" value="${build}"/>
+        </ant>
+
+        <war destfile="${all.war}" webxml="web.xml">
+            <classes dir="${build}"/>
+        </war>
+
+         
+        <copy file="application.xml" todir="${build}/archive/META-INF"/>
+        <copy file="${all.war}" todir="${build}/archive"/>
+        <jar destfile="${all.ear}" basedir="${build}/archive"/>
+    </target>
+
+    <target name="deploy.asadmin" depends="prepare">
+        <antcall target="common.deploy.asadmin">
+            <param name="arg.list" value="${all.ear}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="redeploy.asadmin" depends="prepare">
+        <antcall target="common.redeploy.asadmin">
+            <param name="arg.list" value="${all.ear}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>
+
+   <target name="v3.redeploy.asadmin" depends="prepare">
+        <antcall target="common.v3.redeploy.asadmin">
+            <param name="arg.list"
+                   value="--name ${testName} ${all.ear}"/>
+        </antcall>
+    </target>
+
+    <target name="undeploy.asadmin">
+        <antcall target="common.undeploy.asadmin">
+            <param name="arg.list" value="${testName}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="enable.asadmin"> 
+        <antcall target="common.enable.asadmin">
+            <param name="arg.list" 
+                   value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="disable.asadmin">
+        <antcall target="common.disable.asadmin">
+            <param name="arg.list" 
+                   value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="deploy.jsr88" depends="prepare">
+        <antcall target="common.deploy.jsr88">
+            <param name="arg.list" value="${portable.war} ${deployplan.jar}"/>
+        </antcall>
+    </target>
+
+    <target name="redeploy.jsr88" depends="prepare">
+        <antcall target="common.run.jsr88">
+            <param name="command" value="redeploy"/>
+            <param name="arg.list" value="appmgt-portable ${portable.war} ${deployplan.jar}"/>
+        </antcall>
+    </target>
+
+    <target name="undeploy.jsr88">
+        <antcall target="common.undeploy.jsr88">
+            <param name="arg.list" value="appmgt-portable"/>
+        </antcall>
+    </target>
+
+    <target name="start.jsr88">
+        <antcall target="common.run.jsr88">
+            <param name="command" value="start"/>
+            <param name="arg.list" value="appmgt-portable"/>
+        </antcall>
+    </target>
+
+    <target name="stop.jsr88">
+        <antcall target="common.run.jsr88">
+            <param name="command" value="stop"/>
+            <param name="arg.list" value="appmgt-portable"/>
+        </antcall>
+    </target>
+
+    <target name="do.asadmin">
+        <antcall target="common.run.asadmin">
+            <param name="arg.list" value="${command} ${arg.list} ${asadminCmdArg}"/>
+        </antcall>
+    </target>
+
+    <target name="run" depends="run.positive"/>
+
+    <target name="run.positive" depends="setHttpPort">
+        <antcall target="common.run.positive">
+            <param name="link" value="${urlToContact}"/>
+            <param name="log.id" value="${log.id}"/>
+        </antcall>
+    </target>
+
+    <target name="run.negative" depends="setHttpPort">
+        <antcall target="common.run.negative">
+            <param name="link" value="${urlToContact}"/>
+            <param name="log.id" value="${log.id}"/>
+        </antcall>
+    </target>
+
+    <target name="runclient" depends="init">
+        <echo message="TestClient ${arg.list}"/>
+        <javaWithResult
+            fork="true"
+            failonerror="false"
+            jvm="${JAVA}"
+            classname="appmgttest.TestClient"
+            output="${build}/${log.id}.output.log"
+            resultproperty="result">
+            <jvmarg value="-Dorg.omg.CORBA.ORBInitialHost=${http.host}"/>
+            <jvmarg value="-Dorg.omg.CORBA.ORBInitialPort=${orb.port}"/>
+            <jvmarg value="-Djava.endorsed.dirs=${inst}/lib/endorsed"/>
+
+            <classpath>
+                <path location="${inst}/lib/j2ee.jar"/>
+                <path location="${build}"/>
+            </classpath>
+
+            <arg line="${arg.list}"/>
+        </javaWithResult>
+        <antcall target="processResult">
+            <param name="result" value="${result}"/>
+            <param name="log" value="${build}/${log.id}.output.log"/>
+        </antcall>
+    </target>
+
+    <target name="private-all" depends="private-all-pe"/>
+
+    <target name="private-all-pe" if="PE">
+
+        <antcall target="assemble"/>
+
+        <antcall target="deploy.asadmin"/>
+
+        <antcall target="runTests"/>
+
+        <antcall target="undeploy.asadmin"/>
+
+    </target>
+
+    <target name="runTests">
+
+        <!--
+            Note that the client asks the servlet to report all its
+            env-entries and all context-params.  Then the client uses the
+            client command-line args to search for matching entries that the
+            servlet returned.  We expect positive results for env-entries or
+            context-params defined EITHER in the web app OR in the customizations,
+            unless of course the customizations request ignoreDescriptorItem in
+            which case the corresponding descriptor item should not appear in
+            the data the servlet sends to the client.
+        -->
+        <antcall target="check.original.config.with.no.customization">
+            <param name="log.id" value="1"/>
+        </antcall>
+
+        <!--
+            Now create a new env entry and context param via customization.
+        -->
+
+        <antcall target="do.asadmin">
+            <param name="command" value="set-web-env-entry"/>
+            <param name="arg.list" value="--name=env1 --type=java.lang.String --value=env-val1"/>
+        </antcall>
+
+        <antcall target="do.asadmin">
+            <param name="command" value="set-web-context-param"/>
+            <param name="arg.list" value="--name=par1 --value=par-val1"/>
+        </antcall>
+
+        <antcall target="disable.asadmin"/>
+        <antcall target="enable.asadmin"/>
+
+        <antcall target="check.original.config.with.additive.customization">
+            <param name="log.id" value="2"/>
+        </antcall>
+
+        <!--
+            Further customize by suppressing the original env-entry and
+            context-param but leaving the added ones.
+        -->
+        <antcall target="do.asadmin">
+            <param name="command" value="set-web-env-entry"/>
+            <param name="arg.list" value="--name builtin --ignoreDescriptorItem=true"/>
+        </antcall>
+
+        <antcall target="do.asadmin">
+            <param name="command" value="set-web-context-param"/>
+            <param name="arg.list" value="--name=builtin --ignoreDescriptorItem=true"/>
+        </antcall>
+
+        <!--
+            Restart the app so the config changes will have effect.
+        -->
+        <antcall target="disable.asadmin"/>
+        <antcall target="enable.asadmin"/>
+
+        <antcall target="check.added.customization.and.suppressed.original.config">
+            <param name="log.id" value="3"/>
+        </antcall>
+
+        <!--
+            Make sure the results are the same after a redeployment.
+        -->
+        <antcall target="v3.redeploy.asadmin"/>
+
+        <antcall target="check.added.customization.and.suppressed.original.config">
+            <param name="log.id" value="4"/>
+        </antcall>
+
+        <!--
+            Redeploy using deploy force=true.  The customizations should
+            survive.
+        -->
+
+        <antcall target="redeploy.asadmin"/>
+
+        <antcall target="check.added.customization.and.suppressed.original.config">
+            <param name="log.id" value="5"/>
+        </antcall>
+
+        <!--
+            Now unset the customizations and then make sure that the behavior
+            is back to how it was immediately after the initial deployment.
+        -->
+
+        <antcall target="do.asadmin">
+            <param name="command" value="unset-web-env-entry"/>
+            <param name="arg.list" value="--name=env1"/>
+        </antcall>
+
+        <antcall target="do.asadmin">
+            <param name="command" value="unset-web-env-entry"/>
+            <param name="arg.list" value="--name builtin"/>
+        </antcall>
+
+        <antcall target="do.asadmin">
+            <param name="command" value="unset-web-context-param"/>
+            <param name="arg.list" value="--name=par1"/>
+        </antcall>
+
+        <antcall target="do.asadmin">
+            <param name="command" value="unset-web-context-param"/>
+            <param name="arg.list" value="--name=builtin"/>
+        </antcall>
+
+        <!-- Restart so the changes become effective. -->
+        <antcall target="disable.asadmin"/>
+        <antcall target="enable.asadmin"/>
+
+        <antcall target="check.original.config.with.no.customization">
+            <param name="log.id" value="6"/>
+        </antcall>
+
+        <!--
+            The app is still deployed.  Undeploy it then deploy it again.
+            The customizations should have vanished.
+        -->
+
+        <antcall target="undeploy.asadmin"/>
+
+        <antcall target="deploy.asadmin"/>
+
+        <antcall target="check.original.config.with.no.customization">
+            <param name="log.id" value="7"/>
+        </antcall>
+
+    </target>
+
+    <!--
+        Makes sure the app's configuration matches how it
+        was when first deployed, before any customization.
+    -->
+    <target name="check.original.config.with.no.customization">
+        <antcall target="run.positive">
+            <param name="log.id" value="${log.id}.1"/>
+            <param name="desc" value="${testCategory} Check app's original config [${log.id}.1]"/>
+            <param name="extra.args" value="${original.config.client.args}"/>
+        </antcall>
+
+        <antcall target="run.negative">
+            <param name="log.id" value="${log.id}.2"/>
+            <param name="desc" value="${testCategory} Make sure a non-existent customization is absent [${log.id}.2]"/>
+            <param name="extra.args" value="-env notThere(java.lang.String)=in-app"/>
+        </antcall>
+
+        <antcall target="run.negative">
+            <param name="log.id" value="${log.id}.3"/>
+            <param name="desc" value="${testCategory} Make sure a customization used during the test is absent when it should be [${log.id}.3]"/>
+            <param name="extra.args" value="${customized.config.client.args}"/>
+        </antcall>
+    </target>
+
+    <!--
+        Make sure that the customizations are
+        reflected with the app's original config.
+    -->
+    <target name="check.original.config.with.additive.customization">
+        <antcall target="run.positive">
+            <param name="log.id" value="${log.id}.1"/>
+            <param name="desc" value="${testCategory} Check app's original config plus additive customization [${log.id}.1]"/>
+            <param name="extra.args" value="${original.config.client.args} ${customized.config.client.args}"/>
+        </antcall>
+
+    </target>
+
+    <target name="check.additive.customization">
+        <antcall target="run.positive">
+            <param name="log.id" value="${log.id}.1"/>
+            <param name="desc" value="${testCategory} Check for added env and param customization [${log.id}.1]"/>
+            <param name="extra.args" value="${customized.config.client.args}"/>
+        </antcall>
+    </target>
+        
+    <target name="check.added.customization.and.suppressed.original.config">
+        <antcall target="check.additive.customization">
+            <param name="log.id" value="${log.id}.1"/>
+        </antcall>
+        <antcall target="check.suppressed.original.config">
+            <param name="log.id" value="${log.id}.2"/>
+        </antcall>
+    </target>
+
+    <target name="check.suppressed.original.config">
+        <antcall target="run.negative">
+            <param name="log.id" value="${log.id}.1"/>
+            <param name="desc" value="${testCategory} Check for env-entry in the web app's descr being (correctly) ignored [${log.id}.1]"/>
+            <param name="extra.args" value="-env builtin(java.lang.String)=in-app"/>
+        </antcall>
+
+        <antcall target="run.negative">
+            <param name="log.id" value="${log.id}.2"/>
+            <param name="desc" value="${testCategory} Check for context-param in the web app's descr being (correctly) ignored [${log.id}.2]"/>
+            <param name="extra.args" value="-param builtin=in-app"/>
+        </antcall>
+    </target>
+    
+    <target name="clobber" depends="clean">
+        <delete file="${all.ear}"/>
+        <delete dir="${build}"/>
+    </target>
+
+    <target name="usage">
+        <antcall target="all"/>
+    </target>
+</project>

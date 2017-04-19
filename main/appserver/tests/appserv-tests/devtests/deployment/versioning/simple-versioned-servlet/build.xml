@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "./../../config/common.xml">
+<!ENTITY commonVersioning SYSTEM "../versioning-common.xml">
+<!ENTITY basicScenarios SYSTEM "../basic-scenarios.xml">
+]>
+
+<project name="simple-versioned-servlet" default="usage" basedir=".">
+
+    &commonBuild;
+    &commonVersioning;
+    &basicScenarios;
+
+    <loadproperties srcFile="../build.properties"/>
+    <!--
+        versionInfos: the property file included in the war archives, this
+        file contains a version identifier as a property and is used by the
+        servlet to display the version informations.
+    -->
+    <property name="versionInfos" value="version-infos.properties"/>
+    <property name="testPackage" value="versionedservlet"/>
+    <property name="gfDDFile" value="glassfish-web.xml"/>
+    <property name="gfDDDir" value="WEB-INF"/>
+    <!-- untaggedName: the name of the application, its the version's prefix -->
+    <property name="untaggedName" value="simple-versioned-servlet"/>
+    <!-- link: the context root of the servlet -->
+    <property name="link" value="/${untaggedName}"/>
+    <!-- classClient: the class used by runclient's target and excluded from war -->
+    <property name="classClient" value="SimpleVersionedClient"/>
+    <!-- classRunclient: the full name of the client class for runclient's target -->
+    <property name="classRunclient" value="${testPackage}.client.${classClient}"/>
+    <!-- packaging: the file archive's extention -->
+    <property name="packaging" value="war"/>
+
+    <target name="prepare" depends="init">
+        <mkdir dir="${build}"/>
+    </target>
+
+    <!-- compile: compiles the 2 classes (servlet+client) -->
+    <target name="compile" depends="prepare,process.versionexpression">
+        <javac srcdir="./src/"
+               destdir="${build}"
+               debug="on"
+               failonerror="true">
+            <classpath refid="gfv3.classpath" />
+        </javac>
+        <!--
+            generation of the property from witch the servlet read the
+            version information.
+        -->
+        <propertyfile file="${build}/${testPackage}/${versionInfos}">
+          <entry  key="version.identifier" value="${versionExpression}"/>
+        </propertyfile>
+        <property name="xmlFile" value="${gfDDDir}/${gfDDFile}"/>
+    	<antcall target="generate.xml.identifier"/>
+    </target>
+
+    <!-- assemble: package the war archive -->
+    <target name="assemble" depends="compile">        
+        <war destfile="${archiveFile}" webxml="WEB-INF/web.xml" manifest="META-INF/MANIFEST.MF">
+            <webinf dir="WEB-INF" includes="glassfish-web.xml"/>
+            <classes dir="${classPath}" includes="**/*.class, **/*.properties">
+                <exclude name="**/${classClient}.class"/>
+                <exclude name="**/${classClient}$TestResponse.class"/>
+            </classes>
+        </war>
+    </target>
+
+    <target name="main-all">
+       <antcall target="versioned.vs.unversioned"/>
+        <antcall target="deployment">
+            <param name="withTest" value="true"/>
+        </antcall>
+        <antcall target="deactivation"/>
+        <antcall target="redeployment"/>
+        <antcall target="undeployment"/>
+        <antcall target="samples.scenarios"/>
+        <antcall target="switch"/>
+        <antcall target="xml.version.information"/>
+        <antcall target="client-stubs"/>
+        <antcall target="clean.scenario"/>
+<!--        <antcall target="rolling-upgrade.scenario"/>-->
+    </target>
+
+    <target name="main-rollingUpgrade">
+        <antcall target="rolling-upgrade.scenario"/>
+    </target>
+</project>

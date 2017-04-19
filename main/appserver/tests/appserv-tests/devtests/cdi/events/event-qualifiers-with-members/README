@@ -1,0 +1,5 @@
+Test
+- Use of Events
+    - Event Qualifiers with members
+    - qualifier member value specified statically for event production and dynamically through a
+    subclass of AnnotationLiteral

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../config/common.xml">
+<!ENTITY reporting SYSTEM "../report.xml">
+]>
+
+<project name="ejb-ee" default="usage" basedir=".">
+    &commonSetup;
+    &commonBuild;
+    &reporting;
+
+    <target name="all">
+        <antcall target="methodcheckpoint"/>
+        <antcall target="txcheckpoint"/>
+    </target>
+
+    <target name="methodcheckpoint">
+        <record name="methodcheckpoint.output" action="start" />
+            <ant dir="methodcheckpoint" target="all"/>
+        <record name="methodcheckpoint.output" action="stop" />
+    </target>
+
+
+    <target name="txcheckpoint">
+        <record name="txcheckpoint.output" action="start" />
+            <ant dir="txcheckpoint" target="all"/>
+        <record name="txcheckpoint.output" action="stop" />
+    </target>
+
+    <target name="usage">
+	<echo>
+		Usage:
+			ant all (Executes all the ejb-ee tests)
+			ant methodcheckpoint (Executes the ejb-ee-methodcheckpoint test)
+			ant txcheckpoint (Executes the ejb-ee-txcheckpoint test)
+	</echo>
+    </target>
+</project>

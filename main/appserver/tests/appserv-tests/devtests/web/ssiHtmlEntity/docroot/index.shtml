@@ -1,0 +1,3 @@
+<!--#set var="test" value="<!\-\- testvalue \"x\" \-\->" -->
+<!--#echo var="test" encoding="none" -->
+<!--#echo var="test" encoding="entity" -->

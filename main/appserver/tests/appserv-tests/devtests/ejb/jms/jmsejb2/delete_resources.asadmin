@@ -1,0 +1,6 @@
+delete-jms-resource jms/ejb_jms_jmsejb2_QCF
+
+delete-jms-resource jms/ejb_jms_jmsejb2_Queue
+delete-jmsdest --desttype queue ejb_jms_jmsejb2_Queue
+
+quit

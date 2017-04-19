@@ -1,0 +1,51 @@
+/*
+ * Copyright 2002 Sun Microsystems, Inc. All rights reserved.
+ * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+ */
+package com.sun.s1asdev.security.jmac.soapembedded.webclient;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import javax.xml.ws.WebServiceRef;
+
+import com.sun.s1asdev.security.jmac.soapembedded.ejbws.HelloEjb;
+import com.sun.s1asdev.security.jmac.soapembedded.ejbws.JmacSoapEmbeddedEjbService;
+import com.sun.s1asdev.security.jmac.soapembedded.servletws.HelloServlet;
+import com.sun.s1asdev.security.jmac.soapembedded.servletws.JmacSoapEmbeddedServletService;
+
+public class Servlet extends HttpServlet {
+    @WebServiceRef(wsdlLocation="http://@HOST@:@PORT@/JmacSoapEmbeddedEjbService/HelloEjb?WSDL")
+    private JmacSoapEmbeddedEjbService ejbService;
+
+    @WebServiceRef(wsdlLocation="http://@HOST@:@PORT@/security-jmac-soapembedded-web/webservice/JmacSoapEmbeddedServletService/HelloServlet?WSDL")
+    private JmacSoapEmbeddedServletService servletService;
+
+    public void service(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+        resp.setContentType("text/html");
+        PrintWriter out = resp.getWriter();
+
+        out.println("<HTML><HEAD><TITLE>Servlet Output</TTILE></HEAD><BODY>");
+        try {
+            HelloEjb ejbPort = ejbService.getHelloEjbPort();
+
+            String ejbMsg = ejbPort.hello("Sun");
+            out.println(ejbMsg);
+            out.println("<br>");
+
+            HelloServlet servletPort = servletService.getHelloServletPort();
+            String servletMsg = servletPort.hello("Sun");
+            out.println(servletMsg);
+            out.println("</BODY></HTML>");
+        } catch(Exception ex) {
+            out.println(ex.toString());
+            ex.printStackTrace();
+        }
+    }
+}

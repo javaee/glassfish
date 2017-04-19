@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY autodeployUtil SYSTEM "./../util/util.xml">
+<!ENTITY commonBuild SYSTEM "./../../config/common.xml">
+]>
+<!--
+    Note that this currently assumes that the ear/earwithejb and ejb/statelesshello projects have run to build 
+    the ear used for this test.
+
+    Also note that this test expects the 'grep' command to be present in the operating environment.
+    This is fine on Solaris and Linux systems, and should be fine on Windows systems prepared 
+    according to the requirements for building the app server.  
+-->
+ 
+<project name="autodeploy-slowcopy" default="all" basedir=".">
+
+ 	&commonBuild;
+        &autodeployUtil;
+
+    <property name="testName" value="slowcopy"/>
+    
+    <target name="prepare" depends="init">
+        <property name="inputArchive" value="${autodeploy.archive}"/>
+        <property name="outputArchive" value="${autodeploy.dir}/${autodeploy.archive.name}"/>
+        <!--
+            The next property setting represents a 4-second delay between
+            writes to the autodeployed file (by the SlowCopy test class invoked
+            below).  This is based on the 2-second
+            interval with which the autodeploy thread rechecks the files
+            in the autodeploy directory.  By using a setting significantly
+            longer than the 2-second autodeploy period, we test two code paths in the
+            autodeploy code. 
+            
+            One code path suppresses a retry of the file
+            if it has failed to open successfully as an archive previously
+            and has grown in size since the last check of the file.  The
+            assumption in this case is that, since the file has grown since the
+            last check, it might continue to grow and so we decide not to 
+            retry it at that moment.
+            
+            The other code path detects runs when the
+            size has not changed since the last check.  This set of logic
+            then tries to open the file as an archive
+            again.  (Here, the assumption is that since the file did
+            not grow since the previous check, it might be done growing and
+            therefore it makes sense to try to open it again now).  
+            For most of the iterations, this code path finds that the archive 
+            still will not open correctly - because the slow copy is still
+            in progress - and does not further work with the file in the
+            current iteration but leaves the file in the map of files to be
+            monitored.  
+            
+            At last, when the copy completes, an iteration discovers that
+            the file size has been stable since the last time through and
+            the attempt to open the file as an archive succeeds.  The file
+            is then autodeployed normally.
+        -->
+        <property name="slowcopy.delay" value="4000"/>
+        
+        <property name="result.property.file" value="${build}/result.properties"/>
+        
+        <mkdir dir="${build}" />
+    </target>
+	
+    <target name="build" depends="prepare">
+        
+        <echo>Using previously-built ${inputArchive}</echo>
+        <!--
+            Some earlier tests should have run already, so the app we use for autodeploy testing
+            should already be in place in the build directory.
+        -->
+
+    </target>
+    
+    <target name="private-all" depends="build">
+        
+        <antcall target="declare-test">
+            <param name="description" value="autodeploy/slow Test autodeploy with slowly-copied file"/>
+        </antcall>
+
+        <!--
+            The next task discards any previous temporary file used to gather property settings that
+            record the results of the autodeploy directory monitoring Java class.
+        -->
+        <delete file="${result.property.file}" quiet="true"/>
+        
+        <tstamp prefix="slowcopy">
+            <format property="NOW" pattern="${dateFormat}"/>
+        </tstamp>
+        
+        <!--
+            Do the auto-deployment but use the special tool that copies slowly.
+         -->
+         <echo>Copying ${inputArchive} slowly to the autodeploy directory</echo>
+        <javaWithResult
+                fork="true"
+                failonerror="false"
+                jvm="${JAVA}"
+                classname="autodeploy.slowtest.SlowCopy"
+                resultproperty="slow.autodeploy.deployResult"
+                output="${build}/1.output.log"
+            >
+            <jvmarg value="-Djava.endorsed.dirs=${inst}/lib/endorsed"/>
+            <arg value="timed"/>
+            <arg value="${inputArchive}"/>
+            <arg value="${outputArchive}"/>
+            <arg value="${slowcopy.delay}"/>
+
+            <classpath refid="autodeploy.compile.classpath"/>
+
+        </javaWithResult>
+        
+        <antcall target="useMonitorToWaitForAutodeployCompletion">
+            <param name="log.id" value="2"/>
+        </antcall>
+        
+        <!--
+            Now undeploy the app.
+        -->
+        <antcall target="deploy.autoundeploy">
+            <param name="archive.file" value="${outputArchive}"/>
+            <param name="archive.name" value="${autodeploy.archive.name}"/>
+            <param name="autodeploy.dir" value="${autodeploy.dir}"/>
+            <param name="undeployResultPropertyName" value="undeployResult"/>
+            <param name="log.id" value="3"/>
+        </antcall>
+
+        <!--
+            Make the result properties of the several substeps accessible now because we need them in
+            the next several steps.  The prefix attribute helps avoid possible collisions with other
+            property names that might already be present.
+        -->
+        <property file="${result.property.file}" prefix="slow.autodeploy"/>
+
+        <!--
+            Decide whether the test was successful or not.  Make sure that the deploy and
+            undeploy results are good.
+        -->
+        <condition property="result" value="0">
+            <and>
+                <equals arg1="${slow.autodeploy.deployResult}" arg2="0"/>
+                <equals arg1="${slow.autodeploy.undeployResult}" arg2="0"/>
+            </and>
+        </condition>
+        
+        <!--
+            If the property "result" was not set by the "condition" task just above then something
+            went wrong and we set result to 1 now.
+        -->
+        <condition property="result" value="1">
+            <not>
+                <isset property="result"/>
+            </not>
+        </condition>
+        
+        <antcall target="processResult">
+            <param name="result" value="${result}"/>
+            <param name="log" value="${build}/output.log"/>
+        </antcall>
+
+    </target>
+    
+    <target name="useMonitorToWaitForAutodeployCompletion">
+        <javaWithResult
+                fork="true"
+                failonerror="false"
+                jvm="${JAVA}"
+                classname="autodeploy.test.AutoDeployMonitor"
+                resultproperty="autodeployResult"
+                output="${build}/${log.id}.output.log"
+            >
+            <jvmarg value="-Djava.endorsed.dirs=${inst}/lib/endorsed"/>
+            <jvmarg value="-Dmonitor.debug=true"/>
+
+            <classpath refid="autodeploy.compile.classpath"/>
+
+            <arg value="${autodeploy.archive.name}"/>
+            <arg value="${autodeploy.dir}"/>
+            <arg value="${dateFormat}"/>
+            <arg value="${slowcopy.NOW}"/>
+        </javaWithResult>
+        
+        <!--
+            The result property name used in the next task is an argument to the called target.  
+            Note that the echo is a little oddly formatted.  The </echo> is on a line by itself and left-justified so
+            that the output to the file being written will reside on a line by itself.  The
+            left-justification is not really needed but the properties file looks a bit nicer
+            if you open it in an editor.  This is because the next line in the properties file being 
+            written is indented as far as the </echo> is indented here in the build.xml file.
+        -->
+        <echo file="${result.property.file}" append="true">${resultPropertyName}=${autodeployResult}
+</echo>          
+    </target>
+    
+</project>

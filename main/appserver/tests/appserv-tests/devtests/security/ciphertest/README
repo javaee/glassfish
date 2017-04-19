@@ -1,0 +1,2 @@
+1. The cipher tests currently only work with RSA key and ciphers
+2. The check for server authentication only(no client authentication)

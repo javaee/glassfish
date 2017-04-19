@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
+<!ENTITY testproperties SYSTEM "file:./build.properties">
+]>
+
+<project name="transaction" default="usage" basedir=".">
+
+    &commonSetup;
+    &commonBuild;
+    &testproperties;
+
+    <target name="all" depends="setup,build,deploy"/>
+    <target name="run-test" depends="build,deploy"/>
+
+    <target name="clean" depends="init-common">
+        <antcall target="clean-common" />
+    </target>
+
+    <target name="compile" depends="clean">
+        <antcall target="compile-common">
+            <param name="src" value="ejb/beanB"/>
+        </antcall>
+        <antcall target="compile-common">
+            <param name="src" value="ejb/beanA"/>
+        </antcall>
+        <antcall target="compile-common">
+            <param name="src" value="client"/>
+        </antcall>
+        <antcall target="compile-common">
+            <param name="src" value="servlet"/>
+        </antcall>
+    </target>
+
+    <target name="build" depends="compile">
+    <property name="hasWebclient" value="yes"/>
+    <antcall target="webclient-war-common">
+    <param name="hasWebclient" value="yes"/>
+    <param name="webclient.war.classes" value="**/*.class"/>
+    </antcall>
+    <antcall target="build-ear-common"/>
+    </target>
+
+    <target name="setup" depends="init-common,copyreplace">
+      <!--antcall target="execute-sql-common">
+        <param name="sql.file" value="sql/create_pointbase.sql"/>
+      </antcall-->
+      <antcall target="create-oracle-jdbc-connpool-common">
+        <param name="db.url" value="${db.url1}"/>
+        <param name="db.user" value="${db.user1}"/>
+        <param name="db.pwd" value="${db.pwd1}"/>
+        <param name="db.class" value="${db.class1}"/>
+        <param name="jdbc.resource.type" value="${jdbc.resource.type1}"/>
+        <param name="jdbc.conpool.name" value="jdbc-db-pool1"/>
+      </antcall>
+      <antcall target="create-jdbc-resource-common">
+        <param name="jdbc.conpool.name" value="jdbc-db-pool1"/>
+        <param name="jdbc.resource.name" value="jdbc/s1qeDB1"/>
+      </antcall>
+      <!--antcall target="execute-sql-common">
+        <param name="db.url" value="jdbc:pointbase:server://${db.host}:9093/sun-appserv-samples,new"/>
+        <param name="sql.file" value="sql/create_pointbase.sql"/>
+      </antcall-->
+      <antcall target="create-oracle-jdbc-connpool-common">
+        <param name="db.url" value="${db.url2}"/>
+        <param name="db.user" value="${db.user2}"/>
+        <param name="db.pwd" value="${db.pwd2}"/>
+        <param name="db.class" value="${db.class2}"/>
+        <param name="jdbc.resource.type" value="${jdbc.resource.type2}"/>
+        <param name="jdbc.conpool.name" value="jdbc-db-pool2"/>
+      </antcall>
+      <antcall target="create-jdbc-resource-common">
+        <param name="jdbc.conpool.name" value="jdbc-db-pool2"/>
+        <param name="jdbc.resource.name" value="jdbc/s1qeDB2"/>
+      </antcall>
+
+      <antcall target="deploy-jms-common"/>
+    </target>
+
+    <target name="copyreplace" >
+        <copy file="descriptor/ejb-jar.xml.template"
+                  tofile="descriptor/ejb-jar.xml"/>
+        <replace file="descriptor/ejb-jar.xml">
+            <replacefilter token="%user1%" value="${db.user1}"/>
+            <replacefilter token="%user2%" value="${db.user2}"/>
+            <replacefilter token="%password1%" value="${db.pwd1}"/>
+            <replacefilter token="%password2%" value="${db.pwd2}"/>
+        </replace>
+    </target>
+    <target name="deploy" depends="init-common">
+      <antcall target="deploy-common"/>
+    </target>
+
+    <target name="run" depends="init-common">
+        <antcall target="runclient-common"/>
+    </target>
+
+    <target name="unsetup" depends="init-common">
+        <antcall target="delete-jdbc-resource-common">
+          <param name="jdbc.resource.name" value="jdbc/s1qeDB1"/>
+        </antcall>
+        <antcall target="delete-jdbc-resource-common">
+          <param name="jdbc.resource.name" value="jdbc/s1qeDB2"/>
+        </antcall>
+        <antcall target="delete-jdbc-connpool-common">
+          <param name="jdbc.conpool.name" value="jdbc-pointbase-pool1"/>
+        </antcall>
+        <antcall target="delete-jdbc-connpool-common">
+          <param name="jdbc.conpool.name" value="jdbc-pointbase-pool2"/>
+        </antcall>
+
+        <antcall target="execute-sql-common">
+          <param name="sql.file" value="sql/drop_pointbase.sql"/>
+        </antcall>
+        <antcall target="execute-sql-common">
+          <param name="db.url"
+          value="jdbc:pointbase:server://${db.host}:9093/sun-appserv-samples"/>
+          <param name="sql.file" value="sql/drop_pointbase.sql"/>
+        </antcall>
+
+        <antcall target="undeploy-jms-common"/>
+    </target>
+
+    <target name="undeploy" depends="init-common">
+        <antcall target="undeploy-common"/>
+    </target>
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+
+    <!-- ================================================================ -->
+    <!-- Target to create JDBC connection pool  -->
+    <!-- ================================================================ -->
+    <target name="create-oracle-jdbc-connpool-common" depends="init-common">
+    <echo message="created jdbc connection pool ${jdbc.conpool.name}"
+        level="verbose"/>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command"
+          value="create-jdbc-connection-pool
+            --datasourceclassname ${db.class}
+            --restype ${jdbc.resource.type}
+            --target ${appserver.instance.name}" />
+        <param name="operand.props" value="${jdbc.conpool.name}" />
+      </antcall>
+        <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="set" />
+        <param name="operand.props"
+          value="${resources.dottedname.prefix}.jdbc-connection-pool.${jdbc.conpool.name}.property.URL=${db.url}"/>
+      </antcall>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="set" />
+        <param name="operand.props"
+          value="${resources.dottedname.prefix}.jdbc-connection-pool.${jdbc.conpool.name}.property.User=${db.user}" />
+      </antcall>
+      <antcall target="asadmin-common-ignore-fail">
+        <param name="admin.command" value="set" />
+        <param name="operand.props"
+          value="${resources.dottedname.prefix}.jdbc-connection-pool.${jdbc.conpool.name}.property.Password=${db.pwd}" />
+      </antcall>
+    </target>
+
+</project>

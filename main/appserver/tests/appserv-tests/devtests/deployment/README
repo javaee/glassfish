@@ -1,0 +1,44 @@
+UNIT TESTS ON DEPLOYMENT FOR CURRENT V3 RELEASE
+================================================
+TESTS INFO :
+------------
+
+1. war/* are tests that deploy WAR module only. The name of directories indicate
+   what kind of WAR each tests build for deployment. 
+
+2. ejb/* are tests that deploy EJB-JARs only
+
+3. ear/* are tests that deploy EAR with WAR only, EAR with EJBJAR only, EAR
+   with WAR and EJBJAR, EAR with webservice
+
+4. jsr88/* are tests that test other jsr88 APIs like get*Modules etc
+
+FOR RUNNING THE DEPLOYMENT TESTS ON v3:
+----------------------------------------
+
+0. Set the following env. variables as below:
+   S1AS_HOME=<glassfish v3 installation>
+   APS_HOME=<appserv-tests>
+
+1. Check the following env. variables to set with these values:
+   SECURE=false
+   DEPL_TARGET=PE
+   Nothing needs to be done if you don't have these env. var set.
+
+2. Start the domain.
+   asadmin start-domain -v 
+
+3. Simply type "ant all" from appserv-tests/devtests/deployment.  At the end
+   of the run, in the above mentioned directory two files are created :
+   result.html has the result of each test; client.log has all output from test run
+
+4. To run individual tests, go to the test directory and type "ant all". For
+   example, to run war/servletonly test "cd war/servletonly" and do "ant all".
+   The results.html and client.log are created in war/servletonly directory
+
+READING RESULTS :
+-----------------
+
+1. result.html will state whether a particular test passed or failed. This
+   file just has a summary of the test results.
+2. compare results with EXPECTED_RESULTS.v3.txt, grep for "FAILED", "UNKNOWN" to see if any test has failed.

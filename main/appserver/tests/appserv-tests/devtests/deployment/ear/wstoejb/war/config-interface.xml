@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration 
+  xmlns="http://java.sun.com/xml/ns/jax-rpc/ri/config">
+  <service 
+      name="WebServiceToEjb" 
+      targetNamespace="urn:DeploymentWebServiceTest" 
+      typeNamespace="urn:DeploymentWebServiceTest" 
+      packageName="wstoejb">
+      <interface name="wstoejb.WebServiceToEjbSEI"/>
+  </service>
+</configuration> 

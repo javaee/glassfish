@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application-client xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="5" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application-client_5.xsd">
+  <display-name>ejb-ejb30-hello-mdb2Client</display-name>
+  <message-destination-ref>
+     <description>test destination</description>
+     <message-destination-ref-name>jms/MsgBeanQueue
+     </message-destination-ref-name>
+     <message-destination-type>javax.jms.Queue</message-destination-type>
+     <message-destination-usage>Produces</message-destination-usage>
+     <message-destination-link>MsgBeanInQueue</message-destination-link>
+  </message-destination-ref>
+  <message-destination-ref>
+     <description>test destination</description>
+     <message-destination-ref-name>jms/MsgBeanClientQueue
+     </message-destination-ref-name>
+     <message-destination-type>javax.jms.Queue</message-destination-type>
+     <message-destination-usage>Consumes</message-destination-usage>
+     <message-destination-link>MsgBeanOutQueue</message-destination-link>
+  </message-destination-ref>
+</application-client>
+

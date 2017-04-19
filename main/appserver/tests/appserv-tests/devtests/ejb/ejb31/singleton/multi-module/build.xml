@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../../../config/common.xml">
+<!ENTITY testproperties SYSTEM "build.properties">
+]>
+
+<project name="ejb-ejb31-singleton-multimodule-App" default="usage" basedir=".">
+
+    &commonSetup;
+    &commonBuild;
+    &testproperties;
+
+    <target name="all" depends="build,deploy">
+	<antcall target="run"/>
+	<antcall target="undeploy-common"/>
+   </target>
+
+    <target name="clean" depends="init-common">
+      <antcall  target="clean-common"/>
+    </target>
+ 
+    <target name="compile" depends="clean">
+        <antcall target="compile-common">
+            <param name="src" value="ejb"/>
+        </antcall>
+        <antcall target="compile-common">
+            <param name="src" value="client"/>
+        </antcall>
+    </target>
+
+    <target name="build" depends="compile">
+        <!-- package ourselves to include persistence.xml -->
+	<echo message="Assemble dir: ${assemble.dir} "/>
+        <mkdir dir="${assemble.dir}"/>
+        <jar jarfile="${assemble.dir}/${appname}-ejb.jar" 
+             basedir="${build.classes.dir}" 
+             update="true"
+             includes ="**/*Tracker.class, **/InitOrderTrackerBean.class">
+        </jar>
+        <jar jarfile="${assemble.dir}/${appname}-ejb1.jar" 
+             basedir="${build.classes.dir}" 
+             update="true"
+             includes ="**/*Mod1.class, **/LocalInitTracker.class">
+        </jar>
+        <jar jarfile="${assemble.dir}/${appname}-ejb2.jar" 
+             basedir="${build.classes.dir}" 
+             update="true"
+             includes ="**/*Mod2.class, **/LocalInitTracker.class">
+        </jar>
+        <jar jarfile="${assemble.dir}/${appname}-client.jar" 
+             basedir="${build.classes.dir}" 
+             update="true"
+	     manifest="./client/MANIFEST.MF"
+             includes ="**/*Tracker.class, **/*Client.class">
+        </jar>
+
+<!--
+        <antcall target="package-appclientjar-common">
+    		<param name="appclientjar.files" 
+      			value="${build.classes.dir}"/>
+    		<param name="appclient.jar" 
+      			value="${assemble.dir}/${appname}-client.jar"/>/space/work/v3/appserv-tests/build/module/archive/ejb-ejb31-singleton-multimodule-ejb.jar
+        </antcall>
+-->
+  	<delete file="${assemble.dir}/${appname}.ear"/>
+  	<mkdir dir="${assemble.dir}"/>
+  	<mkdir dir="${build.classes.dir}/META-INF"/>   
+  	<copy file="${application.xml}" tofile="${build.classes.dir}/META-INF/application.xml"  	failonerror="false"/> 
+  	<jar jarfile="${assemble.dir}/${appname}App.ear"> 
+    	<fileset dir="${assemble.dir}">
+      	<include name="*ejb.jar"/>
+      	<include name="*ejb1.jar"/>
+      	<include name="*ejb2.jar"/>
+      	<include name="*client.jar"/>
+    	</fileset>
+    	<fileset dir="${build.classes.dir}">
+		<include name="META-INF/sun-application.xml"/>
+		<include name="META-INF/application.xml"/>
+    	</fileset>
+    	<fileset dir="${env.APS_HOME}" includes="lib/reporter.jar"/>
+  	</jar>        
+
+    </target>     
+       
+    <target name="deploy" depends="build">
+  <property name="deployed.app" value="${assemble.dir}/${appname}App.ear"/>
+  <exec executable="${ASADMIN}" failonerror="false">
+    <arg line="deploy"/>
+    <arg line="--force=true"/>
+    <arg line="${as.props}"/>    
+    <arg line="${deployed.app}"/>
+  </exec>
+  <echo message="Deployment on target server ${appserver.instance.name} successful"/>
+        
+    </target> 
+
+    <target name="run" depends="init-common">
+        <antcall target="run_se"/>
+    </target>
+ 
+    <target name="run_se" depends="init-common">
+       <echo message="se.client: ${se.client}"/>
+       <java  fork="on" 
+              failonerror="true"
+
+              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${build.classes.dir}:${assemble.dir}/${appname}-ejb.jar:${assemble.dir}/${appname}-client.jar:${env.APS_HOME}/lib/reporter.jar"
+              classname="${se.client}">
+           <sysproperty key="org.omg.CORBA.ORBInitialPort" value="${orb.port}"/>
+           <arg line="${module}-ejb"/>
+        </java>
+    </target>
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+</project>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "./../config/common.xml">
+]>
+
+<project name="versioning" default="all" basedir=".">
+
+    &commonBuild;
+
+    <target name="private-all">
+      <!-- play some versioning devtests scenarios with simple-version-servlet -->
+      <ant dir="simple-versioned-servlet" target="private-all">
+          <property name="build" value="${build}/simple-versioned-servlet"/>
+      </ant>
+
+      <!-- play some versioning devtests scenarios with simple-versioned-appclient -->
+      <ant dir="simple-versioned-appclient" target="private-all">
+          <property name="build" value="${build}/simple-versioned-appclient"/>
+      </ant>
+      
+      <!-- play some versioning devtests scenarios with simple-versioned-ejb -->
+      <ant dir="simple-versioned-ejb" target="private-all">
+        <property name="build" value="${build}/simple-versioned-ejb"/>
+      </ant>
+
+      <!-- play some versioning devtests scenarios with simple-versioned-ear -->
+      <ant dir="simple-versioned-ear" target="private-all">
+        <property name="build" value="${build}/simple-versioned-ear"/>
+      </ant>
+    </target>
+    <target name="rolling-upgrade">
+      <ant antfile="rolling-upgrade.xml" target="all-ee"/>
+    </target>
+</project>

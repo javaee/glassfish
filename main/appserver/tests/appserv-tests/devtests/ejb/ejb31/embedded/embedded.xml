@@ -1,0 +1,54 @@
+<property environment="env"/>
+
+<condition property="uber.mode">
+  <or>
+    <isset property="uber.jar.repo"/>
+    <isset property="uber.jar"/>
+  </or>
+</condition>
+
+<condition property="uber.jar" value="${uber.jar.repo}/repository/org/glassfish/extras/glassfish-embedded-all/3.1-SNAPSHOT/glassfish-embedded-all-3.1-SNAPSHOT.jar">
+    <and>
+  	<isset property="uber.mode"/>
+        <not>
+          <isset property="uber.jar"/>
+        </not>
+    </and>
+</condition>
+
+<condition property="embedded.classpath" value="${uber.jar}" else="${env.S1AS_HOME}/lib/embedded/glassfish-embedded-static-shell.jar">
+  <isset property="uber.mode"/>
+</condition>
+
+
+<target name="start-database" unless="skip.start.database">
+    <antcall target="start-derby"/>
+</target>
+
+<target name="start-derby" unless="uber.mode">
+    <antcall target="startDerby"/>
+</target>
+
+<target name="stop-database" unless="skip.stop.database">
+    <antcall target="stop-derby"/>
+</target>
+
+<target name="stop-derby" unless="uber.mode">
+    <antcall target="stopDerby"/>
+</target>
+
+<target name="clean-result">
+    <delete>
+       <fileset dir="${env.APS_HOME}" includes="test_results*"/>
+    </delete>
+    <delete>
+       <fileset dir="." includes="*.output"/>
+    </delete>
+</target>
+
+<target name="compile-util">
+    <antcall target="compile-common">
+        <param name="src" value="../util/src"/>
+    </antcall>
+</target>
+

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../../config/common.xml">
+<!ENTITY reporting   SYSTEM "../../report.xml">
+]>
+
+<project name="singleton" default="usage" basedir=".">
+    &commonSetup;
+    &commonBuild;
+    &reporting;
+
+    <target name="all">
+        <antcall target="cache"/>
+        <antcall target="hello"/>
+        <antcall target="three-modules"/>
+        <antcall target="multi-module"/>
+    </target>
+
+    <target name="cache">
+        <record name="cache.output" action="start" />
+            <ant dir="cache" target="all"/>
+        <record name="cache.output" action="stop" />
+    </target>
+
+    <target name="hello">
+        <record name="hello.output" action="start" />
+            <ant dir="hello" target="all"/>
+        <record name="hello.output" action="stop" />
+    </target>
+
+    <target name="three-modules">
+        <record name="three-modules.output" action="start" />
+            <ant dir="threemodules" target="all"/>
+        <record name="three-modules.output" action="stop" />
+    </target>
+
+    <target name="multi-module">
+        <record name="multi-module.output" action="start" />
+            <ant dir="multi-module" target="all"/>
+        <record name="multi-module.output" action="stop" />
+    </target>
+
+    <target name="usage">
+	<echo>
+		Usage:
+			ant all (Executes all the ejb-ejb31-singleton tests)
+	</echo>
+    </target>
+</project>

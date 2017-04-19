@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "./config/common.xml">
+]>
+
+<project name="deployment" default="all" basedir=".">
+
+    &commonBuild;
+
+
+    <target name="private-all">
+        <ant dir="war" target="private-all">
+            <property name="build" value="${build}/war"/>
+        </ant>
+        <ant dir="ejb" target="private-all">
+            <property name="build" value="${build}/ejb"/>
+        </ant>
+        <ant dir="ear" target="private-all">
+            <property name="build" value="${build}/ear"/>
+        </ant>                
+        <ant dir="jsr88" target="private-all">
+            <property name="build" value="${build}/jsr88"/>
+        </ant>
+        <ant dir="dol" target="private-all">
+            <property name="build" value="${build}/dol"/>
+        </ant>
+<!--        <ant dir="autodeploy" target="private-all">
+            <property name="build" value="${build}/autodeploy"/>
+        </ant> -->
+        <ant dir="annotation" target="private-all">
+            <property name="build" value="${build}/annotation"/>
+        </ant>
+        <ant dir="ejb30" target="private-all">
+            <property name="build" value="${build}/ejb30"/>
+        </ant>
+
+       <ant dir="ejb31" target="private-all">
+            <property name="build" value="${build}/ejb31"/>
+        </ant>
+
+        <ant dir="descriptor_free_zone" target="private-all">
+            <property name="build" value="${build}/descriptor_free_zone"/>
+        </ant>
+        <ant dir="directorydeploy" target="private-all">
+            <property name="build" value="${build}/directorydeploy"/>
+        </ant>
+        <ant dir="versioning" target="private-all">
+            <property name="build" value="${build}/versioning"/>
+        </ant>
+        <ant dir="osgi" target="private-all">
+            <property name="build" value="${build}/osgi"/>
+        </ant>
+        <!-- comment out till issue 12637 is fixed
+        <ant dir="webservices" target="private-all">
+            <property name="build" value="${build}/webservices"/>
+        </ant>
+         -->
+        <ant dir="${testsRoot}/ear/earwithall2" target="depl-order">
+            <property name="build" value="${build}/ear/earwithall2"/>
+        </ant>
+    </target>
+
+    <target name="clobber" depends="clean">
+        <delete file="${basedir}/tests-results.xml"/>
+        <delete file="${basedir}/results.html"/>
+        <delete file="${basedir}/client.log"/>
+        <delete file="${annotation.report.dir}"/>
+    </target>
+</project>

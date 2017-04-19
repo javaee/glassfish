@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+ * The contents of this file are subject to the terms 
+ * of the Common Development and Distribution License 
+ * (the License).  You may not use this file except in
+ * compliance with the License.
+ * 
+ * You can obtain a copy of the license at 
+ * https://glassfish.dev.java.net/public/CDDLv1.0.html or
+ * glassfish/bootstrap/legal/CDDLv1.0.txt.
+ * See the License for the specific language governing 
+ * permissions and limitations under the License.
+ * 
+ * When distributing Covered Code, include this CDDL 
+ * Header Notice in each file and include the License file 
+ * at glassfish/bootstrap/legal/CDDLv1.0.txt.  
+ * If applicable, add the following below the CDDL Header, 
+ * with the fields enclosed by brackets [] replaced by
+ * you own identifying information: 
+ * "Portions Copyrighted [year] [name of copyright owner]"
+ * 
+ * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
+-->
+
+<!--
+    This ant script runs TestNG to manage tests in a GlassFish deployment devtest
+    directory.  Note that this script expects:
+ 
+    -  Environment variables:
+        APS_HOME should point to the GlassFish appserv-tests directory
+        JAVA_HOME should point to the JDK to be used for testing
+        
+    - The TestNG jar file be placed at ${APS_HOME}/lib with the name testng.jar.  
+    In the near future the TestNG jar may become available from the GlassFish 
+    site.  Until then testers who wish to use it should download it themselves
+    from http://www.testng.org and copy the jar file from that download as 
+    testng.jar into ${APS_HOME}/lib.
+    
+    -  One or more Java classes of any name exist at the lowest-level test
+    directory.  (For example, such a directory is ejb30/ear/session.)  These 
+    classes are required to use the TestNG annotations to identify and
+    describe the test methods to be run.  They must also (temporarily at least)
+    reside in a package that ends with .testng so the testng task below can
+    efficiently select which .class files to check for TestNG annotations.
+
+    Such classes may extend DeploymentTest (in the GlassFish repository at 
+    ${APS_HOME}/devtests/deployment/DeploymentTest.java) if they wish but 
+    they are not required to do so.
+    
+    To use TestNG to run such tests, cd to the lower-level test directory
+    of interest and invoke ant specifying this file.  
+    
+    Note that this script and the test classes are fairly simple and will 
+    likely evolve and improve over time.  
+        
+-->
+
+<project default="run-test" basedir=".">
+
+    <property environment="envng"/>
+    
+    <!-- 
+        Currently, deployment devtests user their own build area.
+    -->
+    <property name="depl.devtests.home" value="${envng.APS_HOME}/devtests/deployment"/>
+    <property name="depl.build.dir" value="${depl.devtests.home}/build"/>
+    
+  <!-- 
+    Classpath for the TestNG jar and the build class directory.  The test files
+    themselves will be compiled into the deployment devtest build directory.
+    
+    Currently, the TestNG-driven deployment devtests use callable ant, so the
+    various ant jars need to be in the class path.  Also, the devtests 
+    require compilation of Java files, so tools.jar must be in the classpath
+    for the compiler to be found when ant is invoked from the TestNG test.
+    
+  -->
+  <path id="cp">
+    <pathelement location="${envng.APS_HOME}/lib/testng.jar"/>
+    <pathelement location="${depl.build.dir}"/>
+    <fileset dir="${envng.S1AS_HOME}/lib/ant/lib">
+        <include name="*.jar"/>
+    </fileset>
+    <pathelement location="${envng.JAVA_HOME}/lib/tools.jar"/>
+  </path>
+ 
+  <!-- Define the task for running testng -->
+  <taskdef name="testng" classpathref="cp"
+           classname="org.testng.TestNGAntTask" />
+
+  <!--
+    The tests compiled are from the current directory - which should be the
+    low-level directory for a deployment dev test - and from the top-level
+    deployment devtest directory which contains the abstract DeploymentTest.java
+    file.
+  -->
+    <target name="compile-tests">
+        <javac 
+            srcdir="${user.dir}:${depl.devtests.home}" 
+            includes="*.java"
+            destdir="${depl.build.dir}" 
+            debug="on" 
+            failonerror="true">
+            <classpath>
+                <path refid="cp"/>
+            </classpath>
+        </javac>
+    </target>
+    
+ <!-- 
+    Run using all tests, looking in those .class files for which the package
+    ends with .testng (for efficiency of searching only).
+ -->
+ <target name="run-test" depends="compile-tests">
+    <testng classpathref="cp" >
+      <classfileset dir="${depl.build.dir}" includes="**/testng/*.class"/>
+    </testng>
+  </target>
+ 
+</project>

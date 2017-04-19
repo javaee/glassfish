@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../../../config/common.xml">
+<!ENTITY embeddedCommon SYSTEM "../embedded.xml">
+<!ENTITY testproperties SYSTEM "build.properties">
+]>
+
+<project name="ejb-ejb31-embedded-jaxrs-App" default="usage" basedir=".">
+
+    &embeddedCommon;
+    &commonSetup;
+    &commonBuild;
+    &testproperties;
+
+    <target name="all" depends="start-database,build,run,stop-database"/>
+
+    <target name="clean" depends="init-common">
+      <antcall  target="clean-common"/>
+    </target>
+ 
+    <target name="compile" depends="clean">
+        <antcall target="compile-util"/>
+        <antcall target="compile-common">
+            <param name="src" value="ejb"/>
+        </antcall>
+        <antcall target="compile-common">
+            <param name="src" value="client"/>
+        </antcall>
+        <antcall target="compile-common">
+            <param name="src" value="servlet"/>
+        </antcall>
+    </target>
+
+    <target name="build" depends="compile">
+        <mkdir dir="${assemble.dir}"/>
+        <!-- package war ourselves to include persistence.xml -->
+        <mkdir dir="${build.classes.dir}/tmp"/>
+        <mkdir dir="${build.classes.dir}/tmp/WEB-INF"/>
+        <mkdir dir="${build.classes.dir}/tmp/WEB-INF/classes"/>
+        <copy todir="${build.classes.dir}/tmp/WEB-INF/classes">
+            <fileset dir="${build.classes.dir}">
+                <exclude name="**/Client.class"/>
+            </fileset>
+        </copy>
+        <mkdir dir="${build.classes.dir}/tmp/WEB-INF/classes/META-INF"/>
+        <copy file="${persistence.xml}"
+              tofile="${build.classes.dir}/tmp/WEB-INF/classes/META-INF/persistence.xml" failonerror="false"/>
+        <copy file="${web.xml}"
+              tofile="${build.classes.dir}/tmp/WEB-INF/web.xml" failonerror="false"/>
+
+        <jar jarfile="${assemble.dir}/${appname}-web.war" update="true">
+                <fileset dir="${build.classes.dir}/tmp" casesensitive="yes"/>
+        </jar>
+        <delete>
+            <fileset dir="${build.classes.dir}/org" excludes="**/*Simple.class"/>
+        </delete>
+
+        <move file="${build.classes.dir}/tmp" tofile="${assemble.dir}/tmp"/>
+    </target> 
+    
+    <target name="run" depends="init-common">
+        <antcall target="run_ejb"/>
+<!-- Doesn't work
+        <antcall target="run_rest"/>
+-->
+    </target>
+ 
+    <target name="run_ejb" depends="init-common">
+        <antcall target="run_war_ejb"/>
+        <antcall target="run_dir_ejb"/>
+    </target>
+ 
+    <target name="run_rest" depends="init-common">
+        <antcall target="run_war_rest"/>
+        <antcall target="run_dir_rest"/>
+    </target>
+ 
+    <target name="run_war_ejb" depends="init-common">
+        <antcall target="run_test">
+            <param name="test-path" value="${assemble.dir}/${appname}-web.war"/>
+            <param name="test" value="ejb"/>
+            <param name="packaging" value="war"/>
+        </antcall>
+    </target>
+ 
+    <target name="run_war_rest" depends="init-common">
+        <antcall target="run_test">
+            <param name="test-path" value="${assemble.dir}/${appname}-web.war"/>
+            <param name="test" value="rest"/>
+            <param name="packaging" value="war"/>
+        </antcall>
+    </target>
+ 
+    <target name="run_dir_ejb" depends="init-common">
+        <antcall target="run_test">
+            <param name="test-path" value="${assemble.dir}/tmp"/>
+            <param name="test" value="ejb"/>
+            <param name="packaging" value="dir"/>
+        </antcall>
+    </target>
+ 
+    <target name="run_dir_rest" depends="init-common">
+        <antcall target="run_test">
+            <param name="test-path" value="${assemble.dir}/tmp"/>
+            <param name="test" value="rest"/>
+            <param name="packaging" value="dir"/>
+        </antcall>
+    </target>
+ 
+    <target name="run_test" depends="init-common">
+       <java  fork="on" 
+              failonerror="true"
+              classpath="${test-path}:${assemble.dir}/${appname}-pu.jar:${embedded.classpath}:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
+              classname="${se.client}">
+           <jvmarg value="-Dorg.glassfish.ejb.embedded.keep-temporary-files=true"/>
+           <arg line="${appname}"/>
+           <arg line="${test}"/>
+           <arg line="${packaging}"/>
+        </java>
+    </target>
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+</project>

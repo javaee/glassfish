@@ -1,0 +1,61 @@
+/*
+ * Copyright 2006 Sun Microsystems, Inc. All rights reserved.
+ * SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+ */
+package com.sun.s1asdev.security.jmac.soapdefault.client;
+
+import java.util.Map;
+
+import javax.xml.ws.WebServiceRef;
+
+import com.sun.ejte.ccl.reporter.SimpleReporterAdapter;
+
+import com.sun.s1asdev.security.jmac.soapdefault.ejbws.HelloEjb;
+import com.sun.s1asdev.security.jmac.soapdefault.ejbws.JmacSoapDefaultEjbService;
+import com.sun.s1asdev.security.jmac.soapdefault.servletws.HelloServlet;
+import com.sun.s1asdev.security.jmac.soapdefault.servletws.JmacSoapDefaultServletService;
+
+public class Client {
+    private static SimpleReporterAdapter stat =
+            new SimpleReporterAdapter("appserv-tests");
+    private static String testSuite = "Sec::Jmac SOAPDefault test ";
+
+    @WebServiceRef(wsdlLocation="http://@HOST@:@PORT@/JmacSoapDefaultEjbService/HelloEjb?WSDL")
+    private static JmacSoapDefaultEjbService ejbService;
+
+    @WebServiceRef(wsdlLocation="http://@HOST@:@PORT@/security-jmac-soapdefault-web/webservice/JmacSoapDefaultServletService/HelloServlet?WSDL")
+    private static JmacSoapDefaultServletService servletService;
+
+
+    public static void main(String[] args) {
+        stat.addDescription("security-jmac-soapdefault");
+        String description = null;
+        try {
+            HelloEjb ejbPort = ejbService.getHelloEjbPort();
+
+            description = testSuite + " ejbws: hello";
+            String ejbMsg = ejbPort.hello("Sun");
+            System.out.println(ejbMsg);
+            if ("ValResp SecResp HelloEjb ValReq SecReq Sun".equals(ejbMsg)) {
+                stat.addStatus(description, stat.PASS);  
+            } else {
+                stat.addStatus(description, stat.FAIL);  
+            }
+
+            HelloServlet servletPort = servletService.getHelloServletPort();
+            description = testSuite + " serlvetws: hello";
+            String servletMsg = servletPort.hello("Sun");
+            System.out.println(servletMsg);
+            if ("ValResp SecResp HelloServlet ValReq SecReq Sun".equals(servletMsg)) {
+                stat.addStatus(description, stat.PASS);  
+            } else {
+                stat.addStatus(description, stat.FAIL);  
+            }
+        } catch(Exception ex) {
+            ex.printStackTrace();
+            stat.addStatus(description, stat.FAIL);
+        }
+
+        stat.printSummary("security-jmac-soapdefault");
+    }
+}

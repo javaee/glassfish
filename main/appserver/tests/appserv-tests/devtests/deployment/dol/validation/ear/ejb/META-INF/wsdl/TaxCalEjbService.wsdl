@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definitions name="TaxCalEjbService" targetNamespace="http://tax.org/wsdl" xmlns:tns="http://tax.org/wsdl" xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+  <types/>
+  <message name="FedTaxIF_getFedTax">
+    <part name="double_1" type="xsd:double"/>
+    <part name="double_2" type="xsd:double"/></message>
+  <message name="FedTaxIF_getFedTaxResponse">
+    <part name="result" type="xsd:double"/></message>
+  <message name="StateTaxIF_getStateTax">
+    <part name="double_1" type="xsd:double"/>
+    <part name="double_2" type="xsd:double"/></message>
+  <message name="StateTaxIF_getStateTaxResponse">
+    <part name="result" type="xsd:double"/></message>
+  <portType name="FedTaxIF">
+    <operation name="getFedTax" parameterOrder="double_1 double_2">
+      <input message="tns:FedTaxIF_getFedTax"/>
+      <output message="tns:FedTaxIF_getFedTaxResponse"/></operation></portType>
+  <portType name="StateTaxIF">
+    <operation name="getStateTax" parameterOrder="double_1 double_2">
+      <input message="tns:StateTaxIF_getStateTax"/>
+      <output message="tns:StateTaxIF_getStateTaxResponse"/></operation></portType>
+  <binding name="FedTaxIFBinding" type="tns:FedTaxIF">
+    <operation name="getFedTax">
+      <input>
+        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" use="encoded" namespace="http://tax.org/wsdl"/></input>
+      <output>
+        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" use="encoded" namespace="http://tax.org/wsdl"/></output>
+      <soap:operation soapAction=""/></operation>
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="rpc"/></binding>
+  <binding name="StateTaxIFBinding" type="tns:StateTaxIF">
+    <operation name="getStateTax">
+      <input>
+        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" use="encoded" namespace="http://tax.org/wsdl"/></input>
+      <output>
+        <soap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" use="encoded" namespace="http://tax.org/wsdl"/></output>
+      <soap:operation soapAction=""/></operation>
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="rpc"/></binding>
+  <service name="TaxCalEjbService">
+    <port name="FedTaxIFPort" binding="tns:FedTaxIFBinding">
+      <soap:address location="REPLACE_WITH_ACTUAL_URL"/></port>
+    <port name="StateTaxIFPort" binding="tns:StateTaxIFBinding">
+      <soap:address location="REPLACE_WITH_ACTUAL_URL"/></port></service></definitions>

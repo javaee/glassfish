@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ejb-jar xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" metadata-complete="false" version="3.0" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_0.xsd">
+  <display-name>TimerSessionEjbJar</display-name>
+  <enterprise-beans>
+    <session>
+      <ejb-name>TimerSessionEJB</ejb-name>
+      <home>com.sun.s1asdev.ejb.timer.sessiontimer.TimerSessionHome</home>
+      <remote>com.sun.s1asdev.ejb.timer.sessiontimer.TimerSession</remote>
+      <ejb-class>com.sun.s1asdev.ejb.timer.sessiontimer.TimerSessionEJB</ejb-class>
+      <session-type>Stateless</session-type>
+      <transaction-type>Container</transaction-type>
+      <security-identity>
+        <use-caller-identity/>
+      </security-identity>
+    </session>
+  </enterprise-beans>
+  <assembly-descriptor>
+    <container-transaction>
+      <method>
+        <ejb-name>TimerSessionEJB</ejb-name>
+        <method-name>*</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>TimerSessionEJB</ejb-name>
+        <method-name>ejbTimeout</method-name>
+        <method-params>
+          <method-param>javax.ejb.Timer</method-param>
+        </method-params>
+      </method>
+      <trans-attribute>RequiresNew</trans-attribute>
+    </container-transaction>
+  </assembly-descriptor>
+</ejb-jar>

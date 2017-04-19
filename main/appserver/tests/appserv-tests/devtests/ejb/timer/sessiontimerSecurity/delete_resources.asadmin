@@ -1,0 +1,6 @@
+delete-jms-resource jms/ejb_timer_sessiontimersecurity_TQCF
+
+delete-jms-resource jms/ejb_timer_sessiontimersecurity_TQueue
+delete-jmsdest --desttype queue ejb_timer_sessiontimersecurity_TQueue
+
+quit

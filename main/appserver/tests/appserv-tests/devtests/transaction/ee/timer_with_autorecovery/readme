@@ -1,0 +1,24 @@
+This test, when run with 'all' target performs the following steps:
+
+- build
+- setup
+  - start-database
+  - startDomain
+  - setup-database (add jdbc resources, execute create.sql script on 2 resorces, and set xa resource as the timer resource)
+  - setup-cluster (create cluster of 2 instances, enable resources in the cluster, set configs.c1-config.transaction-service.property.delegated-recovery=true, and deploy the application)
+
+- run
+  - run-recover (execute test for automatic transactions recover and timer migration as a GMS notification handling)
+    Programmatic timer is created on in1 in a separate method call to get it going
+    3 rows are inserted on in1 into the default and xa databases
+    Instance in1 is killed during 2PC of the insert
+    Instance in2 receives GMS failure recovery notification
+    Test sleeps 85 seconds to allow for all processing to go through
+    Expected result: 3 rows found in xa database and 1 programmatic timer had been migrated to the new instance
+
+- unsetup
+  - unsetup-cluster (undeploy the application, stop and delete the cluster)
+  - unsetup-database (drop tables and remove resources)
+  - stop-database
+  - stopDomain
+

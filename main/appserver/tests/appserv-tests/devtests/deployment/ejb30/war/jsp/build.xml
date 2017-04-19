@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
+]>
+
+<project name="deployment-ejb30-war-jsp" default="all" basedir=".">
+
+    &commonBuild;
+
+    <property name="testName" value="deployment-ejb30-war-jsp"/>
+    <property name="archivedir" value="${build}/archives"/>
+
+    <target name="prepare" depends="init">
+        <mkdir dir="${build}"/>
+        <mkdir dir="${archivedir}"/>
+        <property name="web.war" value="${archivedir}/${testName}.war"/>
+    </target>
+
+    <target name="compile" depends="prepare">
+        <javac srcdir="${basedir}" destdir="${build}" debug="on"
+            failonerror="true"
+            includes="WebTest.java">
+          <classpath refid="gfv3.classpath"/>
+        </javac>
+
+        <javac srcdir="${basedir}/web" destdir="${build}" debug="on"
+            failonerror="true">
+          <classpath refid="gfv3.classpath"/>
+        </javac>
+    </target>
+ 
+    <target name="assemble" depends="compile">
+        <war destfile="${web.war}" webxml="descriptor/web.xml">
+            <classes dir="${build}" excludes="WebTest.class"/>
+            <fileset dir="web" includes="index.jsp"/>
+            <webinf dir="descriptor">
+                <include name="sun-web.xml"/>
+                <include name="my.tld"/>
+            </webinf>
+        </war>
+    </target> 
+    
+    <target name="deploy.asadmin" depends="prepare">
+        <antcall target="common.deploy.asadmin">
+            <param name="arg.list" value="--name ${testName} ${web.war}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="redeploy.asadmin" depends="prepare">
+        <antcall target="common.redeploy.asadmin">
+            <param name="arg.list" value="--name ${testName} ${web.war}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="undeploy.asadmin" depends="prepare">
+        <antcall target="common.undeploy.asadmin">
+            <param name="arg.list" value="${testName}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>   
+
+    <target name="runweb" depends="prepare,setHttpPort2">
+        <javaWithResult fork="true" failonerror="false" jvm="${JAVA}"
+                classname="WebTest" resultproperty="result"
+                output="${build}/${log.id}.output.log">
+            <arg value="${http.host}"/>
+            <arg value="${depltest.port}"/>
+            <arg value="${testName}"/>
+            <classpath>
+                <pathelement location="${build}"/>
+            </classpath>
+        </javaWithResult>
+
+        <antcall target="processResult">
+            <param name="result" value="${result}"/>
+            <param name="log" value="${build}/${log.id}.output.log"/>
+        </antcall>  
+    </target>
+ 
+    <target name="private-all">
+        <antcall target="assemble"/>
+        <antcall target="declare-test">
+            <param name="description" value="ejb30/war/jsp Test asadmin deploy"/>
+        </antcall>
+        <antcall target="deploy.asadmin"/>
+        <antcall target="runweb">
+            <param name="log.id" value="1"/>
+        </antcall>
+        <antcall target="declare-test">
+            <param name="description" value="ejb30/war/jsp Test asadmin redeploy"/>
+        </antcall>
+        <antcall target="redeploy.asadmin"/>
+        <antcall target="runweb">
+            <param name="log.id" value="2"/>
+        </antcall>
+        <antcall target="undeploy.asadmin"/>
+    </target>
+</project>

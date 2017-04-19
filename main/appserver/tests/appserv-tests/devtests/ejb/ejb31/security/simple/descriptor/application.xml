@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="6" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_6.xsd">
+  <module>
+    <ejb>ejb-ejb31-security-simple-ejb.jar</ejb>
+  </module>
+  <module>
+    <java>ejb-ejb31-security-simple-client.jar</java>
+  </module>
+  <env-entry>
+     <env-entry-name>java:app/env/value1</env-entry-name>
+     <env-entry-type>java.lang.Integer</env-entry-type>
+     <env-entry-value>18338</env-entry-value>
+  </env-entry>
+  <ejb-local-ref>
+    <ejb-ref-name>java:app/env/appLevelEjbRef</ejb-ref-name>
+    <ejb-ref-type>Session</ejb-ref-type>
+    <local>com.acme.Hello</local>
+  </ejb-local-ref>
+</application>

@@ -221,6 +221,7 @@
                 <directory>src/main/resources</directory>
                 <excludes>
                     <exclude>**/.ade_path/**</exclude>
+                    <exclude>**/.gitkeep_empty_dir</exclude>
                 </excludes>
             </resource>
         </resources>

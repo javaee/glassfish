@@ -1,0 +1,270 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../../config/common.xml">
+<!ENTITY commonRun SYSTEM "file:./../../../../config/run.xml">
+<!ENTITY testProperties SYSTEM "./../build.properties">
+<!ENTITY testProperties2 SYSTEM "./build.properties">
+<!ENTITY commonSecurity SYSTEM "file:./../../common.xml">
+]>
+
+
+<project name="security-ldap-simple" basedir="." default="usage">
+
+   &commonSetup;
+   &commonBuild;
+   &commonRun;
+   &commonSecurity;
+   &testProperties;
+   &testProperties2;
+    
+   <property file="../config.properties"/>
+
+<!--
+   <condition property="unique-sub-context-not-specified">
+       <equals arg1="${unique-ldap-sub-context-id}" arg2="not-yet-set"/>
+   </condition>
+-->
+
+   <target name="all" depends="display-header">
+       <antcall target="all-reg"/>
+       <antcall target="all-ssl"/>
+   </target>
+
+   <target name="all-reg" depends="init-common,env-check">
+	   <antcall target="setup"/>
+	   <antcall target="build"/>
+	   <antcall target="deploy"/>
+	   <antcall target="run"/>
+	   <antcall target="undeploy"/>
+	   <antcall target="unsetup"/>
+   </target>
+
+   <target name="all-ssl" depends="init-common,env-check">
+	   <antcall target="setup-ssl"/>
+	   <antcall target="build"/>
+	   <antcall target="deploy"/>
+	   <antcall target="run"/>
+	   <antcall target="undeploy"/>
+	   <antcall target="unsetup-ssl"/>
+   </target>
+
+   <target name="display-header">
+     <echo message="-->Running ${ant.project.name} tests from ${basedir} ..."/>
+   </target>
+   
+    <target name="setup" depends="init-common">
+      <!-- create auth realms -->
+      <antcall target="create-auth-ldaprealm"/>
+      <antcall target="create-ldap-usrgrps"/>
+    </target>
+
+    <target name="clean" depends="init-common">
+        <delete dir="${build.classes.dir}"/>
+        <delete dir="${assemble.dir}"/>
+    </target>
+
+    <target name="compile" depends="clean">
+        <antcall target="compile-common">
+            <param name="src" value="web"/>
+        </antcall>
+        <antcall target="compile-common">
+            <param name="src" value="client"/>
+        </antcall>
+    </target>
+
+    <target name="build" depends="compile">
+        <antcall target="webclient-war-common">
+          <param name="hasWebclient" value="true"/>
+        </antcall>
+    </target>
+
+    <target name="deploy" depends="init-common">
+        <antcall target="deploy-war-common">
+            <param name="contextroot" value="${appname}"/>
+        </antcall>
+    </target>
+
+    <target name="run" depends="init-common">
+      <java classname="HttpBasicAuthTest" fork="true">
+        <classpath>
+  	       <pathelement path="${build.classes.dir}:${s1astest.classpath}"/>
+        </classpath>
+        <arg value="-url"/>
+        <arg value="http://${http.host}:${http.port}/${appname}/TestServlet"/>
+        <arg value="-user"/>
+        <arg value="munta"/>
+        <arg value="-pass"/>
+        <arg value="munta"/>
+        <arg value="-tc"/>
+        <arg value="10"/>
+        <arg value="-lc"/>
+        <arg value="10"/>
+      </java>
+    </target>
+
+    <target name="undeploy" depends="init-common">
+        <antcall target="undeploy-war-common"/>
+    </target>
+
+    <target name="unsetup" depends="init-common">
+      <!-- delete auth realms -->
+      <antcall target="delete-auth-ldaprealm"/>
+      <antcall target="delete-ldap-usrgrps"/>
+    </target>
+
+    <target name="create-ldap-usrgrps" depends="init-common">
+
+  	  <copy file="${create.ldif.file}" tofile="temp.ldif" overwrite="true" failonerror="false"/>
+  	  <replace file="temp.ldif" token="UNIQUE_SUB_CONTEXT" value="${unique-ldap-sub-context-id}"/>
+	  <echo message="Creating ldap test users and groups at ldap://${directory.server.host}:${directory.server.port}/?dc=${unique-ldap-sub-context-id},${directory.server.basedn}"/>
+	  <antcall target="execute-ldap-ldif">
+		<param name="ldif.file.path" value="temp.ldif"/>
+	  </antcall>
+	  <echo message="deleting temp file..."/>
+	  <delete file="temp.ldif"/>
+
+    </target>
+
+    <target name="delete-ldap-usrgrps" depends="init-common">
+  	  <copy file="${delete.ldif.file}" tofile="temp.ldif" overwrite="true" failonerror="false"/>
+  	  <replace file="temp.ldif" token="UNIQUE_SUB_CONTEXT" value="${unique-ldap-sub-context-id}"/>
+      <echo message="Deleting ldap test users and groups at ldap://${directory.server.host}:${directory.server.port}/?dc=${unique-ldap-sub-context-id},${directory.server.basedn}"/>
+	  <antcall target="execute-ldap-ldif">
+		<param name="ldif.file.path" value="temp.ldif"/>
+	  </antcall>
+	  <echo message="deleting temp file..."/>
+	  <delete file="temp.ldif"/>
+    </target>
+
+    <target name="restart">
+      <antcall target="restart-server-instance-common"/>
+    </target>
+
+
+<target name="execute-ldap-ldif" depends="init-common">
+	<java classname="LDAPModify" fork="true" failonerror="false">
+		<arg line="-h ${directory.server.host}"/>
+		<arg line="-p ${directory.server.port}"/>
+		<arg line="-D &quot;${directory.manager.dn}&quot;"/>
+		<arg line="-w ${directory.manager.passwd}"/>
+		<arg line="-f ${ldif.file.path}"/>
+		<classpath>
+			<pathelement path="${env.APS_HOME}/lib/ldapjdk.jar"/>
+		</classpath>
+	</java>
+</target>
+
+<target name="create-auth-ldaprealm" depends="init-common">
+	<!-- workaround for handling the special character : in the admin command -->
+	<echo message="directory=${directory.server.url}" file="temp.txt"/>
+	<replace file="temp.txt" token=":" value="\\:"/>
+	<loadproperties srcFile="temp.txt"/>
+	<delete file="temp.txt"/>
+	<echo message="base-dn=${directory.server.basedn}" file="temp.txt"/>
+	<replace file="temp.txt" token="dc=" value="dc\\="/>
+	<loadproperties srcFile="temp.txt"/>
+	<delete file="temp.txt"/>
+    <echo message="url=${directory}"/>
+    <echo message="base-dn=${base-dn}"/>
+	
+	<antcall target="create-auth-realm">
+	    <param name="realmname" value="${ldap.realm.name}"/> 
+		<param name="realmclass" value="${ldap.realm.class}"/>
+		<param name="realmproperties" value="--property directory=${directory}:base-dn=dc\=${unique-ldap-sub-context-id},${base-dn}:jaas-context=ldapRealm:com.sun.jndi.ldap.connect.pool=true:com.sun.jndi.ldap.connect.pool.maxsize=2"/>
+      </antcall>
+</target>
+
+<!-- delete auth ldap realm -->
+<target name="delete-auth-ldaprealm" depends="init-common">
+    <antcall target="asadmin-common">
+        <param name="admin.command" value="delete-auth-realm" />
+        <param name="operand.props" value="${ldap.realm.name}"/>
+    </antcall>
+</target>
+
+
+
+<target name="import-ldap-server-cert" depends="init-common">
+   <antcall target="import-ldap-server-cert-pe"/>
+   <antcall target="import-ldap-server-cert-ee"/>
+</target>
+
+<target name="delete-ldap-server-cert" depends="init-common">
+   <antcall target="delete-ldap-server-cert-pe"/>
+   <antcall target="delete-ldap-server-cert-ee"/>
+</target>
+
+<target name="import-ldap-server-cert-pe" unless="isNSS">
+    <antcall target="import-cert-jks">
+        <param name="cert.alias" value="ldapServerCert"/>
+        <param name="cert.file" value="../whirlTestCert.rfc"/>
+        <param name="keystore.file" value="${admin.domain.dir}/${admin.domain}/config/cacerts.jks"/>
+    </antcall>
+    <!--<antcall target="restart-server-instance-common"/>-->
+</target>
+<target name="delete-ldap-server-cert-pe" unless="isNSS">
+    <exec executable="${java.home}/bin/keytool" failonerror="true">
+        <arg line="-delete -alias ldapServerCert -storepass ${ssl.password} -keystore ${admin.domain.dir}/${admin.domain}/config/cacerts.jks"/>
+    </exec>
+    <!--<antcall target="restart-server-instance-common"/>-->
+</target>
+
+<target name="import-ldap-server-cert-ee" if="isNSS">
+  <echo message="${ssl.password}" file="passfile"/>
+  <exec executable="${env.S1AS_HOME}/lib/certutil">
+    <env key="LD_LIBRARY_PATH" path="${env.S1AS_HOME}/lib"/>
+    <arg line="-A"/>
+    <arg line="-a"/>
+    <arg line="-n whirlTestCert"/>
+    <arg line="-t 'CTP,CTP,CTP'"/>
+    <arg line="-d ${admin.domain.dir}/${admin.domain}/config/"/>
+    <arg line="-f passfile"/>
+    <arg line="-i ../whirlTestCert.rfc"/>
+  </exec>
+</target>
+
+<target name="delete-ldap-server-cert-ee" if="isNSS">
+  <echo message="${ssl.password}" file="passfile"/>
+  <exec executable="${env.S1AS_HOME}/lib/certutil">
+    <env key="LD_LIBRARY_PATH" path="${env.S1AS_HOME}/lib"/>
+    <arg line="-D"/>
+    <arg line="-n whirlTestCert"/>
+    <arg line="-d ${admin.domain.dir}/${admin.domain}/config/"/>
+    <arg line="-f passfile"/>
+  </exec>
+</target>
+
+<target name="create-auth-ldaprealm-ssl" depends="init-common">
+	<echo message="directory=${directory.server.url.ssl}" file="temp.txt"/>
+	<replace file="temp.txt" token=":" value="\\:"/>
+	<loadproperties srcFile="temp.txt"/>
+	<delete file="temp.txt"/>
+	<echo message="base-dn=${directory.server.basedn}" file="temp.txt"/>
+	<replace file="temp.txt" token="dc=" value="dc\\="/>
+	<loadproperties srcFile="temp.txt"/>
+	<delete file="temp.txt"/>
+    <echo message="url=${directory}"/>
+    <echo message="base-dn=${base-dn}"/>
+	
+	<antcall target="create-auth-realm">
+	    <param name="realmname" value="${ldap.realm.name}"/> 
+		<param name="realmclass" value="${ldap.realm.class}"/>
+		<param name="realmproperties" value="--property directory=${directory}:base-dn=dc\=${unique-ldap-sub-context-id},${base-dn}:jaas-context=ldapRealm:com.sun.jndi.ldap.connect.pool=true:com.sun.jndi.ldap.connect.pool.maxsize=2"/>
+      </antcall>
+</target>
+
+    <target name="setup-ssl" depends="init-common,env-check">
+<!--      <antcall target="import-ldap-server-cert"/>-->
+      <antcall target="create-auth-ldaprealm-ssl"/>
+      <antcall target="create-ldap-usrgrps"/>
+    </target>
+    <target name="unsetup-ssl" depends="init-common,env-check">
+<!--      <antcall target="delete-ldap-server-cert"/>-->
+      <antcall target="delete-auth-ldaprealm"/>
+      <antcall target="delete-ldap-usrgrps"/>
+    </target>
+
+
+</project>

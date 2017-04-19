@@ -1,0 +1,2 @@
+delete-http-listener test-http-listener-1
+delete-http-listener test-http-listener-2

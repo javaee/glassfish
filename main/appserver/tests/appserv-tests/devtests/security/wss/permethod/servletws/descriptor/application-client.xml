@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application-client version="1.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/application-client_1_4.xsd">
+  <description>app client dd for hello</description>
+  <display-name>ws-permethod-hello</display-name>
+  <service-ref>
+     <description>hello service ref</description>
+     <service-ref-name>service/HelloServletService</service-ref-name>
+     <service-interface>com.sun.s1asdev.security.wss.permethod.servlet.client.HelloServletService</service-interface>
+     <wsdl-file>META-INF/wsdl/HelloServletService.wsdl</wsdl-file>
+     <jaxrpc-mapping-file>HelloClientMapping.xml</jaxrpc-mapping-file>
+  </service-ref>
+</application-client>

@@ -1,0 +1,42 @@
+This test, when run with 'all' target performs the following steps:
+
+- build
+- setup
+  - start-database
+  - startDomain
+  - setup-database (add jdbc resources and execute create.sql script on 2 resources + tx logs resource "jdbc/nontx")
+
+- run
+  - setup-cluster (create cluster of 2 instances, enable resources in the cluster, enable db-based tx logging, and deploy the application)
+  - run-delegated (execute test for automatic transactions recover as a GMS notification handling)
+    Test inserts 3 rows from in1 into the default and xa database
+    Instance in1 is killed and restarted
+    Sleep 35 seconds to allow for all processing to go through
+    Expected result: 3 rows found in xa database when verified from in2
+  - reset (unsetup-cluster, reset-tables, setup-cluster)
+  - run-cli (execute the same test with CLI-based delegated recovery) 
+  - run-autorecovery (execute the same test as in run-delegated but do not enable delegated recovery, and allow restarted instance to do its job) 
+
+- unsetup
+  - unsetup-cluster (undeploy the application, stop and delete the cluster)
+  - unsetup-database (drop tables and remove resources)
+  - stop-database
+  - stopDomain
+
+Note: how to look at the log table:
+% asadmin stop-database
+% java -cp <gf-install>/javadb/lib/derbytools.jar:<gf-install>/javadb/lib/derbyclient.jar:<gf-install>/gfs/glassfish3/javadb/lib/derby.jar org.apache.derby.impl.tools.ij.Main
+ij version 10.8
+ij> connect 'jdbc:derby:<gf-install>/glassfish/databases/testdb';
+ij> show tables in dbuser;
+ij> describe DBUSER.TXN_LOG_TABLE;
+COLUMN_NAME         |TYPE_NAME|DEC&|NUM&|COLUM&|COLUMN_DEF|CHAR_OCTE&|IS_NULL&
+------------------------------------------------------------------------------
+LOCALTID            |VARCHAR  |NULL|NULL|20    |NULL      |40        |YES     
+SERVERNAME          |VARCHAR  |NULL|NULL|150   |NULL      |300       |YES     
+INSTANCENAME        |VARCHAR  |NULL|NULL|150   |NULL      |300       |YES     
+GTRID               |BLOB     |NULL|NULL|21474&|NULL      |NULL      |YES     
+
+4 rows selected
+ij> select LOCALTID, SERVERNAME, INSTANCENAME from DBUSER.TXN_LOG_TABLE;
+

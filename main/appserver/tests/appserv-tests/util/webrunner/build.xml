@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE project [
+<!ENTITY setup-props SYSTEM "../../config/properties.xml">
+]>
+
+
+<project name="webrunner" basedir="." default="jar">
+      &setup-props;
+      
+     <property name="proxy.src" value="proxy"/>
+     <property environment="myenv" />
+     <property name="webtest.src" value="webtest"/>
+     <property name="tomcattest.src" value="tomcattest"/>
+     <property name="http2test.src" value="http2test"/>
+     <property name="build.dest" value="build"/>
+     <property name="java.classpath" value="${JAVA_HOME}/lib/dt.jar:${JAVA_HOME}/lib/tools.jar:${build.dest}:${myenv.APS_HOME}/lib/reporter.jar"/>
+     <property name="server.host" value="dsingh"/>
+     
+  <target name="all" depends="compile-webtest,run-webtest">
+        <!-- WRITEME -->
+  </target>
+   
+  
+  <target name="compile-proxy" depends="init-common">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <echo message="Compiling Proxy Server source files (${name}) ..."/>
+    <mkdir dir="${build.dest}"/>
+    <javac
+		srcdir="${proxy.src}"
+		destdir="${build.dest}"
+		classpath="${java.classpath}"
+                debug="on"
+		
+    />
+  </target>
+  
+  <target name="compile-webtest" depends="init-common">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <echo message="Compiling Proxy Server source files (${name}) ..."/>
+    <mkdir dir="${build.dest}"/>
+    <javac
+		srcdir="${webtest.src}"
+		destdir="${build.dest}"
+		classpath="${java.classpath}"
+                debug="on"
+		
+    />
+  </target>
+  
+  <target name="compile-tomcattest" depends="init-common">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <echo message="Compiling Tomcat test util source files ..."/>
+    <mkdir dir="${build.dest}"/>
+    <javac
+		srcdir="${tomcattest.src}"
+		destdir="${build.dest}"
+		classpath="${java.classpath}"
+                debug="on"
+		
+    />
+  </target>
+
+  <target name="compile-http2test" depends="init-common">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <echo message="Compiling Grizzly test source files (${name}) ..."/>
+    <mkdir dir="${build.dest}"/>
+    <javac
+		srcdir="${http2test.src}"
+		destdir="${build.dest}"
+		classpath="${java.classpath}:${myenv.S1AS_HOME}/modules/nucleus-grizzly-all.jar"
+                debug="on"
+		
+    />
+
+  </target>
+
+  <target name="run-webtest" depends="compile-webtest">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <echo message="Running Web Test"/>
+    <java
+			fork="on"
+			classpath="${java.classpath}:${build.dest}"
+			classname="com.sun.ejte.ccl.webrunner.webtest.WebTest">
+                        <arg value="script.txt"/>
+                        <arg value="${server.host}"/>
+    		
+    </java>
+  </target>
+  
+  <target name="run-proxy" depends="compile-proxy">
+    <!-- Compile the java code from ${src} into ${build} -->
+    <echo message="Starting webserver at port 1235"/>
+    <java
+			fork="on"
+			classpath="${java.classpath}:${build.dest}"
+			classname="com.sun.ejte.ccl.webrunner.proxy.httpd">
+                        
+    		
+    </java>
+  </target>
+  
+  <target name="clean" depends="init-common">
+    <delete dir="${build.dest}"/>
+  </target>
+
+<target name="jar" depends="compile-proxy,compile-webtest,compile-tomcattest,compile-http2test">
+  <jar destfile="${myenv.APS_HOME}/lib/webtest.jar">
+	<fileset dir="${build.dest}"/>
+  </jar>
+  </target>
+
+
+  <target name="usage" depends="init-common">
+    <echo >
+    Targets are;
+    ant compile-proxy
+    ant compile-webtest
+    ant run-webtest
+    ant run-proxy
+    </echo>
+  </target>
+
+  
+</project>

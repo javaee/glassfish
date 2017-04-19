@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.4">
+<description>Application description</description>
+<display-name>ValidationApp</display-name>
+<icon>
+<small-icon>employee-service-icon16x16.jpg</small-icon>
+</icon>
+<module>
+<connector>validation.rar</connector>
+</module>
+<security-role>
+<description>emp app role </description>
+<role-name>employee_app</role-name>
+</security-role>
+<security-role>
+<description>admin app role </description>
+<role-name>administrator_app</role-name>
+</security-role>
+</application>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../../config/common.xml">
+<!ENTITY reporting SYSTEM "../../report.xml">
+]>
+
+<project name="ejb-ee" default="usage" basedir=".">
+    &commonSetup;
+    &commonBuild;
+    &reporting;
+
+    <target name="all">
+        <antcall target="bmtcmttx"/>
+        <antcall target="bmttx"/>
+        <antcall target="simpletx"/>
+    </target>
+
+    <target name="bmtcmttx">
+        <record name="txcp-bmtcmttx.output" action="start" />
+            <ant dir="bmtcmttx" target="all"/>
+        <record name="txcp-bmtcmttx.output" action="stop" />
+    </target>
+
+    <target name="bmttx">
+        <record name="txcp-bmttx.output" action="start" />
+            <ant dir="bmttx" target="all"/>
+        <record name="txcp-bmttx.output" action="stop" />
+    </target>
+
+    <target name="simpletx">
+        <record name="txcp-simpletx.output" action="start" />
+            <ant dir="simpletx" target="all"/>
+        <record name="txcp-simpletx.output" action="stop" />
+    </target>
+
+    <target name="usage">
+	<echo>
+		Usage:
+			ant all (Executes all the ejb-ee tests)
+	</echo>
+    </target>
+</project>

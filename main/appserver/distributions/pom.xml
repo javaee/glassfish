@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -86,8 +86,6 @@
         <module>minnow</module>
         <module>web</module>
         <module>glassfish</module>
-        <!-- disable appclient distribution build since we're not using it yet -->
-        <!-- 	<module>appclient</module> -->
     </modules>
 
     <build>
@@ -176,104 +174,7 @@
                         </execution>
                     </executions>
                 </plugin>
-                <plugin>
-                    <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
-                    <artifactId>maven-antrun-extended-plugin</artifactId>
-                    <executions>
-                        <execution> 
-                            <id>create-ips-distribution</id>
-                            <phase>package</phase>
-                            <configuration>
-                                <tasks>
-                                    <ant dir="." antfile="../distributions.xml" target="create-${project.artifactId}-distributions">
-                                        <property name="install.dir.name" value="${install.dir.name}" />
-                                        <property name="ips.compress" value="${ips.compress}"/>
-                                    </ant>
-                                </tasks>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
             </plugins>
         </pluginManagement>
     </build>
-    <profiles>
-        <profile>
-            <id>ips</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.jvnet.maven-antrun-extended-plugin</groupId>
-                        <artifactId>maven-antrun-extended-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>repo-import</id>
-                                <goals>
-                                    <goal>run</goal>
-                                </goals>
-                                <phase>package</phase>
-                                <configuration>
-                                    <tasks>
-                                        <ant dir="." antfile="./repo-import.xml" />
-                                    </tasks>
-                                </configuration>
-                            </execution>
-                        </executions>
-                        <inherited>false</inherited>
-                    </plugin>
-                </plugins>
-            </build>
-            <dependencies>
-                <dependency>
-                    <groupId>org.glassfish.mq</groupId>
-                    <artifactId>mq-distribution</artifactId>
-                    <version>${mq.version}</version>
-                    <classifier>repo</classifier>
-                    <type>zip</type>
-                </dependency>
-                <dependency>
-                    <groupId>javadb</groupId>
-                    <artifactId>javadb-common</artifactId>
-                    <version>${javadb.version}</version>
-                    <type>zip</type>
-                </dependency>
-                <dependency>
-                    <groupId>javadb</groupId>
-                    <artifactId>javadb-core</artifactId>
-                    <version>${javadb.version}</version>
-                    <type>zip</type>
-                </dependency>
-                <dependency>
-                    <groupId>javadb</groupId>
-                    <artifactId>javadb-client</artifactId>
-                    <version>${javadb.version}</version>
-                    <type>zip</type>
-                </dependency>
-                <dependency>
-                    <groupId>javadb</groupId>
-                    <artifactId>javadb-demo</artifactId>
-                    <version>${javadb.version}</version>
-                    <type>zip</type>
-                </dependency>
-                <dependency>
-                    <groupId>javadb</groupId>
-                    <artifactId>javadb-doc</artifactId>
-                    <version>${javadb.version}</version>
-                    <type>zip</type>
-                </dependency>
-                <dependency>
-                    <groupId>javadb</groupId>
-                    <artifactId>javadb-javadoc</artifactId>
-                    <version>${javadb.version}</version>
-                    <type>zip</type>
-                </dependency>
-                <dependency>
-                    <groupId>org.glassfish.l10n</groupId>
-                    <artifactId>l10n-distribution</artifactId>
-                    <version>${l10n.version}</version>
-                    <type>zip</type>
-                </dependency>
-            </dependencies>
-        </profile>
-    </profiles>  
 </project>

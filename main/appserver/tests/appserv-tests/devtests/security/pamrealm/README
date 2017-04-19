@@ -1,0 +1,13 @@
+This test is used to verify the PamRealm. When a webapplication is configured using this realm,
+the Unix username and password are authenticated. The role should be mapped to a Unix user/group in the sun-web.xml
+
+The test client uses httpclient for simulating a Httprequest and basic auth challenge.
+
+It is important to note that Glassfish must be run as root if Unix realm is used.
+If a non-root user is used for running Glassfish, then then user must be able to access /etc/shadow file (must belong to the shadow nix group)
+
+The default setting assumes that there is a Unix login - unixuser
+with password 'password'.
+If such a user does not exist, please create the user using the Unix command - 'useradd -p password unixuser' or the GUI, as applicable.
+
+If a different Unix user/password is used for testing, please modify build.properties and sun-web.xml to reflect the unix username.

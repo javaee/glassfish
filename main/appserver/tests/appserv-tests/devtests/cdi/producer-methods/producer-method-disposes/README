@@ -1,0 +1,3 @@
+Test
+- Destruction of a bean by a matching disposer method, defined by the same class as the producer method
+- Test injection of method parameters into disposer methods

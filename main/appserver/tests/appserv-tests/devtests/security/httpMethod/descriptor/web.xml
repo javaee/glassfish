@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE web-app PUBLIC '-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN' 'http://java.sun.com/j2ee/dtds/web-app_2_2.dtd'>
+
+<web-app>
+  <display-name>security-httpMethod</display-name>
+  <distributable></distributable>
+  <servlet>
+    <servlet-name>TestServlet</servlet-name>
+    <servlet-class>com.sun.s1asdev.security.httpMethod.TestServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>TestServlet2</servlet-name>
+    <servlet-class>com.sun.s1asdev.security.httpMethod.TestServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>TestServlet</servlet-name>
+    <url-pattern>/TestServlet</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>TestServlet2</servlet-name>
+    <url-pattern>/TestServlet2</url-pattern>
+  </servlet-mapping>
+
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>secure1</web-resource-name>
+      <url-pattern>/TestServlet</url-pattern>
+      <http-method>FOO</http-method>
+      <http-method>GET</http-method>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>manager</role-name>
+    </auth-constraint>
+    <user-data-constraint>
+      <transport-guarantee>NONE</transport-guarantee>
+    </user-data-constraint>
+  </security-constraint>
+  
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>secure2</web-resource-name>
+      <url-pattern>/TestServlet2</url-pattern>
+      <http-method>FOO</http-method>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>manager</role-name>
+    </auth-constraint>
+    <user-data-constraint>
+      <transport-guarantee>NONE</transport-guarantee>
+    </user-data-constraint>
+  </security-constraint>
+
+  <login-config>
+    <auth-method>BASIC</auth-method>
+    <realm-name>default</realm-name>
+  </login-config>
+  
+  <security-role>
+    <role-name>manager</role-name>
+  </security-role>
+</web-app>
+

@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "./../../config/common.xml">
+]>
+
+<project name="jsponlyApp" default="usage" basedir=".">
+
+    &commonBuild;
+    <property name="contextRoot" value="war"/>
+    <property name="testName" value="jsponly"/>
+
+    <target name="prepare" depends="init">
+        <property name="portable.war" value="${build}/${testName}-portable.war"/>
+        <property name="all.war" value="${build}/${testName}.war"/>
+        <property name="deployplan.jar" value="${build}/${testName}-deployplan.jar"/>
+        <mkdir dir="${build}"/>
+    </target>
+
+    <target name="compile" depends="prepare">
+        <javac srcdir="."
+               destdir="${build}"
+               debug="on"
+               failonerror="true">
+            <classpath refid="test.compile.classpath"/>
+        </javac>
+    </target>
+
+    <target name="assemble" depends="prepare">
+        <war destfile="${portable.war}" webxml="web.xml">
+            <fileset dir="." includes="*.jsp"/>
+        </war>
+        <jar destfile="${deployplan.jar}">
+            <fileset dir="${basedir}" includes="glassfish-web.xml"/>
+        </jar>
+        <war destfile="${all.war}" webxml="web.xml">
+            <webinf dir="." includes="glassfish-web.xml"/>
+            <fileset dir="." includes="*.jsp"/>
+        </war>
+    </target>
+
+    <target name="deploy.asadmin" depends="prepare">
+        <antcall target="common.deploy.asadmin">
+            <param name="arg.list" value="${all.war}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="redeploy.asadmin" depends="prepare">
+        <antcall target="common.redeploy.asadmin">
+            <param name="arg.list" value="${all.war}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="undeploy.asadmin">
+        <antcall target="common.undeploy.asadmin">
+            <param name="arg.list" value="${testName}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="deploy.jsr88" depends="prepare">
+        <antcall target="common.deploy.jsr88">
+            <param name="arg.list" value="${portable.war} ${deployplan.jar}"/>
+        </antcall>
+    </target>
+
+    <target name="redeploy.jsr88" depends="prepare">
+        <antcall target="common.run.jsr88">
+            <param name="command" value="redeploy"/>
+            <param name="arg.list" value="jsponly-portable ${portable.war} ${deployplan.jar}"/>
+        </antcall>
+    </target>
+
+    <target name="undeploy.jsr88">
+        <antcall target="common.undeploy.jsr88">
+            <param name="arg.list" value="jsponly-portable"/>
+        </antcall>
+    </target>
+
+    <target name="start.jsr88">
+        <antcall target="common.run.jsr88">
+            <param name="command" value="start"/>
+            <param name="arg.list" value="jsponly-portable"/>
+        </antcall>
+    </target>
+
+    <target name="stop.jsr88">
+        <antcall target="common.run.jsr88">
+            <param name="command" value="stop"/>
+            <param name="arg.list" value="jsponly-portable"/>
+        </antcall>
+    </target>
+
+    <target name="deploy.autodeploy">
+    </target>
+
+    <target name="run" depends="run.positive"/>
+
+    <target name="run.positive" depends="setHttpPort">
+        <antcall target="common.run.positive">
+            <param name="link" value="${contextRoot}/${testName}"/>
+            <param name="log.id" value="${log.id}"/>
+        </antcall>
+    </target>
+
+    <target name="run.negative" depends="setHttpPort">
+        <antcall target="common.run.negative">
+            <param name="link" value="${contextRoot}/${testName}"/>
+            <param name="log.id" value="${log.id}"/>
+        </antcall>
+    </target>
+
+    <target name="runclient" depends="compile">
+        <javaWithResult
+                fork="true"
+                failonerror="false"
+                jvm="${JAVA}"
+                classname="jsponly.client.TestClient"
+                output="${build}/${log.id}.output.log"
+                resultproperty="result">
+            <jvmarg value="-Dorg.omg.CORBA.ORBInitialHost=${http.host}"/>
+            <jvmarg value="-Dorg.omg.CORBA.ORBInitialPort=${orb.port}"/>
+            <jvmarg value="-Djava.endorsed.dirs=${inst}/lib/endorsed"/>
+
+            <classpath>
+	       <path refid="gfv3.classpath"/>
+               <path location="${build}"/>
+            </classpath>
+
+            <arg line="${arg.list}"/>
+        </javaWithResult>
+
+        <antcall target="processResult">
+            <param name="result" value="${result}"/>
+            <param name="log" value="${build}/${log.id}.output.log"/>
+        </antcall>
+    </target>
+
+    <target name="private-all">
+        <antcall target="assemble"/>
+        <antcall target="deploy.asadmin"/>
+        <antcall target="run.positive">
+            <param name="log.id" value="1"/>
+            <param name="desc" value="war/jsponly Test asadmin deploy"/>
+        </antcall>
+
+        <antcall target="redeploy.asadmin"/>
+        <antcall target="run.positive">
+            <param name="log.id" value="2"/>
+            <param name="desc" value="war/jsponly Test asadmin redeploy"/>
+        </antcall>
+        <antcall target="undeploy.asadmin"/>
+
+        <antcall target="deploy.jsr88"/>
+        <antcall target="run.positive">
+            <param name="log.id" value="3"/>
+            <param name="desc" value="war/jsponly Test jsr88 deploy"/>
+        </antcall>
+
+        <antcall target="stop.jsr88"/>
+        <antcall target="run.negative">
+            <param name="log.id" value="4"/>
+            <param name="desc" value="war/jsponly Test jsr88 stopped state"/>
+        </antcall>
+
+
+        <antcall target="start.jsr88"/>
+        <antcall target="run.positive">
+            <param name="log.id" value="5"/>
+            <param name="desc" value="war/jsponly Test jsr88 started state"/>
+        </antcall>
+
+        <antcall target="stop.jsr88"/>
+        <antcall target="redeploy.jsr88"/>
+        <antcall target="run.negative">
+            <param name="log.id" value="6"/>
+            <param name="desc" value="war/jsponly Test jsr88 redeploy stop"/>
+        </antcall>
+
+        <antcall target="start.jsr88"/>
+        <antcall target="redeploy.jsr88"/>
+        <antcall target="run.positive">
+            <param name="log.id" value="7"/>
+            <param name="desc" value="war/jsponly Test jsr88 redeploy start"/>
+        </antcall>
+
+        <antcall target="undeploy.jsr88"/>
+    </target>
+
+    <target name="clobber" depends="clean">
+        <delete file="${portable.war}"/>
+        <delete file="${all.war}"/>
+        <delete file="${deployplan.war}"/>
+        <delete dir="${build}"/>
+    </target>
+
+    <target name="usage">
+        <antcall target="all"/>
+    </target>
+</project>

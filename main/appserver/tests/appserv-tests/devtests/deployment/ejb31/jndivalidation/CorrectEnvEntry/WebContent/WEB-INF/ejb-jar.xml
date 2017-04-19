@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ejb-jar xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:ejb="http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd"
+	version="3.1">
+	<enterprise-beans>
+		<session>
+			<ejb-name>Invoker1</ejb-name>
+			<ejb-class>gf.Invoker1</ejb-class>
+			<session-type>Stateless</session-type>
+			<env-entry>
+				<env-entry-name>java:module/env/DuplicateEnvEntry</env-entry-name>
+				<env-entry-type>java.lang.String</env-entry-type>
+				<env-entry-value>from ejb</env-entry-value>
+			</env-entry>
+			
+			<env-entry>
+				<env-entry-name>java:comp/env/DuplicateEnvEntry</env-entry-name>
+				<env-entry-type>java.lang.String</env-entry-type>
+				<env-entry-value>from ejb</env-entry-value>
+			</env-entry>
+		</session>
+	
+	</enterprise-beans>
+
+
+
+</ejb-jar>

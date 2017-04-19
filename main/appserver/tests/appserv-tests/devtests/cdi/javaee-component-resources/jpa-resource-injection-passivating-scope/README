@@ -1,0 +1,7 @@
+Test
+- Use of Java EE component environment resources 
+Passivating Scopes and passivation capable dependencies
+    - test if a producer method can return a non-serializable resource [EntityManager]. 
+    - test if a Stateful session bean can have non-transient injected field that is a resource  
+
+This test is similar to jpa-resource-injection-non-serializable except that the injection happens into a SFSB [a passivating bean]

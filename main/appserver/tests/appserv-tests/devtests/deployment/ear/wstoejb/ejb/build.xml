@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
+]>
+ 
+<project name="wstoejb" default="all" basedir=".">
+
+ 	&commonBuild;
+    <property name="archivedir" value="${build}/archives"/>
+
+	<target name="prepare" depends="init">
+		<mkdir dir="${build}" />
+		<mkdir dir="${archivedir}" />
+	</target>
+	
+	<target name="compile" depends="prepare">
+		<javac srcdir="wstoejb" destdir="${build}">
+                 <classpath refid="gfv3.classpath"/>
+                </javac>
+
+	</target>
+	
+	<target name="assemble" depends="compile">
+		<mkdir dir="${build}/META-INF"/>
+		<copy file="ejb-jar.xml" todir="${build}/META-INF"/>
+		<jar destfile="${archivedir}/wstoejb-portable.jar" basedir="${build}"/>
+		<copy file="sun-ejb-jar.xml" todir="${build}/META-INF" failonerror="false"/>
+		<jar destfile="${archivedir}/wstoejb.jar" basedir="${build}"/>
+	</target>
+		
+	<target name="private-all" depends="assemble">
+	</target>
+
+</project>

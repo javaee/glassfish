@@ -1,0 +1,4 @@
+Test
+- Testing portable extensions support 
+    - Injection and lookup of BeanManager in a Servlet
+    - Use of BeanManager to make checks about Beans, Interceptors, Scopes etc

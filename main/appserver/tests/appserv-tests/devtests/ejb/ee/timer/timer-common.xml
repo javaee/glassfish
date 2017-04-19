@@ -1,0 +1,61 @@
+<target name="setup-database" depends="init-common">
+  <antcall target="deploy-jdbc-common">
+        <param name="jdbc.conpool.name" value="jdbc-mypool-pool"/>
+        <param name="db.class" value="org.apache.derby.jdbc.ClientDataSource"/>
+        <param name="jdbc.resource.type" value="javax.sql.DataSource"/>
+        <param name="jdbc.resource.name" value="jdbc/mypool"/>
+    </antcall>
+   <antcall target="asadmin-common">
+      <param name="admin.command" value="set"/>
+      <param name="operand.props"
+          value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-mypool-pool.property.connectionAttributes=;create=true"/>
+   </antcall>
+   <antcall target="asadmin-common">
+      <param name="admin.command" value="set"/>
+      <param name="operand.props"
+          value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-mypool-pool.connection-validation-method=table"/>
+   </antcall>
+   <antcall target="asadmin-common">
+      <param name="admin.command" value="set"/>
+      <param name="operand.props"
+          value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-mypool-pool.validation-table-name=sys.systables"/>
+   </antcall>
+   <antcall target="asadmin-common">
+      <param name="admin.command" value="set"/>
+      <param name="operand.props"
+          value="${resources.dottedname.prefix}.jdbc-connection-pool.jdbc-mypool-pool.is-connection-validation-required=true"/>
+   </antcall>
+   <antcall target="asadmin-common">
+      <param name="admin.command" value="set"/>
+      <param name="operand.props"
+          value="configs.config.default-config.ejb-container.ejb-timer-service.timer-datasource=jdbc/mypool"/>
+   </antcall>
+</target>
+
+<target name="unsetup-database" depends="init-common">
+   <antcall target="asadmin-common">
+      <param name="admin.command" value="set"/>
+      <param name="operand.props"
+          value="configs.config.default-config.ejb-container.ejb-timer-service.timer-datasource="/>
+   </antcall>
+    <antcall target="delete-jdbc-resource-common">
+        <param name="jdbc.resource.name" value="jdbc/mypool"/>
+    </antcall>
+
+    <antcall target="delete-jdbc-connpool-common">
+        <param name="jdbc.conpool.name" value="jdbc-mypool-pool"/>
+    </antcall>
+</target>
+
+<target name="save-logs" depends="init-common" >
+    <condition property="zip-logs">
+       <isset property="${save.logs}" />
+    </condition>
+
+    <echo message="saving logs to ${basedir}"/>
+    <zip destfile="${module}-logs.zip"
+        basedir="${env.S1AS_HOME}"
+        includes="**/server.lo*"
+    />
+
+</target>

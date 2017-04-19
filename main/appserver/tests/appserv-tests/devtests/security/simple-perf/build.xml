@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
+<!ENTITY testproperties SYSTEM "file:./build.properties">
+]>
+
+<project name="simple-perf" default="usage" basedir=".">
+
+    &commonSetup;
+    &commonBuild;
+    &testproperties;
+
+
+    <target name="all" depends="build,deploy,run,undeploy"/>
+    <!-- run-test target added to have setup/unsetup commonly -->
+    <target name="run-test" depends="build,deploy,run,undeploy"/>
+
+    <target name="clean" depends="init-common">
+      <antcall target="clean-common"/>
+    </target>
+ 
+    <target name="compile" depends="clean">
+        <antcall target="compile-common">
+            <param name="src" value="ejb"/>
+        </antcall>
+        <antcall target="compile-common">
+            <param name="src" value="client"/>
+        </antcall>
+    </target>
+
+    <target name="build" depends="compile">
+        <antcall target="build-ear-common"/>
+    </target> 
+    
+    <target name="deploy" depends="init-common">
+        <antcall target="deploy-common"/>
+    </target>
+    
+    <target name="run" depends="init-common">
+         <antcall target="runclient-local"/> 
+	<antcall target="run-standalone-client"/>
+    </target>
+
+    <target name="runclient-local" depends="init-common">
+      <exec executable="${APPCLIENT}">
+        <env key="VMARGS" value=" -Djavax.net.ssl.keyStore=${admin.domain.dir}/${admin.domain}/config/keystore.jks -Djavax.net.ssl.trustStore=${admin.domain.dir}/${admin.domain}/config/cacerts.jks" />
+        <arg value="-client" />
+        <arg value="${assemble.dir}/${appname}AppClient.jar"/>
+  	<!-- dummy user added as appclient throwing login window -->	
+	<arg value="-textauth"/>
+        <arg value="-user"/>
+        <arg value="temp"/>
+        <arg value="-password"/>
+        <arg value="temp"/>
+      </exec>
+    </target>
+    <target name="undeploy" depends="init-common">
+        <antcall target="undeploy-common"/>
+    </target>   
+
+  <!-- =============================================== -->
+    <!-- Target to run the standalone client without ACC -->
+    <!-- =============================================== -->
+    <target name="run-standalone-client" depends="init-common">
+        <property name="jndi.name" value="SSLconverter"/>
+        <property name="provider.url" value="iiop://${admin.host}:${orb.port}"/>
+        <property name="ctxfactory"
+            value="com.sun.enterprise.naming.SerialInitContextFactory"/>
+        <echo message="provider.url used is ${provider.url}"/>
+      <java classname="${test.client}"
+        classpath="${s1astest.classpath}:${assemble.dir}/${appname}AppClient.jar"
+        failonerror="true" fork="true">
+        <jvmarg value="-Dorg.omg.CORBA.ORBInitialHost=${admin.host}"/>
+        <jvmarg value="-Dorg.omg.CORBA.ORBInitialPort=${orb.port}"/>
+        <jvmarg value="-Djavax.net.ssl.keyStore=${admin.domain.dir}/${admin.domain}/config/keystore.jks"/>
+        <jvmarg value="-Djavax.net.ssl.trustStore=${admin.domain.dir}/${admin.domain}/config/cacerts.jks"/>
+	<jvmarg value="-Dcom.sun.CORBA.connection.ORBSocketFactoryClass=com.sun.enterprise.iiop.IIOPSSLSocketFactory"/>
+        <arg value="${provider.url}"/>
+        <arg value="${ctxfactory}"/>
+        <arg value="${jndi.name}"/>
+      </java>
+    </target>
+
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+</project>

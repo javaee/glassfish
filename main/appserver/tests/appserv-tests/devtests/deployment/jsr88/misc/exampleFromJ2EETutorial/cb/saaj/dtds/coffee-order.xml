@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+ Copyright 2002 Sun Microsystems, Inc. All rights reserved.
+ SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
+-->
+
+
+<!DOCTYPE coffee-order
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Coffee Order//EN"
+    "http://java.sun.com/webservices/dtds/coffee-order.dtd">
+
+<coffee-order>
+    <orderID>
+		"1234"
+    </orderID>
+
+    <customer>
+        <last-name>
+            "Pental"
+        </last-name>
+        <first-name>
+            "Ragni"
+        </first-name>
+    </customer>
+
+    <address>
+        <street>
+            "9876 Central Way"
+        </street>
+        <city>
+            "Rainbow"
+        </city>
+        <state>
+            "CA"
+        </state>
+        <zip>
+            "99999"
+        </zip>
+        <phone-number>
+            "908 873-6789"
+        </phone-number>
+        <email-address>
+            "ragnip@aol.com"
+        </email-address>
+    </address>
+
+    <line-item>
+        <coffee-name>
+            "arabica"
+        </coffee-name>
+        <pounds>
+            "2"
+        </pounds>
+        <price>
+            "10.95"
+        </price>
+    </line-item>
+
+    <total>
+        "10.95"
+    </total>
+   
+</coffee-order>

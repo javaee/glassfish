@@ -1,0 +1,17 @@
+<connector xmlns="http://java.sun.com/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+  http://java.sun.com/xml/ns/javaee/connector_1_6.xsd"
+  version="1.6">
+
+  <display-name>SimpleVersionableRA</display-name>
+  <vendor-name>deploymentTestCo</vendor-name>
+  <eis-type>StartupClassRA</eis-type>
+  <resourceadapter-version>0.1</resourceadapter-version>
+  <resourceadapter>
+    <resourceadapter-class>
+      connector.ResourceAdapterImpl
+    </resourceadapter-class>
+  </resourceadapter>
+
+</connector>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../../../config/common.xml">
+<!ENTITY testproperties SYSTEM "build.properties">
+]>
+
+<project name="ejb-timer-opallowed-App" default="usage" basedir=".">
+
+    &commonSetup;
+    &commonBuild;
+    &testproperties;
+
+    <target name="all" depends="clean,build,deploy,run,undeploy"/>
+
+    <target name="clean" depends="init-common">
+      <antcall  target="clean-common"/>
+    </target>
+ 
+    <target name="compile" depends="clean">
+        <!--this is tricky since webclient-war-common simply package all classes under ${war.classes}
+        and we need remote/local interface in the war-->
+				<copy todir="war">
+    				<fileset dir="ejb" includes="**/*Timeout.java,**/*TimeoutLocal.java"/>
+  			</copy>
+        <antcall target="compile-common">
+            <param name="src" value="war"/>
+        </antcall>
+        <delete>
+    				<fileset dir="war" includes="**/*Timeout.java,**/*TimeoutLocal.java"/>
+  			</delete>
+        <antcall target="webclient-war-common">
+          <param name="hasWebclient" value="true"/>
+        </antcall>
+        <antcall target="compile-common">
+            <param name="src" value="ejb"/>
+        </antcall>
+        <antcall target="compile-common">
+            <param name="src" value="client"/>
+        </antcall>
+    </target>
+
+    <target name="build" depends="compile">
+      <mkdir dir="${assemble.dir}"/>
+      <antcall target="package-ejbjar-common">
+        <param name="ejbjar.files" value="${build.classes.dir}"/>
+        <param name="ejb.jar" value="${assemble.dir}/${appname}-ejb.jar"/>
+        <param name="ejbjar.classes" value="**/*Timeout*.class" />
+      </antcall>
+      <antcall target="appclient-jar-common">
+        <param name="appclientjar.classes" value="**/Client.class,**/*Timeout.class" />
+      </antcall>
+      <antcall target="ear-common"/>
+    </target> 
+    
+    <target name="deploy" 
+            depends="init-common">
+        <antcall target="deploy-common"/>
+    </target>
+
+	  <!--run-appclient & run-jseclient are blocked by JIRA19546-->
+    <target name="run" depends="run-pojo, run-webapp, run-managedbean"/>
+
+	  <target name="run-appclient" depends="init-common">
+	      <antcall target="runclient-common"/>
+	  </target>
+	      
+	  <target name="run-jseclient" depends="init-common">
+       <antcall target="run-client">
+         <param name="client.type" value="jseClient" />
+      </antcall>
+	  </target>
+
+	  <target name="run-client">
+       <java  fork="on" 
+              failonerror="true"
+              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
+              classname="${test.client}">
+					 <sysproperty key="org.omg.CORBA.ORBInitialPort" value="${orb.port}"/>
+           <arg line="${client.type}"/>
+           <arg line="${http.port}"/>
+        </java>
+	  </target>
+
+	  <target name="run-pojo" depends="init-common">
+       <antcall target="run-client">
+         <param name="client.type" value="pojo" />
+      </antcall>
+	  </target>
+
+	  <target name="run-webapp" depends="init-common">
+       <antcall target="run-client">
+         <param name="client.type" value="webapp" />
+      </antcall>
+	  </target>
+
+	  <target name="run-managedbean" depends="init-common">
+       <antcall target="run-client">
+         <param name="client.type" value="managedbean" />
+      </antcall>
+	  </target>
+
+    <target name="undeploy" depends="init-common">
+        <antcall target="undeploy-common"/>
+    </target>   
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+</project>

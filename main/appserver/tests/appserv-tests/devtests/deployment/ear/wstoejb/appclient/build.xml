@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "./../../../config/common.xml">
+]>
+ 
+<project name="wstoejb" default="all" basedir=".">
+
+ 	&commonBuild;
+    <property name="archivedir" value="${build}/archives"/>
+
+	<target name="prepare" depends="init">
+        <mkdir dir="${build}" />
+        <mkdir dir="${archivedir}" />
+        <copy file="WebServiceToEjb.wsdl" todir="${build}/META-INF/wsdl"/>
+        <exec executable="${WSCOMPILE}" failonerror="true" >
+		    <arg line="-import -d ${build} -classpath ${build} -mapping ${build}/mapping.xml wscompile_config.xml"/>
+        </exec>
+	</target>
+
+	<target name="compile" depends="prepare">
+		<javac srcdir="wstoejb" destdir="${build}">
+  <classpath refid="gfv3.classpath"/>
+         </javac>
+
+	</target>
+
+	<target name="assemble" depends="compile,setHttpPort">
+            <mkdir dir="${build}/META-INF"/>
+            <copy file="application-client.xml" todir="${build}/META-INF"/>
+            <jar destfile="${archivedir}/appclient-portable.jar" basedir="${build}">
+                <manifest>
+                    <attribute name="main-class" value="wstoejb.Client"/>
+                </manifest>
+            </jar>
+            <copy file="sun-application-client.xml" todir="${build}/META-INF" failonerror="false"/>
+            <replace file="${build}/META-INF/sun-application-client.xml">
+                <replacefilter token="HTTP_HOST" value="${http.host}" />
+                <replacefilter token="HTTP_PORT" value="${depltest.port}"/>
+            </replace>
+            <jar destfile="${archivedir}/appclient.jar" basedir="${build}">
+                <manifest>
+                    <attribute name="main-class" value="wstoejb.Client"/>
+                </manifest>
+            </jar>
+	</target>
+		
+	<target name="private-all" depends="assemble"/>
+
+</project>

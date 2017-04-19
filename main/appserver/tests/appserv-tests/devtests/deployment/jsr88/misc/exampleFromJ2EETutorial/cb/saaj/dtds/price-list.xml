@@ -1,0 +1,26 @@
+<!DOCTYPE price-list
+    PUBLIC "-//Sun Microsystems, Inc.//DTD priceList//EN"
+    "http://java.sun.com/webservices/dtds/price-list.dtd">
+
+<price-list
+    <coffee>
+		<coffee-name> Arabica </coffee-name>
+		<price> 4.50 </price>
+    </coffee>
+
+    <coffee>
+		<coffee-name> HouseBlend </coffee-name>
+		<price> 5.00 </price>
+    </coffee>
+
+    <coffee>
+		<coffee-name> Espresso </coffee-name>
+		<price> 5.00 </price>
+    </coffee>
+
+    <coffee>
+		<coffee-name> Dorada </coffee-name>
+		<price> 6.00 </price>
+    </coffee>
+
+</price-list>

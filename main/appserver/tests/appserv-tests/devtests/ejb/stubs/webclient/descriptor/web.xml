@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+
+  <display-name>webclient</display-name>
+  <distributable></distributable>
+  <servlet>
+    <servlet-name>Servlet</servlet-name>
+    <servlet-class>com.sun.s1asdev.ejb.stubs.webclient.Servlet</servlet-class>
+    <load-on-startup>0</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Servlet</servlet-name>
+    <url-pattern>/servlet</url-pattern>
+  </servlet-mapping>
+  <ejb-ref>
+    <ejb-ref-name>ejb/hello</ejb-ref-name>
+    <ejb-ref-type>Session</ejb-ref-type>
+    <home>com.sun.s1asdev.ejb.stubs.ejbapp.HelloHome</home>
+    <remote>com.sun.s1asdev.ejb.stubs.ejbapp.Hello</remote>
+  </ejb-ref>
+<!-- 
+ <ejb-ref>
+    <ejb-ref-name>ejb/dummymejb</ejb-ref-name>
+    <ejb-ref-type>Session</ejb-ref-type>
+    <home>javax.management.j2ee.ManagementHome</home>
+    <remote>javax.management.j2ee.Management</remote>
+  </ejb-ref>
+-->
+</web-app>
+

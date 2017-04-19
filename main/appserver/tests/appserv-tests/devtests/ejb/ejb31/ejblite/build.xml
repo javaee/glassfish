@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../../config/common.xml">
+<!ENTITY reporting   SYSTEM "../../report.xml">
+]>
+
+<project name="ejblite" default="usage" basedir=".">
+    &commonSetup;
+    &commonBuild;
+    &reporting;
+
+    <target name="all">
+        <antcall target="javamodule"/>
+
+        <antcall target="managedbean"/>
+
+        <antcall target="sinitcallejb"/>
+
+        <antcall target="jaxrs"/>
+        <antcall target="generics"/>
+    </target>
+
+    <target name="javamodule">
+        <record name="javamodule.output" action="start" />
+            <ant dir="javamodule" target="all"/>
+        <record name="javamodule.output" action="stop" />
+    </target>
+
+    <target name="managedbean">
+        <record name="managedbean.output" action="start" />
+            <ant dir="managedbean" target="all"/>
+        <record name="managedbean.output" action="stop" />
+    </target>
+
+    <target name="sinitcallejb">
+        <record name="sinitcallejb.output" action="start" />
+            <ant dir="sinitcallejb" target="all"/>
+        <record name="sinitcallejb.output" action="stop" />
+    </target>
+
+    <target name="jaxrs">
+        <record name="jaxrs.output" action="start" />
+            <ant dir="jaxrs" target="all"/>
+        <record name="jaxrs.output" action="stop" />
+    </target>
+
+    <target name="generics">
+        <record name="generics.output" action="start" />
+            <ant dir="generics" target="all"/>
+        <record name="generics.output" action="stop" />
+    </target>
+
+    <target name="usage">
+	<echo>
+		Usage:
+			ant all (Executes all the ejb-ejb31-ejblite tests)
+	</echo>
+    </target>
+</project>

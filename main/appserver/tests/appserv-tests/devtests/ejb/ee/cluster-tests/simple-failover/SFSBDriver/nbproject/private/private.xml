@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project-private xmlns="http://www.netbeans.org/ns/project-private/1">
+    <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/1"/>
+    <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/1">
+        <file>file:/space/work/v3/appserv-tests/devtests/ejb/ee/cluster-tests/simple-failover/SFSBDriver/web/WEB-INF/web.xml</file>
+        <file>file:/space/work/v3/appserv-tests/devtests/ejb/ee/cluster-tests/simple-failover/SFSBDriver/src/java/net/max/ee/sfsb/SFSBDriverServlet.java</file>
+        <file>file:/space/work/v3/appserv-tests/devtests/ejb/ee/cluster-tests/simple-failover/SFSBDriver/src/java/net/max/ee/sfsb/SimpleSessionBean.java</file>
+    </open-files>
+</project-private>

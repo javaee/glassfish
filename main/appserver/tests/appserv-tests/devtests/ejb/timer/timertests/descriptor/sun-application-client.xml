@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sun-application-client PUBLIC "-//Sun Microsystems, Inc.//DTD Sun ONE Application Server 7.0 Application Client 1.3//EN" "http://www.sun.com/software/sunone/appserver/dtds/sun-application-client_1_3-0.dtd">
+<sun-application-client>
+<!--
+  <resource-ref>
+    <res-ref-name>jms/MyTopicConnectionFactory</res-ref-name>
+    <jndi-name>jms/ejb_timer_timertests_TCF</jndi-name>
+    <default-resource-principal>
+       <name>guest</name>
+       <password>guest</password>
+    </default-resource-principal>
+  </resource-ref>
+  <resource-ref>
+    <res-ref-name>jms/MyQueueConnectionFactory</res-ref-name>
+    <jndi-name>jms/ejb_timer_timertests_QCF</jndi-name>
+    <default-resource-principal>
+       <name>guest</name>
+       <password>guest</password>
+    </default-resource-principal>
+  </resource-ref>
+-->
+  <ejb-ref>
+    <ejb-ref-name>ejbs/Foo_CMT</ejb-ref-name>
+    <jndi-name>ejbtimer/Foo_CMT</jndi-name>
+  </ejb-ref>
+  <ejb-ref>
+    <ejb-ref-name>ejbs/Foo_BMT</ejb-ref-name>
+    <jndi-name>ejbtimer/Foo_BMT</jndi-name>
+  </ejb-ref>
+  <ejb-ref>
+    <ejb-ref-name>ejbs/Foo_UNSPECIFIED_TX</ejb-ref-name>
+    <jndi-name>ejbtimer/Foo_UNSPECIFIED_TX</jndi-name>
+  </ejb-ref>
+  <ejb-ref>
+    <ejb-ref-name>ejbs/Stateful_BMT</ejb-ref-name>
+    <jndi-name>ejbtimer/Stateful_BMT</jndi-name>
+  </ejb-ref>
+  <ejb-ref>
+    <ejb-ref-name>ejbs/Stateful_CMT</ejb-ref-name>
+    <jndi-name>ejbtimer/Stateful_CMT</jndi-name>
+  </ejb-ref>
+</sun-application-client>

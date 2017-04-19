@@ -39,9 +39,11 @@
 # holder.
 #
 
-#check if maven is installed and in the path
+# check if maven is installed and in the path
+set +e
 which mvn 2>&1 > /dev/null
-_status=$?
+_status=${?}
+set -e
 if [ ${_status} -ne 0 ]; then
     echo "Unable to find mvn in the path."
     echo "Please install Maven version 3.0.3 or above.  http://maven.apache.org/download.html"

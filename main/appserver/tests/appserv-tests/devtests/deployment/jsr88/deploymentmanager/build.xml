@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "./../../config/common.xml">
+]>
+
+<project name="deploymentmanager" default="all" basedir=".">
+
+	&commonBuild;    
+    <property name="archivedir" value="${build}/archives"/>
+
+	<target name="private-all">
+		<ant dir="distribute" target="private-all">
+			<property name="build" value="${build}/distribute"/>
+		</ant>
+		<ant dir="getXModules" target="private-all">
+			<property name="build" value="${build}/getXModules"/>
+		</ant>
+	</target>
+
+</project>

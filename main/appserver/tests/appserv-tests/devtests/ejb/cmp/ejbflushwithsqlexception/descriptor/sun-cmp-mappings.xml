@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sun-cmp-mappings>
+  <sun-cmp-mapping>
+    <schema></schema>
+    <entity-mapping>
+      <ejb-name>A1</ejb-name>
+      <table-name>A1</table-name>
+      <cmp-field-mapping>
+        <field-name>id</field-name>
+        <column-name>A1.ID</column-name>
+      </cmp-field-mapping>
+      <cmp-field-mapping>
+        <field-name>name</field-name>
+        <column-name>A1.NAME</column-name>
+      </cmp-field-mapping>
+    </entity-mapping>
+    <entity-mapping>
+      <ejb-name>A2</ejb-name>
+      <table-name>A2</table-name>
+      <cmp-field-mapping>
+        <field-name>id</field-name>
+        <column-name>A2.ID</column-name>
+      </cmp-field-mapping>
+      <cmp-field-mapping>
+        <field-name>name</field-name>
+        <column-name>A2.NAME</column-name>
+      </cmp-field-mapping>
+    </entity-mapping>
+  </sun-cmp-mapping>
+</sun-cmp-mappings>

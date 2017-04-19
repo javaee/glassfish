@@ -1,0 +1,5 @@
+This test verifies the following functionalities:
+
+1. deployment of an ear without application.xml
+2. the correct identification of the type of the jar file if the 
+   application.xml does not exist

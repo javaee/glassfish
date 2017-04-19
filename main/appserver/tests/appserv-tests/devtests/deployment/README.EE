@@ -1,0 +1,68 @@
+(Please see the ADDITIONAL NOTES section at the end)
+
+UNIT TESTS ON DEPLOYMENT
+========================
+
+There are 3 test senarios in running the deployment dev tests on an EE 
+installation, i.e. running tests on DAS or on remote instance or on cluster
+(and on remote instance).
+The tests should be run on, at least, DAS and remote instance before checkin to
+ensure the checkin quality. For cluster related fixes, the tests should be 
+run on DAS and cluster.
+
+** It is assumed that the masster password is changeit **
+
+FOR RUNNING THE DEPLOYMENT TESTS ON EE w/ DAS :
+--------------------------------------------------
+1. Set APS_HOME, S1AS_HOME (see README for more details). 
+
+2. Start the DAS (i.e. domain1 in the default case.) using command
+   asadmin start-domain --user <user> --password <pwd>
+
+3. Run the tests using "ant all".
+
+
+FOR RUNNING THE DEPLOYMENT TESTS ON EE w/ remote instance:
+---------------------------------------------------------------
+
+1. Set APS_HOME, S1AS_HOME (see README for more details). 
+
+2. Set DEPL_TARGET to SERVER (e.g. export DEPL_TARGET=SERVER on ksh)
+
+3. Run the tests using "ant all-ee".
+
+NOTE : no need to to start a domain manually before starting the tests; setting
+       the env DEPL_TARGET will result in creation and starting of a remote
+       instance. All test modules will be deployed on this instance 
+       named depltest-server.
+
+FOR RUNNING THE DEPLOYMENT TESTS ON EE w/ cluster and remote instance :
+--------------------------------------------------------------------------
+
+1. Set APS_HOME, S1AS_HOME (see README for more details). 
+
+2. Set DEPL_TARGET to CLUSTER (e.g. export DEPL_TARGET=CLUSTER on ksh)
+
+3. Run the tests using "ant all-ee".
+
+NOTE : no need to to start a domain manually before starting the tests; setting
+       the env DEPL_TARGET will result in creation and starting of a 
+       cluster. All test modules will be deployed on this cluster 
+       named depltest-cluster and the remote instance depltest-server.
+
+Please NOTE.  You might want to do the following anyway before starting the tests:
+
+Overcoming 'ant' compile problem :
+----------------------------------
+In some cases the ant test clients run out of memory during the test run.
+To avoid this problem, add -Xmx999m to the command that starts the ant java vm
+
+Here is how to do that :
+
+cat `which ant` :
+
+(... go towards bottom of ant script and add the option -Xmx999m as shown below)
+
+ "$JAVACMD" -Xmx999m -classpath "$LOCALCLASSPATH" -Dant.home="${ANT_HOME}" $ANT_OPTS org.apache.tools.ant.Main $ANT_ARGS "$@"
+
+

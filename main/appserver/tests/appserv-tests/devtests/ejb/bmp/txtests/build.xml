@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<project name="txtests" default="usage" basedir=".">
+
+    <target name="all">
+        <record name="txtests.output" action="start" />
+            <ant dir="simple" target="build"/>
+            <ant dir="simple" target="deploy"/>
+            <ant dir="simple" target="run"/>
+            <ant dir="stateless" target="all"/>
+            <ant dir="simple" target="undeploy"/>
+        <record name="txtests.output" action="stop" />
+    </target>
+
+    <target name="usage">
+	<echo>
+		Usage:
+                     ant all (Executes all the ejb-bmp txtests tests)
+			
+	</echo>
+    </target>
+</project>

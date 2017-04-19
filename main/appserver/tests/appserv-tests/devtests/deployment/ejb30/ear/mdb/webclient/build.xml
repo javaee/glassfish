@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "./../../../../config/common.xml">
+]>
+
+<project name="ejb-ejb30-hello-mdbApp" default="usage" basedir=".">
+
+    &commonBuild;
+    <property name="archivedir" value="${build}/archives"/>
+
+    <property name="testName" value="ejb-ejb30-hello-mdbApp"/>
+    <property name="contextRoot" value="webclient"/>
+
+    <target name="prepare" depends="init">
+        <mkdir dir="${build}"/>
+        <mkdir dir="${archivedir}"/>
+        <property name="all.ear" value="${archivedir}/${testName}App.ear"/>
+        <property name="ejb.jar" value="${archivedir}/${testName}-ejb.jar"/>
+        <property name="web.war" value="${archivedir}/${testName}-web.war"/>
+    </target>
+
+    <target name="compile" depends="prepare">
+        <javac srcdir="ejb" destdir="${build}" debug="on" failonerror="true">
+            <classpath refid="gfv3.classpath"/>
+         </javac>
+
+        <javac srcdir="servlet" destdir="${build}" debug="on" failonerror="true">
+            <classpath refid="gfv3.classpath"/>
+        </javac>
+    </target>
+
+    <target name="assemble" depends="compile">
+       <jar destfile="${ejb.jar}">
+            <metainf file="descriptor/sun-ejb-jar.xml"/>
+            <fileset dir="${build}" excludes="**/Servlet.class, **/TestClient.class"/>   
+        </jar>
+
+        <war destfile="${web.war}" webxml="descriptor/web.xml">
+            <webinf file="descriptor/sun-web.xml"/>
+            <classes dir="${build}" includes="**/Servlet.class,**/Sful.class,**/Sless.class"/>
+        </war>
+
+        <ear destfile="${all.ear}" basedir="${archivedir}"
+            appxml="descriptor/application.xml" includes="*.jar, *.war">
+        </ear>
+    </target>
+
+    <target name="deploy.asadmin" depends="prepare">
+        <antcall target="common.deploy.asadmin">
+            <param name="arg.list" value="--retrieve ${archivedir} --name ${testName} ${all.ear}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="redeploy.asadmin" depends="prepare">
+        <antcall target="common.redeploy.asadmin">
+            <param name="arg.list" value="--retrieve ${archivedir} --name ${testName} ${all.ear}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="runclient" depends="init,setOrbPort2">
+       <echo message="TestClient ${arg.list}"/>
+        <javaWithResult
+            fork="true"
+            failonerror="false"
+            jvm="${JAVA}"
+            classname="com.sun.s1asdev.ejb.ejb30.hello.mdb.TestClient"
+            output="${build}/${log.id}.output.log"
+            resultproperty="result">
+            <jvmarg value="-Dorg.omg.CORBA.ORBInitialHost=${http.host}"/>
+            <jvmarg value="-Dorg.omg.CORBA.ORBInitialPort=${depltest.orbport}"/>
+            <jvmarg value="-Djava.endorsed.dirs=${inst}/lib/endorsed"/>
+
+            <classpath>
+                <path location="${inst}/lib/j2ee.jar"/>
+                <path location="${build}"/>
+            </classpath>
+
+            <arg line="${arg.list}"/>
+        </javaWithResult>
+
+        <antcall target="processResult">
+            <param name="result" value="${result}"/>
+            <param name="log" value="${build}/${log.id}.output.log"/>
+        </antcall>
+    </target>
+
+   <target name="run" depends="run.positive"/>
+
+    <target name="run.positive" depends="setHttpPort">
+        <antcall target="common.run.positive">
+            <param name="link" value="${contextRoot}/${testName}"/>
+            <param name="log.id" value="${log.id}"/>
+        </antcall>
+    </target>
+
+    <target name="run.negative" depends="setHttpPort">
+        <antcall target="common.run.negative">
+            <param name="link" value="${contextRoot}/${testName}"/>
+            <param name="log.id" value="${log.id}"/>
+        </antcall>
+    </target>
+
+    <target name="undeploy.asadmin" depends="prepare">
+        <antcall target="common.undeploy.asadmin">
+            <param name="arg.list" value="${testName}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="deploy.jms.queues" depends="prepare">
+        <antcall target="common.create.jms.connection">
+            <param name="jms.factory.type" value="javax.jms.QueueConnectionFactory"/>
+            <param name="jms.factory.name" value="jms/ejb_ejb30_hello_mdb_QCF"/>           
+        </antcall>
+        <antcall target="common.create.jms.resource">
+            <param name="dest.type" value="queue"/>
+            <param name="dest.name" value="ejb_ejb30_hello_mdb_InQueue"/>
+            <param name="res.type" value="javax.jms.Queue"/>
+            <param name="jms.resource.name" value="jms/ejb_ejb30_hello_mdb_InQueue"/>  
+        </antcall>
+        <antcall target="common.create.jms.resource">
+            <param name="dest.type" value="queue"/>
+            <param name="dest.name" value="ejb_ejb30_hello_mdb_OutQueue"/>
+            <param name="res.type" value="javax.jms.Queue"/>
+            <param name="jms.resource.name" value="jms/ejb_ejb30_hello_mdb_OutQueue"/>     
+        </antcall>
+    </target>
+
+    <target name="undeploy.jms.queues" depends="prepare">
+        <antcall target="common.delete.jms.resource">
+            <param name="jms.resource.name" value="jms/ejb_ejb30_hello_mdb_InQueue"/>
+            <param name="dest.type" value="queue"/>
+            <param name="dest.name" value="ejb_ejb30_hello_mdb_InQueue"/>
+        </antcall>
+        <antcall target="common.delete.jms.resource">
+            <param name="jms.resource.name" value="jms/ejb_ejb30_hello_mdb_OutQueue"/>
+            <param name="dest.type" value="queue"/>
+            <param name="dest.name" value="ejb_ejb30_hello_mdb_OutQueue"/>
+        </antcall>
+        <antcall target="common.delete.jms.connection">
+            <param name="jms.factory.name" value="jms/ejb_ejb30_hello_mdb_QCF"/>
+        </antcall>
+    </target>
+
+    <target name="private-all">
+        <antcall target="assemble"/>
+
+        <antcall target="deploy.jms.queues"/>
+        <antcall target="deploy.asadmin"/>
+
+        <antcall target="run.positive">
+            <param name="log.id" value="1"/>
+            <param name="desc" value="ejb30/mdb/webClient Test asadmin deploy"/>
+        </antcall>
+
+        <antcall target="redeploy.asadmin"/>
+        <antcall target="run.positive">
+            <param name="log.id" value="2"/>
+            <param name="desc" value="ejb30/mdb/webClient Test asadmin redeploy"/>
+        </antcall>
+
+        <antcall target="undeploy.asadmin"/>
+        <antcall target="undeploy.jms.queues"/>
+    </target>
+</project>

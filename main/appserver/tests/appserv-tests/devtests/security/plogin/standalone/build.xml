@@ -1,0 +1,157 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../../config/common.xml">
+<!ENTITY commonRun SYSTEM "file:./../../../../config/run.xml">
+<!ENTITY testProperties SYSTEM "./build.properties">
+<!ENTITY commonSecurity SYSTEM "file:./../../common.xml">
+]>
+
+
+<project name="plogin-standalone" basedir="." default="usage">
+
+   &commonSetup;
+   &commonBuild;
+   &commonRun;
+   &testProperties;
+   &commonSecurity;
+
+    <target name="usage">
+	<echo>
+		Usage:
+			ant all (Executes all standalone programmatic login tests)
+	</echo>
+    </target>
+    
+    <target name="all" depends="build, setup, deploy,run, undeploy, unsetup">
+    </target>
+
+    <target name="clean" depends="init-common">
+      <antcall target="clean-common"/>
+    </target>
+
+    <target name="compile" depends="clean">
+        <antcall target="compile-common">
+            <param name="src" value="ejb"/>
+        </antcall>
+        <antcall target="compile-common">
+            <param name="src" value="client"/>
+        </antcall>
+    </target>
+
+    <target name="build" depends="compile">
+        <antcall target="build-ear-common"/>
+    </target>
+
+    <target name="deploy" depends="init-common">
+        <antcall target="deploy-common"/>
+    </target>
+
+    <target name="run" depends="init-common">
+        <antcall target="run-standalone-client"/>
+    </target>
+
+    <target name="echo" depends="init-common">
+        <echo message="as.props = ${as.props}"/>
+    </target>
+
+    <target name="undeploy" depends="init-common">
+       <antcall target="undeploy-common"/>
+    </target>
+
+    <target name="setup" depends="init-common">
+        <antcall target="create-auth-filerealm">
+            <param name="file.realm.name" value="file2"/>
+            <param name="keyfile.path" value="${admin.domain.dir}/${admin.domain}/config/keyfile2"/>
+        </antcall>
+        <!--<antcall target="reconfig-common"/>-->
+
+        <antcall target="create-user-common">
+            <param name="user" value="chief"/>
+            <param name="password" value="chief"/>
+            <param name="groups" value="boss"/>
+            <param name="authrealmname" value="file2"/>
+        </antcall>
+        <antcall target="create-user-common">
+            <param name="user" value="testy"/>
+            <param name="password" value="testy"/>
+            <param name="groups" value="employee"/>
+            <param name="authrealmname" value="file2"/>
+        </antcall>
+        <antcall target="create-user-common">
+            <param name="user" value="testy2"/>
+            <param name="password" value="testy2"/>
+            <param name="groups" value="employee"/>
+            <param name="authrealmname" value="file2"/>
+        </antcall>
+        <antcall target="create-user-common">
+            <param name="user" value="testy3"/>
+            <param name="password" value="testy3"/>
+            <param name="groups" value="employee"/>
+            <param name="authrealmname" value="file2"/>
+        </antcall>
+    </target>
+
+    <target name="unsetup" depends="init-common">
+        <antcall target="delete-user-common">
+            <param name="user" value="chief"/>
+            <param name="authrealmname" value="file2"/>
+        </antcall>
+        <antcall target="delete-user-common">
+            <param name="user" value="testy"/>
+            <param name="authrealmname" value="file2"/>
+        </antcall>
+        <antcall target="delete-user-common">
+            <param name="user" value="testy2"/>
+            <param name="authrealmname" value="file2"/>
+        </antcall>
+        <antcall target="delete-user-common">
+            <param name="user" value="testy3"/>
+            <param name="authrealmname" value="file2"/>
+        </antcall>
+        <antcall target="asadmin-common">
+            <param name="admin.command" value="delete-auth-realm" />
+            <param name="operand.props" value="file2"/>
+        </antcall>
+    </target>
+
+    <target name="run-standalone-client" depends="init-common">
+        <antcall target="run-standalone-client-per-thread"/>
+        <antcall target="run-standalone-client-per-process"/>
+    </target>
+
+    <target name="run-standalone-client-per-thread" depends="init-common">
+
+      <echo message="Running standalone client per-thread ..."/>
+   
+      <java classname="PLoginTest"
+        classpath="${admin.domain.dir}/../lib/appserv-rt.jar:${s1astest.classpath}:${assemble.dir}/${appname}AppClient.jar" fork="true">
+        <jvmarg value="-Djava.security.auth.login.config=${admin.domain.dir}/../lib/appclient/appclientlogin.conf"/>
+        <jvmarg value="-Dorg.omg.CORBA.ORBInitialHost=${admin.host}"/>
+        <jvmarg value="-Dorg.omg.CORBA.ORBInitialPort=${orb.port}"/>
+        <jvmarg value="-Dcom.sun.appserv.iiopclient.perthreadauth=true"/>
+
+        <arg value="1"/>
+        <arg value="100"/>
+      </java>
+    </target>
+
+    <target name="run-standalone-client-per-process" depends="init-common">
+
+      <echo message="Running standalone client per-process ..."/>
+   
+      <java classname="PLoginTest"
+        classpath="${admin.domain.dir}/../lib/appserv-rt.jar:${s1astest.classpath}:${assemble.dir}/${appname}AppClient.jar" fork="true">
+        <jvmarg value="-Djava.security.auth.login.config=${admin.domain.dir}/../lib/appclient/appclientlogin.conf"/>
+        <jvmarg value="-Dorg.omg.CORBA.ORBInitialHost=${admin.host}"/>
+        <jvmarg value="-Dorg.omg.CORBA.ORBInitialPort=${orb.port}"/>
+
+        <arg value="1"/>
+        <arg value="100"/>
+
+      </java>
+    </target>
+
+
+</project>

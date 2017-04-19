@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY autodeployUtil SYSTEM "./util/util.xml">
+<!ENTITY commonBuild SYSTEM "./../config/common.xml">
+]>
+
+<project name="autodeploy" default="all" basedir=".">
+
+	&commonBuild;
+        
+        <property name="autodeploy.util.build" value="${build}/util"/>
+        <property name="autodeploy.archive.name" value="servletonly.war"/>
+        <property name="autodeploy.archive" value="../../build/war/servletonly/${autodeploy.archive.name}"/>
+        
+        &autodeployUtil;
+
+	<target name="private-all">
+
+            <!--
+                Build the common tools used by autodeploy tests.
+            -->
+            <ant dir="util" target="private-all">
+                <property name="build" value="${build}/util"/>
+            </ant>
+
+            <!--
+                Build the servletonly.war file used by the autodeploy tests.
+            -->
+            <ant dir="../war/servletonly" target="assemble">
+                <property name="build" value="${build}/war/servletonly"/>
+            </ant>
+            
+            <ant dir="simple" target="private-all">
+                <property name="build" value="${build}/simple"/>
+            </ant>
+
+            <ant dir="slowCopy" target="private-all">
+                <property name="build" value="${build}/slowCopy"/>
+            </ant>
+            
+            <!-- commented out because log search on Linux does not work as expected -->
+            <!--
+                    <ant dir="withEJB" target="private-all">
+                            <property name="build" value="${build}/withEJB"/>
+                    </ant>
+            -->
+        
+	</target>
+
+</project>

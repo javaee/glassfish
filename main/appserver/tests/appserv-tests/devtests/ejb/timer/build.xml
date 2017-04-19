@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../config/common.xml">
+<!ENTITY reporting SYSTEM "../report.xml">
+]>
+
+
+<project name="timer" default="usage" basedir=".">
+    &commonSetup;
+    &commonBuild;
+    &reporting;
+
+    <target name="all">
+        <antcall target="sessiontimer"/>
+        <antcall target="timerserialization"/>
+        <antcall target="timertests"/>
+        <antcall target="mdbtimer"/>
+    </target>
+
+    <target name="sessiontimer">
+        <record name="sessiontimer.output" action="start" />
+            <ant dir="sessiontimer" target="all"/>
+        <record name="sessiontimer.output" action="stop" />
+    </target>
+
+    <target name="mdbtimer">
+        <record name="mdbtimer.output" action="start" />
+            <ant dir="mdbtimer" target="all"/>
+        <record name="mdbtimer.output" action="stop" />
+    </target>
+
+    <target name="timertests">
+        <record name="timertests.output" action="start" />
+            <ant dir="timertests" target="all"/>
+        <record name="timertests.output" action="stop" />
+    </target>
+
+    <target name="timerserialization">
+        <record name="timerserialization.output" action="start" />
+            <ant dir="timerserialization" target="all"/>
+        <record name="timerserialization.output" action="stop" />
+    </target>
+
+    <target name="usage">
+	<echo>
+		Usage:
+			ant all (Executes all the ejb-timer tests)
+
+			ant mdbtimer (Executes the ejb-timer mdbtimer
+
+			ant sessiontimer (Executes the ejb-timer sessiontimer test)
+			ant timertests (Executes the ejb-timer timertests test)
+			ant timerserialization (Executes the ejb-timer serialization test)
+
+	</echo>
+    </target>
+</project>

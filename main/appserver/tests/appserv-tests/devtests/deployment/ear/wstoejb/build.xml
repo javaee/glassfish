@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "./../../config/common.xml">
+]>
+
+<project name="wstoejb" default="all" basedir=".">
+
+	&commonBuild;
+
+	
+    <property name="testName" value="wstoejb"/>
+    <target name="prepare" depends="init">
+        <property name="portable.ear" value="${build}/wstoejb-portable.ear"/>
+        <property name="all.ear" value="${build}/wstoejb.ear"/>
+        <property name="deployplan.jar" value="${build}/wstoejb-deployplan.jar"/>
+        <mkdir dir="${build}"/>
+    </target>
+
+    <target name="build" depends="prepare">
+        <mkdir dir="${build}/ear"/>
+
+        <ant dir="ejb" target="private-all">
+            <property name="build" value="${build}/ejb"/>
+        </ant>
+
+        <ant dir="war" target="private-all">
+            <property name="build" value="${build}/war"/>
+        </ant>
+
+        <copy file="${build}/war/WEB-INF/wsdl/WebServiceToEjb.wsdl" todir="appclient"/>                
+        <ant dir="appclient" target="private-all">
+            <property name="build" value="${build}/appclient"/>
+        </ant>  
+
+        <delete file="appclient/WebServiceToEjb.wsdl"/>
+        <mkdir dir="${build}/ear/META-INF"/>
+        <copy file="application.xml" todir="${build}/ear/META-INF"/>
+        <jar destfile="${all.ear}">
+            <fileset dir="${build}/ear" excludes="appclient-portable.jar,sayhello-portable.war,wstoejb-portable.jar"/>
+        </jar>
+
+        <delete file="${build}/ear/META-INF/application.xml"/>
+        <copy file="portable-app.xml" tofile="${build}/ear/META-INF/application.xml"/>
+        <jar destfile="${portable.ear}">
+            <fileset dir="${build}/ear" excludes="appclient.jar,sayhello.war,wstoejb.jar"/>
+        </jar>
+
+        <mkdir dir="${build}/plan"/>
+        <copy file="war/sun-web.xml" tofile="${build}/plan/sayhello-portable.war.sun-web.xml"/>
+        <copy file="ejb/sun-ejb-jar.xml" tofile="${build}/plan/wstoejb-portable.jar.sun-ejb-jar.xml"/>
+        <copy file="${build}/appclient/META-INF/sun-application-client.xml" tofile="${build}/plan/appclient-portable.jar.sun-application-client.xml"/>
+        <jar destfile="${deployplan.jar}" basedir="${build}/plan"/>
+    </target>
+
+    <target name="deploy.asadmin" depends="prepare">
+        <antcall target="common.deploy.asadmin">
+            <param name="arg.list" value="--name ${testName} --retrieve ${build} ${all.ear}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="redeploy.asadmin" depends="prepare">
+        <antcall target="common.redeploy.asadmin">
+            <param name="arg.list" value="--name ${testName} --retrieve ${build} ${all.ear}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="undeploy.asadmin">
+        <antcall target="common.undeploy.asadmin">
+            <param name="arg.list" value="${testName}"/>
+            <param name="testName" value="${testName}"/>
+        </antcall>
+    </target>
+
+    <target name="deploy.jsr88" depends="prepare">
+        <antcall target="common.deploy.jsr88">
+            <param name="arg.list" value="${portable.ear} ${deployplan.jar}"/>
+        </antcall>
+    </target>
+
+    <target name="redeploy.jsr88" depends="prepare">
+        <antcall target="common.run.jsr88">
+            <param name="command" value="redeploy"/>
+            <param name="arg.list" value="wstoejb-portable ${portable.ear} ${deployplan.jar}"/>
+        </antcall>
+    </target>
+
+    <target name="undeploy.jsr88">
+        <antcall target="common.undeploy.jsr88">
+            <param name="arg.list" value="wstoejb-portable"/>
+        </antcall>
+    </target>
+
+    <target name="start.jsr88">
+        <antcall target="common.run.jsr88">
+            <param name="command" value="start"/>
+            <param name="arg.list" value="wstoejb-portable"/>
+        </antcall>
+    </target>
+
+    <target name="stop.jsr88">
+        <antcall target="common.run.jsr88">
+            <param name="command" value="stop"/>
+            <param name="arg.list" value="wstoejb-portable"/>
+        </antcall>
+    </target>
+
+    <target name="deploy.autodeploy">
+    </target>
+
+    <target name="run" depends="run.positive"/>
+
+    <target name="run.positive">
+        <antcall target="runclient">
+            <param name="arg.list" value="true"/>
+            <param name="log.id" value="${log.id}"/>
+        </antcall>
+    </target>
+
+    <target name="run.negative">
+        <antcall target="runclient">
+            <param name="arg.list" value="false"/>
+            <param name="log.id" value="${log.id}"/>
+        </antcall>
+    </target>
+
+    <target name="runclient" depends="prepare">
+        <exec executable="${APPCLIENT}" resultproperty="result" output="${build}/${log.id}.output.log">
+            <arg line="-client ${build}/wstoejbClient.jar ${arg.list}"/>
+        </exec>     
+        <antcall target="processResult">
+            <param name="result" value="${result}"/>
+            <param name="log" value="${build}/${log.id}.output.log"/>
+        </antcall>                
+    </target>
+
+    <target name="private-all" unless="EE">
+        <antcall target="declare-test">
+            <param name="description" value="ear/wstoejb Test asadmin deploy"/>
+        </antcall>
+        <antcall target="build"/>
+        <antcall target="deploy.asadmin"/>
+        <antcall target="run.positive"><param name="log.id" value="1"/></antcall>
+
+        <antcall target="declare-test">
+            <param name="description" value="ear/wstoejb Test asadmin redeploy"/>
+        </antcall>
+        <antcall target="deploy.asadmin"/>
+        <antcall target="run.positive"><param name="log.id" value="2"/></antcall>
+        <antcall target="undeploy.asadmin"/>
+
+        <antcall target="declare-test">
+            <param name="description" value="ear/wstoejb Test jsr88 deploy"/>
+        </antcall>
+        <antcall target="deploy.jsr88"/>
+        <antcall target="run.positive"><param name="log.id" value="3"/></antcall>
+
+        <antcall target="declare-test">
+            <param name="description" value="ear/wstoejb Test jsr88 stopped state"/>
+        </antcall>
+        <antcall target="stop.jsr88"/>
+        <antcall target="run.negative"><param name="log.id" value="4"/></antcall>
+
+        <antcall target="declare-test">
+            <param name="description" value="ear/wstoejb Test jsr88 started state"/>
+        </antcall>
+        <antcall target="start.jsr88"/>
+        <antcall target="run.positive"><param name="log.id" value="5"/></antcall>
+
+        <antcall target="stop.jsr88"/>
+        <antcall target="declare-test">
+            <param name="description" value="ear/wstoejb Test jsr88 redeploy stop"/>
+        </antcall>
+        <antcall target="redeploy.jsr88"/>
+        <antcall target="run.negative"><param name="log.id" value="6"/></antcall>
+
+        <antcall target="start.jsr88"/>
+        <antcall target="declare-test">
+            <param name="description" value="ear/wstoejb Test jsr88 redeploy start"/>
+        </antcall>
+        <antcall target="redeploy.jsr88"/>
+        <antcall target="run.positive"><param name="log.id" value="7"/></antcall>
+        <antcall target="undeploy.jsr88"/>
+    </target>
+</project>

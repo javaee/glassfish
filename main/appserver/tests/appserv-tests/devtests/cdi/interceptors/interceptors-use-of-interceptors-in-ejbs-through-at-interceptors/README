@@ -1,0 +1,5 @@
+Test
+- Use of business method interceptors to EJBs that specify interceptors through
+traditional @Interceptors
+Related issue: GLASSFISH-14831 
+    

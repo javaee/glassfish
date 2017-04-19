@@ -1,0 +1,12 @@
+- Test support for enabled beans' classes deployed as a standalone RAR
+[test originally from connector1.5 test in Connectors developer tests]
+section 12.1. Bean archives of JSR 299 spec:
+
+"Bean classes of enabled beans must be deployed in bean archives.
+â€¢ A library jar, EJB jar, application client jar or rar archive is a
+bean archive if it has a file named beans.xml in the META-INF
+directory."
+
+In this test, a standalone RAR has a TestCDIBean Bean class. This is injected into a MDB in another ejb-jar in the EAR.
+
+[Note: This test doesn't seem to work now -- need to investigate]

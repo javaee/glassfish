@@ -1,0 +1,9 @@
+delete-jms-resource jms/security_mdb_QCF
+
+delete-jms-resource jms/security_mdb_InQueue
+delete-jmsdest --desttype queue security_mdb_InQueue
+
+delete-jms-resource jms/security_mdb_OutQueue
+delete-jmsdest --desttype queue security_mdb_OutQueue
+
+quit

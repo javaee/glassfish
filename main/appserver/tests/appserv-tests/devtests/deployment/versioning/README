@@ -1,0 +1,22 @@
+==========================================================================
+*ROLLING-UPGRADE:
+
+--------------------------------------------------------------------------
+CONFIGURATION: The EE/CLUSTER configuration is required:
+--------------------------------------------------------------------------
+1. In addition to setting APS_HOME, S1AS_HOME (see README for more details), 
+   set environment variable SECURE to true (e.g. export SECURE=true on ksh)
+
+2. Set DEPL_TARGET to CLUSTER (e.g. export DEPL_TARGET=CLUSTER on ksh)
+--------------------------------------------------------------------------
+
+There are three ways to run the rolling-upgrade devtest:
+
+1)"ant rolling-upgrade"
+2)"ant -f rolling-upgrade.xml" (equivalent)
+
+If you want to run the rolling-upgrade devtest from top by default :
+
+3)
+- uncomment the rolling-upgrade scenario from "simple-versioned-servlet/build.xml", it looks like "<antcall target="rolling-upgrade.scenario"/>"
+- "ant all-ee" (from versioning devtest's directory or from deployment devtest's directory)==========================================================================

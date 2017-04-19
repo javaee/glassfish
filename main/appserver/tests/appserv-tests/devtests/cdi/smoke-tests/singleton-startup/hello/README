@@ -1,0 +1,1 @@
+A Singleton Startup EJB using constructor based injection of CDI beans [issue 13072]

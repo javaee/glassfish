@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE web-app
+    PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+    "http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+  
+  <servlet>
+    <servlet-name>TestJSP</servlet-name>
+    <jsp-file>/TestJSP.jsp</jsp-file>
+  </servlet>
+ 
+  <servlet>
+    <servlet-name>TestServlet</servlet-name>
+    <servlet-class>com.sun.security.devtests.ldap.simple.TestServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>TestJSP</servlet-name>
+    <url-pattern>/TestJSP</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>TestServlet</servlet-name>
+    <url-pattern>/TestServlet</url-pattern>
+  </servlet-mapping>
+  
+  <session-config>
+    <session-timeout>
+            30
+        </session-timeout>
+  </session-config>
+
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>WR1</web-resource-name>
+      <url-pattern>/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>Employee</role-name>
+    </auth-constraint>
+  </security-constraint>
+
+  <login-config>
+    <auth-method>BASIC</auth-method>
+    <realm-name>ldaprealmname</realm-name>
+  </login-config>
+
+  <security-role>
+    <description>NONE</description>
+    <role-name>Employee</role-name>
+  </security-role>
+  <security-role>
+    <role-name>Manager</role-name>
+  </security-role>
+
+</web-app>

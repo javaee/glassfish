@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../../config/common.xml">
+<!ENTITY commonSecurity SYSTEM "file:../../common.xml">
+<!ENTITY testproperties SYSTEM "file:./build.properties">
+]>
+
+<project name="security-wss-gartner" default="usage" basedir=".">
+
+    &commonSetup;
+    &commonBuild;
+    &testproperties;
+    &commonSecurity;
+
+    <target name="all" depends="clean, setup, build, deploy, run, undeploy, unsetup"/>
+
+    <target name="clean" depends="init-common">
+      <antcall target="clean-common"/>
+    </target>
+
+    <target name="setup" depends="init-common">
+        <!-- exports certdb stuff and imports into keystore -->
+        <antcall target="prepare-store-nickname-common">
+            <param name="cert.nickname" value="s1as"/>
+        </antcall>
+    </target>
+
+    <target name="unsetup" depends="init-common" >
+    </target>
+
+    <target name="compile" depends="clean">
+        <antcall target="compile-common">
+            <param name="src" value="ejbws"/>
+            <param name="build.classes.dir" value="${build.classes.dir}/ejbws"/>
+        </antcall>
+        <antcall target="compile-common">
+            <param name="src" value="servletws"/>
+            <param name="build.classes.dir" value="${build.classes.dir}/servletws/WEB-INF/classes"/>
+        </antcall>
+
+        <mkdir dir="${build.classes.dir}/client/META-INF/wsdl"/>
+        <antcall target="wsgen">
+            <param name="wsgen.args"
+                value="-wsdl -cp ${build.classes.dir}/ejbws:${s1astest.classpath}/modules/javax.ejb.jar -keep -d ${build.classes.dir}/ejbws com.sun.s1asdev.security.wss.gartner.PingEjb"/>
+        </antcall>
+
+        <antcall target="wsgen">
+            <param name="wsgen.args"
+                value="-wsdl -cp ${build.classes.dir}/servletws/WEB-INF/classes -keep -d ${build.classes.dir}/servletws/WEB-INF/classes com.sun.s1asdev.security.wss.gartner.PingServlet"/>
+        </antcall>
+
+        <!-- copy wsdl to client jar -->
+        <copy file="${build.classes.dir}/ejbws/PingEjbService.wsdl" todir="${build.classes.dir}/client/META-INF/wsdl"/>
+        <copy file="${build.classes.dir}/servletws/WEB-INF/classes/PingServletService.wsdl" todir="${build.classes.dir}/client/META-INF/wsdl"/>
+
+        <copy file="${basedir}/custom-client.xml" todir="${build.classes.dir}/client" overwrite="true"/>
+        <replace file="${build.classes.dir}/client/custom-client.xml" token="@build.classes.dir@" value="${build.classes.dir}/ejbws"/>
+                <!--<value="-b ${build.classes.dir}/client/custom-client.xml -keep -wsdllocation META-INF/wsdl/PingEjbService.wsdl -d ${build.classes.dir}/client ${build.classes.dir}/ejbws/PingEjbService.wsdl"/>-->
+        <antcall target="wsimport">
+            <param name="wsimport.args"
+                value="-keep  -p com.sun.s1asdev.security.wss.gartner.client -d ${build.classes.dir}/client ${build.classes.dir}/ejbws/PingEjbService.wsdl"/>
+        </antcall>
+
+        <copy file="${basedir}/custom-client2.xml" todir="${build.classes.dir}/client" overwrite="true"/>
+        <replace file="${build.classes.dir}/client/custom-client2.xml" token="@build.classes.dir@" value="${build.classes.dir}/servletws/WEB-INF/classes"/>
+                <!--value="-b ${build.classes.dir}/client/custom-client2.xml -keep -wsdllocation META-INF/wsdl/PingServletService.wsdl -d ${build.classes.dir}/client ${build.classes.dir}/servletws/WEB-INF/classes/PingServletService.wsdl"/>-->
+        <antcall target="wsimport">
+            <param name="wsimport.args"
+                value=" -keep  -p com.sun.s1asdev.security.wss.gartner.client -d ${build.classes.dir}/client ${build.classes.dir}/servletws/WEB-INF/classes/PingServletService.wsdl"/>
+        </antcall>
+
+        <javac srcdir="client" destdir="${build.classes.dir}/client"
+            classpath="${env.APS_HOME}/lib/reporter.jar:${env.S1AS_HOME}/lib/j2ee.jar:${env.S1AS_HOME}/lib/webservices-rt.jar:${env.S1AS_HOME}/lib/webservices-tools.jar:${build.classes.dir}/ejbws:${build.classes.dir}/servletws/WEB-INF/classes:${build.classes.dir}/client" debug="on" failonerror="true"/>
+    </target>
+
+    <target name="build" depends="compile">
+        <delete file="${assemble.dir}/${appname}.ear"/>
+        <mkdir dir="${assemble.dir}"/>
+        <mkdir dir="${build.classes.dir}/META-INF"/> 
+
+        <antcall target="package-ejbjar-common">
+            <param name="ejbjar.files" value="${build.classes.dir}/ejbws"/>
+            <param name="ejb.jar" value="${assemble.dir}/${appname}-ejb.jar"/>
+            <param name="ejbjar.classes" value="com/sun/**/*.class"/>
+        </antcall>
+
+        <copy file="${sun-web.xml}" tofile="${build.classes.dir}/servletws/WEB-INF/sun-web.xml" failonerror="true"/> 
+        <jar destfile="${assemble.dir}/${appname}-web.war">
+            <fileset dir="${build.classes.dir}/servletws"/>
+        </jar>
+
+        <copy file="${application-client.xml}"
+            tofile="${build.classes.dir}/client/META-INF/application-client.xml"
+            failonerror="false"/>
+        <copy file="${sun-application-client.xml}"
+            tofile="${build.classes.dir}/client/META-INF/sun-application-client.xml"
+            failonerror="false"/>
+        <jar jarfile="${assemble.dir}/${appname}-client.jar"
+            basedir="${build.classes.dir}/client"
+            includes ="com/sun/**/*.class/"
+            manifest="./client/MANIFEST.MF">
+            <metainf dir="${build.classes.dir}/client/META-INF">
+               <include name="**"/>
+            </metainf>
+        </jar>
+
+        <copy file="${sun-application.xml}" tofile="${build.classes.dir}/META-INF/sun-application.xml" failonerror="false"/> 
+        <copy file="${application.xml}" tofile="${build.classes.dir}/META-INF/application.xml" failonerror="false"/> 
+        <jar jarfile="${assemble.dir}/${appname}App.ear"> 
+            <fileset dir="${assemble.dir}">
+               <include name="*.jar"/>
+               <include name="*.war"/>
+            </fileset>
+            <fileset dir="${build.classes.dir}">
+	       <include name="META-INF/sun-application.xml"/>
+	       <include name="META-INF/application.xml"/>
+            </fileset>
+            <fileset dir="${env.APS_HOME}" includes="lib/reporter.jar"/>
+        </jar>       
+    </target>
+
+    <target name="deploy" depends="init-common">
+        <antcall target="deploy-common"/>
+    </target>
+
+    <target name="run" depends="init-common">
+        <property name="VMARGS" value="-Djavax.net.ssl.keyStore=${mykeystore.db.file} -Djavax.net.ssl.trustStore=${mytruststore.db.file} -Djavax.net.ssl.keyStorePassword=${ssl.password} -Djavax.net.ssl.trustStorePassword=${ssl.password}"/>
+        <echo message="VMARGS= ${VMARGS}"/>
+        <exec executable="${APPCLIENT}">
+            <env key="VMARGS" value="${VMARGS}"/>
+            <arg line="-client" />
+            <arg line="${assemble.dir}/${appname}AppClient.jar"/>
+            <arg line="${http.host}"/>   
+            <arg line="${http.port}"/>   
+        </exec>
+    </target>
+
+    <target name="undeploy" depends="init-common">
+        <antcall target="undeploy-common"/>
+    </target>
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+</project>

@@ -1,0 +1,2 @@
+java.naming.factory.initial=com.sun.enterprise.naming.SerialInitContextFactory
+java.naming.factory.url.pkgs=com.sun.enterprise.naming

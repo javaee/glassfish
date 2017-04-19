@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webservices xmlns="http://java.sun.com/xml/ns/j2ee"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
+        http://www.ibm.com/webservices/xsd/j2ee_web_services_1_1.xsd"
+      version="1.1">
+  <description>desc</description>
+  <webservice-description xmlns:googlens="urn:GoogleSearch">
+    <webservice-description-name>GoogleServiceServlet</webservice-description-name>
+    <wsdl-file>WEB-INF/wsdl/GoogleSearch.wsdl</wsdl-file>
+    <jaxrpc-mapping-file>googleweb.model</jaxrpc-mapping-file>
+    <port-component>
+      <description>port component description</description>
+      <port-component-name>GoogleSearchPort</port-component-name>
+      <wsdl-port>googlens:GoogleSearchPort</wsdl-port>
+      <service-endpoint-interface>com.sun.s1asdev.ejb.webservice.ksink.googleserverweb.GoogleSearchPort
+      </service-endpoint-interface>
+      <service-impl-bean>
+        <servlet-link>GoogleServlet</servlet-link>
+      </service-impl-bean>
+      <handler>
+        <description>handler 1</description>
+        <handler-name>handler1</handler-name>
+        <handler-class>com.sun.s1asdev.ejb.webservice.ksink.googleserverweb.FooHandler</handler-class>
+        <init-param>
+          <description>param1 description</description>
+          <param-name>a</param-name>
+          <param-value>b</param-value>
+        </init-param>
+        <soap-header>googlens:DirectoryCategory</soap-header>
+        <soap-role>Role1</soap-role>
+        <soap-role>Role2</soap-role>
+      </handler>
+    </port-component>
+  </webservice-description>
+</webservices>

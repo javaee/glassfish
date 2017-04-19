@@ -1,0 +1,4 @@
+Test
+- Testing portable extensions support 
+    - Using Bean Interface to discover metadata about discovered beans
+    - check for the absence of a bean that was vetoed by the portable Extension 

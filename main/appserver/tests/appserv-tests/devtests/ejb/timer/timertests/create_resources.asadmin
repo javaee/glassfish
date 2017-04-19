@@ -1,0 +1,16 @@
+create-jms-resource --restype javax.jms.QueueConnectionFactory  jms/ejb_timer_timertests_QCF
+create-jms-resource --restype javax.jms.TopicConnectionFactory  jms/ejb_timer_timertests_TCF
+
+create-jms-resource --restype javax.jms.Queue --enabled=true --property imqDestinationName=ejb_timer_timertests_queue jms/ejb_timer_timertests_queue
+create-jms-resource --restype javax.jms.Topic --enabled=true --property imqDestinationName=ejb_timer_timertests_topic jms/ejb_timer_timertests_topic
+create-jms-resource --restype javax.jms.Queue --enabled=true --property imqDestinationName=ejb_timer_timertests_mdb_cmt jms/ejb_timer_timertests_mdb_cmt
+create-jms-resource --restype javax.jms.Queue --enabled=true --property imqDestinationName=ejb_timer_timertests_mdb_bmt jms/ejb_timer_timertests_mdb_bmt
+
+create-jmsdest --desttype queue ejb_timer_timertests_queue
+create-jmsdest --desttype topic ejb_timer_timertests_topic
+
+create-jmsdest --desttype queue ejb_timer_timertests_mdb_cmt
+create-jmsdest --desttype queue ejb_timer_timertests_mdb_bmt
+
+
+quit

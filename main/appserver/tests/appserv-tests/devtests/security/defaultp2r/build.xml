@@ -1,0 +1,183 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../config/common.xml">
+<!ENTITY commonRun SYSTEM "file:./../../../config/run.xml">
+<!ENTITY commonSecurity SYSTEM "file:./../common.xml">
+<!ENTITY testProperties SYSTEM "./build.properties">
+]>
+
+<project name="security-defaultp2r" basedir="." default="usage">
+  
+  &commonSetup;
+  &commonBuild;
+  &commonRun;
+  &commonSecurity;
+  &testProperties;
+
+  <target name="all" depends="build, setup">
+    <antcall target="test-p2r-enabled"/>
+    <antcall target="test-p2r-disabled"/>
+    <antcall target="unsetup"/>
+  </target>
+  
+  <target name="test-p2r-enabled"
+      depends="enable-p2r, deploy, run, undeploy"/>
+  
+  <target name="test-p2r-disabled"
+      depends="disable-p2r, deploy, run-negative, undeploy"/>
+
+  <target name="clean" depends="init-common">
+    <delete dir="${build.classes.dir}"/>
+    <delete dir="${assemble.dir}"/>
+  </target>
+  
+  <target name="compile" depends="clean">
+    <antcall target="compile-common">
+      <param name="src" value="web"/>
+    </antcall>
+  </target>
+  
+  <target name="build" depends="compile">
+    <antcall target="webclient-war-common">
+      <param name="hasWebclient" value="yes" /> 
+    </antcall>
+  </target>
+  
+  <target name="deploy" depends="init-common">
+    <antcall target="deploy-war-common">
+      <param name="contextroot" value="${appname}"/>
+    </antcall>
+  </target>
+  
+  <target name="run" depends="init-common">
+    <antcall target="runweb">
+      <param name="servlet" value="TestServlet"/>
+      <param name="webuser" value="bobby"/>
+      <param name="webpassword" value="bb"/>
+      <param name="httpMethod" value="FOO"/>
+      <param name="goldenfile" value="goldenfiles/foo.html"/>
+      <param name="testcaseid" value="user-auth-with-foo"/>
+    </antcall>
+    <antcall target="runweb">
+      <param name="servlet" value="TestServlet"/>
+      <param name="webuser" value="bobby"/>
+      <param name="webpassword" value="bb"/>
+      <param name="httpMethod" value="GET"/>
+      <param name="goldenfile" value="goldenfiles/get.html"/>
+      <param name="testcaseid" value="user-auth-with-get"/>
+    </antcall>
+  </target>
+  
+  <target name="run-negative" depends="init-common">
+    <antcall target="runweb-403">
+      <param name="servlet" value="TestServlet"/>
+      <param name="webuser" value="bobby"/>
+      <param name="webpassword" value="bb"/>
+      <param name="httpMethod" value="GET"/>
+      <param name="testcaseid" value="user-auth-should-fail"/>
+    </antcall>
+  </target>
+  
+  <target name="runweb" depends="init-common">
+    <taskdef name="webtest" classname="${webtest.classname}"
+        classpath="${webtest.classpath}" />
+    <webtest request="${httpMethod} /security-defaultp2r/${servlet} HTTP/1.0"
+        debug="9"
+        host="${http.host}"
+        port="${http.port}"
+        authMethod="BASIC"
+        userName="${webuser}"
+        password="${webpassword}"
+        firstTask="true"
+        lastTest="true"
+        lastCase="true"
+        lastTask="true"
+        resultFileName="${webtest.report.dir}/security-gtest-results.xml"
+        testSession="security-defaultp2r"
+        requestHeaders="Host:${http.host}:${http.port}"
+        goldenFile="${env.APS_HOME}/devtests/security/defaultp2r/${goldenfile}"
+        testSuiteId="security-defaultp2r"
+        testSuiteName="security-defaultp2r"
+        testSuiteDescription="Security Test"
+        testId="security-defaultp2r"
+        testName="security-defaultp2r"
+        testDescription="Testing default principal to role mapping: ${testcaseid}"
+        testCaseId="${testcaseid}"
+        testCaseName="${testcaseid}"
+        testCaseDescription="Testing default principal to role mapping"
+        testStrategy="Testing default principal to role mapping"/>
+  </target>
+  
+  <target name="runweb-403" depends="init-common">
+    <taskdef name="webtest" classname="${webtest.classname}"
+        classpath="${webtest.classpath}" />
+    <webtest request="${httpMethod} /security-defaultp2r/${servlet} HTTP/1.0"
+        debug="9"
+        host="${http.host}"
+        port="${http.port}"
+        authMethod="BASIC"
+        userName="${webuser}"
+        password="${webpassword}"
+        firstTask="true"
+        lastTest="true"
+        lastCase="true"
+        lastTask="true"
+        resultFileName="${webtest.report.dir}/security-gtest-results.xml"
+        testSession="security-httpMethod"
+        requestHeaders="Host:${http.host}:${http.port}"
+        returnCode="HTTP/1.1 403"
+        testSuiteId="security-httpMethod"
+        testSuiteName="security-httpMethod"
+        testSuiteDescription="Security Test"
+        testId="security-httpMethod"
+        testName="security-httpMethod"
+        testDescription="Testing default p2r mapping disabled: ${testcaseid}"
+        testCaseId="${testcaseid}"
+        testCaseName="${testcaseid}"
+        testCaseDescription="Testing default p2r mapping disabled"
+        testStrategy="Testing default p2r mapping disabled"/>
+    </target>
+    
+  <target name="undeploy" depends="init-common">
+    <antcall target="undeploy-war-common"/>
+  </target>
+  
+  <target name="usage">
+    <antcall target="usage-common"/>
+  </target>
+  
+  <target name="setup">
+    <antcall target="create-user-common">
+      <param name="user" value="bobby"/>
+      <param name="password" value="bb"/>
+      <param name="groups" value="mygroup"/>
+    </antcall>
+   <!-- <antcall target="reconfig-common"/>-->
+  </target>
+  
+  <target name="unsetup">
+    <!-- remove test users, just cleanup. -->
+    <antcall target="delete-user-common">
+      <param name="user" value="bobby"/>
+    </antcall>
+  </target>
+  
+  <target name="enable-p2r" depends="init-common">
+    <antcall target="asadmin-common">
+      <param name="admin.command" value="set"/>
+      <param name="operand.props"
+          value="server-config.security-service.activate-default-principal-to-role-mapping=true"/>
+    </antcall>
+  </target>
+  
+  <target name="disable-p2r" depends="init-common">
+    <antcall target="asadmin-common">
+      <param name="admin.command" value="set"/>
+      <param name="operand.props"
+          value="server-config.security-service.activate-default-principal-to-role-mapping=false"/>
+    </antcall>
+  </target>
+
+</project>

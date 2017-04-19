@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonBuild SYSTEM "./../../../../config/common.xml">
+]>
+ 
+<project name="deploytargetmoduleid" default="all" basedir=".">
+
+ 	&commonBuild;        
+    <property name="archivedir" value="${build}/archives"/>
+
+	<target name="compile" depends="init">
+                <mkdir dir="${build}" />        
+		<javac srcdir="." destdir="${env.APS_HOME}/devtests/deployment/util/build"
+			classpath="${inst}/lib/j2ee.jar:${inst}/lib/appserv-rt.jar:../../../../util/build"
+		/>		
+	</target>
+        
+        <target name="build-ear" unless="earfile.built">
+            <echo message="file ${build}/save/wstoejb.ear is present : ${earfile.built}"/>
+            <ant dir="../../../ear/wstoejb" target="assemble"/>
+            <mkdir dir="${build}/../save"/>
+            <copy file="${archivedir}/wstoejb.ear" todir="${build}/../save"/>
+            <copy file="${archivedir}/plan.jar" todir="${build}/../save"/>
+        </target>
+        
+        <target name="private-all" depends="compile">
+		<antcall target="declare-test">
+                    <param name="description" value="jsr88/distribute/ChildTargetModuleID test TargetModuleID and its children returned from deployment"/>
+                </antcall>        
+                <available property="earfile.built" file="${archivedir}/wstoejb.ear"/>
+                <antcall target="build-ear"/>
+		<antcall target="specialized.run.jsr88">
+                        <param name="deployer.class" value="jsr88.deploymentmanager.getXModules.childtmid.ChildTargetModuleIDTester"/>
+			<param name="command" value="deploy"/>
+			<param name="arg.list" value="true ${build}/../save/wstoejb.ear ${build}/../save/plan.jar"/>
+		</antcall>   
+                <antcall target="processResult">
+                    <param name="result" value="0"/>                
+                </antcall>
+                <antcall target="common.undeploy.asadmin">
+                    <param name="arg.list" value="wstoejb"/>
+                </antcall>                                          
+        </target>       
+        
+</project>

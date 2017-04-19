@@ -1,0 +1,21 @@
+Clustering Scalability Developer Tests
+
+These tests are designed for running on a hudson environment with multiple nodes.
+Information about what nodes to use in the hosted-nodes file.
+
+How to prepare a new node for use:
+o Add local "hudson" user with password "hudson"
+o If home directory is not /export/home/hudson, then make a symlink so that
+  /export/home/hudson points to home directory
+o Copy .bashrc, .bash_profile and .ssh from an existing system into ~hudson
+o Install Java SE SDK 7 in ~hudson/java/jdk1.7*
+o Edit .bashrc and make sure JAVA_HOME points to SDK in ~/hudson/java/jdk1.7*
+o Make sure ~hudson/.ssh is 700 permissions
+o Log into DAS machine (ida-s10-2.us.oracle.com) as hudson user.
+  SSH into new system and answer "yes" to trusted host question.
+  Log out of new system.
+o Log into new system again as hudson using SSH and make sure it does not
+  prompt for a password (to verify it is using SSH key). Run
+  "$JAVA_HOME/bin/java" -version to make sure environment is OK.
+
+The new system should now be be ready for use by the test.

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../config/common.xml">
+<!ENTITY reporting   SYSTEM "../report.xml">
+]>
+
+<project name="ejb32" default="usage" basedir=".">
+    &commonSetup;
+    &commonBuild;
+    &reporting;
+
+    <target name="all">
+        <antcall target="sfsb"/>
+        <antcall target="mdb"/>
+        <antcall target="methodintf"/>
+        <antcall target="timer"/>
+        <antcall target="intfces"/>
+        <antcall target="persistence"/>
+        <antcall target="interceptors"/>
+        <antcall target="embedded"/>
+    </target>
+
+    <target name="lite">
+        <antcall target="ejblite"/>
+        <antcall target="embedded-lite"/>
+    </target>
+
+    <target name="sfsb">
+        <record name="sfsb.output" action="start" />
+            <ant dir="sfsb" target="all"/>
+        <record name="sfsb.output" action="stop" />
+    </target>
+
+    <target name="methodintf">
+        <record name="methodintf.output" action="start" />
+            <ant dir="methodintf" target="all"/>
+        <record name="methodintf.output" action="stop" />
+    </target>
+
+    <target name="timer">
+        <record name="timer.output" action="start" />
+            <ant dir="timer" target="all"/>
+        <record name="timer.output" action="stop" />
+    </target>
+
+    <target name="intfces">
+        <record name="intfces.output" action="start" />
+            <ant dir="intfces" target="all"/>
+        <record name="intfces.output" action="stop" />
+    </target>
+
+    <target name="ejblite">
+        <record name="ejblite.output" action="start" />
+            <ant dir="ejblite" target="all"/>
+        <record name="ejblite.output" action="stop" />
+    </target>
+
+    <target name="embedded">
+        <record name="embedded.output" action="start" />
+            <ant dir="embedded" target="all"/>
+        <record name="embedded.output" action="stop" />
+    </target>
+
+    <target name="embedded-lite">
+        <record name="embedded.output" action="start" />
+            <ant dir="embedded" target="lite"/>
+        <record name="embedded.output" action="stop" />
+    </target>
+
+    <target name="persistence">
+        <record name="persistence.output" action="start" />
+            <ant dir="persistence" target="all"/>
+        <record name="persistence.output" action="stop" />
+    </target>
+
+    <target name="interceptors">
+        <record name="interceptors.output" action="start" />
+            <ant dir="interceptors" target="all"/>
+        <record name="interceptors.output" action="stop" />
+    </target>
+
+    <target name="mdb">
+        <record name="mdb.output" action="start" />
+            <ant dir="mdb" target="all"/>
+        <record name="mdb.output" action="stop" />
+    </target>
+
+    <target name="usage">
+	<echo>
+		Usage:
+			ant all (Executes set of ejb-ejb32 tests in a full profile)
+			ant lite (Executes set of the ejb-ejb32 tests in a lite profile)
+	</echo>
+    </target>
+</project>

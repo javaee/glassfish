@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "file:./../../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "file:./../../../../../config/common.xml">
+<!ENTITY commonSecurity SYSTEM "file:../../../common.xml">
+<!ENTITY testproperties SYSTEM "file:./build.properties">
+]>
+
+<project name="wss-permethod" default="usage" basedir=".">
+
+    &commonSetup;
+    &commonBuild;
+    &testproperties;
+    &commonSecurity;
+
+    <target name="all" 
+    depends="clean, build, setup, deploy, run, undeploy, unsetup"/>
+
+    <target name="run-test" 
+    depends="clean, build, deploy, run, undeploy"/>
+
+    <target name="clean" depends="init-common">
+      <antcall target="clean-common"/>
+    </target>
+
+    <target name="setup">
+        <antcall target="create-user-common">
+            <param name="user" value="j2ee"/>
+            <param name="password" value="j2ee"/>
+            <param name="groups" value="j2ee"/>
+        </antcall>
+    </target>
+
+    <target name="unsetup">
+        <antcall target="delete-user-common">
+            <param name="user" value="j2ee"/>
+        </antcall>
+    </target>
+
+    <target name="compile" depends="init-common,clean-common, generate-artifacts">
+        <antcall target="compile-common">
+            <param name="src" value="client"/>
+        </antcall>
+        <antcall target="compile-common">
+            <param name="src" value="web"/>
+        </antcall>
+    </target>
+
+    <target name="generate-artifacts">
+	<echo message=" Client Mapping file : ${client-mapping.xml}"/>
+        <antcall target="import-wsdl">
+            <param name="mapping.file"
+            value="${client-mapping.xml}"/>
+            <param name="config-wsdl.file"
+            value="config/config-client.xml"/>
+        </antcall>
+	<echo message="Web Mapping File : ${web-mapping.xml}"/>
+        <antcall target="import-wsdl">
+            <param name="mapping.file"
+            value="${web-mapping.xml}"/>
+            <param name="config-wsdl.file"
+            value="config/config-web.xml"/>
+        </antcall>
+    </target>
+    <target name="ws-package-appclientjar-common">
+        <mkdir dir="${assemble.dir}"/>
+        <delete file="${appclient.jar}" failonerror="false"/>
+        <mkdir dir="${build.classes.dir}/META-INF"/>
+        <copy file="${application-client.xml}"
+                tofile="${build.classes.dir}/META-INF/application-client.xml"/>
+        <copy file="${sun-application-client.xml}"
+                tofile="${build.classes.dir}/META-INF/sun-application-client.xml"/>
+        <copy file="${wsdl-file}"
+                tofile="${build.classes.dir}/META-INF/${wsdl-file}"/>
+        <jar jarfile="${appclient.jar}" basedir="${appclientjar.files}"
+                update="true" includes="${appclientjar.classes}"
+                manifest="./client/MANIFEST.MF">
+
+                <fileset dir="${build.classes.dir}" includes="${client-mapping.xml}"/>
+                <metainf dir="${build.classes.dir}/META-INF">
+                        <include name="application-client.xml"/>
+                        <include name="sun-application-client.xml"/>
+                        <include name="${wsdl-file}"/>
+                </metainf>
+        </jar>
+        <delete dir="${build.classes.dir}/META-INF" failonerror="false"/>
+    </target>
+    <target name="ws-package-war-common">
+        <echo message="my build classes dir is:${build.classes.dir}"/>
+        <delete file="${war.file}"/>
+        <mkdir dir="${build.classes.dir}/tmp"/>
+        <mkdir dir="${build.classes.dir}/tmp/WEB-INF"/>
+        <mkdir dir="${build.classes.dir}/tmp/WEB-INF/classes"/>
+        <copy file="${sun-web.xml}"
+           tofile="${build.classes.dir}/tmp/WEB-INF/sun-web.xml" failonerror="false"/>
+        <copy file="${webservices.xml}"
+           tofile="${build.classes.dir}/tmp/WEB-INF/webservices.xml"
+           failonerror="false"/>
+        <copy file="${mappingfile.location}/${mappingfile.name}"
+           tofile="${build.classes.dir}/tmp/${mappingfile.name}"
+           failonerror="false"/>
+        <copy file="${wsdlfile.location}/${wsdlfile.name}"
+           tofile="${build.classes.dir}/tmp/WEB-INF/wsdl/${wsdlfile.name}"
+           failonerror="false"/>
+        <copy file="${web.xml}"
+           tofile="${build.classes.dir}/tmp/WEB-INF/web.xml"/>
+        <copy todir="${build.classes.dir}/tmp/WEB-INF/classes">
+           <fileset dir="${build.classes.dir}">
+               <include name="${war.classes}"/>
+           </fileset>
+        </copy>
+        <echo message="Creating war file ${war.file}"/>
+        <jar jarfile="${war.file}" update="true">
+           <fileset dir="${build.classes.dir}/tmp" casesensitive="yes">
+               <include name="**/*class*"/>
+           </fileset>
+           <fileset dir="${basedir}/web" casesensitive="yes">
+               <include name="**/*.html"/>
+               <include name="**/*.jsp"/>
+               <include name="**/*.gif"/>
+               <include name="**/*.do"/>
+               <exclude name="**/*.java,**/*.xml,**/*.properties"/>
+           </fileset>
+           <fileset dir="${build.classes.dir}/tmp/" casesensitive="true">
+               <include name="WEB-INF/web.xml"/>
+               <include name="WEB-INF/sun-web.xml"/>
+               <include name="WEB-INF/webservices.xml"/>
+               <include name="WEB-INF/wsdl/${wsdlfile.name}"/>
+               <include name="${mappingfile.name}"/>
+           </fileset>
+        </jar>
+        <echo message="created war file ${war.file}"/>
+        <delete dir="${build.classes.dir}/tmp/WEB-INF" failonerror="false"/>
+        <echo message="my webclient war classes are:${webclient.war.classes}"/>
+     </target>
+
+    <target name="build" depends="init-common,compile">
+	<antcall target="ws-package-appclientjar-common">
+            <param name="appclientjar.classes" 
+              value="com/sun/s1asdev/security/wss/permethod/servlet/client/*.class" />
+            <param name="appclientjar.files"
+              value="${build.classes.dir}"/>
+            <param name="appclient.jar"
+              value="${assemble.dir}/${appname}-client.jar"/>
+	</antcall>
+	<!--antcall target="ws-war-common"-->
+	<antcall target="ws-package-war-common">
+            <param name="war.file" value="${assemble.dir}/${appname}-web.war"/>
+            <param name="war.classes" 
+              value="com/sun/s1asdev/security/wss/permethod/servlet/*.class" />
+            <param name="mappingfile.name" 
+              value="${web-mapping.xml}" />
+            <param name="mappingfile.location" 
+              value="${build.classes.dir}"/>
+            <param name="webservices.xml" 
+              value="${web-webservices.xml}" />
+	</antcall>
+        <antcall target="ear-common"/>
+    </target> 
+
+    <target name="deploy"
+            depends="init-common">
+        <antcall target="deploy-common"/>
+    </target>
+	 
+    <target name="run" depends="init-common">
+	<property name="VMARGS" value="-Djavax.net.ssl.keyStore=${mykeystore.db.file} -Djavax.net.ssl.trustStore=${mytruststore.db.file} -Djavax.net.ssl.keyStorePassword=${ssl.password} -Djavax.net.ssl.trustStorePassword=${ssl.password}"/>
+        <property name="hello-endpoint-url" 
+            value="http://${http.host}:${http.port}/${appname}/helloservlet"/>
+	<echo message="VMARGS= ${VMARGS}"/>
+   	<exec executable="${APPCLIENT}">
+      		<env key="VMARGS" value="${VMARGS}"/>
+        	<arg value="-client" />
+        	<arg value="${assemble.dir}/${appname}AppClient.jar"/>
+        	<arg value="-textauth"/>
+        	<arg value="-user"/>
+        	<arg value="j2ee"/>
+       		<arg value="-password"/>
+        	<arg value="j2ee"/>
+        	<arg line="-xml ${admin.domain.dir}/${admin.domain}/config/glassfish-acc.xml"/>
+        	<arg line="${hello-endpoint-url}"/>
+      </exec>
+   </target>
+ 
+    <target name="undeploy" depends="init-common">
+        <antcall target="undeploy-common"/>
+    </target>   
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+
+  <!-- 
+  ======================================================= 
+  User Defined specific targets
+  =======================================================
+  -->
+</project>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration
+	xmlns="http://java.sun.com/xml/ns/jax-rpc/ri/config">
+	<service name="TaxCalServletService"
+		targetNamespace="http://tax.org/wsdl"
+		typeNamespace="http://tax.org/types"
+		packageName="com.sun.s1asdev.security.wss.defprovider.servlet.taxcal">
+		<interface name="com.sun.s1asdev.security.wss.defprovider.servlet.taxcal.FedTaxIF"
+			servantName="com.sun.s1asdev.security.wss.defprovider.servlet.taxcal.FedTaxServlet"/>
+		<interface name="com.sun.s1asdev.security.wss.defprovider.servlet.taxcal.StateTaxIF"
+			servantName="com.sun.s1asdev.security.wss.defprovider.servlet.taxcal.StateTaxServlet">
+		</interface>
+	</service>
+</configuration>
+

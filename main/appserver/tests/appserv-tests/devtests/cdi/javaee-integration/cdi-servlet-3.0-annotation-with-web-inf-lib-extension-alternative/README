@@ -1,0 +1,8 @@
+GLASSFISH-15791
+Ensure Extension in a bundled library in an archive, does not result in 
+issues with Alternatives enabled in that bundled library
+
+GLASSFISH-16279
+Ensure BM injected in sub BDA is not parent BDA's BM
+Ensure alternatives enabled in sub BDA is not visible via BeanManager 
+in parent BDA

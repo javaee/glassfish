@@ -1,0 +1,24 @@
+This test, when run with 'all' target performs the following steps:
+
+- build
+- setup
+  - start-database
+  - startDomain
+  - setup-database (add jdbc resources and execute create.sql script on it)
+  - setup-cluster (create cluster of 2 instances, change JMS type to LOCAL, enable resources in the cluster)
+
+- deploy
+- run
+  - run-auto-recover (execute test for automatic transactions recover after instance restart)
+    Test inserts 3 rows from in1 into the xa database and sends 3 messages to the MDB
+    Instance in1 is killed  and restarted
+    Sleep 25 seconds to allow for all processing to go through
+    Expected result: 3 rows found in student table and 3 in the messages tables (recorded when the message is received)
+
+- undeploy
+- unsetup
+  - unsetup-cluster (delete JMS resources, stop and delete the cluster, reset JMS type to EMBEDDED)
+  - unsetup-database (drop tables and remove resources)
+  - stop-database
+  - stopDomain
+

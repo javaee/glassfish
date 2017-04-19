@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Created-By: 1.4.0-beta3 (Sun Microsystems Inc.)
+Main-Class: com.sun.s1asdev.ejb.stubs.proxy.client.Client
+

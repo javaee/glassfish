@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../config/common.xml">
+<!ENTITY reporting   SYSTEM "../report.xml">
+]>
+
+<project name="ejbc" default="usage" basedir=".">
+    &commonSetup;
+    &commonBuild;
+    &reporting;
+
+    <target name="all">
+        <antcall target="equals"/>
+        <antcall target="redef"/>
+        <antcall target="sameimpl"/>
+    </target>
+
+    <target name="equals">
+        <record name="equals.output" action="start" />
+            <ant dir="equals" target="all"/>
+        <record name="equals.output" action="stop" />
+    </target>
+
+    <target name="redef">
+        <record name="redef.output" action="start" />
+            <ant dir="redef" target="all"/>
+        <record name="redef.output" action="stop" />
+    </target>
+
+    <target name="sameimpl">
+        <record name="sameimpl.output" action="start" />
+            <ant dir="sameimpl" target="all"/>
+        <record name="sameimpl.output" action="stop" />
+    </target>
+
+    <target name="usage">
+	<echo>
+		Usage:
+			ant equals (Executes the ejb-ejbc equals test)
+			ant redef (Executes the ejb-ejbc redef test)
+			ant sameimpl (Executes the ejb-ejbc sameimpl
+test)
+			ant all (Executes all the ejb-ejbc tests)
+	</echo>
+    </target>
+</project>

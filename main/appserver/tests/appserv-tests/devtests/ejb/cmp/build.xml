@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../config/common.xml">
+<!ENTITY reporting   SYSTEM "../report.xml">
+]>
+
+<project name="cmp" default="usage" basedir=".">
+    &commonSetup;
+    &commonBuild;
+    &reporting;
+
+    <target name="all">
+        <antcall target="readonly"/>
+        <antcall target="ejbflushwithsqlexception"/>
+    </target>
+
+    <target name="readonly">
+        <record name="readonly_cmp.output" action="start" />
+            <ant dir="readonly" target="all"/>
+        <record name="readonly_cmp.output" action="stop" />
+    </target>
+
+    <target name="ejbflushwithsqlexception">
+        <record name="ejbflushwithsqlexception_cmp.output" action="start" />
+            <ant dir="ejbflushwithsqlexception" target="all"/>
+        <record name="ejbflushwithsqlexception_cmp.output" action="stop" />
+    </target>
+
+    <target name="usage">
+	<echo>
+		Usage:
+			ant readonly (Executes the ejb-cmp-readonly test)
+			ant ejbflushwithsqlexception (Executes the ejb-cmp-ejbflushwithsqlexception test)
+			ant all (Executes all the ejb-cmp tests)
+	</echo>
+    </target>
+</project>

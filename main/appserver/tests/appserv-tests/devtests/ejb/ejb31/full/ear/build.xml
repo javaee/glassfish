@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../../../config/common.xml">
+<!ENTITY testproperties SYSTEM "build.properties">
+]>
+
+<project name="ejb-ejb31-full-ear-App" default="usage" basedir=".">
+
+    &commonSetup;
+    &commonBuild;
+    &testproperties;
+
+    <target name="all" depends="clean,build,deploy,run,undeploy"/>
+
+    <target name="clean" depends="init-common">
+      <antcall  target="clean-common"/>
+    </target>
+ 
+    <target name="compile" depends="clean">
+        <antcall target="compile-common">
+            <param name="src" value="war"/>
+        </antcall>
+        <antcall target="webclient-war-common">
+          <param name="hasWebclient" value="true"/>
+        </antcall>
+        <antcall target="compile-common">
+            <param name="src" value="ejb"/>
+        </antcall>
+
+	<javac classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar" srcdir="client" destdir="${build.classes.dir}" debug="on" failonerror="true">
+          <compilerarg line="-endorseddirs ${env.S1AS_HOME}/modules/endorsed${path.separator}${env.S1AS_HOME}/modules"/>
+	 
+        </javac>
+<!--
+        <antcall target="compile-common">
+            <param name="src" value="client"/>
+        </antcall>
+-->
+    </target>
+
+    <target name="build" depends="compile">
+        <mkdir dir="${assemble.dir}"/>
+        <antcall target="ejb-jar-common">
+          <param name="ejbjar.classes" value="**/Foo.class,**/Hello.class,**/HelloRemote.class,**/Singleton*.class,**/HelloStateless.class,**/HelloSingleton.class,**/FooManagedBean.class,**/BarManagedBean.class, **/FooBarManagedBean.class, **/ManagedSuper.class, **/Interceptor*.class"/>
+        </antcall>
+        <antcall target="ear-common"/>
+    </target> 
+    
+    <target name="deploy" 
+            depends="init-common">
+        <antcall target="deploy-common"/>
+    </target>
+
+    <target name="run" depends="init-common">
+       <java  fork="on" 
+              failonerror="true"
+              classpath="${env.S1AS_HOME}/lib/javaee.jar:${env.S1AS_HOME}/lib/gf-client.jar:${build.classes.dir}:${env.APS_HOME}/lib/reporter.jar"
+              classname="${se.client}">
+           <arg line="${contextroot}"/>
+           <arg line="${http.host}"/>
+           <arg line="${http.port}"/>
+        </java>
+    </target>
+ 
+    <target name="undeploy" depends="init-common">
+        <antcall target="undeploy-common"/>
+    </target>   
+
+    <target name="usage">
+        <antcall target="usage-common"/>
+    </target>
+</project>

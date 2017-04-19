@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ejb-jar version="2.1" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/ejb-jar_2_1.xsd">
+  <display-name>CourseJAR</display-name>
+  <enterprise-beans>
+    <entity>
+      <display-name>StudentEJB</display-name>
+      <ejb-name>ReadOnlyStudentBean</ejb-name>
+      <home>com.sun.s1asdev.ejb.cmp.readonly.ejb.StudentHome</home>
+      <remote>com.sun.s1asdev.ejb.cmp.readonly.ejb.Student</remote>
+      <local-home>com.sun.s1asdev.ejb.cmp.readonly.ejb.StudentLocalHome</local-home>
+      <local>com.sun.s1asdev.ejb.cmp.readonly.ejb.StudentLocal</local>
+      <ejb-class>com.sun.s1asdev.ejb.cmp.readonly.ejb.StudentBean</ejb-class>
+      <persistence-type>Container</persistence-type>
+      <prim-key-class>java.lang.String</prim-key-class>
+      <reentrant>false</reentrant>
+      <cmp-version>2.x</cmp-version>
+      <abstract-schema-name>ReadOnlyStudent</abstract-schema-name>
+      <cmp-field>
+        <description>no description</description>
+        <field-name>studentId</field-name>
+      </cmp-field>
+      <cmp-field>
+        <description>no description</description>
+        <field-name>name</field-name>
+      </cmp-field>
+      <primkey-field>studentId</primkey-field>
+      <security-identity>
+        <description></description>
+        <use-caller-identity></use-caller-identity>
+      </security-identity>     
+      <query>
+        <description></description>
+        <query-method>
+          <method-name>findFoo</method-name>
+          <method-params/>
+        </query-method>
+        <ejb-ql>SELECT OBJECT(rous) FROM ReadOnlyStudent rous</ejb-ql>
+      </query>
+      <query>
+        <description></description>
+        <query-method>
+          <method-name>findBar</method-name>
+            <method-params>
+             <method-param>java.lang.String</method-param>
+          </method-params>
+        </query-method>
+        <ejb-ql>SELECT OBJECT(rous) FROM ReadOnlyStudent rous WHERE rous.studentId=?1</ejb-ql>
+      </query>
+      <query>
+        <description></description>
+        <query-method>
+          <method-name>findByRemoteStudent</method-name>
+          <method-params>
+             <method-param>com.sun.s1asdev.ejb.cmp.readonly.ejb.Student</method-param>
+          </method-params>
+        </query-method>
+        <ejb-ql>SELECT OBJECT(s) FROM ReadOnlyStudent s WHERE s = ?1</ejb-ql>
+      </query>
+      <query>
+        <description></description>
+        <query-method>
+          <method-name>findByLocalStudent</method-name>
+          <method-params>
+             <method-param>com.sun.s1asdev.ejb.cmp.readonly.ejb.StudentLocal</method-param>
+          </method-params>
+        </query-method>
+        <ejb-ql>SELECT OBJECT(s) FROM ReadOnlyStudent s WHERE s = ?1</ejb-ql>
+      </query>
+    </entity>
+    <entity>
+      <ejb-name>StudentBean</ejb-name>
+      <home>com.sun.s1asdev.ejb.cmp.readonly.ejb.StudentHome</home>
+      <remote>com.sun.s1asdev.ejb.cmp.readonly.ejb.Student</remote>
+      <local-home>com.sun.s1asdev.ejb.cmp.readonly.ejb.StudentLocalHome</local-home>
+      <local>com.sun.s1asdev.ejb.cmp.readonly.ejb.StudentLocal</local>
+      <ejb-class>com.sun.s1asdev.ejb.cmp.readonly.ejb.StudentBean</ejb-class>
+      <persistence-type>Container</persistence-type>
+      <prim-key-class>java.lang.String</prim-key-class>
+      <reentrant>false</reentrant>
+      <cmp-version>2.x</cmp-version>
+      <abstract-schema-name>Student</abstract-schema-name>
+      <cmp-field>
+        <description>no description</description>
+        <field-name>studentId</field-name>
+      </cmp-field>
+      <cmp-field>
+        <description>no description</description>
+        <field-name>name</field-name>
+      </cmp-field>   
+      <primkey-field>studentId</primkey-field>
+      <ejb-ref>
+        <ejb-ref-name>ejb/ReadOnlyStudent</ejb-ref-name>
+        <ejb-ref-type>Entity</ejb-ref-type>
+        <home>com.sun.s1asdev.ejb.cmp.readonly.ejb.StudentHome</home>
+        <remote>com.sun.s1asdev.ejb.cmp.readonly.ejb.Student</remote>
+      </ejb-ref>
+      <security-identity>
+        <description></description>
+        <use-caller-identity></use-caller-identity>
+      </security-identity>     
+      <query>
+        <description></description>
+        <query-method>
+          <method-name>findFoo</method-name>
+          <method-params/>
+        </query-method>
+        <ejb-ql>SELECT OBJECT(s) FROM Student s</ejb-ql>
+      </query>
+      <query>
+        <description></description>
+        <query-method>
+          <method-name>findBar</method-name>
+          <method-params>
+             <method-param>java.lang.String</method-param>
+          </method-params>
+        </query-method>
+        <ejb-ql>SELECT OBJECT(s) FROM Student s WHERE s.name = ?1</ejb-ql>
+      </query>
+      <query>
+        <description></description>
+        <query-method>
+          <method-name>findByRemoteStudent</method-name>
+          <method-params>
+             <method-param>com.sun.s1asdev.ejb.cmp.readonly.ejb.Student</method-param>
+          </method-params>
+        </query-method>
+        <ejb-ql>SELECT OBJECT(s) FROM Student s WHERE s = ?1</ejb-ql>
+      </query>
+      <query>
+        <description></description>
+        <query-method>
+          <method-name>findByLocalStudent</method-name>
+          <method-params>
+             <method-param>com.sun.s1asdev.ejb.cmp.readonly.ejb.StudentLocal</method-param>
+          </method-params>
+        </query-method>
+        <ejb-ql>SELECT OBJECT(s) FROM Student s WHERE s = ?1</ejb-ql>
+      </query>
+    </entity>
+  </enterprise-beans>
+  <assembly-descriptor>
+    <method-permission>
+      <unchecked />
+      <method>
+        <ejb-name>ReadOnlyStudentBean</ejb-name>
+        <method-name>*</method-name>        
+      </method>
+      <method>
+        <ejb-name>StudentBean</ejb-name>
+        <method-name>*</method-name>
+      </method>
+    </method-permission>
+    
+<!-- Student EJB -->
+    <container-transaction>
+      <method>
+        <ejb-name>ReadOnlyStudentBean</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>setName</method-name>
+        <method-params>
+          <method-param>java.lang.String</method-param>
+          <method-param>boolean</method-param>
+        </method-params>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>    
+    <container-transaction>
+      <method>
+        <ejb-name>ReadOnlyStudentBean</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>getName</method-name>
+        <method-params />
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>ReadOnlyStudentBean</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>getNameTx</method-name>
+        <method-params />
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>            
+    <container-transaction>
+      <method>
+        <ejb-name>ReadOnlyStudentBean</ejb-name>
+        <method-intf>Home</method-intf>
+        <method-name>findByPrimaryKey</method-name>
+        <method-params>
+          <method-param>java.lang.String</method-param>
+        </method-params>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>     
+     <container-transaction>
+      <method>
+        <ejb-name>StudentBean</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>setName</method-name>
+        <method-params>
+          <method-param>java.lang.String</method-param>
+          <method-param>boolean</method-param>
+        </method-params>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>StudentBean</ejb-name>
+        <method-name>*</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>    
+  </assembly-descriptor>
+      
+</ejb-jar>
+

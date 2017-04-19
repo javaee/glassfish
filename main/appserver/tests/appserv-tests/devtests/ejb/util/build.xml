@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE project [
+<!ENTITY commonSetup SYSTEM "../../../config/properties.xml">
+<!ENTITY commonBuild SYSTEM "../../../config/common.xml">
+<!ENTITY reporting   SYSTEM "../report.xml">
+]>
+
+<project name="util" default="usage" basedir=".">
+    &commonSetup;
+    &commonBuild;
+    &reporting;
+
+    <target name="all">
+        <antcall target="methodmap"/>
+    </target>
+
+    <target name="methodmap">
+        <record name="methodmap.output" action="start" />
+            <ant dir="methodmap" target="all"/>
+        <record name="methodmap.output" action="stop" />
+    </target>
+
+    <target name="usage">
+	<echo>
+		Usage:
+                   ant methodmap (Executes the ejb-util methodmap test)
+                   ant all (Executes all the ejb-util tests)
+	</echo>
+    </target>
+</project>

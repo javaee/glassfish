@@ -1,0 +1,38 @@
+This reporter is an adapter around reporter.jar written by Ramesh.
+Adapter is written by Jean Francois Arcand.
+
+Main purpose is to:
+1. Give same ease of use as statusU of earlier J2EE workspace
+2. Doesn't write to a file so there is no J2EE security breach
+3. Uses reporterAPI only for generating test results
+
+
+build.xml is the ant build file for building whole of reporter.jar along with adapter.This build file jars it also and places jar file in EJTE_HOME/lib/reporter.jar
+
+Usage:
+
+in client class:
+
+import com.sun.ejte.ccl.reporter.*;
+
+
+private static SimpleReporterAdapter stat=new SimpleReporterAdapter()
+
+//for adding testsuites and test cases:
+stat.addStatus(String testsuite,String testcase,stat.PASS or stat.FAIL)
+e.g
+
+stat.addStatus(adminControllerSession setupJNDIContext,stat.PASS);
+
+stat.addStatus(adminControllerSession setupJNDIContext,stat.FAIL);
+
+
+// in the end when test is finished
+
+stat.printSummary(String testsuite);
+
+e.g:
+stat.printSummary(adminControllerSession");
+
+
+This adapter is currently being used in admincontroller and AddressBook App.

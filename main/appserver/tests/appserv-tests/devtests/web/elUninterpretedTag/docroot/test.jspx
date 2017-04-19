@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+  - JSPX Testcase.
+  -->
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:jsp="http://java.sun.com/JSP/Page">
+
+  <head>
+    <title>Test</title>
+  </head>
+
+  <body>
+    <p>
+    When param.test is not set, for jsp pages the attribute value is an empty 
+    string if printed to output. <br />
+    When using jspx (jsp document) the string"null" is in the output instead.
+    <br />
+
+    Observe the difference:<br />
+    In template text: ${notDefined}
+
+    but displayed as "null" here:<br />
+    <myTag value="${notDefined}" />  
+
+    </p>
+
+  </body>
+</html>
+

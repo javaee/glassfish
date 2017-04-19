@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<project name="handle" default="usage" basedir=".">
+
+    <target name="all">
+        <antcall target="mix"/>
+    </target>
+
+    <target name="mix">
+        <ant dir="mix" target="all"/>
+    </target>
+
+    <target name="usage">
+	<echo>
+		Usage:
+			ant mix (Executes the ejb-bm-handle mix tests)
+			ant all (Executes all the ejb-bmp-handle tests)
+	</echo>
+    </target>
+</project>
+
