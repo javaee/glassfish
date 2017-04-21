@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Created-By: 1.4.0 (Sun Microsystems Inc.)
-Implementation-Vendor-Id: com.sun
-Implementation-Vendor: Sun Microsystems, Inc.
-Specification-Vendor: Sun Microsystems, Inc.
-Class-Path: cli-framework_en.jar cli-framework_ja.jar cli-framework_zh_CN.jar cli-framework_fr.jar cli-framework_de.jar cli-framework_es.jar cli-framework_it.jar cli-framework_sw.jar cli-framework_ko.jar cli-framework_zh_TW.jar
-

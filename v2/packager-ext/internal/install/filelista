@@ -1,8 +1,0 @@
-/opt/sun/appserver/lib/install/templates/asenv.conf.template /opt/sun/appserver/config/asenv.conf
-/opt/sun/appserver/lib/install/templates/wsimport.template /opt/sun/appserver/bin/wsimport
-/opt/sun/appserver/lib/install/templates/wsgen.template /opt/sun/appserver/bin/wsgen
-/opt/sun/appserver/lib/install/templates/xjc.template /opt/sun/appserver/bin/xjc
-/opt/sun/appserver/lib/install/templates/schemagen.template /opt/sun/appserver/bin/schemagen
-/opt/sun/appserver/lib/install/templates/asapt.template /opt/sun/appserver/bin/asapt
-/opt/sun/appserver/lib/install/templates/wscompile.template /opt/sun/appserver/bin/wscompile
-/opt/sun/appserver/lib/install/templates/wsdeploy.template /opt/sun/appserver/bin/wsdeploy

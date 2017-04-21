@@ -1,5 +1,0 @@
-Test
-- Use of Events
-    -  Defining Event Qualifiers
-    - Simple observer methods that observer qualified and any events on a particular Event payload
-    - Simple event producer (with qualifiers) to produce the appropriate event

@@ -1,3 +1,0 @@
-create-jms-resource --restype javax.jms.ConnectionFactory jms/ConnectionFactory
-create-jmsdest --desttype queue Q1 
-create-jms-resource --restype javax.jms.Queue --property imqDestinationName=Q1 jms/Queue

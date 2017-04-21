@@ -1,7 +1,0 @@
-#!/bin/sh
-# copy bundled_rpm.txt substituting the build_release_id for appserver
-# packages.
-# Usage copy_bundled_rpm.txt input_file output_file build_release_id
-# eg: ./copy_bundled_rpm.txt ./bundled_rpm.txt ${rpms.home}/bundled_rpm.txt 2
-
-        cat $1 | sed "s/%BUILD_REL_ID%/$3/" > $2

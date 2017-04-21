@@ -1,6 +1,0 @@
-Test
-- Testing @TransactionScoped support
-    - Annotate multiple beans with @TransactionScoped
-    - Inject those beans
-    - Verify identical type of bean is shared within same transaction.
-    - Verify beans destroyed at end of transaction.

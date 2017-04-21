@@ -1,8 +1,0 @@
-Test
-- Testing portable extensions support 
-    - Use of Injection Target to inject CDI beans into a framework class that
-    is not under the control of CDI.
-    - 2 usecases:
-        - Constructor injection (fwk bean instantiation via CDI SPI)
-        - setter and field method (fwk bean instantiation by the framework)
-        
