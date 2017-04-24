@@ -81,6 +81,7 @@
         <javax.security.jacc-api.version>1.5</javax.security.jacc-api.version>
         <javax.security.auth.message-api.version>1.1</javax.security.auth.message-api.version>
         <javax.validation-api.version>1.1.0.Final</javax.validation-api.version>
+        <javax.security-api.version>1.0-m02-SNAPSHOT</javax.security-api.version>
 
         <product.name>GlassFish Server Open Source Edition</product.name>
         <brief_product_name>GlassFish Server</brief_product_name>
@@ -133,6 +134,7 @@
         <javax.management.j2ee-api.version>1.1.1</javax.management.j2ee-api.version>
         <guava.version>13.0.1</guava.version>
 	<bean.validator.cdi.version>2.5.0-b06</bean.validator.cdi.version>
+        <soteria.version>1.0-m02-SNAPSHOT</soteria.version>
     </properties>
 
     <modules>
@@ -470,6 +472,19 @@
                             <apiPackage>javax.el</apiPackage>
                             <implNamespace>com.sun.el</implNamespace>
                         </spec>
+                        <spec>
+                            <artifact>
+                                <groupId>javax.security</groupId>
+                                <artifactId>javax.security-api</artifactId>
+                                <version>${javax.security-api.version}</version>
+                            </artifact>
+                            <nonFinal>false</nonFinal>
+                            <jarType>api</jarType>
+                            <specVersion>1.0-m02-SNAPSHOT</specVersion>
+                            <specImplVersion>${soteria.version}</specImplVersion>
+                            <apiPackage>javax.security</apiPackage>
+                            <implNamespace>org.glassfish.soteria</implNamespace>
+                         </spec>
                     </specs>
                 </configuration>
             </plugin>            
@@ -1065,6 +1080,16 @@
                 <groupId>org.hibernate</groupId>
                 <artifactId>hibernate-validator-cdi</artifactId>
                 <version>${hibernate-validator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.soteria</groupId>
+                <artifactId>soteria</artifactId>
+                <version>${soteria.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.security</groupId>
+                <artifactId>javax.security-api</artifactId>
+                <version>${javax.security-api.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
