@@ -1,12 +1,35 @@
-This file describes the subdirectories of the GlassFish Git repository.
+GlassFish Server
+=================
+http://glassfish.java.net
 
-Last updated: 05/19/2017 by romain.grecourt@oracle.com
+GlassFish is the reference implementation of Java EE.
 
-- main
+Building
+--------
 
-	The main GlassFish project source code.
+Prerequisites:
 
-- v2
+* JDK8+
+* Maven 3.0.3+
 
-	The older GlassFish v2 source code.
-	Also contains the current devtests for GlassFish.
+Run the full build:
+
+`mvn install`
+
+Locate the Zip distributions:
+- appserver/distributions/glassfish/target/glassfish.zip
+- appserver/distributions/web/target/web.zip
+
+Locate staged distributions:
+- appserver/distributions/glassfish/target/stage
+- appserver/distributions/web/target/stage
+
+Starting GlassFish
+------------------
+
+`glassfish4/bin/asadmin start-domain`
+
+Stopping GlassFish
+------------------
+
+`glassfish4/bin/asadmin stop-domain`
