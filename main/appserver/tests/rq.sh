@@ -38,6 +38,141 @@
 # only if the new code is made subject to such option by the copyright
 # holder.
 
+#
+# Map style.
+# Returns the value for the supplied key
+#
+# Args: key array_of_key=val
+#
+get_value_from_key_val_array(){
+  local _array=${2}
+  local array=(${_array[*]})
+  local i=0
+  while [ ${i} -lt ${#array[*]} ]
+  do
+    entry=(`key_val_as_list ${array[${i}]}`)
+    if [ "${entry[0]}" = "${1}" ] ; then
+      echo "${entry[1]}"
+      return 0
+    fi
+    i=$((i+1))
+  done
+}
+
+#
+# Converts a key=value string into a list
+#
+# Args: key=value
+#
+key_val_as_list(){
+    local param_key=`echo ${1} | cut -d '=' -f1`
+    local param_value=`echo ${1} | cut -d '=' -f2`
+    echo "${param_key} ${param_value}"
+}
+
+#
+# Returns the build parameters of a given test job run
+# As space separated string of PARAM_NAME=PARAM_VALUE
+#
+# Args: BUILD_NUMBER
+#
+get_test_job_params(){
+  local url="${HUDSON_URL}/${1}/api/xml?xpath=//parameter&wrapper=list"
+  curl "${url}" | sed \
+      -e s@'<list><parameter>'@@g -e s@'</list>'@@g \
+      -e s@'<parameter>'@@g -e s@'</parameter>'@@g \
+      -e s@'<name>'@@g -e s@'</name>'@@g \
+      -e s@'<value>'@'='@g -e s@'</value>'@' '@g -e s@'<value/>'@' '@g 
+
+
+  if [ ${PIPESTATUS[0]} -ne 0 ] ; then
+    # exit with curl status code
+    return ${PIPESTATUS[0]}
+  fi
+}
+
+#
+# Returns true if the test job was triggered by the current PARENT_ID and given TEST_ID
+#
+# Args: params array to match the job
+#
+is_test_job_match(){
+  local array=${2}
+  local match_params=(${array[*]})
+  set +e
+  local job_param=(`get_test_job_params ${1}`)
+  local error_code=${?}
+  set -e
+
+  if [ ${error_code} -ne 0 ] ; then
+    # no match
+    echo false
+    return 0
+  fi
+  # match provided params with job params
+  local i=0
+  while [ ${i} -lt ${#match_params[*]} ]
+  do
+    local match_entry=(`key_val_as_list  ${match_params[${i}]}`)
+    job_value=`get_value_from_key_val_array ${match_entry[0]} "${job_param[*]}"`
+    if [ "${job_value}" != "${match_entry[1]}" ] ; then
+      echo false
+      return 0
+    fi
+    i=$((i+1))
+  done
+  # match
+  echo true
+}
+
+#
+# Gets the last build number of the test job.
+# This will include the currently on-going runs.
+#
+get_test_job_last_build_number(){
+  local url="${HUDSON_URL}/api/xml?xpath=//lastBuild/number/text()"
+  curl "${url}"
+  local error_code=${?}
+  if [ ${error_code} -ne 0 ] ; then
+    exit 1
+  fi
+}
+
+#
+# Find a test job for TEST_ID
+#
+# Args: TEST_ID PREVIOUS_LAST_BUILD
+#
+find_test_job(){
+    local previous_last_build=${1}
+    local last_build=`get_test_job_last_build_number`
+
+    # nothing running and nothing new completed
+    if [ "${previous_last_build}" = "${last_build}" ] ; then
+      return 1
+    fi
+
+    # look into the newly completed run
+    local i=$((previous_last_build+1))
+    while [ ${i} -le ${last_build} ]
+    do
+      local params
+      params[0]="BRANCH=${branch}"
+      params[1]="TEST_IDS=${test_ids_triggerd}"
+      params[2]="PR_NUMBER"
+      params[3]="FORK_ORIGIN=${fork_origin}"
+      if `is_test_job_match ${i} "${params[*]}"` ; then
+        # the triggered run is already completed
+        echo ${i}
+        return 0
+      fi
+      i=$((i+1))
+    done
+
+    # not found
+    return 1
+}
+
 USAGE="Usage: rq -b BRANCH -a ---> For runing all the test ids\n\
 	   or  rq -b BRANCH -g TESTGROUPNAME ---> For runing a TESTGROUPNAME\n\
 	   or  rq -b BRANCH -t TESTIDS ---> For runing a space separated set of TESTIDS"
@@ -88,7 +223,24 @@ if [[ -z $test_ids ]]; then
 	echo -e $USAGE
 	exit 1
 fi
-
+fork_origin=`git config --get remote.origin.url`
 test_ids_encoded=`echo ${test_ids[@]} | tr ' ' '+'`
-params="BRANCH=${branch}&TEST_IDS=${test_ids_encoded}"
+params="BRANCH=${branch}&TEST_IDS=${test_ids_encoded}&FORK_ORIGIN=${fork_origin}"
+last_build=`get_test_job_last_build_number`
 curl -X POST "${HUDSON_URL}/buildWithParameters?${params}&delay=0sec" 2> /dev/null
+test_ids_triggerd=`echo ${test_ids[@]}`
+export branch fork_origin test_ids_triggerd
+job_build_number=`find_test_job ${last_build}`
+printf "###################################################################\n"
+printf "###################################################################\n"
+if [[ ! -z ${job_build_number} ]]; then
+	printf "RQ triggered successfully. Please find the RQ link below\n"
+	printf ${HUDSON_URL}/${job_build_number}
+	printf "\n"
+	printf "###################################################################\n"
+	printf "###################################################################\n"
+else
+	printf "Issue in RQ client.Please check your git settings\n"
+	printf "###################################################################\n"
+	printf "###################################################################\n"
+fi
