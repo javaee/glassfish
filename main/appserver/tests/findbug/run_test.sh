@@ -57,7 +57,7 @@ findbugs_run(){
 
 }
 
-findbugs_lp_run(){
+findbugs_low_priority_all_run(){
   M2_HOME=/net/gf-hudson/scratch/gf-hudson/export2/hudson/tools/apache-maven-3.0.3
   MAVEN_OPTS="-Xmx512m -Xms256m -XX:MaxPermSize=1024m"; export MAVEN_OPTS
   MAVEN_REPO=$WORKSPACE/repository
@@ -82,13 +82,14 @@ generate_findbugs_result(){
 
 	# check findbbugs
 	cd /net/gf-hudson/scratch/gf-hudson/export2/hudson/tools/findbugs-tool-latest; ./findbugscheck $WORKSPACE/main
+	set +e
 	if [ $? -ne 0 ]
 	then
 	   echo "FAILED" > $WORKSPACE/results/findbugs_results/findbugscheck.log
 	else
 	   echo "SUCCESS" > $WORKSPACE/results/findbugs_results/findbugscheck.log
 	fi
-
+	set -e
 	# archive the findbugs results
 	for i in `find $WORKSPACE/main -name findbugsXml.xml`
 	do
@@ -96,23 +97,24 @@ generate_findbugs_result(){
 	done
 }
 
-generate_findbugs_lp_result(){
+generate_findbugs_low_priority_all_result(){
   rm -rf $WORKSPACE/results
-  mkdir -p $WORKSPACE/results/findbugs_lp_results
+  mkdir -p $WORKSPACE/results/findbugs_low_priority_all_results
 
   # check findbbugs
   cd /net/gf-hudson/scratch/gf-hudson/export2/hudson/tools/findbugs-tool-latest; ./fbcheck $WORKSPACE/main
+  set +e
   if [ $? -ne 0 ]
   then
-     echo "FAILED" > $WORKSPACE/results/findbugs_lp_results/findbugscheck.log
+     echo "FAILED" > $WORKSPACE/results/findbugs_low_priority_all_results/findbugscheck.log
   else
-     echo "SUCCESS" > $WORKSPACE/results/findbugs_lp_results/findbugscheck.log
+     echo "SUCCESS" > $WORKSPACE/results/findbugs_low_priority_all_results/findbugscheck.log
   fi
-
+  set -e
   # archive the findbugs results
   for i in `find $WORKSPACE/main -name findbugsXml.xml`
   do
-     cp $i $WORKSPACE/results/findbugs_lp_results/`echo $i | sed s@"$WORKSPACE"@@g | sed s@"/"@"_"@g`
+     cp $i $WORKSPACE/results/findbugs_low_priority_all_results/`echo $i | sed s@"$WORKSPACE"@@g | sed s@"/"@"_"@g`
   done
 }
 
@@ -127,9 +129,9 @@ run_test_id(){
     findbugs_all)
    	  findbugs_run
      	generate_findbugs_result;;
-    findbugs_lp)
-      findbugs_lp_run
-      generate_findbugs_lp_result;;
+    findbugs_low_priority_all)
+      findbugs_low_priority_all_run
+      generate_findbugs_low_priority_all_result;;
   esac
   upload_test_results
   delete_bundle
@@ -138,7 +140,7 @@ run_test_id(){
 
 list_test_ids(){
 	echo findbugs_all
-  echo findbugs_lp
+  echo findbugs_low_priority_all
 }
 
 OPT=$1
