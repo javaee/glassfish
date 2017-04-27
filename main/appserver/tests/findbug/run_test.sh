@@ -81,8 +81,8 @@ generate_findbugs_result(){
 	mkdir -p $WORKSPACE/results/findbugs_results
 
 	# check findbbugs
-	cd /net/gf-hudson/scratch/gf-hudson/export2/hudson/tools/findbugs-tool-latest; ./findbugscheck $WORKSPACE/main
 	set +e
+	cd /net/gf-hudson/scratch/gf-hudson/export2/hudson/tools/findbugs-tool-latest; ./findbugscheck $WORKSPACE/main
 	if [ $? -ne 0 ]
 	then
 	   echo "FAILED" > $WORKSPACE/results/findbugs_results/findbugscheck.log
@@ -102,8 +102,8 @@ generate_findbugs_low_priority_all_result(){
   mkdir -p $WORKSPACE/results/findbugs_low_priority_all_results
 
   # check findbbugs
-  cd /net/gf-hudson/scratch/gf-hudson/export2/hudson/tools/findbugs-tool-latest; ./fbcheck $WORKSPACE/main
   set +e
+  cd /net/gf-hudson/scratch/gf-hudson/export2/hudson/tools/findbugs-tool-latest; ./fbcheck $WORKSPACE/main
   if [ $? -ne 0 ]
   then
      echo "FAILED" > $WORKSPACE/results/findbugs_low_priority_all_results/findbugscheck.log
