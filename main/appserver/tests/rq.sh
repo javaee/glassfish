@@ -77,7 +77,7 @@ key_val_as_list(){
 # Args: BUILD_NUMBER
 #
 get_test_job_params(){
-  local url="${HUDSON_URL}/${1}/api/xml?xpath=//parameter&wrapper=list"
+  local url="${GLASSFISH_REMOTE_QUEUE_URL}/${1}/api/xml?xpath=//parameter&wrapper=list"
   curl "${url}" | sed \
       -e s@'<list><parameter>'@@g -e s@'</list>'@@g \
       -e s@'<parameter>'@@g -e s@'</parameter>'@@g \
@@ -130,7 +130,7 @@ is_test_job_match(){
 # This will include the currently on-going runs.
 #
 get_test_job_last_build_number(){
-  local url="${HUDSON_URL}/api/xml?xpath=//lastBuild/number/text()"
+  local url="${GLASSFISH_REMOTE_QUEUE_URL}/api/xml?xpath=//lastBuild/number/text()"
   curl "${url}"
   local error_code=${?}
   if [ ${error_code} -ne 0 ] ; then
@@ -189,7 +189,7 @@ list_group_test_ids(){
 	echo ${test_id_arr[*]}
 }
 
-if [[ -z $HUDSON_URL ]]; then
+if [[ -z $GLASSFISH_REMOTE_QUEUE_URL ]]; then
 	echo "Please enter hudson url"
 	exit 1
 fi
@@ -227,7 +227,7 @@ fork_origin=`git config --get remote.origin.url`
 test_ids_encoded=`echo ${test_ids[@]} | tr ' ' '+'`
 params="BRANCH=${branch}&TEST_IDS=${test_ids_encoded}&FORK_ORIGIN=${fork_origin}"
 last_build=`get_test_job_last_build_number`
-curl -X POST "${HUDSON_URL}/buildWithParameters?${params}&delay=0sec" 2> /dev/null
+curl -X POST "${GLASSFISH_REMOTE_QUEUE_URL}/buildWithParameters?${params}&delay=0sec" 2> /dev/null
 test_ids_triggerd=`echo ${test_ids[@]}`
 export branch fork_origin test_ids_triggerd
 job_build_number=`find_test_job ${last_build}`
@@ -235,7 +235,7 @@ printf "###################################################################\n"
 printf "###################################################################\n"
 if [[ ! -z ${job_build_number} ]]; then
 	printf "RQ triggered successfully. Please find the RQ link below\n"
-	printf ${HUDSON_URL}/${job_build_number}
+	printf ${GLASSFISH_REMOTE_QUEUE_URL}/${job_build_number}
 	printf "\n"
 	printf "###################################################################\n"
 	printf "###################################################################\n"
