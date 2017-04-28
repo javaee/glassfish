@@ -73,6 +73,8 @@ test_init(){
 	ANT_HOME=/net/gf-hudson/scratch/gf-hudson/export2/hudson/tools/ant-1.7.1; export ANT_HOME
 	APS_HOME=$WORKSPACE/main/appserver/tests/appserv-tests; export APS_HOME
 	TEST_RUN_LOG=tests-run.log; export TEST_RUN_LOG
+        #workaround for OSGI timestamp issue
+        find $S1AS_HOME -type f | xargs touch > /dev/null
 	echo S1AS_HOME is $S1AS_HOME
 	echo ANT_HOME is $ANT_HOME
 	echo APS_HOME is $APS_HOME
@@ -122,6 +124,7 @@ unzip_test_resources(){
 
 copy_test_artifects(){
 	printf "\n%s \n\n" "===== COPY TEST ARTIFECTs ====="
+        zip -r $WORKSPACE/results/domainArchive.zip $S1AS_HOME/domains
 	cp $S1AS_HOME/domains/domain1/logs/server.log* $WORKSPACE/results/ || true
 	cp $TEST_RUN_LOG $WORKSPACE/results/
 	cp $WORKSPACE/bundles/version-info.txt $WORKSPACE/results/
