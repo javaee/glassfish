@@ -103,11 +103,48 @@ build_re_weekly(){
     clean_and_zip_workspace
 }
 
+init_weekly(){
+    BUILD_KIND="weekly"
+    require_env_var "GPG_PASSPHRASE"
+
+    ARCHIVE_PATH=${PRODUCT_GF}/${PRODUCT_VERSION_GF}
+    if [ ${#BUILD_ID} -gt 0 ]
+    then
+        ARCHIVE_PATH=${ARCHIVE_PATH}/promoted
+    else
+        ARCHIVE_PATH=${ARCHIVE_PATH}/release
+    fi
+    ARCHIVE_MASTER_BUNDLES=${ARCHIVE_PATH}/${BUILD_ID}/archive/bundles
+    export BUILD_ID BUILD_KIND ARCHIVE_PATH ARCHIVE_MASTER_BUNDLES
+    init_bundles_dir
+    init_version 
+}
+
+init_nightly(){
+    BUILD_KIND="nightly"
+    ARCHIVE_PATH=${PRODUCT_GF}/${PRODUCT_VERSION_GF}/nightly
+    ARCHIVE_MASTER_BUNDLES=${ARCHIVE_PATH}/${BUILD_ID}-${MDATE}
+    export BUILD_KIND ARCHIVE_PATH ARCHIVE_MASTER_BUNDLES
+    init_bundles_dir
+    init_version
+    NIGHTLY_PROMOTED_JOB="${HUDSON_URL}/job/${PROMOTED_JOB_NAME}/api/xml?xpath=//lastStableBuild/url/text()"
+    NIGHTLY_PROMOTED_JOB_URL=`curl $NIGHTLY_PROMOTED_JOB`
+    NIGHTLY_PROMOTED_BUNDLES="${NIGHTLY_PROMOTED_JOB_URL}artifact/bundles"
+    export NIGHTLY_PROMOTED_BUNDLES
+}
+
 promote_init(){
     init_common
-	init_weekly
+    if [ "nightly" == "${1}" ]
+    then
+        init_nightly
+    elif [ "weekly" == "${1}" ]
+    then
+        init_weekly
+    fi
+
     export PROMOTION_SUMMARY=${WORKSPACE_BUNDLES}/${BUILD_KIND}-promotion-summary.txt
-    rm -f ${PROMOTION_SUMMARY}
+    rm -f $PROMOTION_SUMMARY
     export JNET_DIR=${JNET_USER}@${JNET_STORAGE_HOST}:/dlc/${ARCHIVE_PATH}
     export JNET_DIR_HTTP=http://download.java.net/${ARCHIVE_PATH}
     export ARCHIVE_STORAGE_BUNDLES=/java/re/${ARCHIVE_MASTER_BUNDLES}
@@ -115,6 +152,7 @@ promote_init(){
     export SSH_STORAGE=${RE_USER}@${STORAGE_HOST}
     export SCP=${SSH_STORAGE}:${ARCHIVE_STORAGE_BUNDLES}
     export ARCHIVE_URL=http://${STORAGE_HOST_HTTP}/java/re/${ARCHIVE_MASTER_BUNDLES}
+
     init_storage_area
 }
 
@@ -154,11 +192,25 @@ promote_weekly(){
     promote_finalize
 }
 
-promote_dev(){
-    BUILD_KIND="dev"
-    init_common
-    mkdir -p ${WORKSPACE}/dev-bundles
-    curl ${PROMOTED_BUNDLES}/version-info.txt > ${WORKSPACE}/dev-bundles/version-info.txt
+promote_nightly(){
+    promote_init "nightly"
+    promote_bundle ${PROMOTED_BUNDLES}/web.zip ${PRODUCT_GF}-${PRODUCT_VERSION_GF}-web-${BUILD_ID}-${MDATE}.zip
+    promote_bundle ${PROMOTED_BUNDLES}/glassfish.zip ${PRODUCT_GF}-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.zip
+    promote_bundle ${PROMOTED_BUNDLES}/nucleus-new.zip nucleus-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.zip
+    promote_bundle ${PROMOTED_BUNDLES}/version-info.txt version-info-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.txt
+    promote_bundle ${PROMOTED_BUNDLES}/changes.txt changes-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.txt
+    VERSION_INFO="${WORKSPACE_BUNDLES}/version-info-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.txt"
+    SVN_REVISION=`head -1 ${VERSION_INFO} | awk '{print $2}'`
+    #record_svn_rev ${SVN_REVISION}
+    purge_old_nightlies
+    # hook for the docker image of the nightly
+    curl -H "Content-Type: application/json" \
+        --data '{"build": true}' \
+        -X POST \
+        -k \
+        https://registry.hub.docker.com/u/glassfish/nightly/trigger/945d55fc-1d4c-4043-8221-74185d9a4d53/
+    ssh $SSH_MASTER `echo "echo $SVN_REVISION > /scratch/java_re/hudson/hudson_install/last_promoted_nightly_scm_revision"`    
+    promote_finalize
 }
 
 init_weekly(){
@@ -192,9 +244,6 @@ init_common(){
     if [ ! -z $MICRO_VERSION ] && [ ${#MICRO_VERSION} -gt 0 ]; then
         PRODUCT_VERSION_GF=$PRODUCT_VERSION_GF.${MICRO_VERSION} 
     fi
-
-    PROMOTED_JOB_URL=${HUDSON_URL}/job/${PROMOTED_JOB_NAME}/${PROMOTED_NUMBER}
-    PROMOTED_BUNDLES=${PROMOTED_JOB_URL}/artifact/bundles/
 
     IPS_REPO_URL=http://localhost
     IPS_REPO_DIR=${WORKSPACE}/promorepo
