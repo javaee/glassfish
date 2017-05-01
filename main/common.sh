@@ -120,6 +120,37 @@ init_weekly(){
     init_version 
 }
 
+purge_old_nightlies(){
+#########################
+# PURGE OLDER NIGHTLIES #
+#########################
+
+    rm -rf /tmp/purgeNightlies.sh
+    cat <<EOF > /tmp/purgeNightlies.sh
+#!/bin/bash
+# Max builds to keep around
+    MAX_BUILDS=21
+    cd \$1
+    LISTING=\`ls -trd b*\`
+    nbuilds=0
+    for i in \$LISTING; do
+    nbuilds=\`expr \$nbuilds + 1\`
+    done
+    echo "Total number of builds is \$nbuilds"
+    
+    while [ \$nbuilds -gt \$MAX_BUILDS ]; do
+    oldest_dir=\`ls -trd b* | head -n1\`
+    echo "rm -rf \$oldest_dir"
+    rm -rf \$oldest_dir
+    nbuilds=\`expr \$nbuilds - 1\`
+    echo "Number of builds is now \$nbuilds"
+    done    
+EOF
+    ssh ${SSH_MASTER} "rm -rf /tmp/purgeNightlies.sh"
+    scp /tmp/purgeNightlies.sh ${SSH_MASTER}:/tmp
+    ssh ${SSH_MASTER} "chmod +x /tmp/purgeNightlies.sh ; bash -e /tmp/purgeNightlies.sh /java/re/${ARCHIVE_PATH}"
+}
+
 init_nightly(){
     BUILD_KIND="nightly"
     ARCHIVE_PATH=${PRODUCT_GF}/${PRODUCT_VERSION_GF}/nightly
@@ -194,22 +225,19 @@ promote_weekly(){
 
 promote_nightly(){
     promote_init "nightly"
-    promote_bundle ${PROMOTED_BUNDLES}/web.zip ${PRODUCT_GF}-${PRODUCT_VERSION_GF}-web-${BUILD_ID}-${MDATE}.zip
-    promote_bundle ${PROMOTED_BUNDLES}/glassfish.zip ${PRODUCT_GF}-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.zip
-    promote_bundle ${PROMOTED_BUNDLES}/nucleus-new.zip nucleus-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.zip
-    promote_bundle ${PROMOTED_BUNDLES}/version-info.txt version-info-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.txt
-    promote_bundle ${PROMOTED_BUNDLES}/changes.txt changes-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.txt
+    promote_bundle ${NIGHTLY_PROMOTED_BUNDLES}/web.zip ${PRODUCT_GF}-${PRODUCT_VERSION_GF}-web-${BUILD_ID}-${MDATE}.zip
+    promote_bundle ${NIGHTLY_PROMOTED_BUNDLES}/glassfish.zip ${PRODUCT_GF}-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.zip
+    promote_bundle ${NIGHTLY_PROMOTED_BUNDLES}/nucleus-new.zip nucleus-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.zip
+    promote_bundle ${NIGHTLY_PROMOTED_BUNDLES}/version-info.txt version-info-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.txt
+    promote_bundle ${NIGHTLY_PROMOTED_BUNDLES}/changes.txt changes-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.txt
     VERSION_INFO="${WORKSPACE_BUNDLES}/version-info-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.txt"
-    SVN_REVISION=`head -1 ${VERSION_INFO} | awk '{print $2}'`
-    #record_svn_rev ${SVN_REVISION}
     purge_old_nightlies
     # hook for the docker image of the nightly
     curl -H "Content-Type: application/json" \
         --data '{"build": true}' \
         -X POST \
         -k \
-        https://registry.hub.docker.com/u/glassfish/nightly/trigger/945d55fc-1d4c-4043-8221-74185d9a4d53/
-    ssh $SSH_MASTER `echo "echo $SVN_REVISION > /scratch/java_re/hudson/hudson_install/last_promoted_nightly_scm_revision"`    
+        https://registry.hub.docker.com/u/glassfish/nightly/trigger/945d55fc-1d4c-4043-8221-74185d9a4d53/  
     promote_finalize
 }
 
