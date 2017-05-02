@@ -43,7 +43,7 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
  
 <suite name="QuickLookTests" verbose="2" >
-  <test name="wsit_jaxws_tests">
+  <test name="wsit_jaxws_wsdl_tests">
     <classes>
       <class name="jaxwsfromwsdl.client.JaxwsFromWsdlTestNG"/>
     </classes>
