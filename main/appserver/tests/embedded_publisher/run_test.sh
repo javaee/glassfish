@@ -45,24 +45,12 @@ test_run_embedded_publisher(){
 	PATH=$M2_HOME/bin:$JAVA_HOME/bin:$PATH; export PATH
 	mvn -version
 	echo $WORKSPACE
-  EMBEDDED_WORKSPACE=$WORKSPACE/main/appserver/extras/embedded
-	cd $WORKSPACE/main
-  mvn -Dmaven.repo.local=$WORKSPACE/repository -DskipTests=true clean install
-  cd $EMBEDDED_WORKSPACE/all
-  mvn -Dmaven.repo.local=$WORKSPACE/repository -DskipTests=true clean install
-  cd $EMBEDDED_WORKSPACE/nucleus
-  mvn -Dmaven.repo.local=$WORKSPACE/repository -DskipTests=true clean install
-  cd $EMBEDDED_WORKSPACE/web
-  mvn -Dmaven.repo.local=$WORKSPACE/repository -DskipTests=true clean install
-  cd $WORKSPACE/maven-embedded-glassfish-plugin
-  mvn -Dmaven.repo.local=$WORKSPACE/repository -DskipTests=true clean install
   cd $WORKSPACE/main/appserver/tests/embedded/maven-plugin/remoteejbs
   mvn -Dmaven.repo.local=$WORKSPACE/repository -DskipTests=true clean verify
   cd $WORKSPACE/main/appserver/tests/embedded/maven-plugin/mdb
   mvn -Dmaven.repo.local=$WORKSPACE/repository -DskipTests=true clean verify
   cd $WORKSPACE/main/appserver/tests/embedded
   mvn -Dmaven.repo.local=$WORKSPACE/repository -DskipTests=true clean verify
-  mvn -Dbuild=snapshot -Dmaven.repo.local=$WORKSPACE/repository -Dmaven.test.failure.ignore=true clean verify
   merge_junits
 }
 
@@ -82,13 +70,6 @@ merge_junits(){
   ${SED} -i "s/\bclassname=\"/classname=\"${TEST_ID}./g" ${JUD}
 }
 
-get_maven_embedded_glassfish_plugin_source(){
-  rm -rf $WORKSPACE/maven-embedded-glassfish-plugin || true
-  GIT_EMBEDDED_URL="https://github.com/javaee/maven-embedded-glassfish-plugin.git"
-  git clone $GIT_EMBEDDED_URL $WORKSPACE/maven-embedded-glassfish-plugin
-}
-
-
 run_test_id(){
 	source `dirname $0`/../common_test.sh
 	kill_process
@@ -96,7 +77,6 @@ run_test_id(){
 	download_test_resources main.zip version-info.txt
 	rm -rf main || true
 	unzip_test_resources $WORKSPACE/bundles/main.zip
-  get_maven_embedded_glassfish_plugin_source
   case ${TEST_ID} in
     embedded_publisher)
    	  test_run_embedded_publisher;;
