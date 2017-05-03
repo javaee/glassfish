@@ -45,6 +45,8 @@ test_run_embedded_publisher(){
 	PATH=$M2_HOME/bin:$JAVA_HOME/bin:$PATH; export PATH
 	mvn -version
 	echo $WORKSPACE
+  cd $WORKSPACE/main
+  mvn -Dmaven.repo.local=$WORKSPACE/repository -DskipTests=true clean install
   EMBEDDED_WORKSPACE=$WORKSPACE/main/appserver/extras/embedded
   cd $EMBEDDED_WORKSPACE/all
   mvn -Dmaven.repo.local=$WORKSPACE/repository -DskipTests=true clean install
@@ -81,14 +83,9 @@ run_test_id(){
 	source `dirname $0`/../common_test.sh
 	kill_process
 	rm main.zip rm version-info.txt || true
-	download_test_resources main.zip version-info.txt tests-maven-repo.zip
+	download_test_resources main.zip version-info.txt
 	rm -rf main || true
 	unzip_test_resources $WORKSPACE/bundles/main.zip
-  rm -rf $WORKSPACE/repository || true
-  mkdir $WORKSPACE/repository
-  cd $WORKSPACE/repository
-  unzip_test_resources $WORKSPACE/bundles/tests-maven-repo.zip
-  cd -
   case ${TEST_ID} in
     embedded_publisher)
    	  test_run_embedded_publisher;;

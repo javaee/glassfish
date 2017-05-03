@@ -560,7 +560,6 @@ zip_tests_maven_repo(){
         org/glassfish/main/core/* \
         org/glassfish/main/deployment/deployment-common/* \
         org/glassfish/main/deployment/nucleus-deployment/* \
-        org/glassfish/main/packager/* \
         org/glassfish/main/external/ldapbp-repackaged/* \
         org/glassfish/main/external/nucleus-external/* \
         org/glassfish/main/flashlight/flashlight-framework/* \
