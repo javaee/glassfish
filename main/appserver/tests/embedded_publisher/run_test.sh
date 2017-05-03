@@ -45,6 +45,13 @@ test_run_embedded_publisher(){
 	PATH=$M2_HOME/bin:$JAVA_HOME/bin:$PATH; export PATH
 	mvn -version
 	echo $WORKSPACE
+  EMBEDDED_WORKSPACE=$WORKSPACE/main/appserver/extras/embedded
+  cd $EMBEDDED_WORKSPACE/all
+  mvn -Dmaven.repo.local=$WORKSPACE/repository -DskipTests=true clean install
+  cd $EMBEDDED_WORKSPACE/nucleus
+  mvn -Dmaven.repo.local=$WORKSPACE/repository -DskipTests=true clean install
+  cd $EMBEDDED_WORKSPACE/web
+  mvn -Dmaven.repo.local=$WORKSPACE/repository -DskipTests=true clean install
   cd $WORKSPACE/main/appserver/tests/embedded/maven-plugin/remoteejbs
   mvn -Dmaven.repo.local=$WORKSPACE/repository -DskipTests=true clean verify
   cd $WORKSPACE/main/appserver/tests/embedded/maven-plugin/mdb
