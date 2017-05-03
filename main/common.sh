@@ -120,6 +120,37 @@ init_weekly(){
     init_version 
 }
 
+purge_old_nightlies(){
+#########################
+# PURGE OLDER NIGHTLIES #
+#########################
+
+    rm -rf /tmp/purgeNightlies.sh
+    cat <<EOF > /tmp/purgeNightlies.sh
+#!/bin/bash
+# Max builds to keep around
+    MAX_BUILDS=21
+    cd \$1
+    LISTING=\`ls -trd b*\`
+    nbuilds=0
+    for i in \$LISTING; do
+    nbuilds=\`expr \$nbuilds + 1\`
+    done
+    echo "Total number of builds is \$nbuilds"
+    
+    while [ \$nbuilds -gt \$MAX_BUILDS ]; do
+    oldest_dir=\`ls -trd b* | head -n1\`
+    echo "rm -rf \$oldest_dir"
+    rm -rf \$oldest_dir
+    nbuilds=\`expr \$nbuilds - 1\`
+    echo "Number of builds is now \$nbuilds"
+    done    
+EOF
+    ssh ${SSH_MASTER} "rm -rf /tmp/purgeNightlies.sh"
+    scp /tmp/purgeNightlies.sh ${SSH_MASTER}:/tmp
+    ssh ${SSH_MASTER} "chmod +x /tmp/purgeNightlies.sh ; bash -e /tmp/purgeNightlies.sh /java/re/${ARCHIVE_PATH}"
+}
+
 init_nightly(){
     BUILD_KIND="nightly"
     ARCHIVE_PATH=${PRODUCT_GF}/${PRODUCT_VERSION_GF}/nightly
@@ -144,7 +175,7 @@ promote_init(){
     fi
 
     export PROMOTION_SUMMARY=${WORKSPACE_BUNDLES}/${BUILD_KIND}-promotion-summary.txt
-    rm -f $PROMOTION_SUMMARY
+    rm -f ${PROMOTION_SUMMARY}
     export JNET_DIR=${JNET_USER}@${JNET_STORAGE_HOST}:/dlc/${ARCHIVE_PATH}
     export JNET_DIR_HTTP=http://download.java.net/${ARCHIVE_PATH}
     export ARCHIVE_STORAGE_BUNDLES=/java/re/${ARCHIVE_MASTER_BUNDLES}
@@ -152,13 +183,13 @@ promote_init(){
     export SSH_STORAGE=${RE_USER}@${STORAGE_HOST}
     export SCP=${SSH_STORAGE}:${ARCHIVE_STORAGE_BUNDLES}
     export ARCHIVE_URL=http://${STORAGE_HOST_HTTP}/java/re/${ARCHIVE_MASTER_BUNDLES}
-
     init_storage_area
 }
 
 promote_finalize(){
     create_symlinks
     create_index
+    add_permission
     send_notification
 }
 
@@ -194,22 +225,21 @@ promote_weekly(){
 
 promote_nightly(){
     promote_init "nightly"
-    promote_bundle ${PROMOTED_BUNDLES}/web.zip ${PRODUCT_GF}-${PRODUCT_VERSION_GF}-web-${BUILD_ID}-${MDATE}.zip
-    promote_bundle ${PROMOTED_BUNDLES}/glassfish.zip ${PRODUCT_GF}-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.zip
-    promote_bundle ${PROMOTED_BUNDLES}/nucleus-new.zip nucleus-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.zip
-    promote_bundle ${PROMOTED_BUNDLES}/version-info.txt version-info-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.txt
-    promote_bundle ${PROMOTED_BUNDLES}/changes.txt changes-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.txt
+    promote_bundle ${NIGHTLY_PROMOTED_BUNDLES}/web.zip ${PRODUCT_GF}-${PRODUCT_VERSION_GF}-web-${BUILD_ID}-${MDATE}.zip
+    promote_bundle ${NIGHTLY_PROMOTED_BUNDLES}/glassfish.zip ${PRODUCT_GF}-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.zip
+    promote_bundle ${NIGHTLY_PROMOTED_BUNDLES}/nucleus-new.zip nucleus-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.zip
+    promote_bundle ${NIGHTLY_PROMOTED_BUNDLES}/version-info.txt version-info-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.txt
+    promote_bundle ${NIGHTLY_PROMOTED_BUNDLES}/changes.txt changes-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.txt
     VERSION_INFO="${WORKSPACE_BUNDLES}/version-info-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.txt"
-    SVN_REVISION=`head -1 ${VERSION_INFO} | awk '{print $2}'`
-    #record_svn_rev ${SVN_REVISION}
+    SCM_REVISION=`head -1 ${VERSION_INFO} | cut -d ":" -f2 | tr " " ""`
     purge_old_nightlies
     # hook for the docker image of the nightly
     curl -H "Content-Type: application/json" \
         --data '{"build": true}' \
         -X POST \
         -k \
-        https://registry.hub.docker.com/u/glassfish/nightly/trigger/945d55fc-1d4c-4043-8221-74185d9a4d53/
-    ssh $SSH_MASTER `echo "echo $SVN_REVISION > /scratch/java_re/hudson/hudson_install/last_promoted_nightly_scm_revision"`    
+        https://registry.hub.docker.com/u/glassfish/nightly/trigger/945d55fc-1d4c-4043-8221-74185d9a4d53/  
+    ssh $SSH_MASTER `echo "echo $SCM_REVISION > /scratch/java_re/hudson/hudson_install/last_promoted_nightly_scm_revision"`
     promote_finalize
 }
 
@@ -244,6 +274,9 @@ init_common(){
     if [ ! -z $MICRO_VERSION ] && [ ${#MICRO_VERSION} -gt 0 ]; then
         PRODUCT_VERSION_GF=$PRODUCT_VERSION_GF.${MICRO_VERSION} 
     fi
+
+    PROMOTED_JOB_URL=${HUDSON_URL}/job/${PROMOTED_JOB_NAME}/${PROMOTED_NUMBER}
+    PROMOTED_BUNDLES=${PROMOTED_JOB_URL}/artifact/bundles/
 
     IPS_REPO_URL=http://localhost
     IPS_REPO_DIR=${WORKSPACE}/promorepo
@@ -672,9 +705,28 @@ scp_jnet(){
         "scp /java/re/${ARCHIVE_MASTER_BUNDLES}/${file} ${JNET_DIR}/latest-${simple_name}"
 }
 
+create_promotion_changs(){
+    rm ${WORKSPACE_BUNDLES}/${1} | true
+    if [[ "nightly" == "${BUILD_KIND}" ]]; then
+        PREVIOUS_COMMIT=`cat ${HUDSON_HOME}/last_promoted_nightly_scm_revision`
+    fi
+    if [[ "weekly" == "${BUILD_KIND}" ]]; then
+        PREVIOUS_COMMIT=`cat ${HUDSON_HOME}/last_promoted_weekly_scm_revision`
+    fi
+    CURRENT_COMMIT=`head -1 ${WORKSPACE_BUNDLES}/version-info-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.txt | cut -d ":" -f2 | tr " " ""`
+    if [ "${CURRENT_COMMIT}" != "${PREVIOUS_COMMIT}" ] ; then
+    cd ${WORKSPACE}/glassfish    
+        git log --abbrev-commit --pretty=oneline ${PREVIOUS_COMMIT}..${CURRENT_COMMIT} > ${WORKSPACE_BUNDLES}/${1}
+    fi
+}
+
 promote_bundle(){
     printf "\n==== PROMOTE_BUNDLE (%s) ====\n\n" ${2}
-    curl ${1} > ${WORKSPACE_BUNDLES}/${2}
+    if [[ ${1} == *"changes.txt" ]]; then
+        create_promotion_changs ${2}
+    else
+        curl ${1} > ${WORKSPACE_BUNDLES}/${2}
+    fi
     scp ${WORKSPACE_BUNDLES}/${2} ${SCP}
     scp_jnet ${WORKSPACE_BUNDLES}/${2}
     if [ "nightly" == "${BUILD_KIND}" ]
@@ -726,13 +778,19 @@ RE
 MESSAGE
 }
 
+add_permission(){
+
+    ssh ${SSH_MASTER} \
+     "ssh ${JNET_USER}@${JNET_STORAGE_HOST} 'cd /dlc/${PRODUCT_GF}/${PRODUCT_VERSION_GF};chmod o+r nightly/*;chmod o+r promoted/*'"
+}
+
 #
 # Create index files on JNET_STORAGE_HOST for PRODUCT_GF.
 #
 create_index(){
 
     # cp this script to master.
-    scp `dirname $0`/common.sh ${SSH_MASTER}:/tmp
+    scp ${WORKSPACE}/glassfish/main/common.sh ${SSH_MASTER}:/tmp
 
     # cp script from ssh_master to JNET_STORAGE_HOST.
     ssh ${SSH_MASTER} \
