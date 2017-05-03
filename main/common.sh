@@ -232,6 +232,7 @@ promote_nightly(){
     promote_bundle ${NIGHTLY_PROMOTED_BUNDLES}/version-info.txt version-info-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.txt
     promote_bundle ${NIGHTLY_PROMOTED_BUNDLES}/changes.txt changes-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.txt
     VERSION_INFO="${WORKSPACE_BUNDLES}/version-info-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.txt"
+    SCM_REVISION=`head -1 ${VERSION_INFO} | cut -d ":" -f2 | tr " " ""`
     purge_old_nightlies
     # hook for the docker image of the nightly
     curl -H "Content-Type: application/json" \
@@ -239,6 +240,7 @@ promote_nightly(){
         -X POST \
         -k \
         https://registry.hub.docker.com/u/glassfish/nightly/trigger/945d55fc-1d4c-4043-8221-74185d9a4d53/  
+    ssh $SSH_MASTER `echo "echo $SCM_REVISION > /scratch/java_re/hudson/hudson_install/last_promoted_nightly_scm_revision"`
     promote_finalize
 }
 
@@ -700,21 +702,40 @@ scp_jnet(){
         "scp /java/re/${ARCHIVE_MASTER_BUNDLES}/${file} ${JNET_DIR}/latest-${simple_name}"
 }
 
+create_promotion_changs(){
+    rm ${WORKSPACE_BUNDLES}/${1} | true
+    if [[ "nightly" == "${BUILD_KIND}" ]]; then
+        PREVIOUS_COMMIT=`cat ${HUDSON_HOME}/last_promoted_nightly_scm_revision`
+    fi
+    if [[ "weekly" == "${BUILD_KIND}" ]]; then
+        PREVIOUS_COMMIT=`cat ${HUDSON_HOME}/last_promoted_weekly_scm_revision`
+    fi
+    CURRENT_COMMIT=`head -1 ${WORKSPACE_BUNDLES}/version-info-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.txt | cut -d ":" -f2 | tr " " ""`
+    if [ "${CURRENT_COMMIT}" != "${PREVIOUS_COMMIT}" ] ; then
+    cd ${WORKSPACE}/glassfish    
+        git log --abbrev-commit --pretty=oneline ${PREVIOUS_COMMIT}..${CURRENT_COMMIT} > ${WORKSPACE_BUNDLES}/${1}
+    fi
+}
+
 promote_bundle(){
     printf "\n==== PROMOTE_BUNDLE (%s) ====\n\n" ${2}
-    curl ${1} > ${WORKSPACE_BUNDLES}/${2}
+    if [[ ${1} == *"changes.txt" ]]; then
+        create_promotion_changs ${2}
+    else
+        curl ${1} > ${WORKSPACE_BUNDLES}/${2}
+    fi
     scp ${WORKSPACE_BUNDLES}/${2} ${SCP}
     scp_jnet ${WORKSPACE_BUNDLES}/${2}
     if [ "nightly" == "${BUILD_KIND}" ]
     then
-	   simple_name=`echo ${2}| tr -d " " | sed \
+       simple_name=`echo ${2}| tr -d " " | sed \
             -e s@"${PRODUCT_VERSION_GF}-"@@g \
             -e s@"${BUILD_ID}-${MDATE}-"@@g \
             -e s@"-${BUILD_ID}-${MDATE}"@@g \
             -e s@"--"@"-"@g`
     elif [ "weekly" == "${BUILD_KIND}" ]
     then
-	   simple_name=`echo ${2}| tr -d " " | sed \
+       simple_name=`echo ${2}| tr -d " " | sed \
             -e s@"${PRODUCT_VERSION_GF}-"@@g \
             -e s@"${BUILD_ID}-"@@g \
             -e s@"-${BUILD_ID}"@@g \
@@ -766,7 +787,7 @@ add_permission(){
 create_index(){
 
     # cp this script to master.
-    scp `dirname $0`/common.sh ${SSH_MASTER}:/tmp
+    scp ${WORKSPACE}/glassfish/main/common.sh ${SSH_MASTER}:/tmp
 
     # cp script from ssh_master to JNET_STORAGE_HOST.
     ssh ${SSH_MASTER} \
