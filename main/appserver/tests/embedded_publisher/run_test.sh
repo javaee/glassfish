@@ -65,9 +65,9 @@ test_run_embedded_publisher(){
 
 merge_junits(){
   TEST_ID="embedded_publisher"
-  rm -rf ${WORKSPACE}/test-results || true
-  mkdir -p ${WORKSPACE}/test-results/$TEST_ID/results/junitreports
-  JUD="${WORKSPACE}/test-results/${TEST_ID}/results/junitreports/test_results_junit.xml"
+  rm -rf ${WORKSPACE}/results || true
+  mkdir -p ${WORKSPACE}/results/junitreports
+  JUD="${WORKSPACE}/results/junitreports/test_results_junit.xml"
   echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" > ${JUD}
   echo "<testsuites>" >> ${JUD}
   for i in `find . -type d -name "surefire-reports"`
