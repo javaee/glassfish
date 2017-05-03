@@ -149,18 +149,18 @@
 
       <property name="https.1.port" value="1${https.port}" />
       <property name="https.2.port" value="2${https.port}" />
-      
+      <!-- Skip below https://jira.oraclecorp.com/jira/browse/IDCINTER-82
       <antcall target="cipher-test">
         <param name="should-pass-cipher" value="SSL_RSA_WITH_RC4_128_MD5"/>
         <param name="enable-cipher"      value="SSL_RSA_WITH_RC4_128_MD5"/>
         <param name="https.port"         value="${https.1.port}"/>
       </antcall>
-
+     
       <antcall target="cipher-test">
         <param name="should-pass-cipher" value=""/>
         <param name="enable-cipher"      value="SSL_RSA_WITH_3DES_EDE_CBC_SHA"/>
         <param name="https.port"         value="${https.1.port}"/>
-      </antcall>
+      </antcall>-->
 
       <antcall target="cipher-test">
         <param name="should-pass-cipher" value=""/>
@@ -224,12 +224,12 @@
         <param name="enable-cipher"      value="SSL_RSA_WITH_NULL_MD5"/>
         <param name="https.port"         value="${https.2.port}"/>
       </antcall>
-
+      <!-- Skip below https://jira.oraclecorp.com/jira/browse/IDCINTER-82
       <antcall target="cipher-test">
         <param name="should-pass-cipher" value="SSL_RSA_WITH_RC4_128_SHA"/>
         <param name="enable-cipher"      value="SSL_RSA_WITH_RC4_128_SHA"/>
         <param name="https.port"         value="${https.2.port}"/>
-      </antcall>
+      </antcall>-->
 
       <antcall target="cipher-test">
         <param name="should-pass-cipher" value="SSL_RSA_WITH_NULL_SHA"/>

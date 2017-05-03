@@ -175,7 +175,7 @@ promote_init(){
     fi
 
     export PROMOTION_SUMMARY=${WORKSPACE_BUNDLES}/${BUILD_KIND}-promotion-summary.txt
-    rm -f $PROMOTION_SUMMARY
+    rm -f ${PROMOTION_SUMMARY}
     export JNET_DIR=${JNET_USER}@${JNET_STORAGE_HOST}:/dlc/${ARCHIVE_PATH}
     export JNET_DIR_HTTP=http://download.java.net/${ARCHIVE_PATH}
     export ARCHIVE_STORAGE_BUNDLES=/java/re/${ARCHIVE_MASTER_BUNDLES}
@@ -183,7 +183,6 @@ promote_init(){
     export SSH_STORAGE=${RE_USER}@${STORAGE_HOST}
     export SCP=${SSH_STORAGE}:${ARCHIVE_STORAGE_BUNDLES}
     export ARCHIVE_URL=http://${STORAGE_HOST_HTTP}/java/re/${ARCHIVE_MASTER_BUNDLES}
-
     init_storage_area
 }
 
@@ -275,6 +274,9 @@ init_common(){
     if [ ! -z $MICRO_VERSION ] && [ ${#MICRO_VERSION} -gt 0 ]; then
         PRODUCT_VERSION_GF=$PRODUCT_VERSION_GF.${MICRO_VERSION} 
     fi
+
+    PROMOTED_JOB_URL=${HUDSON_URL}/job/${PROMOTED_JOB_NAME}/${PROMOTED_NUMBER}
+    PROMOTED_BUNDLES=${PROMOTED_JOB_URL}/artifact/bundles/
 
     IPS_REPO_URL=http://localhost
     IPS_REPO_DIR=${WORKSPACE}/promorepo
@@ -728,14 +730,14 @@ promote_bundle(){
     scp_jnet ${WORKSPACE_BUNDLES}/${2}
     if [ "nightly" == "${BUILD_KIND}" ]
     then
-       simple_name=`echo ${2}| tr -d " " | sed \
+	   simple_name=`echo ${2}| tr -d " " | sed \
             -e s@"${PRODUCT_VERSION_GF}-"@@g \
             -e s@"${BUILD_ID}-${MDATE}-"@@g \
             -e s@"-${BUILD_ID}-${MDATE}"@@g \
             -e s@"--"@"-"@g`
     elif [ "weekly" == "${BUILD_KIND}" ]
     then
-       simple_name=`echo ${2}| tr -d " " | sed \
+	   simple_name=`echo ${2}| tr -d " " | sed \
             -e s@"${PRODUCT_VERSION_GF}-"@@g \
             -e s@"${BUILD_ID}-"@@g \
             -e s@"-${BUILD_ID}"@@g \

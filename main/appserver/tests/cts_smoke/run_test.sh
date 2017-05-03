@@ -191,7 +191,7 @@ run_test_id(){
 		echo "Invalid Test ID"
 		exit 1
 	fi
-    cts_to_junit $result $WORKSPACE/results/junitreports/test_results_junit.xml
+    cts_to_junit $result $WORKSPACE/results/junitreports/test_results_junit.xml $1
     upload_test_results
     delete_bundle
     cd -
@@ -203,6 +203,7 @@ list_test_ids(){
 }
 
 cts_to_junit(){
+        junitCategory=$3
 	cd $WORKSPACE/results
 	rm -rf $2
 	cat $1 | ${GREP} -a "\[javatest.batch\] Finished Test" >  results.txt
@@ -219,7 +220,7 @@ cts_to_junit(){
 		classname=`echo $id | cut -d '#' -f1 | ${SED} s@"\/"@"."@g`
 		name=`echo $id | cut -d '#' -f2`
 
-		echo "		<testcase classname=\"$classname\" name=\"$name\">" >> $2		
+		echo "		<testcase classname=\"${junitCategory}.$classname\" name=\"$name\">" >> $2		
 		if [ "${status}" = "FAILED" ]
 		then
 			echo "			<failure type=\"CtsFailure\"> n/a </failure>" >> $2
