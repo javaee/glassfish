@@ -211,6 +211,19 @@ public final class ContainerEvent extends EventObject {
     public static final String AFTER_WRITE_LISTENER_ON_ERROR
         = "afterWriteListenerOnError";
 
+    public static final String BEFORE_AUTHENTICATION
+        = "beforeAuthentication";
+    public static final String AFTER_AUTHENTICATION
+        = "afterAuthentication";
+    public static final String BEFORE_POST_AUTHENTICATION
+        = "beforePostAuthentication";
+    public static final String AFTER_POST_AUTHENTICATION
+        = "afterPostAuthentication";
+    public static final String BEFORE_LOGOUT
+        = "beforePostAuthentication";
+    public static final String AFTER_LOGOUT
+        = "afterPostAuthentication";
+
     /**
      * The Container on which this event occurred.
      */
