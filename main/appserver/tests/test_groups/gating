@@ -17,3 +17,4 @@ nucleus_admin_all
 cts_smoke_all
 servlet_tck_all
 findbugs_all
+embedded_publisher_all
