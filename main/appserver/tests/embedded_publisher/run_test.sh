@@ -64,7 +64,7 @@ test_run_embedded_publisher(){
 }
 
 merge_junits(){
-  TEST_ID="embedded_publisher"
+  TEST_ID="embedded_publisher_all"
   rm -rf ${WORKSPACE}/results || true
   mkdir -p ${WORKSPACE}/results/junitreports
   JUD="${WORKSPACE}/results/junitreports/test_results_junit.xml"
@@ -87,7 +87,7 @@ run_test_id(){
 	rm -rf main || true
 	unzip_test_resources $WORKSPACE/bundles/main.zip
   case ${TEST_ID} in
-    embedded_publisher)
+    embedded_publisher_all)
    	  test_run_embedded_publisher;;
   esac
   upload_test_results
@@ -97,7 +97,7 @@ run_test_id(){
 
 
 list_test_ids(){
-	echo embedded_publisher
+	echo embedded_publisher_all
 }
 
 OPT=$1
