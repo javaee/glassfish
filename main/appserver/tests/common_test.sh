@@ -74,10 +74,7 @@ test_init(){
 	APS_HOME=$WORKSPACE/main/appserver/tests/appserv-tests; export APS_HOME
 	TEST_RUN_LOG=tests-run.log; export TEST_RUN_LOG
   #workaround for OSGI timestamp issue
-  for osgiDir in `find $S1AS_HOME/domains -name "osgi-cache" -type d`
-  do
-    rm -rf $osgiDir/*
-  done
+  find $S1AS_HOME -type f | xargs touch > /dev/null
 	echo S1AS_HOME is $S1AS_HOME
 	echo ANT_HOME is $ANT_HOME
 	echo APS_HOME is $APS_HOME

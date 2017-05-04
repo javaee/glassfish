@@ -52,6 +52,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadFactory;
 import static org.glassfish.tests.utils.NucleusTestUtils.*;
+import org.glassfish.tests.utils.NucleusTestUtils;
 import static org.testng.AssertJUnit.*;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.Test;
@@ -62,11 +63,13 @@ import org.testng.annotations.Test;
  */
 @Test(testName="DetachAttachTest")
 public class DetachAttachTest {
-    
+    private static File nucleusRoot  = NucleusTestUtils.getNucleusRoot();   
     @AfterTest
     public void cleanUp() throws Exception {
         nadmin("stop-domain");
         JobManagerTest.deleteJobsFile();
+        //osgi-cache workaround
+        touchDirectory(new File(nucleusRoot));
         nadmin("start-domain");
     }
 
