@@ -39,7 +39,7 @@
 # holder.
 
 copy_ql_results(){
-	cp $WORKSPACE/glassfish4/glassfish/domains/domain1/logs/server.log* $WORKSPACE/results/ || true
+	cp $WORKSPACE/glassfish5/glassfish/domains/domain1/logs/server.log* $WORKSPACE/results/ || true
 	cp $TEST_RUN_LOG $WORKSPACE/results/
 	cp $WORKSPACE/bundles/version-info.txt $WORKSPACE/results/
 	cp -r test-output/* $WORKSPACE/results/
@@ -56,7 +56,7 @@ run_test_id(){
 	    download_test_resources glassfish.zip tests-maven-repo.zip version-info.txt
 		unzip_test_resources $WORKSPACE/bundles/glassfish.zip "$WORKSPACE/bundles/tests-maven-repo.zip -d $WORKSPACE/repository"	    	
 		cd $WORKSPACE/main/appserver/tests/quicklook/
-		mvn -Dglassfish.home=$WORKSPACE/glassfish4/glassfish -Dmaven.repo.local=$WORKSPACE/repository -Ptest_gd_security,report test | tee $TEST_RUN_LOG
+		mvn -Dglassfish.home=$WORKSPACE/glassfish5/glassfish -Dmaven.repo.local=$WORKSPACE/repository -Ptest_gd_security,report test | tee $TEST_RUN_LOG
 		copy_ql_results
 	elif [[ $1 = "ql_gf_nucleus_all" || $1 = "nucleus_admin_all" ]]; then
 		download_test_resources nucleus-new.zip tests-maven-repo.zip version-info.txt
@@ -80,9 +80,9 @@ run_test_id(){
 		unzip_test_resources $WORKSPACE/bundles/web.zip "$WORKSPACE/bundles/tests-maven-repo.zip -d $WORKSPACE/repository"
 		cd $WORKSPACE/main/appserver/tests/quicklook/
 		if [[ $1 = "ql_gf_web_profile_all" ]]; then
-			mvn -Dglassfish.home=$WORKSPACE/glassfish4/glassfish -Dmaven.repo.local=$WORKSPACE/repository -Ptest_wd_security,report test | tee $TEST_RUN_LOG
+			mvn -Dglassfish.home=$WORKSPACE/glassfish5/glassfish -Dmaven.repo.local=$WORKSPACE/repository -Ptest_wd_security,report test | tee $TEST_RUN_LOG
 		elif [[ $1 = "ql_gf_embedded_profile_all" ]]; then
-			mvn -Dglassfish.home=$WORKSPACE/glassfish4/glassfish -Dmaven.repo.local=$WORKSPACE/repository -Ptest_em,report test | tee $TEST_RUN_LOG
+			mvn -Dglassfish.home=$WORKSPACE/glassfish5/glassfish -Dmaven.repo.local=$WORKSPACE/repository -Ptest_em,report test | tee $TEST_RUN_LOG
 		fi
 		copy_ql_results
 	else

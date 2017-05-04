@@ -54,7 +54,7 @@ test_run_cts_smoke(){
 	rm -rf /disk1/java_re/.javatest
 
 	# XXX Trying this as a test - touch all the files in the glassfish distribution
-	# find glassfish4 -exec touch {} \;
+	# find glassfish5 -exec touch {} \;
 	# XXX End test
 
 	wget $CTS_SMOKE/$CTS_SMOKE_BUNDLE
@@ -233,7 +233,7 @@ cts_to_junit(){
 
 delete_workspace(){
 	printf "\n%s \n\n" "===== DELETE WORKSPACE ====="
-    rm -rf $WORKSPACE/glassfish4 > /dev/null || true
+    rm -rf $WORKSPACE/glassfish5 > /dev/null || true
     rm -rf $WORKSPACE/servlettck > /dev/null  || true
     rm $WORKSPACE/servlettck.zip > /dev/null || true
     rm -rf $WORKSPACE/javaee-smoke > /dev/null || true

@@ -55,7 +55,7 @@ wget --no-proxy $GLASSFISH_URL
 
 unzip -q glassfish.zip
 
-export S1AS_HOME=$PWD/glassfish4/glassfish
+export S1AS_HOME=$PWD/glassfish5/glassfish
 popd
 
 rm -rf opends-image

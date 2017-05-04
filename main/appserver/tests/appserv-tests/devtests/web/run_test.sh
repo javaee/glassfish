@@ -78,7 +78,7 @@
 # Record finderprints of files to track usage: glassfish-v3-image/glassfish.zip
 #     Fingerprint all archived artifacts
 #
-# Archive the artifacts: appserv-tests/test_results*.*,glassfish-v3-image/glassfish4/glassfish/domains/domain1/logs/*
+# Archive the artifacts: appserv-tests/test_results*.*,glassfish-v3-image/glassfish5/glassfish/domains/domain1/logs/*
 #
 # Publish SQE test result report
 #     SQE report XMLs: appserv-tests/test_resultsValid.xml

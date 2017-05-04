@@ -49,7 +49,7 @@ pushd glassfish-v4-image
 wget --no-proxy http://gf-hudson.us.oracle.com/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip
 unzip -q glassfish.zip
 
-export S1AS_HOME=$PWD/glassfish4/glassfish
+export S1AS_HOME=$PWD/glassfish5/glassfish
 popd
 
 rm -rf opends-image

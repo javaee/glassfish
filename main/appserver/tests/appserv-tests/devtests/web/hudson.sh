@@ -78,7 +78,7 @@
 # Record finderprints of files to track usage: glassfish-v3-image/glassfish.zip
 #     Fingerprint all archived artifacts
 #
-# Archive the artifacts: appserv-tests/test_results*.*,glassfish-v3-image/glassfish4/glassfish/domains/domain1/logs/*
+# Archive the artifacts: appserv-tests/test_results*.*,glassfish-v3-image/glassfish5/glassfish/domains/domain1/logs/*
 #
 # Publish SQE test result report
 #     SQE report XMLs: appserv-tests/test_resultsValid.xml
@@ -160,7 +160,7 @@ shift $(( OPTIND - 1 ));
 java -version
 ant -version
 
-rm -rf $WORKSPACE/glassfish4
+rm -rf $WORKSPACE/glassfish5
 
 if [ "x$download" = "x1" ]; then
     cd $DOWNLOAD_DIR
@@ -169,7 +169,7 @@ fi
 cd $WORKSPACE
 unzip -q $DOWNLOAD_DIR/glassfish.zip
 
-export S1AS_HOME=$WORKSPACE/glassfish4/glassfish
+export S1AS_HOME=$WORKSPACE/glassfish5/glassfish
 export APS_HOME=$WORKSPACE/appserv-tests
 export AS_LOGFILE=$S1AS_HOME/cli.log 
 #export AS_DEBUG=true 
