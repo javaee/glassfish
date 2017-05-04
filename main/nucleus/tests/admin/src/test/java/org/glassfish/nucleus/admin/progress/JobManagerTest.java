@@ -66,7 +66,7 @@ public class JobManagerTest {
         //delete jobs.xml incase there were other jobs run
         deleteJobsFile();
         //osgi-cache workaround
-        touchDirectory(new File(nucleusRoot + File.separator + "domains"+ File.separator + "domain1" + File.separator + "osgi-cache")); 
+        touchDirectory(nucleusRoot); 
         nadmin("start-domain");
 
 
