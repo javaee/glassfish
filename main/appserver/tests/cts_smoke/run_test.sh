@@ -217,7 +217,7 @@ cts_to_junit(){
 		line=`echo $i | ${SED} s@"\.\.\.\.\.\.\.\."@" "@g`
 		status=`echo $line | ${AWK} '{print $1}'`
 		id=`echo $line | ${AWK} '{print $2}'`
-		classname=`echo $id | cut -d '#' -f1 | ${SED} s@"\/"@"."@g`
+		classname=`echo $id | cut -d '#' -f1 | ${SED} s@"\/"@"_"@g | ${SED} s@".java"@@g`
 		name=`echo $id | cut -d '#' -f2`
 
 		echo "		<testcase classname=\"${junitCategory}.$classname\" name=\"$name\">" >> $2		
