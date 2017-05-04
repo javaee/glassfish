@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -335,4 +335,58 @@ public class NucleusTestUtils {
         public String outAndErr;
     }
 
+    public static void deleteDirectoryContents(final File dir) {
+      if (dir == null || !dir.exists()) {
+        return;
+      }
+      System.out.println("Deleting contents of directory : " + dir);
+      File[] files = dir.listFiles();
+      if(files!=null) {
+        for(File f: files) {
+          if(f.isDirectory()) {
+            deleteDirectory(f);
+          }else{
+            f.delete();
+          }
+        }
+      }
+    }
+
+    public static void deleteDirectory (final File dir) {
+      if (dir == null || !dir.exists()) {
+        return;
+      }
+      File[] files = dir.listFiles();
+      if(files!=null) {
+        for(File f: files) {
+          if(f.isDirectory()) {
+            deleteDirectory(f);
+          }else{
+            f.delete();
+          }
+        }
+      }
+      dir.delete();
+    }
+
+    public static void touchDirectory (final File dir) {
+      if (dir == null || !dir.exists()) {
+        return;
+      }
+      long timestamp;
+      File[] files = dir.listFiles();
+      if(files!=null) {
+        for(File f: files) {
+          if(f.isDirectory()) {
+            touchDirectory(f);
+          }else{
+            timestamp = System.currentTimeMillis();
+            f.setLastModified(timestamp);
+          }
+        }
+      }
+      timestamp = System.currentTimeMillis();
+      dir.setLastModified(timestamp);
+      System.out.println("Touched contents of directory : " + dir);
+    }
 }
