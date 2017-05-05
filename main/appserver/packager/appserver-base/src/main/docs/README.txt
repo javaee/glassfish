@@ -1,4 +1,4 @@
-Thank you for downloading GlassFish Server Open Source Edition 4.1!
+Thank you for downloading GlassFish Server Open Source Edition 5.0!
 
 Here are a few short steps to get you started...
 
