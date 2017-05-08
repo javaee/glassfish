@@ -51,7 +51,7 @@ import java.util.logging.Logger;
 
 import org.apache.jasper.runtime.JspApplicationContextImpl;
 import org.glassfish.cdi.CDILoggerInfo;
-import org.jboss.weld.el.WeldELContextListener;
+import org.jboss.weld.module.web.el.WeldELContextListener;
 
 /**
  * ServletContextListener implementation that ensures (for Weld applications)
@@ -74,7 +74,7 @@ public class WeldContextListener implements ServletContextListener {
              jspAppContext.addELResolver(beanManager.getELResolver());
 
              try {
-                 Class weldClass = Class.forName("org.jboss.weld.el.WeldELContextListener");
+                 Class weldClass = Class.forName("org.jboss.weld.module.web.el.WeldELContextListener");
                  WeldELContextListener welcl = ( WeldELContextListener ) weldClass.newInstance();
                  jspAppContext.addELContextListener(welcl);
              } catch (Exception e) {

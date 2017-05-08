@@ -47,7 +47,7 @@ import java.util.Set;
 
 import javax.interceptor.InvocationContext;
 
-import org.jboss.weld.ejb.SessionBeanInterceptor;
+import org.jboss.weld.module.ejb.SessionBeanInterceptor;
 import org.jboss.weld.ejb.spi.BusinessInterfaceDescriptor;
 
 import com.sun.enterprise.deployment.EjbDescriptor;

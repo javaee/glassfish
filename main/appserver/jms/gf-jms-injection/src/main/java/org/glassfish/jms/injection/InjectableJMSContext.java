@@ -60,10 +60,11 @@ import javax.transaction.SystemException;
 import com.sun.appserv.connectors.internal.api.ConnectorsUtil;
 import com.sun.enterprise.transaction.api.JavaEETransactionManager;
 import com.sun.enterprise.util.LocalStringManagerImpl;
-import org.jboss.weld.context.ContextNotActiveException;
+
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.internal.api.Globals;
 import org.glassfish.logging.annotation.LoggerInfo;
+import javax.enterprise.context.ContextNotActiveException;
 
 /**
  * This bean is the JMSContext wrapper which user gets by injection.
