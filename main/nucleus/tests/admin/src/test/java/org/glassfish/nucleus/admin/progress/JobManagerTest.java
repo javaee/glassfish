@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -65,7 +65,8 @@ public class JobManagerTest {
         nadmin("stop-domain");
         //delete jobs.xml incase there were other jobs run
         deleteJobsFile();
-
+        //osgi-cache workaround
+        touchDirectory(nucleusRoot); 
         nadmin("start-domain");
 
 
