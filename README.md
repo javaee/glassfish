@@ -27,9 +27,9 @@ Locate staged distributions:
 Starting GlassFish
 ------------------
 
-`glassfish4/bin/asadmin start-domain`
+`glassfish5/bin/asadmin start-domain`
 
 Stopping GlassFish
 ------------------
 
-`glassfish4/bin/asadmin stop-domain`
+`glassfish5/bin/asadmin stop-domain`

@@ -27,7 +27,7 @@ build() {
 if [ -z "${S1AS_HOME}" ]
 then
    build
-   export S1AS_HOME=$PWD/glassfish3/glassfish
+   export S1AS_HOME=$PWD/glassfish5/glassfish
    export APS_HOME=$PWD/appserv-tests
 else 
    export APS_HOME="$(pwd )/../.."
