@@ -505,7 +505,7 @@
 	</loadfile>
         <echo message="${testng_output}"/>
     </target>
-
+     <!-- added few messages in order to show testng summary of wsit related tests along with final summary as wsit tests are ran seperately as a workaround for GLASSFISH-21672 -->
     <target name="quicklook-summary">
         <tstamp>
            <format property="end.timestamp" pattern="EE MM/dd/yyyy HH:mm:ss zz" />
@@ -519,7 +519,29 @@
 	      </tokenfilter>
            </filterchain>
         </loadfile>
+	 <loadfile srcfile="wsit/JaxwsFromWsdl/wsit1run.output" property="testng1_output">
+           <filterchain>
+              <tailfilter lines="4" skip="1"/>
+	      <tokenfilter>
+    		  <replacestring from="[testng]" to=""/>
+		  <replacestring from="QuickLookTests" to="JaxwsFromWsdl Tests"/>
+	      </tokenfilter>
+           </filterchain>
+        </loadfile>
+	 <loadfile srcfile="wsit/jsr109tester/wsit2run.output" property="testng2_output">
+           <filterchain>
+              <tailfilter lines="4" skip="1"/>
+	      <tokenfilter>
+    		  <replacestring from="[testng]" to=""/>
+		   <replacestring from="QuickLookTests" to=" Jsr109tester Tests"/>
+	      </tokenfilter>
+           </filterchain>
+        </loadfile>
         <echo file="quicklook_summary.txt" append="true" message="${testng_output}"/>
+	
+	<echo file="quicklook_summary.txt" append="true" message="${testng1_output}"/>
+
+	<echo file="quicklook_summary.txt" append="true" message="${testng2_output}"/>
         <antcall target="build-version"/>
         <available file="test-output/emailable-report.html" property="report.present"/>
     	<antcall target="quicklook-report"/>
