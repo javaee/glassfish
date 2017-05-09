@@ -173,9 +173,10 @@ find_test_job(){
     return 1
 }
 
-USAGE="Usage: rq -b BRANCH -a ---> For runing all the test ids\n\
-	   or  rq -b BRANCH -g TESTGROUPNAME ---> For runing a TESTGROUPNAME\n\
-	   or  rq -b BRANCH -t TESTIDS ---> For runing a space separated set of TESTIDS"
+USAGE="Usage:\n 1) rq -l ---> List all the available TEST IDS without running them\n
+	   2) rq -b BRANCH -a ---> For runing all the test ids\n\
+	   3) rq -b BRANCH -g TESTGROUPNAME ---> For runing a TESTGROUPNAME\n\
+	   4) rq -b BRANCH -t TESTIDS ---> For runing a space separated set of TESTIDS"
 
 list_test_ids(){
 	for runtest in `find . -name run_test\.sh`; do
@@ -199,12 +200,21 @@ OPTIND=1
 output_file=""
 verbose=0
 
-while getopts ":b:t:g:a" opt; do
+while getopts ":b:t:g:a:l" opt; do
     case "$opt" in
     b)	branch=$OPTARG;;
     t)  test_ids=($OPTARG);;
     a)  test_ids=(`list_test_ids`);;
 	g)  test_ids=(`list_group_test_ids $OPTARG`);;
+	l)	test_ids=(`list_test_ids`)
+		printf "###################################################################\n"
+		printf "Start List of available Test Ids\n"
+		printf "###################################################################\n"
+		echo ${test_ids[@]} | tr " " "\n"
+		printf "###################################################################\n"
+		printf "End List of available Test Ids\n"
+		printf "###################################################################\n"
+		exit 0;;
     *)	echo -e "Invalid option"
 		echo -e $USAGE
 		exit 1 ;;         
