@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2013-2017 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -51,21 +51,129 @@
     <includeBaseDirectory>false</includeBaseDirectory>
 
     <fileSets>
+
+        <!-- nucleus-common -->
         <fileSet>
-            <directory>${temp.dir}/${nucleus.install.dir.name}</directory>
-            <excludes>
-                <exclude>domains/domain1/**</exclude>
-                <exclude>bin/*</exclude>
-            </excludes>
-            <outputDirectory>${nucleus.install.dir.name}</outputDirectory>
+            <directory>${temp.dir}/nucleus-common</directory>
+            <includes>
+                <include>osgi/**</include>
+                <include>config/**</include>
+                <include>modules/**</include>
+            </includes>
+            <outputDirectory>${install.dir.name}</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>${temp.dir}/${nucleus.install.dir.name}</directory>
+            <directory>${temp.dir}/nucleus-common/nucleus</directory>
+            <excludes>
+                <exclude>bin/**</exclude>
+            </excludes>
+            <outputDirectory>${install.dir.name}</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${temp.dir}/nucleus-common/nucleus</directory>
             <fileMode>755</fileMode>
             <includes>
-                <include>bin/*</include>
+                <include>bin/**</include>
             </includes>
-            <outputDirectory>${nucleus.install.dir.name}</outputDirectory>
+            <outputDirectory>${install.dir.name}</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${temp.dir}/nucleus-common/nucleus</directory>
+            <fileMode>755</fileMode>
+            <includes>
+                <include>nadmin*</include>
+            </includes>
+            <outputDirectory>${install.dir.name}/lib</outputDirectory>
+        </fileSet>
+
+        <!-- staging jars -->
+
+        <fileSet>
+            <directory>${temp.dir}</directory>
+            <includes>
+                <include>nucleus-domain.jar</include>
+            </includes>
+            <outputDirectory>${install.dir.name}/common/templates/gf</outputDirectory>
+        </fileSet>
+
+        <!-- lib/asadmin/ -->
+        <fileSet>
+            <directory>${temp.dir}</directory>
+            <includes>
+                <include>server-mgmt.jar</include>
+                <include>osgi-cli-interactive.jar</include>
+                <include>cluster-cli.jar</include>
+            </includes>
+            <outputDirectory>${install.dir.name}/lib/asadmin</outputDirectory>
+        </fileSet>
+
+        <!-- lib/monitor/ -->
+        <fileSet>
+            <directory>${temp.dir}</directory>
+            <includes>
+                <include>flashlight-agent.jar</include>
+            </includes>
+            <outputDirectory>${install.dir.name}/lib/monitor</outputDirectory>
+        </fileSet>
+
+        <!-- lib/ -->
+        <fileSet>
+            <directory>${temp.dir}</directory>
+            <includes>
+                <include>grizzly-npn-bootstrap.jar</include>
+            </includes>
+            <outputDirectory>${install.dir.name}/lib</outputDirectory>
+        </fileSet>
+
+        <!-- modules/endorsed -->
+        <fileSet>
+            <directory>${temp.dir}</directory>
+            <includes>
+                <include>javax.annotation-api.jar</include>
+            </includes>
+            <outputDirectory>${install.dir.name}/modules/endorsed</outputDirectory>
+        </fileSet>
+
+        <!-- felix -->
+        <fileSet>
+            <directory>${temp.dir}</directory>
+            <includes>
+                <include>felix.jar</include>
+            </includes>
+            <outputDirectory>${install.dir.name}/osgi/felix/bin</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${temp.dir}</directory>
+            <includes>
+                <include>org.apache.felix.*.jar</include>
+            </includes>
+            <excludes>
+                <exclude>org.apache.felix.bundlerepository.jar</exclude>
+            </excludes>
+            <outputDirectory>${install.dir.name}/modules/autostart</outputDirectory>
+        </fileSet>
+
+        <!-- staging modules -->
+        <fileSet>
+            <directory>${temp.dir}</directory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+            <excludes>
+                <exclude>server-mgmt.jar</exclude>
+                <exclude>osgi-cli-interactive.jar</exclude>
+                <exclude>flashlight-agent.jar</exclude>
+                <exclude>org.apache.felix.configadmin.jar</exclude>
+                <exclude>org.apache.felix.fileinstall.jar</exclude>
+                <exclude>org.apache.felix.gogo.command.jar</exclude>
+                <exclude>org.apache.felix.gogo.runtime.jar</exclude>
+                <exclude>org.apache.felix.gogo.shell.jar</exclude>
+                <exclude>org.apache.felix.scr.jar</exclude>
+                <exclude>felix.jar</exclude>
+                <exclude>nucleus-domain.jar</exclude>
+                <exclude>javax.annotation-api.jar</exclude>
+            </excludes>
+            <outputDirectory>${install.dir.name}/modules</outputDirectory>
         </fileSet>
     </fileSets>
 </assembly>

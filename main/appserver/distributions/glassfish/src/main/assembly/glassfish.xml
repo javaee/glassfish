@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2013-2017 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -51,32 +51,328 @@
     <includeBaseDirectory>false</includeBaseDirectory>
 
     <fileSets>
+
+        <!-- glassfish-common -->
         <fileSet>
-            <directory>${temp.dir}/${install.dir.name}</directory>
-            <excludes>
-                <exclude>domains/domain1/**</exclude>
-                <exclude>bin/*</exclude>
-                <exclude>glassfish/bin/*</exclude>
-                <exclude>glassfish/lib/nadmin*</exclude>
-            </excludes>
-            <outputDirectory>${install.dir.name}</outputDirectory>
-        </fileSet>
-        <fileSet>
-            <directory>${temp.dir}/glassfish</directory>
-            <outputDirectory>${install.dir.name}/glassfish</outputDirectory>
-            <excludes>
-                <exclude>legal/3RD-PARTY-LICENSE-WEB-PROFILE.txt</exclude>
-            </excludes>
-        </fileSet>
-        <fileSet>
-            <directory>${temp.dir}/${install.dir.name}</directory>
+            <directory>${temp.dir}/glassfish-common/${install.dir.name}</directory>
             <fileMode>755</fileMode>
             <includes>
-                <include>bin/*</include>
-                <include>glassfish/bin/*</include>
-                <include>glassfish/lib/nadmin*</include>
+                <include>bin/**</include>
             </includes>
             <outputDirectory>${install.dir.name}</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${temp.dir}/glassfish-common/${install.dir.name}</directory>
+            <excludes>
+                <exclude>bin/**</exclude>
+            </excludes>
+            <outputDirectory>${install.dir.name}</outputDirectory>
+        </fileSet>
+
+        <!-- appclient-scripts -->
+        <fileSet>
+            <directory>${temp.dir}/appclient-scripts/bin</directory>
+            <fileMode>755</fileMode>
+            <outputDirectory>${install.dir.name}/glassfish/bin</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${temp.dir}/appclient-scripts/config</directory>
+            <outputDirectory>${install.dir.name}/glassfish/config</outputDirectory>
+        </fileSet>
+
+        <!-- webservices-scripts -->
+        <fileSet>
+            <directory>${temp.dir}/webservices-scripts</directory>
+            <fileMode>755</fileMode>
+            <outputDirectory>${install.dir.name}/glassfish/bin</outputDirectory>
+        </fileSet>
+
+        <!-- cmp-scripts -->
+        <fileSet>
+            <directory>${temp.dir}/cmp-scripts</directory>
+            <fileMode>755</fileMode>
+            <outputDirectory>${install.dir.name}/glassfish/bin</outputDirectory>
+        </fileSet>
+
+        <!-- mq -->
+        <fileSet>
+            <directory>${temp.dir}/mq-distribution/mq</directory>
+            <outputDirectory>${install.dir.name}/mq</outputDirectory>
+        </fileSet>
+
+        <!-- javadb -->
+        <fileSet>
+            <directory>${temp.dir}/javadb</directory>
+            <excludes>
+                <exclude>demo/**</exclude>
+                <exclude>docs/**</exclude>
+                <exclude>javadoc/**</exclude>
+                <exclude>test/**</exclude>
+            </excludes>
+            <outputDirectory>${install.dir.name}/javadb</outputDirectory>
+        </fileSet>
+
+        <!-- lib/dtds -->
+       <fileSet>
+            <directory>${temp.dir}/appserver-dtds</directory>
+            <outputDirectory>${install.dir.name}/glassfish/lib/dtds</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${temp.dir}/nucleus-dtds</directory>
+            <outputDirectory>${install.dir.name}/glassfish/lib/dtds</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${temp.dir}/connectors-dtds</directory>
+            <outputDirectory>${install.dir.name}/glassfish/lib/dtds</outputDirectory>
+        </fileSet>
+
+        <!-- lib/schemas -->
+        <fileSet>
+            <directory>${temp.dir}/nucleus-schemas</directory>
+            <outputDirectory>${install.dir.name}/glassfish/lib/schemas</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${temp.dir}/appserver-schemas</directory>
+            <outputDirectory>${install.dir.name}/glassfish/lib/schemas</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${temp.dir}/connectors-schemas</directory>
+            <outputDirectory>${install.dir.name}/glassfish/lib/schemas</outputDirectory>
+        </fileSet>
+
+        <!-- lib/install/ -->
+        <fileSet>
+            <directory>${temp.dir}</directory>
+            <includes>
+                <include>__*_jdbc_ra/**</include>
+            </includes>
+            <outputDirectory>${install.dir.name}/glassfish/lib/install/applications</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${temp.dir}/vendor-mapping-properties</directory>
+            <outputDirectory>${install.dir.name}/glassfish/lib/install/databases/dbvendormapping</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${temp.dir}/jdbc-templates</directory>
+            <outputDirectory>${install.dir.name}/glassfish/lib/install/templates/resources/jdbc</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${temp.dir}/connectors-custom-descriptors</directory>
+            <outputDirectory>${install.dir.name}/glassfish/lib/install/templates/resources/custom</outputDirectory>
+        </fileSet>
+
+        <!-- lib/install/applications -->
+        <fileSet>
+            <directory>${temp.dir}</directory>
+            <includes>
+                <include>ejb-timer-service-app.war</include>
+                <include>mejb.jar</include>
+            </includes>
+            <outputDirectory>${install.dir.name}/glassfish/lib/install/applications</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${temp.dir}/jaxr-ra</directory>
+            <outputDirectory>${install.dir.name}/glassfish/lib/install/applications/jaxr-ra</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${temp.dir}/jmsra</directory>
+            <outputDirectory>${install.dir.name}/glassfish/lib/install/applications/jmsra</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${temp.dir}</directory>
+            <includes>
+                <include>wstx-services.war</include>
+            </includes>
+            <outputDirectory>${install.dir.name}/glassfish/lib/install/applications/metro</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${temp.dir}/admingui-war</directory>
+            <outputDirectory>${install.dir.name}/glassfish/lib/install/applications/__admingui</outputDirectory>
+        </fileSet>
+
+        <!-- lib/install/databases -->
+        <fileSet>
+            <directory>${temp.dir}/ejb-timer-databases</directory>
+            <outputDirectory>${install.dir.name}/glassfish/lib/install/databases</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${temp.dir}/batch-databases</directory>
+            <outputDirectory>${install.dir.name}/glassfish/lib/install/databases</outputDirectory>
+        </fileSet>
+
+        <!-- staging jars -->
+
+        <fileSet>
+            <directory>${temp.dir}</directory>
+            <includes>
+                <include>nucleus-domain.jar</include>
+                <include>appserver-domain.jar</include>
+            </includes>
+            <outputDirectory>${install.dir.name}/glassfish/common/templates/gf</outputDirectory>
+        </fileSet>
+
+        <!-- lib/asadmin/ -->
+        <fileSet>
+            <directory>${temp.dir}</directory>
+            <includes>
+                <include>server-mgmt.jar</include>
+                <include>osgi-cli-interactive.jar</include>
+                <include>cluster-cli.jar</include>
+                <include>cli-optional.jar</include>
+            </includes>
+            <outputDirectory>${install.dir.name}/glassfish/lib/asadmin</outputDirectory>
+        </fileSet>
+
+        <!-- lib/client -->
+        <fileSet>
+            <directory>${temp.dir}</directory>
+            <includes>
+                <include>appserver-cli.jar</include>
+            </includes>
+            <outputDirectory>${install.dir.name}/glassfish/lib/client</outputDirectory>
+        </fileSet>
+
+        <!-- lib/appclient -->
+        <fileSet>
+            <directory>${temp.dir}</directory>
+            <includes>
+                <include>weld-se-core.jar</include>
+            </includes>
+            <outputDirectory>${install.dir.name}/glassfish/lib/appclient</outputDirectory>
+        </fileSet>
+
+        <!-- lib/monitor/ -->
+        <fileSet>
+            <directory>${temp.dir}</directory>
+            <includes>
+                <include>flashlight-agent.jar</include>
+            </includes>
+            <outputDirectory>${install.dir.name}/glassfish/lib/monitor</outputDirectory>
+        </fileSet>
+
+        <!-- lib/embedded -->
+        <fileSet>
+            <directory>${temp.dir}</directory>
+            <includes>
+                <include>glassfish-embedded-shell.jar</include>
+                <include>glassfish-embedded-static-shell.jar</include>
+            </includes>
+            <outputDirectory>${install.dir.name}/glassfish/lib/embedded</outputDirectory>
+        </fileSet>
+
+        <!-- lib/deployment -->
+        <fileSet>
+            <directory>${temp.dir}</directory>
+            <includes>
+                <include>sun-as-jsr88-dm.jar</include>
+            </includes>
+            <outputDirectory>${install.dir.name}/glassfish/lib/deployment</outputDirectory>
+        </fileSet>
+
+        <!-- lib/ -->
+        <fileSet>
+            <directory>${temp.dir}</directory>
+            <includes>
+                <include>javaee.jar</include>
+                <include>appserv-rt.jar</include>
+                <include>gf-client.jar</include>
+                <include>grizzly-npn-bootstrap.jar</include>
+            </includes>
+            <outputDirectory>${install.dir.name}/glassfish/lib</outputDirectory>
+        </fileSet>
+
+        <!-- modules/endorsed -->
+        <fileSet>
+            <directory>${temp.dir}</directory>
+            <includes>
+                <include>javax.annotation-api.jar</include>
+                <include>jaxb-api.jar</include>
+                <include>webservices-api-osgi.jar</include>
+            </includes>
+            <outputDirectory>${install.dir.name}/glassfish/modules/endorsed</outputDirectory>
+        </fileSet>
+
+        <!-- felix -->
+        <fileSet>
+            <directory>${temp.dir}</directory>
+            <includes>
+                <include>felix.jar</include>
+            </includes>
+            <outputDirectory>${install.dir.name}/glassfish/osgi/felix/bin</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${temp.dir}</directory>
+            <includes>
+                <include>org.apache.felix.*.jar</include>
+            </includes>
+            <excludes>
+                <exclude>org.apache.felix.bundlerepository.jar</exclude>
+            </excludes>
+            <outputDirectory>${install.dir.name}/glassfish/modules/autostart</outputDirectory>
+        </fileSet>
+
+        <!-- autostart -->
+        <fileSet>
+            <directory>${temp.dir}</directory>
+            <includes>
+                <include>osgi-cdi.jar</include>
+                <include>osgi-ee-resources.jar</include>
+                <include>osgi-ejb-container.jar</include>
+                <include>osgi-http.jar</include>
+                <include>osgi-javaee-base.jar</include>
+                <include>osgi-jdbc.jar</include>
+                <include>osgi-jpa.jar</include>
+                <include>osgi-jta.jar</include>
+                <include>osgi-web-container.jar</include>
+            </includes>
+            <outputDirectory>${install.dir.name}/glassfish/modules/autostart</outputDirectory>
+        </fileSet>
+
+        <!-- staging modules -->
+        <fileSet>
+            <directory>${temp.dir}</directory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+            <excludes>
+                <exclude>osgi-cdi.jar</exclude>
+                <exclude>osgi-ee-resources.jar</exclude>
+                <exclude>osgi-ejb-container.jar</exclude>
+                <exclude>osgi-http.jar</exclude>
+                <exclude>osgi-javaee-base.jar</exclude>
+                <exclude>osgi-jdbc.jar</exclude>
+                <exclude>osgi-jpa.jar</exclude>
+                <exclude>osgi-jta.jar</exclude>
+                <exclude>osgi-web-container.jar</exclude>
+                <exclude>server-mgmt.jar</exclude>
+                <exclude>osgi-cli-interactive.jar</exclude>
+                <exclude>flashlight-agent.jar</exclude>
+                <exclude>org.apache.felix.configadmin.jar</exclude>
+                <exclude>org.apache.felix.fileinstall.jar</exclude>
+                <exclude>org.apache.felix.gogo.command.jar</exclude>
+                <exclude>org.apache.felix.gogo.runtime.jar</exclude>
+                <exclude>org.apache.felix.gogo.shell.jar</exclude>
+                <exclude>org.apache.felix.scr.jar</exclude>
+                <exclude>org.apache.felix.eventadmin.jar</exclude>
+                <exclude>felix.jar</exclude>
+                <exclude>nucleus-domain.jar</exclude>
+                <exclude>appserver-domain.jar</exclude>
+                <exclude>javax.annotation-api.jar</exclude>
+                <exclude>cli-optional.jar</exclude>
+                <exclude>appserver-cli.jar</exclude>
+                <exclude>cluster-cli.jar</exclude>
+                <exclude>glassfish-embedded-shell.jar</exclude>
+                <exclude>glassfish-embedded-static-shell.jar</exclude>
+                <exclude>javaee.jar</exclude>
+                <exclude>appserv-rt.jar</exclude>
+                <exclude>sun-as-jsr88-dm.jar</exclude>
+                <exclude>gf-client.jar</exclude>
+                <exclude>mejb.jar</exclude>
+                <exclude>weld-se-core.jar</exclude>
+                <exclude>jaxb-api.jar</exclude>
+                <exclude>webservices-api-osgi.jar</exclude>
+            </excludes>
+            <outputDirectory>${install.dir.name}/glassfish/modules</outputDirectory>
         </fileSet>
     </fileSets>
 </assembly>

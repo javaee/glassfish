@@ -70,10 +70,9 @@ fi
 # convert to number since shell is unable to compare float"
 # e.g. convert x.y.z to xyz
 version=`echo $mvn_ver |  sed 's/\.//g'`
-#verify that maven version is >= 3.0.3
 echo "Maven version: ${version}"
-if [ ${version} -lt "303" ]; then
-    echo "Please do not use Maven version lower than 3.0.3."
+if [ ${version} -lt "333" ]; then
+    echo "Please do not use Maven version lower than 3.3.3."
     exit 1
 fi
 

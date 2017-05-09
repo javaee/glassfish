@@ -117,9 +117,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.main.external</groupId>
-            <artifactId>antlr-repackaged</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>antlr</artifactId>
         </dependency>
         <dependency> 
         <!-- We depend on repackaged antlr, but antlr-maven-plugin checks for this dependency to be present -->

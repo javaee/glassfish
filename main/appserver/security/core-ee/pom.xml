@@ -273,9 +273,8 @@
 	    <artifactId>gmbal</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.main.external</groupId>
-            <artifactId>libpam4j-repackaged</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>libpam4j</artifactId>
         </dependency>
     </dependencies>
 </project>

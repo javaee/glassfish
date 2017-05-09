@@ -61,8 +61,6 @@
 
     <properties>
         <extracted-dtd-root>temp</extracted-dtd-root>
-        <extracted-dtd-top-level-directory>${extracted-dtd-root}/glassfish</extracted-dtd-top-level-directory>
-        <extracted-dtd-directory>${extracted-dtd-top-level-directory}/lib/dtds</extracted-dtd-directory>
         <dtd-for-jaxb-compilation>glassfish-application-client-container_1_3.dtd</dtd-for-jaxb-compilation>
         <config-dtd-file>*-application-client-container*.dtd</config-dtd-file>
         <added-test-classpath>${project.build.directory}/../${extracted-dtd-root}</added-test-classpath>
@@ -80,7 +78,7 @@
             <url>http://blogs.sun.com/quinn</url>
             <organization>Oracle, Inc.</organization>
             <roles>
-		        <role>lead</role>
+                <role>lead</role>
                 <role>developer</role>
             </roles>
         </developer>
@@ -118,7 +116,7 @@
                       <artifactItems>
                         <artifactItem>
                           <groupId>org.glassfish.main.deployment</groupId>
-                          <artifactId>dtds</artifactId>
+                          <artifactId>appserver-dtds</artifactId>
                           <version>${project.version}</version>
                           <type>zip</type>
                           <includes>**/${config-dtd-file}</includes>
@@ -149,7 +147,7 @@
                 </executions>
                 <configuration>
                     <schemaLanguage>DTD</schemaLanguage>
-                    <schemaDirectory>${extracted-dtd-directory}</schemaDirectory>
+                    <schemaDirectory>${extracted-dtd-root}</schemaDirectory>
 <!--
                     <schemaDirectory>${config-xsd-dir}</schemaDirectory>
 -->
@@ -212,7 +210,7 @@
         <dependency>
             <scope>provided</scope>
             <groupId>org.glassfish.main.deployment</groupId>
-            <artifactId>dtds</artifactId>
+            <artifactId>appserver-dtds</artifactId>
             <type>zip</type>
             <version>${project.version}</version>
         </dependency>

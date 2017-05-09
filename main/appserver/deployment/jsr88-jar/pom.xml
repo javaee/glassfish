@@ -55,7 +55,7 @@
     <name>JSR-88 JAR and dist. fragment</name>  
     <modules>
         <module>sun-as-jsr88-dm</module>
-        <module>sun-as-jsr88-dm-frag</module>
+        <!--<module>sun-as-jsr88-dm-frag</module>-->
     </modules>
     <developers>
         <developer>

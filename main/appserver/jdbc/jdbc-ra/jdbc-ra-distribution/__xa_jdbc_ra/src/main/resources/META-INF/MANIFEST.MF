@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Specification-Title: JDBC Specification
+Specification-Vendor: Sun Microsystems, Inc.,
+Specification-Version: 3.0, 4.0
+Implementation-Vendor: Sun Microsystems, Inc.,
+Implementation-Version: V3
+Implementation-Title: GlassFish
+probe-provider-class-names: ${provider.class.names}

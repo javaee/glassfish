@@ -157,7 +157,7 @@
         <javassist.version>3.20.0-GA</javassist.version>
         <javax.el.version>3.0.1-b03</javax.el.version>
         <javax.el-api.version>3.0.1-b03</javax.el-api.version>
-        <trilead-ssh2.version>build212-hudson-6</trilead-ssh2.version>
+        <trilead-ssh2.version>2.1.2</trilead-ssh2.version>
         <pfl.version>4.0.0-b004</pfl.version>
         <gmbal.version>4.0.0-b001</gmbal.version>
         <woodstox.version>4.1.2</woodstox.version>
@@ -178,7 +178,8 @@
         <asm.version>6.0_ALPHA</asm.version>
         <shoal.version>1.6.18</shoal.version>
         <ha-api.version>3.1.8</ha-api.version>
-        <glassfishbuild.version>3.2.20</glassfishbuild.version>
+        <jinterop.version>2.0.4</jinterop.version>
+        <glassfishbuild.version>3.2.24</glassfishbuild.version>
         <source-annotation-processor.version>1.0</source-annotation-processor.version>
         <logging-annotation-processor.version>1.7</logging-annotation-processor.version>
         <command-security-plugin.version>1.0.7</command-security-plugin.version>
@@ -202,13 +203,12 @@
         <module>flashlight</module>
         <module>grizzly</module>
         <module>deployment</module>
-        <module>packager</module>
+        <module>featuresets</module>
         <module>distributions</module>
         <module>security</module>
         <module>test-utils</module>
         <module>diagnostics</module>
         <module>resources</module>
-        <module>resources-l10n</module>
     </modules>
 
     <build>
@@ -473,7 +473,7 @@
                                 </requireJavaVersion>
                                 <requireMavenVersion>
                                     <version>[3.0.3,3.2.1],[3.2.3,)</version>
-                                <message>You need Maven greater than 3.0.3 (3.2.2 not supported)</message>
+                                    <message>You need Maven greater than 3.0.3 (3.2.2 not supported)</message>
                                 </requireMavenVersion>
                             </rules>
                         </configuration>
@@ -715,6 +715,16 @@
                 <version>${antlr.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.glassfish.external</groupId>
+                <artifactId>antlr</artifactId>
+                <version>${antlr.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.external</groupId>
+                <artifactId>j-interop</artifactId>
+                <version>${jinterop.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>javax.jbi</groupId>
                 <artifactId>jbi</artifactId>
                 <version>${jbi.version}</version>
@@ -762,7 +772,6 @@
                 <artifactId>org.apache.felix.eventadmin</artifactId>
                 <version>1.2.8</version>
             </dependency>
-
             <dependency>
                 <groupId>javax.annotation</groupId>
                 <artifactId>javax.annotation-api</artifactId>
@@ -831,7 +840,7 @@
             </dependency>
             <dependency>
                 <groupId>org.glassfish.external</groupId>
-                <artifactId>opendmk_jmxremote_optional_jar</artifactId>
+                <artifactId>jmxremote_optional</artifactId>
                 <version>${opendmk.version}</version>
             </dependency>
             <dependency>
@@ -935,7 +944,7 @@
                 <version>${servlet-api.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.sun</groupId>
+                <groupId>org.glassfish.external</groupId>
                 <artifactId>ldapbp</artifactId>
                 <version>1.0</version>
             </dependency>
@@ -945,7 +954,7 @@
                 <version>${asm.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.jvnet.hudson</groupId>
+                <groupId>org.glassfish.external</groupId>
                 <artifactId>trilead-ssh2</artifactId>
                 <version>${trilead-ssh2.version}</version>
             </dependency>
@@ -1029,18 +1038,6 @@
                 <groupId>org.glassfish.docs.man</groupId>
                 <artifactId>osgi-cli-interactive-manpage</artifactId>
                 <version>${v3-docs.version}</version>
-                <type>zip</type>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs-l10n.man-l10n</groupId>
-                <artifactId>osgi-cli-remote-manpage-l10n</artifactId>
-                <version>${v3-docs-l10n.version}</version>
-                <type>zip</type>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs-l10n.man-l10n</groupId>
-                <artifactId>osgi-cli-interactive-manpage-l10n</artifactId>
-                <version>${v3-docs-l10n.version}</version>
                 <type>zip</type>
             </dependency>
             <!-- This is currently used by osgi-shell cmd, but can be used for others as well -->

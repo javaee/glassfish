@@ -1,0 +1,6 @@
+RepRunConf.txt
+derby.log
+build/
+test_results.xml
+test_resultsValid.xml
+devtests/ejb/ejb31/embedded/sun-appserv-samples

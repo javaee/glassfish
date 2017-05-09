@@ -109,11 +109,10 @@
         <stax2-api.version>3.1.1</stax2-api.version>
         <javax.xml.registry-api.version>1.0.7</javax.xml.registry-api.version>
         <eclipselink.version>2.6.3-M1</eclipselink.version>
-        <javax-persistence-api.version>2.1.0</javax-persistence-api.version> 
-        <dbschema.version>3.1.1</dbschema.version>
-        <dbschema.osgi.version>6.0</dbschema.osgi.version>
-        <schema2beans.version>3.1.1</schema2beans.version>
-        <schema2beans.osgi.version>5.5</schema2beans.osgi.version>
+        <javax-persistence-api.version>2.1.0</javax-persistence-api.version>
+        <ant.version>1.8.3</ant.version>
+        <dbschema.version>6.5</dbschema.version>
+        <schema2beans.version>6.5</schema2beans.version>
         <mq.version>5.1.1-b02</mq.version>
         <javadb.version>10.10.2.0</javadb.version>
         <jaxr.version>JAXR_RA_20091012</jaxr.version>
@@ -133,6 +132,7 @@
         <javax.management.j2ee-api.version>1.1.1</javax.management.j2ee-api.version>
         <guava.version>13.0.1</guava.version>
 	<bean.validator.cdi.version>2.5.0-b06</bean.validator.cdi.version>
+        <libpam4j.version>1.3</libpam4j.version>
     </properties>
 
     <modules>
@@ -155,7 +155,6 @@
         <module>extras</module>
         <module>admingui</module>
         <module>extras/embedded/shell</module>
-        <module>packager</module>
         <module>featuresets</module>
         <module>distributions</module>
         <module>security</module>
@@ -168,7 +167,6 @@
         <module>orb</module>
         <module>appclient</module>
         <module>verifier/verifier-impl</module>
-        <module>verifier/verifier-impl-l10n</module>
         <module>verifier/verifier-scripts</module>
         <module>verifier/verifier-jdk-extension-bundle</module>
         <module>ant-tasks</module>
@@ -224,7 +222,7 @@
                                 <version>${mojarra.version}</version>
                             </artifact>
                             <nonFinal>false</nonFinal>
-                            <jarType>impl</jarType>             
+                            <jarType>impl</jarType>
                             <specVersion>2.2</specVersion>
                             <implVersion>${mojarra.version}</implVersion>
                             <apiPackage>javax.faces</apiPackage>
@@ -237,7 +235,7 @@
                                 <version>${javax.security.jacc-api.version}</version>
                             </artifact>
                             <nonFinal>false</nonFinal>
-                            <jarType>api</jarType>             
+                            <jarType>api</jarType>
                             <specVersion>${javax.security.jacc-api.version}</specVersion>
                             <specImplVersion>${javax.security.jacc-api.version}</specImplVersion>
                             <apiPackage>javax.security.jacc</apiPackage>
@@ -249,7 +247,7 @@
                                 <version>${javax.security.auth.message-api.version}</version>
                             </artifact>
                             <nonFinal>false</nonFinal>
-                            <jarType>api</jarType>             
+                            <jarType>api</jarType>
                             <specVersion>${javax.security.auth.message-api.version}</specVersion>
                             <specImplVersion>${javax.security.auth.message-api.version}</specImplVersion>
                             <apiPackage>javax.security.auth.message</apiPackage>
@@ -261,7 +259,7 @@
                                 <version>${jstl-api.version}</version>
                             </artifact>
                             <nonFinal>false</nonFinal>
-                            <jarType>api</jarType>             
+                            <jarType>api</jarType>
                             <specVersion>1.2</specVersion>
                             <specImplVersion>1.2.1</specImplVersion>
                             <apiPackage>javax.servlet.jsp.jstl</apiPackage>
@@ -273,7 +271,7 @@
                                 <version>${javax.transaction-api.version}</version>
                             </artifact>
                             <nonFinal>false</nonFinal>
-                            <jarType>api</jarType>     
+                            <jarType>api</jarType>
                             <specVersion>${javax.transaction-api.version}</specVersion>
                             <specImplVersion>${javax.transaction-api.version}</specImplVersion>
                             <apiPackage>javax.transaction</apiPackage>
@@ -285,9 +283,9 @@
                                 <version>${javax.batch-api.version}</version>
                             </artifact>
                             <nonFinal>false</nonFinal>
-                            <jarType>api</jarType>     
+                            <jarType>api</jarType>
                             <specVersion>1.0</specVersion>
-			    <specImplVersion>${javax.batch-api.version}</specImplVersion>
+                            <specImplVersion>${javax.batch-api.version}</specImplVersion>
                             <apiPackage>javax.batch</apiPackage>
                         </spec>
                         <spec>
@@ -297,7 +295,7 @@
                                 <version>${jms-api.version}</version>
                             </artifact>
                             <nonFinal>false</nonFinal>
-                            <jarType>api</jarType>     
+                            <jarType>api</jarType>
                             <specVersion>${jms-api.version}</specVersion>
                             <specImplVersion>${jms-api.version}</specImplVersion>
                             <apiPackage>javax.jms</apiPackage>
@@ -309,7 +307,7 @@
                                 <version>${concurrent-api.version}</version>
                             </artifact>
                             <nonFinal>false</nonFinal>
-                            <jarType>api</jarType>     
+                            <jarType>api</jarType>
                             <specVersion>${concurrent-api.version}</specVersion>
                             <specImplVersion>${concurrent-api.version}</specImplVersion>
                             <apiPackage>javax.enterprise.concurrent</apiPackage>
@@ -321,7 +319,7 @@
                                 <version>${servlet-api.version}</version>
                             </artifact>
                             <nonFinal>false</nonFinal>
-                            <jarType>api</jarType>     
+                            <jarType>api</jarType>
                             <specVersion>3.1</specVersion>
                             <specImplVersion>${servlet-api.version}</specImplVersion>
                             <apiPackage>javax.servlet</apiPackage>
@@ -333,7 +331,7 @@
                                 <version>${javax.annotation-api.version}</version>
                             </artifact>
                             <nonFinal>false</nonFinal>
-                            <jarType>api</jarType>     
+                            <jarType>api</jarType>
                             <specVersion>${javax.annotation-api.version}</specVersion>
                             <specImplVersion>${javax.annotation-api.version}</specImplVersion>
                             <apiPackage>javax.annotation</apiPackage>
@@ -345,7 +343,7 @@
                                 <version>${websocket-api.version}</version>
                             </artifact>
                             <nonFinal>false</nonFinal>
-                            <jarType>api</jarType>     
+                            <jarType>api</jarType>
                             <specVersion>1.0</specVersion>
                             <specImplVersion>${websocket-api.version}</specImplVersion>
                             <apiPackage>javax.websocket</apiPackage>
@@ -371,7 +369,7 @@
                             <nonFinal>false</nonFinal>
                             <jarType>api</jarType>
                             <specVersion>${javax.ejb-api.version}</specVersion>
-			    <specImplVersion>${javax.ejb-api.version}</specImplVersion>
+                            <specImplVersion>${javax.ejb-api.version}</specImplVersion>
                             <apiPackage>javax.ejb</apiPackage>
                         </spec>
                         <spec>
@@ -383,7 +381,7 @@
                             <nonFinal>false</nonFinal>
                             <jarType>api</jarType>
                             <specVersion>${javax.interceptor-api.version}</specVersion>
-			    <specImplVersion>${javax.interceptor-api.version}</specImplVersion>
+                            <specImplVersion>${javax.interceptor-api.version}</specImplVersion>
                             <apiPackage>javax.interceptor</apiPackage>
                         </spec>
                         <spec>
@@ -395,7 +393,7 @@
                             <nonFinal>false</nonFinal>
                             <jarType>api</jarType>
                             <specVersion>${javax.resource-api.version}</specVersion>
-			    <specImplVersion>${javax.resource-api.version}</specImplVersion>
+                            <specImplVersion>${javax.resource-api.version}</specImplVersion>
                             <apiPackage>javax.resource</apiPackage>
                         </spec>
                         <spec>
@@ -472,10 +470,10 @@
                         </spec>
                     </specs>
                 </configuration>
-            </plugin>            
+            </plugin>
         </plugins>
     </build>
-    
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -528,11 +526,11 @@
                 <artifactId>jsr181-api</artifactId>
                 <version>${jsr181-api.version}</version>
             </dependency>
-	    <dependency>
-		<groupId>javax.resource</groupId>
-		<artifactId>javax.resource-api</artifactId>
-		<version>${javax.resource-api.version}</version>
-	    </dependency>
+            <dependency>
+                <groupId>javax.resource</groupId>
+                <artifactId>javax.resource-api</artifactId>
+                <version>${javax.resource-api.version}</version>
+            </dependency>
             <dependency>
                 <groupId>javax.enterprise.deploy</groupId>
                 <artifactId>javax.enterprise.deploy-api</artifactId>
@@ -542,7 +540,7 @@
                 <groupId>javax.security.jacc</groupId>
                 <artifactId>javax.security.jacc-api</artifactId>
                 <version>${javax.security.jacc-api.version}</version>
-            </dependency>            
+            </dependency>
             <dependency>
                 <groupId>javax.security.auth.message</groupId>
                 <artifactId>javax.security.auth.message-api</artifactId>
@@ -638,16 +636,16 @@
                 <artifactId>jaxb-api</artifactId>
                 <version>${jaxb-api.version}</version>
             </dependency>
-	    <dependency>
-            	<groupId>javax.xml.registry</groupId>
-	        <artifactId>javax.xml.registry-api</artifactId>
-		<version>${javax.xml.registry-api.version}</version>
+            <dependency>
+                <groupId>javax.xml.registry</groupId>
+                <artifactId>javax.xml.registry-api</artifactId>
+                <version>${javax.xml.registry-api.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.codehaus.woodstox</groupId>
                 <artifactId>stax2-api</artifactId>
                 <version>${stax2-api.version}</version>
-            </dependency>            
+            </dependency>
             <dependency>
                 <groupId>javax.jbi</groupId>
                 <artifactId>jbi</artifactId>
@@ -667,7 +665,7 @@
                         <groupId>org.jboss.classfilewriter</groupId>
                         <artifactId>jboss-classfilewriter</artifactId>
                     </exclusion>
-                </exclusions>                
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>org.jboss.weld.se</groupId>
@@ -892,12 +890,17 @@
             </dependency>
             <dependency>
                 <groupId>org.glassfish.external</groupId>
-                <artifactId>dbschema-repackaged</artifactId>
+                <artifactId>ant</artifactId>
+                <version>${ant.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish.external</groupId>
+                <artifactId>dbschema</artifactId>
                 <version>${dbschema.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.glassfish.external</groupId>
-                <artifactId>schema2beans-repackaged</artifactId>
+                <artifactId>schema2beans</artifactId>
                 <version>${schema2beans.version}</version>
             </dependency>
             <dependency>
@@ -964,77 +967,17 @@
                 <groupId>org.glassfish.docs.help</groupId>
                 <artifactId>console-web-plugin-help</artifactId>
                 <version>${v3-docs.version}</version>
-            </dependency>            
-            <dependency>
-                <groupId>org.glassfish.docs-l10n.help-l10n</groupId>
-                <artifactId>console-common-help-l10n</artifactId>
-                <version>${v3-docs-l10n.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs-l10n.help-l10n</groupId>
-                <artifactId>console-cluster-plugin-help-l10n</artifactId>
-                <version>${v3-docs-l10n.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs-l10n.help-l10n</groupId>
-                <artifactId>console-corba-plugin-help-l10n</artifactId>
-                <version>${v3-docs-l10n.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs-l10n.help-l10n</groupId>
-                <artifactId>console-ejb-lite-plugin-help-l10n</artifactId>
-                <version>${v3-docs-l10n.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs-l10n.help-l10n</groupId>
-                <artifactId>console-ejb-plugin-help-l10n</artifactId>
-                <version>${v3-docs-l10n.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs-l10n.help-l10n</groupId>
-                <artifactId>console-jca-plugin-help-l10n</artifactId>
-                <version>${v3-docs-l10n.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs-l10n.help-l10n</groupId>
-                <artifactId>console-jdbc-plugin-help-l10n</artifactId>
-                <version>${v3-docs-l10n.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs-l10n.help-l10n</groupId>
-                <artifactId>console-common-full-plugin-help-l10n</artifactId>
-                <version>${v3-docs-l10n.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs-l10n.help-l10n</groupId>
-                <artifactId>console-jms-plugin-help-l10n</artifactId>
-                <version>${v3-docs-l10n.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs-l10n.help-l10n</groupId>
-                <artifactId>console-jruby-plugin-help-l10n</artifactId>
-                <version>${v3-docs-l10n.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs-l10n.help-l10n</groupId>
-                <artifactId>console-jts-plugin-help-l10n</artifactId>
-                <version>${v3-docs-l10n.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.docs-l10n.help-l10n</groupId>
-                <artifactId>console-web-plugin-help-l10n</artifactId>
-                <version>${v3-docs-l10n.version}</version>
-            </dependency>            
             <dependency>
                 <groupId>javax.batch</groupId>
                 <artifactId>javax.batch-api</artifactId>
                 <version>${javax.batch-api.version}</version>
-            </dependency>            
+            </dependency>
             <dependency>
                 <groupId>com.ibm.jbatch</groupId>
                 <artifactId>com.ibm.jbatch.container</artifactId>
                 <version>${com.ibm.jbatch.container.version}</version>
-            </dependency>            
+            </dependency>
             <dependency>
                 <groupId>com.ibm.jbatch</groupId>
                 <artifactId>com.ibm.jbatch.spi</artifactId>
@@ -1066,6 +1009,17 @@
                 <artifactId>hibernate-validator-cdi</artifactId>
                 <version>${hibernate-validator.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.glassfish.external</groupId>
+                <artifactId>libpam4j</artifactId>
+                <version>${libpam4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>javadb</groupId>
+                <artifactId>javadb</artifactId>
+                <version>${javadb.version}</version>
+                <type>zip</type>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -1081,6 +1035,6 @@
             <modules>
                 <module>javaee-api</module>
             </modules>
-        </profile>       
+        </profile>
     </profiles>
 </project>

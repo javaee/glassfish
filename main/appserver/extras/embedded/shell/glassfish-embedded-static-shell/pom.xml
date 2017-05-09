@@ -88,6 +88,7 @@
                           <fileSeparator>/</fileSeparator>
                           <prefix>../../modules</prefix>
                           <stripVersion>true</stripVersion>
+                          <excludeTypes>pom,zip</excludeTypes>
                           <excludeArtifactIds>jsftemplating</excludeArtifactIds>
                       </configuration>
                   </execution>
@@ -125,7 +126,7 @@
                                   <property name="output.dir" value="${project.build.directory}" />
                                   <property name="stage.dir" value="${project.build.directory}/stage" />
                                   <property name="classpath.file" value="${classpath.file}" />
-                                  <property name="bundlename" value="org.glassfish.embedded.static-shell" />                                  
+                                  <property name="bundlename" value="org.glassfish.embedded.static-shell" />
                               </ant>
                           </target>
                       </configuration>
@@ -136,12 +137,35 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>org.glassfish.main.featuresets</groupId>
+            <artifactId>glassfish</artifactId>
+            <version>${project.version}</version>
+            <type>pom</type>
+            <optional>true</optional>
+            <!-- TODO exclude ?-->
+        </dependency>
+
+<!--        <dependency>
+            <groupId>org.glassfish.main.distributions</groupId>
+            <artifactId>glassfish-common</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+            <optional>true</optional>
+        </dependency>-->
+<!--        <dependency>
+            <groupId>org.glassfish.main.distributions</groupId>
+            <artifactId>nucleus-common</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+            <optional>true</optional>
+        </dependency>-->
         <!--
             The maven-jar-plugin will do the work of finding the transitive
             closure of it and the modules on which it depends to build the
             accurate Class-Path for the manifest.
         -->
-        <dependency>
+<!--        <dependency>
             <groupId>org.glassfish.main.packager</groupId>
             <artifactId>glassfish-cmp</artifactId>
             <version>${project.version}</version>
@@ -308,6 +332,6 @@
             <version>${project.version}</version>
             <type>zip</type>
             <optional>true</optional>
-        </dependency>
+        </dependency>-->
    </dependencies>
 </project>

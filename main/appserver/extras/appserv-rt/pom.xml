@@ -55,6 +55,6 @@
     <name>GlassFish appserv-rt Manifest pom</name>  
     <modules>
         <module>manifest-jar</module>
-        <module>dist-frag</module>
+        <!--<module>dist-frag</module>-->
     </modules>
 </project>

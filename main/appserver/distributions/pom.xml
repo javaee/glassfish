@@ -83,41 +83,27 @@
     </properties>
 
     <modules>
-        <module>minnow</module>
         <module>web</module>
         <module>glassfish</module>
+        <module>glassfish-common</module>
     </modules>
 
     <build>
+        <outputDirectory>${temp.dir}</outputDirectory>
         <pluginManagement>
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-dependency-plugin</artifactId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
                     <configuration>
-                        <outputDirectory>${temp.dir}</outputDirectory>
-                        <useSubDirectoryPerType>false</useSubDirectoryPerType>
-                        <overWriteReleases>false</overWriteReleases>
-                        <overWriteSnapshots>true</overWriteSnapshots>
-                        <includeScope>compile</includeScope>
-                        <includeScope>runtime</includeScope>
-                        <includeTypes>zip</includeTypes>
-                        <includeGroupIds>${include.group.ids}</includeGroupIds>
-                        <stripVersion>true</stripVersion>
-                        <silent>true</silent>
+                        <skip>true</skip>
                     </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-assembly-plugin</artifactId>
+                    <artifactId>maven-resources-plugin</artifactId>
                     <configuration>
-                        <descriptors>
-                            <descriptor>src/main/assembly/${project.artifactId}.xml</descriptor>
-                        </descriptors>
-                        <finalName>${stage.dir.name}</finalName>
-                        <attach>false</attach>
-                        <appendAssemblyId>false</appendAssemblyId>
-                        <useProjectArtifact>false</useProjectArtifact>
+                        <includeEmptyDirs>true</includeEmptyDirs>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -125,9 +111,37 @@
                     <artifactId>glassfishbuild-maven-plugin</artifactId>
                     <executions>
                         <execution>
+                            <id>create-domain</id>
+                            <phase>process-resources</phase>
+                            <configuration>
+                                <executable>${stage.dir}/${install.dir.name}/bin/asadmin</executable>
+                                <commandlineArgs>${create-domain.args}</commandlineArgs>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>default-featuresets-dependencies</id>
+                            <phase>process-resources</phase>
+                            <configuration>
+                                <featureSetGroupIdIncludes>org.glassfish.main.featuresets</featureSetGroupIdIncludes>
+                                <stageDirectory>${temp.dir}</stageDirectory>
+                                <excludes>META-INF/maven/**</excludes>
+                                <copyTypes>jar,war</copyTypes>
+                                <unpackTypes>zip,rar,war</unpackTypes>
+                                <silent>true</silent>
+                                <copyExcludes>admingui-war</copyExcludes>
+                                <mappings>
+                                    <mapping>
+                                        <artifactId>org.apache.felix.main</artifactId>
+                                        <name>felix</name>
+                                    </mapping>
+                                </mappings>
+                            </configuration>
+                        </execution>
+                        <execution>
                             <id>default-zip</id>
                             <phase>package</phase>
                             <configuration>
+                                <excludes>**/.gitkeep_empty_dir</excludes>
                                 <duplicate>preserve</duplicate>
                                 <filesets>
                                     <fileset>
@@ -146,15 +160,30 @@
                                 </filesets>
                             </configuration>
                         </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <executions>
                         <execution>
-                            <id>create-domain</id>
+                            <id>default-single</id>
                             <phase>process-resources</phase>
-                            <configuration>
-                                <executable>${stage.dir}/${install.dir.name}/bin/asadmin</executable>
-                                <commandlineArgs>${create-domain.args}</commandlineArgs>
-                            </configuration>
+                            <goals>
+                                <goal>single</goal>
+                            </goals>
                         </execution>
                     </executions>
+                    <configuration>
+                        <descriptors>
+                            <descriptor>${basedir}/src/main/assembly/${project.artifactId}.xml</descriptor>
+                        </descriptors>
+                        <ignoreMissingDescriptor>false</ignoreMissingDescriptor>
+                        <finalName>${stage.dir.name}</finalName>
+                        <attach>false</attach>
+                        <appendAssemblyId>false</appendAssemblyId>
+                        <useProjectArtifact>false</useProjectArtifact>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

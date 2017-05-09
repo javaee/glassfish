@@ -2,7 +2,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2011-2015 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2011-2017 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -52,10 +52,10 @@
     <artifactId>resources</artifactId>
     <packaging>pom</packaging>
     <name>GlassFish Resources infrastructure related modules</name>
+
     <modules>
         <module>resources-connector</module>
         <module>resources-runtime</module>
         <module>javamail</module>
-        <module>resources-connector-l10n</module>
-  </modules>
+    </modules>
 </project>

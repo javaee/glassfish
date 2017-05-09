@@ -52,7 +52,6 @@
   <groupId>org.glassfish.main.jdbc.jdbc-ra.jdbc-core</groupId>
   <artifactId>jdbc-core</artifactId>
   <packaging>glassfish-jar</packaging>
-  
   <name>Core JDBC Resource Adapter classes</name>
 
   <properties>
@@ -79,7 +78,7 @@
           <groupId>org.glassfish.main.common</groupId>
           <artifactId>glassfish-api</artifactId>
           <version>${project.version}</version>
-      </dependency>		    
+      </dependency>
       <dependency>
           <groupId>org.glassfish.main.connectors</groupId>
           <artifactId>connectors-internal-api</artifactId>

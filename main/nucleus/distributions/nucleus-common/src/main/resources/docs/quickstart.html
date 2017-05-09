@@ -1,0 +1,671 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html lang="en">
+<!--DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+
+Copyright 2010, 2014 Oracle and/or its affiliates. All rights reserved.
+
+Use is subject to License Terms-->
+<head>
+<style type="text/css">
+	body{margin-top:0}
+	body,td,p,div,span,a,ul,ul li, ol, ol li, ol li b, dl,h1,h2,h3,h4,h5,h6,li {font-family:geneva,helvetica,arial,"lucida sans",sans-serif; font-size:10pt}
+	h1 {font-size:18pt}
+	h2 {font-size:14pt}
+	h3 {font-size:12pt}
+	code,kbd,tt,pre {font-family:monaco,courier,"courier new"; font-size:10pt;}
+	p.copy, p.copy a {font-family:geneva,helvetica,arial,"lucida sans",sans-serif; font-size:8pt}
+	p.copy {text-align: center}
+	table.grey1,tr.grey1,td.grey1{background:#f1f1f1}
+	th {color:#ffffff; font-family:geneva,helvetica,arial,"lucida sans",sans-serif; font-size:12pt}
+	td.insidehead {font-weight:bold; background:white; text-align: left;}
+	a {text-decoration:none; color:#3E6B8A}
+	a:visited{color:#917E9C}
+	a:hover {text-decoration:underline}
+</style>
+<title>GlassFish Server 4.1 Quick Start Guide</title>
+</head>
+<body style="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);"
+link="#594fbf" vlink="#1005fb" alink="#333366"><table width="100%" border="0"
+cellspacing="4" cellpadding="2">
+<tbody>
+<tr>
+<td align="right" valign="top"> <a href="http://www.oracle.com">oracle.com</a> </td>
+</tr>
+<tr>
+<td align="left" valign="top" bgcolor="#587993"> <font color="#ffffff"><b>GlassFish Server 4.1</b></font></td>
+</tr>
+</tbody>
+</table><div class="maincontent">
+<a name="aboaa"></a><h1>GlassFish Server 4.1 Quick Start Guide</h1>
+<p>GlassFish Server provides a server for the development and deployment of Java Platform, Enterprise Edition (Java EE platform) applications and web technologies based on Java technology. GlassFish Server 4.1 provides the following:</p>
+<ul>
+<li><p>A lightweight and extensible core based on OSGi Alliance standards</p></li>
+<li><p>A web container</p></li>
+<li><p>An easy-to-use Administration Console for configuration and management</p></li>
+<li><p>Update Tool connectivity for updates and add-on components</p></li>
+</ul>
+<p>The following topics are addressed here:</p>
+<ul>
+<li><p><a href="#ghgpe">About This Quick Start Guide</a></p></li>
+<li><p><a href="#ghpfg">Default Paths and File Names</a></p></li>
+<li><p><a href="#gixue">Default Administration Values</a></p></li>
+<li><p><a href="#gglog">Starting and Stopping the Default Domain</a></p></li>
+<li><p><a href="#gglmh">Starting and Stopping the Database Server</a></p></li>
+<li><p><a href="#ggllq">Starting the Administration Console</a></p></li>
+<li><p><a href="#geyvr">Deploying and Undeploying Applications</a></p></li>
+<li><p><a href="#ghgqg">Removing GlassFish Server 4.1 Software</a></p></li>
+<li><p><a href="#ggkzh">For More Information</a></p></li>
+</ul>
+<a id="ghgpe" name="ghgpe"></a><a id="GSQSG00030" name="GSQSG00030"></a>
+<h2>About This Quick Start Guide</h2>
+<p>This <i>Quick Start Guide</i> demonstrates key features of GlassFish Server and enables you to quickly learn the basics. Step-by-step procedures introduce you to product features and enable you to use them immediately.</p>
+<p>This guide assumes that you have already obtained and installed the GlassFish Server 4.1 software. For more information about installing GlassFish Server 4.1, see the <a href="http://glassfish.java.net/docs/4.0/installation-guide.pdf"><cite>Installation Guide</cite></a>.</p>
+<p>Instructions and examples in this guide that apply to all supported operating systems use the forward slash character (<code>/</code>) as path separators in all file names and commands. Ensure that you use the correct character for the system on which GlassFish Server is installed. For example:</p>
+<ul>
+<li><p><b>UNIX, Linux, or Mac OS X systems:</b> <i>as-install</i><code>/bin/asadmin</code></p></li>
+<li><p><b>Windows systems:</b> <i>as-install</i><code>\bin\asadmin</code></p></li>
+</ul>
+<p>This guide provides basic information only. For comprehensive information about GlassFish Server and other entities mentioned in this guide, see <a href="#ggkzh">For More Information</a>.</p>
+<p>To review additional details about this release before you begin using the software, see the <a href="http://glassfish.java.net/docs/4.1/release-notes.pdf"><cite>Release Notes</cite></a>. The <i>Release Notes</i> provide important information about the GlassFish Server 4.1 release, including details about new features, information about known issues and possible workarounds, and tips for installing and working with GlassFish Server 4.1 software.</p>
+
+
+<a id="ghpfg" name="ghpfg"></a><a id="GSQSG00031" name="GSQSG00031"></a>
+
+<h2>Default Paths and File Names</h2>
+<p>The following table describes the default paths and file names that are used in this book.</p>
+<a id="sthref2" name="sthref2"></a><a id="sthref3" name="sthref3"></a>
+<p><b>Table 1-1 Default Paths and File Names</b></p>
+<table  title="Default Paths and File Names" summary="Explanation of the placeholders for denoting default paths and file names." dir="ltr" border="1" width="100%" frame="hsides" rules="rows" cellpadding="3" cellspacing="0">
+<col width="14%" />
+<col width="35%" />
+<col width="*" />
+<thead>
+<tr align="left" valign="top">
+<th align="left" valign="bottom" id="r1c1-t2">Placeholder</th>
+<th align="left" valign="bottom" id="r1c2-t2">Description</th>
+<th align="left" valign="bottom" id="r1c3-t2">Default Value</th>
+</tr>
+</thead>
+<tbody>
+<tr align="left" valign="top">
+<td align="left" id="r2c1-t2" headers="r1c1-t2">
+<p><i>as-install</i></p>
+<br /></td>
+<td align="left" headers="r2c1-t2 r1c2-t2">
+<p>Represents the base installation directory for GlassFish Server.</p>
+<p>In configuration files, <i>as-install</i> is represented as follows:</p>
+<p><code>${com.sun.aas.installRoot}</code></p>
+</td>
+<td align="left" headers="r2c1-t2 r1c3-t2">
+<p>Installations on the Oracle Solaris operating system, Linux operating system, and Mac OS operating system:</p>
+<p><i>user's-home-directory</i><code>/glassfish4/glassfish</code></p>
+<p>Installations on the Windows operating system:</p>
+<p><i>SystemDrive</i><code>:\glassfish4\glassfish</code></p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td align="left" id="r3c1-t2" headers="r1c1-t2">
+<p><i>as-install-parent</i></p>
+<br /></td>
+<td align="left" headers="r3c1-t2 r1c2-t2">
+<p>Represents the parent of the base installation directory for GlassFish Server.</p>
+</td>
+<td align="left" headers="r3c1-t2 r1c3-t2">
+<p>Installations on the Oracle Solaris operating system, Linux operating system, and Mac operating system:</p>
+<p><i>user's-home-directory</i><code>/glassfish4</code></p>
+<p>Installations on the Windows operating system:</p>
+<p><i>SystemDrive</i><code>:\glassfish4</code></p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td align="left" id="r4c1-t2" headers="r1c1-t2">
+<p><i>domain-root-dir</i></p>
+<br /></td>
+<td align="left" headers="r4c1-t2 r1c2-t2">
+<p>Represents the directory in which a domain is created by default.</p>
+</td>
+<td align="left" headers="r4c1-t2 r1c3-t2">
+<p><i>as-install</i><code>/domains/</code></p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td align="left" id="r5c1-t2" headers="r1c1-t2">
+<p><i>domain-dir</i></p>
+<br /></td>
+<td align="left" headers="r5c1-t2 r1c2-t2">
+<p>Represents the directory in which a domain's configuration is stored.</p>
+<p>In configuration files, <i>domain-dir</i> is represented as follows:</p>
+<p><code>${com.sun.aas.instanceRoot}</code></p>
+</td>
+<td align="left" headers="r5c1-t2 r1c3-t2">
+<p><i>domain-root-dir</i><code>/</code><i>domain-name</i></p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td align="left" id="r6c1-t2" headers="r1c1-t2">
+<p><i>instance-dir</i></p>
+<br /></td>
+<td align="left" headers="r6c1-t2 r1c2-t2">
+<p>Represents the directory for a server instance.</p>
+</td>
+<td align="left" headers="r6c1-t2 r1c3-t2">
+<p><i>domain-dir</i><code>/</code><i>instance-name</i></p>
+</td>
+</tr>
+</tbody>
+</table>
+<br />
+
+
+<a id="gixue" name="gixue"></a><a id="GSQSG00032" name="GSQSG00032"></a>
+
+<h2>Default Administration Values</h2>
+<p>The following table lists default administration values for GlassFish Server. See <a href="#ghpfg">Default Paths and File Names</a> for more information about the <i>as-install</i> and <i>domain-dir</i> placeholders.</p>
+<a id="sthref4" name="sthref4"></a><a id="gixxy" name="gixxy"></a>
+<p><b>Table 1-2 Default Administration Values</b></p>
+<table  title="Default Administration Values" summary="Summary of default paths and port numbers for administration." dir="ltr" border="1" width="100%" frame="hsides" rules="rows" cellpadding="3" cellspacing="0">
+<col width="*" />
+<col width="50%" />
+<thead>
+<tr align="left" valign="top">
+<th align="left" valign="bottom" id="r1c1-t3">Item</th>
+<th align="left" valign="bottom" id="r1c2-t3">Default Value or Location</th>
+</tr>
+</thead>
+<tbody>
+<tr align="left" valign="top">
+<td align="left" id="r2c1-t3" headers="r1c1-t3">
+<p>Domain name</p>
+</td>
+<td align="left" headers="r2c1-t3 r1c2-t3">
+<p><code>domain1</code></p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td align="left" id="r3c1-t3" headers="r1c1-t3">
+<p>Master password</p>
+</td>
+<td align="left" headers="r3c1-t3 r1c2-t3">
+<p><code>changeit</code></p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td align="left" id="r4c1-t3" headers="r1c1-t3">
+<p><a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00263"><code>asadmin</code>(1M)</a> command-line utility</p>
+</td>
+<td align="left" headers="r4c1-t3 r1c2-t3">
+<p><i>as-install</i><code>/bin</code></p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td align="left" id="r5c1-t3" headers="r1c1-t3">
+<p>Configuration files</p>
+</td>
+<td align="left" headers="r5c1-t3 r1c2-t3">
+<p><i>domain-dir</i><code>/config</code></p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td align="left" id="r6c1-t3" headers="r1c1-t3">
+<p>Log files</p>
+</td>
+<td align="left" headers="r6c1-t3 r1c2-t3">
+<p><i>domain-dir</i><code>/logs</code></p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td align="left" id="r7c1-t3" headers="r1c1-t3">
+<p>Administration server port</p>
+</td>
+<td align="left" headers="r7c1-t3 r1c2-t3">
+<p><code>4848</code></p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td align="left" id="r8c1-t3" headers="r1c1-t3">
+<p>HTTP port</p>
+</td>
+<td align="left" headers="r8c1-t3 r1c2-t3">
+<p><code>8080</code></p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td align="left" id="r9c1-t3" headers="r1c1-t3">
+<p>HTTPS port</p>
+</td>
+<td align="left" headers="r9c1-t3 r1c2-t3">
+<p><code>8181</code></p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td align="left" id="r10c1-t3" headers="r1c1-t3">
+<p>Pure JMX clients port</p>
+</td>
+<td align="left" headers="r10c1-t3 r1c2-t3">
+<p><code>8686</code></p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td align="left" id="r11c1-t3" headers="r1c1-t3">
+<p>Message Queue port</p>
+</td>
+<td align="left" headers="r11c1-t3 r1c2-t3">
+<p><code>7676</code></p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td align="left" id="r12c1-t3" headers="r1c1-t3">
+<p>IIOP port</p>
+</td>
+<td align="left" headers="r12c1-t3 r1c2-t3">
+<p><code>3700</code></p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td align="left" id="r13c1-t3" headers="r1c1-t3">
+<p>IIOP/SSL port</p>
+</td>
+<td align="left" headers="r13c1-t3 r1c2-t3">
+<p><code>3820</code></p>
+</td>
+</tr>
+<tr align="left" valign="top">
+<td align="left" id="r14c1-t3" headers="r1c1-t3">
+<p>IIOP/SSL port with mutual authentication</p>
+</td>
+<td align="left" headers="r14c1-t3 r1c2-t3">
+<p><code>3920</code></p>
+</td>
+</tr>
+</tbody>
+</table>
+<br />
+
+
+<a id="gglog" name="gglog"></a><a id="GSQSG00033" name="GSQSG00033"></a>
+
+<h2>Starting and Stopping the Default Domain</h2>
+<p>When you install GlassFish Server, a default domain named <code>domain1</code> is created. The following procedures describe how to start and stop <code>domain1</code> when it is the only domain. For information about starting and stopping a domain when there are multiple domains, see <i>Administering Domains</i> in  <a href="https://glassfish.java.net/docs/4.0/administration-guide.pdf"><i>Oracle GlassFish Server Administration Guide</i></a>.</p>
+<a id="ggmpd" name="ggmpd"></a><a id="GSQSG00005" name="GSQSG00005"></a>
+
+<h3>To Start the Default Domain</h3>
+<a id="sthref5" name="sthref5"></a>
+<h6>Before You Begin</h6>
+<p>GlassFish Server software must be installed before you start the domain.</p>
+<p>Run the <code>asadmin start-domain</code> command without an operand:</p>
+<pre>
+<b><i>as-install</i>/bin/asadmin start-domain</b>
+</pre>
+<p>The command starts the default domain, <code>domain1</code>.</p>
+
+
+<a id="ggmsx" name="ggmsx"></a><a id="GSQSG00006" name="GSQSG00006"></a>
+
+<h3>To Stop the Default Domain</h3>
+<p>Run the <code>asadmin stop-domain</code> command without an operand:</p>
+<pre>
+<b><i>as-install</i>/bin/asadmin stop-domain</b>
+</pre>
+<p>The command stops the default domain, <code>domain1</code>.</p>
+
+<br />
+<p><b>Tip:</b></p>
+<p>To determine whether a domain is running, use the <code>asadmin list-domains</code> command:</p>
+<pre>
+<b><i>as-install</i>/bin/asadmin list-domains</b>
+</pre>
+<br />
+
+
+
+
+<a id="gglmh" name="gglmh"></a><a id="GSQSG00034" name="GSQSG00034"></a>
+
+<h2>Starting and Stopping the Database Server</h2>
+<p>A database server is not started by default when you start the GlassFish Server domain. If your applications require a database back end, you must start and stop the database server manually.</p>
+<p>The following procedures describe how to start and stop the Java DB server that is bundled with GlassFish Server. For information about starting and stopping other database servers, see the documentation for your specific product.</p>
+<p>For the list of database products supported in this release, see the <a href="http://glassfish.java.net/docs/4.1/release-notes.pdf"><cite>Release Notes</cite></a>.</p>
+<p>For more information about database connectivity, see <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSADG00015"><i>Administering Database Connectivity,</i> in <i>Oracle GlassFish Server Administration Guide</i></a>.</p>
+<a id="ggncr" name="ggncr"></a><a id="GSQSG00007" name="GSQSG00007"></a>
+
+<h3>To Start the Java DB Server</h3>
+<a id="sthref6" name="sthref6"></a>
+<h6>Before You Begin</h6>
+<p>At least one GlassFish Server domain must be started before you start the database server.</p>
+<p>Run the <code>asadmin start-database</code> command.</p>
+<p>The general form for the command is as follows:</p>
+<pre>
+<i>as-install</i>/bin/asadmin start-database --dbhome <i>directory-path</i>
+</pre>
+<p>For example, to start the Java DB server from its default location:</p>
+<pre>
+<b><i>as-install</i>/bin/asadmin start-database --dbhome <i>as-install-parent</i>/javadb</b>
+</pre>
+
+<a id="ggnez" name="ggnez"></a><a id="GSQSG00008" name="GSQSG00008"></a>
+
+<h3>To Stop the Java DB Server</h3>
+<p>Run the <code>asadmin stop-database</code> command:</p>
+<pre>
+<b><i>as-install</i>/bin/asadmin stop-database</b>
+</pre>
+
+
+<a id="ggllq" name="ggllq"></a><a id="GSQSG00035" name="GSQSG00035"></a>
+
+<h2>Starting the Administration Console</h2>
+<p>The GlassFish Server Administration Console provides a browser interface for configuring, administering, and monitoring GlassFish Server.</p>
+<a id="ggnbp" name="ggnbp"></a><a id="GSQSG00009" name="GSQSG00009"></a>
+
+<h3>To Start the Administration Console</h3>
+<a id="sthref7" name="sthref7"></a>
+<h6>Before You Begin</h6>
+<p>At least one GlassFish Server domain must be started.</p>
+<ol>
+<li><p>Type the URL in your browser.</p>
+<p>The default URL for the Administration Console on the local host is as follows:</p>
+<pre>
+<b>http://localhost:4848</b>
+</pre></li>
+<li><p>If prompted, log in to the Administration Console.</p>
+<p>You will be prompted to log in if you chose to require an administration password at the time GlassFish Server was installed.</p></li>
+</ol>
+<a id="sthref8" name="sthref8"></a>
+<h6>See Also</h6>
+<p>For more information, see the Administration Console online help.</p>
+
+
+
+<a id="geyvr" name="geyvr"></a><a id="GSQSG00036" name="GSQSG00036"></a>
+
+<h2>Deploying and Undeploying Applications</h2>
+<p>The process of configuring and enabling applications to run within the GlassFish Server framework is referred to as deployment.</p>
+<p>This section explains how to deploy, list, and undeploy applications. The procedures in this section use the <code>hello.war</code> sample application. The following topics are addressed here:</p>
+<ul>
+<li><p><a href="#ghgis">To Obtain the Sample Application</a></p></li>
+<li><p><a href="#gkpao">Deploying and Undeploying the Sample Application From the Command Line</a></p></li>
+<li><p><a href="#gkpau">Deploying and Undeploying Applications by Using the Administration Console</a></p></li>
+<li><p><a href="#gkpaa">Deploying and Undeploying the Sample Application Automatically</a></p></li>
+</ul>
+<a id="ghgis" name="ghgis"></a><a id="GSQSG00010" name="GSQSG00010"></a>
+
+<h3>To Obtain the Sample Application</h3>
+<ol>
+<li><p>Download a copy of the <code>hello.war</code> sample application from <code><a href="http://glassfish.java.net/downloads/quickstart/hello.war">http://glassfish.java.net/downloads/quickstart/hello.war</a></code>.</p></li>
+<li><p>Save the <code>hello.war</code> file in the directory of your choice.</p>
+<p>This directory is referred to as <i>sample-dir</i>.</p></li>
+</ol>
+
+
+<a id="gkpao" name="gkpao"></a><a id="GSQSG00044" name="GSQSG00044"></a>
+
+<h3>Deploying and Undeploying the Sample Application From the Command Line</h3>
+<p>GlassFish Server provides <code>asadmin</code> subcommands for performing the following deployment-related tasks:</p>
+<ul>
+<li><p><a href="#ggndq">To Deploy the Sample Application From the Command Line</a></p></li>
+<li><p><a href="#ggnco">To List Deployed Applications From the Command Line</a></p></li>
+<li><p><a href="#ggnbm">To Undeploy the Sample Application From the Command Line</a></p></li>
+</ul>
+<a id="ggndq" name="ggndq"></a><a id="GSQSG00011" name="GSQSG00011"></a>
+
+<h4>To Deploy the Sample Application From the Command Line</h4>
+<a id="sthref9" name="sthref9"></a>
+<h6>Before You Begin</h6>
+<p>The sample application must be available before you start this task. To download the sample, see <a href="#ghgis">To Obtain the Sample Application</a>. At least one GlassFish Server domain must be started before you deploy the sample application.</p>
+<ol>
+<li><p>Run the <code>asadmin deploy</code> command.</p>
+<p>The general form for the command is as follows:</p>
+<pre>
+<i>as-install</i>/bin/asadmin deploy <i>war-name</i>
+</pre>
+<p>To deploy the <code>hello.war</code> sample, the command is as follows:</p>
+<pre>
+<b><i>as-install</i>/bin/asadmin deploy </b><code><b><i>sample-dir</i></b></code><b>/hello.war</b>
+</pre></li>
+<li><p>Access the <code>hello</code> application by typing the following URL in your browser:</p>
+<pre>
+<b>http://localhost:8080/hello</b>
+</pre>
+<p>The application's start page is displayed, and you are prompted to type your name.</p>
+<pre>
+Hi, my name is Duke. What's yours?
+</pre></li>
+<li><p>Type your name and click Submit.</p>
+<p>The application displays a customized response, giving you a personal <code>Hello</code>.</p></li>
+</ol>
+<a id="sthref10" name="sthref10"></a>
+<h6>See Also</h6>
+<p>For more information about the <code>deploy</code> subcommand, see <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00114"><code>deploy</code>(1)</a>.</p>
+<p>For more information about deploying applications from the command line, see <a href="https://glassfish.java.net/docs/4.0/application-deployment-guide.pdf"><i>GlassFish Server Application Deployment Guide</i></a>.</p>
+
+
+<a id="ggnco" name="ggnco"></a><a id="GSQSG00012" name="GSQSG00012"></a>
+
+<h4>To List Deployed Applications From the Command Line</h4>
+<p>Run the <code>asadmin list-applications</code> command:</p>
+<pre>
+<b><i>as-install</i>/bin/asadmin list-applications</b>
+</pre>
+
+<a id="ggnbm" name="ggnbm"></a><a id="GSQSG00013" name="GSQSG00013"></a>
+
+<h4>To Undeploy the Sample Application From the Command Line</h4>
+<p>Run the <code>asadmin undeploy</code> command.</p>
+<p>The general form for the command is as follows:</p>
+<pre>
+<i>as-install</i>/bin/asadmin undeploy <i>war-name</i>
+</pre>
+<p>For <i>war-name</i>, use the literal <code>hello</code>, not the full <code>hello.war</code> name.</p>
+<p>For the <code>hello.war</code> example, the command is as follows:</p>
+<pre>
+<b><i>as-install</i>/bin/asadmin undeploy hello</b>
+</pre>
+<a id="sthref11" name="sthref11"></a>
+<h6>See Also</h6>
+<p>For more information about the <code>undeploy</code> subcommand, see <a href="http://www.oracle.com/pls/topic/lookup?ctx=E26576_01&id=GSRFM00244"><code>undeploy</code>(1)</a>.</p>
+
+
+
+<a id="gkpau" name="gkpau"></a><a id="GSQSG00045" name="GSQSG00045"></a>
+
+<h3>Deploying and Undeploying Applications by Using the Administration Console</h3>
+<p>The graphical Administration Console of GlassFish Server enables you to perform the following deployment-related tasks:</p>
+<ul>
+<li><p><a href="#ggnbn">To Deploy the Sample Application by Using the Administration Console</a></p></li>
+<li><p><a href="#ggncd">To View Deployed Applications in the Administration Console</a></p></li>
+<li><p><a href="#ggneh">To Undeploy the Sample Application by Using the Administration Console</a></p></li>
+</ul>
+<a id="ggnbn" name="ggnbn"></a><a id="GSQSG00014" name="GSQSG00014"></a>
+
+<h4>To Deploy the Sample Application by Using the Administration Console</h4>
+<a id="sthref12" name="sthref12"></a>
+<h6>Before You Begin</h6>
+<p>The sample application must be available before you start this task. To download the sample, see <a href="#ghgis">To Obtain the Sample Application</a>. At least one GlassFish Server domain must be started before you deploy the sample application.</p>
+<ol>
+<li><p>Launch the Administration Console by typing the following URL in your browser:</p>
+<pre>
+<b>http://localhost:4848</b>
+</pre></li>
+<li><p>Click the Applications node in the tree on the left.</p>
+<p>The Applications page is displayed.</p></li>
+<li><p>Click the Deploy button.</p>
+<p>The Deploy Applications or Modules page is displayed.</p></li>
+<li><p>Select Packaged File to be Uploaded to the Server, and click Browse.</p></li>
+<li><p>Navigate to the location in which you saved the <code>hello.war</code> sample, select the file, and click Open.</p>
+<p>You are returned to the Deploy Applications or Modules page.</p></li>
+<li><p>Specify a description in the Description field, for example:</p>
+<p><code>hello</code></p></li>
+<li><p>Accept the other default settings, and click OK.</p>
+<p>You are returned to the Applications page.</p></li>
+<li><p>Select the check box next to the <code>hello</code> application and click the Launch link to run the application.</p>
+<p>The default URL for the application is as follows:</p>
+<pre>
+<b>http://localhost:8080/hello/</b>
+</pre></li>
+</ol>
+<a id="sthref13" name="sthref13"></a>
+<h6>See Also</h6>
+<p>For more information, see the Administration Console online help.</p>
+
+
+<a id="ggncd" name="ggncd"></a><a id="GSQSG00015" name="GSQSG00015"></a>
+
+<h4>To View Deployed Applications in the Administration Console</h4>
+<ol>
+<li><p>Launch the Administration Console by typing the following URL in your browser:</p>
+<pre>
+<b>http://localhost:4848</b>
+</pre></li>
+<li><p>Click the Applications node in the tree on the left.</p>
+<p>Expand the node to list deployed applications. Deployed applications are also listed in the table on the Applications page.</p></li>
+</ol>
+
+
+<a id="ggneh" name="ggneh"></a><a id="GSQSG00016" name="GSQSG00016"></a>
+
+<h4>To Undeploy the Sample Application by Using the Administration Console</h4>
+<ol>
+<li><p>Launch the Administration Console by typing the following URL in your browser:</p>
+<pre>
+<b>http://localhost:4848</b>
+</pre></li>
+<li><p>Click the Applications node in the tree on the left.</p>
+<p>The Applications page is displayed.</p></li>
+<li><p>Select the check box next to the <code>hello</code> sample application.</p></li>
+<li><p>Remove or disable the application.</p>
+<ul>
+<li><p>To remove the application, click the Undeploy button.</p></li>
+<li><p>To disable the application, click the Disable button.</p></li>
+</ul>
+</li>
+</ol>
+<a id="sthref14" name="sthref14"></a>
+<h6>See Also</h6>
+<p>For more information, see the Administration Console online help.</p>
+
+
+
+<a id="gkpaa" name="gkpaa"></a><a id="GSQSG00046" name="GSQSG00046"></a>
+
+<h3>Deploying and Undeploying the Sample Application Automatically</h3>
+<p>GlassFish Server enables you to performing the following deployment-related tasks automatically:</p>
+<ul>
+<li><p><a href="#geyvj">To Deploy the Sample Application Automatically</a></p></li>
+<li><p><a href="#ggncw">To Undeploy the Sample Application Automatically</a></p></li>
+</ul>
+<a id="geyvj" name="geyvj"></a><a id="GSQSG00017" name="GSQSG00017"></a>
+
+<h4>To Deploy the Sample Application Automatically</h4>
+<p>You can deploy applications automatically by placing them in the <i>domain-dir</i><code>/autodeploy</code> directory, where <i>domain-dir</i> is the directory of the domain for which you want to configure automatic deployment. For this example, use the default domain, <code>domain1</code>, in the default <i>domain-root-dir</i>, which is <i>as-install</i><code>/domains</code>:</p>
+<pre>
+<i>as-install</i>/domains/domain1/autodeploy
+</pre>
+<a id="sthref15" name="sthref15"></a>
+<h6>Before You Begin</h6>
+<p>The sample application must be available before you start this task. To download the sample, see <a href="#ghgis">To Obtain the Sample Application</a>.</p>
+<p>Copy the application WAR file to the <i>domain-dir</i><code>/autodeploy</code> directory.</p>
+<ul>
+<li><p>On UNIX, Linux, and Mac OS X systems, type this command:</p>
+<pre>
+<b>cp </b><code><b><i>sample-dir</i></b></code><b>/hello.war <i>as-install</i>/domains/<i>domain-dir</i>/autodeploy</b>
+</pre></li>
+<li><p>On Windows systems, type this command:</p>
+<pre>
+<b>copy </b><code><b><i>sample-dir</i></b></code><b>\hello.war <i>as-install</i>\domains\<i>domain-dir</i>\autodeploy</b>
+</pre></li>
+</ul>
+<p>GlassFish Server automatically discovers and deploys the application. The default URL for the application is as follows:</p>
+<pre>
+<b>http://localhost:8080/hello/</b>
+</pre>
+
+<a id="ggncw" name="ggncw"></a><a id="GSQSG00018" name="GSQSG00018"></a>
+
+<h4>To Undeploy the Sample Application Automatically</h4>
+<ol>
+<li><p>Change to the domain's <code>autodeploy</code> directory.</p>
+<pre>
+<b>cd <i>as-install</i>\domains\<i>domain-dir</i>\autodeploy</b>
+</pre></li>
+<li><p>Delete the sample application's WAR file to undeploy and remove the application.</p>
+<ul>
+<li><p>On UNIX, Linux, and Mac OS X systems, type this command:</p>
+<pre>
+<b>rm hello.war</b>
+</pre></li>
+<li><p>On Windows systems, type this command:</p>
+<pre>
+<b>del hello.war</b>
+</pre></li>
+</ul>
+</li>
+</ol>
+
+
+
+<a id="ghgqg" name="ghgqg"></a><a id="GSQSG00039" name="GSQSG00039"></a>
+
+<h2>Removing GlassFish Server 4.1 Software</h2>
+<p>Before removing the GlassFish Server software, stop the following processes:</p>
+<ul>
+<li><p>All domains and other related processes</p></li>
+<li><p>Command prompts that use the installation directory or its subdirectories</p></li>
+<li><p>The Update Tool notifier process if present</p></li>
+<li><p>Any applications that use files that are part of the Java Platform, Standard Edition (Java SE)</p></li>
+</ul>
+<p>You can then remove the <i>as-install-parent directory</i> </p>
+
+<a id="ggrkk" name="ggrkk"></a><a id="GSQSG00021" name="GSQSG00021"></a>
+
+<a id="ggkzh" name="ggkzh"></a><a id="GSQSG00040" name="GSQSG00040"></a>
+
+<h2>For More Information</h2>
+<p>Additional resources are available to help you learn more about GlassFish Server 4.1 and related technologies.</p>
+<p>The following resources are described here:</p>
+<ul>
+<li><p><a href="#ghhir">Product Documentation</a></p></li>
+<li><p><a href="#ghhis">GlassFish Communities</a></p></li>
+<li><p><a href="#giyjo">Tutorials</a></p></li>
+<li><p><a href="#gintm">Java EE 7 Samples</a></p></li>
+</ul>
+<a id="ghhir" name="ghhir"></a><a id="GSQSG00050" name="GSQSG00050"></a>
+
+<h3>Product Documentation</h3>
+<p>Comprehensive product documentation is available and includes the following.</p>
+<ul>
+<li><p><a href="http://glassfish.java.net/docs/4.1/release-notes.pdf"><cite>Release Notes</cite></a>: Latest details about new features, known issues, and tips for installing and working with GlassFish Server software.</p></li>
+<li><p>The <a href="http://glassfish.java.net/docs/index.html">GlassFish Product Documentation</a> page: Collection of guides that document GlassFish Server Open Source Edition features and functions.</p></li>
+<li><p><a href="http://wikis.oracle.com/display/GlassFish/Screencasts+and+Other+Videos">GlassFish Server Screencasts</a>: Collection of video recordings that demonstrate various features and provide examples for working with GlassFish Server and related technologies.</p></li>
+<li><p><a href="http://wikis.oracle.com/display/GlassFish/GlassFishFAQIndex">GlassFish Server FAQs</a>: Frequently asked questions covering a variety of GlassFish Server topics.</p></li>
+</ul>
+
+
+<a id="ghhis" name="ghhis"></a><a id="GSQSG00051" name="GSQSG00051"></a>
+
+<h3>GlassFish Communities</h3>
+<p>The following resources will help you connect with other users, learn more about GlassFish Server, and get help if needed.</p>
+<ul>
+<li><p><a href="http://www.java.net/forums/glassfish/glassfish">GlassFish Forum</a>: Public online discussion forum that provides community support and tips for working with GlassFish Server.</p></li>
+<li><p><a href="http://wikis.oracle.com/display/GlassFish">GlassFish Wiki</a>: Community site that provides a wide range of information related to GlassFish Server.</p></li>
+</ul>
+
+
+<a id="giyjo" name="giyjo"></a><a id="GSQSG00052" name="GSQSG00052"></a>
+
+<h3>Tutorials</h3>
+<p>The following tutorials provide working examples and detailed instructions for creating enterprise applications for the Java EE 7 platform.</p>
+<ul>
+<li><p><a href="http://docs.oracle.com/javaee/7/firstcup/doc/">Your First Cup: An Introduction to the Java EE Platform</a>: Provides a short tutorial for beginning Java EE programmers that shows how to develop a simple enterprise application from scratch. The sample application consists of four main components: a JAX-RS RESTful web service, an enterprise bean, a Java Persistence API entity, and a web application created with JavaServer Faces Facelets technology.</p></li>
+<li><p><a href="http://docs.oracle.com/javaee/7/tutorial/doc/">The Java EE 7 Tutorial</a>: Provides a beginner's guide to developing enterprise applications for GlassFish Server. The tutorial includes working examples and instructions for creating applications with Java EE 7 technologies, including Java Servlets, JavaServer Faces, Facelets, RESTful Web Services, Enterprise JavaBeans, Java Persistence API, Contexts and Dependency Injection for the Java EE platform, and more. The document is also available through Update Tool.</p></li>
+</ul>
+
+
+<a id="gintm" name="gintm"></a><a id="GSQSG00053" name="GSQSG00053"></a>
+
+<h3>Java EE 7 Samples</h3>
+<p>The sample applications demonstrate Java EE technologies. The samples are available through Update Tool and also as part of the Java EE 7 SDK distributions. The SDK distributions are available from the <a href="http://www.oracle.com/technetwork/java/javaee/downloads/index.html">Java EE SDK downloads page</a>.</p>
+</div> <hr style="width: 80%; height: 2px;"> <p
+class="copy"><a href="http://www.oracle.com/corporate/">Company Info</a> &nbsp;&nbsp;|&nbsp;&nbsp; <a
+href="http://www.oracle.com/corporate/contact/">Contact</a> &nbsp;&nbsp;|&nbsp;&nbsp;
+Copyright &copy; 2010, 2014 Oracle Corporation &nbsp;&nbsp;|&nbsp;&nbsp; <a
+href="./copyright.html">Legal Notices</a></p></body></html>

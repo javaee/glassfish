@@ -51,19 +51,9 @@
     <artifactId>glassfish</artifactId>
     <name>Glassfish Distribution</name>
     <packaging>glassfish-distribution</packaging>
-    <description>This pom describes how to assemble the GlassFish Distribution</description>
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-clean-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>clean-domain</id>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.glassfish.build</groupId>
                 <artifactId>glassfishbuild-maven-plugin</artifactId>
@@ -73,6 +63,7 @@
                         <goals>
                             <goal>exec</goal>
                         </goals>
+                        <phase>process-resources</phase>
                     </execution>
                 </executions>
             </plugin>
@@ -85,6 +76,25 @@
             <artifactId>glassfish</artifactId>
             <version>${project.version}</version>
             <type>pom</type>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.main.extras</groupId>
+            <artifactId>glassfish-embedded-shell</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.main.extras</groupId>
+            <artifactId>glassfish-embedded-static-shell</artifactId>
+            <version>${project.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.main.distributions</groupId>
+            <artifactId>glassfish-common</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
             <optional>true</optional>
         </dependency>
     </dependencies>

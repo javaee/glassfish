@@ -1,0 +1,12 @@
+classes/EJB_CMP/
+classes/EJB_slsbnicmt/
+classes/jpainjectemf/
+classes/jpavalidation/
+classes/test/
+classes/weldtest/
+classes/wsit/app/jaxb1/
+dist/
+quicklook_summary.txt
+test-output/
+wsit/JaxwsFromWsdl/JaxwsFromWsdl.war
+wsit/jsr109tester/JaxwsFromJava.war

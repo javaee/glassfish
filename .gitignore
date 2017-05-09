@@ -1,5 +1,6 @@
 target
 .classpath
+.DS_Store
 .project
 .settings/
 target/

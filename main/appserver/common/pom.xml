@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -52,19 +52,15 @@
     <groupId>org.glassfish.main.common</groupId>
     <artifactId>common</artifactId>
     <packaging>pom</packaging>
-    <name>GlassFish Common modules</name>  
+    <name>GlassFish Common modules</name>
     <modules>
-    	<module>stats77</module>
-    	<module>amx-javaee</module>
-	<module>mejb</module>
-	<module>mejb-frag</module>    	
+        <module>stats77</module>
+        <module>amx-javaee</module>
+        <module>mejb</module>
+        <!--<module>mejb-frag</module>-->
         <module>glassfish-ee-api</module>
         <module>annotation-framework</module>
         <module>container-common</module>
         <module>glassfish-naming</module>
-        <module>annotation-framework-l10n</module>
-        <module>container-common-l10n</module>
-        <module>glassfish-naming-l10n</module>
-    	<module>stats77-l10n</module>
     </modules>
 </project>

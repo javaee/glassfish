@@ -116,8 +116,8 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>glassfish-embedded-static-shell</artifactId>
-	    <version>${project.version}</version>
-	    <optional>true</optional>
+            <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 </project>

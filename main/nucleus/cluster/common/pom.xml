@@ -101,9 +101,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.glassfish.main.external</groupId>
-            <artifactId>j-interop-repackaged</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.glassfish.external</groupId>
+            <artifactId>j-interop</artifactId>
         </dependency>
     </dependencies>
 </project>

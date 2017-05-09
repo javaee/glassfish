@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2009-2015 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2009-2017 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -99,7 +99,7 @@
             </roles>
         </developer>
     </developers>
-    
+
     <modules>
         <module>dataprovider</module>
         <module>plugin-service</module>
@@ -109,7 +109,7 @@
         <module>cluster</module>
         <module>community-theme</module>
         <module>web</module>
-	<module>gf-admingui-connector</module>
+        <module>gf-admingui-connector</module>
         <module>jts</module>
         <module>jdbc</module>
         <module>jca</module>
@@ -118,27 +118,9 @@
         <module>ejb-lite</module>
         <module>corba</module>
         <module>full</module>
-        <module>updatecenter</module>
         <module>war</module>
-        <module>dist-fragment</module>
-        <module>updatecenter-l10n</module>
-        <module>full-l10n</module>
-        <module>common-l10n</module>
-        <module>corba-l10n</module>
-        <module>jts-l10n</module>
-        <module>community-theme-l10n</module>
-        <module>web-l10n</module>
-        <module>jms-plugin-l10n</module>
-        <module>jdbc-l10n</module>
-        <module>ejb-l10n</module>
-        <module>cluster-l10n</module>
-        <module>jca-l10n</module>
-        <module>ejb-lite-l10n</module>
-        <module>core-l10n</module>
-        <module>concurrent-l10n</module>
-        <module>webui-jsf-plugin-l10n</module>
-        <module>webui-jsf-suntheme-plugin-l10n</module>
     </modules>
+
     <build>
         <plugins>
           <plugin>
@@ -151,7 +133,7 @@
                   <goal>unpack-dependencies</goal>
                 </goals>
                 <configuration>
-                  <includeGroupIds>org.glassfish.docs.help,org.glassfish.docs-l10n.help-l10n</includeGroupIds>
+                  <includeGroupIds>org.glassfish.docs.help</includeGroupIds>
                   <excludeTransitive>true</excludeTransitive>
                   <outputDirectory>${project.build.outputDirectory}</outputDirectory>
                 </configuration>
@@ -180,7 +162,7 @@
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>javax.faces</artifactId>
-	    <scope>provided</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>

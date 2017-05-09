@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -56,9 +56,7 @@
         <module>appclient-scripts</module>
         <module>acc-config</module>
         <module>acc</module>
-        <module>acc-l10n</module>
         <module>acc-standalone</module>
-        <module>acc-standalone-l10n</module>
         <!--  JWS support is not yet implemented
         <module>jws</module>
         -->

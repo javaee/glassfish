@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 1997-2015 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -41,9 +41,6 @@
 
 -->
 
-<!--
-  modules used to build glassfish packages
--->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
@@ -81,90 +78,129 @@
         <stage.dir>${project.build.directory}/${stage.dir.name}</stage.dir>
         <temp.dir>${project.build.directory}/dependency</temp.dir>
         <include.group.ids>org.glassfish.main.packager</include.group.ids>
+        <install.dir.name>${nucleus.install.dir.name}</install.dir.name>
         <create-domain.args>--user admin create-domain --nopassword --savelogin=true --checkports=false --adminport 4848 --instanceport 8080 --keytooloptions CN=localhost domain1</create-domain.args>
     </properties>
 
     <modules>
-	<module>atomic</module>
+        <module>nucleus-common</module>
+        <module>atomic</module>
         <module>nucleus</module>
     </modules>
 
     <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <configuration>
-                    <outputDirectory>${temp.dir}</outputDirectory>
-                    <useSubDirectoryPerType>false</useSubDirectoryPerType>
-                    <overWriteReleases>false</overWriteReleases>
-                    <overWriteSnapshots>true</overWriteSnapshots>
-                    <includeScope>compile</includeScope>
-                    <includeScope>runtime</includeScope>
-                    <includeTypes>zip</includeTypes>
-                    <includeGroupIds>${include.group.ids}</includeGroupIds>
-                    <stripVersion>true</stripVersion>
-                    <silent>true</silent>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <descriptors>
-                        <descriptor>src/main/assembly/${project.artifactId}.xml</descriptor>
-                    </descriptors>
-                    <finalName>${stage.dir.name}</finalName>
-                    <attach>false</attach>
-                    <appendAssemblyId>false</appendAssemblyId>
-                    <useProjectArtifact>false</useProjectArtifact>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.glassfish.build</groupId>
-                <artifactId>glassfishbuild-maven-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <!-- zip configuration -->
-                    <duplicate>preserve</duplicate>
-                    <filesets>
-                        <fileset>
-                            <dir>${stage.dir}</dir>
-                            <fileMode>755</fileMode>
-                            <includes>**/bin/*</includes>
-                            <includes>**/bin/*.bat</includes>
-                            <includes>**/lib/nadmin</includes>
-                        </fileset>
-                        <fileset>
-                            <dir>${stage.dir}</dir>
-                        </fileset>
-                    </filesets>
-                    <!-- exec configuration -->
-                    <executable>${stage.dir}/${nucleus.install.dir.name}/bin/nadmin</executable>
-                    <commandlineArgs>${create-domain.args}</commandlineArgs>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-clean-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <!-- make sure domain is created each time -->
-                        <id>clean domain</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>clean</goal>
-                        </goals>
-                        <configuration>
-                            <directory>${project.build.directory}</directory>
-                            <includes>
-                                <include>${stage.dir.name}/domains/**</include>
-                            </includes>                            
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
+        <outputDirectory>${temp.dir}</outputDirectory>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <configuration>
+                        <skip>true</skip>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <configuration>
+                        <includeEmptyDirs>true</includeEmptyDirs>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.glassfish.build</groupId>
+                    <artifactId>glassfishbuild-maven-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>create-domain</id>
+                            <phase>process-resources</phase>
+                            <configuration>
+                                <executable>${stage.dir}/${nucleus.install.dir.name}/bin/nadmin</executable>
+                                <commandlineArgs>${create-domain.args}</commandlineArgs>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>default-featuresets-dependencies</id>
+                            <phase>process-resources</phase>
+                            <configuration>
+                                <featureSetGroupIdIncludes>org.glassfish.main.featuresets</featureSetGroupIdIncludes>
+                                <stageDirectory>${temp.dir}</stageDirectory>
+                                <excludes>META-INF/**</excludes>
+                                <mappings>
+                                    <mapping>
+                                        <artifactId>org.apache.felix.main</artifactId>
+                                        <name>felix</name>
+                                    </mapping>
+                                </mappings>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>default-zip</id>
+                            <phase>package</phase>
+                            <configuration>
+                                <excludes>**/.gitkeep_empty_dir</excludes>
+                                <duplicate>preserve</duplicate>
+                                <filesets>
+                                    <fileset>
+                                        <dir>${stage.dir}</dir>
+                                        <fileMode>755</fileMode>
+                                        <includes>**/bin/*</includes>
+                                        <includes>**/bin/*.bat</includes>
+                                        <includes>**/lib/nadmin*</includes>
+                                    </fileset>
+                                    <fileset>
+                                        <dir>${stage.dir}</dir>
+                                        <excludes>**/bin/*</excludes>
+                                        <excludes>**/bin/*.bat</excludes>
+                                        <excludes>**/lib/nadmin*</excludes>
+                                    </fileset>
+                                </filesets>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>default-single</id>
+                            <phase>process-resources</phase>
+                            <goals>
+                                <goal>single</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <descriptors>
+                            <descriptor>${basedir}/src/main/assembly/${project.artifactId}.xml</descriptor>
+                        </descriptors>
+                        <ignoreMissingDescriptor>false</ignoreMissingDescriptor>
+                        <finalName>${stage.dir.name}</finalName>
+                        <attach>false</attach>
+                        <appendAssemblyId>false</appendAssemblyId>
+                        <useProjectArtifact>false</useProjectArtifact>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>clean-domain</id>
+                            <phase>initialize</phase>
+                            <goals>
+                                <goal>clean</goal>
+                            </goals>
+                            <configuration>
+                                <directory>${project.build.directory}</directory>
+                                <includes>
+                                    <include>${stage.dir.name}/domains/**</include>
+                                </includes>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 </project>
-

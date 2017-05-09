@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010-2015 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2017 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -42,64 +42,45 @@
 -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <parent>
-      <groupId>org.glassfish.main</groupId>
-      <artifactId>glassfish-parent</artifactId>
-      <version>5.0-SNAPSHOT</version>
-      <relativePath>../../pom.xml</relativePath>
-  </parent>
+    <parent>
+        <groupId>org.glassfish.main</groupId>
+        <artifactId>glassfish-parent</artifactId>
+        <version>5.0-SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.glassfish.main.jdbc.jdbc-ra</groupId>
+    <artifactId>jdbc-ra</artifactId>
+    <name>JDBC Resource Adapter</name>
+    <packaging>pom</packaging>
+    <version>5.0-SNAPSHOT</version>
 
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.glassfish.main.jdbc.jdbc-ra</groupId>
-  <artifactId>jdbc-ra</artifactId>
-  <name>JDBC Resource Adapter</name>
-  <packaging>pom</packaging>
-  <version>5.0-SNAPSHOT</version>
+    <developers>
+        <developer>
+            <id>sm157516</id>
+            <name>Shalini Muthukrishnan</name>
+            <url>http://blogs.sun.com/technical</url>
+            <organization>Oracle, Inc.</organization>
+            <roles>
+                <role>developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>jr158900</id>
+            <name>Jagadish Ramu</name>
+            <url>http://blogs.sun.com/JagadishPrasath</url>
+            <organization>Oracle, Inc.</organization>
+            <roles>
+                <role>lead</role>
+                <role>developer</role>
+            </roles>
+        </developer>
+    </developers>
 
-  <build>
-    <plugins>
-      <plugin>
-          <groupId>org.glassfish.build</groupId>
-          <artifactId>glassfishbuild-maven-plugin</artifactId>
-          <configuration>
-              <!-- configuration for the run mojo -->
-              <distribution>
-                  <groupId>org.glassfish.main.distributions</groupId>
-                  <artifactId>web</artifactId>
-                  <version>${project.version}</version>
-              </distribution>
-          </configuration>
-      </plugin>
-    </plugins>
-  </build>
-
-  <developers>
-    <developer>
-      <id>sm157516</id>
-      <name>Shalini Muthukrishnan</name>
-      <url>http://blogs.sun.com/technical</url>
-      <organization>Oracle, Inc.</organization>
-      <roles>
-        <role>developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <id>jr158900</id>
-      <name>Jagadish Ramu</name>
-      <url>http://blogs.sun.com/JagadishPrasath</url>
-      <organization>Oracle, Inc.</organization>
-      <roles>
-        <role>lead</role>      
-	<role>developer</role>
-      </roles>
-    </developer>
-  </developers>
-
-  <modules>
-    <module>jdbc-core</module>
-    <module>jdbc30</module>
-    <module>jdbc40</module>
-    <module>jdbc-ra-distribution</module>
-    <module>jdbc-core-l10n</module>
-  </modules>
+    <modules>
+        <module>jdbc-core</module>
+        <module>jdbc30</module>
+        <module>jdbc40</module>
+        <module>jdbc-ra-distribution</module>
+    </modules>
 </project>

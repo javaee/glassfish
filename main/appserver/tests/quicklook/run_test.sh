@@ -59,8 +59,8 @@ run_test_id(){
 		mvn -Dglassfish.home=$WORKSPACE/glassfish4/glassfish -Dmaven.repo.local=$WORKSPACE/repository -Ptest_gd_security,report test | tee $TEST_RUN_LOG
 		copy_ql_results
 	elif [[ $1 = "ql_gf_nucleus_all" || $1 = "nucleus_admin_all" ]]; then
-		download_test_resources nucleus-new.zip tests-maven-repo.zip version-info.txt
-		unzip_test_resources $WORKSPACE/bundles/nucleus-new.zip "$WORKSPACE/bundles/tests-maven-repo.zip -d $WORKSPACE/repository"
+		download_test_resources nucleus.zip tests-maven-repo.zip version-info.txt
+		unzip_test_resources $WORKSPACE/bundles/nucleus.zip "$WORKSPACE/bundles/tests-maven-repo.zip -d $WORKSPACE/repository"
 		if [[ $1 = "ql_gf_nucleus_all" ]]; then
 			cd $WORKSPACE/main/nucleus/tests/quicklook
 		elif [[ $1 = "nucleus_admin_all"  ]]; then
@@ -92,7 +92,7 @@ run_test_id(){
     change_junit_report_class_names
     upload_test_results
     delete_bundle
-    cd -
+    cd - > /dev/null 2>&1
 }
 
 merge_junit_xmls(){

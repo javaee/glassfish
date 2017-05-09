@@ -84,7 +84,7 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.external</groupId>
-            <artifactId>dbschema-repackaged</artifactId>
+            <artifactId>dbschema</artifactId>
         </dependency>
     </dependencies>
     
