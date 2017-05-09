@@ -3,7 +3,7 @@
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
-    Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+    Copyright (c) 2010-2017 Oracle and/or its affiliates. All rights reserved.
 
     The contents of this file are subject to the terms of either the GNU
     General Public License Version 2 only ("GPL") or the Common Development
@@ -46,17 +46,17 @@
     <target name="all">
         <taskdef name="unjar" classname="org.jvnet.maven.plugin.antrun.UnJarTask"/>
         <unjar dest="target/classes/modules/@filebasename@_jar">
-            <fileset dir="target/module_jars/glassfish3/glassfish/modules">
+            <fileset dir="target/module_jars/glassfish5/glassfish/modules">
                 <include name="*.jar"/>
             </fileset>
         </unjar>
         <unjar dest="target/classes/modules/autostart/@filebasename@_jar">
-            <fileset dir="target/module_jars/glassfish3/glassfish/modules/autostart">
+            <fileset dir="target/module_jars/glassfish5/glassfish/modules/autostart">
                 <include name="*.jar"/>
             </fileset>
         </unjar>
         <unjar dest="target/classes/modules/endorsed/@filebasename@_jar">
-            <fileset dir="target/module_jars/glassfish3/glassfish/modules/endorsed">
+            <fileset dir="target/module_jars/glassfish5/glassfish/modules/endorsed">
                 <include name="*.jar"/>
             </fileset>
         </unjar>

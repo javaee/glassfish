@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -169,7 +169,7 @@ public class Jps {
      <pre>
      2524 sun.tools.jps.Jps
      5324 com.sun.enterprise.glassfish.bootstrap.ASMain
-     4120 D:\glassfish4\glassfish\bin\..\modules\admin-cli.jar
+     4120 D:\glassfish5\glassfish\bin\..\modules\admin-cli.jar
      </pre>
      * If there is a path -- then there is no classname and vice-versa
      * @param s

@@ -27,13 +27,13 @@ rm revision-under-test.html
 wget --no-proxy -q -O revision-under-test.html http://${REHudson}/hudson/job/${upstreamSource}/lastSuccessfulBuild
 grep 'Build #' revision-under-test.html
 time wget --no-proxy -q -O glassfish.zip http://${REHudson}/hudson/job/${upstreamSource}/lastSuccessfulBuild/artifact/bundles/glassfish.zip
-rm -fR glassfish4
+rm -fR glassfish5
 unzip -q glassfish.zip
 if [ $? -ne 0 ]
 then
   exit 1
 fi
-export S1AS_HOME="$ROOT/glassfish4/glassfish"
+export S1AS_HOME="$ROOT/glassfish5/glassfish"
 export APS_HOME="$ROOT/appserv-tests"
 export ANT_OPTS= "Xms128m -Xmx256m"
 cd "$APS_HOME"

@@ -17,12 +17,12 @@ then
   export LAST_SUCC_BUNDLE=artifact/bundles/glassfish.zip
 fi
 
-rm -rf glassfish4
+rm -rf glassfish5
 wget -q -O revision-under-test.html ${LAST_SUCC_BUILD_URL}
 grep 'Build #' revision-under-test.html
 time wget -q -O glassfish.zip ${LAST_SUCC_BUILD_URL}/${LAST_SUCC_BUNDLE}
 unzip -q glassfish.zip
-export S1AS_HOME="$ROOT/glassfish4/glassfish"
+export S1AS_HOME="$ROOT/glassfish5/glassfish"
 export APS_HOME="$ROOT/appserv-tests"
 export AS_LOGFILE="$S1AS_HOME/cli.log"
 

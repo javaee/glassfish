@@ -49,7 +49,7 @@ test_run_sqe_smoke(){
         # CLEANUPS
         kill_clean `ps -ef |grep jre|grep -v grep|cut -f4,5 -d" "`
         kill_clean `jps |grep Main |grep -v grep |cut -f1 -d" "`
-        kill_clean `ps -ef | grep $WORKSPACE/glassfish4/glassfish|grep -v grep`
+        kill_clean `ps -ef | grep $WORKSPACE/glassfish5/glassfish|grep -v grep`
         
         curl --noproxy $GF_MAVEN $INTERNAL_RELEASE_REPO/com/oracle/glassfish/sqe-smoke/1.0/sqe-smoke-1.0.zip > bundles/sqe-smoke.zip
         unzip bundles/sqe-smoke.zip
@@ -175,7 +175,7 @@ list_test_ids(){
 
 delete_workspace(){
 	printf "\n%s \n\n" "===== DELETE WORKSPACE ====="
-    rm -rf $WORKSPACE/glassfish4 > /dev/null || true
+    rm -rf $WORKSPACE/glassfish5 > /dev/null || true
     rm -rf $WORKSPACE/appserver-sqe > /dev/null  || true
     rm -rf $WORKSPACE/sqe-smoke.zip > /dev/null || true
     for f in `find $WORKSPACE -type f`; do

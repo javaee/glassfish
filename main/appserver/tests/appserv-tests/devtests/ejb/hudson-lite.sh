@@ -25,7 +25,7 @@ unzip -q web.zip
 
 date
 
-export S1AS_HOME=$PWD/glassfish4/glassfish
+export S1AS_HOME=$PWD/glassfish5/glassfish
 popd
 export APS_HOME=$PWD/appserv-tests
 export AS_LOGFILE=$S1AS_HOME/cli.log 

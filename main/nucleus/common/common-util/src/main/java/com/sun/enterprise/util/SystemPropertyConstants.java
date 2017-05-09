@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -344,7 +344,7 @@ public class SystemPropertyConstants
     }
 
     /** Returns the component identifier associated with the INSTALL_ROOT.
-     *  For example if INSTALL_ROOT is /home/glassfish4/glassfish the
+     *  For example if INSTALL_ROOT is /home/glassfish5/glassfish the
      *  component name will "glassfish".
      * @return String representing the component identifier.
      */

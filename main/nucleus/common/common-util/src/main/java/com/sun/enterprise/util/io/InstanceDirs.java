@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -52,11 +52,11 @@ import java.io.IOException;
  * when working with invalid directories...
  *
  * Example:
- * new InstanceDirs(new File("/glassfish4/glassfish/nodes/mymachine/instance1"));
+ * new InstanceDirs(new File("/glassfish5/glassfish/nodes/mymachine/instance1"));
  *
- * getInstanceDir()   == /glassfish4/glassfish/nodes/mymachine/instance1
- * getNodeAgentDir()  == /glassfish4/glassfish/nodes/mymachine
- * getNodeAgentsDir() == /glassfish4/glassfish/nodes
+ * getInstanceDir()   == /glassfish5/glassfish/nodes/mymachine/instance1
+ * getNodeAgentDir()  == /glassfish5/glassfish/nodes/mymachine
+ * getNodeAgentsDir() == /glassfish5/glassfish/nodes
  * getInstanceName()  == instance1
  *
  *

@@ -1,4 +1,4 @@
-Thank you for downloading GlassFish Server Open Source Edition 4.1!
+Thank you for downloading GlassFish Server Open Source Edition 5.0!
 
 Here are a few short steps to get you started...
 
@@ -6,7 +6,7 @@ Here are a few short steps to get you started...
 0. Prerequisite
 ===============
 
-GlassFish 4.1 requires Oracle JDK 7 Update 65+ or Oracle JDK 8 Update 5+. 
+GlassFish 5.0 requires Oracle JDK 8 Update 121
 Check http://www.oracle.com/technetwork/java/javase/downloads/index.html to download the JDK.
 
 
@@ -25,8 +25,8 @@ The default domain called 'domain1' is installed and preconfigured.
 The 'asadmin' command-line utility is used to control and manage GlassFish (start, stop, configure, deploy applications, etc).
 
 To start GlassFish, just go in the directory where GlassFish is located and type:
-        On Unix: glassfish4/glassfish/bin asadmin start-domain
-        On Windows: glassfish4\glassfish\bin asadmin start-domain
+        On Unix: glassfish5/glassfish/bin asadmin start-domain
+        On Windows: glassfish5\glassfish\bin asadmin start-domain
 
 After a few seconds, GlassFish will be up and ready to accept requests. The default 'domain1' domain is configured to listen on port 8080. In your browser, go to http://localhost:8080 to see the default landing page.
 
@@ -37,14 +37,14 @@ To manage GlassFish, just go to web administration console: http://localhost:484
 =====================
 
 To stop GlassFish, just issue the following command :
-        On Unix: glassfish4/glassfish/bin asadmin stop-domain
-        On Windows: glassfish4\glassfish\bin asadmin stop-domain
+        On Unix: glassfish5/glassfish/bin asadmin stop-domain
+        On Windows: glassfish5\glassfish\bin asadmin stop-domain
 
 
 4. Where to go next?
 ====================
 
-Open the following local file in your browser: glassfish4/glassfish/docs/quickstart.html. It contains useful information such as the details about the pre-configured 'domain1', links to the GlassFish Documentation, etc.
+Open the following local file in your browser: glassfish5/glassfish/docs/quickstart.html. It contains useful information such as the details about the pre-configured 'domain1', links to the GlassFish Documentation, etc.
 
 
 Make sure to also check the GlassFish 4.1 Release Notes as they contains important information : https://glassfish.java.net/docs/4.1/release-notes.pdf

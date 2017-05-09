@@ -348,7 +348,7 @@ setS1ASclassPath:
 init-common:
 
 runclient-common:
-     [echo] appclient -client /space/jagadish/workspaces/v3/feb10/v2/appserv-tests/build/module/archive/ejb-bmp-statementwrapperAppClient.jar -name ejb-bmp-statementwrapperClient -textauth -user j2ee -password j2ee -xml /space/jagadish/workspaces/v3/feb10/v3/distributions/glassfish/target/installation/glassfish3/glassfish/domains/domain1/config/sun-acc.xml 20 1 3
+     [echo] appclient -client /space/jagadish/workspaces/v3/feb10/v2/appserv-tests/build/module/archive/ejb-bmp-statementwrapperAppClient.jar -name ejb-bmp-statementwrapperClient -textauth -user j2ee -password j2ee -xml /space/jagadish/workspaces/v3/feb10/v3/distributions/glassfish/target/installation/glassfish5/glassfish/domains/domain1/config/sun-acc.xml 20 1 3
      [exec] 1 Dec, 2010 8:12:28 PM org.glassfish.appclient.client.acc.AppclientCommandArguments warnAboutPasswordUsage
      [exec] WARNING: ACC013: The -password option is deprecated and will likely be removed in a future release.  Please use -passwordfile or let the app client container prompt for the username and/or password if they are needed to access a remote resource.
      [exec] 1 Dec, 2010 8:12:31 PM com.sun.logging.LogDomains$1 log

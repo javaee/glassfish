@@ -15,10 +15,10 @@ unzip -q glassfish.zip
 
 # PUT IN GMS PATCH
 #wget http://java.net/jira/secure/attachment/45919/shoal-gms-impl.jar
-#mv shoal-gms-impl.jar $PWD/glassfish4/glassfish/modules
+#mv shoal-gms-impl.jar $PWD/glassfish5/glassfish/modules
 # PUT IN GMS PATCH
 
-export S1AS_HOME=$PWD/glassfish4/glassfish
+export S1AS_HOME=$PWD/glassfish5/glassfish
 popd
 export APS_HOME=$PWD/appserv-tests
 #export AS_DEBUG=true 

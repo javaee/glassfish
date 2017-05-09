@@ -1,4 +1,4 @@
-Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+Copyright (c) 2013-2017 Oracle and/or its affiliates. All rights reserved.
 
 This is a set of integrations tests for cdi.
 
@@ -8,7 +8,7 @@ source.home= The directory where the glassfish source is located
 
 To run the tests something like this line should be run:
 
-mvn -Dglassfish.home=/scratch/jwells/bg/installs/gf/glassfish4/glassfish \
+mvn -Dglassfish.home=/scratch/jwells/bg/installs/gf/glassfish5/glassfish \
     -Dsource.home=/scratch/jwells/bg/all/main \
 	clean install 2>&1 | tee t.out
 

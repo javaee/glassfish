@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  * 
- * Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2017 Oracle and/or its affiliates. All rights reserved.
  * 
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -74,7 +74,7 @@ public class CLIBootstrapTest {
         System.setProperty(CLIBootstrap.ENV_VAR_PROP_PREFIX + "PATH",
                 System.getenv("PATH"));
         System.setProperty(CLIBootstrap.ENV_VAR_PROP_PREFIX + "_AS_INSTALL",
-                "/Users/Tim/asgroup/v3/H/publish/glassfish4/glassfish");
+                "/Users/Tim/asgroup/v3/H/publish/glassfish5/glassfish");
     }
 
     @After
