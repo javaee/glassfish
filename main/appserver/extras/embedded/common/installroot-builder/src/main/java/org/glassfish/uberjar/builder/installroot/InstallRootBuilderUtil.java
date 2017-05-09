@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -58,7 +58,7 @@ import java.util.logging.Logger;
 public class InstallRootBuilderUtil {
 
     private static final Logger logger = Logger.getLogger("embedded-glassfish");
-    private static String resourceroot = "glassfish4/glassfish/";
+    private static String resourceroot = "glassfish5/glassfish/";
 
     public static void buildInstallRoot(String installRoot) throws Exception {
         ClassLoader cl = InstallRootBuilderUtil.class.getClassLoader();

@@ -200,7 +200,7 @@
 
 [#|2012-10-19T15:27:48.265-0400|SEVERE|44.0|org.glassfish.admingui|_ThreadID=90;_ThreadName=admin-listener(7);_TimeMillis=1350674868265;_LevelValue=1000;|RestResponse.getResponse() gives FAILURE.  endpoint = 'http://localhost:4848/management/domain/location'; attrs = '{}'|#]
 
-[#|2012-10-19T15:27:48.629-0400|WARNING|44.0|org.glassfish.admingui|_ThreadID=95;_ThreadName=Thread-20;_TimeMillis=1350674868629;_LevelValue=900;|Cannot create update center Image for /scratch/sanshriv/software/glassfish3; Update Center functionality will not be available in Admin Console|#]
+[#|2012-10-19T15:27:48.629-0400|WARNING|44.0|org.glassfish.admingui|_ThreadID=95;_ThreadName=Thread-20;_TimeMillis=1350674868629;_LevelValue=900;|Cannot create update center Image for /scratch/sanshriv/software/glassfish5; Update Center functionality will not be available in Admin Console|#]
 
 [#|2012-10-19T15:27:55.484-0400|WARNING|44.0|javax.enterprise.resource.webcontainer.jsf.context|_ThreadID=89;_ThreadName=admin-listener(6);_TimeMillis=1350674875484;_LevelValue=900;_MessageID=jsf.externalcontext.no.mime.type.found;|JSF1091: No mime type could be found for file /common/applications/applications.jsp.  To resolve this, add a mime-type mapping to the applications web.xml.|#]
 

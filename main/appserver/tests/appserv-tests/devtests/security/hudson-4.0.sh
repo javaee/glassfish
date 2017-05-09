@@ -2,7 +2,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2013 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2013-2017 Oracle and/or its affiliates. All rights reserved.
 #
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
@@ -49,7 +49,7 @@ pushd glassfish-v4-image
 wget --no-proxy http://gf-hudson.us.oracle.com/hudson/job/gf-trunk-build-continuous/lastSuccessfulBuild/artifact/bundles/glassfish.zip
 unzip -q glassfish.zip
 
-export S1AS_HOME=$PWD/glassfish4/glassfish
+export S1AS_HOME=$PWD/glassfish5/glassfish
 popd
 
 rm -rf opends-image

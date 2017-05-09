@@ -1,7 +1,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2012-2017 Oracle and/or its affiliates. All rights reserved.
 #
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
@@ -42,7 +42,7 @@ Steps to run these automated tests:
 
 1. Unzip latest version of glassfish.zip and set S1AS_HOME enviroment variable to point to the extracted GlassFish location.
 
-  For example: export S1AS_HOME=/tmp/glassfish4/glassfish
+  For example: export S1AS_HOME=/tmp/glassfish5/glassfish
 
 2. Also set PAAS_TESTS_HOME environment variable to point to the location where paas tests are checked out.
 
