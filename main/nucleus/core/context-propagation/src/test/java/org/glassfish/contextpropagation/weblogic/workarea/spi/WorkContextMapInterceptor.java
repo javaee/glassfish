@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -90,8 +90,6 @@ import org.glassfish.contextpropagation.weblogic.workarea.WorkContextOutput;
  *
  * @see org.glassfish.contextpropagation.weblogic.workarea.WorkContextMap
  * @see org.glassfish.contextpropagation.weblogic.workarea.PropagationMode
- *
- * @author Copyright (c) 2003 by BEA Systems Inc. All Rights Reserved.
  * @exclude
  */
 public interface WorkContextMapInterceptor {
