@@ -183,6 +183,7 @@
     </distributionManagement> 
 
     <properties>
+        <javax.annotation.version>1.2</javax.annotation.version>
         <javax.json.version>1.0</javax.json.version>
         <glassfish.json.version>1.0.4</glassfish.json.version>
         <java.net.username>${user.name}</java.net.username>
@@ -717,6 +718,11 @@
     
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>javax.annotation</groupId>
+                <artifactId>javax.annotation-api</artifactId>
+                <version>${javax.annotation.version}</version>
+            </dependency>
             <dependency>
                 <groupId>javax.json</groupId>
                 <artifactId>javax.json-api</artifactId>

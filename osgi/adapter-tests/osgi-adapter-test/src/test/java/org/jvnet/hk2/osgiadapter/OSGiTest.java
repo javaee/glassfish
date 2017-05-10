@@ -111,7 +111,6 @@ public class OSGiTest {
                 systemPackage("javax.xml.transform"),
                 systemPackage("javax.xml.transform.stream"),
                 systemPackage("javax.xml.validation"),
-                systemPackage("javax.annotation"),
                 systemPackage("javax.script"),
                 systemPackage("javax.management"),
                 systemPackage("org.w3c.dom"),
@@ -146,6 +145,7 @@ public class OSGiTest {
                                 "no-hk2-bundle").version(projectVersion).startLevel(4)),
                 provision(mavenBundle().groupId(ServiceLocatorHk2MainTest.GROUP_ID).artifactId(
                                 "sdp-management-bundle").version(projectVersion).startLevel(4)),
+                provision(mavenBundle().groupId("javax.annotation").artifactId("javax.annotation-api").version("1.2")),
                 provision(mavenBundle().groupId("javax.el").artifactId("javax.el-api").version("2.2.5")),
                 provision(mavenBundle().groupId("javax.validation").artifactId("validation-api").version("1.1.0.Final")),
                 provision(mavenBundle().groupId("org.hibernate").artifactId("hibernate-validator").version("5.2.4.Final")),
