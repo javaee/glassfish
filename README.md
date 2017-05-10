@@ -16,7 +16,7 @@ Run the full build:
 
 `mvn install`
 
-Locate the Zip distributions:
+Locate the ZIP distributions:
 - appserver/distributions/glassfish/target/glassfish.zip
 - appserver/distributions/web/target/web.zip
 
