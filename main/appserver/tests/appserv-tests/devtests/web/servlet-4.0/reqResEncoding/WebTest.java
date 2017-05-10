@@ -53,7 +53,7 @@ public class WebTest {
     private static SimpleReporterAdapter stat
         = new SimpleReporterAdapter("appserv-tests");
 
-    private static final String TEST_NAME = "req-res-encoding";
+    private static final String TEST_NAME = "servlet-4.0-req-res-encoding";
     private static final String JCHARSET = "Shift_JIS";
     private static final String JSTR = "\u3068\u4eba\u6587";
     private static final String EXPECTED_RESPONSE = "true:" + JSTR;
