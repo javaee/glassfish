@@ -56,7 +56,30 @@ import org.junit.Assert;
 public class NamespaceCommon {
     public final static String XTRA_ATTRIBUTES_FILE = "xmlns/xtra-attributes.xml";
     
+    private final static String ACME_NS_URI = "http://www.acme.org/jmxoverjms";
+    private final static String BOX_NS_URI = "http://www.boxco.com/boxes";
+    private final static String HLMS_NS_URI = "http://www.holmes.com/ac";
+    
+    private final static String ATTA_LOCAL = "attA";
+    private final static String ATTA_PREFIX = "xos";
+    private final static String ATTB_LOCAL = "attB";
+    private final static String ATTB_PREFIX = "box";
+    private final static String ATTC_LOCAL = "attC";
+    private final static String ATTC_PREFIX = "sox";
+    private final static String ATTD_LOCAL = "attD";
+    
+    private final static QName JOJ_ATTA_QNAME = new QName(ACME_NS_URI, ATTA_LOCAL, ATTA_PREFIX);
+    private final static QName BOX_ATTB_QNAME = new QName(BOX_NS_URI, ATTB_LOCAL, ATTB_PREFIX);
+    private final static QName DFL_ATTB_QNAME = new QName(ATTB_LOCAL);
+    private final static QName SOX_ATTC_QNAME = new QName(HLMS_NS_URI, ATTC_LOCAL, ATTC_PREFIX);
+    private final static QName DFL_ATTD_QNAME = new QName(ATTD_LOCAL);
+    
     private final static String FOO = "foo";
+    private final static String BAZ = "baz";
+    private final static String GRAX = "grax";
+    private final static String BAR = "bar";
+    private final static String GMB = "gumby";
+    private final static String FIG = "figaro";
     
     public static void testExtraAttributes(ServiceLocator locator, URI uri) {
         XmlService xmlService = locator.getService(XmlService.class);
@@ -68,6 +91,47 @@ public class NamespaceCommon {
         Assert.assertEquals(FOO, fooBean.getAttA());
         
         Map<QName, String> others = fooBean.getOtherAttributes();
+        Assert.assertEquals(5, others.size());
+        
+        boolean foundBaz = false;
+        boolean foundGrax = false;
+        boolean foundBar = false;
+        boolean foundGumby = false;
+        boolean foundFigaro = false;
+        for (Map.Entry<QName, String> entry : others.entrySet()) {
+            QName qEntry = entry.getKey();
+            String value = entry.getValue();
+            
+            if (qEntry.equals(JOJ_ATTA_QNAME)) {
+                Assert.assertEquals(BAZ, value);
+                foundBaz = true;
+            }
+            else if (qEntry.equals(BOX_ATTB_QNAME)) {
+                Assert.assertEquals(GRAX, value);
+                foundGrax = true;
+            }
+            else if (qEntry.equals(DFL_ATTB_QNAME)) {
+                Assert.assertEquals(BAR, value);
+                foundBar = true;
+            }
+            else if (qEntry.equals(SOX_ATTC_QNAME)) {
+                Assert.assertEquals(GMB, value);
+                foundGumby = true;
+            }
+            else if (qEntry.equals(DFL_ATTD_QNAME)) {
+                Assert.assertEquals(FIG, value);
+                foundFigaro = true;
+            }
+            else {
+                Assert.fail("Unknown QName=" + qEntry + " and value " + value);
+            }
+        }
+        
+        Assert.assertTrue(foundBaz);
+        Assert.assertTrue(foundGrax);
+        Assert.assertTrue(foundBar);
+        Assert.assertTrue(foundGumby);
+        Assert.assertTrue(foundFigaro);
     }
 
 }
