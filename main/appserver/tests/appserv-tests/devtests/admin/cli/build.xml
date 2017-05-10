@@ -81,7 +81,7 @@
     <property name="dcom.domain"     value="wnevins-lnr"/>
     <property name="dcom.user"       value="hudson"/>
     <property name="dcom.password"   value="hudson"/>
-    <property name="dcom.installdir" value="C:/glassfish4"/>
+    <property name="dcom.installdir" value="C:/glassfish5"/>
 
     <!-- convert these paths to canonical form -->
     <pathconvert property="aps_home">
@@ -440,11 +440,11 @@
         <echo message="gfurl == ${gfurl}"/>
         <setproxy proxyhost=""/>
         <get verbose="${verbose}" src="${gfurl}" dest="${asinstall_dir}/glassfish.zip"/>
-        <delete dir="${asinstall_dir}/glassfish4" includeemptydirs="true"/>
+        <delete dir="${asinstall_dir}/glassfish5" includeemptydirs="true"/>
         <unzip src="${asinstall_dir}/glassfish.zip" dest="${asinstall_dir}"/>
-        <chmod perm="a+x" file="${asinstall_dir}/glassfish4/bin/asadmin"/>
-        <chmod perm="a+x" file="${asinstall_dir}/glassfish4/glassfish/bin/asadmin"/>
-        <chmod perm="a+x" file="${asinstall_dir}/glassfish4/glassfish/lib/nadmin"/>
+        <chmod perm="a+x" file="${asinstall_dir}/glassfish5/bin/asadmin"/>
+        <chmod perm="a+x" file="${asinstall_dir}/glassfish5/glassfish/bin/asadmin"/>
+        <chmod perm="a+x" file="${asinstall_dir}/glassfish5/glassfish/lib/nadmin"/>
     </target>
 
     <!--

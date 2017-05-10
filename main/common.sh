@@ -103,9 +103,77 @@ build_re_weekly(){
     clean_and_zip_workspace
 }
 
+init_weekly(){
+    BUILD_KIND="weekly"
+    require_env_var "GPG_PASSPHRASE"
+
+    ARCHIVE_PATH=${PRODUCT_GF}/${PRODUCT_VERSION_GF}
+    if [ ${#BUILD_ID} -gt 0 ]
+    then
+        ARCHIVE_PATH=${ARCHIVE_PATH}/promoted
+    else
+        ARCHIVE_PATH=${ARCHIVE_PATH}/release
+    fi
+    ARCHIVE_MASTER_BUNDLES=${ARCHIVE_PATH}/${BUILD_ID}/archive/bundles
+    export BUILD_ID BUILD_KIND ARCHIVE_PATH ARCHIVE_MASTER_BUNDLES
+    init_bundles_dir
+    init_version 
+}
+
+purge_old_nightlies(){
+#########################
+# PURGE OLDER NIGHTLIES #
+#########################
+
+    rm -rf /tmp/purgeNightlies.sh
+    cat <<EOF > /tmp/purgeNightlies.sh
+#!/bin/bash
+# Max builds to keep around
+    MAX_BUILDS=21
+    cd \$1
+    LISTING=\`ls -trd b*\`
+    nbuilds=0
+    for i in \$LISTING; do
+    nbuilds=\`expr \$nbuilds + 1\`
+    done
+    echo "Total number of builds is \$nbuilds"
+    
+    while [ \$nbuilds -gt \$MAX_BUILDS ]; do
+    oldest_dir=\`ls -trd b* | head -n1\`
+    echo "rm -rf \$oldest_dir"
+    rm -rf \$oldest_dir
+    nbuilds=\`expr \$nbuilds - 1\`
+    echo "Number of builds is now \$nbuilds"
+    done    
+EOF
+    ssh ${SSH_MASTER} "rm -rf /tmp/purgeNightlies.sh"
+    scp /tmp/purgeNightlies.sh ${SSH_MASTER}:/tmp
+    ssh ${SSH_MASTER} "chmod +x /tmp/purgeNightlies.sh ; bash -e /tmp/purgeNightlies.sh /java/re/${ARCHIVE_PATH}"
+}
+
+init_nightly(){
+    BUILD_KIND="nightly"
+    ARCHIVE_PATH=${PRODUCT_GF}/${PRODUCT_VERSION_GF}/nightly
+    ARCHIVE_MASTER_BUNDLES=${ARCHIVE_PATH}/${BUILD_ID}-${MDATE}
+    export BUILD_KIND ARCHIVE_PATH ARCHIVE_MASTER_BUNDLES
+    init_bundles_dir
+    init_version
+    NIGHTLY_PROMOTED_JOB="${HUDSON_URL}/job/${PROMOTED_JOB_NAME}/api/xml?xpath=//lastStableBuild/url/text()"
+    NIGHTLY_PROMOTED_JOB_URL=`curl $NIGHTLY_PROMOTED_JOB`
+    NIGHTLY_PROMOTED_BUNDLES="${NIGHTLY_PROMOTED_JOB_URL}artifact/bundles"
+    export NIGHTLY_PROMOTED_BUNDLES
+}
+
 promote_init(){
     init_common
-	init_weekly
+    if [ "nightly" == "${1}" ]
+    then
+        init_nightly
+    elif [ "weekly" == "${1}" ]
+    then
+        init_weekly
+    fi
+
     export PROMOTION_SUMMARY=${WORKSPACE_BUNDLES}/${BUILD_KIND}-promotion-summary.txt
     rm -f ${PROMOTION_SUMMARY}
     export JNET_DIR=${JNET_USER}@${JNET_STORAGE_HOST}:/dlc/${ARCHIVE_PATH}
@@ -121,6 +189,7 @@ promote_init(){
 promote_finalize(){
     create_symlinks
     create_index
+    add_permission
     send_notification
 }
 
@@ -154,11 +223,24 @@ promote_weekly(){
     promote_finalize
 }
 
-promote_dev(){
-    BUILD_KIND="dev"
-    init_common
-    mkdir -p ${WORKSPACE}/dev-bundles
-    curl ${PROMOTED_BUNDLES}/version-info.txt > ${WORKSPACE}/dev-bundles/version-info.txt
+promote_nightly(){
+    promote_init "nightly"
+    promote_bundle ${NIGHTLY_PROMOTED_BUNDLES}/web.zip ${PRODUCT_GF}-${PRODUCT_VERSION_GF}-web-${BUILD_ID}-${MDATE}.zip
+    promote_bundle ${NIGHTLY_PROMOTED_BUNDLES}/glassfish.zip ${PRODUCT_GF}-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.zip
+    promote_bundle ${NIGHTLY_PROMOTED_BUNDLES}/nucleus-new.zip nucleus-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.zip
+    promote_bundle ${NIGHTLY_PROMOTED_BUNDLES}/version-info.txt version-info-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.txt
+    promote_bundle ${NIGHTLY_PROMOTED_BUNDLES}/changes.txt changes-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.txt
+    VERSION_INFO="${WORKSPACE_BUNDLES}/version-info-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.txt"
+    SCM_REVISION=`head -1 ${VERSION_INFO} | cut -d ":" -f2 | tr " " ""`
+    purge_old_nightlies
+    # hook for the docker image of the nightly
+    curl -H "Content-Type: application/json" \
+        --data '{"build": true}' \
+        -X POST \
+        -k \
+        https://registry.hub.docker.com/u/glassfish/nightly/trigger/945d55fc-1d4c-4043-8221-74185d9a4d53/  
+    ssh $SSH_MASTER `echo "echo $SCM_REVISION > /scratch/java_re/hudson/hudson_install/last_promoted_nightly_scm_revision"`
+    promote_finalize
 }
 
 init_weekly(){
@@ -622,9 +704,28 @@ scp_jnet(){
         "scp /java/re/${ARCHIVE_MASTER_BUNDLES}/${file} ${JNET_DIR}/latest-${simple_name}"
 }
 
+create_promotion_changs(){
+    rm ${WORKSPACE_BUNDLES}/${1} | true
+    if [[ "nightly" == "${BUILD_KIND}" ]]; then
+        PREVIOUS_COMMIT=`cat ${HUDSON_HOME}/last_promoted_nightly_scm_revision`
+    fi
+    if [[ "weekly" == "${BUILD_KIND}" ]]; then
+        PREVIOUS_COMMIT=`cat ${HUDSON_HOME}/last_promoted_weekly_scm_revision`
+    fi
+    CURRENT_COMMIT=`head -1 ${WORKSPACE_BUNDLES}/version-info-${PRODUCT_VERSION_GF}-${BUILD_ID}-${MDATE}.txt | cut -d ":" -f2 | tr " " ""`
+    if [ "${CURRENT_COMMIT}" != "${PREVIOUS_COMMIT}" ] ; then
+    cd ${WORKSPACE}/glassfish    
+        git log --abbrev-commit --pretty=oneline ${PREVIOUS_COMMIT}..${CURRENT_COMMIT} > ${WORKSPACE_BUNDLES}/${1}
+    fi
+}
+
 promote_bundle(){
     printf "\n==== PROMOTE_BUNDLE (%s) ====\n\n" ${2}
-    curl ${1} > ${WORKSPACE_BUNDLES}/${2}
+    if [[ ${1} == *"changes.txt" ]]; then
+        create_promotion_changs ${2}
+    else
+        curl ${1} > ${WORKSPACE_BUNDLES}/${2}
+    fi
     scp ${WORKSPACE_BUNDLES}/${2} ${SCP}
     scp_jnet ${WORKSPACE_BUNDLES}/${2}
     if [ "nightly" == "${BUILD_KIND}" ]
@@ -676,13 +777,19 @@ RE
 MESSAGE
 }
 
+add_permission(){
+
+    ssh ${SSH_MASTER} \
+     "ssh ${JNET_USER}@${JNET_STORAGE_HOST} 'cd /dlc/${PRODUCT_GF}/${PRODUCT_VERSION_GF};chmod o+r nightly/*;chmod o+r promoted/*'"
+}
+
 #
 # Create index files on JNET_STORAGE_HOST for PRODUCT_GF.
 #
 create_index(){
 
     # cp this script to master.
-    scp `dirname $0`/common.sh ${SSH_MASTER}:/tmp
+    scp ${WORKSPACE}/glassfish/main/common.sh ${SSH_MASTER}:/tmp
 
     # cp script from ssh_master to JNET_STORAGE_HOST.
     ssh ${SSH_MASTER} \

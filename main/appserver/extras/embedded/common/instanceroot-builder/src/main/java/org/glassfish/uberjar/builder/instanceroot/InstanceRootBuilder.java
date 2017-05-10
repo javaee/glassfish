@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -56,7 +56,7 @@ import java.util.logging.Logger;
 public class InstanceRootBuilder implements BundleActivator {
 
     private static final Logger logger = Logger.getLogger("embedded-glassfish");
-    private static String resourceroot = "glassfish4/glassfish/domains/domain1/";
+    private static String resourceroot = "glassfish5/glassfish/domains/domain1/";
 
     public void start(BundleContext context) throws Exception {
         String instanceRoot = context.getProperty("com.sun.aas.instanceRoot");

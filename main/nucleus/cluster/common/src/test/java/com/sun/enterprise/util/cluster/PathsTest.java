@@ -1,7 +1,7 @@
 /*
  *  DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- *  Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
+ *  Copyright (c) 2011-2017 Oracle and/or its affiliates. All rights reserved.
  *
  *  The contents of this file are subject to the terms of either the GNU
  *  General Public License Version 2 only ("GPL") or the Common Development
@@ -57,7 +57,7 @@ import org.jvnet.hk2.config.TransactionFailure;
  * @author wnevins
  */
 public class PathsTest {
-    private static String SPECIFIED_INSTALL_DIR = "D:/glassfish4";
+    private static String SPECIFIED_INSTALL_DIR = "D:/glassfish5";
     private static String NODE_NAME = "thenode";
     private static String SPECIFIED_NODES_DIR = SPECIFIED_INSTALL_DIR + "/glassfish/mynodes";
     private static String SPECIFIED_NODE_DIR = SPECIFIED_NODES_DIR + "/" + NODE_NAME;

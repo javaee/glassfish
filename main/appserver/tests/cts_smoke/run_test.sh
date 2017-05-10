@@ -54,7 +54,7 @@ test_run_cts_smoke(){
 	rm -rf /disk1/java_re/.javatest
 
 	# XXX Trying this as a test - touch all the files in the glassfish distribution
-	# find glassfish4 -exec touch {} \;
+	# find glassfish5 -exec touch {} \;
 	# XXX End test
 
 	wget $CTS_SMOKE/$CTS_SMOKE_BUNDLE
@@ -217,7 +217,7 @@ cts_to_junit(){
 		line=`echo $i | ${SED} s@"\.\.\.\.\.\.\.\."@" "@g`
 		status=`echo $line | ${AWK} '{print $1}'`
 		id=`echo $line | ${AWK} '{print $2}'`
-		classname=`echo $id | cut -d '#' -f1 | ${SED} s@"\/"@"."@g`
+		classname=`echo $id | cut -d '#' -f1 | ${SED} s@"\/"@"_"@g | ${SED} s@".java"@@g`
 		name=`echo $id | cut -d '#' -f2`
 
 		echo "		<testcase classname=\"${junitCategory}.$classname\" name=\"$name\">" >> $2		
@@ -233,7 +233,7 @@ cts_to_junit(){
 
 delete_workspace(){
 	printf "\n%s \n\n" "===== DELETE WORKSPACE ====="
-    rm -rf $WORKSPACE/glassfish4 > /dev/null || true
+    rm -rf $WORKSPACE/glassfish5 > /dev/null || true
     rm -rf $WORKSPACE/servlettck > /dev/null  || true
     rm $WORKSPACE/servlettck.zip > /dev/null || true
     rm -rf $WORKSPACE/javaee-smoke > /dev/null || true
