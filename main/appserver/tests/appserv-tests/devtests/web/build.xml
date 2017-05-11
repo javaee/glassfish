@@ -636,7 +636,7 @@
         </delete>
         <delete>
             <fileset dir="." includes="*.output"/>
-            <fileset dir="." includes="*.txt"/>
+            <fileset dir="." includes="*.txt" excludes="README*.txt"/>
         </delete>
     </target>
 
