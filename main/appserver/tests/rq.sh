@@ -173,9 +173,10 @@ find_test_job(){
     return 1
 }
 
-USAGE="Usage: rq -b BRANCH -a ---> For runing all the test ids\n\
-	   or  rq -b BRANCH -g TESTGROUPNAME ---> For runing a TESTGROUPNAME\n\
-	   or  rq -b BRANCH -t TESTIDS ---> For runing a space separated set of TESTIDS"
+USAGE="Usage:\n\n 1. rq.sh -l ---> List all available test identifiers without running them\n\
+	   2. rq.sh -b -a ---> For running all tests\n\
+	   3. rq.sh -b -g <test_group_name> ---> For running a test group\n\
+	   4. rq.sh -b -t \"<test_id1> <test_id2> <test_id3>\" ---> For running a space separated list of tests"
 
 list_test_ids(){
 	for runtest in `find . -name run_test\.sh`; do
@@ -199,12 +200,20 @@ OPTIND=1
 output_file=""
 verbose=0
 
-while getopts ":b:t:g:a" opt; do
+if [ $# -eq 0 ];
+then
+    echo -e $USAGE
+    exit 0
+fi    
+while getopts ":b:t:g:a:l" opt; do
     case "$opt" in
     b)	branch=$OPTARG;;
     t)  test_ids=($OPTARG);;
     a)  test_ids=(`list_test_ids`);;
-	g)  test_ids=(`list_group_test_ids $OPTARG`);;
+	  g)  test_ids=(`list_group_test_ids $OPTARG`);;
+	  l)	test_ids=(`list_test_ids`)
+		echo ${test_ids[@]} | tr " " "\n"
+		exit 0;;
     *)	echo -e "Invalid option"
 		echo -e $USAGE
 		exit 1 ;;         
