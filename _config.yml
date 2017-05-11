@@ -9,7 +9,7 @@ links:
   source: https://github.com/javaee/glassfish
   mailinglist: https://javaee.groups.io/g/glassfish
   #javadocs:
-  #docs:
+  docs: documentation
   #faq:
   #hide_issuetracker: true #set explicitly to 'true' if you don't want to have the issue tracker link displayed
 
