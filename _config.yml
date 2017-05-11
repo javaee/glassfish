@@ -1,0 +1,15 @@
+theme: jekyll-theme-architect
+
+title: [GlassFish]
+description: [The Open Source Java EE Reference Implementation]
+
+# sidebar links url
+links:
+  download: download
+  source: https://github.com/javaee/glassfish
+  mailinglist: https://javaee.groups.io/g/glassfish
+  #javadocs:
+  #docs:
+  #faq:
+  #hide_issuetracker: true #set explicitly to 'true' if you don't want to have the issue tracker link displayed
+

@@ -1,0 +1,242 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+header {
+  padding-top: 16px;
+  padding-bottom: 40px;
+  font-family: 'Mukta Vaani', 'Open Sans', 'Helvetica Neue', Helvetica, Arial, serif;
+  background: url(../images/header-bkg.jpg) 0 0 repeat-x;
+  border-bottom: solid 1px #E0E0E0;  
+}
+
+header h1 {
+  padding-top: 14px;
+  font-size: 2em;
+  font-weight: 200;
+  line-height: 1.4;
+  color: #FFFFFF;
+  letter-spacing: 0px;
+  border-bottom: 0px;
+}
+
+header h2 {
+  font-size: 1.2em;
+  margin-top: 0;
+  margin-bottom: 0;
+  font-weight: 200;
+  line-height: .8;
+  color: #ec7D11; // orange
+  //color: #2879d0; // blue
+  letter-spacing: 0;
+}
+
+header a.button {
+  background: transparent url(../images/logo.png) 0 0 no-repeat;
+  padding-left: 32px;
+}
+
+header a:hover { 
+  text-decoration: none;
+}
+
+a {
+  font-weight: 300;
+  color: #2879d0;
+}
+
+a:hover { 
+  text-decoration: underline;
+}
+
+#sidebar p {
+  font-size: 1em;
+  margin-bottom: 1em;
+}
+
+.highlight { 
+  background-color: #ffffff;
+}
+
+.sponsor {
+  float: left;
+  padding-top: 20px;
+  padding-left: 18px;
+}
+
+.moveright30{
+  padding-left: 30px;
+}
+
+.moveright{
+  padding-left: 40px;
+}
+
+.moveright50{
+  padding-left: 50px;
+}
+
+a.oraclelogo {
+  position: absolute;
+  background: transparent url(../images/Oracle-logo.png) 0 0 no-repeat;
+  background-position: 2px -2px; 
+  background-size: 100% ;
+  width: 96px;
+  height: 62px;
+  padding-top: 2px;
+  padding-right: 20px;
+}
+
+aside#sidebar {
+  padding-top: 40px;
+  line-height: 1.2;
+}
+
+hr {
+  border:none;
+  height: 10px;
+  width: 75%;
+  height: 50px;
+  margin-top: 0;
+  border-bottom: 1px solid #cccccc;
+  box-shadow: 0 20px 20px -20px #aaa;
+  margin: -48px auto 10px; 
+}
+
+table {
+   margin-bottom: 20px;
+}
+
+th, td {
+  padding: .2em;
+}
+
+td {
+  font-weight: 400;
+}
+
+ul {
+  font-size: 1em;
+  margin-left: 12px;
+}
+
+ol {
+    list-style-position: inside;
+    list-style: decimal;
+    margin-left: 26px;
+}
+
+blockquote {
+    padding: 0 0 0 10px;
+    margin-left: 14px;
+    margin-bottom: 2px;
+    font-size: 1em;
+    border-left: 4px solid #ddd;
+}
+
+#main-content h1 {
+  padding-top: .6em;
+  font-family: 'Mukta Vaani', 'Open Sans', 'Helvetica Neue', Helvetica, Arial, serif;
+  font-size: 1.6em;
+  font-weight: 500;
+  color : #666;
+  text-indent: 16px;
+  letter-spacing: 0px;
+  border-bottom:1px solid #cccccc;
+  padding-bottom:1px;
+  line-height: 1.2;
+  //margin: .6em 0;
+  margin-bottom: .6em;
+}
+
+#main-content h1:before {
+  //padding-right: 0.3em;
+  margin-left: -1em;
+  content: "";
+}
+
+#main-content h2 {
+  margin-bottom: 8px;
+  font-family: 'Mukta Vaani', 'Open Sans', 'Helvetica Neue', Helvetica, Arial, serif;
+  font-size: 1.4em;
+  font-weight: 400;
+  //color: #474747;
+  color: #3c657b; // blue
+  text-indent: 4px;
+}
+
+#main-content h2:before {
+  padding-right: 1.3em;
+  margin-left: -1.5em;
+  content: "";
+  font-weight: 700;
+}
+
+#main-content h3 {
+  text-indent: 24px;
+  margin-bottom: 8px;
+  font-family: 'Mukta Vaani', 'Open Sans', 'Helvetica Neue', Helvetica, Arial, serif;
+  font-size: 1.2em;
+  font-weight: 500;
+  color: #3c657b;
+  text-indent: 4px;
+}
+
+#main-content h3:before {
+  content: "";
+  margin-left: -0.3em;
+  padding-right: 0.1em;
+}
+
+#main-content h4 {
+  margin-bottom: 8px;
+  font-family: 'Mukta Vaani', 'Open Sans', 'Helvetica Neue', Helvetica, Arial, serif;
+  font-size: 1.2em;
+  font-weight: 500;
+  color: #3c657b;
+  text-indent: 4px;
+}
+
+#main-content h4:before {
+  content: "";
+  margin-left: -0.3em;
+  padding-right: 0.1em;
+}
+
+#main-content p {
+  font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, serif;
+  font-weight: normal;
+  font-size: 1em;
+  margin-bottom: 2px;
+}
+
+.footer {
+  position: fixed; 
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background-color: #f0f0f0;
+  //padding: 1rem;
+  padding-top: 4px;
+  padding-bottom: 14px;
+  font-size: 0.8em;
+  text-align: center;
+}
+
+.oracle {
+  color: #666;
+  font-weight: 400;
+}
+
+.oracle:hover { 
+  text-decoration: none;
+  color: #FF0000;
+}
+
+.fullpage {
+  //float: center;
+  color: FF0000;
+  width: 900px;
+}

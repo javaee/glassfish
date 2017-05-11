@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <!--link href="https://fonts.googleapis.com/css?family=Open+Sans" rel='stylesheet' type='text/css'-->
+    <link href="https://fonts.googleapis.com/css?family=Mukta+Vaani:200,300,400,600,800" rel="stylesheet">
+    <link rel="stylesheet" href="{{ '/assets/css/style.css?' | relative_url }}" media="screen" type="text/css">
+    <link rel="stylesheet" href="{{ '/assets/css/print.css' | relative_url }}" media="print" type="text/css">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>{{ site.title | default: site.github.repository_name }}</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <a href="{{ '/' | absolute_url }}">
+          <h1>{{ site.title | default: site.github.repository_name }}</h1>
+        </a>
+        <h2>{{ site.description | default: site.github.project_tagline }}</h2>
+        {% if site.github.is_project_page %}
+        <a href="{{ '/' | absolute_url }}" class="button"></a>
+        {% endif %}
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          {{ content }}
+
+        </section>
+
+        <aside id="sidebar">
+          
+          <hr/>
+
+          <div class="moveright">
+            {% if site.links.source %}
+               <h2><a href="{{ site.links.source }}"><p>Sources</p></a></h2>
+            {% endif %}
+            
+            {% if site.links.javadocs %}
+              <h2><a href="{{ site.links.javadocs }}"><p>APIs</p></a></h2>
+            {% endif %}
+
+            {% if site.links.docs %}
+              <h2><a href="{{ site.links.docs }}"><p>Documentatation</p></a></h2>
+            {% endif %}
+
+            {% if site.links.faq %}
+              <h2><a href="{{ site.links.faq }}"><p>FAQ</p></a></h2>
+            {% endif %}
+            
+            {% if site.links.download %}
+               <h2><a href="{{ site.links.download }}"><p>Download</p></a></h2>
+            {% endif %}
+
+            {% if site.links.hide_issuetracker != true %}
+            <h2><a href="{{ site.github.issues_url }}"><p>Issue Tracker</p></a></h2>
+            {% endif %}
+
+            {% if site.links.mailinglist %}
+               <h2><a href="{{ site.links.mailinglist }}"><p>Mailing List</p></a></h2>
+            {% endif %}          
+
+            <h2><a href="CONTRIBUTING"><p>Contribute</p></a></h2>
+
+            <h2><a href="LICENSE"><p>License</p></a></h2>
+          </div>
+          
+          <hr/>
+          
+          <div class="sponsor">
+            <p>Sponsored by<a href="http://www.oracle.com" class="oraclelogo"></a></p>
+          </div>
+          
+        </aside>
+      </div>
+    </div>
+
+    <div class="footer"><a id="copyright" class="oracle" href="https://www.oracle.com/legal/copyright.html">&copy; Oracle</a> | By contributing to this project, you are agreeing to the terms of use described <a href="CONTRIBUTING">here</a>.</div>
+
+    {% if site.google_analytics %}
+      <script type="text/javascript">
+        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+      </script>
+      <script type="text/javascript">
+        try {
+          var pageTracker = _gat._getTracker("{{ site.google_analytics }}");
+        pageTracker._trackPageview();
+        } catch(err) {}
+      </script>
+    {% endif %}
+  </body>
+</html>
