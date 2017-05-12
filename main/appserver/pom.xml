@@ -860,11 +860,6 @@
             </dependency>
             <dependency>
                 <groupId>org.glassfish.fighterfish</groupId>
-                <artifactId>osgi-cdi</artifactId>
-                <version>1.0.4.SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.fighterfish</groupId>
                 <artifactId>osgi-jta</artifactId>
                 <version>1.0.1</version>
             </dependency>
