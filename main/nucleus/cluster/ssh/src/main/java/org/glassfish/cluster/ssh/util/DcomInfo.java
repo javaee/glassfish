@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2011-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2011-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -66,7 +66,7 @@ public final class DcomInfo {
     private final String remoteNodeRootDirectory;
     // CONFUSING PAIN POINT.  The "installdir" means the parent directory of glassfish
     // installroot means the glassfish dir.  E.g.
-    // installdir == d:/glassfish4  and installroot == d:/glassfish4/glassfish
+    // installdir == d:/glassfish5  and installroot == d:/glassfish5/glassfish
     //
     private final String remoteInstallRoot;
     private final String nadminPath;
@@ -140,7 +140,7 @@ public final class DcomInfo {
 
         if (notFinal2 == null) {
             // no special nodedir -- use the defaults
-            notFinal2 = remoteInstallRoot;  // e.g. "d:/glassfish4/glassfish"
+            notFinal2 = remoteInstallRoot;  // e.g. "d:/glassfish5/glassfish"
             notFinal2 += "/nodes";
         }
         notFinal2 = notFinal2.replace('/', '\\');

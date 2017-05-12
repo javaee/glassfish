@@ -69,7 +69,7 @@ kill_process(){
 }
 test_init(){
 	printf "\n%s \n\n" "===== V2 DEV TESTS INIT ====="
-	S1AS_HOME=$WORKSPACE/glassfish4/glassfish; export S1AS_HOME
+	S1AS_HOME=$WORKSPACE/glassfish5/glassfish; export S1AS_HOME
 	ANT_HOME=/net/gf-hudson/scratch/gf-hudson/export2/hudson/tools/ant-1.7.1; export ANT_HOME
 	APS_HOME=$WORKSPACE/main/appserver/tests/appserv-tests; export APS_HOME
 	TEST_RUN_LOG=tests-run.log; export TEST_RUN_LOG
@@ -221,7 +221,7 @@ fi
 
 delete_gf(){
 	printf "\n%s \n\n" "===== DELETE GLASSFISH AND MAVEN LOCAL REPO AND NUCLEUS ====="
-    rm -rf $WORKSPACE/glassfish4
+    rm -rf $WORKSPACE/glassfish5
     rm -rf $WORKSPACE/repository
     rm -rf $WORKSPACE/nucleus
 } 

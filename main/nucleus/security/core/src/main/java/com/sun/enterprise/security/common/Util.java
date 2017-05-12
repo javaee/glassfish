@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 1997-2013 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -142,7 +142,7 @@ public class Util {
             String userHome = System.getProperty("user.home");
 
             String embeddedServerName = getCurrentEmbeddedServerName();
-            File tempDir = new File(userHome + File.separator + ".glassfish4-"+embeddedServerName+File.separator + "config");
+            File tempDir = new File(userHome + File.separator + ".glassfish5-"+embeddedServerName+File.separator + "config");
             boolean mkDirSuccess = true;
             if (!tempDir.exists()) {
                 mkDirSuccess = tempDir.mkdirs();

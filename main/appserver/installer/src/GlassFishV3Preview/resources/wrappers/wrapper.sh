@@ -2,7 +2,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010-2017 Oracle and/or its affiliates. All rights reserved.
 #
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
@@ -247,7 +247,7 @@ $my_jar xf ./Product/Packages/metadata.zip
 rm tmp.jar
 chmod ugo+x product-installer.sh
 chmod ugo+x install/bin/engine-wrapper
-echo "InstallHome.directory.INSTALL_HOME=$HOME/glassfish4" > install.properties
+echo "InstallHome.directory.INSTALL_HOME=$HOME/glassfish5" > install.properties
 sh product-installer.sh $ARGS
 rm -rf ${tmpdir_path}/*
 #Assign appropriate permission to answer file if one is provided.

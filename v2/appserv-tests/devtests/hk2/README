@@ -12,7 +12,7 @@ Steps for running HK2 Development Tests
 1. Set the following variables:
 
 APS_HOME to the location of where v2/appserv-tests are checked out
-S1AS_HOME to <GlassFish install location>/glassfish3/glassfish
+S1AS_HOME to <GlassFish install location>/glassfish5/glassfish
 
 2. Make sure ant is in your path.  
 

@@ -25,7 +25,7 @@ This test, when run with 'all' target performs the following steps:
 
 Note: how to look at the log table:
 % asadmin stop-database
-% java -cp <gf-install>/javadb/lib/derbytools.jar:<gf-install>/javadb/lib/derbyclient.jar:<gf-install>/gfs/glassfish3/javadb/lib/derby.jar org.apache.derby.impl.tools.ij.Main
+% java -cp <gf-install>/javadb/lib/derbytools.jar:<gf-install>/javadb/lib/derbyclient.jar:<gf-install>/gfs/glassfish5/javadb/lib/derby.jar org.apache.derby.impl.tools.ij.Main
 ij version 10.8
 ij> connect 'jdbc:derby:<gf-install>/glassfish/databases/testdb';
 ij> show tables in dbuser;

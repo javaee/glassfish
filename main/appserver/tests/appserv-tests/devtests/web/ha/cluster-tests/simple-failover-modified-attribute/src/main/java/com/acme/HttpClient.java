@@ -7,7 +7,7 @@ import java.util.StringTokenizer;
 
 public class HttpClient {
 
-    private static final String ASADMIN = "/home/rajiv/Software/glassfish3/glassfish/bin/asadmin";
+    private static final String ASADMIN = "/home/rajiv/Software/glassfish5/glassfish/bin/asadmin";
     private static String appName = "SFSBModifiedAttribute";
     private static String servletName = "SFSBDriverServlet";
 

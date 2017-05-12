@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2012 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2012-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -44,6 +44,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.io.File;
 import java.util.StringTokenizer;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -62,11 +63,14 @@ import org.testng.annotations.Test;
  */
 @Test(testName="DetachAttachTest")
 public class DetachAttachTest {
-    
+    private static File nucleusRoot  = getNucleusRoot();
+
     @AfterTest
     public void cleanUp() throws Exception {
         nadmin("stop-domain");
         JobManagerTest.deleteJobsFile();
+        //osgi-cache workaround
+        touchDirectory(nucleusRoot);
         nadmin("start-domain");
     }
 

@@ -1,7 +1,7 @@
 /*
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2010-2011 Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010-2017 Oracle and/or its affiliates. All rights reserved.
  *
  * The contents of this file are subject to the terms of either the GNU
  * General Public License Version 2 only ("GPL") or the Common Development
@@ -62,7 +62,7 @@ import java.util.ArrayList;
  * In this case run the test like this:
  * #
  * ant -Dteststorun=sshnode -Dssh.host=adc2101159.us.oracle.com
- *    "-Dssh.installdir=/export/glassfish4" all
+ *    "-Dssh.installdir=/export/glassfish5" all
  *
  * If you want to use a different user for SSH login you can set ssh.user:
  *     -Dssh.user=hudson
@@ -352,6 +352,6 @@ public class SSHNodeTest extends SshBaseDevTest {
             prefix = "/var/tmp/devTests-" + thisHost;
         }
         String randomSuffix = Long.toHexString(Double.doubleToLongBits(Math.random()));
-        return prefix + "/" + "glassfish4-" + randomSuffix;
+        return prefix + "/" + "glassfish5-" + randomSuffix;
     }
 }

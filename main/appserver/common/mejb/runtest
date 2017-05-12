@@ -1,7 +1,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2010-2013 Oracle and/or its affiliates. All rights reserved.
+# Copyright (c) 2010-2017 Oracle and/or its affiliates. All rights reserved.
 #
 # The contents of this file are subject to the terms of either the GNU
 # General Public License Version 2 only ("GPL") or the Common Development
@@ -44,7 +44,7 @@ export OPTIONS="-Djava.security.auth.login.config=$CONFIG_FILE"
 echo $OPTIONS
 echo ""
 
-export V3M=/v3/glassfish4/glassfish/modules
+export V3M=/v3/glassfish5/glassfish/modules
 export MAIN=org.glassfish.admin.mejb.test.MEJBTest
 
 java $OPTIONS -cp $V3M/gf-client.jar:$V3M/javax.management.j2ee.jar:target/MEJB.jar:target/test-classes $MAIN
