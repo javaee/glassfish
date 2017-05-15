@@ -144,7 +144,7 @@ public class MainHelper {
             String line = lnReader.readLine();
             // most of the asenv.conf values have surrounding "", remove them
             // and on Windows, they start with SET XXX=YYY
-            Pattern p = Pattern.compile("(SET +|set +)?([^=]*)=\"?([^\"]*)\"?");
+            Pattern p = Pattern.compile("(?i)(set +)?([^=]*)=\"?([^\"]*)\"?");
             while (line != null) {
                 Matcher m = p.matcher(line);
                 if (m.matches()) {
