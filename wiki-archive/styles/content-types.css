@@ -1,0 +1,120 @@
+a.content-type-page span, div.content-type-page, span.content-type-page {
+    background-image: url(../../../images/icons/docs_16.gif);
+    background-repeat: no-repeat;
+}
+
+a.content-type-blogpost span, div.content-type-blogpost, span.content-type-blogpost {
+    background-image: url(../../../images/icons/blogentry_16.gif);
+    background-repeat: no-repeat;
+}
+
+a.content-type-comment span, div.content-type-comment, span.content-type-comment {
+    background-image: url(../../../images/icons/comment_16.gif);
+    background-repeat: no-repeat;
+}
+
+a.content-type-space span, div.content-type-space, span.content-type-space,
+a.content-type-spacedesc span, div.content-type-spacedesc, span.content-type-spacedesc {
+    background-image: url(../../../images/icons/web_16.gif);
+    background-repeat: no-repeat;
+}
+
+a.content-type-personalspacedesc span, div.content-type-personalspacedesc, span.content-type-personalspacedesc {
+    background-image: url(../../../images/icons/personal_space_16.gif);
+    background-repeat: no-repeat;
+}
+
+a.content-type-mail span, div.content-type-mail, span.content-type-mail {
+    background-image: url(../../../images/icons/mail_content_16.gif);
+    background-repeat: no-repeat;
+}
+
+a.content-type-attachment span, div.content-type-attachment, span.content-type-attachment {
+    background-image: url(../../../images/icons/attachments/file.gif);
+    background-repeat: no-repeat;
+}
+
+a.content-type-file span, div.content-type-file, span.content-type-file {
+    background-image: url(../../../images/icons/attachments/file.gif);
+    background-repeat: no-repeat;
+}
+
+a.content-type-attachment-application-pdf span, div.content-type-attachment-application-pdf, span.content-type-attachment-application-pdf {
+    background-image: url(../../../images/icons/attachments/pdf.gif);
+    background-repeat: no-repeat;
+}
+
+a.content-type-attachment-image span, div.content-type-attachment-image, span.content-type-attachment-image {
+    background-image: url(../../../images/icons/attachments/image.gif);
+    background-repeat: no-repeat;
+}
+
+a.content-type-attachment-text-xml span, div.content-type-attachment-text-xml, span.content-type-attachment-text-xml {
+    background-image: url(../../../images/icons/attachments/xml.gif);
+    background-repeat: no-repeat;
+}
+
+a.content-type-attachment-text-html span, div.content-type-attachment-text-html, span.content-type-attachment-text-html {
+    background-image: url(../../../images/icons/attachments/html.gif);
+    background-repeat: no-repeat;
+}
+
+a.content-type-attachment-text span, div.content-type-attachment-text, span.content-type-attachment-text {
+    background-image: url(../../../images/icons/attachments/text.gif);
+    background-repeat: no-repeat;
+}
+
+a.content-type-attachment-application-zip span, div.content-type-attachment-application-zip, span.content-type-attachment-application-zip {
+    background-image: url(../../../images/icons/attachments/zip.gif);
+    background-repeat: no-repeat;
+}
+
+a.content-type-attachment-application-excel span, div.content-type-attachment-application-excel, span.content-type-attachment-application-excel {
+    background-image: url(../../../images/icons/attachments/excel.gif);
+    background-repeat: no-repeat;
+}
+
+a.content-type-attachment-application-powerpoint span, div.content-type-attachment-application-powerpoint, span.content-type-attachment-application-powerpoint {
+    background-image: url(../../../images/icons/attachments/powerpoint.gif);
+    background-repeat: no-repeat;
+}
+
+a.content-type-attachment-application-word span, div.content-type-attachment-application-word, span.content-type-attachment-application-word {
+    background-image: url(../../../images/icons/attachments/word.gif);
+    background-repeat: no-repeat;
+}
+
+a.content-type-attachment-java span, div.content-type-attachment-java, span.content-type-attachment-java {
+    background-image: url(../../../images/icons/attachments/java.gif);
+    background-repeat: no-repeat;
+}
+
+a.content-type-attachment-multimedia span, div.content-type-attachment-multimedia, span.content-type-attachment-multimedia {
+    background-image: url(../../../images/icons/attachments/multimedia.png);
+    background-repeat: no-repeat;
+}
+
+a.content-type-attachment-file span, div.content-type-attachment-file, span.content-type-attachment-file {
+    background-image: url(../../../images/icons/attachments/file.gif);
+    background-repeat: no-repeat;
+}
+
+a.content-type-status span, div.content-type-status, span.content-type-status {
+    background-image: url(../../../images/icons/quotes.png);
+    background-repeat: no-repeat;
+}
+
+div.content-type-userinfo, span.content-type-userinfo {
+    background-image: url(../../../images/icons/user_16.gif);
+    background-repeat: no-repeat;
+}
+
+a.content-type-follow span, div.content-type-follow, span.content-type-follow {
+    background-image: url(../../../images/icons/fav_on_16.png);
+    background-repeat: no-repeat;
+}
+
+a.content-type-favourite span, div.content-type-favourite, span.content-type-favourite {
+    background-image: url(../../../images/icons/fav_on_16.png);
+    background-repeat: no-repeat;
+}

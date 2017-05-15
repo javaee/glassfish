@@ -1,0 +1,158 @@
+/*
+    Styles for macros bundled in Renderer.
+*/
+
+.panelMacro {
+    margin: 10px 20px;
+    overflow: hidden; /* fix width next to floated content */
+}
+
+.panelMacro table {
+    text-align: left;
+    padding: 0 20px;
+    width: 100%;
+}
+
+.panelMacro td, .panelMacro p {
+    font-size: 1em;
+    padding: 14px 0;
+}
+
+.searchMacro {
+    font-size: 10pt;
+    margin: 10px 0;
+}
+
+.searchMacro .result {
+    margin-top: 3px;
+    padding: 0 5px 5px 5px;
+    border-bottom: 1px solid #ddd;
+}
+
+.searchMacro .resultSummary {
+    margin-bottom: 7px;
+}
+
+.rssMacro {
+    font-size: 10pt;
+}
+
+.rssMacro table {
+    margin: 10px 0;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.rssMacro table th,
+.rssMacro table td {
+    border: 1px solid #ccc;
+    padding: 4px;
+}
+
+.rssMacro table th {
+    background: #f0f0f0;
+}
+
+/* Code styles */
+.code {
+    border-width: 1px;
+    border-style: dashed;
+    overflow: auto;
+}
+
+.code, .preformatted {
+    background-color: #fff;
+}
+
+.code pre, .preformatted pre { /* needs 'pre' to override TinyMCE style */
+    font-family:"Courier New", Courier, monospace;
+    line-height: 1.3;
+}
+
+.code-keyword {
+  color: #000091;
+  background-color: inherit;
+}
+
+.code-object {
+  color: #910091;
+  background-color: inherit;
+}
+
+.code-quote {
+  color: #009100;
+  background-color: inherit;
+}
+
+.code-comment {
+  color: #808080;
+  background-color: inherit;
+}
+
+.code-xml .code-keyword {
+  color: inherit;
+  font-weight: bold;
+}
+
+.code-tag {
+  color: #000091;
+  background-color: inherit;
+}
+
+/* Recently Updated Styles */
+.recentlyUpdatedItem {
+	border-bottom: #f0f0f0 1px solid;
+	border-top: #f0f0f0 1px solid;
+	margin: 10px 0 0 0;
+	padding: 0;
+	border-spacing: 0;
+	width: 100%;
+    text-decoration: none;
+    border-collapse: collapse;
+}
+
+.recentlyUpdatedItem td {
+    padding: 10px;
+    border-bottom: #f0f0f0 1px solid;
+    vertical-align: top;
+}
+
+.recentlyUpdatedItem .authorAndDate {
+	background-color: #f0f0f0;
+	width: 25%;
+}
+
+.recentlyUpdatedItem .date {
+    margin-top: 4px;
+    font-size: 90%;
+    color: #666;
+}
+
+.recentlyUpdatedItem .profilePic {
+    float: right;
+    background-color: #f0f0f0;
+    margin: 0 2px;
+}
+
+.recentlyUpdatedItem .twixie {
+    padding: 10px 0 0 4px;
+}
+
+.recentlyUpdatedItem td.icon {
+    padding: 8px 0 0 1px;
+}
+
+.recentlyUpdatedItem .details {
+    padding-left: 7px;
+}
+
+.recentlyUpdatedItem .summary, .recentlyUpdatedItem .thumbnail {
+    margin-top: 3px;
+    color: #666;
+}
+
+.moreRecentlyUpdatedItems {
+    text-align: right;
+    margin-top: 10px;
+    font-size: 10pt;
+}

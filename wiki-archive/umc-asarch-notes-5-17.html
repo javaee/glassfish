@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : umc-asarch-notes-5-17</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/LICENSE" title="License">Legal </a></li>
+									<li><a href="/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="umc-asarch-notes-5-17-GlassFishServerOpenSourceEditionUserManagedClustersMay172011ASARCHNotes"></a>GlassFish Server Open Source Edition - User Managed Clusters - May 17 2011 ASARCH Notes</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#umc-asarch-notes-5-17-GlassFishServerOpenSourceEditionUserManagedClustersMay172011ASARCHNotes">GlassFish Server Open Source Edition - User Managed Clusters - May 17 2011 ASARCH Notes</a></li> 
+       <li><a href="#umc-asarch-notes-5-17-1.Introduction">1. Introduction</a></li> 
+       <li><a href="#umc-asarch-notes-5-17-2.Notes">2. Notes</a></li> 
+      </ul>
+     </div> <h4><a name="umc-asarch-notes-5-17-1.Introduction"></a>1. Introduction</h1> <p>The following people attended the ASARCH review of User Managed Clusters on May 17, 2011:</p> 
+     <ul> 
+      <li>Nazrul</li> 
+      <li>Bill</li> 
+      <li>Tom</li> 
+      <li>Chris</li> 
+      <li>Jerome</li> 
+      <li>Rajiv</li> 
+      <li>Ludo</li> 
+     </ul> <h4><a name="umc-asarch-notes-5-17-2.Notes"></a>2. Notes</h1> 
+     <ol> 
+      <li>Lack of experience in regards to *AAS suggests that we should implement option 1 first and use it as a stepping stone to option 3.</li> 
+      <li>How will GMS find instances? 
+       <ol> 
+        <li>Multicast (Can configure OVM to use multicast)</li> 
+        <li>Environment specific plugin (Amazon: use AutoScale API to find instance group)</li> 
+        <li>List of multicast URL's</li> 
+       </ol> </li> 
+      <li>Jerome: Coherence may solve some issues. Bill: Need some reliable shared storage.</li> 
+      <li>Potentially everything we sync would need to be relocated to the DB</li> 
+      <li>Nazrul: If have an HA filesystem we could make it work 
+       <ol> 
+        <li>Ex: drop war in a directory and have it deployed to all instances without the need to invoke the deploy command.</li> 
+       </ol> </li> 
+      <li>Bill suggests, for symmetry with the centralized DAS model, we create the domain in the instance area and allow commands to operate on it.</li> 
+      <li>The same App ID needs to be used across all instances. To avoid having to share it we could use the same method to generate the ID on each instance thus arriving at the same value. Could be the SHA-256 hash on the war file plus other data (e.g. context root).</li> 
+      <li>How do we handle deploy/undeploy where these command perform some operations on the first (or last instance) - e.g. create/drop tables. 
+       <ol> 
+        <li>Push the responsibility to the user since they are the "central administrator" now.</li> 
+        <li>Can provide new options to deploy/undeploy that the user passes on the first or last instance to trigger the correct operation (create/drop table).</li> 
+       </ol> </li> 
+      <li>There are potentially JMS integration issues that will need to be addressed.</li> 
+      <li>In a UMC are there domains? Named clusters? 
+       <ol> 
+        <li>Probably should combine the two into one - that is use the same name for the cluster and the domain.</li> 
+        <li>In a UMC a "domain" can only contain one cluster because the instances of the cluster make up the domain.</li> 
+       </ol> </li> 
+      <li>--target 
+       <ol> 
+        <li>Default to instance currently executing against.</li> 
+        <li>Specifying something else is an error</li> 
+        <li>Don't want command replication to be used.</li> 
+       </ol> </li> 
+      <li>DEFAULT_SERVER_INSTANCE_NAME=server</li> 
+      <li>Need to review DAS only commands to understand what they should do (if anything) on the instance.</li> 
+      <li>Review the cases where the isDAS() conditional is used to determine what is appropriate in the case where there is no DAS. 
+       <ol> 
+        <li>128 cases in the code.</li> 
+        <li>Some should be pretty straight forward.</li> 
+       </ol> </li> 
+      <li>Deploy can not be executed on instances - that needs to change. 
+       <ol> 
+        <li>deploy vs _deploy - need to talk to deploy team.</li> 
+       </ol> </li> 
+      <li>Do not introduce a new runtime type. Run instances as normal instances. May have some special cases.</li> 
+     </ol> <p>Discussion about Option 3:</p> 
+     <ol> 
+      <li>Option 3 - Limit it to single domain and a cluster</li> 
+      <li>Option 4 - (Bill) HA DAS cluster which manages other domains and clusters. The HA DAS cluster are just instances that run the DAS</li> 
+      <li>Reviewing 3.1 Feature Overview - potentially 1 and 2 require different solutions.</li> 
+      <li>OVM requires shared storage to operate</li> 
+      <li>Nazrul: DAS writes to shared storage. Instances sync from URI when started. If no shared storage we could use the sync-bundle to move data. 
+       <ol> 
+        <li>An advantage of the share storage approach is that when the DAS is transfered to another instance the instance should have all the info it needs to take over as the DAS.</li> 
+        <li>How do we determine which instance should take over as the DAS - ideally want to use a lightly used instance. Don't choose an instances that is very busy.</li> 
+        <li>Today the DAS does not create that much load.</li> 
+        <li>Amazon does not have a convenient shared storage mechanism.</li> 
+       </ol> </li> 
+      <li>Could the DAS/instance run in the same VM? 
+       <ol> 
+        <li>Use embedded DAS in the same JVM? 
+         <ol> 
+          <li>Global vars will be an issue.</li> 
+         </ol> </li> 
+        <li>One server with two admin adapters enabled - one for instance and one for DAS.</li> 
+        <li>Would you need two habitats? Probably.</li> 
+        <li>Should talk to the JVM folks and they are interested in multi-tenancy requirements.</li> 
+       </ol> </li> 
+      <li>Can the runtime type change on the fly? What happens to an instance when it becomes the DAS? Does it restart? Could that cause a cascade of failures?</li> 
+     </ol> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on May 19, 2011 by 
+<font color="#0050B2">ckasso</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

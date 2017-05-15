@@ -1,0 +1,193 @@
+*+html #header .ajs-menu-item a.ajs-menu-title span span { /* IE7 cannot apply background to the outer span. */
+    background-image: url(../../../images/decoration/white_menu_indicator.gif); /* header menus always use a white indicator */
+    background-repeat: no-repeat;
+    background-position: 100% 50%; /* 50% lines up with middle of lowercase letters in IE */
+}
+.ajs-drop-down {
+    clear: both;
+    z-index: 500;
+    zoom: 1;
+}
+* html .ajs-menu-bar .ajs-drop-down li {
+    border-bottom: solid 1px #fff;
+}
+.ajs-menu-bar .ajs-drop-down li {
+    display: block;
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+
+#navigation .ajs-menu-bar .ajs-drop-down a {
+    display: block;
+    padding: 0.33em 0.67em;
+    cursor: pointer;
+}
+#navigation .ajs-menu-bar div.ajs-drop-down a span {
+    padding: 0 0 0 21px;
+    height: 16px;
+    line-height: 16px;
+}
+.ajs-menu-bar div.ajs-drop-down a span {
+    cursor: pointer;
+    height: 16px;
+    line-height: 16px;
+    zoom: 1;
+}
+#navigation .ajs-menu-bar .section-secondary li a,
+#navigation .ajs-menu-bar .section-modify li a {
+    line-height: 2;
+    padding-left: 0;
+}
+#navigation .ajs-menu-bar .section-secondary li a span,
+#navigation .ajs-menu-bar .section-modify li a span {
+    padding-left: 8px;
+}
+.ajs-menu-bar .ajs-drop-down a img {
+    clear: left;
+    float: none;
+    margin: .3em 0 .3em -20px;
+    vertical-align: middle;
+}
+
+#navigation .ajs-menu-bar .ajs-button a,
+#navigation .ajs-menu-bar .ajs-button a span {
+    display: inline-block; /* makes the edit button have layout, but doesn't give it enormous width*/
+}
+
+.ajs-menu-bar .ajs-drop-down a.add-page,
+.ajs-menu-bar .ajs-drop-down a.add-news {
+    background: none;
+}
+.ajs-menu-bar .ajs-drop-down a.add-page span {
+    background: url(../../../images/icons/docs_16.gif) no-repeat 0 50%;
+}
+.ajs-menu-bar .ajs-drop-down a.add-news span {
+    background: url(../../../images/icons/blogentry_16.gif) no-repeat 0 50%;
+}
+
+* html .ajs-menu-bar .ajs-drop-down a.add-comment {
+    background-image: none;
+}
+* html .ajs-menu-bar .ajs-drop-down a.add-comment span {
+    filter: expression(runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" +
+        document.getElementById('confluence-context-path').content +
+        "/images/icons/comment_16.png', sizingMethod='crop')");
+    zoom: 1;
+}
+* html .ajs-menu-bar .ajs-drop-down a.add-attachment,
+* html .ajs-menu-bar .ajs-drop-down a.action-view-attachments,
+* html .page-metadata ul a.action-view-attachments span.page-metadata-attachments-text {
+    background-image: none;
+}
+* html .ajs-menu-bar .ajs-drop-down a.add-attachment span,
+* html .ajs-menu-bar .ajs-drop-down a.action-view-attachments span,
+* html .page-metadata ul a.action-view-attachments span.page-metadata-attachments-text {
+    filter: expression(runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" +
+        document.getElementById('confluence-context-path').content +
+        "/images/icons/attach_16.png', sizingMethod='crop')");
+    zoom: 1;
+}
+* html .page-metadata ul a.action-view-attachments span.page-metadata-attachments-count {
+    display: inline-block;  /* IE6 */
+    text-indent: 9999em;
+}
+* html .page-metadata ul a.page-restrictions span,
+* html .ajs-menu-bar .ajs-drop-down a.action-view-history,
+* html .ajs-menu-bar .ajs-drop-down a.action-page-permissions,
+* html .ajs-menu-bar .ajs-drop-down a.action-page-favourite,
+* html .ajs-menu-bar .ajs-drop-down a.ie-page-favourite-selected,
+* html .ajs-menu-bar .ajs-drop-down a.action-manage-watchers,
+* html .ajs-menu-bar .ajs-drop-down a.action-page-watching-space,
+* html .ajs-menu-bar .ajs-drop-down a.action-page-watching,
+* html .ajs-menu-bar .ajs-drop-down a.ie-page-watching-selected {
+    background-image: none;
+}
+* html .ajs-menu-bar .ajs-drop-down a.action-view-history span {
+    filter: expression(runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" +
+        document.getElementById('confluence-context-path').content +
+        "/images/icons/clock_16.png', sizingMethod='crop')");
+    zoom: 1;
+}
+* html .page-metadata ul a.page-restrictions span,
+* html .ajs-menu-bar .ajs-drop-down a.action-page-permissions span {
+    filter: expression(runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" +
+        document.getElementById('confluence-context-path').content +
+        "/images/icons/lock_16_grey.png', sizingMethod='crop')");
+    zoom: 1;
+}
+* html .ajs-menu-bar .ajs-drop-down a.action-page-favourite span {
+    filter: expression(runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" +
+        document.getElementById('confluence-context-path').content +
+        "/images/icons/fav_off_16.png', sizingMethod='crop')");
+    zoom: 1;
+}
+* html .ajs-menu-bar .ajs-drop-down a.ie-page-favourite-selected span {
+    filter: expression(runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" +
+        document.getElementById('confluence-context-path').content +
+        "/images/icons/fav_on_16.png', sizingMethod='crop')");
+    zoom: 1;
+}
+* html .ajs-menu-bar .ajs-drop-down a.action-page-watching-space span {
+    filter: expression(runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" +
+        document.getElementById('confluence-context-path').content +
+        "/images/icons/watching_space_16.png', sizingMethod='crop')");
+    zoom: 1;
+}
+* html .ajs-menu-bar .ajs-drop-down a.action-manage-watchers span {
+    filter: expression(runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" +
+        document.getElementById('confluence-context-path').content +
+        "/images/icons/watch_manage_16.png', sizingMethod='crop')");
+    zoom: 1;
+}
+* html .ajs-menu-bar .ajs-drop-down a.action-page-watching span {
+    filter: expression(runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" +
+        document.getElementById('confluence-context-path').content +
+        "/images/icons/watch_off_16.png', sizingMethod='crop')");
+    zoom: 1;
+}
+* html .ajs-menu-bar .ajs-drop-down a.ie-page-watching-selected span {
+    filter: expression(runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" +
+        document.getElementById('confluence-context-path').content +
+        "/images/icons/watch_on_16.png', sizingMethod='crop')");
+    zoom: 1;
+}
+* html .ajs-menu-bar .ajs-drop-down a.waiting {
+    background-image: none;
+}
+* html .ajs-menu-bar .ajs-drop-down a.waiting span {
+    background-image: url(../../../images/icons/wait.gif);
+    background-repeat: no-repeat;
+    filter: inherit;
+}
+* html #navigation .ajs-menu-bar .ajs-button a.edit span {
+    background-image: none;
+    filter: expression(runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" +
+        document.getElementById('confluence-context-path').content +
+        "/images/icons/edit_20.png', sizingMethod='crop')");
+    width: 1%;
+}
+
+* html #navigation .ajs-menu-bar li.ajs-menu-item a.add span span {
+    background-image: none;
+    filter: expression(runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" +
+        document.getElementById('confluence-context-path').content +
+        "/images/icons/add_20.png', sizingMethod='crop')");
+    width: 1%;
+}
+
+* html #navigation .ajs-menu-bar li.ajs-menu-item a.action span span {
+    background-image: none;
+    filter: expression(runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" +
+        document.getElementById('confluence-context-path').content +
+        "/images/icons/tools_20.png', sizingMethod='crop')");
+    width: 1%;
+}
+
+* html #navigation .ajs-menu-bar .ajs-button a.view span {
+    background-image: none;
+    filter: expression(runtimeStyle.filter = "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='" +
+        document.getElementById('confluence-context-path').content +
+        "/images/icons/view_20.png', sizingMethod='crop')");
+    width: 1%;
+}

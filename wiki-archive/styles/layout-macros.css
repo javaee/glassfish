@@ -1,0 +1,18 @@
+/* Layout plugin styles */
+
+.sectionMacro,
+.sectionMacro p,
+.sectionMacro ul,
+.sectionMacro ol {
+    font-size: 10pt;
+}
+
+table.sectionMacro td {
+    border: none;
+}
+
+table.sectionMacroWithBorder td.columnMacro {
+    border-style: dashed;
+    border-width: 1px;
+    border-color: #ccc;
+}

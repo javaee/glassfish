@@ -1,0 +1,232 @@
+/*************************************************************
+ * NOTE: Smartsprites used to generate sprites automatically *
+ *************************************************************/
+
+/*
+ * NOTE: Animated gifs will become static when generated into sprites
+ */
+
+span.icon, a.icon {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    text-align: left;
+    text-indent: -9999em;
+}
+
+/* used in pagelist.vm */
+.tabletitleops .icon {
+    width: 12px;
+    height: 12px;
+}
+
+.icon-wait {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -0px top;
+}
+.icon-browse-space {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -16px top;
+}
+.icon-add-page {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -32px top;
+}
+.icon-add-page-disabled {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -48px top;
+}
+.icon-add-fav {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -64px top;
+}
+.icon-remove-fav {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -80px top;
+}
+.icon-home-page {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -96px top;
+}
+.icon-recently-updated-page {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -112px top;
+}
+.icon-page {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -128px top;
+}
+.icon-comment {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -144px top;
+}
+.icon-space {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -160px top;
+}
+.icon-personal-space {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -176px top;
+}
+.icon-user {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -192px top;
+}
+.icon-group {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -208px top;
+}
+.icon-blog {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -224px top;
+}
+.icon-trackback {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -240px top;
+}
+.icon-mail {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -256px top;
+}
+.icon-status {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -272px top;
+}
+.icon-show-more {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -288px top;
+}
+.icon-show-less {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -300px top;
+}
+.icon-file-pdf {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -312px top;
+}
+.icon-file-image {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -328px top;
+}
+.icon-file-xml {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -344px top;
+}
+.icon-file-html {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -360px top;
+}
+.icon-file-java {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -376px top;
+}
+.icon-file-text {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -392px top;
+}
+.icon-file-zip {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -408px top;
+}
+.icon-file-excel97-template {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -424px top;
+}
+.icon-file-powerpoint97-template {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -440px top;
+}
+.icon-file-word97-template {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -456px top;
+}
+.icon-file-excel97 {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -424px top;
+}
+.icon-file-powerpoint97 {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -440px top;
+}
+.icon-file-word97 {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -456px top;
+}
+.icon-file-excel-macro {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -424px top;
+}
+.icon-file-excel {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -424px top;
+}
+.icon-file-excel-template {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -424px top;
+}
+.icon-file-powerpoint-macro {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -440px top;
+}
+.icon-file-powerpoint {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -440px top;
+}
+.icon-file-powerpoint-slideshow {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -440px top;
+}
+.icon-file-powerpoint-template {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -440px top;
+}
+.icon-file-word {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -456px top;
+}
+.icon-file-word-template {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -456px top;
+}
+.icon-file-multimedia {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -472px top;
+}
+.icon-file-unknown {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -488px top;
+}
+.icon-people-directory span.icon {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -208px top;
+}
+.icon-rss-feed-small span.icon {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -504px top;
+}
+.icon-create-space span.icon {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -520px top;
+}
+.icon-create-user-macro span.icon {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -536px top;
+}
+#children-section.children-hidden a.children-show-hide.icon,
+.icon-section-closed {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -552px top;
+}
+#children-section.children-showing a.children-show-hide.icon,
+.icon-section-opened {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -568px top;
+}
+.icon-remove {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -584px top;
+}
+.icon-edit {
+  background-image: url('../../../images/sprites/icons.png');
+  background-position: -600px top;
+}

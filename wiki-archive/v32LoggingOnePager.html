@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html  xml:lang="en" lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>GlassFish Wiki : v32LoggingOnePager</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-language" content="en" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-responsive.min.css" rel="stylesheet" />
+        <link href="styles/docs.css" rel="stylesheet" />
+        <link href="styles/site1.css" rel="stylesheet" />
+        <style> a { color: #555555; } </style>
+        <!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+                <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+    </head>
+
+    <body class="page-documentation project-gfmvnsite" data-spy="scroll" data-offset="60" data-target="#toc-scroll-target">
+
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container">
+                    <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </a>
+                    <div class="brand"><a href="/index.html"><img src="../images/gflogo24.png"><span style="color:#E88A43;font-size:18px;padding-left:11px;padding-top:15px;font-weight:bold;">GlassFish</span> - <span style="font-size:18px;" class="gf-grey">World's first Java EE 7 Application Server</span></a></div>
+                    <div class="nav-collapse">
+                        <ul class="nav pull-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+									<li><a href="/LICENSE" title="License">Legal </a></li>
+									<li><a href="/CONTRIBUTING" title="Contributing">Contributing </a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!--/.nav-collapse -->
+                </div>
+            </div>
+        </div>
+
+        <br/><br/>
+        <div class="container"><body> 
+ <table class="pagecontent" border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="#ffffff"> 
+  <tbody>
+   <tr> 
+    <td valign="top" class="pagebody">   <h4><a name="v32LoggingOnePager-GlassFishServerOpenSourceEdition3.2LoggingOnePager"></a>GlassFish Server Open Source Edition 3.2 - Logging One Pager</h1> 
+     <div> 
+      <ul> 
+       <li><a href="#v32LoggingOnePager-GlassFishServerOpenSourceEdition3.2LoggingOnePager">GlassFish Server Open Source Edition 3.2 - Logging One Pager</a></li> 
+       <ul> 
+        <li><a href="#v32LoggingOnePager-1.Introduction">1. Introduction</a></li> 
+        <ul> 
+         <ul> 
+          <li><a href="#v32LoggingOnePager-1.1.Project%2FComponentWorkingName">1.1. Project/Component Working Name</a></li> 
+          <li><a href="#v32LoggingOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier">1.2. Name(s) and e-mail address of Document Author(s)/Supplier</a></li> 
+          <li><a href="#v32LoggingOnePager-1.3.DateofThisDocument">1.3. Date of This Document</a></li> 
+         </ul> 
+        </ul> 
+        <li><a href="#v32LoggingOnePager-2.ProjectSummary">2. Project Summary</a></li> 
+        <ul> 
+         <ul> 
+          <li><a href="#v32LoggingOnePager-2.1.ProjectDescription">2.1. Project Description</a></li> 
+          <li><a href="#v32LoggingOnePager-2.2.RisksandAssumptions">2.2. Risks and Assumptions</a></li> 
+         </ul> 
+        </ul> 
+        <li><a href="#v32LoggingOnePager-3.ProblemSummary">3. Problem Summary</a></li> 
+        <li><a href="#v32LoggingOnePager-4.TechnicalDescription">4. Technical Description</a></li> 
+        <ul> 
+         <li><a href="#v32LoggingOnePager-4.1.Details">4.1. Details</a></li> 
+         <ul> 
+          <li><a href="#v32LoggingOnePager-4.1.1EnhancementforlogginginaPaaSenvironment">4.1.1 Enhancement for logging in a PaaS environment</a></li> 
+          <li><a href="#v32LoggingOnePager-4.1.2Enhancementsforloggingfrompreviousrelease">4.1.2 Enhancements for logging from previous release</a></li> 
+          <li><a href="#v32LoggingOnePager-4.1.3SupportElasticBeanStalkrelatedchangesinlogging">4.1.3 Support Elastic BeanStalk related changes in logging</a></li> 
+         </ul> 
+         <li><a href="#v32LoggingOnePager-4.2.Bug%2FRFENumber%28s%29">4.2. Bug/RFE Number(s)</a></li> 
+         <ul> 
+          <li><a href="#v32LoggingOnePager-4.2.1RFE">4.2.1 RFE</a></li> 
+          <li><a href="#v32LoggingOnePager-4.2.2Bug">4.2.2 Bug</a></li> 
+         </ul> 
+         <li><a href="#v32LoggingOnePager-4.3.Interfaces">4.3. Interfaces</a></li> 
+         <ul> 
+          <li><a href="#v32LoggingOnePager-4.3.1EnhancementforlogginginaPaaSenvironment">4.3.1 Enhancement for logging in a PaaS environment</a></li> 
+          <li><a href="#v32LoggingOnePager-4.3.2Enhancementsforloggingfrompreviousrelease">4.3.2 Enhancements for logging from previous release</a></li> 
+         </ul> 
+         <li><a href="#v32LoggingOnePager-4.4.DocImpact">4.4. Doc Impact</a></li> 
+         <li><a href="#v32LoggingOnePager-4.5.Admin%2FConfigImpact">4.5. Admin/Config Impact</a></li> 
+         <li><a href="#v32LoggingOnePager-4.6.HAImpact">4.6. HA Impact</a></li> 
+         <li><a href="#v32LoggingOnePager-4.7.I18N%2FL10NImpact">4.7. I18N/L10N Impact</a></li> 
+         <li><a href="#v32LoggingOnePager-4.8.Packaging%2CDelivery%26Upgrade">4.8. Packaging, Delivery &amp; Upgrade</a></li> 
+         <li><a href="#v32LoggingOnePager-4.9.SecurityImpact">4.9. Security Impact</a></li> 
+         <li><a href="#v32LoggingOnePager-4.10.CompatibilityImpact">4.10. Compatibility Impact</a></li> 
+         <li><a href="#v32LoggingOnePager-4.11.Dependencies">4.11. Dependencies</a></li> 
+         <li><a href="#v32LoggingOnePager-4.12.TestingImpact">4.12. Testing Impact</a></li> 
+         <li><a href="#v32LoggingOnePager-4.13ReferenceDocuments">4.13 Reference Documents</a></li> 
+        </ul> 
+        <li><a href="#v32LoggingOnePager-5.Schedule">5. Schedule</a></li> 
+        <li><a href="#v32LoggingOnePager-6.OpenIssues">6. Open Issues</a></li> 
+       </ul> 
+      </ul>
+     </div> <h4><a name="v32LoggingOnePager-1.Introduction"></a>1. Introduction</h3> <h5><a name="v32LoggingOnePager-1.1.Project%2FComponentWorkingName"></a>1.1. Project/Component Working Name</h5> <p>Logging</p> <h5><a name="v32LoggingOnePager-1.2.Name%28s%29andemailaddressofDocumentAuthor%28s%29%2FSupplier"></a>1.2. Name(s) and e-mail address of Document Author(s)/Supplier</h5> <p>Naman Mehta : naman_mehta@java.net</p> <h5><a name="v32LoggingOnePager-1.3.DateofThisDocument"></a>1.3. Date of This Document</h5> 
+     <ul> 
+      <li>20/04/2011 Initial Draft</li> 
+      <li>27/04/2011 Incorporated changes after comment from Siva</li> 
+     </ul> <h4><a name="v32LoggingOnePager-2.ProjectSummary"></a>2. Project Summary</h3> <h5><a name="v32LoggingOnePager-2.1.ProjectDescription"></a>2.1. Project Description</h5> <p>Enhance logging framework to support GlassFish use as a PaaS environment. Adding new features to the existing logging framework to ease of use.</p> <h5><a name="v32LoggingOnePager-2.2.RisksandAssumptions"></a>2.2. Risks and Assumptions</h5> <p>PaaS related feature depends on the PaaS infrastructure availability. Any delay in the delivery of the depended features will affect the delivery of the logging feature.</p> <h4><a name="v32LoggingOnePager-3.ProblemSummary"></a>3. Problem Summary</h3> 
+     <ul> 
+      <li><b>Enhance logging framework to support GlassFish use as a PaaS environment</b><br> We need to support this for v3.2 feature parity. Provision PaaS admin logging to respective log files. Provision log records from IaaS Management Service (IMS), Orchestrator (O), Elasticity Manager (EM) and Domains Manager (DM) needs to be logged under DAS. Augment the Service Provider SPI to contain method to list/set/delete log levels and collect log files. (Priority P1)<br> <font color="red"><b><em>TBD:</em></b></font> <font color="red"><em>We need to have a discussion around this once the initial arch is completed.</em></font></li> 
+     </ul> 
+     <ul> 
+      <li><b>Enhance logging related commands to support GlassFish use as a PaaS environment</b><br> We need to enhance set of the logging commands for v3.2 feature parity. Enhance existing log commands to set/list/delete log levels for given service(e.g. dbms/mq/lb). Enhance collect-log-files command to collect log files from services used by respective instances. (Priority P2)<br> <font color="red"><b><em>TBD:</em></b></font> <font color="red"><em>We need to have a discussion around this once the initial arch is completed.</em></font></li> 
+     </ul> 
+     <ul> 
+      <li><b>Add intelligence for log file refresh during download from remote machine</b><br> Enhancement from 3.1 release. If instance is not part of localhost we used to download file to DAS and uses in Log Viewer. So provide intelligence to avoid downloading of log file every time from remote machine. (Priority P1)</li> 
+     </ul> 
+     <ul> 
+      <li><b>Date-based log rotation</b><br> Enhancement from 3.1 release. Allow user to set the parameter under logging.properties file and based on that rotate the server.log file when date changes. (Priority P1)</li> 
+     </ul> 
+     <ul> 
+      <li><b>Add new logging command to delete log levels 'delete-log-levels'</b><br> Enhancement from 3.1 release. Add new command for logging which deletes log levels from logging.properties files. Respective changes are needed in REST and Admin GUI. (Priority P1)</li> 
+     </ul> 
+     <ul> 
+      <li><b>Add 'Load Defaults' button under Logger Settings page</b><br> Enhancement from 3.1 release. Add new 'Load Default' button to reset the logger setting under Logger Settings page. Respective changes are needed in REST and Admin GUI. (Priority P1)</li> 
+     </ul> 
+     <ul> 
+      <li><b>Log Analyzer Tool, which is the extension of collect-log-files command</b><br> Enhancement from 3.1 release. Add new button "Log Analyzer" under logger setting page which allow user to view all collected log files under zip in the single screen in different tab. Respective changes are needed in REST and Admin GUI. Major changes needed under logging back end code to provision the same. (Priority P3)<br> <font color="red"><b><em>TBD:</em></b></font> <font color="red"><em>We need to have a discussion with Admin team to move further on this.</em></font></li> 
+     </ul> 
+     <ul> 
+      <li><b>Support Elastic BeanStalk related changes in logging</b><br> We need to support this for v3.2 feature parity. Enhance logging to support GF as one of the container in Elastic BeanStalk.<br> <font color="red"><b><em>TBD:</em></b></font> <font color="red"><em>We need to have a discussion around this once the initial arch is completed.</em></font></li> 
+     </ul> <h4><a name="v32LoggingOnePager-4.TechnicalDescription"></a>4. Technical Description</h3> <h4><a name="v32LoggingOnePager-4.1.Details"></a>4.1. Details</h4> <h5><a name="v32LoggingOnePager-4.1.1EnhancementforlogginginaPaaSenvironment"></a>4.1.1 Enhancement for logging in a PaaS environment</h5> 
+     <ul> 
+      <li><b>Enhance logging framework to support GlassFish use as a PaaS environment.</b></li> 
+     </ul> <p>This <a href="./PlanForGlassFish3.2#PlanForGlassFish3.2-SubProjects.html">document</a> describes the high level design for supporting PaaS infrastructure. We will provide v3.2 feature parity for enhancing logging framework to support GlassFish use as a PaaS environment.</p> <p>In 3.1, we provided different log levels for cluster, stand alone instance and DAS. Based on the log levels set by user, log records are logged under appropriate log files.</p> <p><b><em>PaaS admin Logging In 3.2</em></b>, Provision PaaS admin Logging (IaaS Management Service (IMS), Orchestrator (O), Elasticity Manager (EM) and Domains Manager (DM)) to be part of DAS logging only (default location is &lt;AS_HOME&gt;/domains/domain1/logs/server.log). Clustered instances and stand alone instances log records are logged under respective instance log files.</p> <p><b><em>Service level Logging In 3.2</em></b>, All the log records related to Service level logging would be part of respective service provider(e.g dbms, lb etc.). So provide SPI for service provisioning which contains method to list log levels, set log levels, delete log levels and reading log files. This needs to be implemented by service provider (e.g dbms, lb etc.). On getting request from CLI or Admin GUI, it's redirected to appropriate service provider which returns/sets the data based on the request.</p> <p>In 3.1, we are setting/listing data from the DAS and replication framework/SCP is used to replicate files/downloading files from the remote instance which is used by logging back end code. So in 3.2, if we have DAS on machine1, cluster instance is running on machine2 which uses any service like dbms/mq running on machine3 then service provider need to implement methods for getting/setting data.</p> <p>The basic flow is from GUI/Command Line -&gt; Logging Back end Code -&gt; Orchestrator -&gt; Specific Service Provider and vice versa.</p> 
+     <ul> 
+      <li><b>Enhance logging related commands to support GlassFish use as a PaaS environment</b></li> 
+     </ul> <p>We need to enhance logging related commands for v3.2 feature parity.</p> <p>All the logging CLI commands need to be set/list/delete log levels for given service. All list/set/delete-log-levels work with a servicename as the "target" argument. Service logging for global shared provisioned services and application scoped provisioned services would be supported. The log levels may be different per Service implementation(MySQL could have a different logging level interpretation – ie may not have a INFO, FINE etc), and the plugin that integrates the Service Implementation into the Orchestrator would handle the translation of log-levels. The Service implementation's log would not use the logging level terminology of GlassFish. It depends on, how the service provider implements the provided SPI.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin list-log-levels --dbmsservice
+
+asadmin set-log-levels --target=dbmsservice dbms.package=INFO
+
+asadmin delete-log-levels --target=dbmsservice dbms.package</pre> 
+       </div> 
+      </div>
+     </div> <p>We already have command to collect-log-files which needs to be enhanced for collecting log files from services used by instances. Service provider need to implement the method which returns log file from respective host to DAS machine.</p> <h5><a name="v32LoggingOnePager-4.1.2Enhancementsforloggingfrompreviousrelease"></a>4.1.2 Enhancements for logging from previous release</h5> 
+     <ul> 
+      <li><b>Add intelligence for log file refresh during download from remote machine</b></li> 
+     </ul> <p>Enhancement from 3.1 release. We are using scp to download files from remote machine when user clicks 'View Log File' button for given instances. If instance is not part of localhost we used to download file to DAS and uses in Log Viewer.</p> <p>Before downloading files from remote machine check the file size on DAS and compare same with on Remote machine. If size is different then use the SCP code to download the same. To support this requirement provide mechanism to get the file attributes on DAS and Remote machine.</p> 
+     <ul> 
+      <li><b>Date-based log rotation</b></li> 
+     </ul> <p>Enhancement from 3.1 release. Allow user to set the parameter under logging.properties file and based on that rotate the server.log file when date changes.</p> <p>Add new logging attributes under logging.properties template like 'com.sun.enterprise.server.logging.GFFileHandler.rotationOnDateChange=false'. Default value is false. User can change the value of this attribute by using set-log-attributes command or Admin GUI. If the value is true, then server.log file is rotated when date changes.</p> <p>If user had selected date based rotation then it will not consider rotation based on time (com.sun.enterprise.server.logging.GFFileHandler.rotationTimelimitInMinutes).</p> 
+     <ul> 
+      <li><b>Add new logging command to delete log levels 'delete-log-levels'</b></li> 
+     </ul> <p>We need to support for this for v3.2 feature parity. Add new command for logging which deletes log levels from logging.properties file.</p> <p>This command will take logger name as arguments. User can give multiple logger name as ':' separated. The default value for target is server. User can give target value as cluster, stand alone instance or any config name. Based on the target this command would delete log levels from appropriate logging.properties file.</p> 
+     <div class="code panel" style="border-width: 1px;">
+      <div class="codeContent panelContent"> 
+       <div id="root"> 
+        <pre class="theme: Confluence; brush: java; gutter: false">asadmin delete-log-levels dbms.package
+
+asadmin delete-log-levels --target=cluster1 dbms.package
+
+asadmin delete-log-levels --target=cluster1 dbms.package:dbms1.package:dbms2.package</pre> 
+       </div> 
+      </div>
+     </div> <p>Respective changes are needed in REST and Admin GUI. REST needs to provide API for this command which is used by Admin GUI. Admin GUI needs to provide 'Delete Log Levels' button under Logger Settings page.</p> 
+     <ul> 
+      <li><b>Add 'Load Defaults' button under Logger Settings page</b></li> 
+     </ul> <p>We need to support for this for v3.2 feature parity. Add new 'Load Default' button to reset the logger setting under Logger Settings page.</p> <p>If user has changed log attributes and log levels for given target. Now to reset them to original value there is no option provided on Logger Settings page. To give the support for load default values two new hidden commands are provided like _load-default-log-attributes and _load-default-log-levels. _load-default-log-attributes is used to set default log attributes and _load-default-log-levels is used to set default log levels.</p> <p>This command will return values from logging.properties file under template.</p> <p>Respective changes are needed in REST and Admin GUI. REST needs to provide API for this command which is used by Admin GUI. Admin GUI needs to provide 'Load Default' button under Logger Settings page.</p> 
+     <ul> 
+      <li><b>Log Analyzer Tool, which is the extension of collect-log-files command</b></li> 
+     </ul> <p>Enhancement from 3.1 release. Allow user to view all log files under zip in the single screen in different tab.</p> <p>As we we had came up with collect-log-files command in v3.1 release. This command would collect log files from clustered instances and created zip under DAS. Now, how to view the content of log files? Solution as on today, unzip this zip files in one folder and open log files one by one in text editor. This can work but not user friendly.</p> <p>So to make it user friendly and allow user to navigate from one instance to another instance, we need to come up with this tool. It would be useful for end user to view log files for all instances on single screen.</p> <p>Using this tool user is allowed to select available collected log zip files. On selection of particular zip file it creates different tab based on number of instances. And each tab shows log record under tabular form for particular instance. It supports text search through which user can filter the data. On click of particular log record it opens the detail log record. Here, user can traverse through different instance by just clicking the tab.</p> <p><em>Send details to Anissa and Jason about provisioning the same. This tool needs major changes on GUI side and REST API side and logging back end code.</em></p> <h5><a name="v32LoggingOnePager-4.1.3SupportElasticBeanStalkrelatedchangesinlogging"></a>4.1.3 Support Elastic BeanStalk related changes in logging</h5> <p>If we plan to support GF as one of the container for BeanStalk then we need to implement set of the APIs in logging module to get the server/instance log data to BeanStalk.</p> <h4><a name="v32LoggingOnePager-4.2.Bug%2FRFENumber%28s%29"></a>4.2. Bug/RFE Number(s)</h4> <h5><a name="v32LoggingOnePager-4.2.1RFE"></a>4.2.1 RFE</h5> 
+     <ul> 
+      <li>Add intelligence for log file refresh during download from remote machine, <a href="http://java.net/jira/browse/GLASSFISH-15849">15849</a></li> 
+      <li>Date-based log rotation, <a href="http://java.net/jira/browse/GLASSFISH-8894">8894</a></li> 
+      <li>Add 'Load Defaults' button under Logger Settings page, <a href="http://java.net/jira/browse/GLASSFISH-16018">16018</a></li> 
+      <li>Add new logging command to delete log levels 'delete-log-levels', <a href="http://java.net/jira/browse/GLASSFISH-16337">16337</a></li> 
+      <li>The Umbrella RFE for Enhancement for logging in a PaaS environment, <a href="http://java.net/jira/browse/GLASSFISH-16494">16494</a></li> 
+     </ul> <h5><a name="v32LoggingOnePager-4.2.2Bug"></a>4.2.2 Bug</h5> 
+     <ul> 
+      <li>Cannot start standalone instance, <a href="http://java.net/jira/browse/GLASSFISH-16162">16162</a></li> 
+      <li>Add ShoalLogger.level=CONFIG to glassfish/lib/templates/logging.properties, <a href="http://java.net/jira/browse/GLASSFISH-16139">16139</a></li> 
+      <li>NPE in UniformLogFormatter when trying to log collections/maps with null values/keys, <a href="http://java.net/jira/browse/GLASSFISH-16099">16099</a></li> 
+      <li>asadmin collect-log-files --target clustername should collect more information, <a href="http://java.net/jira/browse/GLASSFISH-16088">16088</a></li> 
+      <li>Log Levle set for Handler is not working in current GF, <a href="http://java.net/jira/browse/GLASSFISH-16057">16057</a></li> 
+      <li>Replace early logger messages in the code with hk2 service, <a href="http://java.net/jira/browse/GLASSFISH-15358">15358</a></li> 
+      <li>Provide better user experience to customize Eclipselink loggers, <a href="http://java.net/jira/browse/GLASSFISH-11274">11274</a></li> 
+      <li>com.sun.aas.instanceName in log configuration not used initially, <a href="http://java.net/jira/browse/GLASSFISH-16327">16327</a></li> 
+      <li>If user changes GFFileHandler.file attribute and not restart the server, <a href="http://java.net/jira/browse/GLASSFISH-16451">16451</a></li> 
+      <li>Log Viewer: server.log not found on remote system with custom node directory, <a href="http://java.net/jira/browse/GLASSFISH-15807">15807</a></li> 
+     </ul> <h4><a name="v32LoggingOnePager-4.3.Interfaces"></a>4.3. Interfaces</h4> <h5><a name="v32LoggingOnePager-4.3.1EnhancementforlogginginaPaaSenvironment"></a>4.3.1 Enhancement for logging in a PaaS environment</h5> 
+     <ul> 
+      <li><b>Public Interfaces</b> 
+       <div class="table-wrap"> 
+        <table class="confluenceTable">
+         <tbody> 
+          <tr> 
+           <th class="confluenceTh"> Method </th> 
+           <th class="confluenceTh"> Former Stability (if changing) </th> 
+           <th class="confluenceTh"> Class Name </th> 
+           <th class="confluenceTh"> Comments </th> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> boolean isLoggingSupported() </td> 
+           <td class="confluenceTd"> New </td> 
+           <td class="confluenceTd"> org.glassfish.cloud.service.spi.LoggingProvisionedService </td> 
+           <td class="confluenceTd"> Method to check logging settings are supported for given service or not </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> String[] getValidLogLevels() </td> 
+           <td class="confluenceTd"> New </td> 
+           <td class="confluenceTd"> org.glassfish.cloud.service.spi.LoggingProvisionedService </td> 
+           <td class="confluenceTd"> Method to get valid log levels for given service </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> boolean updateLoggingProperties(Map&lt;String, String&gt; properties) throws Exception </td> 
+           <td class="confluenceTd"> New </td> 
+           <td class="confluenceTd"> org.glassfish.cloud.service.spi.LoggingProvisionedService </td> 
+           <td class="confluenceTd"> Method to update/set logging properties for given service. Here, key is the logger name and value is the logging level </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> boolean deleteLoggingProperties(Lis&lt;String&gt; properties) throws Exception </td> 
+           <td class="confluenceTd"> New </td> 
+           <td class="confluenceTd"> org.glassfish.cloud.service.spi.LoggingProvisionedService </td> 
+           <td class="confluenceTd"> Method to delete logging properties for given service. Here, list contains logger names </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> Map&lt;String, String&gt; getLoggingProperties() throws Exception </td> 
+           <td class="confluenceTd"> New </td> 
+           <td class="confluenceTd"> org.glassfish.cloud.service.spi.LoggingProvisionedService </td> 
+           <td class="confluenceTd"> Method to get logging properties for specific service. Here, key is the logger name and value is the logging level </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> String[] getAllLoggingFileNames() throws Exception </td> 
+           <td class="confluenceTd"> New </td> 
+           <td class="confluenceTd"> org.glassfish.cloud.service.spi.LoggingProvisionedService </td> 
+           <td class="confluenceTd"> Method to get all logging file names for given service </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> boolean downloadAllLoggingFiles(String localPath) throws Exception </td> 
+           <td class="confluenceTd"> New </td> 
+           <td class="confluenceTd"> org.glassfish.cloud.service.spi.LoggingProvisionedService </td> 
+           <td class="confluenceTd"> Method to download all logging files for given service </td> 
+          </tr> 
+          <tr> 
+           <td class="confluenceTd"> boolean downloadLoggingFile(String fileName, String localPath) throws Exception </td> 
+           <td class="confluenceTd"> New </td> 
+           <td class="confluenceTd"> org.glassfish.cloud.service.spi.LoggingProvisionedService </td> 
+           <td class="confluenceTd"> Method to download specific logging file for given service </td> 
+          </tr> 
+         </tbody>
+        </table> 
+       </div> </li> 
+     </ul> 
+     <ul> 
+      <li><b>Private Interfaces</b><br> N/A.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Deprecated/Removed Interfaces</b><br> N/A.</li> 
+     </ul> 
+     <ul> 
+      <li><b>New Classes to Support the functionality</b><br> N/A.</li> 
+     </ul> <h5><a name="v32LoggingOnePager-4.3.2Enhancementsforloggingfrompreviousrelease"></a>4.3.2 Enhancements for logging from previous release</h5> 
+     <ul> 
+      <li><b>Public Interfaces</b></li> 
+     </ul> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Method </th> 
+         <th class="confluenceTh"> Former Stability (if changing) </th> 
+         <th class="confluenceTh"> Class Name </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> deleteLoggingProperties(Map&lt;String, String&gt; properties, String targetConfigName) throws IOException </td> 
+         <td class="confluenceTd"> Committed </td> 
+         <td class="confluenceTd"> com.sun.logging.LoggingConfigImpl </td> 
+         <td class="confluenceTd"> Adding new method to delete logging properties for given target used for delete-log-levels command </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> deleteLoggingProperties(Map&lt;String, String&gt; properties) throws IOException </td> 
+         <td class="confluenceTd"> Committed </td> 
+         <td class="confluenceTd"> com.sun.logging.LoggingConfigImpl </td> 
+         <td class="confluenceTd"> Adding new method to delete logging properties for given server used for delete-log-levels command </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> Map&lt;String, String&gt; getDefaultLoggingProperties() throws IOException </td> 
+         <td class="confluenceTd"> Committed </td> 
+         <td class="confluenceTd"> com.sun.logging.LoggingConfigImpl </td> 
+         <td class="confluenceTd"> Adding new method to get default logging properties from template used to reset values under Logger settings page </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <ul> 
+      <li><b>Private Interfaces</b><br> N/A.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Deprecated/Removed Interfaces</b><br> N/A.</li> 
+     </ul> 
+     <ul> 
+      <li><b>New Classes to Support the functionality</b></li> 
+     </ul> 
+     <div class="table-wrap"> 
+      <table class="confluenceTable">
+       <tbody> 
+        <tr> 
+         <th class="confluenceTh"> Class Name </th> 
+         <th class="confluenceTh"> Implements </th> 
+         <th class="confluenceTh"> Former Stability (if changing) </th> 
+         <th class="confluenceTh"> Package </th> 
+         <th class="confluenceTh"> Comments </th> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> LoadDefaultLogLevels </td> 
+         <td class="confluenceTd"> AdminCommand </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> com.sun.enterprise.server.logging.commands </td> 
+         <td class="confluenceTd"> (_load-default-log-levels) new hidden CLI command for loading default log levels </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> LoadDefaultLogAttributes </td> 
+         <td class="confluenceTd"> AdminCommand </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> com.sun.enterprise.server.logging.commands </td> 
+         <td class="confluenceTd"> (_load-default-log-attributes) new hidden CLI command for loading default log attributes </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> DeleteLogLevel </td> 
+         <td class="confluenceTd"> AdminCommand </td> 
+         <td class="confluenceTd"> New </td> 
+         <td class="confluenceTd"> com.sun.enterprise.server.logging.commands </td> 
+         <td class="confluenceTd"> (delete-log-levels) new CLI command for deleting log levels for given target from respective logging.properties file </td> 
+        </tr> 
+        <tr> 
+         <td class="confluenceTd"> LogFilterForInstance </td> 
+         <td class="confluenceTd">&nbsp;</td> 
+         <td class="confluenceTd"> Committed </td> 
+         <td class="confluenceTd"> com.sun.enterprise.server.logging.logviewer.backend </td> 
+         <td class="confluenceTd"> Add intelligence to get the file attributes from remote machine and available on DAS machine. Compare the file size and based on the diff download files from remote machine </td> 
+        </tr> 
+       </tbody>
+      </table> 
+     </div> 
+     <ul> 
+      <li><b>Need to come up with set of classes if we plan to support Log Analyzer tool. Also, respective changes needed by REST and GUI.</b></li> 
+     </ul> <h4><a name="v32LoggingOnePager-4.4.DocImpact"></a>4.4. Doc Impact</h4> <p>Update man pages for the new/modified CLI commands and PaaS related changes.</p> <h4><a name="v32LoggingOnePager-4.5.Admin%2FConfigImpact"></a>4.5. Admin/Config Impact</h4> 
+     <ul> 
+      <li><b>CLI</b><br> New command is added for Delete log levels. Added hidden command to load default log levels and attributes from logging.properties templates.</li> 
+     </ul> 
+     <ul> 
+      <li><b>GUI</b><br> Need updates on Logger Settings page with 'Delete Log Levels', 'Delete Log Attributes' and 'Load Default' button. Respective changes needed for REST API.</li> 
+     </ul> <h4><a name="v32LoggingOnePager-4.6.HAImpact"></a>4.6. HA Impact</h4> <p>No impact.</p> <h4><a name="v32LoggingOnePager-4.7.I18N%2FL10NImpact"></a>4.7. I18N/L10N Impact</h4> <p>Minor changes needed for Delete Log Levels command properties.</p> <h4><a name="v32LoggingOnePager-4.8.Packaging%2CDelivery%26Upgrade"></a>4.8. Packaging, Delivery &amp; Upgrade</h4> 
+     <ul> 
+      <li><b>Packaging</b><br> No impact.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Delivery</b><br> No impact.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Upgrade and Migration</b><br> No impact.</li> 
+     </ul> <h4><a name="v32LoggingOnePager-4.9.SecurityImpact"></a>4.9. Security Impact</h4> <p>No impact.</p> <h4><a name="v32LoggingOnePager-4.10.CompatibilityImpact"></a>4.10. Compatibility Impact</h4> <p>No compatibility impact.</p> <h4><a name="v32LoggingOnePager-4.11.Dependencies"></a>4.11. Dependencies</h4> 
+     <ul> 
+      <li><b>Internal Dependencies</b></li> 
+      <li>Basic infrastructure: <a href="./PlanForGlassFish3.2#PlanForGlassFish3.2-SubProjects.html">Document</a></li> 
+     </ul> 
+     <ul> 
+      <li><b>External Dependencies</b><br> None</li> 
+     </ul> <h4><a name="v32LoggingOnePager-4.12.TestingImpact"></a>4.12. Testing Impact</h4> 
+     <ul> 
+      <li><b>PaaS Related Testing</b><br> Changes related to PaaS for logging.</li> 
+     </ul> 
+     <ul> 
+      <li><b>New CLI commands</b><br> Delete log levels command.</li> 
+     </ul> 
+     <ul> 
+      <li><b>GUI Testing</b><br> Load Default and Delete Log Levels/Attributes.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Log Rotation</b><br> Date Based log rotation.</li> 
+     </ul> 
+     <ul> 
+      <li><b>Log Analyzer Tool</b><br> If we come up with log analyzer then need to be tested.</li> 
+     </ul> <h4><a name="v32LoggingOnePager-4.13ReferenceDocuments"></a>4.13 Reference Documents</h4> 
+     <ul> 
+      <li>3.2 Wiki: <a href="./PlanForGlassFish3.2.html">Wiki Link</a></li> 
+     </ul> <h4><a name="v32LoggingOnePager-5.Schedule"></a>5. Schedule</h3> 
+     <ul> 
+      <li>Enhance logging framework to support GlassFish use as a PaaS environment - having design dependency</li> 
+      <li>Enhance logging related commands to support GlassFish use as a PaaS environment - having design dependency</li> 
+      <li>Add intelligence for log file refresh during download from remote machine - MS3</li> 
+      <li>Date-based log rotation - MS3</li> 
+      <li>Add new logging command to delete log levels 'delete-log-levels' - MS3</li> 
+      <li>Add 'Load Defaults' button under Logger Settings page - MS3</li> 
+      <li>Log Analyzer Tool, which is the extension of collect-log-files command - having design dependency</li> 
+     </ul> <h4><a name="v32LoggingOnePager-6.OpenIssues"></a>6. Open Issues</h3> 
+     <ul> 
+      <li><font color="red">Need to discuss with Prasad, Rajiv, Shreedhar &amp; Shiva about the PaaS related changes for logging. I added above details as per my understanding. Need to provide SPI details for service provisioning in this document(under section 4.3.1) after the discussion.</font></li> 
+     </ul> 
+     <div class="tabletitle"> 
+      <a name="comments"> <h4>Comments:</h2> </a> 
+     </div> 
+     <table border="0" width="100%"> 
+      <tbody>
+       <tr> 
+        <td> <a name="comment-20882487"></a> <font class="smallfont"><p>Hi Naman,</p> <p>would it be possible to consider these issue from the Glassfish JIRA for inclusion:</p> 
+          <ul class="alternate" type="square"> 
+           <li>GLASSFISH-6666: Ability to log to SLF4J</li> 
+           <li>GLASSFISH-11129: Weld encounters SLF4J error: Class path contains multiple SLF4J bindings</li> 
+           <li>The issue here is that the Glassfish JARs reference other JARs which in turn include duplicate SLF4J bindings.</li> 
+          </ul> <p>It would be great if Glassfish could use the common SLF4J interface in order to support different loggers.<br> This would be the self-made logging bridges which sometimes do not integrate with Glassfish very well.</p> <p>What do you think?</p> <p>Cheers, Jörg</p></font> 
+         <div align="left" class="smallfont" style="color: #666666; width: 98%; margin-bottom: 10px;"> 
+          <img src="images/icons/comment_16.gif" height="16" width="16" border="0" align="absmiddle"> Posted by joergthoennes at Apr 20, 2011 00:37 
+         </div> </td> 
+       </tr> 
+      </tbody>
+     </table> </td> 
+   </tr> 
+  </tbody>
+ </table>    
+</body></div>
+        <br/>
+
+        <!-- footer================================================== -->
+        <footer class="well">
+            <div class="container">
+
+                <div class="row-fluid" id="bottom-info">
+                    <!--div class="span6 pagination-centered" id="social"-->
+                    <div class="span4" id="social">			
+                        <a href="http://blogs.oracle.com/theaquarium/"><img src="../images/icons/TheAquarium.png"></a>
+                        <a href="https://twitter.com/glassfish"><img src="../images/icons/twitter.png"></a>
+                        <a href="https://plus.google.com/communities/106098646151660933759"><img src="../images/icons/google.png"></a>
+                        <a href="http://www.linkedin.com/groups/GlassFish-Users-106819/about"><img src="../images/icons/linkedin.png"></a>
+                        <a href="http://www.youtube.com/user/GlassFishVideos"><img src="../images/icons/youtube.png"></a>
+                        <a href="https://www.facebook.com/GlassFish"><img src="../images/icons/facebook.png"></a>
+                    </div>
+
+                    <div class="span8" id="copyright">Page last changed on Aug 28, 2012 by 
+<font color="#0050B2">10193</font>. Exported from wikis.oracle.com on May 27, 2015 20:47.<br/>
+                        Copyright &copy; 2005-2015 Oracle Corporation and/or its affiliates.</div>
+                </div>
+            </div>
+        </footer>
+
+        <!-- ================================================== -->
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/bootstrap-tab.js"></script>
+	<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+	<!--  Begin SiteCatalyst code  -->
+  	<!--  End SiteCatalyst code  -->
+    </body>
+</html>

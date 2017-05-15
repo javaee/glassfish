@@ -1,0 +1,398 @@
+.dropdown-menu li > a:hover, .dropdown-menu li > a:focus, .dropdown-submenu:hover > a {
+    background-color: rgb(250, 0, 0);
+	background-image: linear-gradient(to bottom, rgb(102, 153, 255), rgb(62, 123, 230));
+    background: -webkit-linear-gradient(rgb(102, 153, 255), rgb(62, 123, 230));
+
+}
+
+.red .active a,
+.red .active a:hover {
+    background: linear-gradient( to bottom, rgb(250, 250, 250), rgb(230, 230, 230));
+    /* background: -webkit-linear-gradient(top bottom, white, rgb(249, 249, 249)); */
+    background: -webkit-linear-gradient(rgb(250, 250, 250), rgb(230, 230, 230));
+    /* border-color: rgb(170, 170, 170) rgb(180, 180, 180) transparent; */
+    border-color: rgb(230, 230, 230) rgb(190, 190, 190) rgb(250, 250, 250) rgb(220, 220, 220) ;   
+}
+
+.red a,
+.red a:hover {
+    background-color: rgb(225, 225, 225);   
+    border-color: rgb(90, 90, 90) rgb(90, 90, 90) rgb(90, 90, 90) rgb(90, 90, 90);
+    color : rgb(150, 150, 150);   
+}
+
+.tab-pane { 
+	min-height:	344px;
+}
+
+.body-content { 
+	min-height:	344px;
+}
+
+.carousel-caption {
+    padding: 10px;
+    background: none repeat scroll 0% 0% rgba(0, 0, 0, 0.50);
+}
+
+
+.pos_after_icon
+{
+	position:relative;
+	right:0px;
+}
+
+
+.shift-left-bord-right { /* DD */
+    margin-left: 0px;
+    /*padding-left: -10px;*/
+    border-left: 1px solid rgb(220, 220, 220);
+}
+
+.right-bord { /* DD */
+    margin-left: 0;
+    padding-right: 20px;
+    border-right: 1px solid rgb(220, 220, 220);
+}
+
+
+.left-bord { /* DD */
+    margin-left: 0;
+    padding-left: 0px;
+    /* border-left: 1px solid #ccc; */
+    /* background-color: rgb(229, 229, 229); */
+    border-left: 1px solid rgb(220, 220, 220);
+    /*background-color: rgb(255, 255, 255); 
+	border-bottom: 1px solid rgb(200, 200, 200);
+	border-right: 1px solid rgb(220, 220, 220);*/
+}
+
+.table-note {
+    /*background-color: rgb(235, 235, 235);   */
+	font-size: 12px;
+	line-height: 80%;
+}
+
+.table-ide {
+    background-color: white;
+    border-top: 1px solid rgb (30,230,230);
+    border-left: 1px solid rgb (230,230,230);
+	border-bottom: 1px solid rgb(200, 200, 200);
+	border-right: 1px solid rgb(220, 220, 220);
+	border-style : ouset;
+}
+
+.anchor-ide { /* to avoid to be hidden by GF top bar */
+	display: block; 
+	position: relative; 
+	top: -50px; 
+	visibility: hidden;
+}
+
+.sub-content {
+	margin-left: 40px;
+}
+
+.gf-code {
+	width: 250px; /* fix this */
+	padding: 6px 6px;
+    color: rgb(102,153,255); /*GF Blue*/
+    white-space: nowrap;
+    /* background-color: rgb(102,153,255); /* gfblue */
+    background-color: rgb(254,254,254); 
+    /* border: 1px solid rgb(142,193,255); */
+    border-right: 1px solid rgb(190, 190, 190);
+    /* border-bottom: 1px solid rgb(100, 100, 220); */
+	border-bottom: 1px solid rgb(200, 200, 200);    
+}
+
+.install-box {
+	/*margin-left: -20px;*/
+	padding: 6px 6px 0px 6px;
+    color: rgb(102,153,255); /*GF Blue*/
+    white-space: nowrap;
+    background-color: rgb(254,254,254); 
+    //border-right: -1px solid rgb(190, 190, 190);
+	border-bottom: 1px solid rgb(200, 200, 200);    
+}
+
+
+.instruct-code {
+	width: 250px; /* fix this */
+	/*margin-left: -20px;*/
+	padding: 4px 4px;
+    color: rgb(102,153,255); /*GF Blue*/
+    white-space: nowrap;
+    background-color: rgb(254,254,254); 
+    border-right: 1px solid rgb(190, 190, 190);
+	border-bottom: 1px solid rgb(200, 200, 200);    
+}
+
+.cmds {display: none;} /* used to loop windows-unix commands */
+
+.mvn-code {
+	width: 310px; /* fix this */
+	padding: 6px 6px;
+    color: rgb(102,153,255); /*GF Blue*/
+    white-space: nowrap;
+    background-color: rgb(254,254,254); 
+    border-right: 1px solid rgb(190, 190, 190);
+	border-bottom: 1px solid rgb(200, 200, 200);
+	margin-left: 8px;
+}
+
+
+.color-highlight {
+	color: #FF00000;
+}
+
+.gf_logo {
+	color: RED; 
+}
+
+
+img {
+    vertical-align: top;
+}
+
+a {
+    /* color: #555555; */
+    color: #E88A43;
+    text-decoration: none;
+}
+
+a:hover {
+    /* color: rgb(29,130,180); */
+    color: rgb(123,126,255); /* blue */
+    text-decoration: none;
+}
+
+#ogs:hover  {
+    color: red; 
+}
+ 
+
+.gf-grey {
+    color: #555555;
+}
+
+.gf-grey:hover {
+    color: #6699FF;
+}
+
+
+
+.gf-orange {
+    color: #E88A43;
+    /* color: #FF9933 */
+}
+
+.gf-grey {
+    color: #555555;
+}
+
+.gf-grey:hover {
+    color: #6699FF;
+}
+
+.gf-blue {
+    color: #6699FF;
+}
+
+.gf-red {
+    color: #FF0000;
+}
+
+
+.gf-bkg-grad {
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr = '#0030ba', endColorstr = '#0f4dff');
+-ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr = '#0030ba', endColorstr = '#0f4dff')";
+background-image: -moz-linear-gradient(top, #ffffff, #dddddd);
+background-image: -ms-linear-gradient(top, #ffffff, #dddddd);
+background-image: -o-linear-gradient(top, #ffffff, #dddddd);
+background-image: -webkit-linear-gradient(top, #ffffff, #dddddd);
+background-image: linear-gradient(top, #ffffff, #dddddd);
+-moz-background-clip: padding;
+-webkit-background-clip: padding-box;
+background-clip: padding-box;
+
+}
+
+
+.tab-unselected {
+    color: green;
+}
+
+
+.transparentBkg {
+    background-color: rgb(249, 249, 249);
+}
+
+a #download {
+    color: #ff1111;
+}
+
+h3 {
+	line-height : 24px;
+	font-size: 24px;
+	margin-top: 18px;
+}
+
+footer.well {
+  padding: 10px 0;
+  margin-top: 14px;
+  margin-bottom: 0;
+  -webkit-border-radius: 0;
+     -moz-border-radius: 0;
+          border-radius: 0;
+  border-right: 0;
+  border-left: 0;
+  font-size: 90%;
+}
+
+footer.well p,
+.subfooter p {
+  margin-bottom: 0;
+}
+
+.subfooter {
+  padding: 30px 0;
+}
+
+
+footer.well #copyright {
+    font-size: 12px;
+    min-height: 12px;
+    line-height: 16px;
+}
+
+footer.well #orcl {
+	vertical-align: middle;
+	position:relative;
+	top:-1px;
+}
+
+.midGrey {
+    color: rgb(160, 160, 160);
+    font-size: 12px;
+}
+
+.bold {
+	font-weight:bold;
+}
+
+/* .navbar-inner {
+	padding-top: 9px;
+} */
+
+.navbar.affix {
+    top: 48px;
+}
+
+container {
+    margin-top : 10px;
+}
+
+
+/* carousel {
+    margin-bottom: 12px;
+} */
+
+
+/* .carousel {
+    margin-bottom: 12px;
+}*/
+
+.spacer4 { height: 4px; width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
+.spacer6 { height: 6px; width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
+.spacer10 { height: 10px; width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
+.spacer20 { height: 20px; width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
+.spacer30 { height: 30px; width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
+
+
+body {
+	background-image:url(/images/bg_s.png);
+}
+
+body[class*="page-themes-bootswatch"] {
+	background-image: none;
+}
+
+body[class*="page-themes-bootswatch"] .color-highlight {
+	color: inherit;
+}
+
+.thumbnail-row {
+	margin-top: 10px;
+}
+
+/*h1, */h2 {
+  margin-top: 30px;
+}
+
+h3, h4, h5, h6 {
+  margin-top: 20px;
+}
+
+.downloadTitle {
+	/* color : #ff9933; /* real GF orange */
+	 color: #E88A43; /* GF Orange */
+}
+
+
+.carousel-caption a {
+  color: #E88A43; /* GF Orange */
+}
+
+.project-site.page-index h2[id]:before {
+    height: 30px;
+    margin-top: -30px;
+}
+
+.project-gfmvnsite.page-index h3[id]:before {
+    height: 30px;
+    margin-top: -30px;
+}
+
+
+/* A bit of workaround for links being not clickable due to :before element in headings */
+.project-reflow-parent.page-index h2[id]:before {
+  height: 30px;
+  margin-top: -30px;
+}
+
+.project-reflow-parent.page-index .sidebar {
+  margin-top: 10px;
+}
+
+.project-reflow-parent.page-index .sidebar {
+  margin-top: 10px;
+}
+
+.project-reflow-parent.page-index .sidebar h3 {
+  margin-top: 10px;
+}
+
+/* *********SPRITES************************************************ */
+.ico-contribute, .ico-docs,  .ico-download, .ico-forum, .ico-getstarted, .ico-globe, .ico-ide, .ico-jira,  .ico-projects, .ico-ide {
+	background-image: url(../images/sprites.png); background-color: transparent; background-repeat: no-repeat; 
+}
+.ico-contribute:hover { width: 35px; height: 22px; background-position: -25px -23px; }
+.ico-contribute { width: 35px; height: 22px; background-position: -25px 0; }
+.ico-docs:hover { width: 22px; height: 24px; background-position: -84px 0; }
+.ico-docs { width: 22px; height: 24px; background-position: -61px 0; }
+.ico-download:hover { width: 27px; height: 22px; background-position: 0 -50px; }
+.ico-download { width: 27px; height: 22px; background-position: -103px -50px; }
+.ico-forum:hover { width: 25px; height: 18px; background-position: -130px -19px; }
+.ico-forum { width: 25px; height: 18px; background-position: -130px 0; }
+.ico-getstarted:hover { width: 22px; height: 24px; background-position: -107px 0; }
+.ico-getstarted { width: 22px; height: 24px; background-position: -107px -25px; }
+.ico-globe:hover { width: 24px; height: 24px; background-position: 0 0; }
+.ico-globe { width: 24px; height: 24px; background-position: -53px -48px; }
+.ico-ide:hover { width: 24px; height: 24px; background-position: -28px -46px; }
+.ico-ide { width: 24px; height: 24px; background-position: 0 -25px; }
+.ico-jira:hover { width: 24px; height: 24px; background-position: -78px -48px; }
+.ico-jira { width: 24px; height: 24px; background-position: -131px -38px; }
+.ico-projects:hover { width: 22px; height: 22px; background-position: -84px -25px; }
+.ico-projects { width: 22px; height: 22px; background-position: -61px -25px; }
+
+/* ********End Sprite************************************* */

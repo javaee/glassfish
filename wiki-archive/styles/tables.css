@@ -1,0 +1,24 @@
+table.confluenceTable {
+    margin: 5px;
+    border-collapse: collapse;
+}
+
+table.confluenceTable td.confluenceTd {
+    border-width: 1px;
+    border-style: solid;
+    border-color: #ddd;
+    padding: 5px;
+    vertical-align: top;
+    min-width: 0.6em;
+}
+
+table.confluenceTable th.confluenceTh, table.confluenceTable td.highlight {
+    border-width: 1px;
+    border-style: solid;
+    border-color: #ddd;
+    padding: 5px;
+    background-color: #f0f0f0;
+    text-align: left;
+    vertical-align: top;
+    min-width: 0.6em;
+}

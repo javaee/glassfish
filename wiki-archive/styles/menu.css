@@ -1,0 +1,347 @@
+/*
+ * Drop down menu stylesheet
+ */
+
+/* Menu bar layout */
+.ajs-menu-bar {
+    float: right;
+    line-height: 1.5;
+    position: relative;
+}
+.ajs-menu-bar,
+.ajs-menu-bar .ajs-button,
+.ajs-menu-bar .ajs-button a,
+.ajs-menu-bar .ajs-button span,
+.ajs-menu-bar .ajs-menu-item .ajs-menu-title,
+.ajs-menu-bar .ajs-menu-item .ajs-menu-title span,
+.ajs-menu-bar .ajs-menu-item .ajs-menu-title span span,
+.ajs-menu-bar .ajs-drop-down a,
+.ajs-menu-bar .ajs-drop-down a span,
+.ajs-menu-bar .ajs-drop-down a span span {
+     /* all containers are block-level with no margin or padding by default */
+    display: block;
+    margin: 0;
+    padding: 0;
+}
+.ajs-menu-bar .ajs-button span,
+.ajs-menu-bar .ajs-menu-item .trigger span span {
+    padding-right: 1em; /* gap after menu label, must be wider than indicator image */
+}
+.ajs-menu-bar .ajs-menu-item,
+.ajs-menu-bar .ajs-button {
+    float: left;
+    list-style: none;
+    position: relative;
+}
+.ajs-menu-bar .ajs-menu-item a,
+.ajs-menu-bar .ajs-button a {
+    line-height: 1.5;
+    text-decoration: none;
+    white-space: nowrap;
+}
+.ajs-menu-bar .ajs-button {
+    float: left;
+    line-height: 2;
+    list-style: none;
+    position: static;
+}
+
+/* Drop-down indicator icon and on-hover colour changing */
+.ajs-menu-bar .ajs-menu-item .trigger span {
+    background-image: url(../../../images/decoration/menu_indicator.gif);
+    position: relative;
+}
+.ajs-menu-bar .ajs-menu-item.opened .trigger span {
+    background-image: url(../../../images/decoration/white_menu_indicator.gif);
+}
+
+.ajs-menu-bar .ajs-menu-item.opened .trigger span span,
+.ajs-menu-bar .ajs-menu-item .trigger span span {
+    background-image: none;
+}
+.ajs-menu-bar .ajs-button a:hover,
+.ajs-menu-bar .ajs-menu-item.opened .trigger span {
+    color: #fff; /* system colour - not derived from colour scheme */
+}
+
+/* Menu bar icons */
+.ajs-menu-bar .ajs-menu-item .trigger span {
+    background-position: 100% 50%;
+    background-repeat: no-repeat;
+}
+.ajs-menu-bar .ajs-button span,
+.ajs-menu-bar .ajs-menu-item .trigger span span {
+    background-position: 0 50%;
+    background-repeat: no-repeat;
+}
+
+/* Drop-down menu layout */
+.ajs-menu-bar .ajs-menu-item .ajs-drop-down a {
+    background: #fff no-repeat 4px 50%;
+    border: none;
+    display: block;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0 0.5em 0 24px;
+    text-decoration: none;
+}
+.ajs-menu-bar .ajs-drop-down {
+    -moz-border-radius-bottomright: 3px;
+    -moz-border-radius-bottomleft: 3px;
+    -webkit-border-bottom-right-radius: 3px;
+    -webkit-border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    background: #fff; /* system colour - not derived from colour scheme */
+    border: solid 1px #c1c1c1;
+    font-weight: normal;
+    min-width: 12em;
+    padding: 0;
+    position: absolute;
+    left: 0;
+    white-space: nowrap;
+    z-index: 1000;
+}
+
+/* CONFDEV-820 - Temporary fix */
+#header-menu-bar .ajs-drop-down {
+    min-width: 15em;
+}
+
+.ajs-menu-bar .ajs-drop-down.above {
+    -moz-border-radius: 0;
+    -moz-border-radius-topleft: 3px;
+    -moz-border-radius-topright: 3px;
+    -webkit-border-radius: 0;
+    -webkit-border-top-left-radius: 3px;
+    -webkit-border-top-right-radius: 3px;
+    border-radius: 0;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    bottom: 2em;
+    margin-top: -2px;
+}
+.ajs-menu-bar .ajs-drop-down ul,
+.ajs-menu-bar ul.ajs-drop-down {
+    border-top: solid 1px #e1e1e1;
+    margin: 0;
+    padding: 5px 0;
+    position: relative;
+    list-style: none;
+}
+.ajs-menu-bar .ajs-drop-down ul.first,
+.ajs-menu-bar ul.ajs-drop-down.first {
+    border-top: none;
+}
+.ajs-menu-bar .ajs-drop-down li {
+    margin: 0;
+    padding: 0;
+}
+.ajs-menu-bar .ajs-menu-item div.ajs-drop-down a {
+    background-position: .5em 50%;
+    background-repeat: no-repeat;
+    border: none;
+    display: block;
+    line-height: 2;
+    margin: 0;
+    padding: 0 1em 0 28px;
+    position: relative;
+    text-decoration: none;
+    white-space: nowrap;
+}
+.ajs-menu-bar .ajs-drop-down a img {
+    float: left;
+    height: 16px;
+    margin: .3em 0 0 -20px;
+    width: 16px;
+}
+
+/* Drop-down menu icons */
+.ajs-menu-bar .ajs-drop-down a.add-comment {
+    background-image: url(../../../images/icons/comment_16.png);
+}
+.ajs-menu-bar .ajs-drop-down a.add-attachment {
+    background-image: url(../../../images/icons/attach_16.png);
+}
+.ajs-menu-bar .ajs-drop-down a.add-page {
+    background-image: url(../../../images/icons/docs_16.gif);
+}
+.ajs-menu-bar .ajs-drop-down a.add-news {
+    background-image: url(../../../images/icons/blogentry_16.gif);
+}
+.ajs-menu-bar .ajs-drop-down a.action-view-history {
+    background-image: url(../../../images/icons/clock_16.png);
+}
+.ajs-menu-bar .ajs-drop-down a.action-page-permissions {
+    background-image: url(../../../images/icons/lock_16_grey.png);
+}
+.ajs-menu-bar .ajs-drop-down a.action-view-attachments {
+    background-image: url(../../../images/icons/attach_16.png);
+}
+.ajs-menu-bar .ajs-drop-down a.action-page-favourite {
+    background-image: url(../../../images/icons/fav_off_16.png);
+}
+.ajs-menu-bar .ajs-drop-down a.ie-page-favourite-selected { /* using IE style here to make IE7 not duplicate bg */
+    background-image: url(../../../images/icons/fav_on_16.png);
+}
+.ajs-menu-bar .ajs-drop-down a.action-page-watching-space {
+    background-image: url(../../../images/icons/watching_space_16.png);
+}
+.ajs-menu-bar .ajs-drop-down a.action-manage-watchers {
+    background-image: url(../../../images/icons/watch_manage_16.png);
+}
+.ajs-menu-bar .ajs-drop-down a.action-page-watching {
+    background-image: url(../../../images/icons/watch_off_16.png);
+}
+.ajs-menu-bar .ajs-drop-down a.ie-page-watching-selected { /* using IE style here to make IE7 not duplicate bg */
+    background-image: url(../../../images/icons/watch_on_16.png);
+}
+.ajs-menu-bar .ajs-drop-down a.waiting {
+    background-image: url(../../../images/icons/wait.gif);
+}
+
+.ajs-menu-bar .ajs-menu-item .section-secondary li a,
+.ajs-menu-bar .ajs-menu-item .section-modify li a {
+    padding-left: 8px;
+    font-size: .9em;
+}
+
+.ajs-menu-bar .ajs-menu-item .ajs-drop-down li.hidden {
+    display: none;
+}
+
+/* Customisations for header menu bar */
+#header-menu-bar {
+    margin-top: 0;
+    margin-right: 5px;
+}
+#header .ajs-menu-item a {
+    float: left;
+    line-height: 1.5;
+    margin: 0;
+    text-decoration: underline;
+}
+#header-menu-bar li.ajs-menu-item a {
+    line-height: 2;
+}
+#header-menu-bar li.ajs-menu-item .ajs-drop-down a {
+    line-height: 1.5;
+}
+#header .ajs-menu-bar li.ajs-menu-item,
+#header .ajs-menu-bar li.ajs-button {
+    margin: 0;
+    padding: 0;
+}
+#header .ajs-menu-bar li.ajs-menu-item a {
+    padding-left: 0.5em;
+}
+#header .ajs-menu-item .trigger span {
+    background-image: url(../../../images/decoration/white_menu_indicator.gif); /* header menus always use a white indicator */
+}
+#header .ajs-menu-item .trigger span span {
+    background: none;
+}
+#header .ajs-menu-bar li.ajs-menu-item a.trigger:focus {
+    outline: none;
+}
+#header .ajs-menu-bar li.ajs-menu-item a.trigger {
+    float: left;
+    padding: 0 0.5em;
+    text-decoration: none;
+}
+#header .ajs-menu-bar li.ajs-menu-item.opened .ajs-drop-down li,
+#header .ajs-menu-bar li.ajs-menu-item.opened .ajs-drop-down a {
+    background-color: #fff; /* system colour - not derived from colour scheme */
+    background-image: none;
+}
+.ajs-menu-bar .ajs-menu-item.opened,
+.ajs-menu-bar .ajs-button a {
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+}
+.ajs-menu-bar .ajs-menu-item.opened {
+    -moz-border-radius-bottomleft: 0;
+    -moz-border-radius-bottomright: 0;
+    -webkit-border-bottom-left-radius: 0;
+    -webkit-border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+/* Customisations for header menus */
+#header .ajs-menu-bar .ajs-drop-down {
+    -moz-border-radius-bottomleft: 3px;
+    -moz-border-radius-bottomright: 3px;
+    -webkit-border-bottom-left-radius: 3px;
+    -webkit-border-bottom-right-radius: 3px;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border-top: none;
+    margin-top: 0;
+    margin-left: -1px;
+    top: 2em;
+    z-index: 9;
+}
+#header .ajs-menu-bar .ajs-drop-down a {
+    float: none;
+    padding: 2px 2em;
+    text-decoration: none;
+}
+#header .ajs-menu-bar .ajs-menu-item .ajs-drop-down ul,
+#header .ajs-menu-bar .ajs-menu-item ul.ajs-drop-down {
+    border-top: 1px solid #cce;
+}
+#header .ajs-menu-bar .ajs-drop-down ul.first,
+#header .ajs-menu-bar ul.ajs-drop-down.first {
+    border: none;
+}
+
+/* Customisations for navigation menu bar */
+#navigation .ajs-menu-bar {
+    margin: 10px 0 0 1em;
+}
+#navigation .ajs-menu-bar .ajs-button span,
+#navigation .ajs-menu-bar .ajs-menu-item .ajs-menu-title span span {
+    padding-left: 25px; /* width of icon + gap before menu label */
+}
+/*#navigation .ajs-menu-bar li.ajs-menu-item,
+#navigation .ajs-menu-bar li.ajs-button {
+    margin-top: -10px;
+}
+*/
+#navigation .ajs-menu-bar li.ajs-menu-item .ajs-menu-title,
+#navigation .ajs-menu-bar li.ajs-button a {
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+    color: #535353; /* system colour - not derived from colour scheme */
+    font-size: 1.1em;
+    line-height: 20px;
+    padding: .35em .5em;
+}
+#navigation .ajs-menu-bar li.ajs-menu-item .ajs-menu-title {
+    -moz-border-radius-bottomleft: 0;
+    -moz-border-radius-bottomright: 0;
+    -webkit-border-bottom-left-radius: 0;
+    -webkit-border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+#navigation .ajs-menu-bar .ajs-button a.edit span {
+    background-image: url(../../../images/icons/edit_20.png);
+}
+#navigation .ajs-menu-bar .ajs-button a.view span {
+    background-image: url(../../../images/icons/view_20.png);
+}
+#navigation .ajs-menu-bar li.ajs-menu-item a.add span span {
+    background-image: url(../../../images/icons/add_20.png);
+}
+#navigation .ajs-menu-bar li.ajs-menu-item a.action span span {
+    background-image: url(../../../images/icons/tools_20.png);
+}
+.ajs-menu-bar .ajs-menu-item .most-right-menu-item {
+    left: auto;
+    margin: 0;
+    right: 0;
+}

@@ -1,0 +1,306 @@
+/*
+    This stylesheet defines styles that only apply to the Default theme. Styles common to all themes should go in
+    master.css
+*/
+html, body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, FreeSans, sans-serif;
+    background-color:#fff;
+}
+
+#full-height-container {
+    min-height: 100%;
+    position: relative;
+    background-color: #fff;    
+}
+
+#header {
+    margin: 0;
+    padding: 0 10px;
+    min-height: 2em;
+    line-height: 2;
+}
+
+#websudo {
+    margin: 0;
+    padding: 0 10px;
+    min-height: 2em;
+    line-height: 2;
+}
+
+.email{
+    /* offset the negative margin set by the header for emails only */
+    margin: 10px;
+}
+
+#page-view-panel {
+    float: right;
+}
+
+h1.pagetitle img {
+    max-height: 2.5em; /* scale logo image with font size */
+    margin-bottom: 0.3em;
+    float: left;
+}
+h1.pagetitle img.custom {
+    height: auto;
+}
+
+h1 span.title-text {
+    display: table; /* page title wrapping drops straight down */
+}
+
+.editable-title {
+    margin: 0 10px 0 58px;
+}
+
+#main {
+    padding: 10px 10px 6em 10px;
+}
+.content-preview #main {
+    padding-bottom: 10px;
+}
+
+#content {
+    clear: left;
+}
+#content.space {
+    margin-top: 2.6em;
+}
+
+a:link,
+a:visited {
+    text-decoration: none;
+    outline: none;
+}
+a:focus,
+a:hover,
+a:active {
+    text-decoration: underline;
+}
+
+.quick-search-submit {
+    display: none;
+}
+
+#page-view-panel li, #page-prefs-list li {
+    color: #666;
+    float: left;
+    font-size: .9em;
+    margin: 0 0 0 .3em;
+    padding: 0 0 0 .3em;
+}
+
+#navigation {
+    display: inline;
+}
+
+.page-actions {
+    float: right;
+    border: solid 1px #ccc;
+    padding: 5px;
+    margin-left: 10px;
+}
+
+.remove-control {
+    display: none;
+}
+
+.page-metadata {
+    color: #666;
+    font-size: 0.9em;
+    margin: 10px 0;
+}
+.page-metadata a:link,
+.page-metadata a:active,
+.page-metadata a:hover,
+.page-metadata a:visited {
+    color: #666;
+    font-style: normal;
+    text-decoration: underline;
+}
+
+.section-header {
+    margin-bottom: 5px;
+    padding: 2px 0;    
+}
+
+h2.section-title {
+    font-size: 12pt;
+    font-weight: bold;
+    margin-top: 20px;
+    padding: 0;
+    display: inline;
+}
+
+#sidebar,
+.sidebar {
+    clear: right;
+    float: right;
+    width: 16em;
+    margin-left: 10px;
+}
+
+#space-blog-search-query{
+    width: 21.5em;
+}
+
+#blog-sidebar{
+    width: 22em;
+    margin-top: 2em;
+}
+
+.has-sidebar #content.space,
+.has-sidebar #content.edit form.markup,
+.has-sidebar .wiki-content,
+.has-sidebar.active-wikimarkup .errorBox{
+    margin-right: 17em;
+}
+
+.has-blog-sidebar #content.space,
+.has-blog-sidebar #content.edit form.markup,
+.has-blog-sidebar .wiki-content
+{
+    margin-right: 24em;
+}
+
+.blog-post-listing .wiki-content,
+.has-blog-sidebar .blogpost-view .wiki-content .wiki-content{
+    margin-right: 0;
+}
+
+.has-sidebar .wiki-content .wiki-content,
+.has-blog-sidebar .wiki-content .wiki-content,
+.has-blog-sidebar .comment-content.wiki-content {
+    margin-right: 0;
+}
+
+.active-richtext #content.create-page,
+.active-preview #content.create-page {
+    margin-right: 0 !important;
+}
+
+.sidebar-content {
+    margin: 10px 0 0 1em;
+}
+.blogcalendar {
+    width: 16em;
+}
+.blogcalendar th a.calendarhead,
+.blogcalendar th.calendarhead {
+    font-size: 1em;
+}
+.blogcalendar td,
+.blogcalendar th {
+    font-size: .85em;
+}
+
+/* folder tab link styles */
+.tabnav .tabs a {
+    padding: 5px 5px 4px;
+    margin: 5px 3px 0 0;
+    border-width: 1px;
+    border-style: solid;
+    border-bottom: none;
+    text-decoration: none;
+    display: block;
+    float: left;
+}
+
+.tabnav .tabs a.current {
+    background: white;
+    border-bottom: 1px solid white;
+    color: black;
+}
+.tabnav .tabs a.current:link, .tabnav .tabs a.current:visited {
+    color: black;
+}
+.tabnav .tabs a.current:hover {
+    background: white;
+    border-bottom: 1px solid white;
+    color: black;
+}
+
+/* list page navigational tabs */
+.tabnav, .comment .tabnav {
+    padding: 0;
+    margin: 0;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    float: left;
+    display: inline;
+    list-style-position: outside;
+    width: 100%;
+    font-weight: bold;
+    font-size: 10pt;
+}
+
+.after-tabnav {
+    clear: both;
+}
+
+.tabnav li.tabs {
+    list-style: none;
+    margin: 0 0 -1px 10px;
+    float: left;
+    display: block;
+}
+
+.dashboard {
+    clear: left;
+}
+
+#footer {
+    position:absolute;
+    bottom:0;
+    width:100%;
+}
+#login-language {
+    text-align: center;
+    font-size: 11px;
+    padding-top: 10px;
+}
+
+#login-language a {
+    color: #666666;
+    text-decoration: none;
+    padding-left: 10px;
+}
+
+
+
+#poweredby,
+#poweredby a {
+    font-size: 11px;
+}
+
+/* We can't have a separate IE css file because the default theme
+   hard codes the location of the theme stylesheet */
+
+/* IE6: treated as min-height*/
+* html #full-height-container {
+    height: 100%;
+    background-color:#F0F0F0;
+}
+
+* html #main {
+    padding-bottom: 1em;
+    height: 88%; /* fake ie6 min height - not perfect but better than alternatives */
+}
+
+* html #footer {
+    position: relative;
+}
+
+/* no footer in popups. */
+body.popup-window #footer {
+    display: none;
+}
+
+* html .popup-window #full-height-container {
+    background-color:#fff;
+}

@@ -1,0 +1,82 @@
+.panel {
+    color: black;
+    padding: 0;
+    margin: 10px 20px;
+    background: #f0f0f0;
+    border-width: 1px;
+    border-style: solid;
+    overflow: hidden;
+}
+
+.alertPanel {
+    border-color: #c00;
+}
+
+.infoPanel {
+    border-color: #69c;
+}
+
+.alertPanel, .infoPanel {
+    border-style: solid;
+    border-width: 1px;
+    padding: 8px;
+    margin: 10px;
+}
+
+.infopanel-heading {
+    font-weight: bold;
+	padding: 4px 0 2px 0;
+}
+
+/* basic panel (basicpanel.vmd) style */
+.basicPanelContainer {
+    border-width: 1px;
+    border-style: solid;
+    margin-top: 2px;
+    margin-bottom: 8px;
+    width: 100%;
+}
+
+.basicPanelTitle {
+    padding: 5px;
+    margin: 0;
+    background-color: #f0f0f0;
+    color: black;
+    font-weight: bold;
+}
+
+.basicPanelBody {
+    padding: 5px;
+    margin: 0;
+}
+
+.panelHeader {
+    padding: 0 12px;
+    line-height: 2; /* vertical alignment for title */
+    text-align: center;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+}
+
+.codeHeader, .panelHeader, .panelContent {
+    background: #f0f0f0;
+}
+
+.preformattedHeader, .codeContent, .preformattedContent {
+    background: #fff;
+}
+
+.panelContent {
+    color: #000;
+    margin: 0;
+    padding: 0 12px;
+    text-align: left;
+    font-size: .95em;
+}
+
+.panelContent,
+.panelContent p, .panelContent th,
+.panelContent td, .panelContent li {
+    text-align: left;
+}
+

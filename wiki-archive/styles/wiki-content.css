@@ -1,0 +1,180 @@
+.wiki-content,
+.wiki-content p,
+.wiki-content table,
+.wiki-content tr,
+.wiki-content td,
+.wiki-content th,
+.wiki-content ol,
+.wiki-content ul,
+.wiki-content li {
+    font-size: 10pt;
+    line-height: 13pt;
+}
+
+.wiki-content p {
+    margin: 10px 0;
+    padding: 0;
+}
+
+.wiki-content li,
+.wiki-content ul p,
+.wiki-content ol p {
+    margin: 0;
+    padding: 0;
+}
+
+.wiki-content ul {
+    list-style-type: disc;
+}
+
+.wiki-content ol,
+.wiki-content ol ol ol ol,
+.wiki-content ol ol ol ol ol ol ol,
+.wiki-content ol ol ol ol ol ol ol ol ol ol {
+    list-style-type: decimal;
+}
+
+.wiki-content ol ol,
+.wiki-content ol ol ol ol ol,
+.wiki-content ol ol ol ol ol ol ol ol,
+.wiki-content ol ol ol ol ol ol ol ol ol ol ol {
+    list-style-type: lower-alpha;
+}
+
+.wiki-content ol ol ol,
+.wiki-content ol ol ol ol ol ol,
+.wiki-content ol ol ol ol ol ol ol ol ol,
+.wiki-content ol ol ol ol ol ol ol ol ol ol ol ol {
+    list-style-type: lower-roman;
+}
+
+.wiki-content h1,
+.wiki-content h2,
+.wiki-content h3,
+.wiki-content h4,
+.wiki-content h5,
+.wiki-content h6 {
+    font-weight: bold;
+    line-height: normal;
+    padding: 0;
+}
+
+
+.wiki-content h1 {
+    font-size: 21pt;
+    margin-top: 38px;
+}
+
+.wiki-content h2 {
+    font-size: 18pt;
+    margin-top: 32px;
+}
+
+.wiki-content h3 {
+    font-size: 15pt;
+    margin-top: 28px;
+}
+
+.wiki-content h4 {
+    font-size: 13pt;
+    margin-top: 25px;
+}
+
+.wiki-content h5 {
+    font-size: 11pt;
+    margin-top: 22px;
+}
+
+.wiki-content h6 {
+    font-size: 10pt;
+    margin-top: 22px;
+}
+
+.wiki-content .confluenceTable, .grid {
+/*
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 10px;
+    margin-bottom: 10px;
+*/
+    padding: 0;
+    margin: 5px 0;
+}
+
+.wiki-content td.confluenceTd,
+.wiki-content th.confluenceTh {
+    padding: 5px 7px;
+}
+.wiki-content-preview {
+    padding: 5px;
+    border-left: 1px solid;
+    border-right: 1px solid;
+}
+
+.wiki-content .preformattedContent,
+.wiki-content .codeContent{
+    padding: 12px 10px;
+}
+
+.wiki-content .preformattedContent pre,
+.wiki-content .codeContent pre{
+    margin:0;
+    /** matches renderer-macros.css: .preformatted pre */
+    font-family:"Courier New",Courier,monospace;
+    line-height:1.3;
+}
+
+/* Styles for TinyMCE editor content */
+
+.mceContentBody {
+    border: none;
+    padding: 10px;
+    text-align: left;
+    background: #fff;
+}
+
+/* IE makes paragraphs in tables, so remove the default margin */
+.mceContentBody .confluenceTable p {
+    margin: 0;
+}
+
+/* Firefox puts resizing controls on tables. They don't line up with tables unless they have margin 1px.
+(0 breaks the border) */
+body.mceContentBody table.confluenceTable {
+    margin: 1px;
+}
+
+.mceContentBody .wysiwyg-macro-body-preformat {
+    border: #ccc solid 1px; /* stick to neutral colour, or move to colors-css.vm if required */
+    /* horizontal margin matches .panel */
+    margin: 5px 20px;
+}
+
+/* Styles for macros */
+.mceContentBody .wysiwyg-macro-inline {
+    display: inline;
+}
+.mceContentBody .user-new-line,
+.mceContentBody .wysiwyg-macro-body-newline {
+    display: none;
+    line-height: 0;
+}
+
+/* Styles for the RTE Autocomplete component */
+#autocomplete {
+    background-color: #eee;
+    border: solid 1px #ddd;
+}
+#autocomplete-trigger{
+    background-color: #ddd;
+    padding: 0 2px;
+}
+#autocomplete-search-text {
+    padding: 0 4px 0 2px;
+}
+
+/* Certain styles override AUI styles, we undo the damage here */
+
+.wiki-content #recent-updates.aui-tabs .tabs-menu .menu-item a {
+    text-decoration: none;
+}

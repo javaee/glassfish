@@ -1,0 +1,174 @@
+body.login,
+body.login #main,
+body.login #full-height-container {
+    background: #fafafa;
+}
+
+* html body.login,
+* html body.login #full-height-container {
+    background: #f0f0f0;
+}
+
+#com-atlassian-confluence.login h1 {
+    width: 560px;
+    margin: 0 auto;
+}
+
+#login-container {
+    margin: 0 auto;
+    width: 500px;
+    padding: 20px 30px;
+    background: #fff;
+}
+
+body.login #header, body.login #websudo {
+    display: none;
+}
+
+/* Gets rid of the break above the footer */
+body.login .clear {
+    display: none;
+}
+
+body.login #main {
+    overflow: hidden;
+    padding: 10% 0 12%;
+}
+
+#login-container .errorBox {
+    background: none;
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* Hide the "The following error(s) occurred:" text */
+#login-container .errorBox .errorMessage {
+    display: none;
+}
+
+#login-container .errorBox ul {
+    list-style-type: none;
+    color: #c00;
+}
+
+#login-container,
+#login-container form.aui {
+    color: #333;
+}
+
+#login-container,
+#login-container .captcha-image {
+    border: 1px solid #eee;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    border-radius: 3px;
+}
+
+#login-container div.login-form-container {
+    margin-bottom: 10px;
+    padding: 0 0 5px 20px;
+}
+
+#login-container .login-form-container fieldset {
+    padding-top: 15px;
+}
+
+#login-container .checkbox label {
+    left: 0;
+    margin-right: 0;
+    float: none;
+    display: inline;
+}
+
+/* Overide default label styling */
+#com-atlassian-confluence.login #login-container label {
+    color: #333;
+}
+
+#com-atlassian-confluence.login #login-container .error p {
+    background: #fff;
+    color: #c00;
+}
+
+#login-container .login-form-container .text,
+#login-container .login-form-container .password {
+    width: 95%;
+}
+
+#login-container .message {
+    padding: 0;
+    width: auto;
+}
+
+#login-container p {
+    margin: 0 0 1em;
+    color: #333;
+}
+
+#login-container p.last {
+    margin: 0;
+}
+
+#login-container p.success-message {
+    color: green;
+}
+
+body.signup #main{
+    padding: 5% 0 7%;
+}
+
+#login-container .captcha-image {
+    margin: 10px 0;
+    width: 200px;
+    height: 100px;
+    float: left;
+}
+
+#captcha-error span.errorMessage {
+    font-weight: normal;
+}
+
+#captcha-container .reload {
+    width: 16px;
+    height: 16px;
+    float: left;
+    position: relative;
+    top: 16px;
+    left: 10px;
+}
+
+#captcha-container label#captcha-reponse-label {
+    float: none;
+    left: 0;
+    margin: 0;
+    width: auto;
+}
+
+#captcha-container input {
+    width: 192px;
+}
+
+#coherence-copyright {
+    margin: 0;
+    text-align: center;
+    font-size: 0.8em;
+    padding-bottom: 3px;
+}
+
+#coherence-copyright a {
+    color: #666;
+}
+
+#login-container .userLogoLink {
+    float: left;
+    padding-right: 5px;
+}
+
+#login-container a#login-notyou {
+    padding-left: 5px;
+}
+
+#login-container div.warningPanel {
+    margin: 0 0 10px 0;
+}
