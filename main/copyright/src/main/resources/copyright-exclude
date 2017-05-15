@@ -347,3 +347,7 @@ appserver/tests/appserv-tests/devtests/deployment/jsr88/misc/exampleFromJ2EETuto
 appserver/tests/appserv-tests/devtests/deployment/jsr88/misc/exampleFromJ2EETutorial/cb/server/web/banner.txt
 appserver/tests/appserv-tests/devtests/deployment/EXPECTED_RESULTS.txt
 appserver/admingui/common/src/main/resources/applications/appEdit.layout
+appserver/tests/appserv-tests/devtests/web/ha/ssoFailover/docroot/index.jsp.a
+appserver/tests/appserv-tests/devtests/web/ha/ssoFailover/docroot/index.jsp.b
+appserver/tests/appserv-tests/devtests/web/defaultServletWithSubdirectoryMapping/docroot/static/test.txt
+appserver/tests/jbi/service_unit/add-numbers/RepRunConf.txt
