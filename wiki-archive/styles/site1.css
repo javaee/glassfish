@@ -310,7 +310,7 @@ container {
 
 
 body {
-	background-image:url(/images/bg_s.png);
+	background-image:url(../images/bg_s.png);
 }
 
 body[class*="page-themes-bootswatch"] {
