@@ -41,7 +41,6 @@
 
 -->
 
-<!-- Copyright (c) 2003 Sun Microsystems, Inc. All rights reserved. -->
 <application xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="5" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_5.xsd">
   <description>Application description</description>
   <display-name>i18n-simple</display-name>

@@ -42,7 +42,6 @@
 
 -->
 
-<!-- Copyright 2004 Sun Microsystems, Inc. All rights reserved. -->
 
 <ejb-jar>
   <enterprise-beans>

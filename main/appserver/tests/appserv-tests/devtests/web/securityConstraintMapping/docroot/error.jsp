@@ -1,4 +1,4 @@
-<%--
+\<%--
 
     DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 
@@ -40,10 +40,6 @@
 
 --%>
 
-<!--
- Copyright 2002 Sun Microsystems, Inc. All rights reserved.
- SUN PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
--->
 <html>
 <head>
 <title>Error Page</title>

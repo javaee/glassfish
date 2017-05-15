@@ -38,9 +38,6 @@
  * holder.
  */
 
-/*
- * Copyright (c) 2010 ProfitBricks GmbH. All Rights Reserved.
- */
 package org.glassfish.cditest.security.interceptor;
 
 import java.lang.reflect.Method;

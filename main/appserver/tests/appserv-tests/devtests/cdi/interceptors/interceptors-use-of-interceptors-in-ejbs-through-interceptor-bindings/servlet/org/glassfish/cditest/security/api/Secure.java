@@ -38,9 +38,6 @@
  * holder.
  */
 
-/*
- * Copyright (c) 2010 ProfitBricks GmbH. All Rights Reserved.
- */
 package org.glassfish.cditest.security.api;
 
 import static java.lang.annotation.ElementType.METHOD;

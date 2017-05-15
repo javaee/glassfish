@@ -42,7 +42,6 @@
 
 -->
 
-<!-- Copyright (c) 2002 Sun Microsystems, Inc. All rights reserved. -->
 <sun-application-client>
   <ejb-ref>
     <ejb-ref-name>ejb/SSLSimpleConverter</ejb-ref-name>

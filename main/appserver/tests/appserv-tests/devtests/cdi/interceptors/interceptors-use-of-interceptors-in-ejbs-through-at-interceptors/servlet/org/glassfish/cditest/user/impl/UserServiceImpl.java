@@ -38,9 +38,6 @@
  * holder.
  */
 
-/*
- * Copyright (c) 2010 ProfitBricks GmbH. All Rights Reserved.
- */
 package org.glassfish.cditest.user.impl;
 
 import java.util.logging.Level;
