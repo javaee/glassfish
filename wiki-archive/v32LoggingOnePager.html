@@ -33,8 +33,8 @@
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">About <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
-									<li><a href="/LICENSE" title="License">Legal </a></li>
-									<li><a href="/CONTRIBUTING" title="Contributing">Contributing </a></li>
+									<li><a href="/glassfish/LICENSE" title="License">Legal </a></li>
+									<li><a href="/glassfish/CONTRIBUTING" title="Contributing">Contributing </a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -175,23 +175,23 @@ asadmin delete-log-levels --target=cluster1 dbms.package:dbms1.package:dbms2.pac
       <li><b>Log Analyzer Tool, which is the extension of collect-log-files command</b></li> 
      </ul> <p>Enhancement from 3.1 release. Allow user to view all log files under zip in the single screen in different tab.</p> <p>As we we had came up with collect-log-files command in v3.1 release. This command would collect log files from clustered instances and created zip under DAS. Now, how to view the content of log files? Solution as on today, unzip this zip files in one folder and open log files one by one in text editor. This can work but not user friendly.</p> <p>So to make it user friendly and allow user to navigate from one instance to another instance, we need to come up with this tool. It would be useful for end user to view log files for all instances on single screen.</p> <p>Using this tool user is allowed to select available collected log zip files. On selection of particular zip file it creates different tab based on number of instances. And each tab shows log record under tabular form for particular instance. It supports text search through which user can filter the data. On click of particular log record it opens the detail log record. Here, user can traverse through different instance by just clicking the tab.</p> <p><em>Send details to Anissa and Jason about provisioning the same. This tool needs major changes on GUI side and REST API side and logging back end code.</em></p> <h5><a name="v32LoggingOnePager-4.1.3SupportElasticBeanStalkrelatedchangesinlogging"></a>4.1.3 Support Elastic BeanStalk related changes in logging</h5> <p>If we plan to support GF as one of the container for BeanStalk then we need to implement set of the APIs in logging module to get the server/instance log data to BeanStalk.</p> <h4><a name="v32LoggingOnePager-4.2.Bug%2FRFENumber%28s%29"></a>4.2. Bug/RFE Number(s)</h4> <h5><a name="v32LoggingOnePager-4.2.1RFE"></a>4.2.1 RFE</h5> 
      <ul> 
-      <li>Add intelligence for log file refresh during download from remote machine, <a href="http://java.net/jira/browse/GLASSFISH-15849">15849</a></li> 
-      <li>Date-based log rotation, <a href="http://java.net/jira/browse/GLASSFISH-8894">8894</a></li> 
-      <li>Add 'Load Defaults' button under Logger Settings page, <a href="http://java.net/jira/browse/GLASSFISH-16018">16018</a></li> 
-      <li>Add new logging command to delete log levels 'delete-log-levels', <a href="http://java.net/jira/browse/GLASSFISH-16337">16337</a></li> 
-      <li>The Umbrella RFE for Enhancement for logging in a PaaS environment, <a href="http://java.net/jira/browse/GLASSFISH-16494">16494</a></li> 
+      <li>Add intelligence for log file refresh during download from remote machine, <a href="https://github.com/javaee/glassfish/issues/15849">15849</a></li> 
+      <li>Date-based log rotation, <a href="https://github.com/javaee/glassfish/issues/8894">8894</a></li> 
+      <li>Add 'Load Defaults' button under Logger Settings page, <a href="https://github.com/javaee/glassfish/issues/16018">16018</a></li> 
+      <li>Add new logging command to delete log levels 'delete-log-levels', <a href="https://github.com/javaee/glassfish/issues/16337">16337</a></li> 
+      <li>The Umbrella RFE for Enhancement for logging in a PaaS environment, <a href="https://github.com/javaee/glassfish/issues/16494">16494</a></li> 
      </ul> <h5><a name="v32LoggingOnePager-4.2.2Bug"></a>4.2.2 Bug</h5> 
      <ul> 
-      <li>Cannot start standalone instance, <a href="http://java.net/jira/browse/GLASSFISH-16162">16162</a></li> 
-      <li>Add ShoalLogger.level=CONFIG to glassfish/lib/templates/logging.properties, <a href="http://java.net/jira/browse/GLASSFISH-16139">16139</a></li> 
-      <li>NPE in UniformLogFormatter when trying to log collections/maps with null values/keys, <a href="http://java.net/jira/browse/GLASSFISH-16099">16099</a></li> 
-      <li>asadmin collect-log-files --target clustername should collect more information, <a href="http://java.net/jira/browse/GLASSFISH-16088">16088</a></li> 
-      <li>Log Levle set for Handler is not working in current GF, <a href="http://java.net/jira/browse/GLASSFISH-16057">16057</a></li> 
-      <li>Replace early logger messages in the code with hk2 service, <a href="http://java.net/jira/browse/GLASSFISH-15358">15358</a></li> 
-      <li>Provide better user experience to customize Eclipselink loggers, <a href="http://java.net/jira/browse/GLASSFISH-11274">11274</a></li> 
-      <li>com.sun.aas.instanceName in log configuration not used initially, <a href="http://java.net/jira/browse/GLASSFISH-16327">16327</a></li> 
-      <li>If user changes GFFileHandler.file attribute and not restart the server, <a href="http://java.net/jira/browse/GLASSFISH-16451">16451</a></li> 
-      <li>Log Viewer: server.log not found on remote system with custom node directory, <a href="http://java.net/jira/browse/GLASSFISH-15807">15807</a></li> 
+      <li>Cannot start standalone instance, <a href="https://github.com/javaee/glassfish/issues/16162">16162</a></li> 
+      <li>Add ShoalLogger.level=CONFIG to glassfish/lib/templates/logging.properties, <a href="https://github.com/javaee/glassfish/issues/16139">16139</a></li> 
+      <li>NPE in UniformLogFormatter when trying to log collections/maps with null values/keys, <a href="https://github.com/javaee/glassfish/issues/16099">16099</a></li> 
+      <li>asadmin collect-log-files --target clustername should collect more information, <a href="https://github.com/javaee/glassfish/issues/16088">16088</a></li> 
+      <li>Log Levle set for Handler is not working in current GF, <a href="https://github.com/javaee/glassfish/issues/16057">16057</a></li> 
+      <li>Replace early logger messages in the code with hk2 service, <a href="https://github.com/javaee/glassfish/issues/15358">15358</a></li> 
+      <li>Provide better user experience to customize Eclipselink loggers, <a href="https://github.com/javaee/glassfish/issues/11274">11274</a></li> 
+      <li>com.sun.aas.instanceName in log configuration not used initially, <a href="https://github.com/javaee/glassfish/issues/16327">16327</a></li> 
+      <li>If user changes GFFileHandler.file attribute and not restart the server, <a href="https://github.com/javaee/glassfish/issues/16451">16451</a></li> 
+      <li>Log Viewer: server.log not found on remote system with custom node directory, <a href="https://github.com/javaee/glassfish/issues/15807">15807</a></li> 
      </ul> <h4><a name="v32LoggingOnePager-4.3.Interfaces"></a>4.3. Interfaces</h4> <h5><a name="v32LoggingOnePager-4.3.1EnhancementforlogginginaPaaSenvironment"></a>4.3.1 Enhancement for logging in a PaaS environment</h5> 
      <ul> 
       <li><b>Public Interfaces</b> 
